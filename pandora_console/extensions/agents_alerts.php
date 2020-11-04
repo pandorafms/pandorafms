@@ -1,44 +1,80 @@
 <?php
+/**
+ * Agents/Alerts Monitoring view.
+ *
+ * @category   Agent Wizard
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-require_once $config['homedir'].'/include/functions_agents.php';
-require_once $config['homedir'].'/include/functions_modules.php';
-require_once $config['homedir'].'/include/functions_users.php';
+// Begin.
+global $config;
+// Require needed class.
+require_once $config['homedir'].'/include/class/AgentsAlerts.class.php';
+// This page.
+$thisOwnPage = 'index.php?sec=view&sec2=extensions/agents_alerts';
+$ajaxPage    = 'extensions/agents_alerts';
+$pageName    = '[AgentsAlerts]';
+// Control call flow.
+try {
+    // User access and validation is being processed on class constructor.
+    $obj = new AgentsAlerts($ajaxPage);
+} catch (Exception $e) {
+    if (is_ajax()) {
+        echo json_encode(['error' => $pageName.$e->getMessage() ]);
+        exit;
+    } else {
+        echo $pageName.$e->getMessage();
+    }
+
+    // Stop this execution, but continue 'globally'.
+    return;
+}
+
+// AJAX controller.
+if (is_ajax()) {
+    $method = get_parameter('method');
+
+    if (method_exists($obj, $method) === true) {
+        $obj->{$method}();
+    } else {
+        $obj->error('Method not found. ['.$method.']');
+    }
+
+    // Stop any execution.
+    exit;
+} else {
+    // Run.
+    $obj->run();
+}
 
 
 function mainAgentsAlerts()
 {
-    global $config;
-
-    // Load global vars
-    include_once 'include/config.php';
-    include_once 'include/functions_reporting.php';
-
-    check_login();
-    // ACL Check
-    if (! check_acl($config['id_user'], 0, 'AR')) {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to access Agent view (Grouped)'
-        );
-        include 'general/noaccess.php';
-        exit;
-    }
-
-    // Update network modules for this group
-    // Check for Network FLAG change request
-    // Made it a subquery, much faster on both the database and server side
-    if (isset($_GET['update_netgroup'])) {
+    /*
+        // Update network modules for this group
+        // Check for Network FLAG change request
+        // Made it a subquery, much faster on both the database and server side
+        if (isset($_GET['update_netgroup'])) {
         $group = get_parameter_get('update_netgroup', 0);
         if (check_acl($config['id_user'], $group, 'AW')) {
             $where = ['id_agente' => 'ANY(SELECT id_agente FROM tagente WHERE id_grupo = '.$group];
@@ -49,19 +85,19 @@ function mainAgentsAlerts()
             include 'general/noaccess.php';
             exit;
         }
-    }
+        }
 
-    if ($config['realtimestats'] == 0) {
+        if ($config['realtimestats'] == 0) {
         $updated_info = __('Last update').' : '.ui_print_timestamp(db_get_sql('SELECT min(utimestamp) FROM tgroup_stat'), true);
-    } else {
+        } else {
         // $updated_info = __("Updated at realtime");
         $updated_info = '';
-    }
+        }
 
-    $updated_time = $updated_info;
-    $create_alert = (int) get_parameter('create_alert', 0);
+        $updated_time = $updated_info;
+        $create_alert = (int) get_parameter('create_alert', 0);
 
-    if ($create_alert) {
+        if ($create_alert) {
         $template2 = get_parameter('template');
         $module_action_threshold = get_parameter('module_action_threshold');
 
@@ -79,29 +115,29 @@ function mainAgentsAlerts()
                 alerts_add_alert_agent_module_action($id_alert, $action_select, $values);
             }
         }
-    }
+        }
 
-    $refr = (int) get_parameter('refr', 30);
-    // By default 30 seconds
-    $show_modules = (bool) get_parameter('show_modules', 0);
-    $group_id = get_parameter('group_id', 0);
-    $offset = get_parameter('offset', 0);
-    $hor_offset = get_parameter('hor_offset', 0);
-    $block = 20;
+        $refr = (int) get_parameter('refr', 30);
+        // By default 30 seconds
+        $show_modules = (bool) get_parameter('show_modules', 0);
+        $group_id = get_parameter('group_id', 0);
+        $offset = get_parameter('offset', 0);
+        $hor_offset = get_parameter('hor_offset', 0);
+        $block = 20;
 
-    $groups = users_get_groups();
+        $groups = users_get_groups();
 
-    $filter_groups .= '<b>'.__('Group').'</b>';
-    $filter_groups .= '<div class="w250px inline margin-left-2">';
-    $filter_groups .= html_print_select_groups(false, 'AR', true, 'group_id', $group_id, false, '', '', true, false, true, '', false, 'margin-right: 10px; margin-top: 5px;');
-    $filter_groups .= '</div>';
+        $filter_groups .= '<b>'.__('Group').'</b>';
+        $filter_groups .= '<div class="w250px inline margin-left-2">';
+        $filter_groups .= html_print_select_groups(false, 'AR', true, 'group_id', $group_id, false, '', '', true, false, true, '', false, 'margin-right: 10px; margin-top: 5px;');
+        $filter_groups .= '</div>';
 
-    $check = '<b>'.__('Show modules without alerts').'</b>';
-    $check .= html_print_checkbox('slides_ids[]', $d['id'], $show_modules, true, false, '', true);
+        $check = '<b>'.__('Show modules without alerts').'</b>';
+        $check .= html_print_checkbox('slides_ids[]', $d['id'], $show_modules, true, false, '', true);
 
-    $comborefr = '<form method="post" action="'.ui_get_url_refresh(['offset' => 0, 'hor_offset' => 0]).'">';
-    $comborefr .= '<b>'.__('Refresh').'</b>';
-    $comborefr .= html_print_select(
+        $comborefr = '<form method="post" action="'.ui_get_url_refresh(['offset' => 0, 'hor_offset' => 0]).'">';
+        $comborefr .= '<b>'.__('Refresh').'</b>';
+        $comborefr .= html_print_select(
         [
             '30'                       => '30 '.__('seconds'),
             (string) SECONDS_1MINUTE   => __('1 minute'),
@@ -120,51 +156,51 @@ function mainAgentsAlerts()
         '',
         false,
         'width: 100px; margin-right: 10px; margin-top: 5px;'
-    );
-    $comborefr .= '</form>';
+        );
+        $comborefr .= '</form>';
 
-    if ($config['pure'] == 0) {
+        if ($config['pure'] == 0) {
         $fullscreen['text'] = '<a href="'.ui_get_url_refresh(['pure' => 1]).'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
-    } else {
+        } else {
         $fullscreen['text'] = '<a href="'.ui_get_url_refresh(['pure' => 0]).'">'.html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]).'</a>';
         $config['refr'] = $refr;
-    }
+        }
 
-    $onheader = [
+        $onheader = [
         'updated_time' => $updated_time,
         'fullscreen'   => $fullscreen,
         'combo_groups' => $filter_groups,
-    ];
+        ];
 
-    if ($config['pure'] == 1) {
+        if ($config['pure'] == 1) {
         $onheader['combo_refr'] = $comborefr;
-    }
+        }
 
-    // Header.
-    ui_print_page_header(
+        // Header.
+        ui_print_page_header(
         __('Agents/Alerts'),
         'images/op_alerts.png',
         false,
         '',
         false,
         $updated_time
-    );
-
-    // Old style table, we need a lot of special formatting,don't use table function
-    // Prepare old-style table
-    echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
-    echo '<tr>';
-    echo '<td>'.$filter_groups.'</td>';
-    echo '<td>'.$check.'</td>';
-    if ($config['pure'] == 1) {
+    );*/
+    /*
+        // Old style table, we need a lot of special formatting,don't use table function
+        // Prepare old-style table
+        echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
+        echo '<tr>';
+        echo '<td>'.$filter_groups.'</td>';
+        echo '<td>'.$check.'</td>';
+        if ($config['pure'] == 1) {
         echo '<td>'.$comborefr.'</td>';
-    }
+        }
 
-    echo '<td> <strong>'.__('Full screen').'</strong>'.$fullscreen['text'].'</td>';
-    echo '</tr>';
-    echo '</table>';
+        echo '<td> <strong>'.__('Full screen').'</strong>'.$fullscreen['text'].'</td>';
+        echo '</tr>';
+        echo '</table>';
 
-    if ($show_modules) {
+        if ($show_modules) {
         if ($group_id > 0) {
             $grupo = " AND tagente.id_grupo = $group_id";
         } else {
@@ -172,17 +208,17 @@ function mainAgentsAlerts()
         }
 
         $offset_modules = get_parameter('offset', 0);
-        $sql_count = "SELECT COUNT(tagente_modulo.nombre) FROM tagente_modulo 
-		INNER JOIN tagente ON tagente.id_agente = tagente_modulo.id_agente
-		WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules) 
-		$grupo";
+        $sql_count = "SELECT COUNT(tagente_modulo.nombre) FROM tagente_modulo
+        INNER JOIN tagente ON tagente.id_agente = tagente_modulo.id_agente
+        WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules)
+        $grupo";
         $count_agent_module = db_get_all_rows_sql($sql_count);
 
-        $sql = "SELECT tagente.alias, tagente_modulo.nombre, 
-		tagente_modulo.id_agente_modulo FROM tagente_modulo 
-		INNER JOIN tagente ON tagente.id_agente = tagente_modulo.id_agente
-		WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules) 
-		$grupo LIMIT 20 OFFSET $offset_modules";
+        $sql = "SELECT tagente.alias, tagente_modulo.nombre,
+        tagente_modulo.id_agente_modulo FROM tagente_modulo
+        INNER JOIN tagente ON tagente.id_agente = tagente_modulo.id_agente
+        WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules)
+        $grupo LIMIT 20 OFFSET $offset_modules";
         $agent_modules = db_get_all_rows_sql($sql);
 
         ui_pagination(
@@ -315,7 +351,7 @@ function mainAgentsAlerts()
         }
 
         html_print_table($table);
-    } else {
+        } else {
         $filter = [
             'offset' => (int) $offset,
             'limit'  => (int) $config['block_size'],
@@ -329,10 +365,10 @@ function mainAgentsAlerts()
 
         // Get the id of all agents with alerts
         $sql = 'SELECT DISTINCT(id_agente)
-			FROM tagente_modulo
-			WHERE id_agente_modulo IN
-				(SELECT id_agent_module
-				FROM talert_template_modules)';
+            FROM tagente_modulo
+            WHERE id_agente_modulo IN
+                (SELECT id_agent_module
+                FROM talert_template_modules)';
         $agents_with_alerts_raw = db_get_all_rows_sql($sql);
 
         if ($agents_with_alerts_raw === false) {
@@ -369,12 +405,12 @@ function mainAgentsAlerts()
             $agent_alerts[$alert['agent_name']][$alert['id_alert_template']][] = $alert;
         }
 
-        // Prepare pagination
+        // Prepare pagination.
         ui_pagination(
             $nagents,
             false,
             0,
-            0,
+            3,
             false,
             'offset',
             true,
@@ -391,18 +427,12 @@ function mainAgentsAlerts()
         echo '<thead><tr>';
         echo "<th width='140px' >".__('Agents').' / '.__('Alert templates').'</th>';
 
-        if ($hor_offset > 0) {
-            $new_hor_offset = ($hor_offset - $block);
-            echo "<th width='20px' style='' rowspan='".($nagents + 1)."'>
-					<a href='index.php?sec=extensions&sec2=extensions/agents_alerts&refr=0&hor_offset=".$new_hor_offset.'&offset='.$offset.'&group_id='.$group_id."'>".html_print_image('images/darrowleft.png', true, ['title' => __('Previous templates')]).'</a> </th>';
-        }
-
         $templates_raw = [];
         if (!empty($templates)) {
             $sql = sprintf(
                 'SELECT id, name
-				FROM talert_templates
-				WHERE id IN (%s)',
+                FROM talert_templates
+                WHERE id IN (%s)',
                 implode(',', array_keys($templates))
             );
 
@@ -435,19 +465,14 @@ function mainAgentsAlerts()
         }
 
         echo '</tr></thead>';
-        if (($hor_offset + $block) < $ntemplates) {
-            $new_hor_offset = ($hor_offset + $block);
-            echo "<th width='20px' style='' rowspan='".($nagents + 1)."'>
-				<a href='index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=".$new_hor_offset.'&offset='.$offset.'&group_id='.$group_id."'>".html_print_image('images/darrowright.png', true, ['title' => __('More templates')]).'</a> </th>';
-        }
 
         foreach ($agents as $agent) {
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
-            // Name of the agent
+            // Name of the agent.
             echo '<td style="font-weight:bold;">'.$alias['alias'].'</td>';
 
-            // Alerts of the agent
+            // Alerts of the agent.
             $anyfired = false;
             foreach ($templates as $tid => $tname) {
                 if ($tname == '') {
@@ -488,6 +513,23 @@ function mainAgentsAlerts()
             echo '</tr>';
         }
 
+        echo '<tr>';
+
+        if ($hor_offset > 0) {
+            $new_hor_offset = ($hor_offset - $block);
+            echo "<th width='20px' style='' colspan='".($ntemplates)."'>
+                    <a href='index.php?sec=extensions&sec2=extensions/agents_alerts&refr=0&hor_offset=".$new_hor_offset.'&offset='.$offset.'&group_id='.$group_id."'>".html_print_image('images/darrowleft.png', true, ['style' => 'float: right;', 'title' => __('Previous templates')]).'</a> </th>';
+        }
+
+        if (($hor_offset + $block) < $ntemplates) {
+            $new_hor_offset = ($hor_offset + $block);
+            echo "<th width='20px' colspan='".($ntemplates)."'>";
+            echo "<a href='index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=".$new_hor_offset.'&offset='.$offset.'&group_id='.$group_id."'>".html_print_image('images/darrowright.png', true, ['style' => 'float: right;', 'title' => __('More templates')])."</a>";
+            echo '</th>';
+        }
+
+        echo '</tr>';
+
         echo '</table>';
 
         ui_pagination(
@@ -506,146 +548,6 @@ function mainAgentsAlerts()
             ],
             'alerts_agents'
         );
-    }
-
-}
-
-
-// Print the modal window for the summary of each alerts group
-function print_alerts_summary_modal_window($id, $alerts)
-{
-    $table->width = '98%';
-    $table->class = 'info_table';
-    $table->data = [];
-
-    $table->head[0] = __('Module');
-    $table->head[1] = __('Action');
-    $table->head[2] = __('Last fired');
-    $table->head[3] = __('Status');
-
-    foreach ($alerts as $alert) {
-        $data[0] = modules_get_agentmodule_name($alert['id_agent_module']);
-
-        $actions = alerts_get_alert_agent_module_actions($alert['id']);
-
-        $actionDefault = db_get_value_sql(
-            '
-			SELECT id_alert_action
-			FROM talert_templates
-			WHERE id = '.$alert['id_alert_template']
-        );
-
-        $actionText = '';
-
-        if (!empty($actions)) {
-            $actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
-            foreach ($actions as $action) {
-                $actionText .= '<div><span class="action_name"><li>'.$action['name'];
-                if ($action['fires_min'] != $action['fires_max']) {
-                    $actionText .= ' ('.$action['fires_min'].' / '.$action['fires_max'].')';
-                }
-
-                $actionText .= '</li></span><br /></div>';
-            }
-
-            $actionText .= '</ul></div>';
-        } else {
-            if (!empty($actionDefault)) {
-                $actionText = db_get_sql(
-                    "SELECT name
-					FROM talert_actions
-					WHERE id = $actionDefault"
-                ).' <i>('.__('Default').')</i>';
-            }
         }
-
-        $data[1] = $actionText;
-        $data[2] = ui_print_timestamp($alert['last_fired'], true);
-
-        $status = STATUS_ALERT_NOT_FIRED;
-
-        if ($alert['times_fired'] > 0) {
-            $status = STATUS_ALERT_FIRED;
-            $title = __('Alert fired').' '.$alert['internal_counter'].' '.__('time(s)');
-        } else if ($alert['disabled'] > 0) {
-            $status = STATUS_ALERT_DISABLED;
-            $title = __('Alert disabled');
-        } else {
-            $status = STATUS_ALERT_NOT_FIRED;
-            $title = __('Alert not fired');
-        }
-
-        $data[3] = ui_print_status_image($status, $title, true);
-
-        array_push($table->data, $data);
-    }
-
-    $content = html_print_table($table, true);
-
-    $agent = modules_get_agentmodule_agent_alias($alerts[0]['id_agent_module']);
-    $template = alerts_get_alert_template_name($alerts[0]['id_alert_template']);
-
-    echo '<div id="alerts_details_'.$id.'" title="'.__('Agent').': '.$agent.' / '.__('Template').': '.$template.'" style="display:none">'.$content.'</div>';
+    */
 }
-
-
-extensions_add_operation_menu_option(__('Agents/Alerts view'), 'estado', null, 'v1r1', 'view');
-extensions_add_main_function('mainAgentsAlerts');
-
-ui_require_jquery_file('pandora');
-
-?>
-
-<script type="text/javascript">
-    function show_alerts_details(id) {
-        $("#alerts_details_"+id).dialog({
-            resizable: true,
-            draggable: true,
-            modal: true,
-            height: 280,
-            width: 800,
-            overlay: {
-                opacity: 0.5,
-                background: "black"
-            }
-        });
-    }
-    
-    function show_add_alerts(id) {
-        $("#add_alerts_dialog_"+id).dialog({
-            resizable: true,
-            draggable: true,
-            modal: true,
-            height: 235,
-            width: 600,
-            overlay: {
-                opacity: 0.5,
-                background: "black"
-            }
-        });
-    }
-    
-    // checkbox-slides_ids
-    $(document).ready(function () {
-        $('#checkbox-slides_ids').click(function(){
-            if ($('#checkbox-slides_ids').prop('checked')){
-                var url = location.href.replace("&show_modules=true", "");
-                location.href = url+"&show_modules=true";
-            } else {
-                var url = location.href.replace("&show_modules=true", "");
-                var re = /&offset=\d*/g;
-                location.href = url.replace(re, "");
-            }
-        });
-        
-        $('#group_id').change(function(){
-            if(location.href.indexOf("extensions/agents_modules") == -1){
-                var regx = /&group_id=\d*/g;
-                var url = location.href.replace(regx, "");
-                location.href = url+"&group_id="+$("#group_id").val();
-            }
-        });
-
-    });
-    
-</script>

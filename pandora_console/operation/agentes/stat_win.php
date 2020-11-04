@@ -86,6 +86,7 @@ ui_require_css_file('register', 'include/styles/', true);
 // Connection lost alert.
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_require_javascript_file('connection_check');
 ui_print_message_dialog(
     $conn_title,
     $conn_text,

@@ -5734,7 +5734,7 @@ sub cli_delete_group() {
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
-	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', $group_name);
+	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
 
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";

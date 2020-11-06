@@ -90,10 +90,7 @@ export default class NetworkLink extends Line {
     50, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
-      const endPosition = {
-        x,
-        y
-      };
+      const endPosition = { x, y };
 
       // Re-Paint after move.
       this.render();
@@ -126,6 +123,8 @@ export default class NetworkLink extends Line {
       labelStartWidth,
       labelStartHeight
     } = this.props;
+
+    console.log("a pintar");
 
     const svgs = element.getElementsByTagName("svg");
     let line;
@@ -178,7 +177,7 @@ export default class NetworkLink extends Line {
     }
 
     // Calculate effective 'text' box sizes.
-    const fontheight = 23;
+    const fontheight = 25;
     if (labelStartWidth <= 0) {
       labelStartWidth = labelStart.length * fontsize;
     }

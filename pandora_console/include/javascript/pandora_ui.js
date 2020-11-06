@@ -365,6 +365,8 @@ function load_modal(settings) {
           //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
+          $(this).dialog("destroy");
+
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
@@ -372,14 +374,12 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-
-          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
-      // console.log(data);
+      console.error(data);
     }
   });
 }

@@ -36,7 +36,6 @@ import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 import Service, { servicePropsDecoder } from "./items/Service";
-import { FormContainer } from "./Form";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -212,9 +211,13 @@ export default class VisualConsole {
     [key: string]: Line;
   } = {};
 
-  // Dictionary which store the created links.
+  // Dictionary which store the related items (by ID).
   private lineLinks: {
-    [key: string]: Line;
+    [key: number]: { [key: number]: { [key: string]: number } };
+  } = {};
+
+  private lines: {
+    [key: number]: { [key: string]: number };
   } = {};
 
   // Event manager for click events.
@@ -277,6 +280,9 @@ export default class VisualConsole {
       }
     });
 
+    // Move lines conneted with this item.
+    this.updateLinesConnected(e.item.props, e.newPosition, e.prevPosition);
+
     // console.log(`Moved element #${e.item.props.id}`, e);
   };
 
@@ -290,13 +296,40 @@ export default class VisualConsole {
   };
 
   /**
+   * Verifies if x,y are inside item coordinates.
+   * @param x Coordinate X
+   * @param y Coordinate Y
+   * @param item ItemProps instance.
+   */
+  private coordinatesInItem(x: number, y: number, props: ItemProps) {
+    if (props.type == ItemType.LINE_ITEM) {
+      return false;
+    }
+
+    if (
+      x > props.x &&
+      x < props.x + props.width &&
+      y > props.y &&
+      y < props.y + props.height
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * React to a line movement.
    * @param e Event object.
    */
   private handleLineElementMovementFinished: (
     e: LineMovedEvent
   ) => void = e => {
+    // Update links.
+    this.refreshLink(e.item);
+
+    // Build line relationships between items and lines.
     this.lineMovedEventManager.emit(e);
+
     // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
 
@@ -384,6 +417,196 @@ export default class VisualConsole {
     this.unSelectItems();
   };
 
+  /**
+   * Refresh link for given line.
+   *
+   * @param line Line.
+   */
+  protected refreshLink(l: Line) {
+    let line: number = l.props.id;
+    let itemAtStart = 0;
+    let itemAtEnd = 0;
+
+    for (let i in this.elementsById) {
+      if (
+        this.coordinatesInItem(
+          l.props.startPosition.x,
+          l.props.startPosition.y,
+          this.elementsById[i].props
+        )
+      ) {
+        // Start position at element i.
+        itemAtStart = parseInt(i);
+      }
+
+      if (
+        this.coordinatesInItem(
+          l.props.endPosition.x,
+          l.props.endPosition.y,
+          this.elementsById[i].props
+        )
+      ) {
+        // Start position at element i.
+        itemAtEnd = parseInt(i);
+      }
+    }
+
+    if (this.lineLinks == null) {
+      this.lineLinks = {};
+    }
+
+    if (this.lines == null) {
+      this.lines = {};
+    }
+
+    console.log(`${line},${itemAtStart},${itemAtEnd}`);
+
+    if (itemAtStart == line) {
+      itemAtStart = 0;
+    }
+
+    if (itemAtEnd == line) {
+      itemAtEnd = 0;
+    }
+
+    console.log(`Agrego linea [${line}] de ${itemAtStart} a ${itemAtEnd}`);
+    // Initialize line if not registered.
+    if (this.lines[line] == null) {
+      this.lines[line] = {
+        start: itemAtStart,
+        end: itemAtEnd
+      };
+    }
+    console.log("inicio");
+
+    // Register 'start' side of the line.
+    if (itemAtStart > 0) {
+      // Initialize.
+      if (this.lineLinks[itemAtStart] == null) {
+        this.lineLinks[itemAtStart] = {};
+      }
+
+      // Assign.
+      this.lineLinks[itemAtStart][line] = {
+        start: itemAtStart,
+        end: itemAtEnd
+      };
+
+      // Register line if not exists prviously.
+    } else {
+      // Clean previous line relationship.
+      if (this.lines[line]["start"] > 0) {
+        console.log(`desconecto ${line} de ${this.lines[line]["start"]}`);
+        this.lineLinks[this.lines[line]["start"]][line]["start"] = 0;
+        this.lines[line]["start"] = 0;
+      }
+    }
+
+    console.log("final");
+    if (itemAtEnd > 0) {
+      if (this.lineLinks[itemAtEnd] == null) {
+        this.lineLinks[itemAtEnd] = {};
+      }
+
+      this.lineLinks[itemAtEnd][line] = {
+        start: itemAtStart,
+        end: itemAtEnd
+      };
+    } else {
+      console.log(this.lines[line]["end"]);
+      // Clean previous line relationship.
+      if (this.lines[line]["end"] > 0) {
+        console.log(`desconecto ${line} de ${this.lines[line]["end"]}`);
+        this.lineLinks[this.lines[line]["end"]][line]["end"] = 0;
+        this.lines[line]["end"] = 0;
+      }
+    }
+
+    console.log("limpiar");
+
+    this.lines[line] = {
+      start: itemAtStart,
+      end: itemAtEnd
+    };
+
+    // Cleanup.
+    for (let i in this.lineLinks) {
+      if (
+        this.lineLinks[i][line].start == 0 &&
+        this.lineLinks[i][line].end == 0
+      ) {
+        // Object not connected to a line.
+        delete this.lineLinks[i][line];
+
+        if (Object.keys(this.lineLinks[i]).length === 0) {
+          delete this.lineLinks[i];
+        }
+      }
+    }
+
+    console.log("Enlaces:");
+    console.log(this.lineLinks);
+    console.log("lines:");
+    console.log(this.lines);
+    console.log("-------------------------");
+  }
+
+  /**
+   * Updates lines connected to this item.
+   *
+   * @param item Item moved.
+   * @param newPosition New location for item.
+   * @param oldPosition Old location for item.
+   */
+  protected updateLinesConnected(
+    item: ItemProps,
+    to: Position,
+    from: Position
+  ) {
+    let xDiff = from.x - to.x;
+    let yDiff = from.y - to.y;
+
+    console.log(`diff: ${xDiff}, ${yDiff}`);
+    Object.keys(this.lineLinks[item.id]).forEach(i => {
+      let lineId = parseInt(i);
+      let line = this.elementsById[lineId] as Line;
+      if (line.props) {
+        console.log(
+          `antes: (${line.props.startPosition.x},${
+            line.props.startPosition.y
+          }) (${line.props.endPosition.x},${line.props.endPosition.y})`
+        );
+
+        if (line.props.id == this.lineLinks[item.id][lineId]["start"]) {
+          line.props = {
+            ...line.props,
+            x: line.props.startPosition.x + xDiff,
+            y: line.props.startPosition.y + yDiff
+          };
+        }
+        if (line.props.id == this.lineLinks[item.id][lineId]["end"]) {
+          line.props = {
+            ...line.props,
+            x: line.props.endPosition.x + xDiff,
+            y: line.props.endPosition.y + yDiff
+          };
+        }
+        console.log("eem");
+
+        console.log(
+          `despues: (${line.props.startPosition.x},${
+            line.props.startPosition.y
+          }) (${line.props.endPosition.x},${line.props.endPosition.y})`
+        );
+
+        line.render();
+      }
+      //this.updateElement(
+      //  ...line.props,
+      //);
+    });
+  }
+
   public constructor(
     container: HTMLElement,
     props: AnyObject,
@@ -435,17 +658,18 @@ export default class VisualConsole {
       // Item event handlers.
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
-
-      // TODO:Continue
       itemInstance.onClick(context.handleElementClick);
       itemInstance.onDblClick(context.handleElementDblClick);
-      itemInstance.onMoved(context.handleElementMovement);
-      itemInstance.onMovementFinished(context.handleElementMovementFinished);
+
+      // TODO:Continue
       if (itemInstance instanceof Line) {
         itemInstance.onLineMovementFinished(
           context.handleLineElementMovementFinished
         );
+        this.refreshLink(itemInstance);
       } else {
+        itemInstance.onMoved(context.handleElementMovement);
+        itemInstance.onMovementFinished(context.handleElementMovementFinished);
         itemInstance.onResized(context.handleElementResizement);
         itemInstance.onResizeFinished(context.handleElementResizementFinished);
       }
@@ -454,7 +678,7 @@ export default class VisualConsole {
       context.containerRef.append(itemInstance.elementRef);
       return itemInstance;
     } catch (error) {
-      console.log("Error creating a new element:", error.message);
+      console.error("Error creating a new element:", error.message);
     }
     return;
   }
@@ -491,7 +715,7 @@ export default class VisualConsole {
           try {
             this.elementsById[item.id].props = decodeProps(item);
           } catch (error) {
-            console.log("Error updating an element:", error.message);
+            console.error("Error updating an element:", error.message);
           }
         }
       }
@@ -512,7 +736,7 @@ export default class VisualConsole {
         ...decodeProps(item)
       };
     } catch (error) {
-      console.log("Error updating element:", error.message);
+      console.error("Error updating element:", error.message);
     }
 
     // Re-build relations.

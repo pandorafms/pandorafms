@@ -297,6 +297,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param element Element to move inside its container.
    */
   private initMovementListener(element: HTMLElement): void {
+    // Avoid line movement as 'block' force using circles.
+    if (
+      this.props.type == ItemType.LINE_ITEM ||
+      this.props.type == ItemType.NETWORK_LINK
+    ) {
+      return;
+    }
+
     this.removeMovement = addMovementListener(
       element,
       (x: Position["x"], y: Position["y"]) => {
@@ -376,6 +384,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param element Element to move inside its container.
    */
   protected initResizementListener(element: HTMLElement): void {
+    if (
+      this.props.type == ItemType.LINE_ITEM ||
+      this.props.type == ItemType.NETWORK_LINK
+    ) {
+      return;
+    }
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {

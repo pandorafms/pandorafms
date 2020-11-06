@@ -2160,6 +2160,55 @@ function html_print_div($options, $return=false)
 
 
 /**
+ * Render an anchor html element.
+ *
+ * @param array   $options Parameters
+ *                - id: string
+ *                - style: string
+ *                - title: string
+ *                - href: string.
+ * @param boolean $return  Return or echo flag.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_anchor(
+    array $options,
+    bool $return=false
+) {
+    $output = '<a ';
+
+    // Valid attributes (invalid attributes get skipped).
+    $attrs = [
+        'id',
+        'style',
+        'class',
+        'title',
+    ];
+
+    $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
+
+    foreach ($attrs as $attribute) {
+        if (isset($options[$attribute])) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        }
+    }
+
+    $output .= '>';
+
+    $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
+
+    $output .= '</a>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
+/**
  * Render an input password element.
  *
  * The element will have an id like: "password-$name"

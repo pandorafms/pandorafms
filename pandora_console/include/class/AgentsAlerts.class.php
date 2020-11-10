@@ -38,7 +38,6 @@ require_once $config['homedir'].'/include/functions_users.php';
 require_once 'include/functions_reporting.php';
 require_once 'include/config.php';
 
-
 use PandoraFMS\Module;
 
 /**
@@ -78,12 +77,14 @@ class AgentsAlerts extends HTML
     /**
      * Create alert received parameter.
      *
-     * @var [type]
+     * @var integer
      */
     private $createAlert;
 
     /**
      * Full view parameter.
+     *
+     * @var integer
      */
     private $selectedFullScreen;
 
@@ -99,7 +100,7 @@ class AgentsAlerts extends HTML
      *
      * @var integer
      */
-    private $hor_offset;
+    private $horOffset;
 
 
     /**
@@ -131,20 +132,20 @@ class AgentsAlerts extends HTML
         }
 
         // Capture all parameters before start.
-        $this->ajaxController = $ajax_controller;
+        $this->ajaxController = $ajaxController;
         // Refresh rate.
         $this->refreshSelectedRate = (string) get_parameter('refresh-rate', '30');
         // Show Modules without alerts table.
         $this->showWithoutAlertModules = isset($_POST['show-modules-without-alerts']);
         // Selected group.
-        $this->groupId = (int) get_parameter('groupId', 0);
+        $this->groupId = (int) get_parameter('filter-groups', 0);
         // Create alert token.
         $this->createAlert = (int) get_parameter('create_alert', 0);
         // View token (for full screen view).
         $this->selectedFullScreen = get_parameter('btn-full-screen', $config['pure']);
         // Offset and hor-offset (for pagination).
-        $this->offset     = (int) get_parameter('offset', 0);
-        $this->hor_offset = (int) get_parameter('hor_offset', 0);
+        $this->offset    = (int) get_parameter('offset', 0);
+        $this->horOffset = (int) get_parameter('hor_offset', 0);
 
         return $this;
     }
@@ -165,20 +166,12 @@ class AgentsAlerts extends HTML
         // CSS.
         ui_require_css_file('wizard');
         ui_require_css_file('discovery');
-        // Add operation menu option.
-        extensions_add_operation_menu_option(
-            __('Agents/Alerts view'),
-            'estado',
-            null,
-            'v1r1',
-            'view'
-        );
 
         // Update network modules for this group
         // Check for Network FLAG change request
         // Made it a subquery, much faster on both the database and server side
         // TODO. Check if this is used or necessary.
-        if (isset($_GET['update_netgroup'])) {
+        if (isset($_GET['update_netgroup']) === true) {
             $group = get_parameter_get('update_netgroup', 0);
             if (check_acl($config['id_user'], $group, 'AW')) {
                 $where = ['id_agente' => 'ANY(SELECT id_agente FROM tagente WHERE id_grupo = '.$group];
@@ -207,7 +200,9 @@ class AgentsAlerts extends HTML
 
 
     /**
+     * Show alert table.
      *
+     * @return void
      */
     private function createAlertTable()
     {
@@ -333,10 +328,14 @@ class AgentsAlerts extends HTML
 
             // Check ACLs for LM users.
             if (check_acl($config['id_user'], 0, 'LM')) {
-                $table2->data[0][1] .= '<a style="margin-left:5px;" href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-                $table2->data[0][1] .= html_print_image('images/add.png', true);
-                $table2->data[0][1] .= '<span style="margin-left:5px;vertical-align:middle;">'.__('Create Action').'</span>';
-                $table2->data[0][1] .= '</a>';
+                $table2->data[0][1] .= html_print_anchor(
+                    [
+                        'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$this->selectedFullScreen,
+                        'style'   => 'margin-left:5px;',
+                        'content' => html_print_image('images/add.png', true).'<span style="margin-left:5px;vertical-align:middle;">'.__('Create Action').'</span>',
+                    ],
+                    true
+                );
             }
 
             $table2->data[1][0] = __('Template');
@@ -378,9 +377,11 @@ class AgentsAlerts extends HTML
             if (check_acl($config['id_user'], 0, 'LM')) {
                 $table2->data[1][1] .= html_print_anchor(
                     [
-                        'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$config['pure'],
+                        'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$this->selectedFullScreen,
+                        'style'   => 'margin-left:5px;',
                         'content' => html_print_image('images/add.png', true).'<span style="margin-left:5px;vertical-align:middle;">'.__('Create Template').'</span>',
-                    ]
+                    ],
+                    true
                 );
             }
 
@@ -396,7 +397,8 @@ class AgentsAlerts extends HTML
                     'class'   => 'action-buttons',
                     'style'   => 'width: '.$table2->width,
                     'content' => html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"', true).html_print_input_hidden('create_alert', $uniqid, true),
-                ]
+                ],
+                true
             );
 
             $content2 .= '</form>';
@@ -406,20 +408,20 @@ class AgentsAlerts extends HTML
             html_print_div(
                 [
                     'id'      => 'add_alerts_dialog_'.$uniqid,
-                    'title'   => __('Agent').': '.$agent_module['alias'].' / '.__('module').': '.$module_name,
-                    'style'   => 'display:none',
+                    'title'   => sprintf(
+                        '%s: %s / %s: %s',
+                        __('Agent'),
+                        $agent_module['alias'],
+                        __('Module'),
+                        $module_name
+                    ),
+                    'style'   => 'display:none; height: auto; padding-top: 1.5em;',
                     'content' => $content2,
                 ]
             );
         }
 
         html_print_table($table);
-    }
-
-
-    private function mainAlertTable()
-    {
-
     }
 
 
@@ -450,9 +452,9 @@ class AgentsAlerts extends HTML
 
 
     /**
-     * Undocumented function
+     * Load the main table.
      *
-     * @return void
+     * @return boolean
      */
     public function loadMainAlertTable()
     {
@@ -538,9 +540,9 @@ class AgentsAlerts extends HTML
             'alerts_agents'
         );
 
-        echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;" class="agents_modules_table">';
+        echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;table-layout:fixed;" class="agents_modules_table">';
         echo '<tr>';
-        echo '<th style="text-align: right !important; padding-right:13px;">'.__('Agents').' / '.__('Alerts').'</th>';
+        echo '<th style="text-align: right !important; padding-right:13px;min-width: 250px;">'.__('Agents').' / '.__('Alerts').'</th>';
 
         $templates_raw = [];
         if (!empty($templates)) {
@@ -560,9 +562,9 @@ class AgentsAlerts extends HTML
 
         $alerts = [];
         $ntemplates = 0;
-        if ($this->hor_offset > 0) {
-            $new_hor_offset = ($this->hor_offset - $block);
-            echo "<th width='20px' style='' rowspan='".($nagents + 1)."'>";
+        if ($this->horOffset > 0) {
+            $new_hor_offset = ($this->horOffset - $block);
+            echo "<th style='width:25px;' rowspan='".($nagents + 1)."'>";
 
             html_print_anchor(
                 [
@@ -589,7 +591,7 @@ class AgentsAlerts extends HTML
             if (isset($templates[$temp['id']]) && $templates[$temp['id']] == '') {
                 $ntemplates++;
 
-                if ($ntemplates <= $this->hor_offset || $ntemplates > ($this->hor_offset + $block)) {
+                if ($ntemplates <= $this->horOffset || $ntemplates > ($this->horOffset + $block)) {
                     continue;
                 }
 
@@ -600,19 +602,20 @@ class AgentsAlerts extends HTML
                         [
                             'id'      => 'line_header_'.$temp['id'],
                             'class'   => 'rotate_text_module',
+                            'style'   => 'margin: 0 -50px;',
                             'content' => '<span title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</span>',
                         ],
                         true
                     );
 
-                    echo sprintf('<th style="width:30px;height:200px;">%s</th>', $outputLine);
+                    echo sprintf('<th style="width:70px;height:200px;">%s</th>', $outputLine);
                 }
             }
         }
 
-        if (($this->hor_offset + $block) < $ntemplates) {
-            $new_hor_offset = ($this->hor_offset + $block);
-            echo "<th width='20px' style='' rowspan='".($nagents + 1)."'>";
+        if (($this->horOffset + $block) < $ntemplates) {
+            $new_hor_offset = ($this->horOffset + $block);
+            echo "<th style='width:25px;' rowspan='".($nagents + 1)."'>";
             html_print_anchor(
                 [
                     'href'    => sprintf(
@@ -691,7 +694,7 @@ class AgentsAlerts extends HTML
         }
 
         echo '</table>';
-        // echo '</table>';
+
         ui_pagination(
             $nagents,
             false,
@@ -714,23 +717,11 @@ class AgentsAlerts extends HTML
     /**
      * Show headers and filters
      *
-     * @return string
+     * @return void
      */
     public function loadHeader()
     {
         global $config;
-
-        $updated_info = '';
-
-        if ($config['realtimestats'] == 0) {
-            $updated_info = __('Last update').' : '.ui_print_timestamp(db_get_sql('SELECT min(utimestamp) FROM tgroup_stat'), true);
-        }
-
-        $updated_time = $updated_info;
-
-        // Magic number?
-        $block      = 20;
-        $groups     = users_get_groups();
 
         // Breadcrums.
         $this->setBreadcrum([]);
@@ -788,6 +779,7 @@ class AgentsAlerts extends HTML
                 'nothing'     => false,
                 'selected'    => $this->groupId,
                 'return'      => true,
+                'script'      => 'this.form.submit()',
                 'size'        => '100%',
             ],
         ];
@@ -991,28 +983,6 @@ class AgentsAlerts extends HTML
 
 
     /**
-     * Show filters.
-     *
-     * @return void
-     */
-    public function loadFilter()
-    {
-
-    }
-
-
-    /**
-     * Show table with results.
-     *
-     * @return void
-     */
-    public function loadTable()
-    {
-
-    }
-
-
-    /**
      * Load the JS.
      *
      * @return string Formed string with script.
@@ -1031,6 +1001,9 @@ class AgentsAlerts extends HTML
                     },
                     ($('#refresh-rate').val() * 1000));
                 <?php } ?>
+
+                
+
                 //Get max width of name of modules
                 max_width = 0;
                 $.each($('.th_class_module_r'), function (i, elem) {
@@ -1103,6 +1076,7 @@ class AgentsAlerts extends HTML
                     });
                 }
                 
+                /*
                 $("#group_id").change (function () {
                     jQuery.post ("ajax.php",
                         {"page" : "operation/agentes/ver_agente",
@@ -1183,7 +1157,7 @@ class AgentsAlerts extends HTML
                 $("#id_agents2").click (function(){
                     selection_agent_module();
                 });
-
+*/
                 $("#selection_agent_module").change(function() {
                     jQuery.post ("ajax.php",
                         {"page" : "operation/agentes/ver_agente",
@@ -1272,7 +1246,7 @@ class AgentsAlerts extends HTML
                     resizable: true,
                     draggable: true,
                     modal: true,
-                    height: 235,
+                    height: 270,
                     width: 600,
                     overlay: {
                         opacity: 0.5,

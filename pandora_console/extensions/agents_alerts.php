@@ -2,7 +2,7 @@
 /**
  * Agents/Alerts Monitoring view.
  *
- * @category   Agent Wizard
+ * @category   Operations
  * @package    Pandora FMS
  * @subpackage Opensource
  * @version    1.0.0

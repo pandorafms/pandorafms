@@ -138,7 +138,7 @@ class AgentsAlerts extends HTML
         // Show Modules without alerts table.
         $this->showWithoutAlertModules = isset($_POST['show-modules-without-alerts']);
         // Selected group.
-        $this->groupId = (int) get_parameter('filter-groups', 0);
+        $this->groupId = (int) get_parameter('group-id', 0);
         // Create alert token.
         $this->createAlert = (int) get_parameter('create_alert', 0);
         // View token (for full screen view).
@@ -210,10 +210,8 @@ class AgentsAlerts extends HTML
 
         $table = new stdClass();
 
-        $group_id = $this->groupId;
-
-        if ($group_id > 0) {
-            $grupo = ' AND tagente.id_grupo = '.$group_id;
+        if ($this->groupId > 0) {
+            $grupo = ' AND tagente.id_grupo = '.$this->groupId;
         } else {
             $grupo = '';
         }
@@ -554,11 +552,14 @@ class AgentsAlerts extends HTML
             );
 
             $templates_raw = db_get_all_rows_sql($sql);
+
+            if (empty($templates_raw)) {
+                $templates_raw = [];
+            }
         }
 
-        if (empty($templates_raw)) {
-            $templates_raw = [];
-        }
+        // Is needed sort templates for show in the row.
+        sort($templates);
 
         $alerts = [];
         $ntemplates = 0;
@@ -569,10 +570,11 @@ class AgentsAlerts extends HTML
             html_print_anchor(
                 [
                     'href'    => sprintf(
-                        'index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=%s&offset=%s&group_id=%s',
+                        'index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=%s&offset=%s&group-id=%s&pure=%s',
                         $new_hor_offset,
                         $this->offset,
-                        $this->groupId
+                        $this->groupId,
+                        $this->selectedFullScreen
                     ),
                     'content' => html_print_image(
                         'images/arrow_left_green.png',
@@ -619,10 +621,11 @@ class AgentsAlerts extends HTML
             html_print_anchor(
                 [
                     'href'    => sprintf(
-                        'index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=%s&offset=%s&group_id=%s',
+                        'index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=%s&offset=%s&group-id=%s&pure=%s',
                         $new_hor_offset,
                         $this->offset,
-                        $this->groupId
+                        $this->groupId,
+                        $this->selectedFullScreen
                     ),
                     'content' => html_print_image(
                         'images/arrow_right_green.png',
@@ -640,23 +643,26 @@ class AgentsAlerts extends HTML
         echo '</tr>';
 
         foreach ($agents as $agent) {
+            // Flag for fired alerts.
+            $anyfired = false;
+            // Get aliases.
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
             // Name of the agent.
             echo '<td style="font-weight:bold;text-align: right;">'.$alias['alias'].'</td>';
-
             // Alerts of the agent.
-            $anyfired = false;
             foreach ($templates as $tid => $tname) {
+                $anyfired = 0;
+
                 if ($tname == '') {
                     continue;
                 }
 
                 echo '<td style="text-align: center;">';
 
-                if (isset($agent_alerts[$agent['nombre']][$tid])) {
-                    foreach ($agent_alerts[$agent['nombre']][$tid] as $alert) {
-                        if ($alert['times_fired'] > 0) {
+                if (isset($agent_alerts[$alias['alias']][$tid])) {
+                    foreach ($agent_alerts[$alias['alias']][$tid] as $alert) {
+                        if ((int) $alert['times_fired'] > 0) {
                             $anyfired = true;
                         }
                     }
@@ -677,14 +683,14 @@ class AgentsAlerts extends HTML
                                     'id'      => 'line_header_'.$temp['id'],
                                     'class'   => 'status_rounded_rectangles text_inside',
                                     'style'   => $cellstyle,
-                                    'content' => count($agent_alerts[$agent['nombre']][$tid]),
+                                    'content' => count($agent_alerts[$alias['alias']][$tid]),
                                 ],
                                 true
                             ),
                         ]
                     );
 
-                    $this->printAlertsSummaryModalWindow($uniqid, $agent_alerts[$agent['nombre']][$tid]);
+                    $this->printAlertsSummaryModalWindow($uniqid, $agent_alerts[$alias['alias']][$tid]);
                 }
 
                 echo '</td>';
@@ -769,9 +775,9 @@ class AgentsAlerts extends HTML
 
         $headerInputs[] = [
             'label'     => __('Group'),
-            'id'        => 'select-filter-groups',
+            'id'        => 'select-group-id',
             'arguments' => [
-                'name'        => 'filter-groups',
+                'name'        => 'group-id',
                 'type'        => 'select_groups',
                 'input_class' => 'flex-row',
                 'class'       => '',
@@ -1002,7 +1008,9 @@ class AgentsAlerts extends HTML
                     ($('#refresh-rate').val() * 1000));
                 <?php } ?>
 
-                
+                $('#checkbox-show-modules-without-alerts').click(function(){
+                   $('#form-header-filters').submit();
+                });
 
                 //Get max width of name of modules
                 max_width = 0;
@@ -1022,210 +1030,7 @@ class AgentsAlerts extends HTML
                     $("#div_module_r_" + id).css('margin-top', (max_width - 20) + 'px');
                     $("#div_module_r_" + id).show();
                 });
-
-                var refr = '<?php echo get_parameter('refresh', 0); ?>';
-                var pure = '<?php echo get_parameter('pure', 0); ?>';
-                var href =' <?php echo ui_get_url_refresh($ignored_params); ?>';
-
-                if (pure) {
-                    var startCountDown = function (duration, cb) {
-                        $('div.vc-countdown').countdown('destroy');
-                        if (!duration) return;
-                        var t = new Date();
-                        t.setTime(t.getTime() + duration * 1000);
-                        $('div.vc-countdown').countdown({
-                            until: t,
-                            format: 'MS',
-                            layout: '(%M%nn%M:%S%nn%S <?php echo __('Until next'); ?>) ',
-                            alwaysExpire: true,
-                            onExpiry: function () {
-                                $('div.vc-countdown').countdown('destroy');
-                                url = js_html_entity_decode( href ) + duration;
-                                $(document).attr ("location", url);
-                            }
-                        });
-                    }
-
-                    if(refr>0){
-                        startCountDown(refr, false);
-                    }
-
-                    var controls = document.getElementById('vc-controls');
-                    autoHideElement(controls, 1000);
-                    
-                    $('select#refresh').change(function (event) {
-                        refr = Number.parseInt(event.target.value, 10);
-                        startCountDown(refr, false);
-                    });
-                }
-                else {
-                    
-                    var agentes_id = $("#id_agents2").val();
-                    var id_agentes = getQueryParam("full_agents_id");
-                    if (agentes_id === null && id_agentes !== null) {
-                        id_agentes = id_agentes.split(";")
-                        id_agentes.forEach(function(element) {
-                            $("#id_agents2 option[value="+ element +"]").attr("selected",true);
-                        });
-                        
-                        selection_agent_module();
-                    }
-                    
-                    $('#refresh').change(function () {
-                        $('#hidden-vc_refr').val($('#refresh option:selected').val());
-                    });
-                }
-                
-                /*
-                $("#group_id").change (function () {
-                    jQuery.post ("ajax.php",
-                        {"page" : "operation/agentes/ver_agente",
-                            "get_agents_group_json" : 1,
-                            "id_group" : this.value,
-                            "privilege" : "AW",
-                            "keys_prefix" : "_",
-                            "recursion" : $('#checkbox-recursion').is(':checked')
-                        },
-                        function (data, status) {
-                            $("#id_agents2").html('');
-                            $("#module").html('');
-                            jQuery.each (data, function (id, value) {
-                                // Remove keys_prefix from the index
-                                id = id.substring(1);
-                                
-                                option = $("<option></option>")
-                                    .attr ("value", value["id_agente"])
-                                    .html (value["alias"]);
-                                $("#id_agents").append (option);
-                                $("#id_agents2").append (option);
-                            });
-                        },
-                        "json"
-                    );
-                });
-                
-                $("#checkbox-recursion").change (function () {
-                    jQuery.post ("ajax.php",
-                        {"page" : "operation/agentes/ver_agente",
-                            "get_agents_group_json" : 1,
-                            "id_group" :     $("#group_id").val(),
-                            "privilege" : "AW",
-                            "keys_prefix" : "_",
-                            "recursion" : $('#checkbox-recursion').is(':checked')
-                        },
-                        function (data, status) {
-                            $("#id_agents2").html('');
-                            $("#module").html('');
-                            jQuery.each (data, function (id, value) {
-                                // Remove keys_prefix from the index
-                                id = id.substring(1);
-                                
-                                option = $("<option></option>")
-                                    .attr ("value", value["id_agente"])
-                                    .html (value["alias"]);
-                                $("#id_agents").append (option);
-                                $("#id_agents2").append (option);
-                            });
-                        },
-                        "json"
-                    );
-                });
-                
-                $("#modulegroup").change (function () {
-                    jQuery.post ("ajax.php",
-                        {"page" : "operation/agentes/ver_agente",
-                            "get_modules_group_json" : 1,
-                            "id_module_group" : this.value,
-                            "id_agents" : $("#id_agents2").val(),
-                            "selection" : $("#selection_agent_module").val()
-                        },
-                        function (data, status) {
-                            $("#module").html('');
-                            if(data){
-                                jQuery.each (data, function (id, value) {
-                                    option = $("<option></option>")
-                                        .attr ("value", value["id_agente_modulo"])
-                                        .html (value["nombre"]);
-                                    $("#module").append (option);
-                                });
-                            }
-                        },
-                        "json"
-                    );
-                });
-
-                $("#id_agents2").click (function(){
-                    selection_agent_module();
-                });
-*/
-                $("#selection_agent_module").change(function() {
-                    jQuery.post ("ajax.php",
-                        {"page" : "operation/agentes/ver_agente",
-                            "get_modules_group_json" : 1,
-                            "id_module_group" : $("#modulegroup").val(),
-                            "id_agents" : $("#id_agents2").val(),
-                            "selection" : $("#selection_agent_module").val()
-                        },
-                        function (data, status) {
-                            $("#module").html('');
-                            if(data){
-                                jQuery.each (data, function (id, value) {
-                                    option = $("<option></option>")
-                                        .attr ("value", value["id_agente_modulo"])
-                                        .html (value["nombre"]);
-                                    $("#module").append (option);
-                                });
-                            }
-                        },
-                        "json"
-                    );
-                });
             });
-
-            function selection_agent_module() {
-                jQuery.post ("ajax.php",
-                    {"page" : "operation/agentes/ver_agente",
-                        "get_modules_group_json" : 1,
-                        "id_module_group" : $("#modulegroup").val(),
-                        "id_agents" : $("#id_agents2").val(),
-                        "selection" : $("#selection_agent_module").val()
-                    },
-                    function (data, status) {
-                        $("#module").html('');
-                        if(data){
-                            jQuery.each (data, function (id, value) {
-                                option = $("<option></option>")
-                                    .attr ("value", value["id_agente_modulo"])
-                                    .html (value["nombre"]);
-                                $("#module").append (option);
-                            });
-                            
-                            var id_modules = getQueryParam("full_modules_selected");
-                            if(id_modules !== null) {
-                                id_modules = id_modules.split(";");
-                                id_modules.forEach(function(element) {
-                                    $("#module option[value="+ element +"]").attr("selected",true);
-                                });
-                            }
-                        }
-                    },
-                    "json"
-                );
-            }
-
-
-
-            function getQueryParam (key) {  
-                var pattern = "[?&]" + key + "=([^&#]*)";  
-                var regex = new RegExp(pattern);
-                var url = unescape(window.location.href);
-                var results = regex.exec(url);
-                if (results === null) {  
-                    return null;  
-                } else {  
-                    return results[1];  
-                } 
-            }
 
             function show_alerts_details(id) {
                 $("#alerts_details_"+id).dialog({
@@ -1253,35 +1058,7 @@ class AgentsAlerts extends HTML
                         background: "black"
                     }
                 });
-            }
-            
-            // checkbox-slides_ids
-            $(document).ready(function () {
-                $('#checkbox-show-modules-without-alerts').click(function(){
-                   $('#form-header-filters').submit();
-                });
-
-                $('#checkbox-slides_ids').click(function(){
-                    if ($('#checkbox-slides_ids').prop('checked')){
-                        var url = location.href.replace("&show_modules=true", "");
-                        location.href = url+"&show_modules=true";
-                    } else {
-                        var url = location.href.replace("&show_modules=true", "");
-                        var re = /&offset=\d*/g;
-                        location.href = url.replace(re, "");
-                    }
-                });
-                
-                $('#group_id').change(function(){
-                    if(location.href.indexOf("extensions/agents_modules") == -1){
-                        var regx = /&group_id=\d*/g;
-                        var url = location.href.replace(regx, "");
-                        location.href = url+"&group_id="+$("#group_id").val();
-                    }
-                });
-
-            });
-            
+            }       
         </script>
 
         <?php

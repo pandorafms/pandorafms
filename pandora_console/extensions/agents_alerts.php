@@ -41,6 +41,7 @@ extensions_add_operation_menu_option(
     'view'
 );
 
+// If sec2 parameter come with this page info.
 if ($sec2 === 'extensions/agents_alerts') {
     extensions_add_main_function('mainAgentsAlerts');
 }
@@ -53,8 +54,10 @@ if ($sec2 === 'extensions/agents_alerts') {
  */
 function mainAgentsAlerts()
 {
+    global $ajaxPage;
     // This page.
     $thisOwnPage = 'index.php?sec=view&sec2=extensions/agents_alerts';
+    // Ajax variables.
     $ajaxPage    = 'extensions/agents_alerts';
     $pageName    = '[AgentsAlerts]';
     // Control call flow.

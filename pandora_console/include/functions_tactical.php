@@ -142,7 +142,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                 $list['_monitors_warning_'] += (int) $value['monitors_warning'];
                 $list['_monitors_unknown_'] += (int) $value['monitors_unknown'];
                 $list['_monitors_not_init_'] += (int) $value['monitors_not_init'];
-                $list['_monitor_alerts_fire_count_'] += (int) $value['alerts_fired'];
+                $list['_monitors_alerts_fired_'] += (int) $value['alerts_fired'];
             }
 
             if (!empty($data_stats_unknown)) {

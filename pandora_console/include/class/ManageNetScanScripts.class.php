@@ -350,28 +350,21 @@ class ManageNetScanScripts extends Wizard
             ['id_recon_script' => $id_script]
         );
 
+        $result_dlt2 = db_process_sql_delete(
+            'trecon_task',
+            ['id_recon_script' => $id_script]
+        );
+
         if (!$result_dlt) {
             $result = [
                 'error' => 1,
                 'msg'   => __('Problem deleting Net scan Scripts'),
             ];
         } else {
-            $result_dlt2 = db_process_sql_delete(
-                'trecon_task',
-                ['id_recon_script' => $id_script]
-            );
-
-            if (!$result_dlt2) {
-                $result = [
-                    'error' => 1,
-                    'msg'   => __('Problem deleting Net scan Scripts'),
-                ];
-            } else {
-                $result = [
-                    'error' => 0,
-                    'msg'   => __('Deleted successfully'),
-                ];
-            }
+            $result = [
+                'error' => 0,
+                'msg'   => __('Deleted successfully'),
+            ];
         }
 
         return $result;

@@ -196,6 +196,7 @@ class Item extends CachedModel
     {
         $decodedData = [
             'id'              => (int) $data['id'],
+            'colorStatus'     => (string) COL_UNKNOWN,
             'type'            => (int) $data['type'],
             'label'           => static::extractLabel($data),
             'labelPosition'   => static::extractLabelPosition($data),

@@ -323,16 +323,6 @@ function createVisualConsole(
             data,
             function(error, data) {
               if (!error && !data) return;
-              //              if (error || !data) {
-              //                console.log(
-              //                  "[ERROR]",
-              //                  "[VISUAL-CONSOLE-CLIENT]",
-              //                  "[API]",
-              //                  error ? error.message : "Invalid response"
-              //                );
-              //
-              //                // TODO: Move the element to its initial position.
-              //              }
 
               try {
                 var decoded_data = JSON.parse(data);

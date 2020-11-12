@@ -776,24 +776,28 @@ export default class VisualConsole {
   public render(prevProps: VisualConsoleProps | null = null): void {
     if (prevProps) {
       if (prevProps.backgroundURL !== this.props.backgroundURL) {
-        this.containerRef.style.backgroundImage =
-          this.props.backgroundURL !== null
-            ? `url(${this.props.backgroundURL})`
-            : null;
+        if (this.props.backgroundURL)
+          this.containerRef.style.backgroundImage =
+            this.props.backgroundURL !== null
+              ? `url(${this.props.backgroundURL})`
+              : "";
       }
-      if (prevProps.backgroundColor !== this.props.backgroundColor) {
-        this.containerRef.style.backgroundColor = this.props.backgroundColor;
-      }
+      if (this.props.backgroundColor != null)
+        if (prevProps.backgroundColor !== this.props.backgroundColor) {
+          this.containerRef.style.backgroundColor = this.props.backgroundColor;
+        }
       if (this.sizeChanged(prevProps, this.props)) {
         this.resizeElement(this.props.width, this.props.height);
       }
     } else {
-      this.containerRef.style.backgroundImage =
-        this.props.backgroundURL !== null
-          ? `url(${this.props.backgroundURL})`
-          : null;
+      if (this.props.backgroundURL)
+        this.containerRef.style.backgroundImage =
+          this.props.backgroundURL !== null
+            ? `url(${this.props.backgroundURL})`
+            : "";
 
-      this.containerRef.style.backgroundColor = this.props.backgroundColor;
+      if (this.props.backgroundColor)
+        this.containerRef.style.backgroundColor = this.props.backgroundColor;
       this.resizeElement(this.props.width, this.props.height);
     }
   }
@@ -998,6 +1002,7 @@ export default class VisualConsole {
     const { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
     const { x: endX, y: endY } = this.getVisualCenter(child.props, child);
 
+    // Line inherits child element status.
     const line = new Line(
       linePropsDecoder({
         id: 0,
@@ -1009,7 +1014,7 @@ export default class VisualConsole {
         width: 0,
         height: 0,
         lineWidth: this.props.relationLineWidth,
-        color: "#CCCCCC"
+        color: notEmptyStringOr(child.props.colorStatus, "#CCC")
       }),
       itemMetaDecoder({
         receivedAt: new Date()

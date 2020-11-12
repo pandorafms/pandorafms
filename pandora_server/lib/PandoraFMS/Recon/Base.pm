@@ -1898,7 +1898,7 @@ sub scan($) {
 
   # 1%
   $self->call('update_progress', 1);
-
+  logger($self->{'pa_config'}, 'Tipo de Task: '.$self->{'task_data'}->{'type'});
   if (defined($self->{'task_data'})) {
     if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE

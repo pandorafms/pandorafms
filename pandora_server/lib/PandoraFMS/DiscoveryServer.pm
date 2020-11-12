@@ -387,7 +387,7 @@ sub exec_recon_script ($$$) {
   } else {
     $ent_script = 1;
   }
-  
+  logger($pa_config, 'Executing command args: ' . $command . ' ' . $args, 1);
   if (-x $command) {
     my $exec_output = `$command $args`;
     logger($pa_config, "Execution output: \n". $exec_output, 10);
@@ -1769,6 +1769,7 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
 
   my $stats = {};
   eval {
+    logger($self->{'pa_config'}, 'Summary es '.$self->{'summary'}, 3);
     local $SIG{__DIE__};
     if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
       $stats->{'summary'} = $self->{'summary'};

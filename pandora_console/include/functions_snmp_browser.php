@@ -616,7 +616,7 @@ function snmp_browser_print_oid(
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);

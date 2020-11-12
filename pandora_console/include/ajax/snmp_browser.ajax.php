@@ -170,7 +170,7 @@ if (is_ajax()) {
             $id_target = explode(',', $id_items[0]);
         }
 
-        if (empty($id_items[0])) {
+        if (empty($id_items[0]) && $module_target !== 'network_component') {
             echo json_encode([0 => -1]);
             exit;
         }

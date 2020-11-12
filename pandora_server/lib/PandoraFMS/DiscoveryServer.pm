@@ -1769,7 +1769,7 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
 
   my $stats = {};
   eval {
-    logger($self->{'pa_config'}, 'Task data: '.Dumper($self->{'task_data'}).' - summary es '.Dumper($self->{'summary'}), 3);
+    logger($self->{'pa_config'}, 'Task data: '.Dumper($self->{'task_data'}->{'description'}).' - summary es '.Dumper($self->{'summary'}), 3);
     local $SIG{__DIE__};
     if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
       $stats->{'summary'} = $self->{'summary'};

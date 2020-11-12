@@ -109,7 +109,7 @@ export default class Line extends Item<LineProps> {
   protected isMoving: boolean = false;
 
   // Event manager for moved events.
-  protected readonly lineMovedEventManager = new TypedEvent<LineMovedEvent>();
+  public readonly lineMovedEventManager = new TypedEvent<LineMovedEvent>();
   // List of references to clean the event listeners.
   protected readonly lineMovedEventDisposables: Disposable[] = [];
 

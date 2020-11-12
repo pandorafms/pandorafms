@@ -124,8 +124,6 @@ export default class NetworkLink extends Line {
       labelStartHeight
     } = this.props;
 
-    console.log("a pintar");
-
     const svgs = element.getElementsByTagName("svg");
     let line;
     let svg;

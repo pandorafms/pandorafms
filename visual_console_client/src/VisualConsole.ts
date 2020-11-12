@@ -6,7 +6,8 @@ import {
   notEmptyStringOr,
   itemMetaDecoder,
   t,
-  ellipsize
+  ellipsize,
+  debounce
 } from "./lib";
 import Item, {
   ItemType,
@@ -281,7 +282,7 @@ export default class VisualConsole {
     });
 
     // Move lines conneted with this item.
-    this.updateLinesConnected(e.item.props, e.newPosition, e.prevPosition);
+    this.updateLinesConnected(e.item.props, e.newPosition);
 
     // console.log(`Moved element #${e.item.props.id}`, e);
   };
@@ -427,128 +428,118 @@ export default class VisualConsole {
     let itemAtStart = 0;
     let itemAtEnd = 0;
 
-    for (let i in this.elementsById) {
-      if (
-        this.coordinatesInItem(
-          l.props.startPosition.x,
-          l.props.startPosition.y,
-          this.elementsById[i].props
-        )
-      ) {
-        // Start position at element i.
-        itemAtStart = parseInt(i);
+    try {
+      for (let i in this.elementsById) {
+        if (
+          this.coordinatesInItem(
+            l.props.startPosition.x,
+            l.props.startPosition.y,
+            this.elementsById[i].props
+          )
+        ) {
+          // Start position at element i.
+          itemAtStart = parseInt(i);
+        }
+
+        if (
+          this.coordinatesInItem(
+            l.props.endPosition.x,
+            l.props.endPosition.y,
+            this.elementsById[i].props
+          )
+        ) {
+          // Start position at element i.
+          itemAtEnd = parseInt(i);
+        }
       }
 
-      if (
-        this.coordinatesInItem(
-          l.props.endPosition.x,
-          l.props.endPosition.y,
-          this.elementsById[i].props
-        )
-      ) {
-        // Start position at element i.
-        itemAtEnd = parseInt(i);
+      if (this.lineLinks == null) {
+        this.lineLinks = {};
       }
-    }
 
-    if (this.lineLinks == null) {
-      this.lineLinks = {};
-    }
+      if (this.lines == null) {
+        this.lines = {};
+      }
 
-    if (this.lines == null) {
-      this.lines = {};
-    }
+      if (itemAtStart == line) {
+        itemAtStart = 0;
+      }
 
-    console.log(`${line},${itemAtStart},${itemAtEnd}`);
+      if (itemAtEnd == line) {
+        itemAtEnd = 0;
+      }
 
-    if (itemAtStart == line) {
-      itemAtStart = 0;
-    }
+      // Initialize line if not registered.
+      if (this.lines[line] == null) {
+        this.lines[line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+      }
 
-    if (itemAtEnd == line) {
-      itemAtEnd = 0;
-    }
+      // Register 'start' side of the line.
+      if (itemAtStart > 0) {
+        // Initialize.
+        if (this.lineLinks[itemAtStart] == null) {
+          this.lineLinks[itemAtStart] = {};
+        }
 
-    console.log(`Agrego linea [${line}] de ${itemAtStart} a ${itemAtEnd}`);
-    // Initialize line if not registered.
-    if (this.lines[line] == null) {
+        // Assign.
+        this.lineLinks[itemAtStart][line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+
+        // Register line if not exists prviously.
+      } else {
+        // Clean previous line relationship.
+        if (this.lines[line]["start"] > 0) {
+          this.lineLinks[this.lines[line]["start"]][line]["start"] = 0;
+          this.lines[line]["start"] = 0;
+        }
+      }
+
+      if (itemAtEnd > 0) {
+        if (this.lineLinks[itemAtEnd] == null) {
+          this.lineLinks[itemAtEnd] = {};
+        }
+
+        this.lineLinks[itemAtEnd][line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+      } else {
+        // Clean previous line relationship.
+        if (this.lines[line]["end"] > 0) {
+          this.lineLinks[this.lines[line]["end"]][line]["end"] = 0;
+          this.lines[line]["end"] = 0;
+        }
+      }
+
       this.lines[line] = {
         start: itemAtStart,
         end: itemAtEnd
       };
-    }
-    console.log("inicio");
 
-    // Register 'start' side of the line.
-    if (itemAtStart > 0) {
-      // Initialize.
-      if (this.lineLinks[itemAtStart] == null) {
-        this.lineLinks[itemAtStart] = {};
-      }
+      // Cleanup.
+      for (let i in this.lineLinks) {
+        if (this.lineLinks[i][line]) {
+          if (
+            this.lineLinks[i][line].start == 0 &&
+            this.lineLinks[i][line].end == 0
+          ) {
+            // Object not connected to a line.
+            delete this.lineLinks[i][line];
 
-      // Assign.
-      this.lineLinks[itemAtStart][line] = {
-        start: itemAtStart,
-        end: itemAtEnd
-      };
-
-      // Register line if not exists prviously.
-    } else {
-      // Clean previous line relationship.
-      if (this.lines[line]["start"] > 0) {
-        console.log(`desconecto ${line} de ${this.lines[line]["start"]}`);
-        this.lineLinks[this.lines[line]["start"]][line]["start"] = 0;
-        this.lines[line]["start"] = 0;
-      }
-    }
-
-    console.log("final");
-    if (itemAtEnd > 0) {
-      if (this.lineLinks[itemAtEnd] == null) {
-        this.lineLinks[itemAtEnd] = {};
-      }
-
-      this.lineLinks[itemAtEnd][line] = {
-        start: itemAtStart,
-        end: itemAtEnd
-      };
-    } else {
-      console.log(this.lines[line]["end"]);
-      // Clean previous line relationship.
-      if (this.lines[line]["end"] > 0) {
-        console.log(`desconecto ${line} de ${this.lines[line]["end"]}`);
-        this.lineLinks[this.lines[line]["end"]][line]["end"] = 0;
-        this.lines[line]["end"] = 0;
-      }
-    }
-
-    console.log("limpiar");
-
-    this.lines[line] = {
-      start: itemAtStart,
-      end: itemAtEnd
-    };
-
-    // Cleanup.
-    for (let i in this.lineLinks) {
-      if (
-        this.lineLinks[i][line].start == 0 &&
-        this.lineLinks[i][line].end == 0
-      ) {
-        // Object not connected to a line.
-        delete this.lineLinks[i][line];
-
-        if (Object.keys(this.lineLinks[i]).length === 0) {
-          delete this.lineLinks[i];
+            if (Object.keys(this.lineLinks[i]).length === 0) {
+              delete this.lineLinks[i];
+            }
+          }
         }
       }
+    } catch (error) {
+      console.error(error);
     }
-
-    console.log("Enlaces:");
-    console.log(this.lineLinks);
-    console.log("lines:");
-    console.log(this.lines);
-    console.log("-------------------------");
   }
 
   /**
@@ -558,52 +549,62 @@ export default class VisualConsole {
    * @param newPosition New location for item.
    * @param oldPosition Old location for item.
    */
-  protected updateLinesConnected(
-    item: ItemProps,
-    to: Position,
-    from: Position
-  ) {
-    let xDiff = from.x - to.x;
-    let yDiff = from.y - to.y;
+  protected updateLinesConnected(item: ItemProps, to: Position) {
+    if (this.lineLinks[item.id] == null) {
+      return;
+    }
 
-    console.log(`diff: ${xDiff}, ${yDiff}`);
     Object.keys(this.lineLinks[item.id]).forEach(i => {
       let lineId = parseInt(i);
       let line = this.elementsById[lineId] as Line;
       if (line.props) {
-        console.log(
-          `antes: (${line.props.startPosition.x},${
-            line.props.startPosition.y
-          }) (${line.props.endPosition.x},${line.props.endPosition.y})`
-        );
+        let startX = line.props.startPosition.x;
+        let startY = line.props.startPosition.y;
+        let endX = line.props.endPosition.x;
+        let endY = line.props.endPosition.y;
 
-        if (line.props.id == this.lineLinks[item.id][lineId]["start"]) {
-          line.props = {
-            ...line.props,
-            x: line.props.startPosition.x + xDiff,
-            y: line.props.startPosition.y + yDiff
-          };
+        if (item.id == this.lineLinks[item.id][lineId]["start"]) {
+          startX = to.x + item.width / 2;
+          startY = to.y + item.height / 2;
         }
-        if (line.props.id == this.lineLinks[item.id][lineId]["end"]) {
-          line.props = {
-            ...line.props,
-            x: line.props.endPosition.x + xDiff,
-            y: line.props.endPosition.y + yDiff
-          };
+
+        if (item.id == this.lineLinks[item.id][lineId]["end"]) {
+          endX = to.x + item.width / 2;
+          endY = to.y + item.height / 2;
         }
-        console.log("eem");
 
-        console.log(
-          `despues: (${line.props.startPosition.x},${
-            line.props.startPosition.y
-          }) (${line.props.endPosition.x},${line.props.endPosition.y})`
-        );
+        // Update line movement.
+        this.updateElement({
+          ...line.props,
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY
+        });
 
-        line.render();
+        let debouncedLinePositionSave = debounce(500, (options: AnyObject) => {
+          this.lineMovedEventManager.emit({
+            item: options.line,
+            startPosition: {
+              x: options.startX,
+              y: options.startY
+            },
+            endPosition: {
+              x: options.endX,
+              y: options.endY
+            }
+          });
+        });
+
+        // Save line positon.
+        debouncedLinePositionSave({
+          line: line,
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY
+        });
       }
-      //this.updateElement(
-      //  ...line.props,
-      //);
     });
   }
 

@@ -32,7 +32,7 @@ use MIME::Base64;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
-
+use Data::Dumper;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
@@ -1769,7 +1769,7 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
 
   my $stats = {};
   eval {
-    logger($self->{'pa_config'}, 'Summary es '.$self->{'summary'}, 3);
+    logger($self->{'pa_config'}, 'Summary es '.Dumper($self->{'summary'}), 3);
     local $SIG{__DIE__};
     if (defined($self->{'summary'}) && $self->{'summary'} ne '') {
       $stats->{'summary'} = $self->{'summary'};

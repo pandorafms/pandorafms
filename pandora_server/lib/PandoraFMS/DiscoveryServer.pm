@@ -32,7 +32,7 @@ use MIME::Base64;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
-use Data::Dumper;
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
@@ -387,7 +387,7 @@ sub exec_recon_script ($$$) {
   } else {
     $ent_script = 1;
   }
-
+  
   if (-x $command) {
     my $exec_output = `$command $args`;
     logger($pa_config, "Execution output: \n". $exec_output, 10);

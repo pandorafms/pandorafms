@@ -623,6 +623,9 @@ function cron_list_table()
                 break;
 
                 case 'cron_task_save_xml_report_to_disk':
+                case 'cron_task_save_json_report_to_disk':
+                case 'cron_task_save_csv_report_to_disk':
+
                     if ($write_perms || $manage_pandora) {
                         $data[0]  = '<a href="'.$url;
                         $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';

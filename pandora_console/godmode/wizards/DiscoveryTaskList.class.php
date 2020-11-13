@@ -546,15 +546,13 @@ class DiscoveryTaskList extends HTML
                         true
                     );
                 } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
-                    hd($task['type']);
-                    hd($task['type'] == DISCOVERY_APP_VMWARE);
                     if ($task['type'] == DISCOVERY_APP_VMWARE) {
                         if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
-                            $data[5] == __('Done');
+                            $data[5] = __('Done');
                         } else if ($task['status'] > 0) {
-                            $data[5] == __('Pending');
+                            $data[5] = __('Pending');
                         } else {
-                            $data[5] == __('Not started');
+                            $data[5] = __('Not started');
                         }
                     } else {
                         if ($task['status'] <= 0

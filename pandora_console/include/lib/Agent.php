@@ -411,12 +411,80 @@ class Agent extends Entity
 
 
     /**
+     * Return a list of interfaces.
+     *
+     * @param array $filter Filter interfaces by name in array.
+     *
+     * @return array Of interfaces and modules PandoraFMS\Modules.
+     */
+    public function getInterfaces(array $filter=[])
+    {
+        $modules = $this->searchModules(
+            ['nombre' => '%ifOperStatus%']
+        );
+
+        $interfaces = [];
+        foreach ($modules as $module) {
+            $matches = [];
+            if (preg_match(
+                '/^(.*?)_ifOperStatus$/',
+                $module->name(),
+                $matches
+            ) > 0
+            ) {
+                $interface = $matches[1];
+            }
+
+            if (empty($interface) === true) {
+                continue;
+            }
+
+            if (empty($filter) === false
+                && in_array($interface, $filter) !== true
+            ) {
+                continue;
+            }
+
+            $interfaces[$interface] = [
+                'ifOperStatus'  => array_shift(
+                    $this->searchModules(
+                        ['nombre' => $interface.'_ifOperStatus']
+                    )
+                ),
+                'ifInOctets'    => array_shift(
+                    $this->searchModules(
+                        ['nombre' => $interface.'_ifInOctets']
+                    )
+                ),
+                'ifOutOctets'   => array_shift(
+                    $this->searchModules(
+                        ['nombre' => $interface.'_ifOutOctets']
+                    )
+                ),
+                'ifHCInOctets'  => array_shift(
+                    $this->searchModules(
+                        ['nombre' => $interface.'_ifHCInOctets']
+                    )
+                ),
+                'ifHCOutOctets' => array_shift(
+                    $this->searchModules(
+                        ['nombre' => $interface.'_ifHCOutOctets']
+                    )
+                ),
+            ];
+        }
+
+        return $interfaces;
+    }
+
+
+    /**
      * Search for modules into this agent.
      *
      * @param array   $filter Filters.
      * @param integer $limit  Limit search results.
      *
-     * @return PandoraFMS\Module Module found.
+     * @return array Of PandoraFMS\Module Modules found.
      */
     public function searchModules(array $filter, int $limit=0)
     {
@@ -443,7 +511,12 @@ class Agent extends Entity
             return $results;
         } else {
             // Search in db.
-            return Module::search($filter, $limit);
+            $return = Module::search($filter, $limit);
+            if (is_array($return) === false) {
+                return [];
+            }
+
+            return $return;
         }
 
     }

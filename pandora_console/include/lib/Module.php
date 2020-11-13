@@ -39,6 +39,12 @@ use PandoraFMS\ModuleType;
 class Module extends Entity
 {
 
+    const INTERFACE_STATUS = 1;
+    const INTERFACE_INOCTETS = 2;
+    const INTERFACE_OUTOCTETS = 3;
+    const INTERFACE_HC_INOCTETS = 4;
+    const INTERFACE_HC_OUTOCTETS = 5;
+
     /**
      * Module status (From tagente_estado).
      *
@@ -748,6 +754,84 @@ class Module extends Entity
         }
 
         return false;
+    }
+
+
+    /**
+     * Return true if module represents an interface (operStatus, in/outOctets)
+     *
+     * @return integer > 0 if interface module, 0 if not.
+     */
+    public function isInterfaceModule():int
+    {
+        if (strstr($this->name(), '_ifOperStatus') !== false) {
+            return self::INTERFACE_STATUS;
+        }
+
+        if (strstr($this->name(), '_ifInOctets') !== false) {
+            return self::INTERFACE_INOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifOutOctets') !== false) {
+            return self::INTERFACE_OUTOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifHCInOctets') !== false) {
+            return self::INTERFACE_HC_INOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifHCOutOctets') !== false) {
+            return self::INTERFACE_HC_OUTOCTETS;
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Return interface name if module represents an interface module.
+     *
+     * @return string|null Interface name or null.
+     */
+    public function getInterfaceName():?string
+    {
+        $label = null;
+        switch ($this->isInterfaceModule()) {
+            case self::INTERFACE_STATUS:
+                $label = '_ifOperStatus';
+            break;
+
+            case self::INTERFACE_INOCTETS:
+                $label = '_ifInOctets';
+            break;
+
+            case self::INTERFACE_OUTOCTETS:
+                $label = '_ifOutOctets';
+            break;
+
+            case self::INTERFACE_HC_INOCTETS:
+                $label = '_ifHCInOctets';
+            break;
+
+            case self::INTERFACE_HC_OUTOCTETS:
+                $label = '_ifHCOutOctets';
+            break;
+
+            default:
+                // Not an interface module.
+            return null;
+        }
+
+        if (preg_match(
+            '/^(.*?)'.$label.'$/',
+            $this->name(),
+            $matches
+        ) > 0
+        ) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
 

@@ -396,7 +396,33 @@ final class NetworkLink extends Model
         $endX = $data['endX'];
         $endY = $data['endY'];
 
-        if (isset($data['width'])) {
+        $linked_start = static::extractlinkedStart($data);
+        $linked_end = static::extractlinkedEnd($data);
+
+        $start = false;
+        $end = false;
+
+        if ($linked_start !== null) {
+            $start = \db_get_row_filter(
+                'tlayout_data',
+                [
+                    'id_layout' => $data['id_layout'],
+                    'id'        => $linked_start,
+                ]
+            );
+        }
+
+        if ($linked_end !== null) {
+            $end = \db_get_row_filter(
+                'tlayout_data',
+                [
+                    'id_layout' => $data['id_layout'],
+                    'id'        => $linked_end,
+                ]
+            );
+        }
+
+        if (isset($data['width']) === true) {
             // Row format.
             $startX = $data['pos_x'];
             $startY = $data['pos_y'];
@@ -404,47 +430,51 @@ final class NetworkLink extends Model
             $endY = $data['height'];
         }
 
-        $start = \db_get_row_filter(
-            'tlayout_data',
-            [
-                'id_layout'      => $data['id_layout'],
-                'pos_x'          => '<'.$startX,
-                'pos_y'          => '<'.$startY,
-                'pos_x`+`width'  => '>'.$startX,
-                'pos_y`+`height' => '>'.$startY,
-                'order'          => [
-                    [
-                        'field' => 'show_on_top',
-                        'order' => 'desc',
+        if ($start === false) {
+            $start = \db_get_row_filter(
+                'tlayout_data',
+                [
+                    'id_layout'      => $data['id_layout'],
+                    'pos_x'          => '<'.$startX,
+                    'pos_y'          => '<'.$startY,
+                    'pos_x`+`width'  => '>'.$startX,
+                    'pos_y`+`height' => '>'.$startY,
+                    'order'          => [
+                        [
+                            'field' => 'show_on_top',
+                            'order' => 'desc',
+                        ],
+                        [
+                            'field' => 'id',
+                            'order' => 'desc',
+                        ],
                     ],
-                    [
-                        'field' => 'id',
-                        'order' => 'desc',
-                    ],
-                ],
-            ]
-        );
+                ]
+            );
+        }
 
-        $end = \db_get_row_filter(
-            'tlayout_data',
-            [
-                'id_layout'      => $data['id_layout'],
-                'pos_x'          => '<'.$endX,
-                'pos_y'          => '<'.$endY,
-                'pos_x`+`width'  => '>'.$endX,
-                'pos_y`+`height' => '>'.$endY,
-                'order'          => [
-                    [
-                        'field' => 'show_on_top',
-                        'order' => 'desc',
+        if ($end === false) {
+            $end = \db_get_row_filter(
+                'tlayout_data',
+                [
+                    'id_layout'      => $data['id_layout'],
+                    'pos_x'          => '<'.$endX,
+                    'pos_y'          => '<'.$endY,
+                    'pos_x`+`width'  => '>'.$endX,
+                    'pos_y`+`height' => '>'.$endY,
+                    'order'          => [
+                        [
+                            'field' => 'show_on_top',
+                            'order' => 'desc',
+                        ],
+                        [
+                            'field' => 'id',
+                            'order' => 'desc',
+                        ],
                     ],
-                    [
-                        'field' => 'id',
-                        'order' => 'desc',
-                    ],
-                ],
-            ]
-        );
+                ]
+            );
+        }
 
         return [
             'start' => $start,
@@ -469,6 +499,18 @@ final class NetworkLink extends Model
         $linkedStart = null;
         $linkedEnd = null;
 
+        /*
+         * If start['id_agente_modulo'] its a network module (in/out/status)
+         * then:
+         *
+         * start => outOctets
+         *
+         * If end['id_agente_modulo'] its a network module (in/out/status)
+         * then:
+         * end => inOctets
+         *
+         */
+
         if (isset($links['start']) === true) {
             $linkedStart = $links['start']['id'];
             if (is_numeric($links['start']['id_agente_modulo']) === true
@@ -478,8 +520,35 @@ final class NetworkLink extends Model
                     (int) $links['start']['id_agente_modulo']
                 );
 
-                $labelStart = $module->nombre();
-                $labelStart .= ': '.$module->lastValue();
+                if ((bool) $module->isInterfaceModule() === true) {
+                    $interface_name = $module->getInterfaceName();
+                    $interface = array_shift(
+                        $module->agent()->getInterfaces(
+                            [$interface_name]
+                        )
+                    );
+
+                    $outOctets = 0;
+                    $inOctets = 0;
+
+                    if (isset($interface['ifOutOctets']) === true) {
+                        $outOctets = $interface['ifOutOctets']->lastValue();
+                    } else if (isset($interface['ifHCOutOctets']) === true) {
+                        $outOctets = $interface['ifHCOutOctets']->lastValue();
+                    }
+
+                    if (isset($interface['ifInOctets']) === true) {
+                        $inOctets = $interface['ifInOctets']->lastValue();
+                    } else if (isset($interface['ifHCInOctets']) === true) {
+                        $inOctets = $interface['ifHCInOctets']->lastValue();
+                    }
+
+                    $labelStart = $interface_name;
+                    $labelStart .= ': '.$outOctets;
+
+                    $labelEnd = $interface_name;
+                    $labelEnd .= ': '.$inOctets;
+                }
             }
         }
 
@@ -492,8 +561,35 @@ final class NetworkLink extends Model
                     (int) $links['end']['id_agente_modulo']
                 );
 
-                $labelEnd = $module->nombre();
-                $labelEnd .= ': '.$module->lastValue();
+                if ((bool) $module->isInterfaceModule() === true) {
+                    $interface_name = $module->getInterfaceName();
+                    $interface = array_shift(
+                        $module->agent()->getInterfaces(
+                            [$interface_name]
+                        )
+                    );
+
+                    $outOctets = 0;
+                    $inOctets = 0;
+
+                    if (isset($interface['ifOutOctets']) === true) {
+                        $outOctets = $interface['ifOutOctets']->lastValue();
+                    } else if (isset($interface['ifHCOutOctets']) === true) {
+                        $outOctets = $interface['ifHCOutOctets']->lastValue();
+                    }
+
+                    if (isset($interface['ifInOctets']) === true) {
+                        $inOctets = $interface['ifInOctets']->lastValue();
+                    } else if (isset($interface['ifHCInOctets']) === true) {
+                        $inOctets = $interface['ifHCInOctets']->lastValue();
+                    }
+
+                    $labelStart .= '<br>'.$interface_name;
+                    $labelStart .= ': '.$outOctets;
+
+                    $labelEnd .= '<br>'.$interface_name;
+                    $labelEnd .= ': '.$inOctets;
+                }
             }
         }
 

@@ -547,6 +547,7 @@ class DiscoveryTaskList extends HTML
                     );
                 } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
                     hd($task['type']);
+                    hd($task['type'] == DISCOVERY_APP_VMWARE);
                     if ($task['type'] == DISCOVERY_APP_VMWARE) {
                         if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
                             $data[5] == __('Done');

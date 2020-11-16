@@ -428,8 +428,8 @@ sub pandora_purgedb ($$) {
 ###############################################################################
 # Compact agent data.
 ###############################################################################
-sub pandora_compactdb ($$) {
-	my ($conf, $dbh) = @_;
+sub pandora_compactdb ($$$) {
+	my ($conf, $dbh, $dbh_conf) = @_;
 
 	my %count_hash;
 	my %id_agent_hash;
@@ -534,9 +534,9 @@ sub pandora_compactdb ($$) {
 
 	# Mark the last compact date
 	if (defined ($conf->{'_last_compact'})) {
-		db_do ($dbh, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
 	} else {
-		db_do ($dbh, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
 	}
 }
 
@@ -1018,7 +1018,7 @@ sub pandoradb_main ($$$) {
 
 	# Compact on if enable and DaysCompact are below DaysPurge 
 	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
-		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);
+		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
 	}
 
 	# Update tconfig with last time of database maintance time (now)

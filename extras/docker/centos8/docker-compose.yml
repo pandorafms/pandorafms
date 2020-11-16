@@ -17,7 +17,7 @@ services:
      - pandora
 
   pandora:
-    image: pandorafms/pandorafms-open-stack-el8:749
+    image: pandorafms/pandorafms-open-stack-el8:latest
     restart: always
     depends_on:
       - db

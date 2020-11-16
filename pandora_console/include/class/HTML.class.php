@@ -254,7 +254,7 @@ class HTML
      *
      * @return boolean Alowed or not.
      */
-    public function aclMulticheck($access=null)
+    public function aclMulticheck($access=null, $id_group=0)
     {
         global $config;
 
@@ -268,7 +268,7 @@ class HTML
         foreach ($perms as $perm) {
             $allowed = $allowed || (bool) check_acl(
                 $config['id_user'],
-                0,
+                $id_group,
                 $perm
             );
         }

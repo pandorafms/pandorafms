@@ -448,6 +448,10 @@ class DiscoveryTaskList extends HTML
             $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
+                if ($this->aclMulticheck('AR|AW|AM', $task['id_group']) === false) {
+                    continue;
+                }
+
                 $no_operations = false;
                 $data = [];
                 $server_name = servers_get_name($task['id_recon_server']);

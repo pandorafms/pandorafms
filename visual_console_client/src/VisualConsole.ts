@@ -303,7 +303,10 @@ export default class VisualConsole {
    * @param item ItemProps instance.
    */
   private coordinatesInItem(x: number, y: number, props: ItemProps) {
-    if (props.type == ItemType.LINE_ITEM) {
+    if (
+      props.type == ItemType.LINE_ITEM ||
+      props.type == ItemType.NETWORK_LINK
+    ) {
       return false;
     }
 

@@ -1,10 +1,5 @@
 import { AnyObject, Position, ItemMeta } from "../lib/types";
-import {
-  debounce,
-  addMovementListener,
-  notEmptyStringOr,
-  parseIntOr
-} from "../lib";
+import { debounce, notEmptyStringOr, parseIntOr } from "../lib";
 import { ItemType } from "../Item";
 import Line, { LineProps, linePropsDecoder } from "./Line";
 
@@ -162,31 +157,45 @@ export default class NetworkLink extends Line {
     const fontsize = 10;
     const adjustment = 50;
 
+    const lineX1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const lineY1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
+    const lineX2 = endPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const lineY2 = endPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
+
     let x1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
     let y1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
     let x2 = endPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
     let y2 = endPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
 
     // Calculate angle (rotation).
-    let g = (Math.atan((y2 - y1) / (x2 - x1)) * 180) / Math.PI;
-
-    if (Math.abs(g) > 0) {
-      g = 0;
-    }
+    let g = (Math.atan((lineY2 - lineY1) / (lineX2 - lineX1)) * 180) / Math.PI;
 
     // Calculate effective 'text' box sizes.
     const fontheight = 25;
     if (labelStartWidth <= 0) {
-      labelStartWidth = labelStart.length * fontsize;
+      let lines = labelStart.split("<br>");
+      labelStartWidth = 0;
+      lines.forEach(l => {
+        if (l.length > labelStartWidth) {
+          labelStartWidth = l.length * fontsize;
+        }
+      });
+      if (labelStartHeight <= 0) {
+        labelStartHeight = lines.length * fontheight;
+      }
     }
+
     if (labelEndWidth <= 0) {
-      labelEndWidth = labelEnd.length * fontsize;
-    }
-    if (labelStartHeight <= 0) {
-      labelStartHeight = fontheight;
-    }
-    if (labelEndHeight <= 0) {
-      labelEndHeight = fontheight;
+      let lines = labelEnd.split("<br>");
+      labelEndWidth = 0;
+      lines.forEach(l => {
+        if (l.length > labelEndWidth) {
+          labelEndWidth = l.length * fontsize;
+        }
+      });
+      if (labelEndHeight <= 0) {
+        labelEndHeight = lines.length * fontheight;
+      }
     }
 
     if (x1 < x2) {
@@ -217,50 +226,61 @@ export default class NetworkLink extends Line {
       color = "#000";
     }
 
+    // Clean.
+    if (element.parentElement !== null) {
+      const labels = element.parentElement.getElementsByClassName(
+        "vc-item-nl-label"
+      );
+      while (labels.length > 0) {
+        const label = labels.item(0);
+        if (label) label.remove();
+      }
+    }
+
     if (labelStart != "") {
-      let start = document.createElementNS(svgNS, "g");
-      let sr = document.createElementNS(svgNS, "rect");
-      sr.setAttribute("x", `${x1}`);
-      sr.setAttribute("y", `${y1}`);
-      sr.setAttribute("width", `${labelStartWidth + fontsize * 2}`);
-      sr.setAttribute("height", `${labelStartHeight}`);
-      sr.setAttribute("stroke", `${color}`);
-      sr.setAttribute("stroke-width", "2");
-      sr.setAttribute("fill", "#FFF");
-      start.append(sr);
+      let htmlLabelStart: HTMLElement = document.createElement("div");
 
-      let st = document.createElementNS(svgNS, "text");
-      st.setAttribute("x", `${x1 + fontsize}`);
-      st.setAttribute("y", `${y1 + (fontheight * 2) / 3}`);
-      st.setAttribute("fill", "#000");
-      st.setAttribute("font-size", `${fontsize}`);
-      st.textContent = labelStart;
-      start.append(st);
+      try {
+        htmlLabelStart.innerHTML = labelStart;
+        htmlLabelStart.style.position = "absolute";
+        htmlLabelStart.style.left = `${x1}px`;
+        htmlLabelStart.style.top = `${y1}px`;
+        htmlLabelStart.style.width = `${labelStartWidth}px`;
+        htmlLabelStart.style.border = `2px solid ${color}`;
 
-      svg.append(start);
+        htmlLabelStart.classList.add("vc-item-nl-label", "label-start");
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (element.parentElement !== null) {
+        element.parentElement.appendChild(htmlLabelStart);
+      }
     }
 
     if (labelEnd != "") {
-      let end = document.createElementNS(svgNS, "g");
-      let er = document.createElementNS(svgNS, "rect");
-      er.setAttribute("x", `${x2}`);
-      er.setAttribute("y", `${y2}`);
-      er.setAttribute("width", `${labelEndWidth + fontsize * 2}`);
-      er.setAttribute("height", `${labelEndHeight}`);
-      er.setAttribute("stroke", `${color}`);
-      er.setAttribute("stroke-width", "2");
-      er.setAttribute("fill", "#FFF");
-      end.append(er);
+      let htmlLabelEnd: HTMLElement = document.createElement("div");
 
-      let et = document.createElementNS(svgNS, "text");
-      et.setAttribute("x", `${x2 + fontsize}`);
-      et.setAttribute("y", `${y2 + (fontheight * 2) / 3}`);
-      et.setAttribute("fill", "#000");
-      et.setAttribute("font-size", `${fontsize}`);
-      et.textContent = labelEnd;
-      end.append(et);
+      try {
+        htmlLabelEnd.innerHTML = labelEnd;
+        htmlLabelEnd.style.position = "absolute";
+        htmlLabelEnd.style.left = `${x2}px`;
+        htmlLabelEnd.style.top = `${y2}px`;
+        htmlLabelEnd.style.width = `${labelEndWidth}px`;
+        htmlLabelEnd.style.border = `2px solid ${color}`;
 
-      svg.append(end);
+        htmlLabelEnd.classList.add("vc-item-nl-label", "label-end");
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (element.parentElement !== null) {
+        element.parentElement.appendChild(htmlLabelEnd);
+      }
+
+      if (element.parentElement !== null) {
+        element.parentElement.appendChild(htmlLabelEnd);
+      }
     }
   }
 }

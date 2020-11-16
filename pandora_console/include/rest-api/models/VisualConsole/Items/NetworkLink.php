@@ -439,6 +439,7 @@ final class NetworkLink extends Model
                     'pos_y'          => '<'.$startY,
                     'pos_x`+`width'  => '>'.$startX,
                     'pos_y`+`height' => '>'.$startY,
+                    'type'           => '!'.NETWORK_LINK,
                     'order'          => [
                         [
                             'field' => 'show_on_top',
@@ -462,6 +463,7 @@ final class NetworkLink extends Model
                     'pos_y'          => '<'.$endY,
                     'pos_x`+`width'  => '>'.$endX,
                     'pos_y`+`height' => '>'.$endY,
+                    'type'           => '!'.NETWORK_LINK,
                     'order'          => [
                         [
                             'field' => 'show_on_top',
@@ -530,24 +532,30 @@ final class NetworkLink extends Model
 
                     $outOctets = 0;
                     $inOctets = 0;
+                    $unitIn = '';
+                    $unitOut = '';
 
                     if (isset($interface['ifOutOctets']) === true) {
                         $outOctets = $interface['ifOutOctets']->lastValue();
+                        $unitOut = $interface['ifOutOctets']->unit();
                     } else if (isset($interface['ifHCOutOctets']) === true) {
                         $outOctets = $interface['ifHCOutOctets']->lastValue();
+                        $unitOut = $interface['ifHCOutOctets']->unit();
                     }
 
                     if (isset($interface['ifInOctets']) === true) {
                         $inOctets = $interface['ifInOctets']->lastValue();
+                        $unitIn = $interface['ifInOctets']->unit();
                     } else if (isset($interface['ifHCInOctets']) === true) {
                         $inOctets = $interface['ifHCInOctets']->lastValue();
+                        $unitIn = $interface['ifHCInOctets']->unit();
                     }
 
                     $labelStart = $interface_name;
-                    $labelStart .= ': '.$outOctets;
+                    $labelStart .= ' (out): '.$outOctets.' '.$unitOut;
 
                     $labelEnd = $interface_name;
-                    $labelEnd .= ': '.$inOctets;
+                    $labelEnd .= ' (in): '.$inOctets.' '.$unitIn;
                 }
             }
         }
@@ -571,24 +579,30 @@ final class NetworkLink extends Model
 
                     $outOctets = 0;
                     $inOctets = 0;
+                    $unitIn = '';
+                    $unitOut = '';
 
                     if (isset($interface['ifOutOctets']) === true) {
                         $outOctets = $interface['ifOutOctets']->lastValue();
+                        $unitOut = $interface['ifOutOctets']->unit();
                     } else if (isset($interface['ifHCOutOctets']) === true) {
                         $outOctets = $interface['ifHCOutOctets']->lastValue();
+                        $unitOut = $interface['ifHCOutOctets']->unit();
                     }
 
                     if (isset($interface['ifInOctets']) === true) {
                         $inOctets = $interface['ifInOctets']->lastValue();
+                        $unitIn = $interface['ifInOctets']->unit();
                     } else if (isset($interface['ifHCInOctets']) === true) {
                         $inOctets = $interface['ifHCInOctets']->lastValue();
+                        $unitIn = $interface['ifHCInOctets']->unit();
                     }
 
                     $labelStart .= '<br>'.$interface_name;
-                    $labelStart .= ': '.$outOctets;
+                    $labelStart .= ' (out): '.$outOctets.' '.$unitOut;
 
                     $labelEnd .= '<br>'.$interface_name;
-                    $labelEnd .= ': '.$inOctets;
+                    $labelEnd .= ' (in): '.$inOctets.' '.$unitIn;
                 }
             }
         }

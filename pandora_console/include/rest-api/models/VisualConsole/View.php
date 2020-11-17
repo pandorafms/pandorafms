@@ -30,7 +30,7 @@
 namespace Models\VisualConsole;
 use Models\VisualConsole\Container as VisualConsole;
 
-define('__DEBUG', 1);
+define('__DEBUG', 0);
 
 global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
@@ -621,46 +621,147 @@ class View extends \HTML
     public function networkLinkPopup()
     {
         global $config;
-        include_once $config['homedir'].'/include/functions_graph.php';
-        $item_idFrom = get_parameter('from');
-        $item_idTo = get_parameter('to');
 
-        $itemFrom = db_get_row_filter(
-            'tlayout_data',
-            ['id' => $item_idFrom]
-        );
+        try {
+            include_once $config['homedir'].'/include/functions_graph.php';
+            $item_idFrom = get_parameter('from');
+            $item_idTo = get_parameter('to');
 
-        $itemTo = db_get_row_filter(
-            'tlayout_data',
-            ['id' => $item_idTo]
-        );
+            $itemFrom = db_get_row_filter(
+                'tlayout_data',
+                ['id' => $item_idFrom]
+            );
 
-        $from = new \PandoraFMS\Module((int) $itemFrom['id_agente_modulo']);
-        $to = new \PandoraFMS\Module((int) $itemTo['id_agente_modulo']);
+            $itemTo = db_get_row_filter(
+                'tlayout_data',
+                ['id' => $item_idTo]
+            );
 
-        echo 'From '.$from->nombre().' con valor '.$from->lastValue();
-        ini_set('display_errors', 1);
+            // Interface chart base configuration.
+            $params = [
+                'period'  => SECONDS_6HOURS,
+                'width'   => '90%',
+                'height'  => 150,
+                'date'    => time(),
+                'homeurl' => $config['homeurl'],
+            ];
 
-        echo \grafico_modulo_sparse(
-            [
-                'agent_module_id' => $from->id_agente_modulo(),
-                'period'          => SECONDS_1DAY,
-                'height'          => 150,
-                'menu'            => false,
-            ]
-        );
+            if ($config['type_interface_charts'] == 'line') {
+                $stacked = CUSTOM_GRAPH_LINE;
+            } else {
+                $stacked = CUSTOM_GRAPH_AREA;
+            }
 
-        echo 'To '.$to->nombre().' con valor '.$to->lastValue();
+            $params_combined = [
+                'weight_list'    => [],
+                'projection'     => false,
+                'from_interface' => true,
+                'return'         => 0,
+                'stacked'        => $stacked,
+            ];
 
-        echo \grafico_modulo_sparse(
-            [
-                'agent_module_id' => $to->id_agente_modulo(),
-                'period'          => SECONDS_1DAY,
-                'height'          => 150,
-                'menu'            => false,
-            ]
-        );
+            if ((bool) is_metaconsole() === true) {
+                $params['id_server'] = $server_id;
+            }
 
+            // Interface FROM.
+            $from = new \PandoraFMS\Module((int) $itemFrom['id_agente_modulo']);
+            if ((bool) $from->isInterfaceModule() === true) {
+                $interface_name = $from->getInterfaceName();
+                if ($interface_name !== null) {
+                    $data = $from->agent()->getInterfaceMetrics(
+                        $interface_name
+                    );
+
+                    echo '<div class="margin-top-10 interface-status from w90p flex-row-vcenter">';
+                    ui_print_module_status($data['status']->lastStatus());
+                    echo '<span style="margin-left: 1em;">';
+                    echo __('Interface %s status', $interface_name);
+                    echo '</span>';
+                    echo '</div>';
+
+                    $interface_traffic_modules = [
+                        __('In')  => $data['in']->id_agente_modulo(),
+                        __('Out') => $data['out']->id_agente_modulo(),
+                    ];
+
+                    $params['unit_name'] = array_fill(
+                        0,
+                        count($interface_traffic_modules),
+                        $config['interface_unit']
+                    );
+
+                    $params_combined['labels'] = array_keys(
+                        $interface_traffic_modules
+                    );
+
+                    $params_combined['modules_series'] = array_values(
+                        $interface_traffic_modules
+                    );
+
+                    // Graph.
+                    echo '<div id="stat-win-interface-graph from">';
+
+                    \graphic_combined_module(
+                        array_values($interface_traffic_modules),
+                        $params,
+                        $params_combined
+                    );
+
+                    echo '</div>';
+                }
+            }
+
+            // Interface TO.
+            $to = new \PandoraFMS\Module((int) $itemTo['id_agente_modulo']);
+            if ((bool) $to->isInterfaceModule() === true) {
+                $interface_name = $to->getInterfaceName();
+                if ($interface_name !== null) {
+                    $data = $to->agent()->getInterfaceMetrics(
+                        $interface_name
+                    );
+
+                    echo '<div class="interface-status from w90p flex-row-vcenter">';
+                    ui_print_module_status($data['status']->lastStatus());
+                    echo '<span style="margin-left: 1em;">';
+                    echo __('Interface %s status', $interface_name);
+                    echo '</span>';
+                    echo '</div>';
+
+                    $interface_traffic_modules = [
+                        __('In')  => $data['in']->id_agente_modulo(),
+                        __('Out') => $data['out']->id_agente_modulo(),
+                    ];
+
+                    $params['unit_name'] = array_fill(
+                        0,
+                        count($interface_traffic_modules),
+                        $config['interface_unit']
+                    );
+
+                    $params_combined['labels'] = array_keys(
+                        $interface_traffic_modules
+                    );
+
+                    $params_combined['modules_series'] = array_values(
+                        $interface_traffic_modules
+                    );
+
+                    // Graph.
+                    echo '<div id="stat-win-interface-graph to">';
+
+                    \graphic_combined_module(
+                        array_values($interface_traffic_modules),
+                        $params,
+                        $params_combined
+                    );
+
+                    echo '</div>';
+                }
+            }
+        } catch (\Exception $e) {
+            echo __('Failed to generate charts: %s', $e->getMessage());
+        }
     }
 
 

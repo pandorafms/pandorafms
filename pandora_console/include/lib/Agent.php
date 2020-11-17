@@ -445,36 +445,81 @@ class Agent extends Entity
                 continue;
             }
 
+            $name_filters = [
+                'ifOperStatus'  => ['nombre' => $interface.'_ifOperStatus'],
+                'ifInOctets'    => ['nombre' => $interface.'_ifInOctets'],
+                'ifOutOctets'   => ['nombre' => $interface.'_ifOutOctets'],
+                'ifHCInOctets'  => ['nombre' => $interface.'_ifHCInOctets'],
+                'ifHCOutOctets' => ['nombre' => $interface.'_ifHCOutOctets'],
+            ];
+
+            $ifOperStatus = $this->searchModules(
+                $name_filters['ifOperStatus']
+            );
+            $ifInOctets = $this->searchModules(
+                $name_filters['ifInOctets']
+            );
+            $ifOutOctets = $this->searchModules(
+                $name_filters['ifOutOctets']
+            );
+            $ifHCInOctets = $this->searchModules(
+                $name_filters['ifHCInOctets']
+            );
+            $ifHCOutOctets = $this->searchModules(
+                $name_filters['ifHCOutOctets']
+            );
+
             $interfaces[$interface] = [
-                'ifOperStatus'  => array_shift(
-                    $this->searchModules(
-                        ['nombre' => $interface.'_ifOperStatus']
-                    )
-                ),
-                'ifInOctets'    => array_shift(
-                    $this->searchModules(
-                        ['nombre' => $interface.'_ifInOctets']
-                    )
-                ),
-                'ifOutOctets'   => array_shift(
-                    $this->searchModules(
-                        ['nombre' => $interface.'_ifOutOctets']
-                    )
-                ),
-                'ifHCInOctets'  => array_shift(
-                    $this->searchModules(
-                        ['nombre' => $interface.'_ifHCInOctets']
-                    )
-                ),
-                'ifHCOutOctets' => array_shift(
-                    $this->searchModules(
-                        ['nombre' => $interface.'_ifHCOutOctets']
-                    )
-                ),
+                'ifOperStatus'  => array_shift($ifOperStatus),
+                'ifInOctets'    => array_shift($ifInOctets),
+                'ifOutOctets'   => array_shift($ifOutOctets),
+                'ifHCInOctets'  => array_shift($ifHCInOctets),
+                'ifHCOutOctets' => array_shift($ifHCOutOctets),
             ];
         }
 
         return $interfaces;
+    }
+
+
+    /**
+     * Retrieves status, in and out modules from given interface name.
+     *
+     * @param string $interface Interface name.
+     *
+     * @return array|null With status, in and out modules. Null if no iface.
+     */
+    public function getInterfaceMetrics(string $interface):?array
+    {
+        $modules = $this->getInterfaces([$interface]);
+        if (empty($modules) === true) {
+            return null;
+        }
+
+        $modules = $modules[$interface];
+
+        $in = null;
+        $out = null;
+        $status = $modules['ifOperStatus'];
+
+        if (empty($modules['ifHCInOctets']) === false) {
+            $in = $modules['ifHCInOctets'];
+        } else if (empty($modules['ifInOctets']) === false) {
+            $in = $modules['ifInOctets'];
+        }
+
+        if (empty($modules['ifHCOutOctets']) === false) {
+            $out = $modules['ifHCOutOctets'];
+        } else if (empty($modules['ifOutOctets']) === false) {
+            $out = $modules['ifOutOctets'];
+        }
+
+        return [
+            'in'     => $in,
+            'out'    => $out,
+            'status' => $status,
+        ];
+
     }
 
 

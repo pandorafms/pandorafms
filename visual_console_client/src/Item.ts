@@ -1204,7 +1204,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
 
     this.initMovementListener(this.elementRef);
-    if (this.props.type !== ItemType.LINE_ITEM) {
+    if (
+      this.props.type !== ItemType.LINE_ITEM &&
+      this.props.type !== ItemType.NETWORK_LINK
+    ) {
       this.initResizementListener(this.elementRef);
     }
   }

@@ -148,14 +148,9 @@ export default class NetworkLink extends Line {
       return;
     }
 
-    if (labelStart == "" && labelEnd == "") {
-      // No more actions are required.
-      return;
-    }
-
     // Font size and text adjustments.
     const fontsize = 10;
-    const adjustment = 50;
+    const adjustment = 25;
 
     const lineX1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
     const lineY1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
@@ -168,7 +163,8 @@ export default class NetworkLink extends Line {
     let y2 = endPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
 
     // Calculate angle (rotation).
-    let g = (Math.atan((lineY2 - lineY1) / (lineX2 - lineX1)) * 180) / Math.PI;
+    let rad = Math.atan2(lineY2 - lineY1, lineX2 - lineX1);
+    let g = (rad * 180) / Math.PI;
 
     // Calculate effective 'text' box sizes.
     const fontheight = 25;
@@ -235,6 +231,42 @@ export default class NetworkLink extends Line {
         const label = labels.item(0);
         if (label) label.remove();
       }
+
+      const arrows = element.parentElement.getElementsByClassName(
+        "vc-item-nl-arrow"
+      );
+      while (arrows.length > 0) {
+        const arrow = arrows.item(0);
+        if (arrow) arrow.remove();
+      }
+    }
+
+    let arrowSize = lineWidth * 2;
+
+    let arrowPosX = lineX1 + (lineX2 - lineX1) / 2 - arrowSize;
+    let arrowPosY = lineY1 + (lineY2 - lineY1) / 2 - arrowSize;
+
+    let arrowStart: HTMLElement = document.createElement("div");
+    arrowStart.classList.add("vc-item-nl-arrow");
+    arrowStart.style.position = "absolute";
+    arrowStart.style.border = `${arrowSize}px solid transparent`;
+    arrowStart.style.borderBottom = `${arrowSize}px solid ${color}`;
+    arrowStart.style.left = `${arrowPosX}px`;
+    arrowStart.style.top = `${arrowPosY}px`;
+    arrowStart.style.transform = `rotate(${90 + g}deg)`;
+
+    let arrowEnd: HTMLElement = document.createElement("div");
+    arrowEnd.classList.add("vc-item-nl-arrow");
+    arrowEnd.style.position = "absolute";
+    arrowEnd.style.border = `${arrowSize}px solid transparent`;
+    arrowEnd.style.borderBottom = `${arrowSize}px solid ${color}`;
+    arrowEnd.style.left = `${arrowPosX}px`;
+    arrowEnd.style.top = `${arrowPosY}px`;
+    arrowEnd.style.transform = `rotate(${270 + g}deg)`;
+
+    if (element.parentElement !== null) {
+      element.parentElement.appendChild(arrowStart);
+      element.parentElement.appendChild(arrowEnd);
     }
 
     if (labelStart != "") {
@@ -272,10 +304,6 @@ export default class NetworkLink extends Line {
         htmlLabelEnd.classList.add("vc-item-nl-label", "label-end");
       } catch (error) {
         console.error(error);
-      }
-
-      if (element.parentElement !== null) {
-        element.parentElement.appendChild(htmlLabelEnd);
       }
 
       if (element.parentElement !== null) {

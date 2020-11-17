@@ -571,13 +571,3 @@ div.module-graph .gauge_d3_class {
   padding-left: 1em;
   font-size: 14px;
 }
-
-.arrow-head {
-  border: 5px solid transparent;
-  border-top: 0;
-  border-right-color: transparent;
-  border-left-color: transparent;
-  display: block;
-  width: 0px;
-  height: 0px;
-}

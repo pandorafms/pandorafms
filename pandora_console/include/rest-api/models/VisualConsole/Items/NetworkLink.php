@@ -551,11 +551,22 @@ final class NetworkLink extends Model
                         $unitIn = $interface['ifHCInOctets']->unit();
                     }
 
-                    $labelStart = $interface_name;
-                    $labelStart .= ' (out): '.$outOctets.' '.$unitOut;
+                    if (empty($outOctets) === true) {
+                        $outOctets = 0;
+                    }
 
-                    $labelEnd = $interface_name;
-                    $labelEnd .= ' (in): '.$inOctets.' '.$unitIn;
+                    if (empty($inOctets) === true) {
+                        $inOctets = 0;
+                    }
+
+                    $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
+                    $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
+
+                    $labelStart = $interface_name;
+                    $labelStart .= ' (in): '.$inOctets;
+
+                    $labelStart .= '<br>'.$interface_name;
+                    $labelStart .= ' (out): '.$outOctets;
                 }
             }
         }
@@ -598,11 +609,22 @@ final class NetworkLink extends Model
                         $unitIn = $interface['ifHCInOctets']->unit();
                     }
 
-                    $labelStart .= '<br>'.$interface_name;
-                    $labelStart .= ' (out): '.$outOctets.' '.$unitOut;
+                    if (empty($outOctets) === true) {
+                        $outOctets = 0;
+                    }
+
+                    if (empty($inOctets) === true) {
+                        $inOctets = 0;
+                    }
+
+                    $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
+                    $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
+
+                    $labelEnd = $interface_name;
+                    $labelEnd .= ' (in): '.$inOctets;
 
                     $labelEnd .= '<br>'.$interface_name;
-                    $labelEnd .= ' (in): '.$inOctets.' '.$unitIn;
+                    $labelEnd .= ' (out): '.$outOctets;
                 }
             }
         }
@@ -839,6 +861,10 @@ final class NetworkLink extends Model
 
         if ($values['tabSelected'] === 'specific') {
             // Width.
+            if ($values['borderWidth'] === null) {
+                $values['borderWidth'] = 5;
+            }
+
             if ($values['borderWidth'] < 1) {
                 $values['borderWidth'] = 1;
             }

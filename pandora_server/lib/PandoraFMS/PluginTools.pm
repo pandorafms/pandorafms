@@ -26,14 +26,15 @@ eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
 use JSON qw(decode_json encode_json);
+use PerlIO::encoding;
 
 use base 'Exporter';
 
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.749";
-my $pandora_build = "201007";
+my $pandora_version = "7.0NG.750";
+my $pandora_build = "201118";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );

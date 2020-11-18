@@ -548,7 +548,24 @@ $table->data[0][1] .= '<b>'.__('Cascade protection').'</b>'.html_print_select(
 $table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;'.html_print_select($modules, 'cascade_protection_module', $cascade_protection_module, '', '', 0, true);
 
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, 'AR', false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
+$table->data[1][1] = '<div class="w290px inline">';
+$table->data[1][1] .= html_print_select_groups(
+    false,
+    'AR',
+    false,
+    'group',
+    $group,
+    '',
+    __('No change'),
+    -1,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width: 150px;'
+);
+$table->data[1][1] .= '</div>';
 
 $table->data[2][0] = __('Interval');
 

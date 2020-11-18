@@ -1380,11 +1380,12 @@ switch ($action) {
                 switch ($action) {
                     case 'update':
                         $values = [];
-                        $server_name = get_parameter('server_id');
-                        if (is_metaconsole() && $server_name != '') {
-                            $id_meta = metaconsole_get_id_server($server_name);
+                        $server_id = get_parameter('server_id', 0);
+                        if (is_metaconsole() === true
+                            && empty($server_id) === false
+                        ) {
                             $connection = metaconsole_get_connection_by_id(
-                                $id_meta
+                                $server_id
                             );
                             metaconsole_connect($connection);
                             $values['server_name'] = $connection['server_name'];
@@ -1811,13 +1812,10 @@ switch ($action) {
                             'combo_modulegroup'
                         );
                         $values['id_group'] = get_parameter('combo_group');
-                        $values['server_name'] = get_parameter('server_name');
 
-                        if ($values['server_name'] == '') {
-                            $values['server_name'] = get_parameter(
-                                'combo_server'
-                            );
-                        }
+                        $values['server_name'] = get_parameter(
+                            'combo_server'
+                        );
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))
@@ -1867,9 +1865,7 @@ switch ($action) {
                         );
 
                         // If metaconsole is activated.
-                        if ($config['metaconsole'] == 1
-                            && defined('METACONSOLE')
-                        ) {
+                        if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
                                 || ($values['type'] == 'automatic_custom_graph')
                             ) {
@@ -2356,6 +2352,8 @@ switch ($action) {
                             break;
                         }
 
+                        hd($values['server_name']);
+                        hd(2);
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
                                 'combo_server'

@@ -114,6 +114,13 @@ foreach ($custom_fields as $field) {
     }
 }
 
+// Connection lost alert.
+ui_require_css_file('register', 'include/styles/', true);
+ui_require_javascript_file('connection_check');
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 // Get the custom icons.
 $docs_logo = ui_get_docs_logo();
 $support_logo = ui_get_support_logo();
@@ -450,7 +457,12 @@ if ($login_screen == 'logout') {
             echo '<div class="content_message_alert">';
                 echo '<div class="text_message_alert">';
                     echo '<h1>'.__('Logged out').'</h1>';
-                    echo '<p>'.__('Your session has ended. Please close your browser window to close this %s session.', get_product_name()).'</p>';
+    if (empty($config['logout_msg']) === true) {
+        echo '<p>'.__('Your session has ended. Please close your browser window to close this %s session.', get_product_name()).'</p>';
+    } else {
+        echo '<p>'.__($config['logout_msg']).'</p>';
+    }
+
                 echo '</div>';
                 echo '<div class="button_message_alert">';
                     html_print_submit_button('Ok', 'hide-login-logout', false);

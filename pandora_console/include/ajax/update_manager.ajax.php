@@ -272,6 +272,12 @@ if ($install_package) {
             "Update version: $version of ".$product_name.' by '.$config['id_user']
         );
 
+        // An update have been applied, clean phantomjs cache.
+        config_update_value(
+            'clean_phantomjs_cache',
+            1
+        );
+
         $return['status'] = 'success';
         echo json_encode($return);
         return;

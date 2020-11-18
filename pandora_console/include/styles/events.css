@@ -5,7 +5,7 @@ div.criticity {
   text-align: center;
   border-radius: 5px;
   font-size: 0.8em;
-  padding: 3px;
+  padding: 5px;
   margin: 0;
   display: table-cell;
   vertical-align: middle;
@@ -32,7 +32,7 @@ form.flex-row ul {
   width: 30%;
   display: flex;
   flex-direction: row;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   align-content: center;
   justify-content: space-between;
@@ -124,6 +124,7 @@ table.dataTable tbody td {
   max-width: 450px;
 }
 
+.filter_input .select2,
 .filter_input_little > select,
 .filter_input_little > input,
 .filter_input > select,
@@ -309,17 +310,4 @@ div.multi-response-buttons {
   margin-top: 2em;
   width: 100%;
   text-align: right;
-}
-
-div.criticity {
-  width: 150px;
-  height: 2em;
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  font-size: 0.8em;
-  padding: 5px;
-  margin: 0;
-  display: table-cell;
-  vertical-align: middle;
 }

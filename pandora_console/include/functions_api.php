@@ -35,6 +35,8 @@ enterprise_include_once('include/functions_modules.php');
 enterprise_include_once('include/functions_clusters.php');
 enterprise_include_once('include/functions_alerts.php');
 
+// Clases.
+use PandoraFMS\Module;
 use PandoraFMS\Enterprise\Cluster;
 
 
@@ -1849,7 +1851,9 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
     }
 
     if (is_metaconsole()) {
-        if (!check_acl($config['id_user'], 0, 'PM')) {
+        if (!check_acl($config['id_user'], 0, 'PM')
+            && !check_acl($config['id_user'], 0, 'AW')
+        ) {
             returnError('forbidden', 'string');
             return;
         }
@@ -1969,7 +1973,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             $ag_groups = $other['data'][1];
             // Recursion.
             if ($other['data'][6] === '1') {
-                $ag_groups = groups_get_id_recursive($ag_groups, true);
+                $ag_groups = groups_get_children_ids($ag_groups, true);
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
@@ -2514,6 +2518,70 @@ function api_get_module_id($id, $thrash1, $name, $thrash3)
     } else {
         returnError('error_module_id', 'does not exist module or agent');
     }
+}
+
+
+/**
+ * Retrieves custom_id from given module_id.
+ *
+ * @param integer $id Module id.
+ *
+ * @return void
+ */
+function api_get_module_custom_id($id)
+{
+    if (is_metaconsole()) {
+        return;
+    }
+
+    try {
+        $module = new Module($id);
+        if (!util_api_check_agent_and_print_error(
+            $module->id_agente(),
+            'json'
+        )
+        ) {
+            return;
+        }
+    } catch (Exception $e) {
+        returnError('id_not_found', 'json');
+    }
+
+    returnData('json', $module->custom_id());
+}
+
+
+/**
+ * Retrieves custom_id from given module_id.
+ *
+ * @param integer $id Module id.
+ *
+ * @return void
+ */
+function api_set_module_custom_id($id, $value)
+{
+    if (is_metaconsole()) {
+        return;
+    }
+
+    try {
+        $module = new Module($id);
+        if (!util_api_check_agent_and_print_error(
+            $module->id_agente(),
+            'json',
+            'AW'
+        )
+        ) {
+            return;
+        }
+
+        $module->custom_id($value);
+        $module->save();
+    } catch (Exception $e) {
+        returnError('id_not_found', 'json');
+    }
+
+    returnData('json', ['type' => 'string', 'data' => $module->custom_id()]);
 }
 
 
@@ -12445,7 +12513,13 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            if (is_metaconsole()) {
+                $table_event = 'tmetaconsole_event';
+            } else {
+                $table_event = 'tevento';
+            }
+
+            $sql_validation = 'SELECT id_evento FROM '.$table_event.' where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {

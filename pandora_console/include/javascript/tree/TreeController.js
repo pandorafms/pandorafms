@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/*global $, _*/
+
 var TreeController = {
   controllers: [],
   getController: function() {
@@ -38,12 +40,35 @@ var TreeController = {
           return;
         }
 
+        function _recursiveGroupsCount(elements, childGroupsLength) {
+          if (typeof childGroupsLength === "undefined") {
+            childGroupsLength = 0;
+          }
+
+          _.each(elements, function(element) {
+            if (typeof element.children !== "undefined") {
+              childGroupsLength = _recursiveGroupsCount(
+                element.children,
+                childGroupsLength
+              );
+              childGroupsLength += element.children.length;
+            }
+          });
+          return childGroupsLength;
+        }
+
         // Load branch
         function _processGroup(container, elements, rootGroup) {
           var $group = $("<ul></ul>");
+          var childGroupsLength = _recursiveGroupsCount(elements);
 
-          // First group
+          // First group.
           if (typeof rootGroup != "undefined" && rootGroup == true) {
+            var messageLength = controller.tree.length;
+            if (childGroupsLength > 0) {
+              messageLength = childGroupsLength + controller.tree.length;
+            }
+
             $group
               .addClass("tree-root")
               .hide()
@@ -54,13 +79,12 @@ var TreeController = {
                   'images/pandora.png" />' +
                   "<span class='margin-left-1'>" +
                   (controller.tree.length > 0
-                    ? controller.foundMessage + ": " + controller.tree.length
+                    ? controller.foundMessage + ": " + messageLength
                     : "") +
                   "</div>"
               );
-          }
-          // Normal group
-          else {
+          } else {
+            // Normal group.
             $group.addClass("tree-group").hide();
           }
 
@@ -637,7 +661,20 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 $content.append($serviceDetailImage);
-                $content.append(" " + element.name);
+                if (
+                  typeof element.elementDescription !== "undefined" &&
+                  element.elementDescription != ""
+                ) {
+                  $content.append(" " + element.elementDescription);
+                } else if (
+                  typeof element.description !== "undefined" &&
+                  element.description != ""
+                ) {
+                  $content.append(" " + element.description);
+                } else {
+                  $content.append(" " + element.name);
+                }
+                // $content.append(" " + element.name);
               } else {
                 $content.remove($node);
               }
@@ -758,8 +795,8 @@ var TreeController = {
                         winopeng_var(
                           element.moduleGraph.url,
                           element.moduleGraph.handle,
-                          1000,
-                          650
+                          800,
+                          480
                         );
                       } catch (error) {
                         // console.log(error);

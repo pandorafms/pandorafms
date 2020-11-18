@@ -738,67 +738,166 @@ $row++;
     $table_chars->data = [];
 
     $table_chars->data[$row][0] = __('Graph color #1');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color1', $config['graph_color1'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color1',
+        $config['graph_color1'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #2');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color2', $config['graph_color2'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color2',
+        $config['graph_color2'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #3');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color3', $config['graph_color3'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color3',
+        $config['graph_color3'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #4');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color4', $config['graph_color4'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color4',
+        $config['graph_color4'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #5');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color5', $config['graph_color5'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color5',
+        $config['graph_color5'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #6');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color6', $config['graph_color6'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color6',
+        $config['graph_color6'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #7');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color7', $config['graph_color7'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color7',
+        $config['graph_color7'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #8');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color8', $config['graph_color8'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color8',
+        $config['graph_color8'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #9');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color9', $config['graph_color9'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color9',
+        $config['graph_color9'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #10');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color10', $config['graph_color10'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color10',
+        $config['graph_color10'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Value to interface graphics');
-    $table_chars->data[$row][1] = html_print_input_text('interface_unit', $config['interface_unit'], '', 20, 20, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'interface_unit',
+        $config['interface_unit'],
+        '',
+        20,
+        20,
+        true
+    );
     $row++;
 
     $disabled_graph_precision = false;
-    if (!enterprise_installed()) {
+    if (enterprise_installed() === false) {
         $disabled_graph_precision = true;
     }
 
     $table_chars->data[$row][0] = __('Data precision');
-    $table_chars->data[$row][1] = html_print_input_text('graph_precision', $config['graph_precision'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_precision',
+        $config['graph_precision'],
+        '',
+        5,
+        5,
+        true,
+        $disabled_graph_precision,
+        false,
+        'onChange="change_precision()"'
+    );
     $row++;
 
-    if (!isset($config['short_module_graph_data'])) {
+    if (isset($config['short_module_graph_data']) === false) {
         $config['short_module_graph_data'] = true;
     }
 
     $table_chars->data[$row][0] = __('Data precision in graphs');
-    $table_chars->data[$row][1] = html_print_input_text('short_module_graph_data', $config['short_module_graph_data'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'short_module_graph_data',
+        $config['short_module_graph_data'],
+        '',
+        5,
+        5,
+        true,
+        $disabled_graph_precision,
+        false,
+        'onChange="change_precision()"'
+    );
     $row++;
 
-    $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
+    $table_chars->data[$row][0] = __(
+        'Default line thickness for the Custom Graph.'
+    );
     $table_chars->data[$row][1] = html_print_input_text(
         'custom_graph_width',
         $config['custom_graph_width'],
@@ -814,6 +913,15 @@ $row++;
         'round_corner',
         1,
         $config['round_corner'],
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Chart fit to content');
+    $table_chars->data[$row][1] = html_print_checkbox_switch(
+        'maximum_y_axis',
+        1,
+        $config['maximum_y_axis'],
         true
     );
     $row++;
@@ -853,7 +961,14 @@ $row++;
     $row++;
 
     $table_chars->data[$row][0] = __('Percentile');
-    $table_chars->data[$row][1] = html_print_input_text('percentil', $config['percentil'], '', 20, 20, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'percentil',
+        $config['percentil'],
+        '',
+        20,
+        20,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph TIP view:');
@@ -863,17 +978,37 @@ $row++;
     $options_full_escale[1] = __('All');
     $options_full_escale[2] = __('On Boolean graphs');
 
-    $table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config['full_scale_option'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_full_escale,
+        'full_scale_option',
+        $config['full_scale_option'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
 
 
-    $table_chars->data[$row][0] = __('Show only average');
+    $table_chars->data[$row][0] = __('Graph mode');
 
     $options_soft_graphs    = [];
     $options_soft_graphs[0] = __('Show only average by default');
     $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 
-    $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_soft_graphs,
+        'type_mode_graph',
+        $config['type_mode_graph'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Zoom graphs:');
@@ -885,17 +1020,18 @@ $row++;
     $options_zoom_graphs[4] = 'x4';
     $options_zoom_graphs[5] = 'x5';
 
-    $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_zoom_graphs,
+        'zoom_graph',
+        $config['zoom_graph'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
-
-    /*
-        $table_font->data[$row][0] = __('Font path');
-        $fonts = load_fonts();
-        $table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
-        io_safe_output($config["fontpath"]), '', '', 0, true);
-
-        $row++;
-    */
 
     echo '<fieldset>';
     echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';

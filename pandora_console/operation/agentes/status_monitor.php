@@ -1,6 +1,5 @@
 <?php
-
-
+// This file is an example on how things must NEVER be done.
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -41,7 +40,7 @@ if (! defined('METACONSOLE')) {
 
     $buttons['fields'] = [
         'active'    => false,
-        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&amp;section=fields">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
         'operation' => true,
     ];
 
@@ -79,22 +78,27 @@ if (! defined('METACONSOLE')) {
     ui_meta_print_header(__('Monitor view'));
 }
 
-$ag_freestring         = (string) get_parameter('ag_freestring');
-$moduletype         = (string) get_parameter('moduletype');
-$datatype             = (string) get_parameter('datatype');
-$ag_modulename         = (string) get_parameter('ag_modulename');
-$refr                 = (int) get_parameter('refr', 0);
-$offset             = (int) get_parameter('offset', 0);
-$status             = (int) get_parameter('status', 4);
-$modulegroup         = (int) get_parameter('modulegroup', -1);
-$tag_filter         = (int) get_parameter('tag_filter', 0);
-$min_hours_status         = (string) get_parameter('min_hours_status', '');
-// Sort functionality
-$sortField             = get_parameter('sort_field');
-$sort                 = get_parameter('sort', 'none');
-// When the previous page was a visualmap and show only one module
-$id_module             = (int) get_parameter('id_module', 0);
-$ag_custom_fields     = (array) get_parameter('ag_custom_fields', []);
+$recursion = get_parameter_switch('recursion', false);
+if ($recursion === false) {
+    $recursion = get_parameter('recursion', false);
+}
+
+$ag_freestring = (string) get_parameter('ag_freestring');
+$moduletype = (string) get_parameter('moduletype');
+$datatype = (string) get_parameter('datatype');
+$ag_modulename = (string) get_parameter('ag_modulename');
+$refr = (int) get_parameter('refr', 0);
+$offset = (int) get_parameter('offset', 0);
+$status = (int) get_parameter('status', 4);
+$modulegroup = (int) get_parameter('modulegroup', -1);
+$tag_filter = (int) get_parameter('tag_filter', 0);
+$min_hours_status = (string) get_parameter('min_hours_status', '');
+// Sort functionality.
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+// When the previous page was a visualmap and show only one module.
+$id_module = (int) get_parameter('id_module', 0);
+$ag_custom_fields = (array) get_parameter('ag_custom_fields', []);
 $module_option = (int) get_parameter('module_option', 1);
 $autosearch = false;
 
@@ -161,11 +165,22 @@ if (is_numeric($ag_group)) {
 // Agent group selector
 if (!is_metaconsole()) {
     if ($ag_group > 0 && check_acl($config['id_user'], $ag_group, 'AR')) {
-        $sql_conditions_group = sprintf(
-            ' AND (tagente.id_grupo = %d OR tasg.id_group = %d)',
-            $ag_group,
-            $ag_group
-        );
+        if ($recursion) {
+            $all_groups = groups_get_children_ids($ag_group, true);
+
+            // User has explicit permission on group 1 ?
+            $sql_conditions_group = sprintf(
+                ' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s)) ',
+                implode(',', $all_groups),
+                implode(',', $all_groups)
+            );
+        } else {
+            $sql_conditions_group = sprintf(
+                ' AND (tagente.id_grupo = %d OR tasg.id_group = %d)',
+                $ag_group,
+                $ag_group
+            );
+        }
     } else if ($user_groups != '') {
         // User has explicit permission on group 1 ?
         $sql_conditions_group = ' AND (
@@ -175,11 +190,22 @@ if (!is_metaconsole()) {
     }
 } else {
     if (((int) $ag_group !== 0) && (check_acl($config['id_user'], $id_ag_group, 'AR'))) {
-        $sql_conditions_group = sprintf(
-            ' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-            $ag_group,
-            $ag_group
-        );
+        if ($recursion) {
+            $all_groups = groups_get_children_ids($ag_group, true);
+
+            // User has explicit permission on group 1 ?
+            $sql_conditions_group = sprintf(
+                ' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s)) ',
+                implode(',', $all_groups),
+                implode(',', $all_groups)
+            );
+        } else {
+            $sql_conditions_group = sprintf(
+                ' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                $ag_group,
+                $ag_group
+            );
+        }
     } else if ($user_groups != '') {
         // User has explicit permission on group 1 ?
         $sql_conditions_group = ' AND (
@@ -355,7 +381,8 @@ $table->style[3] = 'font-weight: bold;';
 $table->style[4] = 'font-weight: bold;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(
+$table->data[0][1] = '<div class="flex flex-row-vcenter w290px"><div class="w200px">';
+$table->data[0][1] .= html_print_select_groups(
     $config['id_user'],
     'AR',
     true,
@@ -375,6 +402,18 @@ $table->data[0][1] = html_print_select_groups(
     'id_grupo',
     false
 );
+$table->data[0][1] .= '</div><div>';
+$table->data[0][1] .= html_print_input(
+    [
+        'type'    => 'checkbox',
+        'name'    => 'recursion',
+        'return'  => true,
+        'checked' => $recursion,
+        'value'   => 1,
+    ]
+);
+$table->data[0][1] .= __('Recursion');
+$table->data[0][1] .= '</div></div>';
 
 $fields = [];
 $fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
@@ -701,8 +740,7 @@ foreach ($custom_fields as $custom_field) {
     $table_custom_fields->data[] = $row;
 }
 
-
-$filters = '<form method="post" action="index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;module_option='.$module_option.'&amp;ag_modulename='.$ag_modulename.'&amp;moduletype='.$moduletype.'&amp;datatype='.$datatype.'&amp;status='.$status.'&amp;sort_field='.$sortField.'&amp;sort='.$sort.'&amp;pure='.$config['pure'].$ag_custom_fields_params.'">';
+$filters = '<form method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 if (is_metaconsole()) {
     $table->colspan[4][0] = 7;
     $table->cellstyle[4][0] = 'padding: 10px;';
@@ -970,7 +1008,7 @@ switch ($sortField) {
 }
 
 $sql = 'SELECT
-	(SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
+    (SELECT GROUP_CONCAT(ttag.name SEPARATOR \',\')
 		FROM ttag
 		WHERE ttag.id_tag IN (
 			SELECT ttag_module.id_tag
@@ -1013,6 +1051,7 @@ $sql = 'SELECT
 	GROUP BY tagente_modulo.id_agente_modulo
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$offset.','.$limit_sql;
+
 
 // We do not show the modules until the user searches with the filter
 if ($autosearch) {
@@ -1102,17 +1141,51 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 
 // Urls to sort the table.
-$url_agent_name = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr='.$refr.'&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=agent_alias&amp;sort=';
-$url_type = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=type&amp;sort=';
-$url_module_name = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=module_name&amp;sort=';
-$url_server_type = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=moduletype&amp;sort=';
-$url_interval = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=interval&amp;sort=';
-$url_status = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=status&amp;sort=';
-$url_status = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=last_status_change&amp;sort=';
-$url_data = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=data&amp;sort=';
-$url_timestamp_up = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=up';
-$url_timestamp_down = 'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;datatype='.$datatype.'&amp;moduletype='.$moduletype.'&amp;refr='.$refr.'&amp;modulegroup='.$modulegroup.'&amp;offset='.$offset.'&amp;ag_group='.$ag_group.'&amp;ag_freestring='.$ag_freestring.'&amp;ag_modulename='.$ag_modulename.'&amp;status='.$status.$ag_custom_fields_params.'&amp;sort_field=timestamp&amp;sort=down';
+$url_agent_name = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_type = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_module_name = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_server_type = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_interval = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_data = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_timestamp_up = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_timestamp_down = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
 
+$url_agent_name .= '&refr='.$refr.'&datatype='.$datatype.'&moduletype='.$moduletype.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_module_name .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_server_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_interval .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_status .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_data .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_timestamp_up .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+$url_timestamp_down .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
+
+// Holy god...
+$url_agent_name .= '&recursion='.$recursion;
+$url_type .= '&recursion='.$recursion;
+$url_module_name .= '&recursion='.$recursion;
+$url_server_type .= '&recursion='.$recursion;
+$url_interval .= '&recursion='.$recursion;
+$url_status .= '&recursion='.$recursion;
+$url_status .= '&recursion='.$recursion;
+$url_data .= '&recursion='.$recursion;
+$url_timestamp_up .= '&recursion='.$recursion;
+$url_timestamp_down .= '&recursion='.$recursion;
+
+
+$url_agent_name .= '&sort_field=agent_alias&sort=';
+$url_type .= '&sort_field=type&sort=';
+$url_module_name .= '&sort_field=module_name&sort=';
+$url_server_type .= '&sort_field=moduletype&sort=';
+$url_interval .= '&sort_field=interval&sort=';
+$url_status .= '&sort_field=status&sort=';
+$url_status .= '&sort_field=last_status_change&sort=';
+$url_data .= '&sort_field=data&sort=';
+$url_timestamp_up .= '&sort_field=timestamp&sort=up';
+$url_timestamp_down .= '&sort_field=timestamp&sort=down';
 
 // Start Build List Result
 if (!empty($result)) {
@@ -1276,9 +1349,9 @@ if (!empty($result)) {
                     }
 
                     if (is_metaconsole()) {
-                        $data[0] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
+                        $data[0] = '<a href="?sec=gmodules&sec2=advanced/policymanager&id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
                     } else {
-                        $data[0] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
+                        $data[0] = '<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&id='.$policyInfo['id_policy'].'">'.html_print_image($img, true, ['title' => $title]).'</a>';
                     }
                 }
 
@@ -1293,7 +1366,7 @@ if (!empty($result)) {
 
             // TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
             if (defined('METACONSOLE')) {
-                $agent_link = '<a href="'.$row['server_url'].'index.php?'.'sec=estado&amp;'.'sec2=operation/agentes/ver_agente&amp;'.'id_agente='.$row['id_agent'].'&amp;'.'loginhash=auto&amp;'.'loginhash_data='.$row['hashdata'].'&amp;'.'loginhash_user='.str_rot13($row['user']).'">';
+                $agent_link = '<a href="'.$row['server_url'].'index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$row['id_agent'].'&'.'loginhash=auto&'.'loginhash_data='.$row['hashdata'].'&'.'loginhash_user='.str_rot13($row['user']).'">';
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
                     'agent_small',
@@ -1309,7 +1382,7 @@ if (!empty($result)) {
                     $data[1] = $agent_alias;
                 }
             } else {
-                $data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row['id_agent'].'">';
+                $data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent'].'">';
                 $data[1] .= ui_print_truncate_text($agent_alias, 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
                 $data[1] .= '</a></strong>';
             }
@@ -1325,9 +1398,9 @@ if (!empty($result)) {
                         $show_edit_icon = false;
                     }
 
-                    $url_edit_module = $row['server_url'].'index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'id_agente='.$row['id_agent'].'&amp;'.'tab=module&amp;'.'id_agent_module='.$row['id_agente_modulo'].'&amp;'.'edit_module=1'.'&amp;loginhash=auto&amp;loginhash_data='.$row['hashdata'].'&amp;loginhash_user='.str_rot13($row['user']);
+                    $url_edit_module = $row['server_url'].'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1'.'&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']);
                 } else {
-                    $url_edit_module = 'index.php?'.'sec=gagente&amp;'.'sec2=godmode/agentes/configurar_agente&amp;'.'id_agente='.$row['id_agent'].'&amp;'.'tab=module&amp;'.'id_agent_module='.$row['id_agente_modulo'].'&amp;'.'edit_module=1';
+                    $url_edit_module = 'index.php?'.'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$row['id_agent'].'&'.'tab=module&'.'id_agent_module='.$row['id_agente_modulo'].'&'.'edit_module=1';
                 }
 
                 if ($show_edit_icon) {
@@ -1545,7 +1618,7 @@ if (!empty($result)) {
 
                 $graph_params_str = http_build_query($graph_params);
 
-                $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 1000, 700)';
+                $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
 
                 $data[8] = get_module_realtime_link_graph($row);
 
@@ -1750,24 +1823,13 @@ if (!empty($result)) {
 
 // End Build List Result.
 echo "<div id='monitor_details_window'></div>";
-// Strict user hidden.
-echo '<div id="strict_hidden" style="display:none;">';
-html_print_input_text('strict_user_hidden', $strict_user);
-echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
 ui_require_javascript_file('pandora_modules');
 
 ?>
-<script type='text/javascript'>
-$(document).ready (function () {
-    if ($('#ag_group').val() != 0) {
-        $('#tag_filter').css('display', 'none');
-        $('#tag_td').css('display', 'none');
-    }
-});
-
+<script type="text/javascript">
 
 $('#moduletype').click(function() {
     jQuery.get (
@@ -1789,17 +1851,6 @@ $('#moduletype').click(function() {
     return false;
 });
 
-$('#ag_group').change (function () {
-    strict_user = $('#text-strict_user_hidden').val();
-    
-    if (($('#ag_group').val() != 0) && (strict_user != 0)) {
-        $('#tag_filter').css('display', 'none');
-        $('#tag_td').css('display', 'none');
-    } else {
-        $('#tag_filter').css('display', '');
-        $('#tag_td').css('display', '');
-    }
-});
 
 function toggle_full_value(id) {
     text = $('#hidden_value_module_' + id).html();

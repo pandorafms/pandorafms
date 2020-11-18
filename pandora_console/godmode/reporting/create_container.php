@@ -222,12 +222,14 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
 }
 
 echo "<td style='width: 12%;'><b>".__('Group').'</b></td><td>';
+echo '<div class="w250px">';
 if ($id_container === '1') {
     echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', true);
 } else {
     echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', false);
 }
 
+echo '</div>';
 echo '</td></tr>';
 
 echo '<tr>';
@@ -500,7 +502,7 @@ if ($edit_container) {
 
     $data = [];
     $data[0] = __('Group');
-    $data[1] = html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true);
+    $data[1] = '<div class="w250px">'.html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true).'</div>';
     $table->data[] = $data;
     $table->rowclass[] = '';
 

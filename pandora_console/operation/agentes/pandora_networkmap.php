@@ -34,7 +34,7 @@ require_once 'include/functions_networkmap.php';
 $new_networkmap = (bool) get_parameter('new_networkmap', false);
 $save_networkmap = (bool) get_parameter('save_networkmap', false);
 $save_empty_networkmap = (bool) get_parameter('save_empty_networkmap', false);
-$update_empty_networkmap = (bool) get_parameter('save_empty_networkmap', false);
+$update_empty_networkmap = (bool) get_parameter('update_empty_networkmap', false);
 $update_networkmap = (bool) get_parameter('update_networkmap', false);
 $copy_networkmap = (bool) get_parameter('copy_networkmap', false);
 $delete = (bool) get_parameter('delete', false);
@@ -53,7 +53,7 @@ if (enterprise_installed()) {
 
     if ($save_empty_networkmap) {
         $id_group = (int) get_parameter('id_group', 0);
-        $id_group_map = (int) get_paramater('id_group_map', 0);
+        $id_group_map = (int) get_parameter('id_group_map', 0);
 
         // ACL for the network map.
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");

@@ -389,8 +389,8 @@ function mainAgentsModules()
     $filter_groups_label = '<b>'.__('Group').'</b>';
     $filter_groups = html_print_select_groups(false, 'AR', true, 'group_id', $group_id, '', '', '', true, false, true, '', false, 'width: auto;');
 
-    $filter_recursion_label = '<b>'.__('Recursion').'</b>';
-    $filter_recursion = html_print_checkbox('recursion', 1, 0, true);
+    $filter_recursion_label = '</td><td><b>'.__('Recursion').'</b>';
+    $filter_recursion = html_print_checkbox('recursion', 1, 0, true).'</td>';
     // Groups module.
     $filter_module_groups_label = '<b>'.__('Module group').'</b>';
     $filter_module_groups = html_print_select_from_sql(
@@ -668,7 +668,7 @@ function mainAgentsModules()
         if ($recursion) {
             $filter_groups['id_grupo'] = array_merge(
                 $group_id,
-                groups_get_id_recursive($group_id, true)
+                groups_get_children_ids($group_id, true)
             );
         } else {
             $filter_groups['id_grupo'] = $group_id;
@@ -801,7 +801,7 @@ function mainAgentsModules()
                     echo "<td style='text-align: center;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
-                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
+                    $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";
 
                     echo '<a href="javascript:'.$link.'">';
 

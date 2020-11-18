@@ -131,7 +131,7 @@ if (check_acl($config['id_user'], 0, 'LM')) {
 
     $table->data[2][0] = __('Template');
     $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
+if ($own_info['is_admin']) {
     $templates = alerts_get_alert_templates(false, ['id', 'name']);
 } else {
     $usr_groups = users_get_groups($config['id_user'], 'LW', true);

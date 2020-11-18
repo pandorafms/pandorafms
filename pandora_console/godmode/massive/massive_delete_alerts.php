@@ -40,7 +40,7 @@ if (is_ajax()) {
         $keys_prefix = (string) get_parameter('keys_prefix', '');
 
         if ($recursion) {
-            $groups = groups_get_id_recursive($id_group, true);
+            $groups = groups_get_children_ids($id_group, true);
         } else {
             $groups = [$id_group];
         }

@@ -319,7 +319,7 @@ function networkmap_generate_dot(
         if ($dont_show_subgroups) {
             $filter['id_grupo'] = $group;
         } else {
-            $childrens = groups_get_childrens($group, null, true);
+            $childrens = groups_get_children($group, null, true);
             if (!empty($childrens)) {
                 $childrens = array_keys($childrens);
 

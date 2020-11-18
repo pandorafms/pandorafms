@@ -59,18 +59,10 @@ global $config;
 check_login();
 
 if (is_ajax()) {
-    enterprise_include_once('include/functions_cron.php');
-
     $test_address = get_parameter('test_address', '');
 
-    $res = enterprise_hook(
-        'send_email_attachment',
-        [
-            $test_address,
-            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
-            __('Testing Pandora FMS email'),
-            null,
-        ]
+    $res = send_test_email(
+        $test_address
     );
 
     echo $res;
@@ -344,6 +336,9 @@ $table->data[$i++][1] = html_print_checkbox_switch('console_log_enabled', 1, $co
 $table->data[$i][0] = __('Enable audit log').ui_print_help_tip(__('Log location').': pandora_console/log/audit.log', true);
 $table->data[$i++][1] = html_print_checkbox_switch('audit_log_enabled', 1, $config['audit_log_enabled'], true);
 
+$table->data[$i][0] = __('Module custom ID readonly').ui_print_help_tip(__('Useful for integrations'), true);
+$table->data[$i++][1] = html_print_checkbox_switch('module_custom_id_ro', 1, $config['module_custom_id_ro'], true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset>';
@@ -387,7 +382,7 @@ $table_mail_conf->data[6][1] = html_print_input_password('email_password', io_ou
 
 $uniqid = uniqid();
 
-$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('$uniqid');", 'class="sub next"', true);
+$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('".$uniqid."');", 'class="sub next"', true);
 
 print_email_test_modal_window($uniqid);
 
@@ -404,7 +399,14 @@ html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"'
 echo '</div>';
 echo '</form>';
 
-// Print the modal window for the summary of each alerts group
+
+/**
+ * Print the modal window for the summary of each alerts group
+ *
+ * @param string $id Id.
+ *
+ * @return void
+ */
 function print_email_test_modal_window($id)
 {
     // Email config table.
@@ -469,7 +471,6 @@ function show_email_test(id) {
         resizable: true,
         draggable: true,
         modal: true,
-        height: 175,
         width: 450,
         overlay: {
             opacity: 0.5,
@@ -487,7 +488,11 @@ function perform_email_test () {
         data: "page=godmode/setup/setup_general&test_address="+test_address,
         dataType: "html",
         success: function(data) {
-            $('#email_test_sent_message').show();
+            if (parseInt(data) === 1) {
+                $('#email_test_sent_message').show();
+            } else {
+                $('#email_test_failure_message').show();
+            }
         },
         error: function() {
             $('#email_test_failure_message').show();

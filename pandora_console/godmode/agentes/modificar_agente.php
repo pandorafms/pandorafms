@@ -173,8 +173,9 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
     $return_all_group = true;
 }
 
+echo '<div class="w250px inline">';
 html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
-
+echo '</div>';
 echo '<td>';
 echo __('Show Agents').'&nbsp;';
 $fields = [
@@ -407,7 +408,7 @@ if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
     if ($recursion) {
-        $ag_groups = groups_get_id_recursive($ag_group, true);
+        $ag_groups = groups_get_children_ids($ag_group, true);
     }
 
     $user_groups_to_sql = implode(',', $ag_groups);
@@ -753,7 +754,6 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     // Create agent button.
     echo '<div style="text-align: right;">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_input_hidden('new_agent', 1);
     html_print_submit_button(
         __('Create agent'),
         'crt-2',

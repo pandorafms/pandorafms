@@ -2494,6 +2494,8 @@ function modules_get_color_status($status, $force_module=false)
         case STATUS_AGENT_CRITICAL:
         case STATUS_MODULE_CRITICAL_BALL:
         case STATUS_AGENT_CRITICAL_BALL:
+        case STATUS_SERVER_CRASH:
+        case STATUS_SERVER_CRASH_BALL:
         return COL_CRITICAL;
 
         case AGENT_MODULE_STATUS_WARNING:
@@ -3456,7 +3458,7 @@ function get_module_realtime_link_graph($module)
 
     $win_handle = 'realtime_'.dechex(crc32($module['id_agente_modulo'].$module['nombre']));
 
-    $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 850, 480)">'.html_print_image(
+    $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 900, 480)">'.html_print_image(
         'images/realtime_shortcut.png',
         true,
         [

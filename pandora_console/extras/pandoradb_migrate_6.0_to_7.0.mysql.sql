@@ -770,7 +770,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`agent_regex` varchar(600) NOT NULL default '',
-
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -849,7 +850,8 @@ ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) 
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
-ALTER TABLE `treport_content_template` add column `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tnews`
@@ -1370,13 +1372,13 @@ ALTER TABLE `ttag` ADD COLUMN `previous_name` text NULL;
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 41);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 42);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '749');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 750);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1403,6 +1405,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.00097656250000":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1692,7 +1695,8 @@ ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned 
 	MODIFY COLUMN `failover_type` tinyint(1) NULL DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
-ALTER TABLE `treport_content` add column `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -2225,13 +2229,15 @@ INSERT INTO tlog_graph_models VALUES (6, 'Pages&#x20;with&#x20;warnings',
 INSERT INTO tlog_graph_models VALUES (7, 'Users&#x20;login',
 'Starting&#x20;Session&#x20;&#92;d+&#92;&#x20;of&#x20;user&#x20;&#40;.*&#41;',
 'user', 0);
+
 -- -----------------------------------------------------
 -- Add column in table `treport`
 -- -----------------------------------------------------
-
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'vertical';
 ALTER TABLE `treport` MODIFY COLUMN `hidden` tinyint(1) NULL DEFAULT '0' AFTER `non_interactive`;
+ALTER TABLE `treport` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';

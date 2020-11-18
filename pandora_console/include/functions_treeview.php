@@ -802,7 +802,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $events_graph = '<div style="width: 100%; height: 90px; display: flex; flex-direction: row; justify-content: center;">';
     $events_graph .= graph_graphic_agentevents(
         $id_agente,
-        '385px;',
+        '340px;margin:0',
         45,
         SECONDS_1DAY,
         '',
@@ -857,7 +857,13 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
                     $graph_url = "$url?params=$params_encoded";
                     $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
 
-                    $graph_link = "<a href=\"javascript:winopeng('$graph_url','$win_handle')\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                    $graph_link = "<a href=\"javascript:winopeng_var('".$graph_url."','".$win_handle."', 800, 480)\">";
+                    $graph_link .= html_print_image(
+                        'images/chart_curve.png',
+                        true,
+                        ['title' => __('Interface traffic')]
+                    );
+                    $graph_link .= '</a>';
                 } else {
                     $graph_link = '';
                 }

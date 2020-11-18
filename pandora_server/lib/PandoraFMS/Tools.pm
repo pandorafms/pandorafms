@@ -857,6 +857,24 @@ sub clean_blank {
 }
 
 ################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (is_empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+################################################################################
 # sub sqlWrap(texto)
 # Elimina comillas y caracteres problematicos y los sustituye por equivalentes
 ################################################################################

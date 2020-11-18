@@ -193,7 +193,6 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     ?>
     <script type="text/javascript">
   var userID = "<?php echo $config['id_user']; ?>";
-  console.log(userID);
 
   var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
   var $dialogContainer = $("div#doble_auth_window");

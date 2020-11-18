@@ -2352,8 +2352,6 @@ switch ($action) {
                             break;
                         }
 
-                        hd($values['server_name']);
-                        hd(2);
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
                                 'combo_server'

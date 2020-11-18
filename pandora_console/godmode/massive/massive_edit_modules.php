@@ -50,6 +50,7 @@ if ($update) {
         $agents_ = [];
 
         $force = get_parameter('force_type', false);
+        $module_status = get_parameter('status_module', null);
 
         if ($agents_select == false) {
             $agents_select = [];
@@ -109,7 +110,7 @@ if ($update) {
                 }
 
                 foreach ($module_name as $mod_name) {
-                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
+                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
                     $success += (int) $result;
                 }
@@ -132,7 +133,7 @@ if ($update) {
                 }
 
                 foreach ($module_name as $mod_name) {
-                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
+                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
                     $success += (int) $result;
                 }
@@ -150,7 +151,7 @@ if ($update) {
             }
 
             foreach ($modules_ as $module_) {
-                $result = process_manage_edit($module_, $agent_, $modules_selection_mode);
+                $result = process_manage_edit($module_, $agent_, $module_status, $modules_selection_mode);
                 $count++;
                 $success += (int) $result;
             }
@@ -1859,7 +1860,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit($module_name, $agents_select=null, $module_status='all')
+function process_manage_edit($module_name, $agents_select=null, $module_status=null, $selection_mode='all')
 {
     if (is_int($module_name) && $module_name < 0) {
         ui_print_error_message(__('No modules selected'));
@@ -2149,6 +2150,20 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
     }
 
     foreach ($modules as $module) {
+        if ($module_status !== null) {
+            if (modules_is_not_init($module['id_agente_modulo']) === true) {
+                if ($module_status != AGENT_MODULE_STATUS_NO_DATA && $module_status != AGENT_MODULE_STATUS_NOT_INIT) {
+                    continue;
+                }
+            } else {
+                $status = modules_get_agentmodule_status($module['id_agente_modulo']);
+
+                if ($module_status !== $status) {
+                    continue;
+                }
+            }
+        }
+
         // Set tcp_send value according to module type since the purpose of this field in database varies in case of SNMP modules.
         if ($module['id_tipo_modulo'] >= 15 && $module['id_tipo_modulo'] <= 18) {
             if ($snmp_version != '') {

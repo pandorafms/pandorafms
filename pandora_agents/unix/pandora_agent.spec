@@ -62,8 +62,9 @@ cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUI
 rm -Rf $RPM_BUILD_ROOT
 
 %pre
-if [ "`id pandora | grep uid | wc -l`" = 0 ]
+if [ "`id pandora 2>/dev/null | grep uid | wc -l`" = 0 ]
 then
+		echo "User pandora does not exist. Creating it..."
         /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
 

@@ -278,7 +278,7 @@ if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
     if ($recursion) {
-        $ag_groups = groups_get_id_recursive($ag_group, true);
+        $ag_groups = groups_get_children_ids($ag_group, true);
     }
 }
 
@@ -307,8 +307,9 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'VR')) {
     $return_all_group = true;
 }
 
+echo '<div class="w250px inline">';
 html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
-
+echo '</div>';
 echo "<td style='width:25%;'>";
 echo __('Group Recursion').'&nbsp;';
 html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');

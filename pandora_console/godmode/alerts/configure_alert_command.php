@@ -218,7 +218,7 @@ $table->data['command'][1] = html_print_textarea(
 
 $table->colspan['group'][1] = 3;
 $table->data['group'][0] = __('Group');
-$table->data['group'][1] = html_print_select_groups(
+$table->data['group'][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     'LM',
     true,
@@ -232,7 +232,7 @@ $table->data['group'][1] = html_print_select_groups(
     true,
     '',
     $is_central_policies_on_node
-);
+).'</div>';
 
 $table->colspan['description'][1] = 3;
 $table->data['description'][0] = __('Description');

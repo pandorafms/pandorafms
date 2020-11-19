@@ -267,13 +267,13 @@ function grafico_modulo_sparse_data(
             || $data_module_graph['id_module_type'] == 31
             || $data_module_graph['id_module_type'] == 100
         ) {
-                $array_data = grafico_modulo_sparse_data_chart(
-                    $agent_module_id,
-                    $date_array,
-                    $data_module_graph,
-                    $params,
-                    $series_suffix
-                );
+            $array_data = grafico_modulo_sparse_data_chart(
+                $agent_module_id,
+                $date_array,
+                $data_module_graph,
+                $params,
+                $series_suffix
+            );
         } else {
             $data_slice = ($date_array['period'] / (250 * $params['zoom']) + 100);
             $array_data = fullscale_data(
@@ -289,19 +289,27 @@ function grafico_modulo_sparse_data(
         }
     }
 
+    if (empty($array_data) === true) {
+        return [];
+    }
+
     if ($array_data === false && (!$params['graph_combined']
         && !isset($array_data['sum1']['data'][0][1]) && !$params['baseline'])
     ) {
         return false;
     }
 
-    $array_data = series_suffix_leyend(
-        'sum',
-        $series_suffix,
-        $agent_module_id,
-        $data_module_graph,
-        $array_data
-    );
+    if ((int) $params['type_mode_graph'] !== 2
+        && (int) $params['type_mode_graph'] !== 3
+    ) {
+        $array_data = series_suffix_leyend(
+            'sum',
+            $series_suffix,
+            $agent_module_id,
+            $data_module_graph,
+            $array_data
+        );
+    }
 
     if ($params['percentil']) {
         $array_data = series_suffix_leyend(
@@ -313,22 +321,30 @@ function grafico_modulo_sparse_data(
         );
     }
 
-    if ($params['type_mode_graph']) {
-        $array_data = series_suffix_leyend(
-            'min',
-            $series_suffix,
-            $agent_module_id,
-            $data_module_graph,
-            $array_data
-        );
+    if ($params['type_mode_graph'] > 0) {
+        if ((int) $params['type_mode_graph'] === 1
+            || (int) $params['type_mode_graph'] === 3
+        ) {
+            $array_data = series_suffix_leyend(
+                'min',
+                $series_suffix,
+                $agent_module_id,
+                $data_module_graph,
+                $array_data
+            );
+        }
 
-        $array_data = series_suffix_leyend(
-            'max',
-            $series_suffix,
-            $agent_module_id,
-            $data_module_graph,
-            $array_data
-        );
+        if ((int) $params['type_mode_graph'] === 1
+            || (int) $params['type_mode_graph'] === 2
+        ) {
+            $array_data = series_suffix_leyend(
+                'max',
+                $series_suffix,
+                $agent_module_id,
+                $data_module_graph,
+                $array_data
+            );
+        }
     }
 
     // This is for a specific type of report that consists in passing
@@ -610,188 +626,206 @@ function grafico_modulo_sparse_data(
  * 'return_img_base_64'  => false,
  * 'image_treshold'      => false,
  * 'graph_combined'      => false,
+ * 'graph_render'        => 0,
  * 'zoom'                => 1,
  * 'server_id'           => null,
- * 'stacked'             => 0.
+ * 'stacked'             => 0
+ * 'maximum_y_axis'      => 0.
  *
  * @return string html Content graphs.
  */
-function grafico_modulo_sparse($params, $server_name='')
+function grafico_modulo_sparse($params)
 {
     global $config;
 
-    if (!isset($params) || !is_array($params)) {
+    if (isset($params) === false || is_array($params) === false) {
         return false;
     }
 
-    if (!isset($params['period'])) {
+    if (isset($params['period']) === false) {
         return false;
     }
 
-    if (!isset($params['show_events'])) {
+    if (isset($params['show_events']) === false) {
         $params['show_events'] = false;
     }
 
-    if (!isset($params['width'])) {
+    if (isset($params['width']) === false) {
         $params['width'] = '90%';
     }
 
-    if (!isset($params['height'])) {
+    if (isset($params['height']) === false) {
         $params['height'] = 450;
     }
 
-    if (!isset($params['title'])) {
+    if (isset($params['title']) === false) {
         $params['title'] = '';
     }
 
-    if (!isset($params['unit_name'])) {
+    if (isset($params['unit_name']) === false) {
         $params['unit_name'] = null;
     }
 
-    if (!isset($params['show_alerts'])) {
+    if (isset($params['show_alerts']) === false) {
         $params['show_alerts'] = false;
     }
 
-    if (!isset($params['date']) || !$params['date']) {
+    if (isset($params['date']) === false || !$params['date']) {
         $params['date'] = get_system_time();
     }
 
-    if (!isset($params['unit'])) {
+    if (isset($params['unit']) === false) {
         $params['unit'] = '';
     }
 
-    if (!isset($params['baseline'])) {
+    if (isset($params['baseline']) === false) {
         $params['baseline'] = 0;
     }
 
-    if (!isset($params['return_data'])) {
+    if (isset($params['return_data']) === false) {
         $params['return_data'] = 0;
     }
 
-    if (!isset($params['show_title'])) {
+    if (isset($params['show_title']) === false) {
         $show_title = true;
     }
 
-    if (!isset($params['only_image'])) {
+    if (isset($params['only_image']) === false) {
         $params['only_image'] = false;
     }
 
-    if (!isset($params['homeurl'])) {
+    if (isset($params['homeurl']) === false) {
         $params['homeurl'] = $config['homeurl'];
     }
 
-    if (!isset($params['ttl'])) {
+    if (isset($params['ttl']) === false) {
         $params['ttl'] = 1;
     }
 
-    if (!isset($params['adapt_key'])) {
+    if (isset($params['adapt_key']) === false) {
         $params['adapt_key'] = '';
     }
 
-    if (!isset($params['compare'])) {
+    if (isset($params['compare']) === false) {
         $params['compare'] = false;
     }
 
-    if (!isset($params['show_unknown'])) {
+    if (isset($params['show_unknown']) === false) {
         $params['show_unknown'] = false;
     }
 
-    if (!isset($params['menu'])) {
+    if (isset($params['menu']) === false) {
         $params['menu'] = true;
     }
 
-    if (!isset($params['show_legend'])) {
+    if (isset($params['show_legend']) === false) {
         $params['show_legend'] = true;
     }
 
-    if (!isset($params['show_overview'])) {
+    if (isset($params['show_overview']) === false) {
         $params['show_overview'] = true;
     }
 
-    if (!isset($params['show_export_csv'])) {
+    if (isset($params['show_export_csv']) === false) {
         $params['show_export_csv'] = true;
     }
 
-    if (!isset($params['backgroundColor'])) {
+    if (isset($params['backgroundColor']) === false) {
         $params['backgroundColor'] = 'white';
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params['percentil'] = null;
     }
 
-    if (!isset($params['dashboard'])) {
+    if (isset($params['dashboard']) === false) {
         $params['dashboard'] = false;
     }
 
-    if (!isset($params['vconsole']) || $params['vconsole'] == false) {
+    if (isset($params['vconsole']) === false || $params['vconsole'] == false) {
         $params['vconsole'] = false;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['type_graph'])) {
+    if (isset($params['type_graph']) === false) {
         $params['type_graph'] = $config['type_module_charts'];
     }
 
-    if (!isset($params['fullscale'])) {
+    if (isset($params['fullscale']) === false) {
         $params['fullscale'] = false;
     }
 
-    if (!isset($params['id_widget_dashboard'])) {
+    if (isset($params['id_widget_dashboard']) === false) {
         $params['id_widget_dashboard'] = false;
     }
 
-    if (!isset($params['force_interval'])) {
+    if (isset($params['force_interval']) === false) {
         $params['force_interval'] = '';
     }
 
-    if (!isset($params['time_interval'])) {
+    if (isset($params['time_interval']) === false) {
         $params['time_interval'] = 300;
     }
 
-    if (!isset($params['array_data_create'])) {
+    if (isset($params['array_data_create']) === false) {
         $params['array_data_create'] = 0;
     }
 
-    if (!isset($params['return_img_base_64'])) {
+    if (isset($params['return_img_base_64']) === false) {
         $params['return_img_base_64'] = false;
     }
 
-    if (!isset($params['image_treshold'])) {
+    if (isset($params['image_treshold']) === false) {
         $params['image_treshold'] = false;
     }
 
-    if (!isset($params['graph_combined'])) {
+    if (isset($params['graph_combined']) === false) {
         $params['graph_combined'] = false;
     }
 
-    if (!isset($params['zoom'])) {
+    if (isset($params['zoom']) === false) {
         $params['zoom'] = ($config['zoom_graph']) ? $config['zoom_graph'] : 1;
     }
 
-    if (!isset($params['type_mode_graph'])) {
+    if (isset($params['type_mode_graph']) === false) {
         $params['type_mode_graph'] = $config['type_mode_graph'];
+        if (isset($params['graph_render']) === true) {
+            $params['type_mode_graph'] = $params['graph_render'];
+        }
     }
 
-    if (!isset($params['projection'])) {
+    if (isset($params['maximum_y_axis']) === false) {
+        $params['maximum_y_axis'] = $config['maximum_y_axis'];
+    }
+
+    if (isset($params['projection']) === false) {
         $params['projection'] = false;
     }
 
-    if (!isset($params['agent_module_id'])) {
-        return graph_nodata_image($params['width'], $params['height']);
+    if (isset($params['pdf']) === false) {
+        $params['pdf'] = false;
+    }
+
+    if (isset($params['agent_module_id']) === false) {
+        return graph_nodata_image(
+            $params['width'],
+            $params['height'],
+            'area',
+            '',
+            false,
+            $params['pdf']
+        );
     } else {
         $agent_module_id = $params['agent_module_id'];
     }
 
-    if (!isset($params['stacked'])) {
+    if (isset($params['stacked']) === false) {
         $params['stacked'] = 0;
     }
 
-    // TODO: Configurable.
     $params['grid_color'] = '#C1C1C1';
     $params['legend_color'] = '#636363';
-
     $params['font'] = $config['fontpath'];
     $params['font_size']  = $config['font_size'];
     $params['short_data'] = $config['short_module_graph_data'];
@@ -811,12 +845,6 @@ function grafico_modulo_sparse($params, $server_name='')
     $date_array['period']     = $params['period'];
     $date_array['final_date'] = $params['date'];
     $date_array['start_date'] = ($params['date'] - $params['period']);
-
-    if (is_metaconsole()) {
-        $id_meta = metaconsole_get_id_server($server_name);
-        $server  = metaconsole_get_connection_by_id($id_meta);
-        metaconsole_connect($server);
-    }
 
     if ($agent_module_id) {
         $module_data = db_get_row_sql(
@@ -855,14 +883,14 @@ function grafico_modulo_sparse($params, $server_name='')
     }
 
     // Format of the graph.
-    if (empty($params['unit'])) {
+    if (empty($params['unit']) === true) {
         $params['unit'] = $module_data['unit'];
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
         }
     }
 
-    if (empty($params['divisor'])) {
+    if (empty($params['divisor']) === true) {
         $params['divisor'] = get_data_multiplier($params['unit']);
     }
 
@@ -961,7 +989,7 @@ function grafico_modulo_sparse($params, $server_name='')
 
     // Check available data.
     if ($params['compare'] === 'separated') {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -975,11 +1003,18 @@ function grafico_modulo_sparse($params, $server_name='')
                 $array_events_alerts
             );
         } else {
-            $return = graph_nodata_image($params['width'], $params['height']);
+            $return = graph_nodata_image(
+                $params['width'],
+                $params['height'],
+                'area',
+                '',
+                false,
+                $params['pdf']
+            );
         }
 
         $return .= '<br>';
-        if (!empty($array_data_prev)) {
+        if (empty($array_data_prev) === false) {
             $series_type_array = series_type_graph_array(
                 $array_data_prev,
                 $params
@@ -1002,10 +1037,17 @@ function grafico_modulo_sparse($params, $server_name='')
                 $array_events_alerts
             );
         } else {
-            $return .= graph_nodata_image($params['width'], $params['height']);
+            $return = graph_nodata_image(
+                $params['width'],
+                $params['height'],
+                'area',
+                '',
+                false,
+                $params['pdf']
+            );
         }
     } else {
-        if (!empty($array_data)) {
+        if (empty($array_data) === false) {
             $return = area_graph(
                 $agent_module_id,
                 $array_data,
@@ -1023,13 +1065,11 @@ function grafico_modulo_sparse($params, $server_name='')
                 $params['width'],
                 $params['height'],
                 'area',
-                __('No data to display within the selected interval')
+                __('No data to display within the selected interval'),
+                false,
+                $params['pdf']
             );
         }
-    }
-
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
     }
 
     return $return;
@@ -1079,11 +1119,11 @@ function graphic_combined_module(
 ) {
     global $config;
 
-    if (!isset($params_combined['from_interface'])) {
+    if (isset($params_combined['from_interface']) === false) {
         $params_combined['from_interface'] = false;
     }
 
-    if (!isset($params_combined['stacked'])) {
+    if (isset($params_combined['stacked']) === false) {
         if ($params_combined['from_interface']) {
             if ($config['type_interface_charts'] == 'line') {
                 $params_combined['stacked'] = CUSTOM_GRAPH_LINE;
@@ -1094,157 +1134,180 @@ function graphic_combined_module(
             if ($params_combined['id_graph'] == 0) {
                 $params_combined['stacked'] = CUSTOM_GRAPH_AREA;
             } else {
-                $params_combined['stacked'] = db_get_row('tgraph', 'id_graph', $params_combined['id_graph']);
+                $params_combined['stacked'] = db_get_row(
+                    'tgraph',
+                    'id_graph',
+                    $params_combined['id_graph']
+                );
             }
         }
     }
 
     $params['stacked'] = $params_combined['stacked'];
 
-    if (!isset($params_combined['projection']) || $params_combined['projection'] == false) {
+    if (isset($params_combined['projection']) === false
+        || $params_combined['projection'] == false
+    ) {
         $params_combined['projection'] = false;
     } else {
         $params['stacked'] = 'area';
         $params['projection'] = true;
     }
 
-    if (!isset($params_combined['labels'])) {
+    if (isset($params_combined['labels']) === false) {
         $params_combined['labels'] = [];
     }
 
-    if (!isset($params_combined['summatory'])) {
+    if (isset($params_combined['summatory']) === false) {
         $params_combined['summatory'] = 0;
     }
 
-    if (!isset($params_combined['average'])) {
+    if (isset($params_combined['average']) === false) {
         $params_combined['average'] = 0;
     }
 
-    if (!isset($params_combined['modules_series'])) {
+    if (isset($params_combined['modules_series']) === false) {
         $params_combined['modules_series'] = 0;
     }
 
-    if (!isset($params_combined['return'])) {
+    if (isset($params_combined['return']) === false) {
         $params_combined['return'] = 1;
     }
 
-    if (!isset($params_combined['id_graph'])) {
+    if (isset($params_combined['id_graph']) === false) {
         $params_combined['id_graph'] = 0;
     }
 
-    if (!isset($params_combined['type_report'])) {
+    if (isset($params_combined['type_report']) === false) {
         $params_combined['type_report'] = '';
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params_combined['percentil'] = null;
     } else {
         $params_combined['percentil'] = $params['percentil'];
     }
 
-    if (!isset($params['period'])) {
+    if (isset($params['period']) === false) {
         return false;
     }
 
-    if (!isset($params['width'])) {
+    if (isset($params['width']) === false) {
         $params['width'] = '90%';
     }
 
-    if (!isset($params['height'])) {
+    if (isset($params['height']) === false) {
         $params['height'] = 450;
     }
 
-    if (!isset($params['title'])) {
+    if (isset($params['title']) === false) {
         $params['title'] = '';
     }
 
-    if (!isset($params['unit_name'])) {
+    if (isset($params['unit_name']) === false) {
         $params['unit_name'] = null;
     }
 
-    if (!isset($params['show_alerts'])) {
+    if (isset($params['show_alerts']) === false) {
         $params['show_alerts'] = false;
     }
 
-    if (!isset($params['date']) || !$params['date']) {
+    if (isset($params['date']) === false || !$params['date']) {
         $params['date'] = get_system_time();
     }
 
-    if (!isset($params['only_image'])) {
+    if (isset($params['only_image']) === false) {
         $params['only_image'] = false;
     }
 
-    if (!isset($params['ttl'])) {
+    if (isset($params['ttl']) === false) {
         $params['ttl'] = 1;
     }
 
-    if (!isset($params['backgroundColor'])) {
+    if (isset($params['backgroundColor']) === false) {
         $params['backgroundColor'] = 'white';
     }
 
-    if (!isset($params['dashboard'])) {
+    if (isset($params['dashboard']) === false) {
         $params['dashboard'] = false;
     }
 
-    if (!isset($params['menu']) || $params['only_image']) {
+    if (isset($params['menu']) === false
+        || $params['only_image']
+    ) {
         $params['menu'] = true;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['vconsole']) || $params['vconsole'] == false) {
+    if (isset($params['vconsole']) === false
+        || $params['vconsole'] == false
+    ) {
         $params['vconsole'] = false;
     } else {
         $params['menu'] = false;
     }
 
-    if (!isset($params['type_graph'])) {
+    if (isset($params['type_graph']) === false) {
         $params['type_graph'] = $config['type_module_charts'];
     }
 
-    if (!isset($params['percentil'])) {
+    if (isset($params['percentil']) === false) {
         $params['percentil'] = null;
     }
 
-    if (!isset($params['fullscale'])) {
+    if (isset($params['fullscale']) === false) {
         $params['fullscale'] = false;
     }
 
-    if (!isset($params['id_widget_dashboard'])) {
+    if (isset($params['id_widget_dashboard']) === false) {
         $params['id_widget_dashboard'] = false;
     }
 
-    if (!isset($params['homeurl'])) {
+    if (isset($params['homeurl']) === false) {
         $params['homeurl'] = ui_get_full_url(false, false, false, false);
     }
 
-    if (!isset($params['show_legend'])) {
+    if (isset($params['show_legend']) === false) {
         $params['show_legend'] = true;
     }
 
-    if (!isset($params['show_overview'])) {
+    if (isset($params['show_overview']) === false) {
         $params['show_overview'] = true;
     }
 
-    if (!isset($params['show_export_csv'])) {
+    if (isset($params['show_export_csv']) === false) {
         $params['show_export_csv'] = true;
     }
 
-    if (!isset($params['return_img_base_64'])) {
+    if (isset($params['return_img_base_64']) === false) {
         $params['return_img_base_64'] = false;
     }
 
-    if (!isset($params['image_treshold'])) {
+    if (isset($params['image_treshold']) === false) {
         $params['image_treshold'] = false;
     }
 
-    if (!isset($params['show_unknown'])) {
+    if (isset($params['show_unknown']) === false) {
         $params['show_unknown'] = false;
     }
 
-    if (!isset($params['type_mode_graph'])) {
-        // $config['type_mode_graph']
+    if (isset($params['type_mode_graph']) === false) {
         $params['type_mode_graph'] = 0;
+        if (isset($params['graph_render']) === true) {
+            $params['type_mode_graph'] = $params['graph_render'];
+            $params_combined['type_mode_graph'] = $params['graph_render'];
+        }
+    }
+
+    if (isset($params['fullscale']) === false) {
+        $params_combined['fullscale'] = false;
+    } else {
+        $params_combined['fullscale'] = $params['fullscale'];
+    }
+
+    if (isset($params['maximum_y_axis']) === false) {
+        $params['maximum_y_axis'] = $config['maximum_y_axis'];
     }
 
     $params['graph_combined'] = true;
@@ -1259,11 +1322,10 @@ function graphic_combined_module(
         );
     }
 
-    if (!isset($params['zoom'])) {
+    if (isset($params['zoom']) === false) {
         $params['zoom'] = 1;
     }
 
-    // TODO: Configurable.
     $params['grid_color']   = '#C1C1C1';
     $params['legend_color'] = '#636363';
 
@@ -1277,7 +1339,7 @@ function graphic_combined_module(
 
     $sources = false;
 
-    if ($params_combined['id_graph'] == 0) {
+    if ((int) $params_combined['id_graph'] === 0) {
         $count_modules = count($module_list);
 
         if (!$params_combined['weight_list']) {
@@ -1286,8 +1348,8 @@ function graphic_combined_module(
 
         if ($count_modules > 0) {
             foreach ($module_list as $key => $value) {
-                $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['id_server'];
-                $sources[$key]['id_agent_module'] = $value['module'];
+                $sources[$key]['id_server'] = (isset($value['id_server']) === true) ? $value['id_server'] : $params['server_id'];
+                $sources[$key]['id_agent_module'] = (isset($value['module']) === true) ? $value['module'] : $value;
                 $sources[$key]['weight'] = $weights[$key];
                 $sources[$key]['label'] = $params_combined['labels'];
             }
@@ -1408,23 +1470,23 @@ function graphic_combined_module(
         $params_combined['modules_id'] = $modules;
     }
 
-    if (isset($summatory)) {
+    if (isset($summatory) === true) {
         $params_combined['summatory'] = $summatory;
     }
 
-    if (isset($average)) {
+    if (isset($average) === true) {
         $params_combined['average'] = $average;
     }
 
-    if (isset($modules_series)) {
+    if (isset($modules_series) === true) {
         $params_combined['modules_series'] = $modules_series;
     }
 
-    if (isset($labels)) {
+    if (isset($labels) === true) {
         $params_combined['labels'] = $labels;
     }
 
-    if (isset($weights)) {
+    if (isset($weights) === true) {
         $params_combined['weight_list'] = $weights;
     }
 
@@ -1614,7 +1676,7 @@ function graphic_combined_module(
                 }
             }
 
-            if (empty($array_data)) {
+            if (empty($array_data) === true) {
                 if ($params_combined['return']) {
                     return graph_nodata_image($width, $height);
                 }
@@ -2479,13 +2541,9 @@ function graphic_agentaccess(
     } else {
         $options['generals']['pdf']['width'] = 350;
         $options['generals']['pdf']['height'] = 125;
-        if (!empty($data_array)) {
-            $imgbase64 = '<img src="data:image/jpg;base64,';
-            $imgbase64 .= vbar_graph($data_array, $options, 2);
-            $imgbase64 .= '" />';
-        } else {
-            $imgbase64 .= vbar_graph($data_array, $options, 2);
-        }
+        $imgbase64 = '<img src="data:image/jpg;base64,';
+        $imgbase64 .= vbar_graph($data_array, $options, 2);
+        $imgbase64 .= '" />';
 
         return $imgbase64;
     }
@@ -2554,20 +2612,35 @@ function truncate_negatives(&$element)
 
 
 /**
- * Print a pie graph with events data of agent or all agents (if id_agent = false)
+ * Print a pie graph with events
+ * data of agent or all agents (if id_agent = false).
  *
- * @param integer id_agent Agent ID
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param bool return or echo flag
- * @param bool show_not_init flag
+ * @param integer $id_agent           Agent ID.
+ * @param integer $width              Pie graph width.
+ * @param integer $height             Pie graph height.
+ * @param boolean $return             Flag.
+ * @param boolean $show_not_init      Flag.
+ * @param array   $data_agents        Data.
+ * @param boolean $donut_narrow_graph Flag type graph.
+ *
+ * @return string Html chart.
  */
-function graph_agent_status($id_agent=false, $width=300, $height=200, $return=false, $show_not_init=false, $data_agents=false, $donut_narrow_graph=false)
-{
+function graph_agent_status(
+    $id_agent=false,
+    $width=300,
+    $height=200,
+    $return=false,
+    $show_not_init=false,
+    $data_agents=false,
+    $donut_narrow_graph=false
+) {
     global $config;
 
     if ($data_agents == false) {
-        $groups = implode(',', array_keys(users_get_groups(false, 'AR', false)));
+        $groups = implode(
+            ',',
+            array_keys(users_get_groups(false, 'AR', false))
+        );
         $p_table = 'tagente';
         $s_table = 'tagent_secondary_group';
         if (is_metaconsole()) {
@@ -2575,10 +2648,8 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
             $s_table = 'tmetaconsole_agent_secondary_group';
         }
 
-        $data = db_get_row_sql(
-            sprintf(
-                'SELECT
-                SUM(critical_count) AS Critical,
+        $sql = sprintf(
+            'SELECT SUM(critical_count) AS Critical,
                 SUM(warning_count) AS Warning,
                 SUM(normal_count) AS Normal,
                 SUM(unknown_count) AS Unknown
@@ -2589,19 +2660,20 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
                 ta.disabled = 0 AND
                 %s
                 (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))',
-                $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
-                $p_table,
-                $s_table,
-                empty($id_agent) ? '' : "ta.id_agente = $id_agent AND",
-                $groups,
-                $groups
-            )
+            $show_not_init ? ', SUM(notinit_count) "Not init"' : '',
+            $p_table,
+            $s_table,
+            (empty($id_agent) === true) ? '' : 'ta.id_agente = '.$id_agent.' AND',
+            $groups,
+            $groups
         );
+
+        $data = db_get_row_sql($sql);
     } else {
         $data = $data_agents;
     }
 
-    if (empty($data)) {
+    if (empty($data) === true) {
         $data = [];
     }
 
@@ -2610,11 +2682,15 @@ function graph_agent_status($id_agent=false, $width=300, $height=200, $return=fa
     if ($config['fixed_graph'] == false) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+            'url'  => ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
     }
 
-    // $colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
     $colors['Critical'] = COL_CRITICAL;
     $colors['Warning'] = COL_WARNING;
     $colors['Normal'] = COL_NORMAL;
@@ -3630,15 +3706,22 @@ function grafico_eventos_usuario($width, $height)
 
 
 /**
- * Print a custom SQL-defined graph
+ * Undocumented function
  *
- * @param integer ID of report content, used to get SQL code to get information for graph
- * @param integer height graph height
- * @param integer width graph width
- * @param integer Graph type 1 vbar, 2 hbar, 3 pie
+ * @param array   $content          ID of report content
+ *            used to get SQL code to get information for graph.
+ * @param integer $width            Graph width.
+ * @param integer $height           Graph height.
+ * @param string  $type             Graph type 1 vbar, 2 hbar, 3 pie.
+ * @param boolean $only_image       Only image.
+ * @param string  $homeurl          Url.
+ * @param integer $ttl              Ttl.
+ * @param integer $max_num_elements Max elements.
+ *
+ * @return string Graph.
  */
 function graph_custom_sql_graph(
-    $id,
+    $content,
     $width,
     $height,
     $type='sql_graph_vbar',
@@ -3650,35 +3733,59 @@ function graph_custom_sql_graph(
     global $config;
 
     $SQL_GRAPH_MAX_LABEL_SIZE = 20;
-
-    if (is_metaconsole()) {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true
+        && empty($content['server_name']) === false
+    ) {
+        $connection = metaconsole_get_connection($content['server_name']);
         metaconsole_connect($connection);
     }
 
-    $report_content = db_get_row('treport_content', 'id_rc', $id);
+    $report_content = db_get_row(
+        'treport_content',
+        'id_rc',
+        $content['id_rc']
+    );
 
     if ($report_content == false || $report_content == '') {
-        $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        $report_content = db_get_row(
+            'treport_content_template',
+            'id_rc',
+            $content['id_rc']
+        );
     }
 
     if ($report_content == false || $report_content == '') {
-        enterprise_hook('metaconsole_restore_db');
-        $report_content = db_get_row('treport_content', 'id_rc', $id);
-        if ($report_content == false || $report_content == '') {
-            $report_content = db_get_row('treport_content_template', 'id_rc', $id);
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
+            enterprise_hook('metaconsole_restore_db');
         }
 
-        if (is_metaconsole()) {
-            $server = metaconsole_get_connection_names();
-            $connection = metaconsole_get_connection($server);
+        $report_content = db_get_row(
+            'treport_content',
+            'id_rc',
+            $content['id_rc']
+        );
+        if ($report_content == false || $report_content == '') {
+            $report_content = db_get_row(
+                'treport_content_template',
+                'id_rc',
+                $content['id_rc']
+            );
+        }
+
+        if (is_metaconsole() === true
+            && empty($content['server_name']) === false
+        ) {
+            $connection = metaconsole_get_connection($content['server_name']);
             metaconsole_connect($connection);
         }
     }
 
     if ($id != null) {
-        $historical_db = db_get_value_sql('SELECT historical_db from treport_content where id_rc ='.$id);
+        $historical_db = db_get_value_sql(
+            'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
+        );
     } else {
         $historical_db = $content['historical_db'];
     }
@@ -3686,13 +3793,17 @@ function graph_custom_sql_graph(
     if ($report_content['external_source'] != '') {
         $sql = io_safe_output($report_content['external_source']);
     } else {
-        $sql = db_get_row('treport_custom_sql', 'id', $report_content['treport_custom_sql_id']);
+        $sql = db_get_row(
+            'treport_custom_sql',
+            'id',
+            $report_content['treport_custom_sql_id']
+        );
         $sql = io_safe_output($sql['sql']);
     }
 
     $data_result = db_get_all_rows_sql($sql, $historical_db);
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true && empty($content['server_name']) === false) {
         enterprise_hook('metaconsole_restore_db');
     }
 
@@ -3707,24 +3818,32 @@ function graph_custom_sql_graph(
     foreach ($data_result as $data_item) {
         $count++;
         $value = 0;
-        if (!empty($data_item['value'])) {
+        if (empty($data_item['value']) === false) {
             $value = $data_item['value'];
         }
 
         if ($count <= $max_num_elements) {
             $label = __('Data');
-            if (!empty($data_item['label'])) {
+            if (empty($data_item['label']) === false) {
                 $label = io_safe_output($data_item['label']);
                 if (strlen($label) > $SQL_GRAPH_MAX_LABEL_SIZE) {
                     $first_label = $label;
-                    $label = substr($first_label, 0, floor($SQL_GRAPH_MAX_LABEL_SIZE / 2));
+                    $label = substr(
+                        $first_label,
+                        0,
+                        floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                    );
                     $label .= '...';
-                    $label .= substr($first_label, floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2));
+                    $label .= substr(
+                        $first_label,
+                        floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)
+                    );
                 }
             }
 
             switch ($type) {
                 case 'sql_graph_vbar':
+                default:
                     // Vertical bar.
                     $data[] = [
                         'tick' => $label.'_'.$count,
@@ -3733,18 +3852,19 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_hbar':
-                    // horizontal bar
+                    // Horizontal bar.
                     $data[$label.'_'.$count]['g'] = $value;
                 break;
 
                 case 'sql_graph_pie':
-                    // Pie
+                    // Pie.
                     $data[$label.'_'.$count] = $value;
                 break;
             }
         } else {
             switch ($type) {
                 case 'sql_graph_vbar':
+                default:
                     // Vertical bar.
                     if ($flagOther === false) {
                         $data[] = [
@@ -3759,8 +3879,8 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_hbar':
-                    // horizontal bar
-                    if (!isset($data[__('Other')]['g'])) {
+                    // Horizontal bar.
+                    if (isset($data[__('Other')]['g']) === false) {
                         $data[__('Other')]['g'] = 0;
                     }
 
@@ -3768,8 +3888,8 @@ function graph_custom_sql_graph(
                 break;
 
                 case 'sql_graph_pie':
-                    // Pie
-                    if (!isset($data[__('Other')])) {
+                    // Pie.
+                    if (isset($data[__('Other')]) === false) {
                         $data[__('Other')] = 0;
                     }
 
@@ -3782,12 +3902,19 @@ function graph_custom_sql_graph(
     if ($config['fixed_graph'] == false) {
         $water_mark = [
             'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
+            'url'  => ui_get_full_url(
+                'images/logo_vertical_water.png',
+                false,
+                false,
+                false
+            ),
         ];
     }
 
+    $output = '';
     switch ($type) {
         case 'sql_graph_vbar':
+        default:
             // Vertical bar.
             $color = color_graph_array();
 
@@ -3804,7 +3931,7 @@ function graph_custom_sql_graph(
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
 
-                $output .= '<img style="margin-left:20px;" src="data:image/jpg;base64,';
+                $output .= '<img src="data:image/jpg;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';
             } else {
@@ -3813,48 +3940,48 @@ function graph_custom_sql_graph(
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '</div>';
             }
-        return $output;
+        break;
 
-            break;
         case 'sql_graph_hbar':
-            // horizontal bar
-        return hbar_graph(
-            $data,
-            $width,
-            $height,
-            [],
-            [],
-            '',
-            '',
-            '',
-            '',
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            false,
-            $ttl,
-            $homeurl,
-            'white',
-            '#c1c1c1'
-        );
+            // Horizontal bar.
+            $output .= hbar_graph(
+                $data,
+                $width,
+                $height,
+                [],
+                [],
+                '',
+                '',
+                '',
+                '',
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                false,
+                $ttl,
+                $homeurl,
+                'white',
+                '#c1c1c1'
+            );
+        break;
 
-            break;
         case 'sql_graph_pie':
-            // Pie
-        return pie_graph(
-            $data,
-            $width,
-            $height,
-            __('other'),
-            $homeurl,
-            $water_mark,
-            $config['fontpath'],
-            $config['font_size'],
-            $ttl
-        );
-
-            break;
+            // Pie.
+            $output .= pie_graph(
+                $data,
+                $width,
+                $height,
+                __('other'),
+                $homeurl,
+                $water_mark,
+                $config['fontpath'],
+                $config['font_size'],
+                $ttl
+            );
+        break;
     }
+
+    return $output;
 }
 
 
@@ -4150,6 +4277,10 @@ function fullscale_data(
         $data_slice
     );
 
+    if ($data_uncompress === false) {
+        return [];
+    }
+
     $data = [];
     $previous_data = 0;
     // Normal.
@@ -4232,20 +4363,22 @@ function fullscale_data(
                         }
                     }
 
-                    if (isset($v['datos']) && $v['datos']) {
-                        // Max.
-                        if ($v['datos'] >= $max_value) {
+                    // Max.
+                    if ($v['datos'] === false || $v['datos'] >= $max_value) {
+                        if ($v['datos'] === false) {
+                            $max_value = 0;
+                        } else {
                             $max_value = $v['datos'];
                         }
-
-                        // Min.
-                        if ($v['datos'] <= $min_value) {
-                            $min_value = $v['datos'];
-                        }
-
-                        // Avg sum.
-                        $sum_data += $v['datos'];
                     }
+
+                    // Min.
+                    if ($v['datos'] <= $min_value) {
+                        $min_value = $v['datos'];
+                    }
+
+                    // Avg sum.
+                    $sum_data += $v['datos'];
 
                     // Avg count.
                     $count_data++;
@@ -4265,23 +4398,30 @@ function fullscale_data(
                         $real_date = ($k['data'][0]['utimestamp'] * 1000);
                     }
 
-                    $data['sum'.$series_suffix]['data'][] = [
-                        $real_date,
-                        ($sum_data / $count_data),
-                    ];
+                    if ($type_mode_graph <= 1) {
+                        $data['sum'.$series_suffix]['data'][] = [
+                            $real_date,
+                            ($sum_data / $count_data),
+                        ];
+                    }
+
                     if ($type_mode_graph && !$params['baseline']) {
-                        if ($min_value != PHP_INT_MAX) {
-                            $data['min'.$series_suffix]['data'][] = [
-                                $real_date,
-                                $min_value,
-                            ];
+                        if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                            if ($min_value != PHP_INT_MAX) {
+                                $data['min'.$series_suffix]['data'][] = [
+                                    $real_date,
+                                    $min_value,
+                                ];
+                            }
                         }
 
-                        if ($max_value != (-PHP_INT_MAX)) {
-                            $data['max'.$series_suffix]['data'][] = [
-                                $real_date,
-                                $max_value,
-                            ];
+                        if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                            if ($max_value != (-PHP_INT_MAX)) {
+                                $data['max'.$series_suffix]['data'][] = [
+                                    $real_date,
+                                    $max_value,
+                                ];
+                            }
                         }
                     } else {
                         if ($min_value != PHP_INT_MAX) {
@@ -4315,7 +4455,7 @@ function fullscale_data(
                     // Avg count total.
                     $count_data_total++;
 
-                    if ($type_mode_graph && !$params['baseline']) {
+                    if (!$params['baseline']) {
                         // MIN.
                         // max min.
                         if ($min_value >= $min_value_max
@@ -4374,31 +4514,35 @@ function fullscale_data(
             }
         }
 
-        $data['sum'.$series_suffix]['min'] = $min_value_total;
-        $data['sum'.$series_suffix]['max'] = $max_value_total;
-        $data['sum'.$series_suffix]['avg'] = 0;
-        if (isset($count_data_total) === true) {
-            $data['sum'.$series_suffix]['avg'] = ($sum_data_total / $count_data_total);
+        if ($type_mode_graph <= 1) {
+            $data['sum'.$series_suffix]['min'] = $min_value_total;
+            $data['sum'.$series_suffix]['max'] = $max_value_total;
+            $data['sum'.$series_suffix]['avg'] = 0;
+            if (isset($count_data_total) === true) {
+                $data['sum'.$series_suffix]['avg'] = ($sum_data_total / $count_data_total);
+            }
         }
 
-        if ($type_mode_graph && !$params['baseline']) {
-            $data['min'.$series_suffix]['min'] = $min_value_min;
-            $data['min'.$series_suffix]['max'] = $min_value_max;
-            $data['min'.$series_suffix]['avg'] = ($sum_data_min / $count_data_total);
+        if (!$params['baseline']) {
+            if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                $data['min'.$series_suffix]['min'] = $min_value_min;
+                $data['min'.$series_suffix]['max'] = $min_value_max;
+                $data['min'.$series_suffix]['avg'] = ($sum_data_min / $count_data_total);
+            }
 
-            $data['max'.$series_suffix]['min'] = $max_value_min;
-            $data['max'.$series_suffix]['max'] = $max_value_max;
-            $data['max'.$series_suffix]['avg'] = ($sum_data_max / $count_data_total);
+            if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                $data['max'.$series_suffix]['min'] = $max_value_min;
+                $data['max'.$series_suffix]['max'] = $max_value_max;
+                $data['max'.$series_suffix]['avg'] = ($sum_data_max / $count_data_total);
+            }
 
-            $data['sum'.$series_suffix]['min'] = $avg_value_min;
-            $data['sum'.$series_suffix]['max'] = $avg_value_max;
-            $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
+            if ($type_mode_graph <= 1) {
+                $data['sum'.$series_suffix]['min'] = $avg_value_min;
+                $data['sum'.$series_suffix]['max'] = $avg_value_max;
+                $data['sum'.$series_suffix]['avg'] = ($sum_data_avg / $count_data_total);
+            }
         }
     } else {
-        if ($data_uncompress === false) {
-            $data_uncompress = [];
-        }
-
         foreach ($data_uncompress as $k) {
             foreach ($k['data'] as $v) {
                 if (isset($v['type']) && $v['type'] == 1) {
@@ -4521,20 +4665,28 @@ function fullscale_data(
             $last_data,
         ];
     } else {
-        $data['sum'.$series_suffix]['data'][] = [
-            ($date_array['final_date'] * 1000),
-            $last_data,
-        ];
+        if ($type_mode_graph <= 1) {
+            $data['sum'.$series_suffix]['data'][] = [
+                ($date_array['final_date'] * 1000),
+                $last_data,
+            ];
+        }
+
         if ($data_slice) {
             if ($type_mode_graph && !$params['baseline']) {
-                $data['min'.$series_suffix]['data'][] = [
-                    ($date_array['final_date'] * 1000),
-                    $min_value,
-                ];
-                $data['max'.$series_suffix]['data'][] = [
-                    ($date_array['final_date'] * 1000),
-                    $max_value,
-                ];
+                if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 3) {
+                    $data['min'.$series_suffix]['data'][] = [
+                        ($date_array['final_date'] * 1000),
+                        $min_value,
+                    ];
+                }
+
+                if ((int) $type_mode_graph === 1 || (int) $type_mode_graph === 2) {
+                    $data['max'.$series_suffix]['data'][] = [
+                        ($date_array['final_date'] * 1000),
+                        $max_value,
+                    ];
+                }
             } else {
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['min'] = $min_value;
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['avg'] = 0;
@@ -4953,8 +5105,17 @@ function graph_nodata_image(
     $height=110,
     $type='area',
     $text='',
-    $percent=false
+    $percent=false,
+    $base64=false
 ) {
+    global $config;
+    if ($base64 === true) {
+        $dataImg = file_get_contents(
+            $config['homedir'].'/images/image_problem_area_150.png'
+        );
+        return base64_encode($dataImg);
+    }
+
     $image = ui_get_full_url(
         'images/image_problem_area.png',
         false,
@@ -4973,7 +5134,14 @@ function graph_nodata_image(
     if ($percent === true) {
         $div = $image_div;
     } else {
-        $style = 'width:'.$width.'px; height:'.$height.'px; background-color: white; margin: 0 auto;';
+        if (strpos($width, '%') === false) {
+            $width = 'width: '.$width.'px;';
+        } else {
+            $width = 'width: '.$width.';';
+        }
+
+        $style = $width.' height:'.$height.'px;';
+        $style .= ' background-color: white; margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

@@ -213,7 +213,7 @@ echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente
 
 echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%" style="font-weight: bold; margin-bottom: 10px;">';
 
-echo '<tr><td style="white-space:nowrap;">';
+echo '<tr><td class="nowrap mw250px padding-right-2-imp">';
 
 echo __('Group').'&nbsp;';
 
@@ -221,17 +221,17 @@ $groups = users_get_groups(false, $access);
 
 html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Recursion').'&nbsp;';
 html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Search').'&nbsp;';
 html_print_input_text('search', $search, '', 15);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 $fields = [];
 $fields[AGENT_STATUS_NORMAL] = __('Normal');
@@ -244,12 +244,12 @@ $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 echo __('Status').'&nbsp;';
 html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Search in custom fields').'&nbsp;';
 html_print_input_text('search_custom', $search_custom, '', 15);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 html_print_submit_button(
     __('Search'),
@@ -546,7 +546,7 @@ if (!empty($search_custom)) {
 if ($group_id > 0) {
     $groups = [$group_id];
     if ($recursion) {
-        $groups = groups_get_id_recursive($group_id, true);
+        $groups = groups_get_children_ids($group_id, true);
     }
 } else {
     $groups = [];
@@ -576,7 +576,7 @@ if ($strict_user) {
     if ($group_id > 0) {
         $groups = [$group_id];
         if ($recursion) {
-            $groups = groups_get_id_recursive($group_id, true);
+            $groups = groups_get_children_ids($group_id, true);
         }
 
         $filter['id_group'] = implode(',', $groups);
@@ -902,7 +902,6 @@ if (!empty($table->data)) {
     if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
         echo '<div style="text-align: right; float: right;">';
         echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_input_hidden('new_agent', 1);
             html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
         echo '</form>';
         echo '</div>';
@@ -913,7 +912,6 @@ if (!empty($table->data)) {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
     echo '<div style="text-align: right; float: right;">';
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-        html_print_input_hidden('new_agent', 1);
         html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
     echo '</form>';
     echo '</div>';

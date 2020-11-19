@@ -2762,6 +2762,7 @@ function get_shape_status_set($type)
         // Small squares.
         case STATUS_SERVER_OK:
         case STATUS_SERVER_DOWN:
+        case STATUS_SERVER_CRASH:
             $return = ['class' => 'status_small_squares'];
         break;
 
@@ -2773,6 +2774,9 @@ function get_shape_status_set($type)
         case STATUS_AGENT_OK_BALL:
         case STATUS_AGENT_NO_DATA_BALL:
         case STATUS_AGENT_NO_MONITORS_BALL:
+        case STATUS_SERVER_OK_BALL:
+        case STATUS_SERVER_DOWN_BALL:
+        case STATUS_SERVER_CRASH_BALL:
             $return = ['class' => 'status_balls'];
         break;
 

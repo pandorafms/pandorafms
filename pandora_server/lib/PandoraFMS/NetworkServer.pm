@@ -498,7 +498,7 @@ sub exec_network_module ($$$$) {
 			$module_data = pandora_ping_latency ($pa_config, $ip_target, $timeout, $retries);
 			
 			if (defined($module_data)) {
-				$module_result = 0; # Successful
+				$module_result = 1; # Unsuccessful
 			}
 		}
 

@@ -270,9 +270,6 @@ class ModuleGraph
 
         global $config;
 
-        echo include_javascript_dependencies_flot_graph(true);
-        ui_require_javascript_file('pandora', 'include/javascript/', true);
-
         ?>
         <script type="text/javascript">
             $(document).ready(function() {

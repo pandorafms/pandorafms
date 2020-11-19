@@ -731,7 +731,7 @@ class Events
         $system = System::getInstance();
 
         // --------------Fill the SQL POST-------------------------------
-        $sql_post = '';
+        $sql_post = ' WHERE 1=1 ';
 
         switch ($this->status) {
             case 0:

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Agent Wizard for SNMP and WMI
  *
@@ -273,7 +274,7 @@ class AgentWizard extends HTML
         // Check access.
         check_login();
 
-        if (! check_acl($config['id_user'], 0, 'AR')) {
+        if (!check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access event viewer'
@@ -293,6 +294,29 @@ class AgentWizard extends HTML
         $this->idAgent = get_parameter('id_agente', '');
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
+
+        if (!empty($this->idAgent)) {
+            $array_aux = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT ip FROM taddress ta
+                    INNER JOIN taddress_agent taa ON taa.id_a = ta.id_a
+                    WHERE taa.id_agent = %d',
+                    $this->idAgent
+                )
+            );
+
+            if (!empty($array_aux)) {
+                $this->datalist = [];
+                foreach ($array_aux as $key => $value) {
+                    $this->datalist[] = $value['ip'];
+                }
+            }
+
+            if (count($this->datalist) === 1 && $this->targetIp === '') {
+                $this->targetIp = $this->datalist[0];
+            }
+        }
+
         $this->server = (int) get_parameter('server', '1');
         if ($this->server !== 0) {
             $this->serverType = (int) db_get_value(
@@ -563,6 +587,18 @@ class AgentWizard extends HTML
             ],
         ];
 
+        if (!empty($this->datalist)) {
+            $inputs[] = [
+                'id'        => 'li_address_list',
+                'arguments' => [
+                    'name'   => 'address_list',
+                    'type'   => 'datalist',
+                    'value'  => $this->datalist,
+                    'return' => true,
+                ],
+            ];
+        }
+
         $inputs[] = [
             'label'     => __('Target IP'),
             'id'        => 'txt-targetIp',
@@ -573,6 +609,7 @@ class AgentWizard extends HTML
                 'class'       => '',
                 'value'       => $this->targetIp,
                 'return'      => true,
+                'list'        => 'address_list',
             ],
         ];
 
@@ -865,7 +902,6 @@ class AgentWizard extends HTML
             ],
             true
         );
-
     }
 
 
@@ -992,10 +1028,51 @@ class AgentWizard extends HTML
         }
 
         if ($this->wizardSection === 'snmp_interfaces_explorer') {
-            // First, try x64 interfaces.
-            $this->interfacesx64 = true;
+            // Check if thereis x64 counters.
+            $snmp_tmp = '.1.3.6.1.2.1.31.1.1.1.6';
+            $check_x64 = get_snmpwalk(
+                $this->targetIp,
+                $this->version,
+                $this->community,
+                $this->authUserV3,
+                $this->securityLevelV3,
+                $this->authMethodV3,
+                $this->authPassV3,
+                $this->privacyMethodV3,
+                $this->privacyPassV3,
+                0,
+                $snmp_tmp,
+                $this->targetPort,
+                $this->server,
+                $this->extraArguments
+            );
+
+            if ($check_x64) {
+                $this->interfacesx64 = true;
+                $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
+            } else {
+                $this->interfacesx64 = false;
+                $oidExplore = '1.3.6.1.2.1.2.2.1.2';
+            }
+
             // Explore interface names.
             $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
+            $receivedOid = get_snmpwalk(
+                $this->targetIp,
+                $this->version,
+                $this->community,
+                $this->authUserV3,
+                $this->securityLevelV3,
+                $this->authMethodV3,
+                $this->authPassV3,
+                $this->privacyMethodV3,
+                $this->privacyPassV3,
+                0,
+                $oidExplore,
+                $this->targetPort,
+                $this->server,
+                $this->extraArguments
+            );
         } else {
             // Get the device PEN.
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
@@ -1310,7 +1387,7 @@ class AgentWizard extends HTML
      *
      * @return array
      */
-    public function candidateModuleToCreate(array $data):array
+    public function candidateModuleToCreate(array $data): array
     {
         $modulesActivated = [];
         $generalInterface = false;
@@ -1560,8 +1637,8 @@ class AgentWizard extends HTML
                         if ($this->securityLevelV3 === 'authNoPriv'
                             || $this->securityLevelV3 === 'authPriv'
                         ) {
-                                $values['plugin_parameter'] = $this->authMethodV3;
-                                $values['plugin_pass'] = $this->authPassV3;
+                            $values['plugin_parameter'] = $this->authMethodV3;
+                            $values['plugin_pass'] = $this->authPassV3;
                             if ($this->securityLevelV3 === 'authPriv') {
                                 $values['custom_string_1'] = $this->privacyMethodV3;
                                 $values['custom_string_2'] = $this->privacyPassV3;
@@ -2261,7 +2338,7 @@ class AgentWizard extends HTML
     private function replacementMacrosPlugin(
         string $text,
         array $macros
-    ):string {
+    ): string {
         // Only agents.
         if (empty($this->idPolicy) === true) {
             // Common.
@@ -2308,7 +2385,7 @@ class AgentWizard extends HTML
         ?string $value,
         ?string $unit='',
         ?int $moduleType=0
-    ):string {
+    ): string {
         if ($moduleType !== MODULE_TYPE_REMOTE_SNMP_INC
             && $moduleType !== MODULE_TYPE_GENERIC_DATA_INC
             && $moduleType !== MODULE_TYPE_REMOTE_TCP_INC
@@ -2562,7 +2639,7 @@ class AgentWizard extends HTML
             // Unpack the extra fields
             // and include with key field in a field set.
             $macros = json_decode($module['macros'], true);
-            $fieldSet = [ '0' => $module['query_key_field'] ];
+            $fieldSet = ['0' => $module['query_key_field']];
             foreach ($macros as $fieldKey => $fieldMacro) {
                 if (preg_match('/extra_field_/', $fieldKey) !== 0) {
                     $tmpKey = explode('_', $fieldKey);
@@ -3002,7 +3079,7 @@ class AgentWizard extends HTML
                         $newModule = $module;
                         // Split the values got to obtain the name.
                         $tmpFirst = explode('.', $value);
-                        $tmpSecond = explode(' ', $tmpFirst[1]);
+                        $tmpSecond = explode(' ', $tmpFirst[(count($tmpFirst) - 1)]);
                         // Position 0 is the index, Position 3 is the MIB name.
                         $snmpwalkNames[$tmpSecond[0]] = $tmpSecond[3];
                         // Perform the operations for get the values.
@@ -3011,6 +3088,11 @@ class AgentWizard extends HTML
                             $currentOid = $oid.'.'.$tmpSecond[0];
                             $macros['macros'][$oidName] = $currentOid;
                             $currentOidValue = $this->snmpgetValue($currentOid);
+                            // If for any reason the value comes empty, add 1.
+                            if ($currentOidValue == '') {
+                                $currentOidValue = 1;
+                            }
+
                             $thisOperation = preg_replace(
                                 '/'.$oidName.'/',
                                 $currentOidValue,
@@ -3095,7 +3177,6 @@ class AgentWizard extends HTML
             // Add Create Modules form.
             $this->createModulesForm();
         }
-
     }
 
 
@@ -3204,7 +3285,6 @@ class AgentWizard extends HTML
         }
 
         return false;
-
     }
 
 
@@ -3301,7 +3381,7 @@ class AgentWizard extends HTML
      *
      * @return array Inputs for common data.
      */
-    private function getCommonDataInputs():array
+    private function getCommonDataInputs(): array
     {
         $inputs[] = [
             'id'        => 'create-modules-action',
@@ -4111,13 +4191,13 @@ class AgentWizard extends HTML
     }
 
 
-        /**
-         * This function return the definition of modules for SNMP Interfaces
-         *
-         * @param array $data Data.
-         *
-         * @return array Return modules for defect.
-         */
+    /**
+     * This function return the definition of modules for SNMP Interfaces
+     *
+     * @param array $data Data.
+     *
+     * @return array Return modules for defect.
+     */
     private function getInterfacesModules(array $data=[])
     {
         $moduleDescription  = '';
@@ -4202,6 +4282,34 @@ class AgentWizard extends HTML
             ],
         ];
 
+        // Get x86 or x64 modules.
+        if ($this->interfacesx64 === true) {
+            $definition_temp = $this->getInterfacesModulesx64($data);
+        } else {
+            $definition_temp = $this->getInterfacesModulesx86($data);
+        }
+
+        // General monitoring names.
+        $general_module_names = [
+            'ifInOctets / ifHCInOctets',
+            'ifOutOctets / ifHCOutOctets',
+            'ifInUcastPkts / ifHCInUcastPkts',
+            'ifOutUcastPkts / ifHCOutUcastPkts',
+            'ifInNUcastPkts / ifHCInNUcastPkts',
+            'ifOutNUcastPkts / ifHCOutNUcastPkts',
+        ];
+
+        if ($name == '') {
+            foreach ($definition_temp as $module => $module_def) {
+                $definition_temp[$module]['module_name'] = array_shift($general_module_names);
+            }
+        }
+
+        if (empty($definition_temp) === false) {
+            $definition = array_merge($definition, $definition_temp);
+        }
+
+        // Continue with common x86 and x84 modules.
         // IfAdminStatus.
         $moduleName = $name.'ifAdminStatus';
         $definition['ifAdminStatus'] = [
@@ -4327,19 +4435,6 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
-
-        // Get x86 or x64 modules.
-        if ($this->interfacesx64 === true) {
-            $definitionx64 = $this->getInterfacesModulesx64($data);
-            if (empty($definitionx64) === false) {
-                $definition = array_merge($definition, $definitionx64);
-            }
-        } else {
-            $definitionx86 = $this->getInterfacesModulesx86($data);
-            if (empty($definitionx86) === false) {
-                $definition = array_merge($definition, $definitionx86);
-            }
-        }
 
         return $definition;
     }
@@ -4566,7 +4661,7 @@ class AgentWizard extends HTML
 
         // Definition object.
         $definition = [];
-        // ifHCInOctets.
+        // IfHCInOctets.
         $moduleName = $name.'ifHCInOctets';
         $definition['ifHCInOctets'] = [
             'module_name'        => $moduleName,
@@ -4592,7 +4687,7 @@ class AgentWizard extends HTML
             ],
 
         ];
-        // ifHCOutOctets.
+        // IfHCOutOctets.
         $moduleName = $name.'ifHCOutOctets';
         $definition['ifHCOutOctets'] = [
             'module_name'        => $moduleName,
@@ -4618,7 +4713,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCInUcastPkts.
+        // IfHCInUcastPkts.
         $moduleName = $name.'ifHCInUcastPkts';
         $definition['ifHCInUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4644,7 +4739,7 @@ class AgentWizard extends HTML
             ],
         ];
 
-        // ifHCOutUcastPkts.
+        // IfHCOutUcastPkts.
         $moduleName = $name.'ifHCOutUcastPkts';
         $definition['ifHCOutUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4669,7 +4764,7 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
-        // ifHCInNUcastPkts.
+        // IfHCInNUcastPkts.
         $moduleName = $name.'ifHCInNUcastPkts';
         $definition['ifHCInNUcastPkts'] = [
             'module_name'        => $moduleName,
@@ -4733,17 +4828,18 @@ class AgentWizard extends HTML
      * @param integer|null $type      Module type.
      *
      * @return string
+     * @throws Exception Handle of unwanted operations.
      */
     private function evalOperation(
         string $operation,
         string $unit='',
         ?int $type=0
     ) {
-        // Avoid non-numeric or arithmetic chars for security reasons.
-        if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
-            $output = 'ERROR';
-        } else {
-            try {
+        try {
+            // Avoid non-numeric or arithmetic chars for security reasons.
+            if (preg_match('/(([^0-9\s\+\-\*\/\(\).,])+)/', $operation) === 1) {
+                throw new Exception(sprintf(__("The operation '%s' is not permitted. Review for remote components."), $operation));
+            } else {
                 // Get the result of the operation and set it.
                 $output = '';
                 eval('$output = '.$operation.';');
@@ -4753,9 +4849,11 @@ class AgentWizard extends HTML
                     $unit,
                     $type
                 );
-            } catch (Exception $e) {
-                $output = 'ERROR';
             }
+        } catch (Exception $e) {
+            $this->message['type'][]    = 'error';
+            $this->message['message'][] = $e->getMessage();
+            $this->showMessage();
         }
 
         return $output;
@@ -4807,7 +4905,7 @@ class AgentWizard extends HTML
         try {
             exec($execution, $output);
         } catch (Exception $ex) {
-            $output = [ '0' => 'ERROR: Failed execution: '.(string) $ex];
+            $output = ['0' => 'ERROR: Failed execution: '.(string) $ex];
         }
 
         return $output;
@@ -4905,7 +5003,7 @@ class AgentWizard extends HTML
                 // Meta.
                 var meta = "<?php echo is_metaconsole(); ?>";
                 var hack_meta = '';
-                if(meta){
+                if (meta) {
                     hack_meta = '../../';
                 }
 
@@ -4913,15 +5011,15 @@ class AgentWizard extends HTML
                 showV3Form();
 
                 // Filter search interfaces snmp.
-                $('#text-filter-search').keyup(function () {
+                $('#text-filter-search').keyup(function() {
                     var string = $('#text-filter-search').val();
                     var regex = new RegExp(string);
                     var interfaces = $('.interfaces_search');
-                    interfaces.each(function(){
-                        if(string == ''){
+                    interfaces.each(function() {
+                        if (string == '') {
                             $(this).removeClass('hidden');
                         } else {
-                            if(this.id.match(regex)) {
+                            if (this.id.match(regex)) {
                                 $(this).removeClass('hidden');
                             } else {
                                 $(this).addClass('hidden');
@@ -4931,12 +5029,12 @@ class AgentWizard extends HTML
                 });
 
                 // Loading.
-                $('#submit-sub-protocol').click(function () {
+                $('#submit-sub-protocol').click(function() {
                     $('.wizard-result').remove();
                     $('#form-create-modules').remove();
                     $('.textodialogo').remove();
                     $('.loading-wizard')
-                        .html('<center><span style="font-size:25px;">Loading...</span><img style="width:25px;heigth:25px;" src="'+hack_meta+'images/spinner.gif"></center>');
+                        .html('<center><span style="font-size:25px;">Loading...</span><img style="width:25px;heigth:25px;" src="' + hack_meta + 'images/spinner.gif"></center>');
                 });
 
             });
@@ -4954,17 +5052,17 @@ class AgentWizard extends HTML
 
             function showSecurityLevelForm() {
                 var selector = $('#securityLevelV3').val();
-                if(selector === 'authNoPriv' || selector === 'authPriv'){
+                if (selector === 'authNoPriv' || selector === 'authPriv') {
                     $('#txt-authMethodV3').removeClass('invisible');
                     $('#txt-authPassV3').removeClass('invisible');
-                    if(selector === 'authPriv'){
+                    if (selector === 'authPriv') {
                         $('#txt-privacyMethodV3').removeClass('invisible');
                         $('#txt-privacyPassV3').removeClass('invisible');
                     } else {
                         $('#txt-privacyMethodV3').addClass('invisible');
                         $('#txt-privacyPassV3').addClass('invisible');
                     }
-                } else  {
+                } else {
                     $('#txt-authMethodV3').addClass('invisible');
                     $('#txt-authPassV3').addClass('invisible');
                     $('#txt-privacyMethodV3').addClass('invisible');
@@ -4978,45 +5076,42 @@ class AgentWizard extends HTML
                 var text = "";
                 var failed = 0;
                 try {
-                data = JSON.parse(data);
-                text = data["result"];
+                    data = JSON.parse(data);
+                    text = data["result"];
                 } catch (err) {
-                title = "<?php echo __('Failed'); ?>";
-                text = err.message;
-                failed = 1;
+                    title = "<?php echo __('Failed'); ?>";
+                    text = err.message;
+                    failed = 1;
                 }
                 if (!failed && data["error"] != undefined) {
-                title = "<?php echo __('Failed'); ?>";
-                text = data["error"];
-                failed = 1;
+                    title = "<?php echo __('Failed'); ?>";
+                    text = data["error"];
+                    failed = 1;
                 }
                 if (data["report"] != undefined) {
-                data["report"].forEach(function(item) {
-                    text += "<br>" + item;
-                });
+                    data["report"].forEach(function(item) {
+                        text += "<br>" + item;
+                    });
                 }
 
                 $("#msg").empty();
                 $("#msg").html(text);
                 $("#msg").dialog({
-                width: 450,
-                position: {
-                    my: "center",
-                    at: "center",
-                    of: window,
-                    collision: "fit"
-                },
-                title: title,
-                buttons: [
-                    {
-                        class:
-                            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+                    width: 450,
+                    position: {
+                        my: "center",
+                        at: "center",
+                        of: window,
+                        collision: "fit"
+                    },
+                    title: title,
+                    buttons: [{
+                        class: "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
                         text: "OK",
                         click: function(e) {
                             $("#msg").close();
                         }
-                    }
-                ]
+                    }]
                 });
 
             }
@@ -5034,41 +5129,39 @@ class AgentWizard extends HTML
                 var imageInfoModules = $("#image-info-modules-" + blockNumber);
                 var totalCount = 0;
                 var markedCount = 0;
-                var hidden_input  = document.getElementById("hidden-module-active-"+switchName[2]+"_"+switchName[3]);
-                var id_input = hidden_input.id.split("_");
                 if (type == 'block') {
                     selectedBlock
-                            .parent()
-                            .removeClass("alpha50");
+                        .parent()
+                        .removeClass("alpha50");
                     if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                         .each(function(){
                             $(this).val('1');
                         });
                         // Set checked.
                         $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                        .each(function(){
-                            $(this).prop("checked", true);
-                        });
+                            .each(function() {
+                                $(this).prop("checked", true);
+                            });
                         imageInfoModules.removeClass('hidden');
                     } else {
                         // Set to inactive the values of fields.
-                        $("[id*='"+id_input[0]+"']")
+                        $("[id*=hidden-module-active-"+blockNumber+"]")
                          .each(function(){
                             $(this).val('0');
                         });
                         // Set unchecked.
                         $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                        .each(function(){
-                            $(this).prop("checked", false);
-                        });
+                            .each(function() {
+                                $(this).prop("checked", false);
+                            });
                         imageInfoModules.addClass('hidden');
                     }
                 } else if (type == 'module') {
                     // Getting the element.
-                    var thisModuleHidden  = document.getElementById("hidden-module-active-"+switchName[2]+"_"+moduleNumber); 
-                    var thisModule = $("#checkbox-sel_module_"+blockNumber+"_"+moduleNumber);
+                    var thisModuleHidden = document.getElementById("hidden-module-active-" + switchName[2] + "_" + moduleNumber);
+                    var thisModule = $("#checkbox-sel_module_" + blockNumber + "_" + moduleNumber);
                     // Setting the individual field
                     if (thisModule.prop('checked')) {
                         thisModuleHidden.value = '1';
@@ -5078,12 +5171,12 @@ class AgentWizard extends HTML
 
                     // Get the list of selected modules.
                     $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                    .each(function() {
-                        if ($(this).prop("checked")) {
-                            markedCount++;
-                        }
-                        totalCount++;
-                    });
+                        .each(function() {
+                            if ($(this).prop("checked")) {
+                                markedCount++;
+                            }
+                            totalCount++;
+                        });
 
                     if (totalCount == markedCount) {
                         selectedBlock.prop("checked", true);
@@ -5112,7 +5205,7 @@ class AgentWizard extends HTML
              */
             function switchBlockControlInterfaces(e) {
                 var string = $('#text-filter-search').val();
-                if(string == ''){
+                if (string == '') {
                     if (e.checked) {
                         $(".interfaz_select").prop("checked", true);
                     } else {
@@ -5121,15 +5214,15 @@ class AgentWizard extends HTML
                 } else {
                     var regex = new RegExp(string);
                     var interfaces = $('.interfaces_search');
-                    interfaces.each(function(){
-                        if(this.id.match(regex)) {
+                    interfaces.each(function() {
+                        if (this.id.match(regex)) {
                             $(this).removeClass('hidden');
                             if (e.checked) {
-                                $("input[name='interfaz_select_"+this.id+"']")
+                                $("input[name='interfaz_select_" + this.id + "']")
                                     .prop("checked", true);
                             } else {
-                                $("input[name='interfaz_select_"+this.id+"']")
-                                 .prop("checked", false);
+                                $("input[name='interfaz_select_" + this.id + "']")
+                                    .prop("checked", false);
                             }
                         }
                     });
@@ -5137,13 +5230,13 @@ class AgentWizard extends HTML
             }
 
             /**
-            * Show the modal with modules for create.
-            */
+             * Show the modal with modules for create.
+             */
             function processListModules() {
                 confirmDialog({
                     title: "<?php echo __('Modules about to be created'); ?>",
                     message: function() {
-                        var id = "div-"+uniqId();
+                        var id = "div-" + uniqId();
                         var loading = "<?php echo __('Loading'); ?>" + "...";
                         $.ajax({
                             method: "post",
@@ -5159,22 +5252,22 @@ class AgentWizard extends HTML
                             },
                             datatype: "html",
                             success: function(data) {
-                                $('#'+id).empty().append(data);
+                                $('#' + id).empty().append(data);
                             },
                             error: function(e) {
                                 showMsg(e);
                             }
                         });
 
-                        return "<div id ='"+id+"'>"+loading+"</div>";
+                        return "<div id ='" + id + "'>" + loading + "</div>";
                     },
                     ok: "<?php echo __('OK'); ?>",
                     cancel: "<?php echo __('Cancel'); ?>",
                     onAccept: function() {
-                       $('#reviewed-modules').submit();
+                        $('#reviewed-modules').submit();
                     },
-                    size:750,
-                    maxHeight:500
+                    size: 750,
+                    maxHeight: 500
                 });
 
             }

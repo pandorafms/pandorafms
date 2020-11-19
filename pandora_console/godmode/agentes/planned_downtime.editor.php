@@ -645,7 +645,7 @@ $table->data[0][1] = html_print_input_text(
     $disabled_in_execution
 );
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(
+$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     false,
     $access,
     true,
@@ -659,7 +659,7 @@ $table->data[1][1] = html_print_select_groups(
     true,
     '',
     $disabled_in_execution
-);
+).'</div>';
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea(
     'description',
@@ -877,7 +877,7 @@ if ($id_downtime > 0) {
     $filter_cond = '';
     if ($filter_group > 0) {
         if ($recursion) {
-            $rg = groups_get_id_recursive($filter_group, true);
+            $rg = groups_get_children_ids($filter_group, true);
             $filter_cond .= ' AND id_grupo IN (';
 
             $i = 0;

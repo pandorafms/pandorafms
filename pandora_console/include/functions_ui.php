@@ -5609,7 +5609,8 @@ function ui_print_module_string_value(
     $value,
     $id_agente_module,
     $current_interval,
-    $module_name=null
+    $module_name=null,
+    $server_id=0
 ) {
     global $config;
 
@@ -5654,6 +5655,7 @@ function ui_print_module_string_value(
                 'last_data'   => $value,
                 'interval'    => $current_interval,
                 'module_name' => $module_name,
+                'id_node'     => $server_id ? $server_id : 0,
             ]
         );
         $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
@@ -5761,7 +5763,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
+    $page = ui_get_full_url('operation/agentes/snapshot_view.php', false, false, false);
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 

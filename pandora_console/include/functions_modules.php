@@ -2361,7 +2361,8 @@ function modules_get_agentmodule_data_for_humans($module)
                 $module['datos'],
                 $module['id'],
                 $module['current_interval'],
-                $module['module_name']
+                $module['module_name'],
+                $module['serverID'] ? $module['serverID'] : 0
             );
         }
     }

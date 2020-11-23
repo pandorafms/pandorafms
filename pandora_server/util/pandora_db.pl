@@ -581,6 +581,28 @@ sub pandora_init_pdb ($) {
 	help_screen () if ($conf->{'_pandora_path'} eq '');
 }
 
+########################################################################
+# Prepares conf read from historical database settings.
+########################################################################
+sub pandoradb_load_history_conf($) {
+	my $dbh = shift;
+
+	my @options = get_db_rows($dbh, 'SELECT * FROM `tconfig`');
+
+	my %options = map 
+	{
+		'_' . $_->{'token'} => $_->{'value'}
+	} @options;
+
+	$options{'_days_autodisable_deletion'} = 0 unless defined ($options{'_days_autodisable_deletion'});
+	$options{'_num_past_special_days'} = 0 unless defined($options{'_num_past_special_days'});
+	$options{'_delete_old_network_matrix'} = 0 unless defined($options{'_delete_old_network_matrix'});
+	$options{'_delete_old_messages'} = 0 unless defined($options{'_delete_old_messages'});
+	$options{'_netflow_max_lifetime'} = 0 unless defined($options{'_netflow_max_lifetime'});
+	$options{'claim_back_snmp_modules'} = 0 unless defined($options{'claim_back_snmp_modules'});
+
+	return \%options;
+}
 
 ########################################################################
 # Read external configuration file.
@@ -651,7 +673,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
-   	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
+  $conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_session_timeout'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'session_timeout'");
 
@@ -726,7 +748,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} == 1) {
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} eq "1") {
 		log_message ('CHECKDB', "Deleting not-init data.");
 		my @modules = get_db_rows ($dbh,
 			'SELECT id_agente_modulo, id_agente
@@ -956,7 +978,7 @@ sub pandora_delete_old_module_data {
 sub pandora_delete_old_export_data {
 	my ($dbh, $ulimit_timestamp) = @_;
 
-	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
+	log_message ('PURGE', "Deleting old export data from tserver_export_data");
 	while((my $rc = db_delete_limit ($dbh, 'tserver_export_data', 'UNIX_TIMESTAMP(timestamp) < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp)) ne '0E0') {
 		print "RC:$rc\n";
 		usleep (10000);
@@ -982,7 +1004,7 @@ sub pandora_delete_old_session_data {
 		$ulimit_timestamp = time() - $session_timeout;
 	}
 
-	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
+	log_message ('PURGE', "Deleting old session data from tsessions_php");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
@@ -1076,8 +1098,9 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Get a lock
-my $lock = db_get_lock ($dbh, 'pandora_db');
+# Get a lock on dbname.
+my $lock_name = $conf{'dbname'};
+my $lock = db_get_lock ($dbh, $lock_name);
 if ($lock == 0 && $conf{'_force'} == 0) { 
 	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
@@ -1086,9 +1109,26 @@ if ($lock == 0 && $conf{'_force'} == 0) {
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
 
+# history_dbh is unset in pandoradb_main if not in use.
+if (defined($history_dbh)) {
+	log_message('', " [>] DB Tool running on historical database.\n");
+	my $h_conf = pandoradb_load_history_conf($history_dbh);
+
+	# Keep base settings.
+	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
+
+	# Re-launch maintenance process for historical database.
+	pandoradb_main(
+		$h_conf,
+		$history_dbh,
+		undef
+	);
+
+}
+
 # Release the lock
 if ($lock == 1) {
-	db_release_lock ($dbh, 'pandora_db');
+	db_release_lock ($dbh, $lock_name);
 }
 
 # Cleanup and exit

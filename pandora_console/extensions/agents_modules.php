@@ -657,7 +657,7 @@ function mainAgentsModules()
         if ($recursion) {
             $filter_groups['id_grupo'] = array_merge(
                 $group_id,
-                groups_get_id_recursive($group_id, true)
+                groups_get_children_ids($group_id, true)
             );
         } else {
             $filter_groups['id_grupo'] = $group_id;

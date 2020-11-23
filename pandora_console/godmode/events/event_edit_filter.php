@@ -130,6 +130,16 @@ if ($update || $create) {
     $id_agent = (int) get_parameter('id_agent');
     $text_module = get_parameter('text_module', '');
     $id_agent_module = (int) get_parameter('module_search_hidden');
+    if ($text_module === '') {
+        $text_module = io_safe_output(
+            db_get_value_filter(
+                'nombre',
+                'tagente_modulo',
+                ['id_agente_modulo' => $id_agent_module]
+            )
+        );
+    }
+
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');

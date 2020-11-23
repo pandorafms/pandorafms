@@ -309,7 +309,7 @@ define('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 // For servers.
 define('STATUS_SERVER_OK', 'server_ok.png');
 define('STATUS_SERVER_DOWN', 'server_down.png');
-
+define('STATUS_SERVER_CRASH', 'server_crash.png');
 
 
 // Status images (ball).
@@ -335,6 +335,7 @@ define('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
 // For servers.
 define('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
 define('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
+define('STATUS_SERVER_CRASH_BALL', 'server_crash_ball.png');
 
 
 

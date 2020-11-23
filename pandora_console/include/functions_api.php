@@ -1973,7 +1973,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             $ag_groups = $other['data'][1];
             // Recursion.
             if ($other['data'][6] === '1') {
-                $ag_groups = groups_get_id_recursive($ag_groups, true);
+                $ag_groups = groups_get_children_ids($ag_groups, true);
             }
 
             $ag_groups = implode(',', (array) $ag_groups);

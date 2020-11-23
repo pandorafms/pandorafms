@@ -1896,7 +1896,14 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_query" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
+            <td style="font-weight:bold;">
+            <?php
+            echo __('SQL query').ui_print_help_tip(
+                __('The entities of the fields that contain them must be included.'),
+                true
+            );
+            ?>
+                </td>
             <td style="" id="sql_entry">
                 <?php
                 html_print_textarea('sql', 5, 25, $sql_query_report);

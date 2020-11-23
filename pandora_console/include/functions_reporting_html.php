@@ -1492,7 +1492,7 @@ function reporting_html_inventory_changes($table, $item, $pdf=0)
 function reporting_html_inventory($table, $item, $pdf=0)
 {
     $return_pdf = '';
-    if (!empty($item['failed'])) {
+    if (empty($item['failed']) === false) {
         if ($pdf === 0) {
             $table->colspan['failed']['cell'] = 3;
             $table->cellstyle['failed']['cell'] = 'text-align: center;';
@@ -1501,59 +1501,76 @@ function reporting_html_inventory($table, $item, $pdf=0)
             $return_pdf .= $item['failed'];
         }
     } else {
-        foreach ($item['data'] as $module_item) {
-            $table1 = new stdClass();
-            $table1->width = '99%';
+        // Grouped type inventory.
+        $type_modules = array_reduce(
+            $item['data'],
+            function ($carry, $it) {
+                $carry[$it['name']][] = $it;
+                return $carry;
+            },
+            []
+        );
 
-            $first = reset($module_item['data']);
-            $count_columns = count($first);
+        if (isset($type_modules) === true
+            && is_array($type_modules) === true
+        ) {
+            foreach ($type_modules as $key_type_module => $type_module) {
+                $table1 = new stdClass();
+                $table1->width = '99%';
+                $table1->data = [];
+                $table1->head = [];
+                $table1->cellstyle = [];
+                $table1->headstyle = [];
+                if (isset($type_module) === true
+                    && is_array($type_module) === true
+                ) {
+                    foreach ($type_module as $key_type => $module) {
+                        if (isset($module['data']) === true
+                            && is_array($module['data']) === true
+                        ) {
+                            array_pop($module['data']);
+                            foreach ($module['data'] as $k_module => $v_module) {
+                                $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
+                                $table1->head[0] = __('Agent');
+                                $table1->head[1] = __('Module');
+                                $table1->head[2] = __('Date');
+                                $table1->headstyle[0] = 'text-align: left';
+                                $table1->headstyle[1] = 'text-align: left';
+                                $table1->headstyle[2] = 'text-align: left';
+                                $table1->cellstyle[$str_key][0] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][1] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][2] = 'text-align: left;';
+                                $table1->data[$str_key][0] = $module['agent_name'];
+                                $table1->data[$str_key][1] = $key_type_module;
+                                $dateModule = explode(' ', $module['timestamp']);
+                                $table1->data[$str_key][2] = $dateModule[0];
+                                if (isset($v_module) === true
+                                    && is_array($v_module) === true
+                                ) {
+                                    foreach ($v_module as $k => $v) {
+                                        $table1->head[$k] = $k;
+                                        $table1->headstyle[$k] = 'text-align: left';
+                                        $table1->cellstyle[$str_key][$k] = 'text-align: left;';
+                                        $table1->data[$str_key][$k] = $v;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-            $table1->cellstyle[0][0] = 'background: #373737; color: #FFF;';
-            $table1->data[0][0] = $module_item['agent_name'];
-            if ($count_columns == 1) {
-                $table1->colspan[0][0] = ($count_columns + 1);
-            } else {
-                $table1->colspan[0][0] = $count_columns;
-            }
-
-            $table1->cellstyle[1][0] = 'background: #373737; color: #FFF;';
-            $table1->cellstyle[1][1] = 'background: #373737; color: #FFF;';
-            $table1->data[1][0] = $module_item['name'];
-            if (($count_columns - 1) > 0) {
-                $table1->colspan[1][0] = ($count_columns - 1);
-            }
-
-            $table1->data[1][1] = $module_item['timestamp'];
-
-            $table1->cellstyle[2] = array_pad(
-                [],
-                $count_columns,
-                'background: #373737; color: #FFF;'
-            );
-            $table1->data[2] = array_keys($first);
-            if (($count_columns - 1) == 0) {
-                $table1->colspan[2][0] = ($count_columns + 1);
-            }
-
-            $table1->data = array_merge(
-                $table1->data,
-                $module_item['data']
-            );
-
-            if ($pdf === 0) {
-                $table->colspan[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = 3;
-                $table->data[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = html_print_table(
-                    $table1,
-                    true
-                );
-            } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
-                $return_pdf .= html_print_table(
-                    $table1,
-                    true
-                );
+                if ($pdf === 0) {
+                    $table->colspan[$key_type_module]['cell'] = 3;
+                    $table->data[$key_type_module]['cell'] = html_print_table(
+                        $table1,
+                        true
+                    );
+                } else {
+                    $return_pdf .= html_print_table(
+                        $table1,
+                        true
+                    );
+                }
             }
         }
     }

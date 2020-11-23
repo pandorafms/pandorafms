@@ -1712,7 +1712,7 @@ function visual_map_print_item(
                 $img_style_title = strip_tags($label);
                 if ($layoutData['type'] == STATIC_GRAPH) {
                     if ($layoutData['id_agente_modulo'] != 0) {
-                        if ($layoutData['id_metaconsole'] != 0) {
+                        if (is_metaconsole() && $layoutData['id_metaconsole'] != 0) {
                             // Metaconsole db connection
                             $connection = db_get_row_filter(
                                 'tmetaconsole_setup',

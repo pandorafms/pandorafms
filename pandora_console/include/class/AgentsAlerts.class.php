@@ -140,7 +140,7 @@ class AgentsAlerts extends HTML
 
         // Capture all parameters before start.
         $this->ajaxController = $ajaxController;
-        // Pure variable for full screen selection
+        // Pure variable for full screen selection.
         $this->pure = $config['pure'];
         // Id user.
         $this->idUser = $config['id_user'];

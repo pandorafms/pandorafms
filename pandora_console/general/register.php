@@ -148,7 +148,8 @@ if ($initial && users_is_admin()) {
     config_wiz_modal(
         false,
         true,
-        (($registration === true) ? 'show_registration_wizard()' : null)
+        (($registration === true) ? 'show_registration_wizard()' : null),
+        true
     );
 }
 
@@ -159,7 +160,8 @@ if (!$config['disabled_newsletter']) {
             false,
             // Launch only if not being launch from 'initial'.
             !$initial,
-            (($show_newsletter === true) ? 'force_run_newsletter()' : null)
+            (($show_newsletter === false) ? 'force_run_newsletter()' : null),
+            true
         );
     } else {
         if ($show_newsletter) {
@@ -167,7 +169,8 @@ if (!$config['disabled_newsletter']) {
             newsletter_wiz_modal(
                 false,
                 // Launch only if not being call from 'registration'.
-                !$registration && !$initial
+                !$registration && !$initial,
+                true
             );
         }
     }

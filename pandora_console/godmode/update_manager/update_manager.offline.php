@@ -44,6 +44,16 @@ if (! check_acl($config['id_user'], 0, 'PM')
     return;
 }
 
+require_once $config['homedir'].'/include/functions_update_manager.php';
+
+
+if (update_manager_verify_license_expired()) {
+    ui_print_error_message(
+        __('The license has expired. Please contact Artica at info@artica.es')
+    );
+    return;
+}
+
 $baseurl = ui_get_full_url(false, false, false, false);
 
 $current_package = db_get_value(

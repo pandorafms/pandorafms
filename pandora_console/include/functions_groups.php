@@ -104,7 +104,7 @@ function groups_check_used($idGroup)
 
     if ($numRows > 0) {
         $return['return'] = true;
-        $return['tables'][] = __('Recon task');
+        $return['tables'][] = __('Discovery task');
     }
 
     switch ($config['dbtype']) {

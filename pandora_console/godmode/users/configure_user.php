@@ -1387,14 +1387,32 @@ $(document).ready (function () {
         });
     });
 
-    $('#submit-crtbutton').click(function (e) {
+    function checkProfiles(e) {
         e.preventDefault();
-        var rows = $("#table_profiles tr").length;
-        if ((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 2)) {
-            alert('<?php echo __('please add a profile'); ?>');
+        if ($('input[name="is_admin"]:checked').val() == 1) {
+            // Admin does not require profiles.
+            $('#user_profile_form').submit();
         } else {
-            this.form.submit();
+            if ($('#table_profiles tbody').children().length == 1) {
+                confirmDialog({
+                    title: "<?php echo __('Warning'); ?>",
+                    message: "<?php echo __('User will be created without profiles assigned and won\'t be able to log in, are you sure?'); ?>",
+                    onAccept: function() {
+                        $('#user_profile_form').submit();
+                    }
+                });
+            } else {
+                $('#user_profile_form').submit();
+            }
         }
+    }
+
+    $('#submit-crtbutton').click(function (e) {
+        checkProfiles(e);
+    });
+
+    $('#submit-uptbutton').click(function (e) {
+        checkProfiles(e);
     });
 });
 

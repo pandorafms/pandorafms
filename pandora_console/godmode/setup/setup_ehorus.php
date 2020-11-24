@@ -82,6 +82,7 @@ $table_remote->data['ehorus_user'] = $row;
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('ehorus_pass', true);
 $table_remote->data['ehorus_pass'] = $row;
 
 // Directory hostname.

@@ -2957,7 +2957,7 @@ function reporting_group_report($report, $content)
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(' AND id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $sql_where = sprintf(' WHERE id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
         $events = events_get_events_grouped(
             $sql_where,
             0,

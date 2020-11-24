@@ -3754,7 +3754,6 @@ $(document).ready (function () {
                 $('#checkbox-recursion').removeAttr('disabled')
             }
 
-            $("#id_agents").html('');
             $("#id_agents2").html('');
             $("#module").html('');
             $("#inventory_modules").html('');

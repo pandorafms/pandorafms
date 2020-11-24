@@ -1724,12 +1724,6 @@ input.pure_normal {
   background-size: 21px 21px;
 }
 
-.full_screen_button {
-  color: transparent;
-  width: 100%;
-  border: 0;
-}
-
 /* end of classes for event priorities */
 div#main_pure {
   background-color: #fefefe;

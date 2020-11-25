@@ -60,3 +60,7 @@
 .agents_alerts_header form > ul > li:nth-child(1n + 1) {
   margin-left: 2em;
 }
+
+.pagination-bottom {
+  margin-top: 15px;
+}

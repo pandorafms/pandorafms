@@ -4087,13 +4087,17 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 function ui_forced_public_url()
 {
     global $config;
-    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+
+    $exclusions = [];
+    if (empty($config['public_url_exclusions']) === false) {
+        $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+    }
 
     if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
         return false;
     }
 
-    return (bool) $config['force_public_url'];
+    return isset($config['force_public_url']) && (bool) $config['force_public_url'];
 }
 
 

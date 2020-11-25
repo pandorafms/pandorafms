@@ -2169,6 +2169,55 @@ function html_print_div($options, $return=false)
 
 
 /**
+ * Render an anchor html element.
+ *
+ * @param array   $options Parameters
+ *                - id: string
+ *                - style: string
+ *                - title: string
+ *                - href: string.
+ * @param boolean $return  Return or echo flag.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_anchor(
+    array $options,
+    bool $return=false
+) {
+    $output = '<a ';
+
+    // Valid attributes (invalid attributes get skipped).
+    $attrs = [
+        'id',
+        'style',
+        'class',
+        'title',
+    ];
+
+    $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
+
+    foreach ($attrs as $attribute) {
+        if (isset($options[$attribute])) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        }
+    }
+
+    $output .= '>';
+
+    $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
+
+    $output .= '</a>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
+/**
  * Render an input password element.
  *
  * The element will have an id like: "password-$name"
@@ -4217,8 +4266,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         }
     }
 
+    // If wrapper has attributes.
+    // TODO. There is possible improve this handle of attributes.
+    if (isset($data['wrapper_attributes'])) {
+        $wrapper_attributes = $data['wrapper_attributes'];
+    } else {
+        $wrapper_attributes = '';
+    }
+
     if (isset($data['wrapper']) === true) {
-        $output = '<'.$data['wrapper'].' id="wr_'.$data['name'].'" ';
+        $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
     }
 

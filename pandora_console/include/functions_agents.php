@@ -1301,6 +1301,17 @@ function agents_get_group_agents(
             $key = $row['id_agente'];
         }
 
+        if ($row['id_server'] !== '') {
+            if (is_metaconsole()) {
+                $server_name = db_get_row_filter(
+                    'tmetaconsole_setup',
+                    'id = '.$row['id_server'].'',
+                    'server_name'
+                );
+                $row['alias'] .= ' ('.$server_name['server_name'].')';
+            }
+        }
+
         switch ($case) {
             case 'lower':
                 $value = mb_strtolower($row['alias'], 'UTF-8');

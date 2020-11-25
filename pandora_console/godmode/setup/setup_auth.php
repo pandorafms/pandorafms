@@ -334,20 +334,24 @@ echo '</form>';
     $( document ).ready(function() {   
     //For change autocreate remote users
 
-    $('input[type=checkbox][name=double_auth_enabled]').change(function () {  
-                if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
-                    $('#table1-2FA_all_users').show();
-                    $('#table3-2FA_all_users').show();
-                    $('#table5-2FA_all_users').show();
-                }
-                else {
-                    $('input[type=checkbox][name=2FA_all_users][value=1]').prop('checked', false);
-                    $('#table1-2FA_all_users').hide();
-                    $('#table3-2FA_all_users').hide();
-                    $('#table5-2FA_all_users').hide();
-                }
+    if ($('#checkbox-double_auth_enabled').val() == 1) {
+        $('#table1-2FA_all_users').show();
+     } else {
+        $('#table1-2FA_all_users').hide();
+     }
+
+        $('input[type=checkbox][name=double_auth_enabled]').change(function () {
+            if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
+                $('#table1-2FA_all_users').show();
+            }
+            else {
+                $('input[type=checkbox][name=double_auth_enabled]:checked').value = 0;
+                $('#table1-2FA_all_users').hide();
+                $('input[type=checkbox][name=2FA_all_users][value=0]').prop('checked', false);
+            }
             }).change();
-    });
+        });
+
     $('#auth').on('change', function(){
         type_auth = $('#auth').val();
         $.ajax({

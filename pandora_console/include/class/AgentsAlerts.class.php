@@ -1018,8 +1018,20 @@ class AgentsAlerts extends HTML
             $(document).ready(function () {
                 var pure = $('#hidden-pure');
                 var mainForm = $('#form-header-filters');
+                var timeout;
 
                 <?php if ($this->pure == 1) { ?>
+                    $('.agents_alerts_header').addClass('agent_alerts_header_pure');
+                    $('.agents_alerts_header').attr('style', 'display: none');
+
+                    document.onmousemove = function(){
+                        clearTimeout(timeout);
+                        $('.agents_alerts_header').attr('style', 'display: block');
+                        timeout = setTimeout(function(){
+                            $('.agents_alerts_header').attr('style', 'display: none');
+                        }, 1000)
+                    }
+
                     setTimeout(function(){
                         mainForm.submit();
                     },

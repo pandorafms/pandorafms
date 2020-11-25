@@ -48,6 +48,10 @@
   border: 0;
 }
 
+.agent_alerts_header_pure {
+  position: absolute;
+}
+
 .agents_alerts_header form > ul > li {
   display: inline-flex;
 }

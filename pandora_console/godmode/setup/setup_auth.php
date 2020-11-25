@@ -334,22 +334,28 @@ echo '</form>';
     $( document ).ready(function() {   
     //For change autocreate remote users
 
-    if ($('#checkbox-double_auth_enabled').val() == 1) {
-        $('#table1-2FA_all_users').show();
-     } else {
-        $('#table1-2FA_all_users').hide();
-     }
 
-        $('input[type=checkbox][name=double_auth_enabled]').change(function () {
+
+        $('#checkbox-double_auth_enabled').change(function () {
+            $('#checkbox-double_auth_enabled').val("1");
+
             if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
                 $('#table1-2FA_all_users').show();
             }
             else {
-                $('input[type=checkbox][name=double_auth_enabled]:checked').value = 0;
+                $('#checkbox-double_auth_enabled').val("0");
                 $('#table1-2FA_all_users').hide();
                 $('input[type=checkbox][name=2FA_all_users][value=0]').prop('checked', false);
             }
             }).change();
+        
+            if ($('#checkbox-double_auth_enabled').val() == 1) {
+                $('#table1-2FA_all_users').show();
+            } else {
+                $('#table1-2FA_all_users').hide();
+            }
+        
+        
         });
 
     $('#auth').on('change', function(){

@@ -535,20 +535,30 @@ $table_advanced->data[0][1] = html_print_input_text(
 );
 
 $table_advanced->data[0][3] = __('Unit');
-// $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
-// $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
-// $table_advanced->colspan[1][4] = 3;
-$table_advanced->data[0][4] = html_print_extended_select_for_unit(
+$table_advanced->data[0][4] = html_print_input_text(
     'unit',
     $unit,
     '',
-    '',
-    '0',
-    false,
+    20,
+    65,
     true,
+    $disabledBecauseInPolicy,
     false,
-    false
+    '',
+    $classdisabledBecauseInPolicy
 );
+// $table_advanced->colspan[1][4] = 3;
+// $table_advanced->data[0][4] = html_print_extended_select_for_unit(
+// 'unit',
+// $unit,
+// '',
+// '',
+// '0',
+// false,
+// true,
+// false,
+// false
+// );
 $table_advanced->colspan[0][4] = 3;
 
 $module_id_policy_module = 0;
@@ -1340,115 +1350,117 @@ $(document).ready (function () {
         var type_name_selected = type_names[type_selected];
         var element = document.getElementById("module_type_help");
         var language =  "<?php echo $config['language']; ?>" ;
-        element.onclick = function (event) {
-            if(type_name_selected == 'async_data' ||
-             type_name_selected == 'async_proc' ||
-             type_name_selected == 'async_string' ||
-             type_name_selected == 'generic_proc'||
-             type_name_selected == 'generic_data' ||
-             type_name_selected == 'generic_data_inc' ||
-             type_name_selected == 'generic_data_inc_abs'||
-             type_name_selected == 'generic_data_string' ||
-             type_name_selected == 'keep_alive'
-               ){
-                if (language == 'es'){
-                 window.open(
-                     'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
-                     '_blank',
-                     'width=800,height=600'
-                        );
-               }
-               else{
-                window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-               }
-              
-                
-            }
-            if(type_name_selected == 'remote_icmp' ||
-             type_name_selected == 'remote_icmp_proc'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-              
-                
-            }
-            if(type_name_selected == 'remote_snmp_string' ||
-             type_name_selected == 'remote_snmp_proc' ||
-             type_name_selected == 'remote_snmp_inc' ||
-             type_name_selected == 'remote_snmp'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-               
-                
-            }
-            if(type_name_selected == 'remote_tcp_string' ||
-             type_name_selected == 'remote_tcp_proc' ||
-             type_name_selected == 'remote_tcp_inc' ||
-             type_name_selected == 'remote_tcp'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
+        if (typeof element !== 'undefined' && element !== null) {
+            element.onclick = function (event) {
+                if(type_name_selected == 'async_data' ||
+                 type_name_selected == 'async_proc' ||
+                 type_name_selected == 'async_string' ||
+                 type_name_selected == 'generic_proc'||
+                 type_name_selected == 'generic_data' ||
+                 type_name_selected == 'generic_data_inc' ||
+                 type_name_selected == 'generic_data_inc_abs'||
+                 type_name_selected == 'generic_data_string' ||
+                 type_name_selected == 'keep_alive'
+                   ){
+                    if (language == 'es'){
+                     window.open(
+                         'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                         '_blank',
+                         'width=800,height=600'
+                            );
                    }
                    else{
                     window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                         '_blank',
+                         'width=800,height=600'
+                         );
                    }
-            }
-            if(type_name_selected == 'web_data' ||
-             type_name_selected == 'web_proc' ||
-             type_name_selected == 'web_content_data' ||
-             type_name_selected == 'web_content_string'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-                   else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
+                  
+                    
+                }
+                if(type_name_selected == 'remote_icmp' ||
+                 type_name_selected == 'remote_icmp_proc'
+                 ){
+                     if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                     else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                  
+                    
+                }
+                if(type_name_selected == 'remote_snmp_string' ||
+                 type_name_selected == 'remote_snmp_proc' ||
+                 type_name_selected == 'remote_snmp_inc' ||
+                 type_name_selected == 'remote_snmp'
+                 ){
+                     if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                     else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                   
+                    
+                }
+                if(type_name_selected == 'remote_tcp_string' ||
+                 type_name_selected == 'remote_tcp_proc' ||
+                 type_name_selected == 'remote_tcp_inc' ||
+                 type_name_selected == 'remote_tcp'
+                   ){
+                       if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                       else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                }
+                if(type_name_selected == 'web_data' ||
+                 type_name_selected == 'web_proc' ||
+                 type_name_selected == 'web_content_data' ||
+                 type_name_selected == 'web_content_string'
+                   ){
+                       if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                       else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                }
             }
         }
 

@@ -230,21 +230,6 @@ function pandoraFlotPieCustom(
     );
   }
   var legends = $("#" + graph_id + " .legendLabel");
-  var j = 0;
-  legends.each(function() {
-    //$(this).css("width", $(this).width());
-    $(this).css("font-size", font_size + "pt");
-    $(this).removeClass("legendLabel");
-    $(this).addClass(font);
-    $(this).text(legend[j]);
-    j++;
-  });
-
-  if ($('input[name="custom_graph"]').val()) {
-    $(".legend>div").css("right", $(".legend>div").height() * -1);
-    $(".legend>table").css("right", $(".legend>div").height() * -1);
-  }
-  //$('.legend>table').css('border',"1px solid #E2E2E2");
 
   if (background_color == "transparent") {
     $(".legend>table").css("background-color", "");

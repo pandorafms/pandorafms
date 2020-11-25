@@ -170,8 +170,8 @@ class Group extends Entity
     private static function prepareGroups(array $groups):array
     {
         $return = [];
-        $groups = \groups_get_groups_tree_recursive($groups);
-        foreach ($groups as $k => $v) {
+        $tree_groups = \groups_get_groups_tree_recursive($groups);
+        foreach ($tree_groups as $k => $v) {
             $return[] = [
                 'id'    => $k,
                 'text'  => \io_safe_output(
@@ -187,8 +187,29 @@ class Group extends Entity
             ];
         }
 
-        return $return;
+        $unassigned = [];
+        $processed = array_keys($tree_groups);
+        foreach ($groups as $k => $v) {
+            if (in_array($k, $processed) === true) {
+                continue;
+            }
 
+            $unassigned[] = [
+                'id'    => $k,
+                'text'  => \io_safe_output(
+                    \ui_print_truncate_text(
+                        $v,
+                        GENERIC_SIZE_TEXT,
+                        false,
+                        true,
+                        false
+                    )
+                ),
+                'level' => 0,
+            ];
+        }
+
+        return array_merge($unassigned, $return);
     }
 
 
@@ -291,18 +312,25 @@ class Group extends Entity
             ]
         );
 
-        $exclusions = json_decode(\io_safe_output($exclusions));
+        $exclusions = json_decode(\io_safe_output($exclusions), true);
         if (empty($exclusions) === false) {
             foreach ($exclusions as $ex) {
                 unset($groups[$ex]);
             }
         }
 
-        $inclusions = json_decode(\io_safe_output($inclusions));
+        $inclusions = json_decode(\io_safe_output($inclusions), true);
         if (empty($inclusions) === false) {
-            foreach ($inclusions as $g) {
-                if (empty($groups[$g]) === true) {
-                    $groups[$g] = \groups_get_name($g);
+            foreach ($inclusions as $k => $g) {
+                if (empty($groups[$k]) === true) {
+                    if (is_numeric($g) === true) {
+                        $groups[$k] = \groups_get_name($k);
+                    }
+
+                    if (empty($groups[$k]) === true) {
+                        // Group does not exist, direct value assigned.
+                        $groups[$k] = $g;
+                    }
                 }
             }
         }

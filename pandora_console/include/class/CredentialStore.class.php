@@ -248,7 +248,7 @@ class CredentialStore extends Wizard
                 );
             } else {
                 $groups = [ $filter['filter_id_group'] ];
-                $childrens = groups_get_childrens($id_group, null, true);
+                $childrens = groups_get_children($id_group, null, true);
                 if (!empty($childrens)) {
                     foreach ($childrens as $child) {
                         $groups[] = (int) $child['id_grupo'];

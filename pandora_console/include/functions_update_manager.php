@@ -74,6 +74,24 @@ function update_manager_verify_trial()
 
 
 /**
+ * Check if the trial license is not expired.
+ *
+ * @return boolean true if the trial license is expired, false otherwise.
+ */
+function update_manager_verify_license_expired()
+{
+    global $config;
+
+    $current_date = date('Ymd');
+    if (isset($config['license_expiry_date']) && $current_date >= $config['license_expiry_date']) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
  * Parses responses from configuration wizard.
  *
  * @return void
@@ -454,13 +472,20 @@ function registration_wiz_process()
 function registration_wiz_modal(
     $return=false,
     $launch=true,
-    $callback=false
+    $callback=false,
+    $return_message=false
 ) {
     global $config;
     $output = '';
 
     // Do not show the wizard for trial licenses.
     if (update_manager_verify_trial()) {
+        ui_print_info_message('Your license is trial. Please contact Artica at info@artica.es for a valid license', '', $return_message);
+        return '';
+    }
+
+    if (update_manager_verify_license_expired()) {
+        ui_print_error_message('The license has expired. Please contact Artica at info@artica.es', '', $return_message);
         return '';
     }
 
@@ -1752,6 +1777,12 @@ function update_manager_extract_package()
 
         return false;
     }
+
+    // An update have been applied, clean phantomjs cache.
+    config_update_value(
+        'clean_phantomjs_cache',
+        1
+    );
 
     db_process_sql_update(
         'tconfig',

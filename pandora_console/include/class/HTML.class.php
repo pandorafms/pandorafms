@@ -547,6 +547,7 @@ class HTML
         } else {
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
+                && $input['arguments']['type'] != 'datalist'
             ) {
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';

@@ -1,0 +1,43 @@
+# Use root/example as user/password credentials
+# este compose incluye la base de datos en otro docker y levanta aplicacion y DB juntos
+version: '3.1'
+
+services:
+
+  db:
+    image: pandorafms/pandorafms-percona-base
+    restart: always
+    #command: ["mysqld", "--innodb-buffer-pool-size=900M"] 
+    environment:
+      MYSQL_ROOT_PASSWORD: pandora
+      MYSQL_DATABASE: pandora
+      MYSQL_USER: pandora
+      MYSQL_PASSWORD: pandora
+    networks:
+     - pandora
+
+  pandora:
+    image: pandorafms/pandorafms-open-stack-el8:latest
+    restart: always
+    depends_on:
+      - db
+    environment:
+      MYSQL_ROOT_PASSWORD: pandora
+      DBHOST: db
+      DBNAME: pandora
+      DBUSER: pandora
+      DBPASS: pandora
+      DBPORT: 3306
+      INSTANCE_NAME: pandora01
+      PUBLICURL: ""
+      SLEEP: 5
+      RETRIES: 10
+    networks:
+     - pandora
+    ports:
+      - "8080:80"
+      - "41121:41121"
+      - "162:162/udp"
+      - "9995:9995/udp"
+networks:
+  pandora:

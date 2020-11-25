@@ -688,7 +688,7 @@ select:-internal-list-box {
   float: right;
 }
 .invisible {
-  display: none;
+  display: none !important;
 }
 
 div#page {
@@ -1708,6 +1708,20 @@ input.remove-item-img {
   background-image: url(../../images/delete.png);
   background-repeat: no-repeat;
   background-position: center;
+}
+
+button.pure_full,
+input.pure_full {
+  background-image: url(../../images/full_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+}
+
+button.pure_normal,
+input.pure_normal {
+  background-image: url(../../images/normal_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
 }
 
 /* end of classes for event priorities */
@@ -5798,6 +5812,13 @@ div#status_pie {
   border-radius: 5px;
 }
 
+.status_rounded_rectangles.text_inside {
+  color: #ffffff;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 0.4em;
+}
+
 .status_small_squares,
 .status_balls {
   width: 12px;
@@ -6038,4 +6059,13 @@ div.graph td.legendLabel {
 div.graph div.legend div,
 div.graph div.legend table {
   top: 25px !important;
+}
+
+.rotate_text_module {
+  -ms-transform: rotate(270deg);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  writing-mode: lr-tb;
+  white-space: nowrap;
 }

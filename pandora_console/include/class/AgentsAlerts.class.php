@@ -35,23 +35,13 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
-require_once 'include/functions_reporting.php';
-require_once 'include/config.php';
-
-use PandoraFMS\Module;
+require_once $config['homedir'].'/include/functions_reporting.php';
 
 /**
  * AgentWizard class
  */
 class AgentsAlerts extends HTML
 {
-
-    /**
-     * Var that contain very cool stuff
-     *
-     * @var string
-     */
-    private $ajaxController;
 
     /**
      * Selected refresh rate
@@ -113,11 +103,9 @@ class AgentsAlerts extends HTML
     /**
      * Constructor
      *
-     * @param string $ajaxController Path.
-     *
      * @return $this
      */
-    public function __construct(string $ajaxController)
+    public function __construct()
     {
         global $config;
 
@@ -138,8 +126,6 @@ class AgentsAlerts extends HTML
             exit;
         }
 
-        // Capture all parameters before start.
-        $this->ajaxController = $ajaxController;
         // Pure variable for full screen selection.
         $this->pure = $config['pure'];
         // Id user.

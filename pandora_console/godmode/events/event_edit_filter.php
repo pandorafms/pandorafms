@@ -138,7 +138,8 @@ if ($update || $create) {
                 ['id_agente_modulo' => $id_agent_module]
             )
         );
-    }    
+    }
+
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');

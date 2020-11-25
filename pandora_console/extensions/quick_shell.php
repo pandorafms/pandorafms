@@ -468,6 +468,7 @@ function quickShellSettings()
         100,
         true
     );
+    $hidden->data[1][1] .= ui_print_reveal_password('gotty_pass', true);
 
     html_print_table($t);
 

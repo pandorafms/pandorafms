@@ -2289,13 +2289,19 @@ function check_login($output=true)
  * @param integer $id_group     Agents group id to check from
  * @param string  $access       Access privilege
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ * @param boolean $cache        Use cache.
  *
  * @return boolean 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
-{
+function check_acl(
+    $id_user,
+    $id_group,
+    $access,
+    $onlyOneGroup=false,
+    $cache=true
+) {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -2305,7 +2311,15 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
     }
 
     if ($id_group != 0 || $onlyOneGroup === true) {
-        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+        $groups_list_acl = users_get_groups(
+            $id_user,
+            $access,
+            false,
+            true,
+            null,
+            'id_grupo',
+            $cache
+        );
     } else {
         $groups_list_acl = get_users_acl($id_user);
     }
@@ -2330,16 +2344,17 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
 /**
  * Check the ACL of a list of groups.
  *
- * @param string $id_user to check the ACL
- * @param array  $groups. All groups to check
- * @param string $access. Profile to check
+ * @param string  $id_user to check the ACL
+ * @param array   $groups. All groups to check
+ * @param string  $access. Profile to check
+ * @param boolean $cache   Use cached group information.
  *
  * @return boolean True if at least one of this groups check the ACL
  */
-function check_acl_one_of_groups($id_user, $groups, $access)
+function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 {
     foreach ($groups as $group) {
-        if (check_acl($id_user, $group, $access)) {
+        if (check_acl($id_user, $group, $access, false, $cache)) {
             return true;
         }
     }

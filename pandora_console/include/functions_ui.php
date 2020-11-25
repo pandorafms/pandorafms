@@ -2041,6 +2041,10 @@ function ui_pagination(
         'disable_user',
         'delete_user',
     ];
+
+    // Check if url has &#x20; blankspace and replace it.
+    preg_replace('/\&#x20;/', '%20', $url);
+
     $url = explode('&', $url);
 
     $finalUrl = [];
@@ -2118,7 +2122,7 @@ function ui_pagination(
             $output .= "<a class='pagination-arrows ".$other_class." offset_0'
 				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".$url.'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -4009,7 +4013,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
                 $url .= $key.'['.$k.']='.$v.'&';
             }
         } else {
-            $url .= $key.'='.io_safe_input($value).'&';
+            $url .= $key.'='.io_safe_input(rawurlencode($value)).'&';
         }
     }
 
@@ -6127,4 +6131,30 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
             echo '</div>';
         echo '</div>';
     echo '</div>';
+}
+
+
+/**
+ * Generate a button for reveal the content of the password field.
+ *
+ * @param string  $name   Name of the field.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_reveal_password(string $name, bool $return=false)
+{
+    if (is_metaconsole()) {
+        $imagePath = '../../images/';
+    } else {
+        $imagePath = 'images/';
+    }
+
+    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+
+    if ($return === true) {
+        return $output;
+    }
+
+    echo $output;
 }

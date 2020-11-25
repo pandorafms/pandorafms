@@ -189,6 +189,10 @@ if (is_ajax()) {
                     100,
                     true
                 );
+                $row['control'] .= ui_print_reveal_password(
+                    'ldap_admin_pass',
+                    true
+                );
                 $table->data['ldap_admin_pass'] = $row;
             break;
 

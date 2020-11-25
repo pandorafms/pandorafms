@@ -689,9 +689,24 @@ class Tree
             );
         }
 
-        // Alerts fired image
+        $module_alerts = alerts_get_alerts_agent_module($module['id']);
+
+        $module_alert_triggered = false;
+
+        foreach ($module_alerts as $module_alert) {
+            if ($module_alert['times_fired'] > 0) {
+                $module_alert_triggered = true;
+            }
+        }
+
+        // Module has alerts.
         if ((bool) $module['alerts']) {
-            $module['alertsImageHTML'] = html_print_image('images/bell.png', true, ['title' => __('Module alerts')]);
+            // Module has alerts triggered.
+            if ($module_alert_triggered === true) {
+                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts')]);
+            } else {
+                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts')]);
+            }
         }
     }
 
@@ -813,7 +828,7 @@ class Tree
 
         // Quiet image
         if (isset($agent['quiet']) && $agent['quiet']) {
-            $agent['quietImageHTML'] = html_print_image('/images/dot_blue.png', true, ['title' => __('Quiet')]);
+               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children

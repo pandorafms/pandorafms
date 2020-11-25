@@ -464,7 +464,7 @@ class AgentsAlerts extends HTML
     {
         global $config;
 
-        $block = 20;
+        $block = 10;
 
         $filter = [
             'offset' => (int) $this->offset,
@@ -595,6 +595,16 @@ class AgentsAlerts extends HTML
             echo '</th>';
         }
 
+        // Dynamic Size.
+        if ($this->pure == 1) {
+            // Count of templates.
+            $templateCount = count($templates_raw);
+            // Define a dynamic size.
+            $thSize = floor(80 / $templateCount).'%';
+        } else {
+            $thSize = '8%';
+        }
+
         foreach ($templates_raw as $temp) {
             if (isset($templates[$temp['id']]) && $templates[$temp['id']] == '') {
                 $ntemplates++;
@@ -609,14 +619,14 @@ class AgentsAlerts extends HTML
                     $outputLine = html_print_div(
                         [
                             'id'      => 'line_header_'.$temp['id'],
-                            'class'   => 'rotate_text_module position_text_module center',
+                            'class'   => 'rotate_text_module position_text_module',
                             'style'   => '',
-                            'content' => '<span title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</span>',
+                            'content' => '<div title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</div>',
                         ],
                         true
                     );
 
-                    echo sprintf('<th class="header_table_caption_cell">%s</th>', $outputLine);
+                    echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
                 }
             }
         }
@@ -1030,24 +1040,6 @@ class AgentsAlerts extends HTML
                     mainForm.submit();
                 });
 
-                //Get max width of name of modules
-                max_width = 0;
-                $.each($('.th_class_module_r'), function (i, elem) {
-                    id = $(elem).attr('id').replace('th_module_r_', '');
-                    
-                    width = $("#div_module_r_" + id).width();
-                    
-                    if (max_width < width) {
-                        max_width = width;
-                    } 
-                });
-                
-                $.each($('.th_class_module_r'), function (i, elem) {
-                    id = $(elem).attr('id').replace('th_module_r_', '');
-                    $("#th_module_r_" + id).height(($("#div_module_r_" + id).width() + 10) + 'px');
-                    $("#div_module_r_" + id).css('margin-top', (max_width - 20) + 'px');
-                    $("#div_module_r_" + id).show();
-                });
             });
 
             function show_alerts_details(id) {

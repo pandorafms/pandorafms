@@ -6,25 +6,30 @@
 }
 
 .agents_modules_table .next_previous_step {
-  width: 25px;
+  width: 0.1%;
 }
 
 .agents_modules_table .header_table_principal_cell {
   text-align: right !important;
   padding-right: 13px;
-  min-width: 130px;
-  width: 100%;
+  width: 20%;
 }
 
 .agents_modules_table .header_table_caption_cell {
-  min-width: 70px;
-  max-width: 105px;
   height: 200px;
 }
 
 .agents_modules_table .position_text_module {
-  margin: 0 -10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
+
+/* .agents_modules_table .position_text_module div {
+  padding-left: 10px;
+  margin-top: 90px;
+} */
 
 #full_screen_refresh_box,
 #slc-refresh-rate,

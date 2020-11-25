@@ -44,13 +44,6 @@ class AgentsAlerts extends HTML
 {
 
     /**
-     * Var that contain very cool stuff
-     *
-     * @var string
-     */
-    private $ajaxController;
-
-    /**
      * Selected refresh rate
      *
      * @var string
@@ -110,11 +103,9 @@ class AgentsAlerts extends HTML
     /**
      * Constructor
      *
-     * @param string $ajaxController Path.
-     *
      * @return $this
      */
-    public function __construct(string $ajaxController)
+    public function __construct()
     {
         global $config;
 
@@ -135,8 +126,6 @@ class AgentsAlerts extends HTML
             exit;
         }
 
-        // Capture all parameters before start.
-        $this->ajaxController = $ajaxController;
         // Pure variable for full screen selection.
         $this->pure = $config['pure'];
         // Id user.

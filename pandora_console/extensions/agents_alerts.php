@@ -54,16 +54,12 @@ if ($sec2 === 'extensions/agents_alerts') {
  */
 function mainAgentsAlerts()
 {
-    global $ajaxPage;
-    // This page.
-    $thisOwnPage = 'index.php?sec=view&sec2=extensions/agents_alerts';
     // Ajax variables.
-    $ajaxPage    = 'extensions/agents_alerts';
     $pageName    = '[AgentsAlerts]';
     // Control call flow.
     try {
         // User access and validation is being processed on class constructor.
-        $obj = new AgentsAlerts($ajaxPage);
+        $obj = new AgentsAlerts();
     } catch (Exception $e) {
         if (is_ajax() === true) {
             echo json_encode(['error' => $pageName.$e->getMessage() ]);

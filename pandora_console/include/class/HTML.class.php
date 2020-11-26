@@ -547,7 +547,13 @@ class HTML
         } else {
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
+                && $input['arguments']['type'] != 'datalist'
             ) {
+                // Raw content for attach at the start of the input.
+                if (isset($input['surround_start']) === true) {
+                    $output .= $input['surround_start'];
+                }
+
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
@@ -561,6 +567,11 @@ class HTML
                 $output .= $input['extra'];
                 if (!$direct) {
                     $output .= '</li>';
+                }
+
+                // Raw content for attach at the end of the input.
+                if (isset($input['surround_end']) === true) {
+                    $output .= $input['surround_end'];
                 }
             } else {
                 $output .= self::printInput($input['arguments']);

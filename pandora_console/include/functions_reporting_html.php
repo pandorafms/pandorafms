@@ -501,6 +501,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->head[5] = __('Status');
 
             $table1->headstyle = [];
+            $table1->headstyle[0] = 'text-align: left';
+            $table1->headstyle[1] = 'text-align: left';
             $table1->headstyle[2] = 'text-align: right';
             $table1->headstyle[3] = 'text-align: right';
             $table1->headstyle[4] = 'text-align: right';
@@ -536,6 +538,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table2->head[6] = __('Downtime');
 
             $table2->headstyle = [];
+            $table2->headstyle[0] = 'text-align: left';
+            $table2->headstyle[1] = 'text-align: left';
             $table2->headstyle[2] = 'text-align: right';
             $table2->headstyle[3] = 'text-align: right';
             $table2->headstyle[4] = 'text-align: right';
@@ -548,7 +552,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
 
             $table3->align = [];
             $table3->align[0] = 'left';
-            $table3->align[1] = 'left';
+            $table3->align[1] = 'right';
             $table3->align[2] = 'right';
             $table3->align[3] = 'right';
             $table3->align[4] = 'right';
@@ -565,6 +569,8 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table3->head[4] = __('Checks Unknown');
 
             $table3->headstyle = [];
+            $table3->headstyle[0] = 'text-align: left';
+            $table3->headstyle[1] = 'text-align: right';
             $table3->headstyle[2] = 'text-align: right';
             $table3->headstyle[3] = 'text-align: right';
             $table3->headstyle[4] = 'text-align: right';
@@ -721,23 +727,23 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     true
                 );
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
                 );
-                $table2->title = $item['title'];
-                $table2->titleclass = 'title_table_pdf';
-                $table2->titlestyle = 'text-align:left;';
+                // $table2->title = $item['title'];
+                // $table2->titleclass = 'title_table_pdf';
+                // $table2->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table2,
                     true
                 );
-                $table3->title = $item['title'];
-                $table3->titleclass = 'title_table_pdf';
-                $table3->titlestyle = 'text-align:left;';
+                // $table3->title = $item['title'];
+                // $table3->titleclass = 'title_table_pdf';
+                // $table3->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table3,
                     true
@@ -782,9 +788,9 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
                     true
                 );
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true
@@ -1486,7 +1492,7 @@ function reporting_html_inventory_changes($table, $item, $pdf=0)
 function reporting_html_inventory($table, $item, $pdf=0)
 {
     $return_pdf = '';
-    if (!empty($item['failed'])) {
+    if (empty($item['failed']) === false) {
         if ($pdf === 0) {
             $table->colspan['failed']['cell'] = 3;
             $table->cellstyle['failed']['cell'] = 'text-align: center;';
@@ -1495,59 +1501,76 @@ function reporting_html_inventory($table, $item, $pdf=0)
             $return_pdf .= $item['failed'];
         }
     } else {
-        foreach ($item['data'] as $module_item) {
-            $table1 = new stdClass();
-            $table1->width = '99%';
+        // Grouped type inventory.
+        $type_modules = array_reduce(
+            $item['data'],
+            function ($carry, $it) {
+                $carry[$it['name']][] = $it;
+                return $carry;
+            },
+            []
+        );
 
-            $first = reset($module_item['data']);
-            $count_columns = count($first);
+        if (isset($type_modules) === true
+            && is_array($type_modules) === true
+        ) {
+            foreach ($type_modules as $key_type_module => $type_module) {
+                $table1 = new stdClass();
+                $table1->width = '99%';
+                $table1->data = [];
+                $table1->head = [];
+                $table1->cellstyle = [];
+                $table1->headstyle = [];
+                if (isset($type_module) === true
+                    && is_array($type_module) === true
+                ) {
+                    foreach ($type_module as $key_type => $module) {
+                        if (isset($module['data']) === true
+                            && is_array($module['data']) === true
+                        ) {
+                            array_pop($module['data']);
+                            foreach ($module['data'] as $k_module => $v_module) {
+                                $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
+                                $table1->head[0] = __('Agent');
+                                $table1->head[1] = __('Module');
+                                $table1->head[2] = __('Date');
+                                $table1->headstyle[0] = 'text-align: left';
+                                $table1->headstyle[1] = 'text-align: left';
+                                $table1->headstyle[2] = 'text-align: left';
+                                $table1->cellstyle[$str_key][0] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][1] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][2] = 'text-align: left;';
+                                $table1->data[$str_key][0] = $module['agent_name'];
+                                $table1->data[$str_key][1] = $key_type_module;
+                                $dateModule = explode(' ', $module['timestamp']);
+                                $table1->data[$str_key][2] = $dateModule[0];
+                                if (isset($v_module) === true
+                                    && is_array($v_module) === true
+                                ) {
+                                    foreach ($v_module as $k => $v) {
+                                        $table1->head[$k] = $k;
+                                        $table1->headstyle[$k] = 'text-align: left';
+                                        $table1->cellstyle[$str_key][$k] = 'text-align: left;';
+                                        $table1->data[$str_key][$k] = $v;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-            $table1->cellstyle[0][0] = 'background: #373737; color: #FFF;';
-            $table1->data[0][0] = $module_item['agent_name'];
-            if ($count_columns == 1) {
-                $table1->colspan[0][0] = ($count_columns + 1);
-            } else {
-                $table1->colspan[0][0] = $count_columns;
-            }
-
-            $table1->cellstyle[1][0] = 'background: #373737; color: #FFF;';
-            $table1->cellstyle[1][1] = 'background: #373737; color: #FFF;';
-            $table1->data[1][0] = $module_item['name'];
-            if (($count_columns - 1) > 0) {
-                $table1->colspan[1][0] = ($count_columns - 1);
-            }
-
-            $table1->data[1][1] = $module_item['timestamp'];
-
-            $table1->cellstyle[2] = array_pad(
-                [],
-                $count_columns,
-                'background: #373737; color: #FFF;'
-            );
-            $table1->data[2] = array_keys($first);
-            if (($count_columns - 1) == 0) {
-                $table1->colspan[2][0] = ($count_columns + 1);
-            }
-
-            $table1->data = array_merge(
-                $table1->data,
-                $module_item['data']
-            );
-
-            if ($pdf === 0) {
-                $table->colspan[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = 3;
-                $table->data[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = html_print_table(
-                    $table1,
-                    true
-                );
-            } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
-                $return_pdf .= html_print_table(
-                    $table1,
-                    true
-                );
+                if ($pdf === 0) {
+                    $table->colspan[$key_type_module]['cell'] = 3;
+                    $table->data[$key_type_module]['cell'] = html_print_table(
+                        $table1,
+                        true
+                    );
+                } else {
+                    $return_pdf .= html_print_table(
+                        $table1,
+                        true
+                    );
+                }
             }
         }
     }
@@ -2965,8 +2988,26 @@ function reporting_html_min_value(&$table, $item, $mini)
 }
 
 
-function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_empty=false)
-{
+/**
+ * Htlm report AVg, min, Max, Only.
+ *
+ * @param array   $table       Table.
+ * @param array   $item        Data.
+ * @param boolean $mini        Is mini.
+ * @param boolean $only_value  Only value.
+ * @param boolean $check_empty Empty.
+ * @param integer $pdf         PDF Mode.
+ *
+ * @return string Html output.
+ */
+function reporting_html_value(
+    $table,
+    $item,
+    $mini,
+    $only_value=false,
+    $check_empty=false,
+    $pdf=0
+) {
     global $config;
 
     if ($mini) {
@@ -2975,8 +3016,12 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $font_size = $config['font_size_item_report'].'em';
     }
 
-    if (isset($item['visual_format']) && $item['visual_format'] != 0
-        && ($item['type'] == 'max_value' || $item['type'] == 'min_value' || $item['type'] == 'avg_value')
+    $return_pdf = '';
+
+    if (isset($item['visual_format']) === true && $item['visual_format'] != 0
+        && ($item['type'] == 'max_value'
+        || $item['type'] == 'min_value'
+        || $item['type'] == 'avg_value')
     ) {
         $table2 = new stdClass();
         $table2->width = '100%';
@@ -2998,6 +3043,7 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             break;
 
             case 'avg_value':
+            default:
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
@@ -3025,14 +3071,27 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         $table->colspan[2][0] = 3;
         $table->colspan[3][0] = 3;
 
-        array_push($table->data, html_print_table($table2, true));
+        if ($pdf === 0) {
+            array_push($table->data, html_print_table($table2, true));
+        } else {
+            $return_pdf .= html_print_table($table2, true);
+        }
+
         unset($item['data'][0]);
 
         if ($item['visual_format'] != 1) {
             $value = $item['data'][1]['value'];
-            array_push($table->data, $value);
-            unset($item['data'][1]);
+            if ($pdf === 0) {
+                array_push($table->data, $value);
+            } else {
+                $style_div_pdf = 'text-align:center;margin-bottom:20px;';
+                $return_pdf .= '<div style="'.$style_div_pdf.'">';
+                $return_pdf .= $value;
+                $return_pdf .= '</div>';
+            }
         }
+
+        unset($item['data'][1]);
 
         if ($item['visual_format'] != 2) {
             $table1 = new stdClass();
@@ -3053,6 +3112,7 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
                 break;
 
                 case 'avg_value':
+                default:
                     $table1->head = [
                         __('Lapse'),
                         __('Average'),
@@ -3061,8 +3121,9 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             }
 
             $table1->data = [];
+            $row = [];
             foreach ($item['data'] as $data) {
-                if (!is_numeric($data[__('Maximun')])) {
+                if (is_numeric($data[__('Maximun')]) === false) {
                     $row = [
                         $data[__('Lapse')],
                         $data[__('Maximun')],
@@ -3070,7 +3131,12 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
                 } else {
                     $row = [
                         $data[__('Lapse')],
-                        remove_right_zeros(number_format($data[__('Maximun')], $config['graph_precision'])),
+                        remove_right_zeros(
+                            number_format(
+                                $data[__('Maximun')],
+                                $config['graph_precision']
+                            )
+                        ),
                     ];
                 }
 
@@ -3080,10 +3146,22 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
             $table1->title = $item['title'];
             $table1->titleclass = 'title_table_pdf';
             $table1->titlestyle = 'text-align:left;';
+            if ($pdf === 0) {
+                array_push($table->data, html_print_table($table1, true));
+            } else {
+                $return_pdf .= html_print_table($table1, true);
+            }
+        }
 
-            array_push($table->data, html_print_table($table1, true));
+        if ($pdf !== 0) {
+            return $return_pdf;
         }
     } else {
+        if ($pdf !== 0) {
+            $table = new stdClass();
+            $table->width = '100%';
+        }
+
         $table->colspan['data']['cell'] = 3;
         $table->cellstyle['data']['cell'] = 'text-align: left;';
 
@@ -3098,6 +3176,10 @@ function reporting_html_value(&$table, $item, $mini, $only_value=false, $check_e
         }
 
         $table->data['data']['cell'] .= '</p>';
+
+        if ($pdf !== 0) {
+            return html_print_table($table, true);
+        }
     }
 }
 
@@ -3617,9 +3699,9 @@ function reporting_html_availability($table, $item, $pdf=0)
         $data[0] = html_print_table($table1, true);
         array_push($table->data, $data);
     } else {
-        $table1->title = $item['title'];
-        $table1->titleclass = 'title_table_pdf';
-        $table1->titlestyle = 'text-align:left;';
+        // $table1->title = $item['title'];
+        // $table1->titleclass = 'title_table_pdf';
+        // $table1->titlestyle = 'text-align:left;';
         $return_pdf .= html_print_table($table1, true);
     }
 
@@ -3629,9 +3711,9 @@ function reporting_html_availability($table, $item, $pdf=0)
             $data2[0] = html_print_table($table2, true);
             array_push($table->data, $data2);
         } else {
-            $table2->title = $item['title'];
-            $table2->titleclass = 'title_table_pdf';
-            $table2->titlestyle = 'text-align:left;';
+            // $table2->title = $item['title'];
+            // $table2->titleclass = 'title_table_pdf';
+            // $table2->titlestyle = 'text-align:left;';
             $return_pdf .= html_print_table($table2, true);
         }
     }
@@ -3699,9 +3781,9 @@ function reporting_html_availability($table, $item, $pdf=0)
                 );
                 array_push($table->data, $data);
             } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
+                // $table1->title = $item['title'];
+                // $table1->titleclass = 'title_table_pdf';
+                // $table1->titlestyle = 'text-align:left;';
                 $return_pdf .= html_print_table(
                     $table1,
                     true

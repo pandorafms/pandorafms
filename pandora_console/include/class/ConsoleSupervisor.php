@@ -107,13 +107,13 @@ class ConsoleSupervisor
         $this->verbose = $verbose;
 
         if ($source === false) {
-            $this->enabled = false;
+            $this->notificationsEnabled = false;
             $this->sourceId = null;
 
             $this->targetGroups = null;
             $this->targetUsers = null;
         } else {
-            $this->enabled = (bool) $source['enabled'];
+            $this->notificationsEnabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
 
             // Assign targets.
@@ -153,58 +153,58 @@ class ConsoleSupervisor
 
         /*
          * PHP configuration warnings:
-         *   NOTIF.PHP.SAFE_MODE
-         *   NOTIF.PHP.INPUT_TIME
-         *   NOTIF.PHP.EXECUTION_TIME
-         *   NOTIF.PHP.UPLOAD_MAX_FILESIZE
-         *   NOTIF.PHP.MEMORY_LIMIT
-         *   NOTIF.PHP.DISABLE_FUNCTIONS
-         *   NOTIF.PHP.PHANTOMJS
-         *   NOTIF.PHP.VERSION
+         *  NOTIF.PHP.SAFE_MODE
+         *  NOTIF.PHP.INPUT_TIME
+         *  NOTIF.PHP.EXECUTION_TIME
+         *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
+         *  NOTIF.PHP.MEMORY_LIMIT
+         *  NOTIF.PHP.DISABLE_FUNCTIONS
+         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.VERSION
          */
 
         $this->checkPHPSettings();
 
         /*
          * Check license.
-         *   NOTIF.LICENSE.EXPIRATION
+         *  NOTIF.LICENSE.EXPIRATION
          */
 
         $this->checkLicense();
 
         /*
          * Check component statuses (servers down - frozen).
-         *    NOTIF.SERVER.STATUS.ID_SERVER
+         *  NOTIF.SERVER.STATUS.ID_SERVER
          */
 
         $this->checkPandoraServers();
 
         /*
          * Check at least 1 server running in master mode.
-         *   NOTIF.SERVER.MASTER
+         *  NOTIF.SERVER.MASTER
          */
 
         $this->checkPandoraServerMasterAvailable();
 
         /*
          * Check if CRON is running.
-         *    NOTIF.CRON.CONFIGURED
+         *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
+        if ((bool) enterprise_installed() === true) {
             $this->checkCronRunning();
         }
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if there're new messages in UM.
-         *     NOTIF.UPDATEMANAGER.MESSAGES
+         *  NOTIF.UPDATEMANAGER.MESSAGES
          */
 
         $this->getUMMessages();
@@ -212,31 +212,32 @@ class ConsoleSupervisor
         /*
          * Check if the Server and Console has
          * the same versions.
+         *  NOTIF.SERVER.MISALIGNED
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
          *  NOTIF.ALLOWOVERIDE.MESSAGE
          */
-        $this->checkAllowOverrideEnabled();
 
-        /*
-         * Check if AllowOverride is None or All.
-         *  NOTIF.HAMASTER.MESSAGE
-         */
-        $this->checkHaStatus();
+        $this->checkAllowOverrideEnabled();
 
         /*
          * Check if the Pandora Console log
          * file remains in old location.
+         *  NOTIF.PANDORACONSOLE.LOG.OLD
          */
+
         $this->checkPandoraConsoleLogOldLocation();
 
         /*
          * Check if the audit log file
          * remains in old location.
+         *  NOTIF.AUDIT.LOG.OLD
          */
+
         $this->checkAuditLogOldLocation();
 
     }
@@ -251,8 +252,10 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if ($this->enabled === false) {
-            // Feature not enabled.
+        $this->maintenanceOperations();
+
+        if ($this->notificationsEnabled === false) {
+            // Notifications not enabled.
             return;
         }
 
@@ -278,65 +281,65 @@ class ConsoleSupervisor
 
         /*
          * Check license.
-         *   NOTIF.LICENSE.EXPIRATION
-         *   NOTIF.LICENSE.LIMITED
+         *  NOTIF.LICENSE.EXPIRATION
+         *  NOTIF.LICENSE.LIMITED
          */
 
         $this->checkLicense();
 
         /*
          * Check number of files in attachment:
-         *   NOTIF.FILES.ATTACHMENT
+         *  NOTIF.FILES.ATTACHMENT
          */
 
         $this->checkAttachment();
 
         /*
          * Files in data_in:
-         *   NOTIF.FILES.DATAIN  (>1000)
-         *   NOTIF.FILES.DATAIN.BADXML (>150)
+         *  NOTIF.FILES.DATAIN  (>1000)
+         *  NOTIF.FILES.DATAIN.BADXML (>150)
          */
 
         $this->checkDataIn();
 
         /*
          * Check module queues not growing:
-         *   NOTIF.SERVER.QUEUE.ID_SERVER
+         *  NOTIF.SERVER.QUEUE.ID_SERVER
          */
 
         $this->checkServers();
 
         /*
          * Check component statuses (servers down - frozen).
-         *    NOTIF.SERVER.STATUS.ID_SERVER
+         *  NOTIF.SERVER.STATUS.ID_SERVER
          */
 
         $this->checkPandoraServers();
 
         /*
          * Check at least 1 server running in master mode.
-         *   NOTIF.SERVER.MASTER
+         *  NOTIF.SERVER.MASTER
          */
 
         $this->checkPandoraServerMasterAvailable();
 
         /*
          * PHP configuration warnings:
-         *   NOTIF.PHP.SAFE_MODE
-         *   NOTIF.PHP.INPUT_TIME
-         *   NOTIF.PHP.EXECUTION_TIME
-         *   NOTIF.PHP.UPLOAD_MAX_FILESIZE
-         *   NOTIF.PHP.MEMORY_LIMIT
-         *   NOTIF.PHP.DISABLE_FUNCTIONS
-         *   NOTIF.PHP.PHANTOMJS
-         *   NOTIF.PHP.VERSION
+         *  NOTIF.PHP.SAFE_MODE
+         *  NOTIF.PHP.INPUT_TIME
+         *  NOTIF.PHP.EXECUTION_TIME
+         *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
+         *  NOTIF.PHP.MEMORY_LIMIT
+         *  NOTIF.PHP.DISABLE_FUNCTIONS
+         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.VERSION
          */
 
         $this->checkPHPSettings();
 
         /*
          *  Check connection with historical DB (if enabled).
-         *    NOTIF.HISTORYDB
+         *  NOTIF.HISTORYDB
          */
 
         $this->checkPandoraHistoryDB();
@@ -344,23 +347,23 @@ class ConsoleSupervisor
         /*
          * Check pandoradb running in main DB.
          * Check pandoradb running in historical DB.
-         *   NOTIF.PANDORADB
-         *   NOTIF.PANDORADB.HISTORICAL
+         *  NOTIF.PANDORADB
+         *  NOTIF.PANDORADB.HISTORICAL
          */
 
         $this->checkPandoraDBMaintenance();
 
         /*
          * Check historical DB MR version.
-         *    NOTIF.HISTORYDB.MR
+         *  NOTIF.HISTORYDB.MR
          */
 
         $this->checkPandoraHistoryDBMR();
 
         /*
          * Check external components.
-         *    NOTIF.EXT.ELASTICSEARCH
-         *    NOTIF.EXT.LOGSTASH
+         *  NOTIF.EXT.ELASTICSEARCH
+         *  NOTIF.EXT.LOGSTASH
          *
          */
 
@@ -368,76 +371,76 @@ class ConsoleSupervisor
 
         /*
          * Check Metaconsole synchronization issues.
-         *    NOTIF.METACONSOLE.DB_CONNECTION
+         *  NOTIF.METACONSOLE.DB_CONNECTION
          */
 
         $this->checkMetaconsole();
 
         /*
          * Check incoming scheduled downtimes (< 15d).
-         *    NOTIF.DOWNTIME
+         *  NOTIF.DOWNTIME
          */
 
         $this->checkDowntimes();
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if event storm protection is activated.
-         *    NOTIF.MISC.EVENTSTORMPROTECTION
+         *  NOTIF.MISC.EVENTSTORMPROTECTION
          */
 
         $this->checkEventStormProtection();
 
         /*
          * Check if develop_bypass is enabled.
-         *    NOTIF.MISC.DEVELOPBYPASS
+         *  NOTIF.MISC.DEVELOPBYPASS
          */
 
         $this->checkDevelopBypass();
 
         /*
          * Check if fontpath exists.
-         *    NOTIF.MISC.FONTPATH
+         *  NOTIF.MISC.FONTPATH
          */
 
         $this->checkFont();
 
         /*
          * Check if default user and password exists.
-         *    NOTIF.SECURITY.DEFAULT_PASSWORD
+         *  NOTIF.SECURITY.DEFAULT_PASSWORD
          */
 
         $this->checkDefaultPassword();
 
         /*
          * Check if there're new updates.
-         *    NOTIF.UPDATEMANAGER.OPENSETUP
-         *    NOTIF.UPDATEMANAGER.UPDATE
+         *  NOTIF.UPDATEMANAGER.OPENSETUP
+         *  NOTIF.UPDATEMANAGER.UPDATE
          */
 
         $this->checkUpdates();
 
         /*
          * Check if there're new minor updates available.
-         *    NOTIF.UPDATEMANAGER.MINOR
+         *  NOTIF.UPDATEMANAGER.MINOR
          */
 
         $this->checkMinorRelease();
 
-        if (enterprise_installed()) {
+        if ((bool) enterprise_installed() === true) {
             // Release the lock.
             enterprise_hook('cron_supervisor_release_lock');
         }
 
         /*
          * Check if CRON is running.
-         *    NOTIF.CRON.CONFIGURED
+         *  NOTIF.CRON.CONFIGURED
          */
 
         if (enterprise_installed()) {
@@ -446,14 +449,14 @@ class ConsoleSupervisor
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if there're new messages in UM.
-         *     NOTIF.UPDATEMANAGER.MESSAGES
+         *  NOTIF.UPDATEMANAGER.MESSAGES
          */
 
         $this->getUMMessages();
@@ -461,18 +464,23 @@ class ConsoleSupervisor
         /*
          * Check if the Server and Console has
          * the same versions.
+         *  NOTIF.SERVER.MISALIGNED
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
+         *  NOTIF.ALLOWOVERRIDE.MESSAGE
          */
+
         $this->checkAllowOverrideEnabled();
 
-          /*
-           * Check if HA status.
-           */
-        if (enterprise_installed()) {
+        /*
+         * Check if HA status.
+         */
+
+        if ((bool) enterprise_installed() === true) {
             $this->checkHaStatus();
         }
 
@@ -480,13 +488,23 @@ class ConsoleSupervisor
          * Check if the audit log file
          * remains in old location.
          */
+
         $this->checkAuditLogOldLocation();
+    }
 
+
+    /**
+     * Executes console maintenance operations. Executed ALWAYS through CRON.
+     *
+     * @return void
+     */
+    public function maintenanceOperations()
+    {
         /*
-            Check if AllowOverride is None or All.
-        */
-        $this->checkAllowOverrideEnabled();
+         * Process cache clean if needed.
+         */
 
+        $this->checkCleanPhantomCache();
     }
 
 
@@ -943,11 +961,11 @@ class ConsoleSupervisor
     {
         global $config;
 
-        $remote_config_dir = io_safe_output($config['remote_config']);
+        $remote_config_dir = (string) io_safe_output($config['remote_config']);
 
-        if (enterprise_installed()
-            && isset($config['license_nms'])
-            && $config['license_nms'] != 1
+        if ((bool) enterprise_installed() === true
+            && isset($config['license_nms']) === true
+            && (int) $config['license_nms'] !== 1
         ) {
             if (is_readable($remote_config_dir) !== true) {
                 $this->notify(
@@ -1183,6 +1201,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServers()
     {
+        global $config;
+
         $servers = db_get_all_rows_sql(
             'SELECT
                 id_server,
@@ -1280,6 +1300,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServerMasterAvailable()
     {
+        global $config;
+
         $n_masters = db_get_value_sql(
             'SELECT
                 count(*) as n
@@ -2524,7 +2546,7 @@ class ConsoleSupervisor
     }
 
 
-    /*
+    /**
      * Check if Pandora console log file remains in old location.
      *
      * @return void
@@ -2594,6 +2616,32 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
         }
+    }
+
+
+    /**
+     * Clean Phantom cache if needed.
+     *
+     * @return void
+     */
+    public function checkCleanPhantomCache()
+    {
+        global $config;
+
+        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+            return;
+        }
+
+        $cache_dir = $config['homedir'].'/attachment/cache';
+        if (is_dir($cache_dir) === true) {
+            rrmdir($cache_dir);
+        }
+
+        // Clean process has ended.
+        config_update_value(
+            'clean_phantomjs_cache',
+            0
+        );
     }
 
 

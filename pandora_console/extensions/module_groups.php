@@ -86,7 +86,6 @@ function mainModuleGroups()
     );
     $info = $tree_group->getArray();
     $info = groupview_plain_groups($info);
-    $counter = count($info);
     $offset = get_parameter('offset', 0);
     $agent_group_search = get_parameter('agent_group_search', '');
     $module_group_search = get_parameter('module_group_search', '');
@@ -133,6 +132,8 @@ function mainModuleGroups()
     } else {
         $ids_group = -1;
     }
+
+    $counter = count($info);
 
     $condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
     $condition_warning  = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);

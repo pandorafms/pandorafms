@@ -291,10 +291,8 @@ enterprise_hook('close_meta_frame');
         // Clear the tree
         if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
-        
-        $(".loading_tree").show();
-        
 
+        $(".loading_tree").show();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -308,21 +306,21 @@ enterprise_hook('close_meta_frame');
         parameters['filter']['statusModule'] = $("select#status_module").val();
         parameters['filter']['groupID'] = $("input#hidden-group-id").val();
         parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
-        
+
         if($("#checkbox-serach_hirearchy").is(':checked')){
             parameters['filter']['searchHirearchy'] = 1;
         }
         else{
             parameters['filter']['searchHirearchy'] = 0;
         }
-        
+
         if($("#checkbox-show_not_init_agents").is(':checked')){
             parameters['filter']['show_not_init_agents'] = 1;
         }
         else{
             parameters['filter']['show_not_init_agents'] = 0;
         }
-        
+
         if($("#checkbox-show_not_init_modules").is(':checked')){
             parameters['filter']['show_not_init_modules'] = 1;
             $('#hidden-show_not_init_modules_hidden').val(1);
@@ -339,13 +337,35 @@ enterprise_hook('close_meta_frame');
             success: function(data) {
                 if (data.success) {
                     $(".loading_tree").hide();
-                    
+                    var foundMessage = '';
+                    switch (parameters['type']) {
+                        case 'policies':
+                            foundMessage = "<?php echo __('Policies found'); ?>";
+                            break;
+                        case 'os':
+                            foundMessage = "<?php echo __('Operating systems found'); ?>";
+                            break;
+                        case 'tag':
+                            foundMessage = "<?php echo __('Tags found'); ?>";
+                            break;
+                        case 'module_group':
+                            foundMessage = "<?php echo __('Module Groups found'); ?>";
+                            break;
+                        case 'module':
+                            foundMessage = "<?php echo __('Modules found'); ?>";
+                            break;
+                        case 'group':
+                        default:
+                            foundMessage = "<?php echo __('Groups found'); ?>";
+                            break;
+                    }
+
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),
                         detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
                         page: parameters['page'],
                         emptyMessage: "<?php echo __('No data found'); ?>",
-                        foundMessage: "<?php echo __('Groups found'); ?>",
+                        foundMessage: foundMessage,
                         tree: data.tree,
                         baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
                         ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

@@ -462,6 +462,10 @@ select:-internal-list-box {
   width: 120px;
   max-width: 120px;
 }
+.w200px {
+  width: 200px;
+  max-width: 200px;
+}
 .w240px {
   width: 240px;
   max-width: 240px;
@@ -684,7 +688,7 @@ select:-internal-list-box {
   float: right;
 }
 .invisible {
-  display: none;
+  display: none !important;
 }
 
 div#page {
@@ -1480,6 +1484,7 @@ table.databox {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
+  text-align: justify;
 }
 
 .databox > th * {
@@ -1703,6 +1708,20 @@ input.remove-item-img {
   background-image: url(../../images/delete.png);
   background-repeat: no-repeat;
   background-position: center;
+}
+
+button.pure_full,
+input.pure_full {
+  background-image: url(../../images/full_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+}
+
+button.pure_normal,
+input.pure_normal {
+  background-image: url(../../images/normal_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
 }
 
 /* end of classes for event priorities */
@@ -3073,6 +3092,12 @@ div#stat-win-module-graph div.nodata_container {
 }
 
 .menu_graph {
+  width: 30px;
+  height: 150px;
+  left: 100%;
+  position: absolute;
+  top: 0px;
+  background-color: transparent;
   -moz-border-top-right-radius: 6px;
   -webkit-border-top-right-radius: 6px;
   border-top-right-radius: 6px;
@@ -5787,6 +5812,13 @@ div#status_pie {
   border-radius: 5px;
 }
 
+.status_rounded_rectangles.text_inside {
+  color: #ffffff;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 0.4em;
+}
+
 .status_small_squares,
 .status_balls {
   width: 12px;
@@ -5865,7 +5897,7 @@ table.table_modal_alternate tr td:first-child {
 }
 
 .flot-text {
-  width: 101%;
+  width: 100%;
 }
 
 /*Font header feedback*/
@@ -6027,4 +6059,13 @@ div.graph td.legendLabel {
 div.graph div.legend div,
 div.graph div.legend table {
   top: 25px !important;
+}
+
+.rotate_text_module {
+  -ms-transform: rotate(270deg);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  writing-mode: lr-tb;
+  white-space: nowrap;
 }

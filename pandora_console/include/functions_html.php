@@ -1734,7 +1734,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline">';
+    echo '<div id="'.$uniq_name.'_default" style="width:auto;display:inline">';
         html_print_select(
             $fields,
             $uniq_name.'_select',

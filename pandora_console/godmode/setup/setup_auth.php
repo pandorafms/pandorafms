@@ -229,15 +229,22 @@ if (is_ajax()) {
 
         // Enable 2FA for all users.
         // Set default value.
-            set_unless_defined($config['2FA_all_users'], false);
-            $row = [];
-            $row['name'] = __('Force 2FA for all users is enabled');
-            $row['control'] .= html_print_checkbox_switch(
-                '2FA_all_users',
-                1,
-                $config['2FA_all_users'],
-                true
-            );
+        set_unless_defined($config['2FA_all_users'], false);
+        $row = [];
+        $row['name'] = __('Force 2FA for all users is enabled');
+        $row['control'] .= html_print_checkbox_switch(
+            '2FA_all_users',
+            1,
+            $config['2FA_all_users'],
+            true
+        );
+
+        if (!$config['double_auth_enabled']) {
+            $table->rowclass['2FA_all_users'] = 'invisible';
+        } else {
+            $table->rowclass['2FA_all_users'] = '';
+        }
+
             $table->data['2FA_all_users'] = $row;
 
 
@@ -334,21 +341,18 @@ echo '</form>';
 
 <script type="text/javascript">
 
-
-function showAndHide() {
-    if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
-        $('#table1-2FA_all_users').show();
-    } else {
-        $('#table1-2FA_all_users').hide();
-    }
-}
-    $( document ).ready(function() {   
-        var enbale = "<?php echo $config['double_auth_enabled']; ?>";
-        if (enbale == '1') {
-            $('#table1-2FA_all_users').show();
-        } else {
-            $('#table1-2FA_all_users').hide();
+    function showAndHide() {
+        if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
+                $('#table1-2FA_all_users').removeClass('invisible');
+                $('#table1-2FA_all_users-name').removeClass('invisible');
+                $('#table1-2FA_all_users-control').removeClass('invisible');
+                $('#table1-2FA_all_users').show();
+            } else {
+                $('#table1-2FA_all_users').hide();
         }
+    }
+    $( document ).ready(function() {   
+
     });
     //For change autocreate remote users
 

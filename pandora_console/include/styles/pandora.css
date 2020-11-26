@@ -691,6 +691,10 @@ select:-internal-list-box {
   display: none;
 }
 
+.visible {
+  display: block;
+}
+
 div#page {
   background: #fbfbfb;
   background-image: none;

@@ -221,7 +221,9 @@ if (is_ajax()) {
             'double_auth_enabled',
             1,
             $config['double_auth_enabled'],
-            true
+            true,
+            false,
+            'showAndHide()'
         );
         $table->data['double_auth_enabled'] = $row;
 
@@ -331,32 +333,23 @@ echo '</form>';
 
 <script type="text/javascript">
 
+
+function showAndHide() {
+    if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
+        $('#table1-2FA_all_users').show();
+    } else {
+        $('#table1-2FA_all_users').hide();
+    }
+}
     $( document ).ready(function() {   
+        if ($('#checkbox-double_auth_enabled').prop('checked') == true) {
+            $('#table1-2FA_all_users').show();
+        } else {
+            $('#table1-2FA_all_users').hide();
+        }
+
+    });
     //For change autocreate remote users
-
-
-
-        $('#checkbox-double_auth_enabled').change(function () {
-            $('#checkbox-double_auth_enabled').val("1");
-
-            if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
-                $('#table1-2FA_all_users').show();
-            }
-            else {
-                $('#checkbox-double_auth_enabled').val("0");
-                $('#table1-2FA_all_users').hide();
-                $('input[type=checkbox][name=2FA_all_users][value=0]').prop('checked', false);
-            }
-            }).change();
-        
-            if ($('#checkbox-double_auth_enabled').val() == 1) {
-                $('#table1-2FA_all_users').show();
-            } else {
-                $('#table1-2FA_all_users').hide();
-            }
-        
-        
-        });
 
     $('#auth').on('change', function(){
         type_auth = $('#auth').val();

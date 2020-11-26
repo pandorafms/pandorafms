@@ -967,28 +967,33 @@ sub pandora_delete_old_export_data {
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
-    my ($conf, $dbh, $ulimit_timestamp) = @_;
+	my ($conf, $dbh, $ulimit_timestamp) = @_;
 
-    my $session_timeout = $conf->{'_session_timeout'};
+	my $session_timeout = $conf->{'_session_timeout'};
 
-	if ($session_timeout ne '') {
-		if ($session_timeout == -1) {
-			# The session expires in 10 years
-			$session_timeout = 315576000;
-		} else {
-			$session_timeout *= 60;
-		}
+	# DO not erase anything if session_timeout is not set.
+	return unless (defined($session_timeout) && $session_timeout ne '');
 
-		$ulimit_timestamp = time() - $session_timeout;
+	if ($session_timeout == 0) {
+		# As defined in console.
+		$session_timeout = 90;
 	}
+
+	if ($session_timeout == -1) {
+		# The session expires in 10 years
+		$session_timeout = 315576000;
+	} else {
+		$session_timeout *= 60;
+	}
+
+	$ulimit_timestamp = time() - $session_timeout;
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 
-	db_do ($dbh, "DELETE FROM tsessions_php WHERE
-	data IS NULL OR id_session REGEXP '^cron-'");
+	db_do ($dbh, "DELETE FROM tsessions_php WHERE data IS NULL OR id_session REGEXP '^cron-'");
 }
 
 ###############################################################################

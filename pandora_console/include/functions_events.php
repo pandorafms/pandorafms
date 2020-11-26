@@ -4166,7 +4166,7 @@ function events_page_details($event, $server='')
     if (!empty($agent)) {
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-        if (can_user_access_node() && is_metaconsole() && agents_check_agent_exists($event['id_agente'], true, true)) {
+        if (can_user_access_node() && is_metaconsole() && empty($event['server_id']) === true) {
             $data[1] = ui_print_truncate_text(
                 $agent['alias'],
                 'agent_medium',

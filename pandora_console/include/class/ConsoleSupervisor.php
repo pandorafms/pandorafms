@@ -86,17 +86,17 @@ class ConsoleSupervisor
      *
      * @var boolean
      */
-    public $verbose;
+    public $interactive;
 
 
     /**
      * Constructor.
      *
-     * @param boolean $verbose Show output while executing or not.
+     * @param boolean $interactive Show output while executing or not.
      *
      * @return class This object
      */
-    public function __construct(bool $verbose=true)
+    public function __construct(bool $interactive=true)
     {
         $source = db_get_row(
             'tnotification_source',
@@ -104,7 +104,7 @@ class ConsoleSupervisor
             io_safe_input('System status')
         );
 
-        $this->verbose = $verbose;
+        $this->interactive = $interactive;
 
         if ($source === false) {
             $this->enabled = false;
@@ -512,13 +512,13 @@ class ConsoleSupervisor
      * Update targets for given notification using object targets.
      *
      * @param array   $notification Current notification.
-     * @param boolean $update       Only update db targets, no email.
+     * @param boolean $send_mails   Only update db targets, no email.
      *
      * @return void
      */
     public function updateTargets(
         array $notification,
-        bool $update=false
+        bool $send_mails=true
     ) {
         $notification_id = $notification['id_mensaje'];
         $blacklist = [];
@@ -537,7 +537,7 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                if ($update === false) {
+                if ($send_mails === true) {
                     // Send mail.
                     if (isset($user['also_mail']) && $user['also_mail'] == 1) {
                         enterprise_hook(
@@ -571,7 +571,7 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                if ($update === false) {
+                if ($send_mails === true) {
                     // Send mail.
                     if (isset($group['also_mail']) && $group['also_mail'] == 1) {
                         enterprise_hook(
@@ -693,7 +693,9 @@ class ConsoleSupervisor
         $prev = db_get_row(
             'tmensajes',
             'subtype',
-            $data['type']
+            $data['type'],
+            false,
+            false
         );
 
         if ($prev !== false
@@ -712,7 +714,7 @@ class ConsoleSupervisor
                 ],
                 ['id_mensaje' => $prev['id_mensaje']]
             );
-            $this->updateTargets($prev, true);
+            $this->updateTargets($prev, false);
             return;
         }
 
@@ -1242,8 +1244,29 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.SERVER.STATUS%');
             return;
         } else {
-            // Clean notifications. Only show notif for down servers.
-            $this->cleanNotifications('NOTIF.SERVER.STATUS%');
+            // Clean notifications. Only show notif for down servers
+            // ONLY FOR RECOVERED ONES.
+            $servers_working = db_get_all_rows_sql(
+                'SELECT
+                    id_server,
+                    name,
+                    server_type,
+                    server_keepalive,
+                    status,
+                    unix_timestamp() - unix_timestamp(keepalive) as downtime
+                FROM tserver
+                WHERE 
+                    unix_timestamp() - unix_timestamp(keepalive) <= server_keepalive
+                    OR status != 0'
+            );
+
+            if (is_array($servers_working) === true) {
+                foreach ($servers_working as $server) {
+                    $this->cleanNotifications(
+                        'NOTIF.SERVER.STATUS'.$server['id_server']
+                    );
+                }
+            }
         }
 
         foreach ($servers as $server) {

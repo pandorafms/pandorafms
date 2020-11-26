@@ -339,7 +339,7 @@ class HostDevices extends Wizard
 
                     // Forbidden chars cleaning.
                     foreach ($network as $key => $singleNetwork) {
-                        $network[$key] = preg_replace('/[A-Za-z-()\']/', '', $singleNetwork);
+                        $network[$key] = preg_replace('/[-()\']/', '', $singleNetwork);
                     }
 
                     unlink($_FILES['network_csv']['tmp_name']);

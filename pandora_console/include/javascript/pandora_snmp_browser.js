@@ -25,6 +25,7 @@ function snmpBrowse() {
   var snmp3_auth_pass = $("#password-snmp3_browser_auth_pass").val();
   var snmp3_privacy_method = $("#snmp3_browser_privacy_method").val();
   var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
+  var server_to_exec = $("#server_to_exec").val();
   var ajax_url = $("#hidden-ajax_url").val();
 
   // Prepare the AJAX call
@@ -41,6 +42,7 @@ function snmpBrowse() {
   params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
   params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
   params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  params["server_to_exec"] = server_to_exec;
   params["action"] = "snmptree";
   params["page"] = "include/ajax/snmp_browser.ajax";
 

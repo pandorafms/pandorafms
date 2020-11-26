@@ -1,16 +1,17 @@
 <?php
-
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2017 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Pandora FMS- http://pandorafms.com.
+ * ==================================================
+ * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the  GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 require_once $config['homedir'].'/include/functions_config.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 require_once $config['homedir'].'/include/functions_snmp.php';
@@ -37,6 +38,7 @@ if (is_ajax()) {
     $targets_oids = get_parameter('oids', '');
     $return_id = get_parameter('return_id', false);
     $custom_action = get_parameter('custom_action', '');
+    $server_to_exec = get_parameter('server_to_exec');
 
     if (!is_array($targets_oids)) {
         $targets_oids = explode(',', $targets_oids);
@@ -50,20 +52,20 @@ if (is_ajax()) {
     if ($action == 'snmptree') {
         $starting_oid = (string) get_parameter('starting_oid', '.');
 
-
-            $snmp_tree = snmp_browser_get_tree(
-                $target_ip,
-                $community,
-                $starting_oid,
-                $snmp_version,
-                $snmp3_auth_user,
-                $snmp3_security_level,
-                $snmp3_auth_method,
-                $snmp3_auth_pass,
-                $snmp3_privacy_method,
-                $snmp3_privacy_pass,
-                $server_to_exec
-            );
+        $snmp_tree = snmp_browser_get_tree(
+            $target_ip,
+            $community,
+            $starting_oid,
+            $snmp_version,
+            $snmp3_auth_user,
+            $snmp3_security_level,
+            $snmp3_auth_method,
+            $snmp3_auth_pass,
+            $snmp3_privacy_method,
+            $snmp3_privacy_pass,
+            'null',
+            $server_to_exec
+        );
         if (! is_array($snmp_tree)) {
             echo $snmp_tree;
         } else {
@@ -166,7 +168,7 @@ if (is_ajax()) {
     if ($method == 'snmp_browser_create_modules') {
         // Get target ids from form.
         $id_items = get_parameter('id_item2', null);
-        if (!is_null($id_items)) {
+        if (empty($id_items) === false) {
             $id_target = explode(',', $id_items[0]);
         }
 

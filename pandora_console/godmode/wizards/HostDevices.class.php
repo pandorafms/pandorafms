@@ -336,6 +336,12 @@ class HostDevices extends Wizard
                             )
                         )
                     );
+
+                    // Forbidden chars cleaning.
+                    foreach ($network as $key => $singleNetwork) {
+                        $network[$key] = preg_replace('/[-()\']/', '', $singleNetwork);
+                    }
+
                     unlink($_FILES['network_csv']['tmp_name']);
                     if (empty($network) || is_array($network) === false) {
                         $this->msg = __(

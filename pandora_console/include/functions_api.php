@@ -1570,7 +1570,9 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             $nombre_agente = $alias;
         }
 
-        if ($direccion_agente != '') {
+        $exists_ip = false;
+
+        if ($config['unique_ip'] && $direccion_agente != '') {
             $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
         }
 

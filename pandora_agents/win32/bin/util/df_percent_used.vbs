@@ -1,6 +1,6 @@
 ' df_all.vbs
 ' Returns used space (%) for all drives
-' Pandora FMS Plugin, (c) 2014 Sancho Lerena
+' Pandora FMS Plugin, (c) 2021 Sancho Lerena
 ' ------------------------------------------
 
 Option Explicit

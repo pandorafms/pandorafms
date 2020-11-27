@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2014 Artica Soluciones Tecnologicas, http://www.artica.es
+-- Copyright (c) 2014-2021 Artica Soluciones Tecnologicas, http://www.artica.es
 -- Please see http://www.pandorafms.org for full contribution list
 
 -- Database Data for Pandora FMS 5.1

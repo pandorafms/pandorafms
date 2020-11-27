@@ -755,7 +755,7 @@ if (is_metaconsole()) {
 
     $filters .= html_print_table($table, true);
     $filters .= '</form>';
-    ui_toggle($filters, __('Show Options'), '', '', false);
+    ui_toggle($filters, __('Show filters'), '', '', false);
 } else {
     $table->colspan[4][0] = 7;
     $table->cellstyle[4][0] = 'padding-left: 10px;';

@@ -2054,6 +2054,14 @@ switch ($action) {
                                 }
                             break;
 
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users', 0);
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2667,6 +2675,14 @@ switch ($action) {
                                 } else {
                                     $style['label'] = '';
                                 }
+                            break;
+
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users');
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
                             break;
 
                             default:

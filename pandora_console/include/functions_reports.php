@@ -54,7 +54,7 @@ function reports_get_report($id_report, $filter=false, $fields=false)
         return false;
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -72,7 +72,7 @@ function reports_get_report($id_report, $filter=false, $fields=false)
 
     $report = db_get_row_filter('treport', $filter, $fields);
 
-    if (! check_acl($config['id_user'], $report['id_group'], 'RR')) {
+    if (!check_acl($config['id_user'], $report['id_group'], 'RR')) {
         return false;
     }
 
@@ -104,16 +104,16 @@ function reports_get_reports(
 ) {
     global $config;
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
-        /*
-            if (!is_user_admin ($config["id_user"]))
+    /*
+        if (!is_user_admin ($config["id_user"]))
             $filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
             $config['id_user']);
-        */
-        $filter['hidden'] = 0;
+    */
+    $filter['hidden'] = 0;
     if (is_array($fields)) {
         $fields[] = 'id_group';
         $fields[] = 'id_user';
@@ -146,7 +146,7 @@ function reports_get_reports(
             }
 
             if ($config['id_user'] != $report['id_user']
-                && ! check_acl($config['id_user'], $report['id_group'], $privileges)
+                && !check_acl($config['id_user'], $report['id_group'], $privileges)
             ) {
                 continue;
             }
@@ -173,7 +173,7 @@ function reports_create_report($name, $id_group, $values=false)
 {
     global $config;
 
-    if (! is_array($values)) {
+    if (!is_array($values)) {
         $values = [];
     }
 
@@ -246,7 +246,7 @@ function reports_get_content($id_report_content, $filter=false, $fields=false)
         return false;
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -293,7 +293,7 @@ function reports_create_content($id_report, $values)
         return false;
     }
 
-    if (! is_array($values)) {
+    if (!is_array($values)) {
         return false;
     }
 
@@ -341,7 +341,7 @@ function reports_get_contents($id_report, $filter=false, $fields=false)
         return [];
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -546,7 +546,7 @@ function reports_delete_content($id_report_content)
 function get_report_name($type, $template=false)
 {
     $types = reports_get_report_types($template);
-    if (! isset($types[$type])) {
+    if (!isset($types[$type])) {
         return __('Unknown');
     }
 
@@ -889,6 +889,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Network Traffic Top N'),
         ];
     }
+
+    $types['permissions_report'] = [
+        'optgroup' => __('Permissions report'),
+        'name'     => __('Permissions report'),
+    ];
 
     return $types;
 }

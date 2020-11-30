@@ -612,6 +612,13 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.flex-row-end {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
 .flex-space-around {
   justify-content: space-around;
 }

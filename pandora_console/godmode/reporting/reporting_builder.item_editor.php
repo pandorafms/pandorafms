@@ -156,6 +156,9 @@ $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
 
+$nothing = __('Local metaconsole');
+$nothing_value = 0;
+
 $graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
 
 switch ($action) {
@@ -726,6 +729,8 @@ switch ($action) {
                 case 'group_configuration':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $nothing = '';
+                    $nothing_value = 0;
                 break;
 
                 case 'netflow_area':
@@ -934,8 +939,8 @@ $class = 'databox filters';
                     'combo_server',
                     $server_name,
                     '',
-                    __('Local metaconsole'),
-                    0
+                    $nothing,
+                    $nothing_value
                 );
                 ?>
             </td>
@@ -5647,6 +5652,7 @@ function chooseType() {
             $("#row_group").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
+            $("#combo_server option[value='0']").remove();
             break;
 
         case 'netflow_area':

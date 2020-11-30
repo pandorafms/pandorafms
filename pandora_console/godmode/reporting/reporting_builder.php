@@ -1432,10 +1432,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -2142,10 +2139,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');

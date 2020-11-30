@@ -227,7 +227,7 @@ if (empty($export_btn) || $show_form) {
 
     $groups = users_get_groups($config['id_user'], 'RR', users_can_manage_group_all());
 
-    $table->data[0][1] = html_print_select_groups(
+    $table->data[0][1] = '<div class="w250px">'.html_print_select_groups(
         $config['id_user'],
         'RR',
         true,
@@ -241,7 +241,7 @@ if (empty($export_btn) || $show_form) {
         true,
         '',
         false
-    );
+    ).'</div>';
 
     // Agent selector.
     $table->data[1][0] = '<b>'.__('Source agent').'</b>';

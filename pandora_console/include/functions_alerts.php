@@ -2830,3 +2830,74 @@ function alerts_ui_update_or_create_actions($update=true)
         $update ? __('Could not be updated') : __('Could not be created')
     );
 }
+
+
+/**
+ * Retrieve all agent_modules with configured alerts filtered by group.
+ *
+ * @param integer|null $id_grupo  Filter by group.
+ * @param boolean      $recursion Filter by group recursive.
+ *
+ * @return array With agent module ids.
+ */
+function alerts_get_agent_modules(
+    ?int $id_grupo,
+    bool $recursion=false
+) : array {
+    if ($id_grupo === null) {
+        $agent_modules = db_get_all_rows_sql(
+            'SELECT distinct(atm.id_agent_module)
+             FROM talert_template_modules atm
+             INNER JOIN tagente_modulo am
+                ON am.id_agente_modulo = atm.id_agent_module
+             WHERE atm.disabled = 0'
+        );
+    } else if ($recursion !== true) {
+        $sql = sprintf(
+            'SELECT distinct(atm.id_agent_module)
+                FROM talert_template_modules atm
+                INNER JOIN tagente_modulo am
+                ON am.id_agente_modulo = atm.id_agent_module
+                INNER JOIN tagente ta
+                ON am.id_agente = ta.id_agente
+                LEFT JOIN tagent_secondary_group tasg
+                ON tasg.id_agent = ta.id_agente
+                WHERE atm.disabled = 0
+                AND (tasg.id_group = %d
+                OR ta.id_grupo = %d)
+            ',
+            $id_grupo,
+            $id_grupo
+        );
+        $agent_modules = db_get_all_rows_sql($sql);
+    } else {
+        $groups = groups_get_children_ids($id_grupo, true);
+        if (empty($groups) === false) {
+            $sql = sprintf(
+                'SELECT distinct(atm.id_agent_module)
+                    FROM talert_template_modules atm
+                    INNER JOIN tagente_modulo am
+                    ON am.id_agente_modulo = atm.id_agent_module
+                    INNER JOIN tagente ta
+                    ON am.id_agente = ta.id_agente
+                    LEFT JOIN tagent_secondary_group tasg
+                    ON tasg.id_agent = ta.id_agente
+                    WHERE atm.disabled = 0
+                    AND (tasg.id_group IN (%s)
+                    OR ta.id_grupo IN (%s))
+                ',
+                implode(',', $groups),
+                implode(',', $groups)
+            );
+        }
+
+        $agent_modules = db_get_all_rows_sql($sql);
+    }
+
+    if ($agent_modules === false) {
+        return [];
+    }
+
+    return $agent_modules;
+
+}

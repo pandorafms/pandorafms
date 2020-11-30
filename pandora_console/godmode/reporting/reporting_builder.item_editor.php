@@ -156,6 +156,8 @@ $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
 
+$graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
+
 switch ($action) {
     case 'new':
         $actionParameter = 'save';
@@ -221,8 +223,9 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && !empty($server_name)) {
+            if ($meta && empty($server_name) === false) {
                 $connection = metaconsole_get_connection($server_name);
+                $server_id = $connection['id'];
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     continue;
                 }
@@ -259,7 +262,8 @@ switch ($action) {
 
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
-                    $percentil = isset($style['percentil']) ? $config['percentil'] : 0;
+                    $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
+                    $graph_render = $item['graph_render'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -653,6 +657,7 @@ switch ($action) {
                     $period = $item['period'];
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $recursion = $item['recursion'];
+                    $graph_render = $item['graph_render'];
                 break;
 
                 case 'top_n':
@@ -1260,6 +1265,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Group'); ?></td>
             <td style="">
                 <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
                 if (check_acl($config['id_user'], 0, 'RW')) {
                     html_print_select_groups(
                         $config['id_user'],
@@ -1279,6 +1285,8 @@ $class = 'databox filters';
                         ''
                     );
                 }
+
+                echo '</div>';
 
                 echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').'&nbsp;&nbsp;&nbsp;'.html_print_checkbox_switch(
                     'recursion',
@@ -1376,8 +1384,7 @@ $class = 'databox filters';
 
                 html_print_input_hidden('id_agent', $idAgent);
                 html_print_input_hidden('server_name', $server_name);
-                html_print_input_hidden('server_id', $server_name);
-                html_print_input_hidden('id_server', '');
+                html_print_input_hidden('server_id', $server_id);
 
                 $params = [];
                 $params['show_helptip'] = false;
@@ -2091,6 +2098,49 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_graph_render" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Graph render');
+            ?>
+            </td>
+            <td>
+                <?php
+                $list_graph_render = [
+                    1 => __('Avg, max & min'),
+                    2 => __('Max only'),
+                    3 => __('Min only'),
+                    0 => __('Avg only'),
+                ];
+                html_print_select(
+                    $list_graph_render,
+                    'graph_render',
+                    $graph_render
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_fullscale" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Full resolution graph (TIP)').ui_print_help_tip(
+                __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
+                true
+            );
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'fullscale',
+                1,
+                $fullscale
+            );
+            ?>
+            </td>
+        </tr>
+
         <tr id="row_time_compare_overlapped" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -2108,29 +2158,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_fullscale" style="" class="datos">
-            <td style="font-weight:bold;">
-            <?php
-            echo __('Full resolution graph (TIP)').ui_print_help_tip(
-                __('This option may cause performance issues.'),
-                true
-            );
-            ?>
-            </td>
-            <td>
-            <?php
-            html_print_checkbox_switch(
-                'fullscale',
-                1,
-                $fullscale
-            );
-            ?>
-            </td>
-        </tr>
-
         <tr id="row_percentil" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Percentil'); ?></td>
-            <td><?php html_print_checkbox('percentil', 1, $percentil); ?></td>
+            <td><?php html_print_checkbox_switch('percentil', 1, $percentil); ?></td>
         </tr>
 
         <tr id="row_exception_condition_value" style="" class="datos">
@@ -3714,7 +3744,16 @@ $(document).ready (function () {
 
     $("#combo_group").change (
         function () {
-            $("#id_agents").html('');
+
+            // Alert report group must show all matches when selecting All group
+            // ignoring 'recursion' option. #6497.
+            if ($("#combo_group").val() == 0) {
+                $('#checkbox-recursion').attr('disabled',true)
+                $('#checkbox-recursion').attr('checked','checked')
+            } else {
+                $('#checkbox-recursion').removeAttr('disabled')
+            }
+
             $("#id_agents2").html('');
             $("#module").html('');
             $("#inventory_modules").html('');
@@ -3742,6 +3781,7 @@ $(document).ready (function () {
             );
         }
     );
+    $("#combo_group").change();
 
     $("#checkbox-recursion").change (
         function () {
@@ -3890,6 +3930,16 @@ $(document).ready (function () {
             }
         });
     });
+
+    $("#checkbox-fullscale").change(function(e){
+        if(e.target.checked === true) {
+            $("#graph_render").prop('disabled', 'disabled');
+        } else {
+            $("#graph_render").prop('disabled', false);
+        }
+    });
+
+    $('#checkbox-fullscale').trigger('change');
 
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
@@ -4906,6 +4956,7 @@ function chooseType() {
     $("#row_show_graph").hide();
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
+    $("#row_graph_render").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
     $("#row_exception_condition_value").hide();
@@ -5010,8 +5061,14 @@ function chooseType() {
         case 'simple_graph':
             $("#row_time_compare_overlapped").show();
             $("#row_fullscale").show();
-            if ($("#checkbox-percentil").prop("checked"))
-                $("#row_percentil").show();
+            $("#row_graph_render").show();
+            $("#row_percentil").show();
+
+            // Force type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(<?php echo $graph_render; ?>);
+            }
+
             // The break hasn't be forgotten, this element
             // only should be shown on the simple graphs.
         case 'simple_baseline_graph':
@@ -5377,7 +5434,12 @@ function chooseType() {
             $("#row_description").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_graph_render").show();
             $("#row_fullscale").show();
+            // Force MAX type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(2);
+            }
             break;
 
         case 'top_n':

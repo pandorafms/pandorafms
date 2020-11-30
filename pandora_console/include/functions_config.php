@@ -925,6 +925,10 @@ function config_update_config()
                         $error_update[] = __('Use round corners');
                     }
 
+                    if (!config_update_value('maximum_y_axis', (bool) get_parameter('maximum_y_axis'))) {
+                        $error_update[] = __('Chart fit to content');
+                    }
+
                     if (!config_update_value('show_qr_code_header', (bool) get_parameter('show_qr_code_header'))) {
                         $error_update[] = __('Show QR code header');
                     }
@@ -1213,8 +1217,14 @@ function config_update_config()
                         $error_update[] = __('Default zoom graphs');
                     }
 
-                    if (!config_update_value('graph_image_height', (int) get_parameter('graph_image_height', 280))) {
-                        $error_update[] = __('Default height of the chart image');
+                    if (!config_update_value(
+                        'graph_image_height',
+                        (int) get_parameter('graph_image_height', 130)
+                    )
+                    ) {
+                        $error_update[] = __(
+                            'Default height of the chart image'
+                        );
                     }
 
                     // --------------------------------------------------
@@ -1320,7 +1330,7 @@ function config_update_config()
                         $error_update[] = __('HTML font size for SLA (em)');
                     }
 
-                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 10))) {
                         $error_update[] = __('PDF font size (px)');
                     }
 
@@ -1772,6 +1782,10 @@ function config_process_config()
         config_update_value('round_corner', false);
     }
 
+    if (isset($config['maximum_y_axis']) === false) {
+        config_update_value('maximum_y_axis', false);
+    }
+
     if (!isset($config['show_qr_code_header'])) {
         config_update_value('show_qr_code_header', false);
     }
@@ -1979,7 +1993,7 @@ function config_process_config()
     }
 
     if (!isset($config['font_size'])) {
-        config_update_value('font_size', 6);
+        config_update_value('font_size', 8);
     }
 
     if (!isset($config['limit_parameters_massive'])) {
@@ -2049,17 +2063,9 @@ function config_process_config()
     }
 
     if (!isset($config['fontpath'])) {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $fontpath = $config['homedir'].'\include\fonts\smallfont.ttf';
-        } else {
-            $home = str_replace('\\', '/', $config['homedir']);
-            $fontpath = $home.'/include/fonts/smallfont.ttf';
-        }
-
         config_update_value(
             'fontpath',
-            $fontpath
+            'opensans.ttf'
         );
     }
 
@@ -2856,7 +2862,7 @@ function config_process_config()
     }
 
     if (!isset($config['graph_image_height'])) {
-        config_update_value('graph_image_height', 280);
+        config_update_value('graph_image_height', 130);
     }
 
     if (!isset($config['zoom_graph'])) {
@@ -2911,9 +2917,12 @@ function config_process_config()
         config_update_value('custom_report_info', 1);
     }
 
-    // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 10);
     }
 
     if (!isset($config['font_size_item_report'])) {
@@ -2921,7 +2930,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'FreeSans.ttf');
+        config_update_value('custom_report_front_font', 'opensans.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {

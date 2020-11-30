@@ -233,8 +233,9 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $data = [];
-$data[0] = __('Show full scale graph (TIP)').ui_print_help_tip(
-    __('This option may cause performance issues'),
+$data[0] = __('Show full scale graph (TIP)');
+$data[0] .= ui_print_help_tip(
+    __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
     true,
     'images/tip.png',
     true
@@ -302,7 +303,7 @@ html_print_div(
 );
 
 // Graph.
-echo '<div>';
+echo '<div id="stat-win-interface-graph">';
 
 $height = 280;
 $width  = '90%';

@@ -145,7 +145,8 @@ if ($id_group) {
 
         $table->data[2][1] = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
     } else {
-        $table->data[2][1] = html_print_select_groups(
+        $table->data[2][1] = '<div class="w250px inline">';
+        $table->data[2][1] .= html_print_select_groups(
             false,
             'AR',
             true,
@@ -163,9 +164,20 @@ if ($id_group) {
             false,
             $id_group
         );
+        $table->data[2][1] .= '</div>';
     }
 } else {
-    $table->data[2][1] = html_print_select_groups(false, 'AR', true, 'id_parent', $id_parent, '', '', '', true);
+    $table->data[2][1] = '<div class="w250px inline">';
+    $table->data[2][1] .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'name'           => 'id_parent',
+            'selected'       => $id_parent,
+            'return'         => true,
+            'returnAllGroup' => true,
+        ]
+    );
+    $table->data[2][1] .= '</div>';
 }
 
 if ($acl_parent) {

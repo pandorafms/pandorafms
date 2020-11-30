@@ -1343,6 +1343,73 @@ function get_priority_name($priority)
 
 
 /**
+ * Translates status into string.
+ *
+ * @param integer $status Agent status.
+ *
+ * @return string Translation.
+ */
+function get_agent_status_string($status)
+{
+    switch ($status) {
+        case AGENT_STATUS_CRITICAL:
+        return __('CRITICAL');
+
+        case AGENT_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_STATUS_ALERT_FIRED:
+        return __('ALERT FIRED');
+
+        case AGENT_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_STATUS_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates status into string.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Translation.
+ */
+function get_module_status_string($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        return __('ALERT FIRED');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        return __('UNKNOWN');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        default:
+        return __('NORMAL');
+    }
+}
+
+
+/**
  * Get priority class (CSS class) from priority value.
  *
  * @param int priority value (integer) as stored eg. in database.
@@ -2222,13 +2289,19 @@ function check_login($output=true)
  * @param integer $id_group     Agents group id to check from
  * @param string  $access       Access privilege
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ * @param boolean $cache        Use cache.
  *
  * @return boolean 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
-{
+function check_acl(
+    $id_user,
+    $id_group,
+    $access,
+    $onlyOneGroup=false,
+    $cache=true
+) {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -2238,7 +2311,15 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
     }
 
     if ($id_group != 0 || $onlyOneGroup === true) {
-        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+        $groups_list_acl = users_get_groups(
+            $id_user,
+            $access,
+            false,
+            true,
+            null,
+            'id_grupo',
+            $cache
+        );
     } else {
         $groups_list_acl = get_users_acl($id_user);
     }
@@ -2263,16 +2344,17 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
 /**
  * Check the ACL of a list of groups.
  *
- * @param string $id_user to check the ACL
- * @param array  $groups. All groups to check
- * @param string $access. Profile to check
+ * @param string  $id_user to check the ACL
+ * @param array   $groups. All groups to check
+ * @param string  $access. Profile to check
+ * @param boolean $cache   Use cached group information.
  *
  * @return boolean True if at least one of this groups check the ACL
  */
-function check_acl_one_of_groups($id_user, $groups, $access)
+function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 {
     foreach ($groups as $group) {
-        if (check_acl($id_user, $group, $access)) {
+        if (check_acl($id_user, $group, $access, false, $cache)) {
             return true;
         }
     }
@@ -3753,7 +3835,16 @@ function series_type_graph_array($data, $show_elements_graph)
                         $name_legend .= __('Unit ').' ';
                         $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        if (isset($show_elements_graph['from_interface']) === true
+                            && (bool) $show_elements_graph['from_interface'] === true
+                        ) {
+                            $label_interfaces = array_flip($show_elements_graph['modules_series']);
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
+                        } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
+                            $name_legend = 'Avg: ';
+                        } else {
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        }
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
@@ -3771,7 +3862,11 @@ function series_type_graph_array($data, $show_elements_graph)
                         }
                     } else {
                         $name_legend = '';
-                        if ((int) $config['type_mode_graph'] === 1) {
+                        if (isset($show_elements_graph['fullscale']) === true
+                            && (int) $show_elements_graph['fullscale'] === 1
+                        ) {
+                            $name_legend .= 'Tip: ';
+                        } else {
                             $name_legend .= 'Avg: ';
                         }
 
@@ -3839,7 +3934,8 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['series_type'][$key] = $type_graph;
 
                 $name_legend = '';
-                if ((int) $config['type_mode_graph'] === 1) {
+
+                if ((int) $show_elements_graph['type_mode_graph'] != 0) {
                     if (strpos($key, 'min') !== false) {
                         $name_legend .= 'Min: ';
                     }
@@ -3968,8 +4064,22 @@ function series_type_graph_array($data, $show_elements_graph)
 }
 
 
-function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false, $module_list=false)
-{
+/**
+ * Draw chart pdf.
+ *
+ * @param string  $type_graph_pdf  Type graph.
+ * @param array   $params          Params.
+ * @param boolean $params_combined Params only charts combined.
+ * @param boolean $module_list     Array modules.
+ *
+ * @return string Img or base64.
+ */
+function generator_chart_to_pdf(
+    $type_graph_pdf,
+    $params,
+    $params_combined=false,
+    $module_list=false
+) {
     global $config;
 
     if (is_metaconsole()) {
@@ -4011,8 +4121,18 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     }
 
     $session_id = session_id();
+    $cache_dir = $config['homedir'].'/attachment/cache';
 
-    $cmd = '"'.io_safe_output($config['phantomjs_bin']).DIRECTORY_SEPARATOR.'phantomjs" --ssl-protocol=any --ignore-ssl-errors=true "'.$file_js.'" '.' "'.$url.'"'.' "'.$type_graph_pdf.'"'.' "'.$params_encode_json.'"'.' "'.$params_combined.'"'.' "'.$module_list.'"'.' "'.$img_path.'"'.' "'.$width_img.'"'.' "'.$height_img.'"'.' "'.$session_id.'"'.' "'.$params['return_img_base_64'].'"';
+    $cmd = '"'.io_safe_output($config['phantomjs_bin']);
+    $cmd .= DIRECTORY_SEPARATOR.'phantomjs" ';
+    $cmd .= ' --disk-cache=true --disk-cache-path="'.$cache_dir.'"';
+    $cmd .= ' --max-disk-cache-size=10000 ';
+    $cmd .= ' --ssl-protocol=any --ignore-ssl-errors=true ';
+    $cmd .= '"'.$file_js.'" "'.$url.'" "'.$type_graph_pdf.'"';
+    $cmd .= ' "'.$params_encode_json.'" "'.$params_combined.'"';
+    $cmd .= ' "'.$module_list.'" "'.$img_path.'"';
+    $cmd .= ' "'.$width_img.'" "'.$height_img.'"';
+    $cmd .= ' "'.$session_id.'" "'.$params['return_img_base_64'].'"';
 
     $result = null;
     $retcode = null;
@@ -4024,7 +4144,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
         // To be used in alerts.
         return $img_content;
     } else {
-        // to be used in PDF files.
+        // To be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -5734,4 +5854,61 @@ function get_data_multiplier($unit)
     }
 
     return $multiplier;
+}
+
+
+/**
+ * Send test email to check email setups.
+ *
+ * @param string $to Target email account.
+ *
+ * @return integer Status of the email send task.
+ */
+function send_test_email(
+    string $to
+) {
+    global $config;
+
+    $result = false;
+    try {
+        $transport = new Swift_SmtpTransport(
+            $config['email_smtpServer'],
+            $config['email_smtpPort']
+        );
+
+        $transport->setUsername($config['email_username']);
+        $transport->setPassword($config['email_password']);
+
+        if ($config['email_encryption']) {
+            $transport->setEncryption($config['email_encryption']);
+        }
+
+        $mailer = new Swift_Mailer($transport);
+
+        $message = new Swift_Message(io_safe_output(__('Testing Pandora FMS email')));
+
+        $message->setFrom(
+            [
+                $config['email_from_dir'] => io_safe_output(
+                    $config['email_from_name']
+                ),
+            ]
+        );
+
+        $to = trim($to);
+        $message->setTo([$to => $to]);
+        $message->setBody(
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            'text/html'
+        );
+
+        ini_restore('sendmail_from');
+
+        $result = $mailer->send($message);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        db_pandora_audit('Cron jobs mail', $e->getMessage());
+    }
+
+    return $result;
 }

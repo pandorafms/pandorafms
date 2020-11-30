@@ -116,6 +116,13 @@ function io_safe_input($value)
     // TICKET: 1223
     $valueHtmlEncode = str_replace('&deg;', '&#176;', $valueHtmlEncode);
 
+    // Fixed the ¿ charater.
+    $valueHtmlEncode = str_replace('&iquest;', '¿', $valueHtmlEncode);
+    // Fixed the ¡ charater.
+    $valueHtmlEncode = str_replace('&iexcl;', '¡', $valueHtmlEncode);
+    // Fixed the € charater.
+    $valueHtmlEncode = str_replace('&euro;', '€', $valueHtmlEncode);
+
     // Replace some characteres for html entities
     for ($i = 0; $i < 33; $i++) {
         $valueHtmlEncode = str_ireplace(

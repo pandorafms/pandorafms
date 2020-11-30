@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.749 PS201002";
+my $version = "7.0NG.750 PS201130";
 
 # save program name for logging
 my $progname = basename($0);
@@ -5734,7 +5734,7 @@ sub cli_delete_group() {
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
-	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', $group_name);
+	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
 
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";

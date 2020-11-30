@@ -535,7 +535,14 @@ function vbar_graph(
     ];
 
     if (empty($params['data']) === true) {
-        return graph_nodata_image(0, 0, 'vbar', '', true);
+        return graph_nodata_image(
+            0,
+            0,
+            'vbar',
+            '',
+            true,
+            ($ttl === 2) ? true : false
+        );
     }
 
     if ((int) $ttl === 2) {

@@ -91,6 +91,7 @@ our @EXPORT = qw(
 	$DEVNULL
 	$OS
 	$OS_VERSION
+	$VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
 	MODULE_NORMAL
@@ -854,6 +855,24 @@ sub clean_blank {
 	$input =~ s/^\s+//g;
 	$input =~ s/\s+$//g;
 	return $input;
+}
+
+################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (is_empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
 }
 
 ################################################################################

@@ -32,7 +32,6 @@ global $config;
 require_once 'include/functions_agents.php';
 
 require_once $config['homedir'].'/include/functions_graph.php';
-include_graphs_dependencies();
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_incidents.php';
@@ -611,7 +610,7 @@ if (!empty($network_interfaces)) {
     $table_interface->style = [];
     $table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph'] = 'right';
     // $table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph_text'] = 'left';
@@ -619,7 +618,7 @@ if (!empty($network_interfaces)) {
     $table_interface->align['interface_name'] = 'left';
     $table_interface->align['interface_ip'] = 'left';
     $table_interface->align['last_contact'] = 'left';
-    $table_interface->style['last_contact'] = 'width: 40%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['last_contact'] = 'width: 20%;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_ip'] = 'width: 8%;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_mac'] = 'width: 12%;padding-top:0px;padding-bottom:0px;';
 
@@ -729,9 +728,15 @@ if (!empty($network_interfaces)) {
         $text_event_header = __('Events info (24hr.)');
         if (!$events) {
             $no_events = ['color' => ['criticity' => 2]];
-            $e_graph = reporting_get_event_histogram($no_events, $text_event_header);
+            $e_graph = reporting_get_event_histogram(
+                $no_events,
+                $text_event_header
+            );
         } else {
-            $e_graph = reporting_get_event_histogram($events, $text_event_header);
+            $e_graph = reporting_get_event_histogram(
+                $events,
+                $text_event_header
+            );
         }
 
         $data = [];
@@ -865,6 +870,9 @@ echo $agent_incidents;
 if (isset($table_interface)) {
     ui_toggle(
         html_print_table($table_interface, true),
-        '<b>'.__('Interface information (SNMP)').'</b>'
+        '<b>'.__('Interface information (SNMP)').'</b>',
+        '',
+        'interface-table-status-agent',
+        true
     );
 }

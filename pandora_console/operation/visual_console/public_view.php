@@ -29,9 +29,10 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 require_once $config['homedir'].'/vendor/autoload.php';
 
 ui_require_css_file('visual_maps');
-ui_require_css_file('register');
+ui_require_css_file('register', 'include/styles/', true);
 
 // Connection lost alert.
+ui_require_javascript_file('connection_check', 'include/javascript/', true);
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
@@ -138,10 +139,6 @@ echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of 
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
-// Connection lost alert.
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 // Check groups can access user.
 $aclUserGroups = [];

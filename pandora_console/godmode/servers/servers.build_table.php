@@ -91,8 +91,20 @@ foreach ($servers as $server) {
 
     // Status
     $data[1] = ui_print_status_image(STATUS_SERVER_OK, '', true);
-    if (($server['status'] == 0) || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)) {
-        $data[1] = ui_print_status_image(STATUS_SERVER_DOWN, '', true);
+    if ($server['status'] == -1) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_CRASH,
+            __('Server has crashed.'),
+            true
+        );
+    } else if (($server['status'] == 0)
+        || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)
+    ) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_DOWN,
+            __('Server is stopped.'),
+            true
+        );
     }
 
     // Type

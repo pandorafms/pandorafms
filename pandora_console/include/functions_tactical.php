@@ -427,6 +427,8 @@ function tactical_monitor_alerts($group_array, $strict_user=false, $id_group_str
         $sql = "SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 			WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
+            AND tagente.disabled = 0
+            AND talert_template_modules.disabled = 0
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
         $count = db_get_sql($sql);
@@ -437,6 +439,8 @@ function tactical_monitor_alerts($group_array, $strict_user=false, $id_group_str
             "SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
+            AND tagente.disabled = 0
+            AND talert_template_modules.disabled = 0
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo"
         );

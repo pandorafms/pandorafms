@@ -5904,7 +5904,7 @@ function reporting_sql($report, $content)
             )
         );
     } else {
-        $sql = io_safe_output($content['external_source']);
+        $sql = $content['external_source'];
     }
 
     // Check if exist sql macro

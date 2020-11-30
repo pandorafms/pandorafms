@@ -1256,17 +1256,23 @@ ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
-ALTER TABLE talert_snmp ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,
 	MODIFY COLUMN `al_field14` text NOT NULL,
 	MODIFY COLUMN `al_field15` text NOT NULL;
+
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`

@@ -694,6 +694,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'permissions_report':
+                $report['contents'][] = reporting_permissions(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'group_report':
                 $report['contents'][] = reporting_group_report(
                     $report,
@@ -3572,6 +3579,128 @@ function reporting_last_value($report, $content)
     if (is_metaconsole()) {
         metaconsole_restore_db();
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+function reporting_permissions($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'permissions_report';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Permissions report');
+    }
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $external_source = io_safe_input(json_decode($content['external_source'], true));
+    $id_users = $external_source['id_users'];
+    $id_groups = $external_source['users_groups'];
+
+    // Select subtype: group by user or by group.
+    $select_by_group = $external_source['select_by_group'];
+    $return['subtype'] = (int) $select_by_group;
+
+    if ($select_by_group === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+        foreach ($id_users as $id_user) {
+            $user_name = db_get_value_filter('fullname', 'tusuario', ['id_user' => $id_user]);
+
+            $sql = sprintf(
+                "SELECT name, id_grupo FROM tusuario_perfil
+                INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+                WHERE tusuario_perfil.id_usuario like '%s'",
+                $id_user
+            );
+
+            $profiles = db_get_all_rows_sql($sql);
+
+            $user_profiles = [];
+            if (empty($profiles)) {
+                $user_profiles[] = __('The user doesn\'t have any assigned profile/group');
+            } else {
+                foreach ($profiles as $user_profile) {
+                    $user_profiles[] = $user_profile['name'].' / '.groups_get_name($user_profile['id_grupo'], true);
+                }
+            }
+
+            $data[] = [
+                'user_id'       => io_safe_output($id_user),
+                'user_name'     => io_safe_output($user_name),
+                'user_profiles' => io_safe_output($user_profiles),
+            ];
+        }
+    } else {
+        $group_users = [];
+        foreach ($id_groups as $id_group) {
+            if ($id_group === '') {
+                $group_name = __('Unnasigned group');
+                $sql = 'SELECT tusuario.id_user, tusuario.fullname FROM tusuario 
+                        LEFT OUTER JOIN tusuario_perfil
+                        ON tusuario.id_user = tusuario_perfil.id_usuario
+                        WHERE tusuario_perfil.id_usuario IS NULL';
+                $group_users = db_get_all_rows_sql($sql);
+                $group_name = __('Unassigned group');
+            } else {
+                $group_name = groups_get_name($id_group, true);
+                $group_users = users_get_user_users(
+                    $id_group,
+                    'AR',
+                    false,
+                    [
+                        'id_user',
+                        'fullname',
+
+                    ],
+                    [$id_group]
+                );
+            }
+
+            $row['users'] = [];
+            foreach ($group_users as $user) {
+                 $id_user = $user['id_user'];
+
+                // Get user fullanme.
+                $row['users'][$id_user]['fullname'] = $user['fullname'];
+
+                if ($id_group === '') {
+                    $row['users'][$id_user]['profiles'][] = __('The user doesn\'t have any assigned profile/group');
+                } else {
+                    // Incluide id group = 0 for 'All' profile.
+                    $sql = sprintf(
+                        "SELECT id_perfil FROM tusuario_perfil 
+                            WHERE id_usuario LIKE '%s' 
+                            AND (
+                                id_grupo LIKE '%s'
+                                OR id_grupo LIKE '0'
+                                )",
+                        $id_user,
+                        $id_group
+                    );
+
+                    $user_profiles_id  = db_get_all_rows_sql($sql);
+
+                    foreach ($user_profiles_id as $profile_id) {
+                        $row['users'][$id_user]['profiles'][] = profile_get_name($profile_id['id_perfil']);
+                    }
+                }
+            }
+
+            $data[] = [
+                'group_name' => $group_name,
+                'users'      => $row['users'],
+            ];
+        }
+    }
+
+    $return['data'] = [];
+    $return['data'] = $data;
 
     return reporting_check_structure_content($return);
 }

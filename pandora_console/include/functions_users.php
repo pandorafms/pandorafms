@@ -616,7 +616,8 @@ function users_get_user_users(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $fields=null
+    $fields=null,
+    $filter_group=[]
 ) {
     global $config;
 
@@ -625,8 +626,12 @@ function users_get_user_users(
     $user_users = [];
     $array_user_group = [];
 
-    foreach ($user_groups as $id_user_group => $name_user_group) {
-        $array_user_group[] = $id_user_group;
+    if (empty($filter_group)) {
+        foreach ($user_groups as $id_user_group => $name_user_group) {
+            $array_user_group[] = $id_user_group;
+        }
+    } else {
+        $array_user_group = $filter_group;
     }
 
     $group_users = groups_get_users($array_user_group, false, $returnAllGroup);
@@ -830,4 +835,26 @@ function users_get_user_profile($id_user)
     }
 
     return $user_profiles;
+}
+
+
+/**
+ * Obtiene una matriz con la informacion de cada usuario que pertenece a un grupo
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_users_group_by_group($id_group)
+{
+    $sql = sprintf(
+        "SELECT tusuario.* FROM tusuario 
+        LEFT JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user 
+        AND tusuario_perfil.id_grupo = '%s'
+        GROUP BY tusuario_perfil.id_usuario",
+        $id_group
+    );
+
+    $users = db_get_all_rows_sql($sql);
+
+    return $users;
 }

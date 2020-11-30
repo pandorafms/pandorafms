@@ -33,6 +33,53 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
     exit;
 }
 
+if (is_ajax()) {
+    $method = get_parameter('method');
+    $group_id = get_parameter('group_id');
+    $group_recursion = (bool) get_parameter('group_recursion', 0);
+    $return_all = false;
+
+    if ($group_id == -1) {
+        $sql = 'SELECT tusuario.id_user FROM tusuario 
+                        LEFT OUTER JOIN tusuario_perfil
+                        ON tusuario.id_user = tusuario_perfil.id_usuario
+                        WHERE tusuario_perfil.id_usuario IS NULL';
+
+        $users = io_safe_output(db_get_all_rows_sql($sql));
+
+        foreach ($users as $key => $user) {
+            $ret_user[$user['id_user']] = $user['id_user'];
+        }
+
+        echo json_encode($ret_user);
+        return;
+    }
+
+    if ($group_id == 0) {
+        $users = io_safe_output(db_get_all_rows_filter('tusuario', [], 'id_user'));
+        foreach ($users as $key => $user) {
+            $ret_user[$user['id_user']] = $user['id_user'];
+        }
+
+        echo json_encode($ret_user);
+        return;
+    }
+
+    if ($method === 'get_users_by_group') {
+        if ($group_recursion === true) {
+            $group_id = groups_get_children_ids($group_id);
+        }
+
+        $users_id = io_safe_output(users_get_user_users(false, 'AR', false, null, $group_id));
+        foreach ($users_id as $key => $user_id) {
+            $ret_id[$user_id] = $user_id;
+        }
+
+        echo json_encode($ret_id);
+        return;
+    }
+}
+
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $tab = get_parameter('tab', 'user');

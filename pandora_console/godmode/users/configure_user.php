@@ -196,6 +196,8 @@ if (is_ajax()) {
     }
 }
 
+
+
 $tab = get_parameter('tab', 'user');
 
 if ($id) {

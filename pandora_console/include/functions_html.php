@@ -913,28 +913,45 @@ function html_print_select_multiple_filtered(
         $sections = [];
     }
 
-    if (empty($sections['filters']) === true) {
+    if (isset($sections['filters']) === false) {
         $sections['filters'] = 1;
     }
 
-    if (empty($sections['group-filter']) === true) {
+    // Show/hide all left/rigth sfilters.
+    if (isset($sections['item-selected-filters']) === false) {
+        $sections['item-selected-filters'] = 1;
+    }
+
+    if (isset($sections['item-available-filters']) === false) {
+        $sections['item-available-filters'] = 1;
+    }
+
+    if (isset($sections['group-filter']) == false) {
         $sections['group-filter'] = 1;
     }
 
-    if (empty($sections['item-available-filter']) === true) {
+    if (isset($sections['item-available-filter']) === false) {
         $sections['item-available-filter'] = 1;
     }
 
-    if (empty($sections['item-selected-filter']) === true) {
+    if (isset($sections['item-selected-filter']) === false) {
         $sections['item-selected-filter'] = 1;
     }
 
-    if (empty($group_filter) === true) {
+    if (isset($group_filter) === false) {
         $sections['group-filter'] = 0;
     }
 
+    if (isset($group_filter['nothing']) === false) {
+        $group_filter['nothing'] = '';
+    }
+
+    if (isset($group_filter['nothing_value']) === false) {
+        $group_filter['nothing_value'] = 0;
+    }
+
     // Main container.
-    $output = '<div class="multi-select flex-row-vcenter '.$class.'">';
+    $output = '<div class="multi-select flex-row-end '.$class.'">';
 
     // Left box.
     $output .= '<div class="multi-select-container flex-column">';
@@ -943,6 +960,7 @@ function html_print_select_multiple_filtered(
     // Filtering.
     if (isset($sections['filters']) === true
         && $sections['filters'] === 1
+        && $sections['item-available-filters'] === 1
     ) {
         // Filtering.
         if (isset($sections['group-filter']) === true
@@ -962,6 +980,7 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
+                    'input_class'    => 'flex-row-vcenter',
                     'label'          => __('Filter group'),
                     'name'           => 'id-group-available-select-'.$rid,
                     'returnAllGroup' => true,
@@ -969,16 +988,20 @@ function html_print_select_multiple_filtered(
                     'type'           => 'select_groups',
                     'return'         => true,
                     'script'         => $reload_content,
+                    'nothing'        => $group_filter['nothing'],
+                    'nothing_value'  => $group_filter['nothing_value'],
                 ]
             );
 
             $output .= html_print_input(
                 [
-                    'label'  => __('Group recursion'),
-                    'name'   => 'id-group-recursion-available-select-'.$rid,
-                    'type'   => 'checkbox',
-                    'script' => $reload_content,
-                    'return' => true,
+                    'label'       => __('Group recursion'),
+                    'input_class' => 'flex-row-vcenter',
+                    'name'        => 'id-group-recursion-available-select-'.$rid,
+                    'id'          => 'checkbox-id-group-recursion-available-select-'.$rid,
+                    'type'        => 'switch',
+                    'onchange'    => $reload_content,
+                    'return'      => true,
                 ]
             );
 
@@ -1087,6 +1110,7 @@ function html_print_select_multiple_filtered(
     // Filtering.
     if (isset($sections['filters']) === true
         && $sections['filters'] === 1
+        && $sections['item-selected-filters']
     ) {
         if (isset($sections['group-filter']) === true
             && $sections['group-filter'] === 1
@@ -1105,6 +1129,7 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
+                    'input_class'    => 'flex-row-vcenter',
                     'label'          => __('Filter group'),
                     'name'           => 'id-group-selected-select-'.$rid,
                     'returnAllGroup' => true,
@@ -1117,11 +1142,12 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
-                    'label'  => __('Group recursion'),
-                    'name'   => 'id-group-recursion-selected-select-'.$rid,
-                    'type'   => 'checkbox',
-                    'script' => $reload_content,
-                    'return' => true,
+                    'input_class' => 'flex-row-vcenter',
+                    'label'       => __('Group recursion'),
+                    'name'        => 'id-group-recursion-selected-select-'.$rid,
+                    'type'        => 'checkbox',
+                    'script'      => $reload_content,
+                    'return'      => true,
                 ]
             );
 
@@ -1152,7 +1178,7 @@ function html_print_select_multiple_filtered(
                     'label'       => __($texts['filter-item']),
                     'name'        => 'filter-item-selected-'.$rid,
                     'onKeyUp'     => $f,
-                    'input_class' => 'filter w100p',
+                    'input_class' => 'flex-row-vcenter filter w100p',
                     'size'        => 20,
                     'type'        => 'text',
                     'return'      => true,

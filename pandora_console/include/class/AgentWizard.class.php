@@ -2408,6 +2408,9 @@ class AgentWizard extends HTML
             }
         }
 
+        // If value comes Null, must return a empty value.
+        $value = ($value ?? '');
+
         return $value;
     }
 

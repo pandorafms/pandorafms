@@ -1166,6 +1166,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = ".\\";
+		$system{cmdsep}  = "\&";
 	}
 	else {
 		$system{devnull} = "/dev/null";
@@ -1176,6 +1177,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = "/tmp";
+		$system{cmdsep}  = ";";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";

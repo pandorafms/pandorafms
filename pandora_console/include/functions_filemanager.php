@@ -117,17 +117,16 @@ if (!function_exists('mime_content_type')) {
 global $config;
 
 
-$homedir_filemanager = trim($config['homedir']);
-$sec2 = get_parameter('sec2');
-if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
-    $homedir_filemanager .= '/attachment/collection/';
-}
-
-
 function upload_file($upload_file_or_zip, $default_real_directory)
 {
     global $config;
-    global $homedir_filemanager;
+
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+
+    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+        $homedir_filemanager .= '/attachment/collection/';
+    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -249,7 +248,13 @@ if (isset($_SERVER['CONTENT_LENGTH'])) {
 function create_text_file($default_real_directory)
 {
     global $config;
-    global $homedir_filemanager;
+
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+
+    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+        $homedir_filemanager .= '/attachment/collection/';
+    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -299,6 +304,12 @@ function create_text_file($default_real_directory)
     }
 }
 
+
+$homedir_filemanager = trim($config['homedir']);
+$sec2 = get_parameter('sec2');
+if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+    $homedir_filemanager .= '/attachment/collection/';
+}
 
 // CREATE DIR
 $create_dir = (bool) get_parameter('create_dir');

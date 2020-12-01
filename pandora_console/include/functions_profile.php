@@ -234,7 +234,7 @@ function profile_print_profile_table($id)
         $sql = sprintf(
             "SELECT tusuario_perfil.* FROM tusuario_perfil
             INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-            WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
+            WHERE id_usuario like '%s' AND id_grupo IN (%s)",
             $id,
             $group_um_string
         );

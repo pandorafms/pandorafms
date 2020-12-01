@@ -759,13 +759,13 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     $sql = sprintf(
         "SELECT tusuario_perfil.* FROM tusuario_perfil
         INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-        WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
-        $id,
+        WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 1",
+        $config['id_user'],
         $group_um_string
     );
 
     $result = db_get_all_rows_sql($sql);
-    if ($result == false || $user_info['is_admin']) {
+    if ($result == false && $user_info['is_admin'] == false) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access User Management'

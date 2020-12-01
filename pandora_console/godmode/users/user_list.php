@@ -491,12 +491,6 @@ foreach ($info as $user_id => $user_info) {
         foreach ($group_um as $key => $value) {
             if (isset($user_profiles_aux[$key])) {
                 $user_profiles[$key] = $user_profiles_aux[$key];
-                if ($user_profiles_aux[$key]['user_management'] == 1) {
-                    $user_info['edit'] = 0;
-                } else {
-                    $user_info['edit'] = 1;
-                }
-
                 unset($user_profiles_aux[$key]);
             }
         }
@@ -593,8 +587,10 @@ foreach ($info as $user_id => $user_info) {
 
             $total_profile++;
         }
-
-            $data[4] .= '</div>';
+        if (isset($user_info['not_delete'])) {
+            $data[4] .= __('Other profiles are also assigned.') . ui_print_help_tip(__('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'), true);
+        }
+        $data[4] .= '</div>';
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
     }

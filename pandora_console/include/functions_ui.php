@@ -3836,7 +3836,8 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'class' => 'float-left',
+                    'style' => 'object-fit: contain; margin-right:10px;',
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]

@@ -593,10 +593,6 @@ $table->data[2][5] = html_print_input_text('min_hours_status', $min_hours_val, '
 
 $table->data[3][0] = '<span id="datatypetittle" ';
 
-if (!$_GET['sort']) {
-    $table->data[3][0] .= 'style="display:none"';
-}
-
 $table->data[3][0] .= '>'.__('Data type').'</span>';
 
 
@@ -670,10 +666,6 @@ switch ($moduletype) {
 
 $a = db_get_all_rows_sql($sql);
 $table->data[3][1] .= '<select id="datatype" name="datatype" ';
-
-if (!$_GET['sort']) {
-    $table->data[3][1] .= 'style="display:none"';
-}
 
 $table->data[3][1] .= '>';
 

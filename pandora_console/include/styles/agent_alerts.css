@@ -1,0 +1,70 @@
+/* Specific CSS for Agent/Alerts view */
+
+.agents_modules_table .table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.agents_modules_table .next_previous_step {
+  width: 0.1%;
+}
+
+.agents_modules_table .header_table_principal_cell {
+  text-align: right !important;
+  padding-right: 13px;
+  width: 20%;
+}
+
+.agents_modules_table .header_table_caption_cell {
+  height: 200px;
+}
+
+.agents_modules_table .position_text_module {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .agents_modules_table .position_text_module div {
+  padding-left: 10px;
+  margin-top: 90px;
+} */
+
+#full_screen_refresh_box,
+#slc-refresh-rate,
+#img-full-screen {
+  float: right;
+}
+
+#full_screen_refresh_box > li > label {
+  width: 100px;
+  margin-left: 20px;
+}
+
+.full_screen_button {
+  color: transparent;
+  width: 20%;
+  border: 0;
+}
+
+.agent_alerts_header_pure {
+  position: absolute;
+}
+
+.agents_alerts_header form > ul > li {
+  display: inline-flex;
+}
+
+.agents_alerts_header form ul {
+  clear: both;
+  width: 100%;
+}
+
+.agents_alerts_header form > ul > li:nth-child(1n + 1) {
+  margin-left: 2em;
+}
+
+.pagination-bottom {
+  margin-top: 15px;
+}

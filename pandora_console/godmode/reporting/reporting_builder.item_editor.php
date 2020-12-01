@@ -156,6 +156,16 @@ $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
 
+// Users.
+$id_users = [];
+$users_groups = [];
+$select_by_group = false;
+
+$nothing = __('Local metaconsole');
+$nothing_value = 0;
+
+$graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
+
 switch ($action) {
     case 'new':
         $actionParameter = 'save';
@@ -221,8 +231,9 @@ switch ($action) {
             $server_name = $item['server_name'];
 
             // Metaconsole db connection.
-            if ($meta && !empty($server_name)) {
+            if ($meta && empty($server_name) === false) {
                 $connection = metaconsole_get_connection($server_name);
+                $server_id = $connection['id'];
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     continue;
                 }
@@ -259,7 +270,8 @@ switch ($action) {
 
                 case 'simple_graph':
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
-                    $percentil = isset($style['percentil']) ? $config['percentil'] : 0;
+                    $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
+                    $graph_render = $item['graph_render'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -653,6 +665,7 @@ switch ($action) {
                     $period = $item['period'];
                     $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
                     $recursion = $item['recursion'];
+                    $graph_render = $item['graph_render'];
                 break;
 
                 case 'top_n':
@@ -721,6 +734,8 @@ switch ($action) {
                 case 'group_configuration':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $nothing = '';
+                    $nothing_value = 0;
                 break;
 
                 case 'netflow_area':
@@ -740,6 +755,22 @@ switch ($action) {
                     $period = $item['period'];
                     $description = $item['description'];
                     $top_n_value = $item['top_n_value'];
+                break;
+
+                case 'permissions_report':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+                    $id_users = array_combine(
+                        array_values($es['id_users']),
+                        array_values($es['id_users'])
+                    );
+
+                    if (isset($id_users[0]) && $id_users[0] == 0) {
+                        $id_users[0] = __('None');
+                    }
+
+                    $users_groups = $es['users_groups'];
+                    $select_by_group = $es['select_by_group'];
                 break;
 
                 default:
@@ -929,8 +960,8 @@ $class = 'databox filters';
                     'combo_server',
                     $server_name,
                     '',
-                    __('Local metaconsole'),
-                    0
+                    $nothing,
+                    $nothing_value
                 );
                 ?>
             </td>
@@ -1024,30 +1055,13 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'last_value',
                     '1',
                     ((int) $period === 0),
                     false,
                     false,
                     'set_last_value_period();'
-                );
-                ?>
-            </td>
-        </tr>
-
-        <tr id="row_resolution" style="" class="datos">
-            <td style="font-weight:bold;">
-                <?php
-                echo __('Resolution');
-                ?>
-            </td>
-            <td style="">
-                <?php
-                html_print_select(
-                    netflow_resolution_select_params(),
-                    'resolution',
-                    $resolution
                 );
                 ?>
             </td>
@@ -1110,7 +1124,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Only display wrong SLAs'); ?></td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'checkbox_only_display_wrong',
                     1,
                     $only_display_wrong
@@ -1125,7 +1139,13 @@ $class = 'databox filters';
             </td>
 
             <td style="font-weight:bold;">
-                <?php html_print_checkbox('current_month', 1, $current_month); ?>
+                <?php
+                html_print_checkbox_switch(
+                    'current_month',
+                    1,
+                    $current_month
+                );
+                ?>
             </td>
         </tr>
 
@@ -1138,46 +1158,60 @@ $class = 'databox filters';
                 <table border="0">
                     <tr>
                         <td>
+                        <p style="margin-right:30px;">
                             <?php
-                            echo __('Monday');
-                            html_print_checkbox('monday', 1, $monday);
+                            echo __('Monday').'<br>';
+                                html_print_checkbox_switch('monday', 1, $monday);
                             ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Tuesday');
-                            html_print_checkbox('tuesday', 1, $tuesday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Tuesday').'<br>';
+                                html_print_checkbox_switch('tuesday', 1, $tuesday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Wednesday');
-                            html_print_checkbox('wednesday', 1, $wednesday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Wednesday').'<br>';
+                                html_print_checkbox_switch('wednesday', 1, $wednesday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Thursday');
-                            html_print_checkbox('thursday', 1, $thursday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Thursday').'<br>';
+                                html_print_checkbox_switch('thursday', 1, $thursday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Friday');
-                            html_print_checkbox('friday', 1, $friday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Friday').'<br>';
+                                html_print_checkbox_switch('friday', 1, $friday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Saturday');
-                            html_print_checkbox('saturday', 1, $saturday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Saturday').'<br>';
+                                html_print_checkbox_switch('saturday', 1, $saturday);
+                                ?>
+                            </p>
                         </td>
                         <td>
-                            <?php
-                            echo __('Sunday');
-                            html_print_checkbox('sunday', 1, $sunday);
-                            ?>
+                            <p style="margin-right:30px;">
+                                <?php
+                                echo __('Sunday').'<br>';
+                                html_print_checkbox_switch('sunday', 1, $sunday);
+                                ?>
+                            </p>
                         </td>
                     </tr>
                     <tr>
@@ -1224,7 +1258,7 @@ $class = 'databox filters';
                         </td>
                         <td colspan="6">
                         <?php
-                        html_print_checkbox(
+                        html_print_checkbox_switch(
                             'compare_work_time',
                             1,
                             $compare_work_time
@@ -1240,6 +1274,7 @@ $class = 'databox filters';
             <td style="font-weight:bold;"><?php echo __('Group'); ?></td>
             <td style="">
                 <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
                 if (check_acl($config['id_user'], 0, 'RW')) {
                     html_print_select_groups(
                         $config['id_user'],
@@ -1260,7 +1295,9 @@ $class = 'databox filters';
                     );
                 }
 
-                echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').html_print_checkbox(
+                echo '</div>';
+
+                echo '&nbsp;&nbsp;&nbsp;'.__('Recursion').'&nbsp;&nbsp;&nbsp;'.html_print_checkbox_switch(
                     'recursion',
                     1,
                     $recursion,
@@ -1356,8 +1393,7 @@ $class = 'databox filters';
 
                 html_print_input_hidden('id_agent', $idAgent);
                 html_print_input_hidden('server_name', $server_name);
-                html_print_input_hidden('server_id', $server_name);
-                html_print_input_hidden('id_server', '');
+                html_print_input_hidden('server_id', $server_id);
 
                 $params = [];
                 $params['show_helptip'] = false;
@@ -1869,7 +1905,14 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_query" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
+            <td style="font-weight:bold;">
+            <?php
+            echo __('SQL query').ui_print_help_tip(
+                __('The entities of the fields that contain them must be included.'),
+                true
+            );
+            ?>
+                </td>
             <td style="" id="sql_entry">
                 <?php
                 html_print_textarea('sql', 5, 25, $sql_query_report);
@@ -1975,7 +2018,7 @@ $class = 'databox filters';
             </td>
             <td>
             <?php
-            html_print_checkbox(
+            html_print_checkbox_switch(
                 'checkbox_row_group_by_agent',
                 1,
                 $group_by_agent
@@ -2071,18 +2114,24 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_time_compare_overlapped" style="" class="datos">
+        <tr id="row_graph_render" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
-            echo __('Time compare (Overlapped)');
+            echo __('Graph render');
             ?>
             </td>
             <td>
                 <?php
-                html_print_checkbox(
-                    'time_compare_overlapped',
-                    1,
-                    $time_compare_overlapped
+                $list_graph_render = [
+                    1 => __('Avg, max & min'),
+                    2 => __('Max only'),
+                    3 => __('Min only'),
+                    0 => __('Avg only'),
+                ];
+                html_print_select(
+                    $list_graph_render,
+                    'graph_render',
+                    $graph_render
                 );
                 ?>
             </td>
@@ -2092,17 +2141,42 @@ $class = 'databox filters';
             <td style="font-weight:bold;">
             <?php
             echo __('Full resolution graph (TIP)').ui_print_help_tip(
-                __('This option may cause performance issues.'),
+                __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
                 true
             );
             ?>
             </td>
-            <td><?php html_print_checkbox('fullscale', 1, $fullscale); ?></td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'fullscale',
+                1,
+                $fullscale
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_time_compare_overlapped" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Time compare (Overlapped)');
+            ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'time_compare_overlapped',
+                    1,
+                    $time_compare_overlapped
+                );
+                ?>
+            </td>
         </tr>
 
         <tr id="row_percentil" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Percentil'); ?></td>
-            <td><?php html_print_checkbox('percentil', 1, $percentil); ?></td>
+            <td><?php html_print_checkbox_switch('percentil', 1, $percentil); ?></td>
         </tr>
 
         <tr id="row_exception_condition_value" style="" class="datos">
@@ -2167,32 +2241,32 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Total time');
-                html_print_checkbox('total_time', 1, $total_time);
+                echo __('Total time').'<br>';
+                html_print_checkbox_switch('total_time', 1, $total_time);
                 ?>
              </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time failed');
-                html_print_checkbox('time_failed', 1, $time_failed);
+                echo __('Time failed').'<br>';
+                html_print_checkbox_switch('time_failed', 1, $time_failed);
                 ?>
                 </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time in OK status');
-                html_print_checkbox('time_in_ok_status', 1, $time_in_ok_status);
+                echo __('Time in OK status').'<br>';
+                html_print_checkbox_switch('time_in_ok_status', 1, $time_in_ok_status);
                 ?>
                 </p>
             </td>
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time in unknown status');
-                html_print_checkbox(
+                echo __('Time in unknown status').'<br>';
+                html_print_checkbox_switch(
                     'time_in_unknown_status',
                     1,
                     $time_in_unknown_status
@@ -2203,8 +2277,8 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time of not initialized module');
-                html_print_checkbox(
+                echo __('Time of not initialized module').'<br>';
+                html_print_checkbox_switch(
                     'time_of_not_initialized_module',
                     1,
                     $time_of_not_initialized_module
@@ -2215,8 +2289,8 @@ $class = 'databox filters';
             <td>
             <p style="margin-right:30px;">
                 <?php
-                echo __('Time of downtime');
-                html_print_checkbox('time_of_downtime', 1, $time_of_downtime);
+                echo __('Time of downtime').'<br>';
+                html_print_checkbox_switch('time_of_downtime', 1, $time_of_downtime);
                 ?>
                 </p>
             </td>
@@ -2349,7 +2423,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'show_summary_group',
                     true,
                     $show_summary_group
@@ -2447,7 +2521,7 @@ $class = 'databox filters';
             </td>
             <td>
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'include_extended_events',
                     true,
                     $include_extended_events
@@ -2461,8 +2535,8 @@ $class = 'databox filters';
             <td>
                 <span id="row_event_graph_by_agent">
                 <?php
-                echo __('By agent');
-                html_print_checkbox(
+                echo __('By agent ');
+                html_print_checkbox_switch(
                     'event_graph_by_agent',
                     true,
                     $event_graph_by_agent
@@ -2471,8 +2545,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_user">
                 <?php
-                echo __('By user validator');
-                html_print_checkbox(
+                echo __('By user validator ');
+                html_print_checkbox_switch(
                     'event_graph_by_user_validator',
                     true,
                     $event_graph_by_user_validator
@@ -2481,8 +2555,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_criticity">
                 <?php
-                echo __('By criticity');
-                html_print_checkbox(
+                echo __('By criticity ');
+                html_print_checkbox_switch(
                     'event_graph_by_criticity',
                     true,
                     $event_graph_by_criticity
@@ -2491,8 +2565,8 @@ $class = 'databox filters';
                 </span>
                 <span id="row_event_graph_by_validated">
                 <?php
-                echo __('Validated vs unvalidated');
-                html_print_checkbox(
+                echo __('Validated vs unvalidated ');
+                html_print_checkbox_switch(
                     'event_graph_validated_vs_unvalidated',
                     true,
                     $event_graph_validated_vs_unvalidated
@@ -2513,7 +2587,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox('historical_db_check', 1, $historical_db);
+                html_print_checkbox_switch('historical_db_check', 1, $historical_db);
                 ?>
             </td>
         </tr>
@@ -2548,7 +2622,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox(
+                html_print_checkbox_switch(
                     'show_in_same_row',
                     '1',
                     $show_in_same_row,
@@ -2684,7 +2758,7 @@ $class = 'databox filters';
             </td>
             <td style="">
                 <?php
-                html_print_checkbox('lapse_calc', 1, $lapse_calc);
+                html_print_checkbox_switch('lapse_calc', 1, $lapse_calc);
                 ?>
             </td>
         </tr>
@@ -2784,18 +2858,113 @@ $class = 'databox filters';
             </td>
             <td style="">
             <?php
-            html_print_checkbox('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
+            html_print_checkbox_switch('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
         </tr>
+        
+        <tr id="row_profiles_group" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('Group');
+                ?>
+            </td>
+            <td>
+            <?php
+            $user_groups = users_get_groups();
 
+            // Add a selector for users without assigned group.
+            $user_groups[''] = __('Unassigned group');
+
+            html_print_select(
+                $user_groups,
+                'users_groups[]',
+                $users_groups,
+                '',
+                false,
+                '',
+                false,
+                true,
+                false,
+                '',
+                false,
+                'min-width: 180px'
+            );
+            ?>
+                </td>
+        </tr>
+
+        <tr id="row_users" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('User');
+                ?>
+            </td>
+            <td style="">
+                <?php
+                $tmp_users = db_get_all_rows_filter('tusuario', [], 'id_user');
+                foreach ($tmp_users as $key => $user) {
+                    $select_users[$user['id_user']] = $user['id_user'];
+                }
+
+                $input_data = [
+                    'type'         => 'select_multiple_filtered',
+                    'class'        => 'w80p mw600px',
+                    'name'         => 'id_users',
+                    'return'       => 0,
+                    'available'    => array_diff(
+                        $select_users,
+                        $id_users
+                    ),
+                    'selected'     => $id_users,
+                    'group_filter' => [
+                        'page'          => 'godmode/users/user_list',
+                        'method'        => 'get_users_by_group',
+                        'nothing'       => __('Unnasigned group'),
+                        'nothing_value' => -1,
+                        'id'            => $id_users,
+                    ],
+                    'texts'        => [
+                        'title-left'  => 'Available users',
+                        'title-right' => 'Selected users',
+                        'filter-item' => 'Filter user name',
+                    ],
+                    'sections'     => [
+                        'filters'               => 1,
+                        'item-selected-filters' => 0,
+                    ],
+                ];
+
+                html_print_input($input_data, 'div', true);
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_select_by_group" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('Select by group');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'select_by_group',
+                    1,
+                    $select_by_group,
+                    false
+                );
+                ?>
+                </td>
+        </tr>
+        
         <tr id="row_landscape" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
             echo __('Show item in landscape format (only PDF)');
             ?>
             </td>
-            <td><?php html_print_checkbox('landscape', 1, $landscape); ?></td>
+            <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
         </tr>
 
         <tr id="row_pagebreak" style="" class="datos">
@@ -2804,7 +2973,7 @@ $class = 'databox filters';
             echo __('Page break at the end of the item (only PDF)');
             ?>
             </td>
-            <td><?php html_print_checkbox('pagebreak', 1, $pagebreak); ?></td>
+            <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
     </tbody>
@@ -3649,6 +3818,14 @@ echo "<div id='message_no_interval_option'  title='".__('Item Editor Information
 echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
 echo '</div>';
 
+echo "<div id='message_no_user'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a user.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_group'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a group.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -3686,7 +3863,16 @@ $(document).ready (function () {
 
     $("#combo_group").change (
         function () {
-            $("#id_agents").html('');
+
+            // Alert report group must show all matches when selecting All group
+            // ignoring 'recursion' option. #6497.
+            if ($("#combo_group").val() == 0) {
+                $('#checkbox-recursion').attr('disabled',true)
+                $('#checkbox-recursion').attr('checked','checked')
+            } else {
+                $('#checkbox-recursion').removeAttr('disabled')
+            }
+
             $("#id_agents2").html('');
             $("#module").html('');
             $("#inventory_modules").html('');
@@ -3714,6 +3900,7 @@ $(document).ready (function () {
             );
         }
     );
+    $("#combo_group").change();
 
     $("#checkbox-recursion").change (
         function () {
@@ -3863,6 +4050,30 @@ $(document).ready (function () {
         });
     });
 
+    $("#checkbox-select_by_group").change(function () {
+        var select_by_group  = $('#checkbox-select_by_group').prop('checked');
+    
+    if(select_by_group == true) {
+        $("#row_users").hide(); 
+        $("#row_profiles_group").show(); 
+
+    } else {
+        $("#row_users").show(); 
+        $("#row_profiles_group").hide(); 
+
+    }
+    });
+
+    $("#checkbox-fullscale").change(function(e){
+        if(e.target.checked === true) {
+            $("#graph_render").prop('disabled', 'disabled');
+        } else {
+            $("#graph_render").prop('disabled', false);
+        }
+    });
+
+    $('#checkbox-fullscale').trigger('change');
+
     $("#submit-create_item").click(function () {
         var type = $('#type').val();
         var name = $('#text-name').val();
@@ -3916,6 +4127,16 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
+                case 'permissions_report':
+                if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
+                    dialog_message('#message_no_group');
+                    return false;
+                    }
+                if ($("#checkbox-select_by_group").prop("checked") == false && $("select#selected-select-id_users>option:selected").val() == 0) {
+                    dialog_message('#message_no_user');
+                    return false;
+                    }
+            break;
             default:
                 break;
         }
@@ -4037,6 +4258,18 @@ $(document).ready (function () {
                     return false;
                     }
                     break;
+            
+            case 'permissions_report':
+                if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
+                    dialog_message('#message_no_group');
+                    return false;
+                    }
+                if ($("#checkbox-select_by_group").prop("checked") == false && $("select#selected-select-id_users>option:selected").val() == 0) {
+                    dialog_message('#message_no_user');
+                    return false;
+                    }
+            break;
+
             default:
                 break;
         }
@@ -4878,6 +5111,7 @@ function chooseType() {
     $("#row_show_graph").hide();
     $("#row_max_min_avg").hide();
     $("#row_fullscale").hide();
+    $("#row_graph_render").hide();
     $("#row_time_compare_overlapped").hide();
     $("#row_quantity").hide();
     $("#row_exception_condition_value").hide();
@@ -4922,6 +5156,10 @@ function chooseType() {
     $("#row_select_fields2").hide();
     $("#row_select_fields3").hide();
     $("#row_uncompressed_module").hide();
+    $("#row_users").hide();
+    $("#row_profiles_group").hide();
+    $("#row_select_by_group").hide();
+
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -4982,8 +5220,14 @@ function chooseType() {
         case 'simple_graph':
             $("#row_time_compare_overlapped").show();
             $("#row_fullscale").show();
-            if ($("#checkbox-percentil").prop("checked"))
-                $("#row_percentil").show();
+            $("#row_graph_render").show();
+            $("#row_percentil").show();
+
+            // Force type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(<?php echo $graph_render; ?>);
+            }
+
             // The break hasn't be forgotten, this element
             // only should be shown on the simple graphs.
         case 'simple_baseline_graph':
@@ -5349,7 +5593,12 @@ function chooseType() {
             $("#row_description").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            $("#row_graph_render").show();
             $("#row_fullscale").show();
+            // Force MAX type.
+            if('<?php echo $action; ?>' === 'new'){
+                $("#graph_render").val(2);
+            }
             break;
 
         case 'top_n':
@@ -5557,6 +5806,7 @@ function chooseType() {
             $("#row_group").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
+            $("#combo_server option[value='0']").remove();
             break;
 
         case 'netflow_area':
@@ -5594,7 +5844,21 @@ function chooseType() {
             $("#row_period").show();
             $("#row_quantity").show();
             break;
+
+        case 'permissions_report':
+            $("#row_description").show();
+            $("#row_users").show();
+            $("#row_profiles_group").show();
+            $("#row_select_by_group").show();
+
+            if($("#checkbox-select_by_group").prop("checked")) {
+                $("#row_users").hide();
+            } else {
+                $("#row_profiles_group").hide(); 
+            }
+            
     }
+
     switch (type) {
         case 'event_report_agent':
         case 'simple_graph':
@@ -5683,4 +5947,5 @@ function dialog_message(message_id) {
       }
     });
 }
+
 </script>

@@ -104,6 +104,13 @@ class EventsListWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Public Link.
+     *
+     * @var boolean
+     */
+    protected $publicLink;
+
 
     /**
      * Construct.
@@ -114,6 +121,7 @@ class EventsListWidget extends Widget
      * @param integer|null $width       New width.
      * @param integer|null $height      New height.
      * @param integer|null $gridWidth   Grid width.
+     * @param boolean|null $publicLink  Public Link.
      */
     public function __construct(
         int $cellId,
@@ -121,7 +129,8 @@ class EventsListWidget extends Widget
         int $widgetId=0,
         ?int $width=0,
         ?int $height=0,
-        ?int $gridWidth=0
+        ?int $gridWidth=0,
+        ?bool $publicLink=false
     ) {
         global $config;
 
@@ -145,6 +154,9 @@ class EventsListWidget extends Widget
 
         // Grid Width.
         $this->gridWidth = $gridWidth;
+
+        // Grid Width.
+        $this->publicLink = $publicLink;
 
         // Options.
         $this->values = $this->decoders($this->getOptionsWidget());
@@ -564,13 +576,18 @@ class EventsListWidget extends Widget
                     ]
                 );
 
-                $data[2] = '<a href="javascript:"onclick="dashboardShowEventDialog(\''.base64_encode($settings).'\');">';
+                if ($this->publicLink === false) {
+                    $data[2] = '<a href="javascript:"onclick="dashboardShowEventDialog(\''.base64_encode($settings).'\');">';
+                }
+
                 $data[2] .= substr(io_safe_output($event['evento']), 0, 150);
                 if (strlen($event['evento']) > 150) {
                     $data[2] .= '...';
                 }
 
-                $data[2] .= '<a>';
+                if ($this->publicLink === false) {
+                    $data[2] .= '<a>';
+                }
 
                 $data[3] = ui_print_timestamp($event['timestamp'], true);
 

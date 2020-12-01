@@ -1,0 +1,5 @@
+# exclude packages
+demos/
+*.tar*
+*.rpm
+phantomjs

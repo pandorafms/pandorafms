@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+cd /usr/local/share/pandora_agent/
+
+# Copy daemon file
+mv com.pandorafms.pandorafms.plist /Library/LaunchDaemons/
+
+if [ -f /etc/pandora/pandora_agent.conf ]
+then
+	# Stop the agent process
+	`launchctl stop com.pandorafms.pandorafms`
+	PFMSAGENT=`ps aux | grep pandora_agent | grep -v postinstall | grep -v grep | wc -l`
+	if [ "$PFMSAGENT" -gt "0" ]
+	then
+        	PIDAGENT=`ps aux | grep pandora_agent | grep -v postinstall | grep -v grep | awk '{print $2}'`
+	        kill $PIDAGENT
+	fi
+else
+	# Ask for user and password
+	SERVER=`/usr/local/share/pandora_agent/inst_utilities/get_serverip.scpt`
+	GROUP=`/usr/local/share/pandora_agent/inst_utilities/get_group.scpt`
+	REMOTECFG=`/usr/local/share/pandora_agent/inst_utilities/get_remotecfg.scpt`
+
+	# Write the conf file
+	`/usr/local/share/pandora_agent/inst_utilities/print_conf.pl /usr/local/share/pandora_agent/pandora_agent.conf server_ip $SERVER`
+	`/usr/local/share/pandora_agent/inst_utilities/print_conf.pl /usr/local/share/pandora_agent/pandora_agent.conf group $GROUP`
+	`/usr/local/share/pandora_agent/inst_utilities/print_conf.pl /usr/local/share/pandora_agent/pandora_agent.conf remote_config $REMOTECFG`
+	
+	# Create agent directories and files
+	mkdir -p /usr/local/bin/
+	mkdir -p /usr/local/share/man/man1/
+	mkdir -p /usr/local/share/pandora_agent/collections/
+	mkdir -p /usr/local/share/pandora_agent/commands/
+	mkdir -p /etc/pandora/
+	mkdir -p /var/spool/pandora/data_out/
+	mkdir -p /var/log/pandora/
+	mv pandora_agent.conf /etc/pandora/
+	touch /var/log/pandora/pandora_agent.log
+
+	# Setting permissions to directories and files
+	chmod -R 700 /usr/local/share/pandora_agent/collections
+	chmod -R 700 /usr/local/share/pandora_agent/commands
+	chmod -R 755 /etc/pandora/
+	chmod -R 700 /var/spool/pandora/data_out
+	chmod -R 711 /var/log/pandora
+	chmod 640 /var/log/pandora/pandora_agent.log
+	chmod 640 /etc/pandora/pandora_agent.conf
+fi
+
+# Copying agent utilities to /usr/local/bin and securing them
+cp -f pandora_agent /usr/local/bin/
+chmod 755 /usr/local/bin/pandora_agent
+chown root:wheel /usr/local/bin/pandora_agent
+
+cp -f pandora_agent_exec /usr/local/bin/
+chmod 755 /usr/local/bin/pandora_agent_exec
+chown root:wheel /usr/local/bin/pandora_agent_exec
+
+cp -f pandora_revent /usr/local/bin/
+chmod 755 /usr/local/bin/pandora_revent
+chown root:wheel /usr/local/bin/pandora_revent
+
+# Copying tentacle_client to /usr/local/bin and securing it
+cp -f tentacle_client /usr/local/bin/
+chmod 755 /usr/local/bin/tentacle_client
+chown root:wheel /usr/local/bin/tentacle_client
+
+
+# Create symbolic links in /etc/pandora/
+ln -s /usr/local/share/pandora_agent/plugins /etc/pandora/plugins
+ln -s /usr/local/share/pandora_agent/commands /etc/pandora/commands
+ln -s /usr/local/share/pandora_agent/collections /etc/pandora/collections
+
+
+# Copy manuals
+cp -f man/man1/pandora_agent.1.gz /usr/local/share/man/man1/
+chmod 644 /usr/local/share/man/man1/pandora_agent.1.gz
+cp -f man/man1/tentacle_client.1.gz /usr/local/share/man/man1/
+chmod 644 /usr/local/share/man/man1/tentacle_client.1.gz
+
+# Create newsyslog entry
+#       logfilename   				[owner:group]      mode 	count 	 size(KB)	  when		flags  [/pid_file]  [sig_num]
+echo "/var/log/pandora/pandora_agent.log        :        640        5        2048        *        Z" > /etc/newsyslog.d/pandora_agent.conf
+
+# Install the daemon
+`launchctl load -wF /Library/LaunchDaemons/com.pandorafms.pandorafms.plist`
+
+# Launch the daemon
+`launchctl start com.pandorafms.pandorafms`
+
+# Clean all install utilites
+rm -Rf inst_utilities
+
+exit 0

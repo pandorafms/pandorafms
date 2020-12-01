@@ -56,7 +56,17 @@ function forecast_projection_graph(
         'projection'      => true,
     ];
 
-    $module_data = grafico_modulo_sparse($params, $server_name);
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($server_name);
+        $server  = metaconsole_get_connection_by_id($id_meta);
+        metaconsole_connect($server);
+    }
+
+    $module_data = grafico_modulo_sparse($params);
+
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     if (empty($module_data)) {
         return [];

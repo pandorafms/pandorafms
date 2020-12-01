@@ -1115,7 +1115,7 @@ if ($update_agent) {
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',
-                'Updated agent '.$alias,
+                'Updated agent '.io_safe_output($alias),
                 false,
                 false,
                 $info
@@ -1650,7 +1650,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Fail to try update module '".$name."' for agent ".$agent['alias']
+            "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
         if ($prediction_module == 3) {
@@ -1674,7 +1674,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Updated module '".$name."' for agent ".$agent['alias'],
+            "Updated module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             false,
             io_json_mb_encode($values)
@@ -1834,7 +1834,7 @@ if ($create_module) {
         $moduletype = $id_module;
         db_pandora_audit(
             'Agent management',
-            "Fail to try added module '".$name."' for agent ".$agent['alias']
+            "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
         if ($prediction_module == 3) {
@@ -1859,7 +1859,7 @@ if ($create_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             'Agent management',
-            "Added module '".$name."' for agent ".$agent['alias'],
+            "Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             true,
             io_json_mb_encode($values)
@@ -1894,12 +1894,12 @@ if ($enable_module) {
     if ($result === NOERR) {
         db_pandora_audit(
             'Module management',
-            'Enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+            'Enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
             'Module management',
-            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
 }
@@ -1929,12 +1929,12 @@ if ($disable_module) {
     if ($result === NOERR) {
         db_pandora_audit(
             'Module management',
-            'Disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+            'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
             'Module management',
-            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
 }
@@ -2108,7 +2108,7 @@ if ($delete_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             'Agent management',
-            "Deleted module '".$module_data['nombre']."' for agent ".$agent['alias']
+            "Deleted module '".io_safe_output($module_data['nombre'])."' for agent ".io_safe_output($agent['alias'])
         );
     }
 }
@@ -2163,7 +2163,7 @@ if (!empty($duplicate_module)) {
 if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
+    $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
@@ -2182,7 +2182,7 @@ if ($enable_module) {
 if ($disable_module) {
     $result = modules_change_disabled($disable_module, 1);
     $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
+    $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);

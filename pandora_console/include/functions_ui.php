@@ -2041,6 +2041,10 @@ function ui_pagination(
         'disable_user',
         'delete_user',
     ];
+
+    // Check if url has &#x20; blankspace and replace it.
+    preg_replace('/\&#x20;/', '%20', $url);
+
     $url = explode('&', $url);
 
     $finalUrl = [];
@@ -2118,7 +2122,7 @@ function ui_pagination(
             $output .= "<a class='pagination-arrows ".$other_class." offset_0'
 				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".$url.'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -2762,6 +2766,7 @@ function get_shape_status_set($type)
         // Small squares.
         case STATUS_SERVER_OK:
         case STATUS_SERVER_DOWN:
+        case STATUS_SERVER_CRASH:
             $return = ['class' => 'status_small_squares'];
         break;
 
@@ -2773,6 +2778,9 @@ function get_shape_status_set($type)
         case STATUS_AGENT_OK_BALL:
         case STATUS_AGENT_NO_DATA_BALL:
         case STATUS_AGENT_NO_MONITORS_BALL:
+        case STATUS_SERVER_OK_BALL:
+        case STATUS_SERVER_DOWN_BALL:
+        case STATUS_SERVER_CRASH_BALL:
             $return = ['class' => 'status_balls'];
         break;
 
@@ -4005,7 +4013,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
                 $url .= $key.'['.$k.']='.$v.'&';
             }
         } else {
-            $url .= $key.'='.io_safe_input($value).'&';
+            $url .= $key.'='.io_safe_input(rawurlencode($value)).'&';
         }
     }
 
@@ -5609,7 +5617,8 @@ function ui_print_module_string_value(
     $value,
     $id_agente_module,
     $current_interval,
-    $module_name=null
+    $module_name=null,
+    $server_id=0
 ) {
     global $config;
 
@@ -5654,6 +5663,7 @@ function ui_print_module_string_value(
                 'last_data'   => $value,
                 'interval'    => $current_interval,
                 'module_name' => $module_name,
+                'id_node'     => $server_id ? $server_id : 0,
             ]
         );
         $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
@@ -5761,7 +5771,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
+    $page = ui_get_full_url('operation/agentes/snapshot_view.php', false, false, false);
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 
@@ -6123,4 +6133,30 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
             echo '</div>';
         echo '</div>';
     echo '</div>';
+}
+
+
+/**
+ * Generate a button for reveal the content of the password field.
+ *
+ * @param string  $name   Name of the field.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_reveal_password(string $name, bool $return=false)
+{
+    if (is_metaconsole()) {
+        $imagePath = '../../images/';
+    } else {
+        $imagePath = 'images/';
+    }
+
+    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+
+    if ($return === true) {
+        return $output;
+    }
+
+    echo $output;
 }

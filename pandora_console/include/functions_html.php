@@ -410,25 +410,32 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
 
 
 /**
- * Prints the groups of user of fields in a popup menu of a form.
+ * Print or return selector for groups.
  *
- * @param string User id
- * @param string The privilege to evaluate
- * @param boolean                                                                                 $returnAllGroup   Flag the return group, by default true.
- * @param boolean                                                                                 $returnAllColumns Flag to return all columns of groups.
- * @param array Array with dropdown values. Example: $fields["value"] = "label"
- * @param string Select form name
- * @param variant Current selected value. Can be a single value or an
- *        array of selected values (in combination with multiple)
- * @param string Javascript onChange code.
- * @param string Label when nothing is selected.
- * @param variant Value when nothing is selected
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Set the input to allow multiple selections (optional, single selection by default).
- * @param bool Whether to sort the options or not (optional, unsorted by default).
- * @param string                                                                                  $style            The string of style.
- * @param integer                                                                                 $id_group         The id of node that must do not show the children and own.
- * @param string                                                                                  $keys_field       The field of the group used in the array keys. By default ID
+ * @param string  $id_user                 User id.
+ * @param string  $privilege               The privilege to evaluate.
+ * @param boolean $returnAllGroup          Flag the return group, (true).
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param integer $id_group                Exclude group branch from id_group.
+ * @param string  $keys_field              Field to be used as array key, (id).
+ * @param boolean $strict_user             Strict.
+ * @param array   $delete_groups           Remove groups from select.
+ * @param array   $include_groups          Add groups to select.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -436,14 +443,14 @@ function html_print_select_groups(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $name,
+    $name=null,
     $selected='',
     $script='',
     $nothing='',
     $nothing_value=0,
     $return=false,
     $multiple=false,
-    $sort=true,
+    $sort=false,
     $class='',
     $disabled=false,
     $style=false,
@@ -454,39 +461,90 @@ function html_print_select_groups(
     $delete_groups=false,
     $include_groups=false,
     $size=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
-    global $config;
+    $output = '';
 
-    $fields = users_get_groups_for_select(
-        $id_user,
-        $privilege,
-        $returnAllGroup,
-        true,
-        $id_group,
-        $keys_field
-    );
+    if (is_ajax()) {
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/select2.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
 
-    if ($delete_groups && is_array($delete_groups)) {
-        foreach ($delete_groups as $value) {
-            unset($fields[$value]);
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/select2.min.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+    } else {
+        ui_require_css_file('select2.min');
+        ui_require_javascript_file('select2.min');
+    }
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'group_select'.$idcounter[$name];
+    }
+
+    if ($id_group !== false) {
+        $children = groups_get_children($id_group);
+        foreach ($children as $child) {
+            $delete_groups[] = $child['id_grupo'];
+        }
+
+        $delete_groups[] = $id_group;
+    }
+
+    $fields = [];
+    // Preload selector.
+    if (is_array($selected) === false) {
+        if (empty($selected) === false) {
+            $fields = [ $selected => groups_get_name($selected) ];
+        } else if ($returnAllGroup === true && $multiple === false) {
+            $fields = [ $selected => groups_get_name(null, true) ];
+        }
+    } else {
+        foreach ($selected as $k) {
+            if ($k === null || $k === '') {
+                continue;
+            }
+
+            $fields[$k] = groups_get_name($k, $returnAllGroup);
+        }
+
+        if (empty($fields) === true && $returnAllGroup) {
+            $fields[0] = groups_get_name(null, true);
         }
     }
 
-    if (is_array($include_groups)) {
-        $field = [];
-        foreach ($include_groups as $value) {
-            $field[$value] = $fields[$value];
-        }
-
-        $fields = array_intersect($fields, $field);
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+        $include_groups[$nothing_value] = $nothing;
     }
 
-    if ($strict_user) {
-        $fields = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
+    if (is_array($delete_groups) === true) {
+        $json_exclusions = json_encode($delete_groups);
     }
 
-    $output = html_print_select(
+    if (is_array($include_groups) === true) {
+        $json_inclusions = json_encode($include_groups);
+    }
+
+    $output .= html_print_select(
         $fields,
         $name,
         $selected,
@@ -495,7 +553,7 @@ function html_print_select_groups(
         $nothing_value,
         $return,
         $multiple,
-        false,
+        $sort,
         $class,
         $disabled,
         $style,
@@ -504,8 +562,81 @@ function html_print_select_groups(
         false,
         '',
         false,
-        $simple_multiple_options
+        $simple_multiple_options,
+        $required
     );
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        },
+                        ajax: {
+                            delay: 500,
+                            method: 'post',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: function (params) {
+                                var query = {
+                                    search: params.term,
+                                    page: 'include/ajax/group',
+                                    method: 'getGroupsForSelect',
+                                    id_user: '<?php echo $id_user; ?>',
+                                    privilege: '<?php echo $privilege; ?>',
+                                    exclusions: '<?php echo $json_exclusions; ?>',
+                                    inclusions: '<?php echo $json_inclusions; ?>',
+                                    step: params.page || 1,
+                                    strict: "<?php echo $strict_user; ?>",
+                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
+                                }
+
+                                return query;
+                            }
+                        }
+                    });
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
 
     if ($return) {
         return $output;
@@ -553,7 +684,8 @@ function html_print_select(
     $modal=false,
     $message='',
     $select_all=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
     $output = "\n";
 
@@ -603,7 +735,11 @@ function html_print_select(
         $styleText = 'style="'.$style.'"';
     }
 
-    $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    if ($required) {
+        $required = 'required';
+    }
+
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -777,28 +913,45 @@ function html_print_select_multiple_filtered(
         $sections = [];
     }
 
-    if (empty($sections['filters']) === true) {
+    if (isset($sections['filters']) === false) {
         $sections['filters'] = 1;
     }
 
-    if (empty($sections['group-filter']) === true) {
+    // Show/hide all left/rigth sfilters.
+    if (isset($sections['item-selected-filters']) === false) {
+        $sections['item-selected-filters'] = 1;
+    }
+
+    if (isset($sections['item-available-filters']) === false) {
+        $sections['item-available-filters'] = 1;
+    }
+
+    if (isset($sections['group-filter']) == false) {
         $sections['group-filter'] = 1;
     }
 
-    if (empty($sections['item-available-filter']) === true) {
+    if (isset($sections['item-available-filter']) === false) {
         $sections['item-available-filter'] = 1;
     }
 
-    if (empty($sections['item-selected-filter']) === true) {
+    if (isset($sections['item-selected-filter']) === false) {
         $sections['item-selected-filter'] = 1;
     }
 
-    if (empty($group_filter) === true) {
+    if (isset($group_filter) === false) {
         $sections['group-filter'] = 0;
     }
 
+    if (isset($group_filter['nothing']) === false) {
+        $group_filter['nothing'] = '';
+    }
+
+    if (isset($group_filter['nothing_value']) === false) {
+        $group_filter['nothing_value'] = 0;
+    }
+
     // Main container.
-    $output = '<div class="multi-select flex-row-vcenter '.$class.'">';
+    $output = '<div class="multi-select flex-row-end '.$class.'">';
 
     // Left box.
     $output .= '<div class="multi-select-container flex-column">';
@@ -807,6 +960,7 @@ function html_print_select_multiple_filtered(
     // Filtering.
     if (isset($sections['filters']) === true
         && $sections['filters'] === 1
+        && $sections['item-available-filters'] === 1
     ) {
         // Filtering.
         if (isset($sections['group-filter']) === true
@@ -826,6 +980,7 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
+                    'input_class'    => 'flex-row-vcenter',
                     'label'          => __('Filter group'),
                     'name'           => 'id-group-available-select-'.$rid,
                     'returnAllGroup' => true,
@@ -833,16 +988,20 @@ function html_print_select_multiple_filtered(
                     'type'           => 'select_groups',
                     'return'         => true,
                     'script'         => $reload_content,
+                    'nothing'        => $group_filter['nothing'],
+                    'nothing_value'  => $group_filter['nothing_value'],
                 ]
             );
 
             $output .= html_print_input(
                 [
-                    'label'  => __('Group recursion'),
-                    'name'   => 'id-group-recursion-available-select-'.$rid,
-                    'type'   => 'checkbox',
-                    'script' => $reload_content,
-                    'return' => true,
+                    'label'       => __('Group recursion'),
+                    'input_class' => 'flex-row-vcenter',
+                    'name'        => 'id-group-recursion-available-select-'.$rid,
+                    'id'          => 'checkbox-id-group-recursion-available-select-'.$rid,
+                    'type'        => 'switch',
+                    'onchange'    => $reload_content,
+                    'return'      => true,
                 ]
             );
 
@@ -951,6 +1110,7 @@ function html_print_select_multiple_filtered(
     // Filtering.
     if (isset($sections['filters']) === true
         && $sections['filters'] === 1
+        && $sections['item-selected-filters']
     ) {
         if (isset($sections['group-filter']) === true
             && $sections['group-filter'] === 1
@@ -969,6 +1129,7 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
+                    'input_class'    => 'flex-row-vcenter',
                     'label'          => __('Filter group'),
                     'name'           => 'id-group-selected-select-'.$rid,
                     'returnAllGroup' => true,
@@ -981,11 +1142,12 @@ function html_print_select_multiple_filtered(
 
             $output .= html_print_input(
                 [
-                    'label'  => __('Group recursion'),
-                    'name'   => 'id-group-recursion-selected-select-'.$rid,
-                    'type'   => 'checkbox',
-                    'script' => $reload_content,
-                    'return' => true,
+                    'input_class' => 'flex-row-vcenter',
+                    'label'       => __('Group recursion'),
+                    'name'        => 'id-group-recursion-selected-select-'.$rid,
+                    'type'        => 'checkbox',
+                    'script'      => $reload_content,
+                    'return'      => true,
                 ]
             );
 
@@ -1016,7 +1178,7 @@ function html_print_select_multiple_filtered(
                     'label'       => __($texts['filter-item']),
                     'name'        => 'filter-item-selected-'.$rid,
                     'onKeyUp'     => $f,
-                    'input_class' => 'filter w100p',
+                    'input_class' => 'flex-row-vcenter filter w100p',
                     'size'        => 20,
                     'type'        => 'text',
                     'return'      => true,
@@ -1232,6 +1394,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
  * @param integer $class          Class to apply.
+ * @param boolean $required       Select is required or not.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -1249,7 +1412,8 @@ function html_print_select_from_sql(
     $style=false,
     $size=false,
     $trucate_size=GENERIC_SIZE_TEXT,
-    $class=''
+    $class='',
+    $required=false
 ) {
     global $config;
 
@@ -1285,7 +1449,17 @@ function html_print_select_from_sql(
         $disabled,
         $style,
         '',
-        $size
+        $size,
+        // Modal.
+        false,
+        // Message.
+        '',
+        // Select_all.
+        false,
+        // Simple_multiple_options.
+        false,
+        // Required.
+        $required
     );
 }
 
@@ -1896,6 +2070,7 @@ function html_print_input_text_extended(
         'required',
         'autocomplete',
         'form',
+        'list',
     ];
 
     $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
@@ -2032,6 +2207,55 @@ function html_print_div($options, $return=false)
 
 
 /**
+ * Render an anchor html element.
+ *
+ * @param array   $options Parameters
+ *                - id: string
+ *                - style: string
+ *                - title: string
+ *                - href: string.
+ * @param boolean $return  Return or echo flag.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_anchor(
+    array $options,
+    bool $return=false
+) {
+    $output = '<a ';
+
+    // Valid attributes (invalid attributes get skipped).
+    $attrs = [
+        'id',
+        'style',
+        'class',
+        'title',
+    ];
+
+    $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
+
+    foreach ($attrs as $attribute) {
+        if (isset($options[$attribute])) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        }
+    }
+
+    $output .= '>';
+
+    $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
+
+    $output .= '</a>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
+/**
  * Render an input password element.
  *
  * The element will have an id like: "password-$name"
@@ -2121,7 +2345,8 @@ function html_print_input_text(
     $onKeyDown='',
     $formTo='',
     $onKeyUp='',
-    $disabled=false
+    $disabled=false,
+    $list=''
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2164,6 +2389,10 @@ function html_print_input_text(
 
     if ($formTo != '') {
         $attr['form'] = $formTo;
+    }
+
+    if ($list != '') {
+        $attr['list'] = $list;
     }
 
     return html_print_input_text_extended(
@@ -4079,8 +4308,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         }
     }
 
+    // If wrapper has attributes.
+    // TODO. There is possible improve this handle of attributes.
+    if (isset($data['wrapper_attributes'])) {
+        $wrapper_attributes = $data['wrapper_attributes'];
+    } else {
+        $wrapper_attributes = '';
+    }
+
     if (isset($data['wrapper']) === true) {
-        $output = '<'.$data['wrapper'].' id="wr_'.$data['name'].'" ';
+        $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
     }
 
@@ -4102,7 +4339,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
-                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : '')
+                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['list']) === true) ? $data['list'] : '')
             );
         break;
 
@@ -4248,7 +4487,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 
@@ -4275,7 +4515,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 
@@ -4599,6 +4840,14 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_select_multiple_modules_filtered($data);
         break;
 
+        case 'datalist':
+            $output .= html_print_datalist(
+                $data['name'],
+                $data['value'],
+                ((isset($data['return']) === true) ? $data['return'] : true)
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -4778,4 +5027,33 @@ function html_print_tabs(array $tabs)
     $result .= '</div>';
 
     return $result;
+}
+
+
+/**
+ * Create a datalist.
+ *
+ * @param string $id          Use custom id.
+ * @param string $values      Input values.
+ * @param string $returnparam Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_datalist(
+    $id,
+    $values,
+    $return=false
+) {
+    $result = '<datalist id="'.$id.'">';
+    foreach ($values as $key => $value) {
+        $result .= '<option value="'.$value.'">';
+    }
+
+    $result .= '</datalist>';
+
+    if ($return) {
+        return $result;
+    } else {
+        echo $result;
+    }
 }

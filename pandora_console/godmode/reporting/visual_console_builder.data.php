@@ -136,7 +136,7 @@ if ($action == 'new') {
 $table->data[1][0] = __('Group:');
 
 
-$table->data[1][1] = html_print_select_groups(
+$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'RW',
     true,
@@ -146,7 +146,7 @@ $table->data[1][1] = html_print_select_groups(
     '',
     '',
     true
-);
+).'</div>';
 $backgrounds_list = list_files(
     $config['homedir'].'/images/console/background/',
     'jpg',

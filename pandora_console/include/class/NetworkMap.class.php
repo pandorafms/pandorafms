@@ -810,7 +810,7 @@ class NetworkMap
                 $filter['id_grupo'] = $this->idGroup;
             } else {
                 // Show current group and children.
-                $childrens = groups_get_childrens($this->idGroup, null, true);
+                $childrens = groups_get_children($this->idGroup, null, true);
                 if (!empty($childrens)) {
                     $childrens = array_keys($childrens);
 
@@ -3346,7 +3346,8 @@ class NetworkMap
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
             url_background_grid: url_background_grid,
-            font_size: '.$this->mapOptions['font_size'].'
+            font_size: '.$this->mapOptions['font_size'].',
+            base_url_homedir: "'.ui_get_full_url(false).'"
         });
         init_drag_and_drop();
         init_minimap();

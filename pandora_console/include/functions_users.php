@@ -116,17 +116,30 @@ function users_get_all_model_groups()
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups_for_select($id_user, $privilege='AR', $returnAllGroup=true, $returnAllColumns=false, $id_groups=null, $keys_field='id_grupo')
-{
+function users_get_groups_for_select(
+    $id_user,
+    $privilege='AR',
+    $returnAllGroup=true,
+    $returnAllColumns=false,
+    $id_groups=null,
+    $keys_field='id_grupo',
+    $ajax_format=false
+) {
     if ($id_groups === false) {
         $id_groups = null;
     }
 
-    $user_groups = users_get_groups($id_user, $privilege, $returnAllGroup, $returnAllColumns, null);
+    $user_groups = users_get_groups(
+        $id_user,
+        $privilege,
+        $returnAllGroup,
+        $returnAllColumns,
+        null
+    );
 
     if ($id_groups !== null) {
-        $childrens = groups_get_childrens($id_groups);
-        foreach ($childrens as $child) {
+        $children = groups_get_children($id_groups);
+        foreach ($children as $child) {
             unset($user_groups[$child['id_grupo']]);
         }
 
@@ -136,7 +149,7 @@ function users_get_groups_for_select($id_user, $privilege='AR', $returnAllGroup=
     if (empty($user_groups)) {
         $user_groups_tree = [];
     } else {
-        // First group it's needed to retrieve its parent group
+        // First group it's needed to retrieve its parent group.
         $first_group = array_slice($user_groups, 0, 1);
         $first_group = reset($first_group);
         $parent_group = $first_group['parent'];
@@ -149,13 +162,28 @@ function users_get_groups_for_select($id_user, $privilege='AR', $returnAllGroup=
     foreach ($user_groups_tree as $group) {
         $groupName = ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false);
 
-        $fields[$group[$keys_field]] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']).$groupName;
+        if ($ajax_format === false) {
+            $fields[$group[$keys_field]] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']).$groupName;
+        } else {
+            $tmp['id'] = $group[$keys_field];
+            $tmp['text'] = io_safe_output($groupName);
+            $tmp['level'] = $group['deep'];
+            $fields[] = $tmp;
+        }
     }
 
     return $fields;
 }
 
 
+/**
+ * Extract ancestors for given group.
+ *
+ * @param integer $group_id Target group.
+ * @param array   $groups   All groups.
+ *
+ * @return array
+ */
 function get_group_ancestors($group_id, $groups)
 {
     if ($group_id == 0) {
@@ -249,13 +277,14 @@ function groups_combine_acl($acl_group_a, $acl_group_b)
 /**
  * Get all the groups a user has reading privileges.
  *
- * @param string  $id_user          User id
+ * @param string  $id_user          User id.
  * @param string  $privilege        The privilege to evaluate, and it is false then no check ACL.
  * @param boolean $returnAllGroup   Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  * @param array   $id_groups        The list of group to scan to bottom child. By default null.
- * @param string  $keys_field       The field of the group used in the array keys. By default ID
- * @param boolean $cache            Set it to false to not use cache
+ * @param string  $keys_field       The field of the group used in the array keys. By default ID.
+ * @param boolean $cache            Set it to false to not use cache.
+ * @param string  $term             Return only groups matching keyword '$term'.
  *
  * @return array A list of the groups the user has certain privileges.
  */
@@ -266,13 +295,14 @@ function users_get_groups(
     $returnAllColumns=false,
     $id_groups=null,
     $keys_field='id_grupo',
-    $cache=true
+    $cache=true,
+    $search=''
 ) {
     static $group_cache = [];
 
     // Added users_group_cache to avoid unnecessary proccess on massive calls...
     static $users_group_cache = [];
-    $users_group_cache_key = $id_user.'|'.$privilege.'|'.$returnAllGroup.'|'.$returnAllColumns;
+    $users_group_cache_key = $id_user.'|'.$privilege.'|'.$returnAllGroup.'|'.$returnAllColumns.'|'.$search;
 
     if (empty($id_user)) {
         global $config;
@@ -284,24 +314,45 @@ function users_get_groups(
     }
 
     // Check the group cache first.
-    if (array_key_exists($id_user, $group_cache) && $cache) {
-        $forest_acl = $group_cache[$id_user];
+    if (array_key_exists($users_group_cache_key, $group_cache) && $cache) {
+        $forest_acl = $group_cache[$users_group_cache_key];
     } else {
         // Admin.
         if (is_user_admin($id_user)) {
-            $forest_acl = db_get_all_rows_sql('SELECT * FROM tgrupo ORDER BY nombre');
+            if (empty($search) === false) {
+                $filter = sprintf(
+                    ' WHERE lower(tgrupo.nombre) like lower("%%%s%%")',
+                    $search
+                );
+            }
+
+            $sql = sprintf(
+                'SELECT * FROM tgrupo %s ORDER BY nombre',
+                $filter
+            );
+
+            $forest_acl = db_get_all_rows_sql($sql);
         }
+
         // Per-group permissions.
         else {
             $query  = 'SELECT * FROM tgrupo ORDER BY nombre';
             $raw_groups = db_get_all_rows_sql($query);
 
+            if (empty($search) === false) {
+                $filter = sprintf(
+                    ' AND lower(tgrupo.nombre) like lower("%%%s%%")',
+                    $search
+                );
+            }
+
             $query = sprintf(
                 "SELECT tgrupo.*, tperfil.*, tusuario_perfil.tags, tusuario_perfil.no_hierarchy FROM tgrupo, tusuario_perfil, tperfil
 						WHERE (tgrupo.id_grupo = tusuario_perfil.id_grupo OR tusuario_perfil.id_grupo = 0)
 						AND tusuario_perfil.id_perfil = tperfil.id_perfil
-						AND tusuario_perfil.id_usuario = '%s' ORDER BY nombre",
-                $id_user
+						AND tusuario_perfil.id_usuario = '%s' %s ORDER BY nombre",
+                $id_user,
+                $filter
             );
             $raw_forest = db_get_all_rows_sql($query);
             if ($raw_forest === false) {
@@ -309,7 +360,6 @@ function users_get_groups(
             }
 
             foreach ($raw_forest as $g) {
-                // XXX, following code must be remade (TAG)
                 users_get_explode_tags($g);
 
                 if (!isset($forest_acl[$g['id_grupo']])) {
@@ -354,7 +404,7 @@ function users_get_groups(
         }
 
         // Update the group cache.
-        $group_cache[$id_user] = $forest_acl;
+        $group_cache[$users_group_cache_key] = $forest_acl;
     }
 
     $user_groups = [];
@@ -566,7 +616,8 @@ function users_get_user_users(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $fields=null
+    $fields=null,
+    $filter_group=[]
 ) {
     global $config;
 
@@ -575,8 +626,12 @@ function users_get_user_users(
     $user_users = [];
     $array_user_group = [];
 
-    foreach ($user_groups as $id_user_group => $name_user_group) {
-        $array_user_group[] = $id_user_group;
+    if (empty($filter_group)) {
+        foreach ($user_groups as $id_user_group => $name_user_group) {
+            $array_user_group[] = $id_user_group;
+        }
+    } else {
+        $array_user_group = $filter_group;
     }
 
     $group_users = groups_get_users($array_user_group, false, $returnAllGroup);
@@ -620,6 +675,13 @@ function users_get_strict_mode_groups($id_user, $return_group_all)
 }
 
 
+/**
+ * Use carefully, it consumes a lot of memory.
+ *
+ * @param array $group Group array.
+ *
+ * @return void
+ */
 function users_get_explode_tags(&$group)
 {
     if (empty($group['tags'])) {
@@ -773,4 +835,26 @@ function users_get_user_profile($id_user)
     }
 
     return $user_profiles;
+}
+
+
+/**
+ * Obtiene una matriz con la informacion de cada usuario que pertenece a un grupo
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_users_group_by_group($id_group)
+{
+    $sql = sprintf(
+        "SELECT tusuario.* FROM tusuario 
+        LEFT JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user 
+        AND tusuario_perfil.id_grupo = '%s'
+        GROUP BY tusuario_perfil.id_usuario",
+        $id_group
+    );
+
+    $users = db_get_all_rows_sql($sql);
+
+    return $users;
 }

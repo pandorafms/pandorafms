@@ -94,6 +94,13 @@ if ($upload_max_filesize < $PHPupload_max_filesize_min) {
     $php_settings_fine++;
 }
 
+if (update_manager_verify_license_expired()) {
+    ui_print_error_message(
+        __('The license has expired. Please contact Artica at info@artica.es')
+    );
+    return;
+}
+
 // Verify registry.
 if (update_manager_verify_registration() === false) {
     ui_require_css_file('register');

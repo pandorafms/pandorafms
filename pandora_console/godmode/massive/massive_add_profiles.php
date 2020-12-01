@@ -14,7 +14,8 @@
 // Load global vars
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+
+if (!check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access massive profile addition'
@@ -108,24 +109,50 @@ $table->size[2] = '33%';
 
 $data = [];
 $data[0] = '<form method="post" id="form_profiles" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
-$data[0] .= html_print_select(
-    profile_get_profiles(),
-    'profiles_id[]',
-    '',
-    '',
-    '',
-    '',
-    true,
-    true,
-    false,
-    '',
-    false,
-    'width: 100%'
-);
+$display_all_group = true;
+if (check_acl($config['id_user'], 0, 'PM')) {
+    $data[0] .= html_print_select(
+        profile_get_profiles(),
+        'profiles_id[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        true,
+        false,
+        '',
+        false,
+        'width: 100%'
+    );
+} else {
+    $display_all_group = false;
+    $data[0] .= html_print_select(
+        profile_get_profiles(
+            [
+                'pandora_management' => '<> 1',
+                'db_management'      => '<> 1',
+                'user_management'    => '<> 1',
+            ]
+        ),
+        'profiles_id[]',
+        '',
+        '',
+        '',
+        '',
+        true,
+        true,
+        false,
+        '',
+        false,
+        'width: 100%'
+    );
+}
+
 $data[1] = html_print_select_groups(
     $config['id_user'],
     'UM',
-    true,
+    $display_all_group,
     'groups_id[]',
     '',
     '',
@@ -146,8 +173,25 @@ $users_order = [
     'field' => 'id_user',
     'order' => 'ASC',
 ];
+
+$info_users = [];
+// Is admin or has group permissions all.
+if (check_acl($config['id_user'], 0, 'PM') || isset($group_um[0])) {
+    $info_users = users_get_info($users_order, 'id_user');
+} else {
+    $info = [];
+    $group_um = users_get_groups_UM($config['id_user']);
+    foreach ($group_um as $group => $value) {
+        $info = array_merge($info, users_get_users_by_group($group, $value));
+    }
+
+    foreach ($info as $key => $value) {
+        $info_users[$key] = $value['id_user'];
+    }
+}
+
 $data[2] .= html_print_select(
-    users_get_info($users_order, 'id_user'),
+    $info_users,
     'users_id[]',
     '',
     '',
@@ -160,7 +204,6 @@ $data[2] .= html_print_select(
     false,
     'width: 100%'
 );
-
 
 array_push($table->data, $data);
 

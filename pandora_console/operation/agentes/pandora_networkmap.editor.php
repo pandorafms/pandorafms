@@ -266,17 +266,26 @@ if ($not_found) {
     );
 
     $table->data[1][0] = __('Group');
-    $table->data[1][1] = html_print_select_groups(
+    $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
+        // Id_user.
         $config['id_user'],
+        // Privilege.
         'AR',
+        // ReturnAllGroup.
         true,
+        // Name.
         'id_group_map',
+        // Selected.
         $id_group_map,
+        // Script.
         '',
+        // Nothing.
         '',
+        // Nothing_value.
         '',
+        // Return.
         true
-    );
+    ).'</div>';
 
     $table->data[2][0] = __('Node radius');
     $table->data[2][1] = html_print_input_text(
@@ -304,7 +313,7 @@ if ($not_found) {
     $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
     $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Recon task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
+    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
 
     $table->data['source_data_recon_task'][0] = __('Source from recon task');
     $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
@@ -333,7 +342,7 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
     $table->data['source_data_group'][0] = __('Source group');
-    $table->data['source_data_group'][1] = html_print_select_groups(
+    $table->data['source_data_group'][1] = '<div class="w250px">'.html_print_select_groups(
         $config['id_user'],
         'AR',
         true,
@@ -343,7 +352,7 @@ if ($not_found) {
         '',
         '',
         true
-    );
+    ).'</div>';
     $table->data['source_data_group'][1] .= html_print_image(
         'images/error.png',
         true,

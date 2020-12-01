@@ -125,7 +125,7 @@ if (is_ajax()) {
 
         db_pandora_audit(
             'User management',
-            'Deleted profile for user '.io_safe_input($id2),
+            'Deleted profile for user '.io_safe_output($id2),
             false,
             false,
             'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
@@ -146,7 +146,7 @@ if (is_ajax()) {
             if ($result) {
                 db_pandora_audit(
                     'User management',
-                    __('Deleted user %s', io_safe_input($id_user))
+                    __('Deleted user %s', io_safe_output($id_user))
                 );
             }
 
@@ -168,7 +168,7 @@ if (is_ajax()) {
                     if ($result) {
                         db_pandora_audit(
                             'User management',
-                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
                         );
                     }
 
@@ -195,6 +195,8 @@ if (is_ajax()) {
         return;
     }
 }
+
+
 
 $tab = get_parameter('tab', 'user');
 
@@ -427,7 +429,7 @@ if ($create_user) {
 
         db_pandora_audit(
             'User management',
-            'Created user '.io_safe_input($id),
+            'Created user '.io_safe_output($id),
             false,
             false,
             $info
@@ -470,7 +472,7 @@ if ($create_user) {
 
                         db_pandora_audit(
                             'User management',
-                            'Added profile for user '.io_safe_input($id2),
+                            'Added profile for user '.io_safe_output($id2),
                             false,
                             false,
                             'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
@@ -661,7 +663,7 @@ if ($update_user) {
 
             db_pandora_audit(
                 'User management',
-                'Updated user '.io_safe_input($id),
+                'Updated user '.io_safe_output($id),
                 false,
                 false,
                 $info
@@ -729,7 +731,7 @@ if ($add_profile && empty($json_profile)) {
 
     db_pandora_audit(
         'User management',
-        'Added profile for user '.io_safe_input($id2),
+        'Added profile for user '.io_safe_output($id2),
         false,
         false,
         'Profile: '.$profile2.' Group: '.$group2.' Tags: '.$tags
@@ -1128,6 +1130,28 @@ if ($config['ehorus_user_level_conf']) {
     $ehorus .= '</div>';
 }
 
+$double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $id);
+
+if ($config['double_auth_enabled'] && check_acl($config['id_user'], 0, 'PM')) {
+    $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
+    if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
+        || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
+        || check_acl($config['id_user'], 0, 'PM')
+    ) {
+        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    }
+
+    // Dialog.
+    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
+}
+
+if ($double_auth_enabled && $config['double_auth_enabled'] && $config['2FA_all_users'] != '') {
+    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+}
+
+if (isset($double_authentication)) {
+    $double_authentication .= '</div>';
+}
 
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
@@ -1179,7 +1203,7 @@ echo '<div id="user_form">
     <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
-    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.'</div>
+    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.$double_authentication.'</div>
 
     <div class="edit_user_timezone">'.$timezone;
 if (!is_metaconsole()) {
@@ -1278,6 +1302,15 @@ if (!is_metaconsole()) {
 var json_profile = $('#hidden-json_profile');
 /* <![CDATA[ */
 $(document).ready (function () {
+    $("input#checkbox-double_auth").change(function (e) {
+        e.preventDefault();
+            if (this.checked) {
+                show_double_auth_activation();
+            } else {
+                show_double_auth_deactivation();
+            }
+    }); 
+
     $('input:radio[name="is_admin"]').change(function() {
         if($('#radiobtn0002').prop('checked')) {     
             $('#metaconsole_agents_manager_div').show();
@@ -1312,7 +1345,8 @@ $(document).ready (function () {
     $('#checkbox-ehorus_user_level_enabled').trigger('change');
 
     var img_delete = '<?php echo $delete_image; ?>';
-    var id_user = '<?php echo $id; ?>';
+    var id_user = '<?php echo io_safe_output($id); ?>';
+    var is_metaconsole = '<?php echo $meta; ?>';
     var data = [];
 
     $('input:image[name="add"]').click(function (e) {
@@ -1357,7 +1391,7 @@ $(document).ready (function () {
     $('input:image[name="del"]').click(function (e) {
         e.preventDefault();
         var rows = $("#table_profiles tr").length;
-        if (rows <= 3) {
+        if ((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) {
             if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
                 return;
             }
@@ -1379,21 +1413,39 @@ $(document).ready (function () {
             success: function (data) {
                 row.remove();
                 var rows = $("#table_profiles tr").length;
-                if (rows <= 2) {
+                if ((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 2)) {
                     window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
                 }
             }
         });
     });
 
-    $('#submit-crtbutton').click(function (e) {
+    function checkProfiles(e) {
         e.preventDefault();
-        var rows = $("#table_profiles tr").length;
-        if (rows <= 2) {
-            alert('<?php echo __('please add a profile'); ?>');
+        if ($('input[name="is_admin"]:checked').val() == 1) {
+            // Admin does not require profiles.
+            $('#user_profile_form').submit();
         } else {
-            this.form.submit();
+            if ($('#table_profiles tbody').children().length == 1) {
+                confirmDialog({
+                    title: "<?php echo __('Warning'); ?>",
+                    message: "<?php echo __('User will be created without profiles assigned and won\'t be able to log in, are you sure?'); ?>",
+                    onAccept: function() {
+                        $('#user_profile_form').submit();
+                    }
+                });
+            } else {
+                $('#user_profile_form').submit();
+            }
         }
+    }
+
+    $('#submit-crtbutton').click(function (e) {
+        checkProfiles(e);
+    });
+
+    $('#submit-uptbutton').click(function (e) {
+        checkProfiles(e);
     });
 });
 
@@ -1475,6 +1527,217 @@ function switch_ehorus_conf()
 
 
 }
+
+function show_double_auth_info () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    $dialogContainer.html($loadingSpinner);
+console.log(userID);
+    // Load the info page
+    var request = $.ajax({
+        url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        type: 'POST',
+        dataType: 'html',
+        data: {
+            page: 'include/ajax/double_auth.ajax',
+            id_user: userID,
+            get_double_auth_data_page: 1,
+            FA_forced: 1,
+            containerID: $dialogContainer.prop('id')
+        },
+        complete: function(xhr, textStatus) {
+            
+        },
+        success: function(data, textStatus, xhr) {
+            // isNaN = is not a number
+            if (isNaN(data)) {
+                $dialogContainer.html(data);
+            }
+            // data is a number, convert it to integer to do the compare
+            else if (Number(data) === -1) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+            }
+            else {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Error').'</div></b>'; ?>");
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error loading the data').'</div></b>'; ?>");
+        }
+    });
+
+    $("div#dialog-double_auth")
+        .css('display','block')
+        .append($dialogContainer)
+        .dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication information'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 400,
+            height: 375,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+            }
+        })
+        .show();
+
+}
+
+function show_double_auth_activation () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    $dialogContainer.html($loadingSpinner);
+
+    // Load the info page
+    var request = $.ajax({
+        url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        type: 'POST',
+        dataType: 'html',
+        data: {
+            page: 'include/ajax/double_auth.ajax',
+            id_user: userID,
+            FA_forced: 1,
+            get_double_auth_info_page: 1,
+            containerID: $dialogContainer.prop('id')
+        },
+        complete: function(xhr, textStatus) {
+            
+        },
+        success: function(data, textStatus, xhr) {
+            // isNaN = is not a number
+            if (isNaN(data)) {
+                $dialogContainer.html(data);
+            }
+            // data is a number, convert it to integer to do the compare
+            else if (Number(data) === -1) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+            }
+            else {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Error').'</div></b>'; ?>");
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error loading the data').'</div></b>'; ?>");
+        }
+    });
+
+    $("div#dialog-double_auth").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication activation'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 500,
+            height: 400,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+
+                document.location.reload();
+            }
+        })
+        .show();
+}
+
+function show_double_auth_deactivation () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+    console.log(userID);
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    var message = "<p><?php echo __('Are you sure?').'<br>'.__('The double authentication will be deactivated'); ?></p>";
+    var $button = $("<input type=\"button\" value=\"<?php echo __('Deactivate'); ?>\" />");
+
+    $dialogContainer
+        .empty()
+        .append(message)
+        .append($button);
+
+    var request;
+
+    $button.click(function(e) {
+        e.preventDefault();
+
+        $dialogContainer.html($loadingSpinner);
+
+        // Deactivate the double auth
+        request = $.ajax({
+            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: 'include/ajax/double_auth.ajax',
+                id_user: userID,
+                FA_forced: 1,
+                deactivate_double_auth: 1
+            },
+            complete: function(xhr, textStatus) {
+                
+            },
+            success: function(data, textStatus, xhr) {
+                console.log(data);
+                if (data === -1) {
+                    $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+                }
+                else if (data) {
+                    $dialogContainer.html("<?php echo '<b><div class=\"green\">'.__('The double autentication was deactivated successfully').'</div></b>'; ?>");
+                }
+                else {
+                    $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error deactivating the double autentication').'</div></b>'; ?>");
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error deactivating the double autentication').'</div></b>'; ?>");
+            }
+        });
+    });
+    
+
+    $("div#dialog-double_auth").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication activation'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 300,
+            height: 150,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+
+                document.location.reload();
+            }
+        })
+        .show();
+}
+
 
 /* ]]> */
 </script>

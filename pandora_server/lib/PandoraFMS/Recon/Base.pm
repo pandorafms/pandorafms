@@ -2146,7 +2146,7 @@ sub snmp_get_value($$$) {
 
   foreach my $line (@output) {
     $line =~ s/[\r\n]//g;
-    return $1 if ($line =~ /^$effective_oid\s+=\s+\S+:\s+(.*)/);
+    return $1 if ($line =~ /^\.{0,1}$effective_oid\s+=\s+\S+:\s+(.*)/);
   }
 
   return undef;
@@ -2162,7 +2162,7 @@ sub snmp_get_value_array($$$) {
   my @output = $self->snmp_get($device, $oid);
   foreach my $line (@output) {
     chomp($line);
-    push(@values, $1) if ($line =~ /^$oid\S*\s+=\s+\S+:\s+(.*)$/);
+    push(@values, $1) if ($line =~ /^\.{0,1}$oid\S*\s+=\s+\S+:\s+(.*)$/);
   }
 
   return @values;

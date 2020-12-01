@@ -292,6 +292,7 @@ if (is_ajax()) {
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as module_name';
                 $fields[] = 'am.id_agente_modulo as id_agentmodule';
+                $fields[] = 'am.custom_id as module_custom_id';
                 $fields[] = 'ta.server_name as server_name';
             } else {
                 $fields[] = 'ts.server_name as server_name';
@@ -355,6 +356,21 @@ if (is_ajax()) {
 
                         if ($tmp->comments) {
                             $tmp->comments = ui_print_comments($tmp->comments);
+                        }
+
+                        // Show last event.
+                        if (isset($tmp->max_id_evento) && $tmp->max_id_evento !== $tmp->id_evento) {
+                            $max_event = db_get_row_sql(
+                                sprintf(
+                                    'SELECT criticity, timestamp FROM %s
+                                    WHERE id_evento = %s',
+                                    ($tmp->meta) ? 'tmetaconsole_event' : 'tevento',
+                                    $tmp->max_id_evento
+                                )
+                            );
+
+                            $tmp->timestamp = $max_event['timestamp'];
+                            $tmp->criticity = $max_event['criticity'];
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
@@ -428,7 +444,7 @@ $user_filter = db_get_row_sql(
     )
 );
 
-// Do not load the user filter if we come from the 24h event graph
+// Do not load the user filter if we come from the 24h event graph.
 $from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
 if ($user_filter !== false && $from_event_graph != 1) {
     $filter = events_get_event_filter($user_filter['id_filter']);
@@ -441,6 +457,13 @@ if ($user_filter !== false && $from_event_graph != 1) {
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
         $id_agent_module = $filter['id_agent_module'];
+        $text_module = io_safe_output(
+            db_get_value_filter(
+                'nombre',
+                'tagente_modulo',
+                ['id_agente_modulo' => $filter['id_agent_module']]
+            )
+        );
         $pagination = $filter['pagination'];
         $event_view_hr = $filter['event_view_hr'];
         $id_user_ack = $filter['id_user_ack'];
@@ -470,8 +493,13 @@ $tags_select_with = [];
 $tags_select_without = [];
 $tag_with_temp = [];
 $tag_without_temp = [];
-$tag_with = json_decode(base64_decode($tag_with), true);
-$tag_without = json_decode(base64_decode($tag_without), true);
+if (is_array($tag_with) === false) {
+    $tag_with = json_decode(base64_decode($tag_with), true);
+}
+
+if (is_array($tag_without) === false) {
+    $tag_without = json_decode(base64_decode($tag_without), true);
+}
 
 
 foreach ($tags as $id_tag => $tag) {
@@ -872,24 +900,21 @@ if (is_metaconsole() !== true) {
  */
 
 // Group.
-$user_groups_array = users_get_groups_for_select(
-    $config['id_user'],
-    $access,
-    true,
-    true,
-    false
-);
-$data = html_print_select(
-    $user_groups_array,
-    'id_group_filter',
-    $id_group_filter,
-    '',
-    '',
-    0,
-    true,
-    false,
-    false,
-    'w130'
+if ($id_group_filter === null) {
+    $id_group_filter = 0;
+}
+
+$data = html_print_input(
+    [
+        'name'           => 'id_group_filter',
+        'returnAllGroup' => true,
+        'privilege'      => 'AR',
+        'type'           => 'select_groups',
+        'selected'       => $id_group_filter,
+        'nothing'        => false,
+        'return'         => true,
+        'size'           => '80%',
+    ]
 );
 $in = '<div class="filter_input"><label>'.__('Group').'</label>';
 $in .= $data.'</div>';
@@ -1936,16 +1961,21 @@ function process_datatables_item(item) {
 
     /* Status */
     img = '<?php echo html_print_image('images/star.png', true, ['title' => __('Unknown'), 'class' => 'forced-title']); ?>';
+    state = '0';
     switch (item.estado) {
         case "<?php echo EVENT_STATUS_NEW; ?>":
             img = '<?php echo html_print_image('images/star.png', true, ['title' => __('New event'), 'class' => 'forced-title']); ?>';
         break;
 
         case "<?php echo EVENT_STATUS_VALIDATED; ?>":
+
+            state = '1';
             img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
         break;
 
         case "<?php echo EVENT_STATUS_INPROCESS; ?>":
+            state = '2';
+
             img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
         break;
     }
@@ -1977,6 +2007,9 @@ function process_datatables_item(item) {
     }
 
     item.estado = '<div>';
+    item.estado += '<span style="display: none">';
+    item.estado += state;
+    item.estado += '</span>';
     item.estado += img;
     item.estado += '</div>';
 
@@ -1997,6 +2030,9 @@ function process_datatables_item(item) {
 
     /* Group name */
     if (item.id_grupo == "0") {
+        var severity_value = "<?php echo $severity; ?>";
+        const multiple = severity_value.split(",");
+        $("#severity").val(multiple);
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;
@@ -2321,9 +2357,8 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
-                    },
+                        load_filter_modal: 1
+                        },
                     success: function (data){
                         $('#load-modal-filter')
                         .empty()

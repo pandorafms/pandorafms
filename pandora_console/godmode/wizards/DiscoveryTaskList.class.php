@@ -176,7 +176,7 @@ class DiscoveryTaskList extends HTML
                             'type'       => 'button',
                             'attributes' => 'class="sub upd"',
                             'return'     => true,
-                            'script'     => 'location.reload();',
+                            'script'     => 'location.href = \''.$this->url.'\';',
                         ],
                     ],
                 ],
@@ -402,8 +402,10 @@ class DiscoveryTaskList extends HTML
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
+            // Task name.
+            $table->headstyle[1] .= 'min-width: 150px; width: 300px;';
             // Name.
-            $table->headstyle[4] .= 'min-width: 100px; width: 600px;';
+            $table->headstyle[4] .= 'min-width: 100px; width: 400px;';
             // Status.
             $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.

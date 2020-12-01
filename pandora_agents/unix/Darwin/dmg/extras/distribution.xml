@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+    <pkg-ref id="com.pandorafms.pandorafms_src"/>
+    <title>Pandora FMS Agent installer for MacOS</title>
+    <welcome file="text/welcome.html" />
+    <!-- <readme file="text/readme.html" /> -->
+    <license file="text/license.html" />
+    <conclusion file="text/conclusion.html" />
+    <background file="images/pfms_background_darwin.png" alignment="bottomleft" scaling="none" mime-type="image/png" uti="public.png" />
+    <options customize="never" allow-external-scripts="true" rootVolumeOnly="true"/>
+    <!-- <options customize="never" allow-external-scripts="true"/> -->
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.pandorafms.pandorafms_src"/>
+            <line choice="com.pandorafms.pandorafms_uninstall"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.pandorafms.pandorafms_src" visible="false">
+        <pkg-ref id="com.pandorafms.pandorafms_src"/>
+    </choice>
+    <pkg-ref id="com.pandorafms.pandorafms_src" version="7.0NG.750" onConclusion="none">pandorafms_src.pdk</pkg-ref>
+    <choice id="com.pandorafms.pandorafms_uninstall" visible="true" customLocation="/Applications">
+        <pkg-ref id="com.pandorafms.pandorafms_uninstall"/>
+    </choice>
+    <pkg-ref id="com.pandorafms.pandorafms_uninstall" version="7.0NG.750" onConclusion="none">pandorafms_uninstall.pdk</pkg-ref>
+<!-- <installation-check script="check()" />
+	<script>
+	<![CDATA[
+	]]>
+	</script>
+-->
+</installer-gui-script>

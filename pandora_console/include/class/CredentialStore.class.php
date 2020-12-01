@@ -248,12 +248,7 @@ class CredentialStore extends Wizard
                 );
             } else {
                 $groups = [ $filter['filter_id_group'] ];
-                $childrens = groups_get_childrens(
-                    $filter['filter_id_group'],
-                    null,
-                    true
-                );
-
+                $childrens = groups_get_children($id_group, null, true);
                 if (!empty($childrens)) {
                     foreach ($childrens as $child) {
                         $groups[] = (int) $child['id_grupo'];
@@ -789,17 +784,16 @@ class CredentialStore extends Wizard
                     'form'                => [
                         'inputs' => [
                             [
-                                'label'   => __('Group'),
-                                'type'    => 'select',
-                                'id'      => 'filter_id_group',
-                                'name'    => 'filter_id_group',
-                                'options' => users_get_groups_for_select(
-                                    $config['id_user'],
-                                    'AR',
-                                    true,
-                                    true,
-                                    false
-                                ),
+                                'label'     => __('Group'),
+                                'type'      => 'select_groups',
+                                'id'        => 'filter_id_group',
+                                'name'      => 'filter_id_group',
+                                'privilege' => 'AR',
+                                'type'      => 'select_groups',
+                                'nothing'   => false,
+                                'selected'  => (defined($id_group_filter) ? $id_group_filter : 0),
+                                'return'    => true,
+                                'size'      => '80%',
                             ],
                             [
                                 'label' => __('Free search'),
@@ -876,13 +870,14 @@ class CredentialStore extends Wizard
         $inputs[] = [
             'label'     => __('Group'),
             'arguments' => [
-                'name'        => 'id_group',
-                'id'          => 'id_group',
-                'input_class' => 'flex-row',
-                'type'        => 'select_groups',
-                'selected'    => $values['id_group'],
-                'return'      => true,
-                'class'       => 'w50p',
+                'name'           => 'id_group',
+                'id'             => 'id_group',
+                'input_class'    => 'flex-row',
+                'type'           => 'select_groups',
+                'returnAllGroup' => true,
+                'selected'       => $values['id_group'],
+                'return'         => true,
+                'class'          => 'w50p',
             ],
         ];
 

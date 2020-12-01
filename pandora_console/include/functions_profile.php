@@ -323,7 +323,7 @@ function profile_print_profile_table($id)
     $data['group'] = html_print_select_groups(
         $config['id_user'],
         'UM',
-        users_is_admin($config['id_user']),
+        users_can_manage_group_all('UM'),
         'assign_group',
         -1,
         '',
@@ -352,4 +352,25 @@ function profile_print_profile_table($id)
     }
 
     unset($table);
+}
+
+
+/**
+ * Delete user profile from database
+ *
+ * @param string User ID
+ * @param int Profile ID
+ * @param int Group ID
+ *
+ * @return boolean Whether or not it's deleted
+ */
+function profile_delete_user_profile_group($id_user, $id_profile, $id_group)
+{
+    $where = [
+        'id_usuario' => $id_user,
+        'id_perfil'  => $id_profile,
+        'id_grupo'   => $id_group,
+    ];
+
+    return (bool) db_process_sql_delete('tusuario_perfil', $where);
 }

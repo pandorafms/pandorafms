@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.749
+# Version 7.0NG.750
 # Licensed under GPL license v2,
 # (c) 2003-2017 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -536,6 +536,9 @@ snmp_storm_protection 25
 
 # Time interval for snmp_storm protection (in seconds).
 snmp_storm_timeout 10
+
+# Silenced time period in seconds, when trap storm is detected
+snmp_storm_silence_period 300
 
 # Default texts for some events. The macros _module_ and _data_ are supported.
 #text_going_down_normal Module '_module_' is going to NORMAL (_data_)

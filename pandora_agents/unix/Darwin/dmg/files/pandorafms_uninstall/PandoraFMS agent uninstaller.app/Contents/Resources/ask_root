@@ -1,0 +1,9 @@
+#!/usr/bin/osascript
+
+set my_password to display dialog "Please provide root password to uninstall Pandora FMS agent:" ¬
+	with title "Root confirmation" ¬
+	with icon caution ¬
+	default answer "" ¬
+	buttons {"Cancel", "OK"} default button 2 ¬
+	with hidden answer
+return (text returned of my_password)

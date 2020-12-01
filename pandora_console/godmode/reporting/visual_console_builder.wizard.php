@@ -381,7 +381,7 @@ if (is_metaconsole()) {
 $table->rowstyle['all_3'] = 'display: none;';
 $table->data['all_3'][0] = __('Groups');
 $table->colspan['all_3'][1] = '3';
-$table->data['all_3'][1] = html_print_select_groups(
+$table->data['all_3'][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
     true,
@@ -391,7 +391,7 @@ $table->data['all_3'][1] = html_print_select_groups(
     '',
     0,
     true
-);
+).'</div>';
 
 
 $table->rowstyle['all_one_item_per_agent'] = 'display: none';

@@ -414,6 +414,15 @@ select:-internal-list-box {
 }
 
 @font-face {
+  font-family: "opensansFont";
+  src: url("../../fonts/opensans.woff2") format("woff2");
+}
+
+.opensansfont {
+  font-family: opensansFont, sans-serif;
+}
+
+@font-face {
   font-family: "roboto";
   src: url("../../fonts/roboto.woff2") format("woff2");
 }
@@ -453,6 +462,22 @@ select:-internal-list-box {
   width: 120px;
   max-width: 120px;
 }
+.w200px {
+  width: 200px;
+  max-width: 200px;
+}
+.w240px {
+  width: 240px;
+  max-width: 240px;
+}
+.w250px {
+  width: 250px;
+  max-width: 250px;
+}
+.w290px {
+  width: 290px;
+  max-width: 290px;
+}
 .mw120px {
   min-width: 120px;
 }
@@ -473,6 +498,12 @@ select:-internal-list-box {
 }
 .w20px {
   width: 20px;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.inline {
+  display: inline-block;
 }
 .w10p {
   width: 10%;
@@ -565,10 +596,12 @@ select:-internal-list-box {
   justify-content: space-between;
   align-content: center;
 }
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
 .flex-row-baseline {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   align-items: baseline;
 }
 
@@ -577,6 +610,13 @@ select:-internal-list-box {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.flex-row-end {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
 }
 
 .flex-space-around {
@@ -590,11 +630,6 @@ select:-internal-list-box {
 .flex-start {
   justify-content: flex-start;
 }
-
-.nowrap {
-  flex-wrap: nowrap;
-}
-
 .padding-2 {
   padding: 2em;
 }
@@ -603,6 +638,12 @@ select:-internal-list-box {
 }
 .padding-6 {
   padding: 6em;
+}
+.padding-right-2 {
+  padding-right: 2em;
+}
+.padding-right-2-imp {
+  padding-right: 2em !important;
 }
 .margin-right-1 {
   margin-right: 1em;
@@ -654,7 +695,11 @@ select:-internal-list-box {
   float: right;
 }
 .invisible {
-  display: none;
+  display: none !important;
+}
+
+.visible {
+  display: block;
 }
 
 div#page {
@@ -1403,90 +1448,6 @@ div#agent_wizard_subtabs {
   line-height: 18pt;
 }
 
-/*
-span.users {
-  background: url(../../images/group.png) no-repeat;
-}
-span.agents {
-  background: url(../../images/bricks.png) no-repeat;
-}
-span.data {
-  background: url(../../images/data.png) no-repeat;
-}
-span.alerts {
-  background: url(../../images/bell.png) no-repeat;
-}
-span.time {
-  background: url(../../images/hourglass.png) no-repeat;
-}
-span.net {
-  background: url(../../images/network.png) no-repeat;
-}
-span.master {
-  background: url(../../images/master.png) no-repeat;
-}
-span.wmi {
-  background: url(../../images/wmi.png) no-repeat;
-}
-span.prediction {
-  background: url(../../images/chart_bar.png) no-repeat;
-}
-span.plugin {
-  background: url(../../images/plugin.png) no-repeat;
-}
-span.export {
-  background: url(../../images/database_refresh.png) no-repeat;
-}
-span.snmp {
-  background: url(../../images/snmp.png) no-repeat;
-}
-span.binary {
-  background: url(../../images/binary.png) no-repeat;
-}
-span.recon {
-  background: url(../../images/recon.png) no-repeat;
-}
-span.rmess {
-  background: url(../../images/email_open.png) no-repeat;
-}
-span.nrmess {
-  background: url(../../images/email.png) no-repeat;
-}
-span.recon_server {
-  background: url(../../images/recon.png) no-repeat;
-}
-span.wmi_server {
-  background: url(../../images/wmi.png) no-repeat;
-}
-span.export_server {
-  background: url(../../images/server_export.png) no-repeat;
-}
-span.inventory_server {
-  background: url(../../images/page_white_text.png) no-repeat;
-}
-span.web_server {
-  background: url(../../images/world.png) no-repeat;
-}
-*/
-
-/* This kind of span do not have any sense, should be replaced on PHP code
-by a real img in code. They are not useful because insert too much margin around
-(for example, not valid to use in the table of server view */
-/*span.users, span.agents, span.data, span.alerts, span.time, span.net,
-span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
-span.plugin, span.plugin, span.export, span.recon_server, span.wmi_server,
-span.export_server, span.inventory_server, span.web_server {
-	margin-left: 4px;
-	margin-top: 10px;
-	padding: 4px 8px 12px 30px;
-	display: block;
-}
-span.rmess, span.nrmess {
-	margin-left: 14px;
-	padding: 1px 0px 10px 30px;
-	display: block;
-}*/
-
 /* New styles for data box */
 /*
  * ---------------------------------------------------------------------
@@ -1534,6 +1495,7 @@ table.databox {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
+  text-align: justify;
 }
 
 .databox > th * {
@@ -1582,24 +1544,6 @@ table.databox {
   color: #333;
 }
 
-/* For use in Netflow */
-/*
-table.databox_grid {
-  margin: 25px;
-}
-
-table.databox_grid > th {
-  font-size: 12px;
-}
-
-table.databox_grid > td {
-  padding: 6px;
-  margin: 4px;
-  border-bottom: 1px solid #acacac;
-  border-right: 1px solid #acacac;
-}
-*/
-
 /* events */
 table.alternate tr:nth-child(odd) td {
   background-color: #ffffff;
@@ -1615,50 +1559,6 @@ table.rounded_cells td {
   border-radius: 6px;
 }
 
-/*#head_l {
-	float: left;
-	margin: 0;
-	padding: 0;
-}
-#head_r {
-  float: right;
-  text-align: right;
-  margin-right: 10px;
-  padding-top: 0px;
-}
-#head_m {
-	position: absolute;
-	padding-top: 6px;
-	padding-left: 12em;
-}*/
-/*span#logo_text1 {
-	font: bolder 3em Arial, Sans-serif;
-	letter-spacing: -2px;
-	color: #eee;
-}
-span#logo_text2 {
-  font: 3em Arial, Sans-serif;
-  letter-spacing: -2px;
-  color: #aaa;
-}
-
-div#logo_text3 {
-  text-align: right;
-  font: 2em Arial, Sans-serif;
-  letter-spacing: 6px;
-  color: #aaa;
-  font-weight: bold;
-  margin-top: 0px;
-  margin-left: 4px;
-  padding-top: 0px;
-}
-
-.bb0 {
-  border-bottom: 0px;
-}
-.bt0 {
-	border-top: 0px;
-}*/
 .action-buttons {
   text-align: right;
 }
@@ -1701,7 +1601,6 @@ input.config,
 input.filter,
 input.cancel,
 input.default,
-input.filter,
 input.pdf,
 input.spinn {
   padding-right: 30px;
@@ -1822,6 +1721,20 @@ input.remove-item-img {
   background-position: center;
 }
 
+button.pure_full,
+input.pure_full {
+  background-image: url(../../images/full_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+}
+
+button.pure_normal,
+input.pure_normal {
+  background-image: url(../../images/normal_screen.png);
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+}
+
 /* end of classes for event priorities */
 div#main_pure {
   background-color: #fefefe;
@@ -1840,19 +1753,6 @@ div#main_pure {
 .ui-draggable {
   cursor: move;
 }
-/*#layout_trash_drop {
-	float: right;
-	width: 300px;
-	height: 180px;
-	background: #fff url("../../images/trash.png") no-repeat bottom left;
-}
-#layout_trash_drop div {
-  display: block;
-}
-#layout_editor_drop {
-	float: left;
-	width: 300px;
-}*/
 
 /* IE 7 Hack */
 #editor {
@@ -1902,12 +1802,6 @@ select#template,
 select#action {
   width: 250px;
 }
-/*#label-checkbox-matches_value,
-#label-checkbox-copy_modules,
-#label-checkbox-copy_alerts {
-	display: inline;
-	font-weight: normal;
-}*/
 
 /* Modules */
 table#simple {
@@ -3077,6 +2971,19 @@ div.nodata_container {
   display: table;
 }
 
+div#stat-win-interface-graph div.nodata_container,
+div#stat-win-module-graph div.nodata_container {
+  width: 30%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: auto auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 #snmp_data {
   width: 40%;
   position: absolute;
@@ -3196,6 +3103,12 @@ div.nodata_container {
 }
 
 .menu_graph {
+  width: 30px;
+  height: 150px;
+  left: 100%;
+  position: absolute;
+  top: 0px;
+  background-color: transparent;
   -moz-border-top-right-radius: 6px;
   -webkit-border-top-right-radius: 6px;
   border-top-right-radius: 6px;
@@ -5478,12 +5391,7 @@ table.info_table.policy_sub_table {
  * ---------------------------------------------------------------------
  */
 .module_graph_menu_dropdown {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  position: absolute;
-  top: 10px;
   width: 100%;
-  z-index: 1001;
 }
 
 .module_graph_menu_content,
@@ -5501,7 +5409,7 @@ table.info_table.policy_sub_table {
   padding: 6px 10px;
   cursor: pointer;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -5511,10 +5419,18 @@ table.info_table.policy_sub_table {
 }
 
 .module_graph_menu_content {
+  position: absolute;
+  left: 2.5%;
+  top: 41px;
+  z-index: 1001;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   padding: 15px;
   border-top: none;
+}
+
+#stat-win-module-graph .flot-y-axis.flot-y1-axis.yAxis.y1Axis {
+  left: -10px !important;
 }
 
 /*
@@ -5907,6 +5823,13 @@ div#status_pie {
   border-radius: 5px;
 }
 
+.status_rounded_rectangles.text_inside {
+  color: #ffffff;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 0.4em;
+}
+
 .status_small_squares,
 .status_balls {
   width: 12px;
@@ -5985,7 +5908,7 @@ table.table_modal_alternate tr td:first-child {
 }
 
 .flot-text {
-  width: 101%;
+  width: 100%;
 }
 
 /*Font header feedback*/
@@ -6134,4 +6057,26 @@ form#form-filter-interfaces ul li {
 form#form-filter-interfaces ul li.select-interfaces {
   flex-direction: row-reverse;
   justify-content: flex-end;
+}
+
+li .select2 {
+  max-width: 400px !important;
+}
+
+div.graph td.legendLabel {
+  text-align: justify;
+}
+
+div.graph div.legend div,
+div.graph div.legend table {
+  top: 25px !important;
+}
+
+.rotate_text_module {
+  -ms-transform: rotate(270deg);
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  writing-mode: lr-tb;
+  white-space: nowrap;
 }

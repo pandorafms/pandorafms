@@ -512,8 +512,6 @@ function db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $h
  *
  * @return mixed The selected field of the first row in a select statement.
  */
-
-
 function db_get_sql($sql, $field=0, $search_history_db=false)
 {
     $result = db_get_all_rows_sql($sql, $search_history_db);
@@ -567,25 +565,34 @@ function db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, $dbcon
 /**
  * Returns the time the module is in unknown status (by events)
  *
- * @param integer $id_agente_modulo module to check
- * @param integer $tstart           begin of search
- * @param integer $tend             end of search
+ * @param integer $id_agente_modulo Module to check.
+ * @param boolean $tstart           Begin of search.
+ * @param boolean $tend             End of search.
+ * @param boolean $historydb        HistoryDb.
+ * @param integer $fix_to_range     Range.
+ *
+ * @return array Return array or false.
  */
-function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=false, $historydb=false, $fix_to_range=0)
-{
+function db_get_module_ranges_unknown(
+    $id_agente_modulo,
+    $tstart=false,
+    $tend=false,
+    $historydb=false,
+    $fix_to_range=0
+) {
     global $config;
 
-    if (!isset($id_agente_modulo)) {
+    if (isset($id_agente_modulo) === false) {
         return false;
     }
 
-    if ((!isset($tstart)) || ($tstart === false)) {
-        // Return data from the begining
+    if ((isset($tstart) === false) || ($tstart === false)) {
+        // Return data from the begining.
         $tstart = 0;
     }
 
-    if ((!isset($tend)) || ($tend === false)) {
-        // Return data until now
+    if ((isset($tend) === false) || ($tend === false)) {
+        // Return data until now.
         $tend = time();
     }
 
@@ -593,24 +600,49 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=fa
         return false;
     }
 
-    // Retrieve going unknown events in range
-    $query  = 'SELECT * FROM tevento WHERE id_agentmodule = '.$id_agente_modulo." AND event_type like 'going_%' "." AND utimestamp >= $tstart AND utimestamp <= $tend ".' ORDER BY utimestamp ASC';
+    // Retrieve going unknown events in range.
+    $query = sprintf(
+        'SELECT *
+        FROM tevento
+        WHERE id_agentmodule = %d
+            AND event_type like "going_%%"
+            AND utimestamp >= %d
+            AND utimestamp <= %d
+            ORDER BY utimestamp ASC
+        ',
+        $id_agente_modulo,
+        $tstart,
+        $tend
+    );
     $events = db_get_all_rows_sql($query, $historydb);
 
-    $query  = 'SELECT * FROM tevento WHERE id_agentmodule = '.$id_agente_modulo." AND event_type like 'going_%' "." AND utimestamp < $tstart ".' ORDER BY utimestamp DESC LIMIT 1;';
+    $query  = sprintf(
+        'SELECT *
+        FROM tevento
+        WHERE id_agentmodule = %d
+            AND event_type like "going_%%"
+            AND utimestamp < %d
+            ORDER BY utimestamp DESC
+            LIMIT 1
+        ',
+        $id_agente_modulo,
+        $tstart
+    );
     $previous_event = db_get_all_rows_sql($query, $historydb);
 
     if ($previous_event !== false) {
-        $last_status = $previous_event[0]['event_type'] == 'going_unknown' ? 1 : 0;
+        $last_status = ($previous_event[0]['event_type'] == 'going_unknown') ? 1 : 0;
     } else {
         $last_status = 0;
     }
 
-    if ((! is_array($events)) && (! is_array($previous_event))) {
+    if ((is_array($events) === false)
+        && (is_array($previous_event) === false)
+    ) {
         return false;
     }
 
-    if (! is_array($events)) {
+    if (is_array($events) === false) {
         if ($previous_event[0]['event_type'] == 'going_unknown') {
             return [
                 [
@@ -622,7 +654,7 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=fa
 
     $return = [];
     $i = 0;
-    if (is_array($events)) {
+    if (is_array($events) === true) {
         foreach ($events as $event) {
             switch ($event['event_type']) {
                 case 'going_up_critical':
@@ -647,11 +679,14 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=fa
 
                     break;
                 }
+                default:
+                    // Nothing.
+                break;
             }
         }
     }
 
-    if (!isset($return[0])) {
+    if (isset($return[0]) === false) {
         return false;
     }
 
@@ -662,12 +697,12 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=fa
 /**
  * Uncompresses and returns the data of a given id_agent_module
  *
- * @param integer    $id_agente_modulo id_agente_modulo
- * @param utimestamp $tstart           Begin of the catch
- * @param utimestamp $tend             End of the catch
- * @param integer    $interval         Size of slice (default-> module_interval)
+ * @param integer    $id_agente_modulo Id_agente_modulo.
+ * @param utimestamp $tstart           Begin of the catch.
+ * @param utimestamp $tend             End of the catch.
+ * @param integer    $slice_size       Size of slice(default-> module_interval).
  *
- * @return hash with the data uncompressed in blocks of module_interval
+ * @return array with the data uncompressed in blocks of module_interval
  * false in case of empty result
  *
  * Note: All "unknown" data are marked as NULL
@@ -683,16 +718,20 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart=false, $tend=fa
  *                  datos
  *                  utimestamp
  */
-function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false, $slice_size=false)
-{
+function db_uncompress_module_data(
+    $id_agente_modulo,
+    $tstart=false,
+    $tend=false,
+    $slice_size=false
+) {
     global $config;
 
-    if (!isset($id_agente_modulo)) {
+    if (isset($id_agente_modulo) === false) {
         return false;
     }
 
-    if ((!isset($tend)) || ($tend === false)) {
-        // Return data until now
+    if ((isset($tend) === false) || ($tend === false)) {
+        // Return data until now.
         $tend = time();
     }
 
@@ -705,7 +744,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
 
     $module = modules_get_agentmodule($id_agente_modulo);
     if ($module === false) {
-        // module not exists
+        // Module not exists.
         return false;
     }
 
@@ -727,27 +766,34 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
 
     $result = modules_get_first_date($id_agente_modulo, $tstart);
     $first_utimestamp = $result['first_utimestamp'];
-    $search_historydb = $result['search_historydb'];
+    $search_historydb = (isset($result['search_historydb']) === true) ? $result['search_historydb'] : false;
 
     if ($first_utimestamp === false) {
         $first_data['utimestamp'] = $tstart;
         $first_data['datos']      = false;
     } else {
-        $query  = "SELECT datos,utimestamp FROM $table ";
-        $query .= " WHERE id_agente_modulo=$id_agente_modulo ";
-        $query .= ' AND utimestamp = '.$first_utimestamp;
+        $query = sprintf(
+            'SELECT datos,utimestamp
+            FROM %s
+            WHERE id_agente_modulo = %d
+                AND utimestamp = %d
+            ',
+            $table,
+            $id_agente_modulo,
+            $first_utimestamp
+        );
 
         $data = db_get_all_rows_sql($query, $search_historydb);
 
         if ($data === false) {
-            // first utimestamp not found in active database
-            // SEARCH HISTORY DB
+            // First utimestamp not found in active database
+            // SEARCH HISTORY DB.
             $search_historydb = true;
             $data = db_get_all_rows_sql($query, $search_historydb);
         }
 
         if ($data === false) {
-            // Not init
+            // Not init.
             $first_data['utimestamp'] = $tstart;
             $first_data['datos']      = false;
         } else {
@@ -756,20 +802,31 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
         }
     }
 
-    $query  = " SELECT utimestamp, datos FROM $table ";
-    $query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp >= $tstart AND utimestamp <= $tend";
-    $query .= ' ORDER BY utimestamp ASC';
-    // Retrieve all data from module in given range
+    $query = sprintf(
+        'SELECT utimestamp, datos
+        FROM %s
+        WHERE id_agente_modulo = %d
+            AND utimestamp >= %d
+            AND utimestamp <= %d
+        ORDER BY utimestamp ASC
+        ',
+        $table,
+        $id_agente_modulo,
+        $tstart,
+        $tend
+    );
+
+    // Retrieve all data from module in given range.
     $raw_data = db_get_all_rows_sql($query, $search_historydb);
 
     $module_interval = modules_get_interval($id_agente_modulo);
 
     if (($raw_data === false) && ( $first_utimestamp === false )) {
-        // No data
+        // No data.
         return false;
     }
 
-    // Retrieve going unknown events in range
+    // Retrieve going unknown events in range.
     $unknown_events = db_get_module_ranges_unknown(
         $id_agente_modulo,
         $tstart,
@@ -778,16 +835,21 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
         1
     );
 
-    // if time to is missing in last event force time to outside range time
-    if ($unknown_events && !isset($unknown_events[(count($unknown_events) - 1)]['time_to'])) {
+    // If time to is missing in last event force time to outside range time.
+    if ($unknown_events
+        && isset($unknown_events[(count($unknown_events) - 1)]['time_to']) === false
+    ) {
         $unknown_events[(count($unknown_events) - 1)]['time_to'] = $tend;
     }
 
-    // if time to is missing in first event force time to outside range time
+    // If time to is missing in first event force time to outside range time.
     if ($first_data['datos'] === false && !$flag_async) {
         $last_inserted_value = false;
-    } else if (($unknown_events && !isset($unknown_events[0]['time_from']) && !$flag_async)
-        || ($first_utimestamp < $tstart - (SECONDS_1DAY + 2 * $module_interval) && !$flag_async)
+    } else if (($unknown_events
+        && isset($unknown_events[0]['time_from']) === false
+        && $flag_async === false)
+        || ($first_utimestamp < $tstart - (SECONDS_1DAY + 2 * $module_interval)
+        && $flag_async === false)
     ) {
         $last_inserted_value = $first_data['datos'];
         $unknown_events[0]['time_from'] = $tstart;
@@ -795,24 +857,24 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
         $last_inserted_value = $first_data['datos'];
     }
 
-    // Retrieve module_interval to build the template
+    // Retrieve module_interval to build the template.
     if ($slice_size === false) {
         $slice_size = $module_interval;
     }
 
     $return = [];
 
-    // Point current_timestamp to begin of the set and initialize flags
+    // Point current_timestamp to begin of the set and initialize flags.
     $current_timestamp   = $tstart;
     $last_timestamp      = $first_data['utimestamp'];
     $last_value          = $first_data['datos'];
 
-    // reverse array data optimization
-    if (is_array($raw_data)) {
+    // Reverse array data optimization.
+    if (is_array($raw_data) === true) {
         $raw_data = array_reverse($raw_data);
     }
 
-    // Build template
+    // Build template.
     $pool_id = 0;
     $now = time();
 
@@ -822,7 +884,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
         $current_unknown = null;
     }
 
-    if (is_array($raw_data)) {
+    if (is_array($raw_data) === true) {
         $current_raw_data = array_pop($raw_data);
     } else {
         $current_raw_data = null;
@@ -838,33 +900,34 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
         ) {
             $tmp_data['utimestamp'] = $current_timestamp;
 
-            // check not init
+            // Check not init.
             $tmp_data['datos'] = $last_value === false ? false : null;
 
-            // async not unknown
+            // Async not unknown.
             if ($flag_async && $tmp_data['datos'] === null) {
                 $tmp_data['datos'] = $last_inserted_value;
             }
 
-            // debug purpose
-            // $tmp_data["obs"] = "unknown extra";
+            // Debug purpose.
+            // $tmp_data["obs"] = "unknown extra";.
             array_push($return[$pool_id]['data'], $tmp_data);
         }
 
-        // insert raw data
+        // Insert raw data.
         while (($current_raw_data != null) &&
                 (   ($current_timestamp_end > $current_raw_data['utimestamp']) &&
                     ($current_timestamp <= $current_raw_data['utimestamp']) ) ) {
-            // Add real data detected
+            // Add real data detected.
             if (count($return[$pool_id]['data']) == 0) {
-                // insert first slice data
+                // Insert first slice data.
                 $tmp_data['utimestamp'] = $current_timestamp;
                 $tmp_data['datos']  = $last_inserted_value;
-                // debug purpose
-                // $tmp_data["obs"] = "virtual data (raw)";
+                // Debug purpose
+                // $tmp_data["obs"] = "virtual data (raw)";.
                 $tmp_data['type'] = ($current_timestamp == $tstart || ($current_timestamp == $tend) ? 0 : 1);
-                // virtual data
-                // Add order to avoid usort missorder in same utimestamp data cells
+                // Virtual data.
+                // Add order to avoid usort missorder
+                // in same utimestamp data cells.
                 $tmp_data['order'] = 1;
                 array_push($return[$pool_id]['data'], $tmp_data);
             }
@@ -872,10 +935,10 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
             $tmp_data['utimestamp'] = $current_raw_data['utimestamp'];
             $tmp_data['datos']      = $current_raw_data['datos'];
             $tmp_data['type'] = 0;
-            // real data
-            // debug purpose
+            // Real data.
+            // Debug purpose
             // $tmp_data["obs"] = "real data";
-            // Add order to avoid usort missorder in same utimestamp data cells
+            // Add order to avoid usort missorder in same utimestamp data cells.
             $tmp_data['order'] = 2;
             array_push($return[$pool_id]['data'], $tmp_data);
 
@@ -888,7 +951,7 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
             }
         }
 
-        // unknown
+        // Unknown.
         $data_slices = $return[$pool_id]['data'];
         if (!$flag_async) {
             while (($current_unknown != null) &&
@@ -899,23 +962,25 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
                     && ( $current_timestamp_end >= $current_unknown['time_from'] )
                 ) {
                     if (count($return[$pool_id]['data']) == 0) {
-                        // insert first slice data
+                        // Insert first slice data.
                         $tmp_data['utimestamp'] = $current_timestamp;
                         $tmp_data['datos']  = $last_inserted_value;
-                        // debug purpose
+                        // Debug purpose
                         // $tmp_data["obs"] = "virtual data (e)";
-                        // Add order to avoid usort missorder in same utimestamp data cells
+                        // Add order to avoid usort missorder
+                        // in same utimestamp data cells.
                         $tmp_data['order'] = 1;
 
                         array_push($return[$pool_id]['data'], $tmp_data);
                     }
 
-                    // Add unknown state detected
+                    // Add unknown state detected.
                     $tmp_data['utimestamp'] = $current_unknown['time_from'];
                     $tmp_data['datos']      = null;
-                    // debug purpose
+                    // Debug purpose
                     // $tmp_data["obs"] = "event data unknown from";
-                    // Add order to avoid usort missorder in same utimestamp data cells
+                    // Add order to avoid usort missorder
+                    // in same utimestamp data cells.
                     $tmp_data['order'] = 2;
                     array_push($return[$pool_id]['data'], $tmp_data);
                     $current_unknown['time_from'] = null;
@@ -923,19 +988,21 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
                     && ($current_timestamp_end > $current_unknown['time_to'] )
                 ) {
                     if (count($return[$pool_id]['data']) == 0) {
-                        // add first slice data always
-                        // insert first slice data
+                        // Add first slice data always
+                        // Insert first slice data.
                         $tmp_data['utimestamp'] = $current_timestamp;
                         $tmp_data['datos']  = $last_inserted_value;
-                        // debug purpose
+                        // Debug purpose
                         // $tmp_data["obs"] = "virtual data (event_to)";
-                        // Add order to avoid usort missorder in same utimestamp data cells
+                        // Add order to avoid usort missorder
+                        // in same utimestamp data cells.
                         $tmp_data['order'] = 1;
                         array_push($return[$pool_id]['data'], $tmp_data);
                     }
 
                     $tmp_data['utimestamp'] = $current_unknown['time_to'];
-                    // Add order to avoid usort missorder in same utimestamp data cells
+                    // Add order to avoid usort missorder
+                    // in same utimestamp data cells.
                     $tmp_data['order'] = 2;
                     $i = count($data_slices);
                     while ($i >= 0) {
@@ -947,8 +1014,8 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
                         $i--;
                     }
 
-                    // debug purpose
-                    // $tmp_data["obs"] = "event data unknown to";
+                    // Debug purpose
+                    // $tmp_data["obs"] = "event data unknown to";.
                     array_push($return[$pool_id]['data'], $tmp_data);
                     if ($unknown_events) {
                         $current_unknown = array_shift($unknown_events);
@@ -963,15 +1030,15 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
 
         $return[$pool_id]['utimestamp'] = $current_timestamp;
         if (count($return[$pool_id]['data']) == 0) {
-            // insert first slice data
+            // Insert first slice data.
             $tmp_data['utimestamp'] = $current_timestamp;
             $tmp_data['datos'] = $last_inserted_value;
-            // debug purpose
-            // $tmp_data["obs"] = "virtual data (empty)";
+            // Debug purpose
+            // $tmp_data["obs"] = "virtual data (empty)";.
             array_push($return[$pool_id]['data'], $tmp_data);
         }
 
-        // sort current slice
+        // Sort current slice.
         if (count($return[$pool_id]['data']) > 1) {
             usort(
                 $return[$pool_id]['data'],
@@ -985,16 +1052,16 @@ function db_uncompress_module_data($id_agente_modulo, $tstart=false, $tend=false
             );
         }
 
-        // put the last slice data like first element of next slice
+        // Put the last slice data like first element of next slice.
         $last_inserted_value = end($return[$pool_id]['data']);
         $last_inserted_value = $last_inserted_value['datos'];
 
-        // increment
+        // Increment.
         $pool_id++;
         $current_timestamp = $current_timestamp_end;
     }
 
-    // slice to the end.
+    // Slice to the end.
     if ($pool_id == 1) {
         $end_array = [];
         $end_array['data'][0]['utimestamp'] = $tend;

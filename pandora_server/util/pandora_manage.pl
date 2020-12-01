@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.749 PS200922";
+my $version = "7.0NG.750 PS201201";
 
 # save program name for logging
 my $progname = basename($0);
@@ -118,6 +118,8 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
+	help_screen_line('--get_module_custom_id', '<agentmodule_id>', 'Get the custom_id of given module');
+	help_screen_line('--set_module_custom_id', '<agentmodule_id> [<custom_id>]', 'Set (or erase if empty) the custom_id of given module');
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
@@ -4616,6 +4618,41 @@ sub cli_get_module_id() {
 
 }
 
+##############################################################################
+# Retrieves the module custom_id given id_agente_modulo.
+# Related option: --get_module_custom_id
+# perl pandora_manage.pl /etc/pandora/pandora_server.conf --get_module_custom_id 4
+##############################################################################
+
+sub cli_get_module_custom_id {
+	my $module_id = $ARGV[2];
+
+	my $custom_id = get_agentmodule_custom_id($dbh, $module_id);
+	
+	if (defined($custom_id)) {
+		print $custom_id;
+	} else {
+		print "\n";
+	}
+}
+
+##############################################################################
+# Update sor erases the module custom_id given id_agente_modulo.
+# Related option: --get_module_custom_id
+# perl pandora_manage.pl /etc/pandora/pandora_server.conf --get_module_custom_id 4 test
+##############################################################################
+
+sub cli_set_module_custom_id {
+	my ($module_id, $custom_id) = @ARGV[2..3];
+
+	my $rs = set_agentmodule_custom_id($dbh, $module_id, $custom_id);
+	
+	if ($rs > 0) {
+		print $custom_id;
+	} else {
+		print "[ERROR] No changes.";
+	}
+}
 
 ##############################################################################
 # Show the group name where a given agent is
@@ -5697,7 +5734,7 @@ sub cli_delete_group() {
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
-	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', $group_name);
+	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
 
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";
@@ -5717,16 +5754,22 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
-	$result = db_do ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
+
+	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 
 	if($result == "0E0"){
 		print_log "[ERROR] Group '$group_id' doesn`t exist \n\n";
 	}else{
 		if(defined($group_name)){
 			if(defined($parent_group_name)){
-				my $parent_group_id = get_group_id($dbh,$parent_group_name);
-				exist_check($parent_group_id, 'group name', $parent_group_name);
 
+				my $parent_group_id = 0;
+
+				if($parent_group_name ne 'All') {
+						$parent_group_id = get_group_id($dbh,$parent_group_name);
+						exist_check($parent_group_id, 'group name', $parent_group_name);				
+				} 
+					
 				if(defined($icon)){
 					if(defined($description)){
 						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? , description=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$description,$group_id);
@@ -7490,6 +7533,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_module_id') {
 			param_check($ltotal, 2);
 			cli_get_module_id();
+		}
+		elsif ($param eq '--get_module_custom_id') {
+			param_check($ltotal, 1);
+			cli_get_module_custom_id();
+		}
+		elsif ($param eq '--set_module_custom_id') {
+			param_check($ltotal, 2);
+			cli_set_module_custom_id();
 		}
 		elsif ($param eq '--get_agent_group') {
 			param_check($ltotal, 2, 1);

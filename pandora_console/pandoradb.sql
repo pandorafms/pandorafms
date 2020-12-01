@@ -308,6 +308,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`al_field13` text NOT NULL,
 	`al_field14` text NOT NULL,
 	`al_field15` text NOT NULL,
+	`al_field16` text NOT NULL,
+	`al_field17` text NOT NULL,
+	`al_field18` text NOT NULL,
+	`al_field19` text NOT NULL,
+	`al_field20` text NOT NULL,
 	`description` varchar(255) default '',
 	`alert_type` int(2) unsigned NOT NULL default '0',
 	`agent` varchar(100) default '',
@@ -407,6 +412,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field13` text NOT NULL,
 	`field14` text NOT NULL,
 	`field15` text NOT NULL,
+	`field16` text NOT NULL,
+	`field17` text NOT NULL,
+	`field18` text NOT NULL,
+	`field19` text NOT NULL,
+	`field20` text NOT NULL,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`action_threshold` int(10) NOT NULL default '0',
 	`field1_recovery` text NOT NULL,
@@ -424,6 +434,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field13_recovery` text NOT NULL,
 	`field14_recovery` text NOT NULL,
 	`field15_recovery` text NOT NULL,
+	`field16_recovery` text NOT NULL,
+	`field17_recovery` text NOT NULL,
+	`field18_recovery` text NOT NULL,
+	`field19_recovery` text NOT NULL,
+	`field20_recovery` text NOT NULL,
 	`previous_name` text,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
@@ -1463,6 +1478,8 @@ CREATE TABLE IF NOT EXISTS `treport` (
 	`non_interactive` tinyint(1) UNSIGNED NOT NULL default 0,
 	`hidden` tinyint(1) DEFAULT 0,
 	`orientation` varchar(25) NOT NULL default 'vertical',
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1534,6 +1551,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
+	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -3041,6 +3059,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`agent_regex` varchar(600) BINARY NOT NULL default '',
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3113,6 +3133,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
+	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3227,6 +3248,11 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE tmetaconsole_event ADD INDEX `tme_agent_name_idx` (`agent_name`);
+
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
 -- ---------------------------------------------------------------------
@@ -3273,6 +3299,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 4 - Critical (red) (status 1)
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
+
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE tmetaconsole_event_history ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
@@ -3360,6 +3389,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
 	KEY `id_grupo` (`id_grupo`),
 	FOREIGN KEY (`id_tmetaconsole_setup`) REFERENCES tmetaconsole_setup(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_id_os_idx` (`id_os`);
+ALTER TABLE tmetaconsole_agent ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`

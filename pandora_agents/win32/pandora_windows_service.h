@@ -117,7 +117,7 @@ namespace Pandora {
 					     const char *svc_description);
 		
 		void           start        ();
-		int            sendXml      (Pandora_Module_List *modules);
+		int            sendXml      (Pandora_Module_List *modules, string extra = "");
         void           sendBufferedXml (string path, copy_func_p copy_func, bool secondary_buffer);
 		Pandora_Agent_Conf *getConf ();
 		string         getEHKey (string ehorus_conf);

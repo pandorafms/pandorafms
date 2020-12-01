@@ -338,12 +338,14 @@ if ((check_acl($config['id_user'], $id_grupo, 'IM') == 1) or ($usuario == $confi
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 
 // Group combo
+echo '<div class="w250px">';
 if ((check_acl($config['id_user'], $id_grupo, 'IM') == 1) or ($usuario == $config['id_user'])) {
     html_print_select_groups($config['id_user'], 'IR', true, 'grupo_form', $id_grupo, '', '', '', false, false, false, 'w135');
 } else {
     html_print_select_groups($config['id_user'], 'IR', true, 'grupo_form', $id_grupo, '', '', '', false, false, true, 'w135', true);
 }
 
+echo '</div>';
 echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="datos">';
 
 if ((check_acl($config['id_user'], $id_grupo, 'IM') == 1) or ($usuario == $config['id_user'])) {

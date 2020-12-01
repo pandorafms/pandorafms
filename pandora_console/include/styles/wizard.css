@@ -11,6 +11,10 @@ ul.wizard {
 ul.wizard li {
   padding-bottom: 10px;
   padding-top: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 ul.wizard li > label:not(.p-switch) {

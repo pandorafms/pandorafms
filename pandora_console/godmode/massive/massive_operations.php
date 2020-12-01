@@ -47,7 +47,7 @@ $options_agents = [
     'delete_agents' => __('Bulk agent delete'),
 ];
 
-if (check_acl($config['id_user'], 0, 'PM')) {
+if (check_acl($config['id_user'], 0, 'UM')) {
     $options_users = [
         'add_profiles'    => __('Bulk profile add'),
         'delete_profiles' => __('Bulk profile delete'),
@@ -263,7 +263,7 @@ $onheader = [];
 $onheader['massive_agents'] = $agentstab;
 $onheader['massive_modules'] = $modulestab;
 $onheader['massive_plugins'] = $pluginstab;
-if (check_acl($config['id_user'], 0, 'PM')) {
+if (check_acl($config['id_user'], 0, 'UM')) {
     $onheader['user_agents'] = $userstab;
 }
 

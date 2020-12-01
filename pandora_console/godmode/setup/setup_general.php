@@ -59,18 +59,10 @@ global $config;
 check_login();
 
 if (is_ajax()) {
-    enterprise_include_once('include/functions_cron.php');
-
     $test_address = get_parameter('test_address', '');
 
-    $res = enterprise_hook(
-        'send_email_attachment',
-        [
-            $test_address,
-            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
-            __('Testing Pandora FMS email'),
-            null,
-        ]
+    $res = send_test_email(
+        $test_address
     );
 
     echo $res;
@@ -124,7 +116,8 @@ $table->data[$i][0] = __('Phantomjs bin directory');
 $table->data[$i++][1] = html_print_input_text('phantomjs_bin', io_safe_output($config['phantomjs_bin']), '', 30, 100, true);
 
 $table->data[$i][0] = __('Auto login (hash) password');
-$table->data[$i++][1] = html_print_input_password('loginhash_pwd', io_output_password($config['loginhash_pwd']), '', 15, 15, true);
+$table->data[$i][1] = html_print_input_password('loginhash_pwd', io_output_password($config['loginhash_pwd']), '', 15, 15, true);
+$table->data[$i++][1] .= ui_print_reveal_password('loginhash_pwd', true);
 
 $table->data[$i][0] = __('Time source');
 $sources['system'] = __('System');
@@ -162,7 +155,8 @@ if (isset($_POST['list_ACL_IPs_for_API'])) {
 $table->data[$i++][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
 $table->data[$i][0] = __('API password');
-$table->data[$i++][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
+$table->data[$i][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
+$table->data[$i++][1] .= ui_print_reveal_password('api_password', true);
 
 $table->data[$i][0] = __('Enable GIS features');
 $table->data[$i++][1] = html_print_checkbox_switch('activate_gis', 1, $config['activate_gis'], true);
@@ -344,6 +338,9 @@ $table->data[$i++][1] = html_print_checkbox_switch('console_log_enabled', 1, $co
 $table->data[$i][0] = __('Enable audit log').ui_print_help_tip(__('Log location').': pandora_console/log/audit.log', true);
 $table->data[$i++][1] = html_print_checkbox_switch('audit_log_enabled', 1, $config['audit_log_enabled'], true);
 
+$table->data[$i][0] = __('Module custom ID readonly').ui_print_help_tip(__('Useful for integrations'), true);
+$table->data[$i++][1] = html_print_checkbox_switch('module_custom_id_ro', 1, $config['module_custom_id_ro'], true);
+
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset>';
@@ -384,10 +381,11 @@ $table_mail_conf->data[5][1] = html_print_input_text('email_username', $config['
 
 $table_mail_conf->data[6][0] = __('Email password');
 $table_mail_conf->data[6][1] = html_print_input_password('email_password', io_output_password($config['email_password']), '', 30, 100, true);
+$table_mail_conf->data[6][1] .= ui_print_reveal_password('email_password', true);
 
 $uniqid = uniqid();
 
-$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('$uniqid');", 'class="sub next"', true);
+$table_mail_conf->data[7][0] = html_print_button(__('Email test'), 'email_test_dialog', false, "show_email_test('".$uniqid."');", 'class="sub next"', true);
 
 print_email_test_modal_window($uniqid);
 
@@ -404,7 +402,14 @@ html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"'
 echo '</div>';
 echo '</form>';
 
-// Print the modal window for the summary of each alerts group
+
+/**
+ * Print the modal window for the summary of each alerts group
+ *
+ * @param string $id Id.
+ *
+ * @return void
+ */
 function print_email_test_modal_window($id)
 {
     // Email config table.
@@ -469,7 +474,6 @@ function show_email_test(id) {
         resizable: true,
         draggable: true,
         modal: true,
-        height: 175,
         width: 450,
         overlay: {
             opacity: 0.5,
@@ -487,7 +491,11 @@ function perform_email_test () {
         data: "page=godmode/setup/setup_general&test_address="+test_address,
         dataType: "html",
         success: function(data) {
-            $('#email_test_sent_message').show();
+            if (parseInt(data) === 1) {
+                $('#email_test_sent_message').show();
+            } else {
+                $('#email_test_failure_message').show();
+            }
         },
         error: function() {
             $('#email_test_failure_message').show();

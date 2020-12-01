@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#Save the existing configuration file
+#if [ -f /usr/local/share/pandora_agent/pandora_agent.conf ] 
+#then
+#	#mkdir -p /tmp/eh_restore
+#	cp /usr/local/share/pandora_agent/pandora_agent.conf /usr/local/share/pandora_agent/pandora_agent.bak
+#fi
+exit 0

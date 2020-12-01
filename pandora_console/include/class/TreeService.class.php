@@ -264,6 +264,7 @@ class TreeService extends Tree
                 ts.id_agent_module,
                 ts.name,
                 ts.name as `alias`,
+                ts.description as `description`,
                 ts.id as `rootID`,
                 "services" as `rootType`,
                 "services" as `type`,
@@ -311,6 +312,7 @@ class TreeService extends Tree
             ];
             $services[$service['id']]['name'] = $service['name'];
             $services[$service['id']]['id'] = $service['id'];
+            $services[$service['id']]['description'] = $service['description'];
             $services[$service['id']]['serviceDetail'] = 'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int) $service['id'];
         }
 
@@ -512,6 +514,8 @@ class TreeService extends Tree
                     $tmp['id'] = (int) $item->service()->id();
                     $tmp['name'] = $item->service()->name();
                     $tmp['alias'] = $item->service()->name();
+                    $tmp['description'] = $item->service()->description();
+                    $tmp['elementDescription'] = $item->description();
 
                     if ($this->connectedToNode === false
                         && is_metaconsole() === true
@@ -643,6 +647,8 @@ class TreeService extends Tree
                 ts.id_agent_module,
                 ts.name,
                 ts.name as `alias`,
+                ts.description as `description`,
+                tse.description as `elementDescription`,
                 tse.id_service as `rootID`,
                 "services" as `rootType`,
                 "services" as `type`,

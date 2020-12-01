@@ -220,7 +220,7 @@ sub data_consumer ($$) {
 		my $col_number;
 
     for(my $i = 0; $i < @output_col; $i++ ) {
-        if( $output_col[$i] =~ /$selected_col/ ) {
+        if( $output_col[$i] =~ /$selected_col/i ) {
         		$col_number = $i;	
             last;
         }

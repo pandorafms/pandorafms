@@ -409,6 +409,8 @@ class ModuleTemplates extends HTML
                 case 'export':
                     global $config;
 
+                    enterprise_include_once('include/functions_reporting_csv.php');
+
                     $id_network_profile = safe_int($this->id_np);
                     if (empty($id_network_profile)) {
                         return false;
@@ -500,7 +502,7 @@ class ModuleTemplates extends HTML
                     }
 
                     // Then print the first line (row names)
-                    echo '"'.implode('","', $row_names).'"';
+                    echo '"'.implode('"'.$config['csv_divider'].'"', $row_names).'"';
                     echo "\n";
 
                     // Then print the rest of the data. Encapsulate in quotes in case we have comma's in any of the descriptions
@@ -509,7 +511,19 @@ class ModuleTemplates extends HTML
                             unset($row[$bad_key]);
                         }
 
-                        echo '"'.implode('","', $row).'"';
+                        if ($config['csv_decimal_separator'] !== '.') {
+                            foreach ($row as $name => $data) {
+                                if (is_numeric($data)) {
+                                    // Get the number of decimals, if > 0, format dec comma.
+                                    $decimals = strlen(substr(strrchr($data, '.'), 1));
+                                    if ($decimals !== 0) {
+                                        $row[$name] = csv_format_numeric((float) $data, $decimals, true);
+                                    }
+                                }
+                            }
+                        }
+
+                        echo '"'.implode('"'.$config['csv_divider'].'"', $row).'"';
                         echo "\n";
                     }
 
@@ -845,7 +859,7 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['title' => 'Export to CSV']
+                ['title' => 'Export tdaso CSV']
             );
             $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
             $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';

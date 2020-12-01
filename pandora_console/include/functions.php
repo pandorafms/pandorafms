@@ -3904,17 +3904,23 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.__('Max:').remove_right_zeros(
                     number_format(
                         $value['max'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '._('Avg:').remove_right_zeros(
                     number_format(
                         $value['avg'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.$str;
 
@@ -3978,7 +3984,8 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator']
                         )
                     ).' '.$str;
                 }
@@ -5911,4 +5918,5 @@ function send_test_email(
     }
 
     return $result;
+
 }

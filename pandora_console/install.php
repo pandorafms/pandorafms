@@ -350,7 +350,7 @@ function random_name($size)
 {
     $temp = '';
     for ($a = 0; $a < $size; $a++) {
-        $temp = $temp.chr(rand(122, 97));
+        $temp = $temp.chr(rand(126, 33));
     }
 
     return $temp;

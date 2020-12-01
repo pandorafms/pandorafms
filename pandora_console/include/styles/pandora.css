@@ -688,7 +688,7 @@ select:-internal-list-box {
   float: right;
 }
 .invisible {
-  display: none !important;
+  display: none;
 }
 
 div#page {

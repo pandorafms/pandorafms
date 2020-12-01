@@ -46,11 +46,13 @@ $update = (bool) get_parameter_post('update');
 
 if ($update) {
     $agents_ = '';
+
+    $module_status = get_parameter('status_module');
+
     if ($selection_mode == 'modules') {
         $agents_ = [];
 
         $force = get_parameter('force_type', false);
-        $module_status = get_parameter('status_module', null);
 
         if ($agents_select == false) {
             $agents_select = [];
@@ -1860,7 +1862,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit($module_name, $agents_select=null, $module_status=null, $selection_mode='all')
+function process_manage_edit($module_name, $agents_select=null, $module_status='-1', $selection_mode='all')
 {
     if (is_int($module_name) && $module_name < 0) {
         ui_print_error_message(__('No modules selected'));
@@ -2150,7 +2152,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status=n
     }
 
     foreach ($modules as $module) {
-        if ($module_status !== null) {
+        if ($module_status !== '-1') {
             if (modules_is_not_init($module['id_agente_modulo']) === true) {
                 if ($module_status != AGENT_MODULE_STATUS_NO_DATA && $module_status != AGENT_MODULE_STATUS_NOT_INIT) {
                     continue;

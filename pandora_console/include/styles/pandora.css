@@ -4769,7 +4769,9 @@ input:checked + .p-slider:before {
 }
 
 .edit_user_info_right #password_new,
-.edit_user_info_right #password_conf {
+.edit_user_info_right #password_conf,
+.edit_user_info_right #own_password_confirm,
+.edit_user_info_right #current_password {
   background-image: url("../../images/user_password.png");
 }
 

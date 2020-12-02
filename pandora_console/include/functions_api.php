@@ -194,6 +194,7 @@ function returnData($returnType, $data, $separator=';')
             if (is_array($data['data'])) {
                 if (array_key_exists('list_index', $data)) {
                     if ($returnType == 'csv_head') {
+                        header('Content-type: text/csv');
                         foreach ($data['list_index'] as $index) {
                             echo $index;
                             if (end($data['list_index']) == $index) {
@@ -1570,7 +1571,9 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             $nombre_agente = $alias;
         }
 
-        if ($direccion_agente != '') {
+        $exists_ip = false;
+
+        if ($config['unique_ip'] && $direccion_agente != '') {
             $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
         }
 
@@ -1973,7 +1976,7 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             $ag_groups = $other['data'][1];
             // Recursion.
             if ($other['data'][6] === '1') {
-                $ag_groups = groups_get_id_recursive($ag_groups, true);
+                $ag_groups = groups_get_children_ids($ag_groups, true);
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
@@ -8443,10 +8446,16 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         return;
     }
 
-    $separator = $other['data'][0];
-    $periodSeconds = $other['data'][1];
-    $tstart = $other['data'][2];
-    $tend = $other['data'][3];
+    $separator = ';';
+    $tstart = null;
+    $tend = null;
+    $periodSeconds = null;
+    if (is_array($other) === true && is_array($other['data']) === true) {
+        $separator = $other['data'][0];
+        $periodSeconds = $other['data'][1];
+        $tstart = $other['data'][2];
+        $tend = $other['data'][3];
+    }
 
     if (($tstart != '') && ($tend != '')) {
         try {
@@ -8467,36 +8476,18 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
             $date_end = $date_end->format('U');
         } catch (Exception $e) {
             returnError('error_query_module_data', 'Error in date format. ');
+            return;
         }
-
-        $sql = sprintf(
-            'SELECT utimestamp, datos 
-            FROM tagente_datos 
-            WHERE id_agente_modulo = %d AND utimestamp > %d 
-            AND utimestamp < %d 
-            ORDER BY utimestamp DESC',
-            $id,
-            $date_start,
-            $date_end
-        );
     } else {
-        if ($periodSeconds == null) {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d 
-                ORDER BY utimestamp DESC',
-                $id
-            );
+        if ($periodSeconds !== null) {
+            $date_end = get_system_time();
+            $date_start = (get_system_time() - $periodSeconds);
         } else {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d AND utimestamp > %d 
-                ORDER BY utimestamp DESC',
-                $id,
-                (get_system_time() - $periodSeconds)
-            );
+            $date_end = get_system_time();
+            $result = modules_get_first_date($id, $tstart);
+            if ($result !== false) {
+                $date_start = $result['first_utimestamp'];
+            }
         }
     }
 
@@ -8505,13 +8496,30 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         'utimestamp',
         'datos',
     ];
-    $data['data'] = db_get_all_rows_sql($sql);
+
+    $data['data'] = array_reduce(
+        db_uncompress_module_data($id, $date_start, $date_end),
+        function ($carry, $item) {
+            if (is_array($item['data']) === true) {
+                foreach ($item['data'] as $i => $v) {
+                    $carry[] = [
+                        'utimestamp' => $v['utimestamp'],
+                        'datos'      => $v['datos'],
+                    ];
+                }
+            }
+
+            return $carry;
+        },
+        []
+    );
 
     if ($data === false) {
         returnError('error_query_module_data', 'Error in the query of module data.');
     } else if ($data['data'] == '') {
         returnError('error_query_module_data', 'No data to show.');
     } else {
+        // returnData('csv_head', $data, $separator);
         returnData('csv', $data, $separator);
     }
 }
@@ -12513,7 +12521,13 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            if (is_metaconsole()) {
+                $table_event = 'tmetaconsole_event';
+            } else {
+                $table_event = 'tevento';
+            }
+
+            $sql_validation = 'SELECT id_evento FROM '.$table_event.' where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
             $validation = db_get_all_rows_sql($sql_validation);
             if ($validation) {
                 foreach ($validation as $val) {

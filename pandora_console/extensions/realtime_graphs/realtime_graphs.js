@@ -1,3 +1,4 @@
+/* global $, get_php_value */
 (function() {
   var numberOfPoints = 100;
   var refresh = parseInt($("#refresh").val());
@@ -14,7 +15,7 @@
       container: $("#chartLegend")
     },
     xaxis: {
-      tickFormatter: function(timestamp, axis) {
+      tickFormatter: function(timestamp) {
         var date = new Date(timestamp * 1000);
 
         var server_timezone_offset = get_php_value("timezone_offset");
@@ -39,7 +40,7 @@
       }
     },
     yaxis: {
-      tickFormatter: function(value, axis) {
+      tickFormatter: function(value) {
         return shortNumber(roundToTwo(value));
       }
     },
@@ -66,10 +67,16 @@
       data: {
         graph: $("#graph :selected").val(),
         graph_title: $("#graph :selected").html(),
-        snmp_community: $("#text-snmp_community").val(),
-        snmp_oid: $("#text-snmp_oid").val(),
-        snmp_ver: $("#snmp_version :selected").val(),
-        snmp_address: $("#text-ip_target").val(),
+        snmp_community: $("#text-community").val(),
+        snmp_oid: $("#text-starting_oid").val(),
+        snmp_ver: $("#snmp_browser_version").val(),
+        snmp_address: $("#text-target_ip").val(),
+        snmp3_auth_user: $("#text-snmp3_browser_auth_user").val(),
+        snmp3_security_level: $("#snmp3_browser_security_level").val(),
+        snmp3_auth_method: $("#snmp3_browser_auth_method").val(),
+        snmp3_auth_pass: $("#password-snmp3_browser_auth_pass").val(),
+        snmp3_privacy_method: $("#snmp3_browser_privacy_method").val(),
+        snmp3_privacy_pass: $("#password-snmp3_browser_privacy_pass").val(),
         refresh: refresh
       },
       success: function(serie) {
@@ -87,7 +94,7 @@
         }
 
         if (data.length === 0) {
-          for (i = 0; i < numberOfPoints; i++) {
+          for (var i = 0; i < numberOfPoints; i++) {
             var step = i * (refresh / 1000);
             serie.data.unshift([timestamp - step, 0]);
           }
@@ -123,7 +130,7 @@
     var data = plot.getData();
     if (data.length === 0) return;
 
-    for (i = 0; i < data[0].data.length; i++) {
+    for (var i = 0; i < data[0].data.length; i++) {
       data[0].data[i][1] = 0;
     }
     if (incremental) lastIncVal = null;

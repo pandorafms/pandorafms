@@ -453,7 +453,6 @@ function perform_response_massive(response, response_id, out_iterator) {
 // Change the status of an event to new, in process or validated.
 function event_change_status(event_ids) {
   var new_status = $("#estado").val();
-  var event_id = $("#hidden-id_event").val();
   var meta = $("#hidden-meta").val();
   var history = $("#hidden-history").val();
 
@@ -472,7 +471,7 @@ function event_change_status(event_ids) {
     type: "POST",
     url: $("#hidden-ajax_file").val(),
     async: true,
-    dataType: "html",
+    dataType: "json",
     success: function(data) {
       $("#button-status_button").removeAttr("disabled");
       $("#response_loading").hide();
@@ -485,11 +484,20 @@ function event_change_status(event_ids) {
         $("#notification_status_error").hide();
       }
 
-      if (data == "status_ok") {
+      if (data.status == "status_ok") {
         if (typeof dt_events !== "undefined") {
           dt_events.draw(false);
         }
         $("#notification_status_success").show();
+        if (new_status == 1) {
+          $("#extended_event_general_page table td.general_acknowleded").text(
+            data.user
+          );
+        } else {
+          $("#extended_event_general_page table td.general_acknowleded").text(
+            "N/A"
+          );
+        }
       } else {
         $("#notification_status_error").show();
       }
@@ -942,7 +950,6 @@ function execute_event_response(event_list_btn) {
             });
             break;
           case "delete_selected":
-            console.log($(this));
             $(".chk_val:checked").each(function() {
               execute_delete_event_reponse(
                 dt_events,

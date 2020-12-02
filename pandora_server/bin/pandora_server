@@ -771,7 +771,7 @@ sub main() {
 			die("Server thread crashed.") unless (check_server_threads() == 1);
 
 			db_do ($DBH,
-				"UPDATE tserver SET status = 0
+				"UPDATE tserver SET status = -1
 				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
 			);
 

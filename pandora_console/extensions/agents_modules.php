@@ -26,17 +26,6 @@ function agents_modules_load_js()
     $ignored_params['refresh'] = '';
 
     ?>
-    <style type='text/css'>
-        .rotate_text_module {
-            -ms-transform: rotate(270deg);
-            -webkit-transform: rotate(270deg);
-            -moz-transform: rotate(270deg);
-            -o-transform: rotate(270deg);
-            writing-mode: lr-tb;
-            white-space: nowrap;
-        }
-    </style>
-
     <script type='text/javascript'>
         $(document).ready(function () {
             //Get max width of name of modules
@@ -668,7 +657,7 @@ function mainAgentsModules()
         if ($recursion) {
             $filter_groups['id_grupo'] = array_merge(
                 $group_id,
-                groups_get_id_recursive($group_id, true)
+                groups_get_children_ids($group_id, true)
             );
         } else {
             $filter_groups['id_grupo'] = $group_id;

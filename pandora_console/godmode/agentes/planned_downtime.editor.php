@@ -354,8 +354,8 @@ if ($create_downtime || $update_downtime) {
             __('Not created. Error inserting data').'. '.__('The end date must be higher than the current time')
         );
     } else if ($type_execution == 'periodically'
-        && (($type_periodicity == 'weekly' && $periodically_time_from >= $periodically_time_to)
-        || ($type_periodicity == 'monthly' && $periodically_day_from == $periodically_day_to && $periodically_time_from >= $periodically_time_to))
+        && $type_periodicity == 'monthly'
+        && $periodically_day_from == $periodically_day_to
     ) {
         ui_print_error_message(
             __('Not created. Error inserting data').'. '.__('The end time must be higher than the start time')
@@ -877,7 +877,7 @@ if ($id_downtime > 0) {
     $filter_cond = '';
     if ($filter_group > 0) {
         if ($recursion) {
-            $rg = groups_get_id_recursive($filter_group, true);
+            $rg = groups_get_children_ids($filter_group, true);
             $filter_cond .= ' AND id_grupo IN (';
 
             $i = 0;

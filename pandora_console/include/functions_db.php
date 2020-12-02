@@ -702,7 +702,7 @@ function db_get_module_ranges_unknown(
  * @param utimestamp $tend             End of the catch.
  * @param integer    $slice_size       Size of slice(default-> module_interval).
  *
- * @return hash with the data uncompressed in blocks of module_interval
+ * @return array with the data uncompressed in blocks of module_interval
  * false in case of empty result
  *
  * Note: All "unknown" data are marked as NULL

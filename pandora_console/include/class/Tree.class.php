@@ -565,7 +565,6 @@ class Tree
         $module['id_module_type'] = (int) $module['id_tipo_modulo'];
         $module['server_type'] = (int) $module['id_modulo'];
         $module['status'] = $module['estado'];
-        $module['value'] = modules_get_agentmodule_data_for_humans($module);
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
@@ -574,6 +573,8 @@ class Tree
             $module['serverName'] = false;
             $module['serverID'] = false;
         }
+
+        $module['value'] = modules_get_agentmodule_data_for_humans($module);
 
         if (!isset($module['value'])) {
             $module['value'] = modules_get_last_value($module['id']);

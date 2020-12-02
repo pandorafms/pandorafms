@@ -1343,6 +1343,73 @@ function get_priority_name($priority)
 
 
 /**
+ * Translates status into string.
+ *
+ * @param integer $status Agent status.
+ *
+ * @return string Translation.
+ */
+function get_agent_status_string($status)
+{
+    switch ($status) {
+        case AGENT_STATUS_CRITICAL:
+        return __('CRITICAL');
+
+        case AGENT_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_STATUS_ALERT_FIRED:
+        return __('ALERT FIRED');
+
+        case AGENT_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_STATUS_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates status into string.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Translation.
+ */
+function get_module_status_string($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        return __('ALERT FIRED');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        return __('UNKNOWN');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        default:
+        return __('NORMAL');
+    }
+}
+
+
+/**
  * Get priority class (CSS class) from priority value.
  *
  * @param int priority value (integer) as stored eg. in database.
@@ -2222,13 +2289,19 @@ function check_login($output=true)
  * @param integer $id_group     Agents group id to check from
  * @param string  $access       Access privilege
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ * @param boolean $cache        Use cache.
  *
  * @return boolean 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
-{
+function check_acl(
+    $id_user,
+    $id_group,
+    $access,
+    $onlyOneGroup=false,
+    $cache=true
+) {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -2238,7 +2311,15 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
     }
 
     if ($id_group != 0 || $onlyOneGroup === true) {
-        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+        $groups_list_acl = users_get_groups(
+            $id_user,
+            $access,
+            false,
+            true,
+            null,
+            'id_grupo',
+            $cache
+        );
     } else {
         $groups_list_acl = get_users_acl($id_user);
     }
@@ -2263,16 +2344,17 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
 /**
  * Check the ACL of a list of groups.
  *
- * @param string $id_user to check the ACL
- * @param array  $groups. All groups to check
- * @param string $access. Profile to check
+ * @param string  $id_user to check the ACL
+ * @param array   $groups. All groups to check
+ * @param string  $access. Profile to check
+ * @param boolean $cache   Use cached group information.
  *
  * @return boolean True if at least one of this groups check the ACL
  */
-function check_acl_one_of_groups($id_user, $groups, $access)
+function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 {
     foreach ($groups as $group) {
-        if (check_acl($id_user, $group, $access)) {
+        if (check_acl($id_user, $group, $access, false, $cache)) {
             return true;
         }
     }
@@ -3753,7 +3835,16 @@ function series_type_graph_array($data, $show_elements_graph)
                         $name_legend .= __('Unit ').' ';
                         $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        if (isset($show_elements_graph['from_interface']) === true
+                            && (bool) $show_elements_graph['from_interface'] === true
+                        ) {
+                            $label_interfaces = array_flip($show_elements_graph['modules_series']);
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
+                        } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
+                            $name_legend = 'Avg: ';
+                        } else {
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        }
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
@@ -3813,17 +3904,23 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.__('Max:').remove_right_zeros(
                     number_format(
                         $value['max'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '._('Avg:').remove_right_zeros(
                     number_format(
                         $value['avg'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.$str;
 
@@ -3887,7 +3984,8 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator']
                         )
                     ).' '.$str;
                 }
@@ -5820,4 +5918,5 @@ function send_test_email(
     }
 
     return $result;
+
 }

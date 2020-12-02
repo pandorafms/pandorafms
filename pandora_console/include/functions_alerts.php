@@ -2871,17 +2871,8 @@ function alerts_get_agent_modules(
         );
         $agent_modules = db_get_all_rows_sql($sql);
     } else {
-        $groups = groups_get_children($id_grupo, true);
+        $groups = groups_get_children_ids($id_grupo, true);
         if (empty($groups) === false) {
-            $groups = array_reduce(
-                $groups,
-                function ($carry, $item) {
-                    $carry[] = $item['id_grupo'];
-                    return $carry;
-                },
-                [$id_grupo]
-            );
-
             $sql = sprintf(
                 'SELECT distinct(atm.id_agent_module)
                     FROM talert_template_modules atm

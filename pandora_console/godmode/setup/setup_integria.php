@@ -221,6 +221,7 @@ $table_remote->data['integria_user'] = $row;
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('integria_pass', io_output_password($config['integria_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('integria_pass', true);
 $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
@@ -233,6 +234,7 @@ $table_remote->data['integria_hostname'] = $row;
 $row = [];
 $row['name'] = __('API Password');
 $row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('integria_api_pass', true);
 $table_remote->data['integria_api_pass'] = $row;
 
 // Request timeout.

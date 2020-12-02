@@ -763,6 +763,7 @@ if ($config['menu_type'] == 'classic') {
                     page: 'include/ajax/order_interpreter',
                     method: 'getResult',
                     text: $('#keywords').val(),
+                    enterprise: <?php echo (int) enterprise_installed(); ?>,
                 },
                 success: function (data) {
                    $('#result_order').html(data);

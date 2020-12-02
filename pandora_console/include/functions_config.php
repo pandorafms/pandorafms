@@ -852,6 +852,10 @@ function config_update_config()
                     if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
                         $error_update[] = __('Max execution event response');
                     }
+
+                    if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
+                        $error_update[] = __('Row limit in csv log');
+                    }
                 break;
 
                 case 'vis':
@@ -1850,6 +1854,10 @@ function config_process_config()
 
     if (!isset($config['max_macro_fields'])) {
         config_update_value('max_macro_fields', 10);
+    }
+
+    if (!isset($config['row_limit_csv'])) {
+        config_update_value('row_limit_csv', 10000);
     }
 
     if (!isset($config['event_purge'])) {

@@ -342,6 +342,8 @@ class TreeService extends Tree
      */
     protected function getSecondLevel()
     {
+        global $config;
+
         $service = new Service($this->id, true);
 
         $output = [];
@@ -422,7 +424,13 @@ class TreeService extends Tree
                     }
 
                     $tmp['children'] = [];
-                    $tmp['searchChildren'] = 1;
+
+                    if (check_acl($config['id_user'], $item->agent()->id_grupo(), 'AR')) {
+                        $tmp['searchChildren'] = 1;
+                    } else {
+                        $tmp['searchChildren'] = 0;
+                    }
+
                     $tmp['showEventsBtn'] = 1;
                     $tmp['eventAgent'] = $item->agent()->id_agente();
                 break;
@@ -532,7 +540,9 @@ class TreeService extends Tree
                         );
                     }
 
-                    $grandchildren = $item->service()->children();
+                    if (check_acl($config['id_user'], $item->service()->id_group(), 'AR')) {
+                        $grandchildren = $item->service()->children();
+                    }
 
                     if ($this->connectedToNode === false
                         && is_metaconsole() === true

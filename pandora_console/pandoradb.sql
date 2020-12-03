@@ -266,6 +266,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_threshold` int(4) default 0,
 	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
+	`debug_content` varchar(200),
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),

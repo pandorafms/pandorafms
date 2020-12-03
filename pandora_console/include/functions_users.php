@@ -756,6 +756,7 @@ function users_get_groups_UM($id_user)
             foreach ($children as $key => $child_group) {
                 $return[$child_group['id_grupo']] = $group['user_management'];
             }
+
             if ($group['id_grupo'] == '0') {
                 $return['group_all'] = $group['id_grupo'];
             }

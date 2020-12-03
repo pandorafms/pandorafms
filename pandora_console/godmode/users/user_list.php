@@ -587,9 +587,11 @@ foreach ($info as $user_id => $user_info) {
 
             $total_profile++;
         }
+
         if (isset($user_info['not_delete'])) {
-            $data[4] .= __('Other profiles are also assigned.') . ui_print_help_tip(__('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'), true);
+            $data[4] .= __('Other profiles are also assigned.').ui_print_help_tip(__('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'), true);
         }
+
         $data[4] .= '</div>';
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');

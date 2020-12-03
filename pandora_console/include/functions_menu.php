@@ -55,6 +55,11 @@ function menu_print_menu(&$menu)
     } else if ($sec2 == 'godmode/servers/discovery') {
         $wiz = (string) get_parameter('wiz');
         $sec2 = 'godmode/servers/discovery&wiz='.$wiz;
+    } else if ($sec2 == 'godmode/groups/group_list') {
+        $tab = (string) get_parameter('tab');
+        if ($tab === 'credbox') {
+            $sec2 = 'godmode/groups/group_list&tab='.$tab;
+        }
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -147,6 +152,7 @@ function menu_print_menu(&$menu)
         $first_sub_sec2 = '';
 
         foreach ($main['sub'] as $subsec2 => $sub) {
+            // hd($sub, true);
             $count_sub++;
 
             // Init some variables.

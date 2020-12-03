@@ -451,6 +451,18 @@ class CredentialStore extends Wizard
         $start = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
         $order = get_datatable_order(true);
+        if ((bool) users_is_admin() === false) {
+            $all = users_can_manage_group_all('UM');
+
+            $filter['group_list'] = array_keys(
+                users_get_groups(
+                    $config['id_user'],
+                    'UM',
+                    (bool) $all
+                )
+            );
+        }
+
         try {
             ob_start();
 

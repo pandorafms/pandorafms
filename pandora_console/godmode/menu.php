@@ -197,6 +197,11 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $sub['gmassive']['sub2'] = $sub2;
 }
 
+if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'UM')) {
+    $sub['godmode/groups/group_list&tab=credbox']['text'] = __('Credential store');
+    $sub['godmode/groups/group_list&tab=credbox']['id'] = 'credential store';
+}
+
 if (!empty($sub)) {
     $menu_godmode['gmodules']['text'] = __('Configuration');
     $menu_godmode['gmodules']['sec2'] = 'godmode/modules/manage_network_templates';

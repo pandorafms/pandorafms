@@ -26,11 +26,6 @@
   justify-content: center;
 }
 
-/* .agents_modules_table .position_text_module div {
-  padding-left: 10px;
-  margin-top: 90px;
-} */
-
 #full_screen_refresh_box,
 #slc-refresh-rate,
 #img-full-screen {
@@ -67,4 +62,8 @@
 
 .pagination-bottom {
   margin-top: 15px;
+}
+
+.invisible {
+  display: none !important;
 }

@@ -1404,6 +1404,10 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
+    if ($unit === '0') {
+        $unit = '';
+    }
+
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');

@@ -1481,7 +1481,6 @@ function html_print_extended_select_for_unit(
 
     // $fields = post_process_get_custom_values();
     $fields['_timeticks_'] = 'Timeticks';
-    $fields['none'] = __('none');
 
     $default_module_custom_units = get_custom_module_units();
 

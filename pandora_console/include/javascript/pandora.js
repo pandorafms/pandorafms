@@ -724,12 +724,14 @@ function post_process_select_init_unit(name, selected) {
       );
       $("#text-" + name + "_text").val("");
     } else {
-      $("#" + name + "_select option[value=none]").attr("selected", true);
+      $("#" + name + "_select option[value=0]").attr("selected", true);
       $("#" + name + "_default").hide();
       $("#" + name + "_manual").show();
     }
   } else {
-    $("#" + name + "_select option[value=none]").attr("selected", true);
+    $("#" + name + "_select option[value=0]").attr("selected", true);
+    $("#" + name + "_default").hide();
+    $("#" + name + "_manual").show();
   }
 
   $("#" + name + "_select").change(function() {

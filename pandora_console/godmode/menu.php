@@ -240,6 +240,7 @@ if (check_acl($config['id_user'], 0, 'LW')
         enterprise_hook('eventalerts_submenu');
         $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
         $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP alerts';
+        enterprise_hook('alert_inventory_submenu');
     }
 
     $menu_godmode['galertas']['sub'] = $sub;

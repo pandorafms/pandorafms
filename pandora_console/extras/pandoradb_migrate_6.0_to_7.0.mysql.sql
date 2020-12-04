@@ -348,6 +348,27 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `tinventory_alert`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tinventory_alert`(
+    `id` int UNSIGNED NOT NULL auto_increment,
+    `id_module_inventory` int(10) NOT NULL,
+    `actions` text NOT NULL default '',
+	`id_group` mediumint(8) unsigned NULL default 0,
+    `condition` enum('WHITE_LIST', 'BLACK_LIST', 'MATCH') NOT NULL default 'WHITE_LIST',
+    `value` text NOT NULL default '',
+    `name` tinytext NOT NULL default '',
+    `description` text NOT NULL default '',
+    `time_threshold` int(10) NOT NULL default '0',
+    `last_fired` text NOT NULL default '',
+    `disable_event` tinyint(1) UNSIGNED default 0,
+    `enabled` tinyint(1) UNSIGNED default 1,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `ttrap_custom_values`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (

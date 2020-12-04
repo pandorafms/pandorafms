@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.750-201203"
+pandora_version="7.0NG.750-201204"
 
 package_cpan=0
 package_pandora=1

@@ -140,8 +140,11 @@ $text_module = get_parameter(
     $filter['module_search']
 );
 $id_agent_module = get_parameter(
-    'filter[id_agent_module]',
-    $filter['id_agent_module']
+    'id_agent_module',
+    get_parameter(
+        'filter[id_agent_module]',
+        $filter['id_agent_module']
+    )
 );
 $pagination = get_parameter(
     'filter[pagination]',

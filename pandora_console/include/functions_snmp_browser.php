@@ -86,6 +86,7 @@ function snmp_browser_get_html_tree(
     $count = 0;
     $total = (count(array_keys($tree['__LEAVES__'])) - 1);
     $last_array[$depth] = $last;
+    $class = 'item_'.$depth;
 
     if ($depth > 0) {
         $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
@@ -97,7 +98,7 @@ function snmp_browser_get_html_tree(
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.'" style="margin: 0; padding: 0;">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {

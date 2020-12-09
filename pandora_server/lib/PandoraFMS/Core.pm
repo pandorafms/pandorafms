@@ -3360,6 +3360,14 @@ sub pandora_get_credential ($$$) {
 		$pa_config,
 		safe_output($key->{'password'})
 	);
+	$key->{'extra_1'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_1'})
+	);
+	$key->{'extra_2'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_2'})
+	);
 
 	return $key;
 }

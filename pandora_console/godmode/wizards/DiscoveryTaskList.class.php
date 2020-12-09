@@ -1253,6 +1253,17 @@ class DiscoveryTaskList extends HTML
                 ],
             ]
         );
+        if (count($map->nodes) <= 1) {
+            // No nodes detected in current task definition.
+            $task = db_get_row('trecon_task', 'id_rt', $id_task);
+
+            if ((int) $task['type'] === DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE) {
+                ui_print_info_message(
+                    __('Please ensure instances or regions are being monitorized and \'scan and general monitoring\' is enabled.')
+                );
+            }
+        }
+
         $map->printMap();
     }
 

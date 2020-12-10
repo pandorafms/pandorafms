@@ -567,12 +567,12 @@ if ($agents !== false) {
                 $url = ui_get_full_url(
                     $url.'&op=update&id='.$cluster->id()
                 );
-                echo '<a href="'.$url.'">'.$agent['alias'].'</a>';
+                echo '<a href="'.$url.'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</a>';
             }
         } else {
             echo '<a alt ='.$agent['nombre']." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
-			id_agente=".$agent['id_agente']."'>".'<span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.$agent['alias'].'</span>'.'</a>';
+			id_agente=".$agent['id_agente']."'>".'<span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</span>'.'</a>';
         }
 
         echo '</strong>';

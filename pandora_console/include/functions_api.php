@@ -6360,6 +6360,14 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3)
 
     $date_time_stop = get_system_time();
 
+    $sql = sprintf('SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=%d', $id);
+    $data = db_get_row_sql($sql);
+
+    if ($data['type_execution'] == 'periodically' && $data['executed'] == 1) {
+        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running planned downtime cannot be stopped.'));
+        return;
+    }
+
     $values = [];
     $values['date_to'] = $date_time_stop;
 

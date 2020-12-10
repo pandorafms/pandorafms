@@ -34,7 +34,7 @@ use PandoraFMS\Agent;
 use PandoraFMS\ModuleType;
 
 /**
- * PandoraFMS agent entity.
+ * PandoraFMS module entity.
  */
 class Module extends Entity
 {

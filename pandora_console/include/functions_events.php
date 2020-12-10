@@ -3714,6 +3714,14 @@ function events_get_response_target(
 ) {
     global $config;
 
+    include_once $config['homedir'].'/vendor/autoload.php';
+
+    try {
+        $eventObjt = new PandoraFMS\Event($event_id);
+    } catch (Exception $e) {
+        $eventObjt = new PandoraFMS\Event();
+    }
+
     // If server_id > 0, it's a metaconsole query.
     $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
@@ -3911,9 +3919,54 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_event_instruction_') !== false) {
+        // Fallback to module instructions if not defined in event.
+        $instructions = [];
+
+        foreach ([
+            'warning_instructions',
+            'critical_instructions',
+            'unknown_instructions',
+        ] as $i) {
+            $instructions[$i] = $event[$i];
+            if (empty($instructions[$i]) === true
+                && $eventObjt->module() !== null
+            ) {
+                try {
+                    $instructions[$i] = $eventObjt->module()->{$i}();
+                } catch (Exception $e) {
+                    // Method not found.
+                    $instructions[$i] = null;
+                }
+            }
+        }
+
         $target = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $instructions,
+                false
+            ),
+            $target
+        );
+    }
+
+    if (strpos($target, '_data_') !== false
+        && $eventObj->module() !== null
+    ) {
+        $target = str_replace(
+            '_data_',
+            $eventObjt->module()->lastValue(),
+            $target
+        );
+    }
+
+    if (strpos($target, '_moduledescription_') !== false
+        && $eventObj->module() !== null
+    ) {
+        $target = str_replace(
+            '_moduledescription_',
+            io_safe_output($eventObjt->module()->description()),
             $target
         );
     }

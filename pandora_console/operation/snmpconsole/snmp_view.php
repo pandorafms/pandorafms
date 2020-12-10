@@ -616,7 +616,7 @@ $table->data[4][1] = html_print_input(
 );
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other).
-$table->data[6][1] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
+$table->data[4][3] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = [
     -1 => __('None'),
     0  => __('Cold start (0)'),
@@ -626,7 +626,7 @@ $trap_types = [
     4  => __('Authentication failure (4)'),
     5  => __('Other'),
 ];
-$table->data[6][2] = html_print_select(
+$table->data[4][4] = html_print_select(
     $trap_types,
     'trap_type',
     $trap_type,

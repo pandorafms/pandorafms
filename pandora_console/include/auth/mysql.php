@@ -68,27 +68,33 @@ $config['admin_can_make_admin'] = true;
 
 
 /**
- * process_user_login accepts $login and $pass and handles it according to current authentication scheme
+ * Process_user_login accepts $login and $pass and handles it according to
+ * current authentication scheme.
  *
- * @param string  $login
- * @param string  $pass
- * @param boolean $api
+ * @param string  $login Login.
+ * @param string  $pass  Pass.
+ * @param boolean $api   Api.
  *
- * @return mixed False in case of error or invalid credentials, the username in case it's correct.
+ * @return mixed False in case of error or invalid credentials, the username in
+ * case it's correct.
  */
 function process_user_login($login, $pass, $api=false)
 {
-    global $config, $mysql_cache;
+    global $config;
 
     // 1. Try remote.
-    $login_remote = process_user_login_remote(
-        $login,
-        io_safe_output($pass),
-        $api
-    );
+    if (strtolower($config['auth']) != 'mysql') {
+        $login_remote = process_user_login_remote(
+            $login,
+            io_safe_output($pass),
+            $api
+        );
+    } else {
+        $login_remote = false;
+    }
 
     // 2. Try local.
-    if ($login_remote == false
+    if ($login_remote === false
         && ($config['fallback_local_auth'] || is_user_admin($login))
     ) {
         return process_user_login_local($login, $pass, $api);

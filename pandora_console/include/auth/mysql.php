@@ -80,16 +80,20 @@ function process_user_login($login, $pass, $api=false)
 {
     global $config, $mysql_cache;
 
-    // Always authenticate admins against the local database
-    if (strtolower($config['auth']) == 'mysql' || is_user_admin($login)) {
+    // 1. Try remote.
+    $login_remote = process_user_login_remote(
+        $login,
+        io_safe_output($pass),
+        $api
+    );
+
+    // 2. Try local.
+    if ($login_remote == false
+        && ($config['fallback_local_auth'] || is_user_admin($login))
+    ) {
         return process_user_login_local($login, $pass, $api);
     } else {
-        $login_remote = process_user_login_remote($login, io_safe_output($pass), $api);
-        if ($login_remote == false && $config['fallback_local_auth']) {
-            return process_user_login_local($login, $pass, $api);
-        } else {
-            return $login_remote;
-        }
+        return $login_remote;
     }
 
     return false;

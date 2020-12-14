@@ -3800,3 +3800,51 @@ function agents_get_last_status_change($id_agent)
 
     return $row['last_status_change'];
 }
+
+
+/**
+ * Return the list of agents for a planned downtime
+ *
+ * @param integer $id_downtime   Id of planned downtime.
+ * @param string  $filter_cond   String-based filters.
+ * @param string  $id_groups_str String-based list of id group, separated with commas.
+ *
+ * @return array
+ */
+function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str)
+{
+    $agents = [];
+
+    $sql = sprintf(
+        'SELECT tagente.id_agente, tagente.alias
+                    FROM tagente
+                    WHERE tagente.id_agente NOT IN (
+                            SELECT tagente.id_agente
+                            FROM tagente, tplanned_downtime_agents
+                            WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+                                AND tplanned_downtime_agents.id_downtime = %d
+                        ) AND disabled = 0 %s
+                        AND tagente.id_grupo IN (%s)
+                    ORDER BY tagente.nombre',
+        $id_downtime,
+        $filter_cond,
+        $id_groups_str
+    );
+
+    $agents = db_get_all_rows_sql($sql);
+
+    if (empty($agents)) {
+        $agents = [];
+    }
+
+    $agent_ids = extract_column($agents, 'id_agente');
+    $agent_names = extract_column($agents, 'alias');
+
+    $agents = array_combine($agent_ids, $agent_names);
+
+    if ($agents === false) {
+        $agents = [];
+    }
+
+    return $agents;
+}

@@ -1482,7 +1482,7 @@ $row++;
         '.' => '.',
         ',' => ',',
     ];
-    $table_other->data[$row][0] = __('CSV decimal separator').ui_print_help_tip(__('Only for csv reports'), true);
+    $table_other->data[$row][0] = __('CSV decimal separator');
     $table_other->data[$row][1] = html_print_select($decimal_separator, 'csv_decimal_separator', $config['csv_decimal_separator'], '', '', '', true, false, false);
 
     $row++;

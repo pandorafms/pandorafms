@@ -179,7 +179,7 @@ sub data_consumer ($$) {
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
-			my $macros = JSON->new->allow_nonref->decode(encode_utf8($module->{'macros'}));
+			my $macros = p_decode_json($pa_config, encode_utf8($module->{'macros'}));
 			my %macros = %{$macros};
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
@@ -206,6 +206,9 @@ sub data_consumer ($$) {
 			}
 		}
 	};
+	if( $@ ) {
+		logger($pa_config, "Error reading macros from module # $module_id. Error: $@", 10);
+	}
 	
 	# Get group info
  	my $group = undef;
@@ -259,6 +262,9 @@ sub data_consumer ($$) {
 	my $module_data;
 	eval {
 		$module_data = `$command`;
+		if ($? < 0) {
+			logger($pa_config, "Error executing command from module # $module_id. Probably out of memory.", 10);
+		}
 	};
 
 	# Empty ? or handle it as 'utf8' string

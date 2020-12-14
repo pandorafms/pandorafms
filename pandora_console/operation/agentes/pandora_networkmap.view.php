@@ -53,6 +53,32 @@ if (is_ajax()) {
     $module_get_status = (bool) get_parameter('module_get_status', false);
     $update_node_alert = (bool) get_parameter('update_node_alert', false);
     $process_migration = (bool) get_parameter('process_migration', false);
+    $get_agent_info = (bool) get_parameter('get_agent_info', false);
+    $update_node = (bool) get_parameter('update_node', false);
+
+    if ($update_node) {
+        $node_json = io_safe_output(get_parameter('node', ''));
+        $node = json_decode($node_json, true);
+        echo json_encode($node);
+
+        return;
+    }
+
+    if ($get_agent_info) {
+        $id_agent = (int) get_parameter('id_agent');
+
+        $return = [];
+        $return['alias'] = agents_get_alias($id_agent);
+        $return['adressess'] = agents_get_addresses($id_agent);
+        $id_group = agents_get_agent_group($id_agent);
+        $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
+        $id_os = agents_get_os($id_agent);
+        $return['os'] = ui_print_os_icon($id_os, true, true);
+
+        echo json_encode($return);
+
+        return;
+    }
 
     if ($module_get_status) {
         $id = (int) get_parameter('id', 0);

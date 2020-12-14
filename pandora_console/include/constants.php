@@ -457,6 +457,9 @@ define('REPORT_OLD_TYPE_SUMATORY', 10);
 define('REPORT_GENERAL_NOT_GROUP_BY_AGENT', 0);
 define('REPORT_GENERAL_GROUP_BY_AGENT', 1);
 
+define('REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP', 0);
+define('REPORT_PERMISSIONS_GROUP_BY_GROUP', 1);
+
 define('REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE', 15);
 
 // POLICIES.
@@ -619,7 +622,8 @@ define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
 define('DISCOVERY_APP_DB2', 11);
-
+define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
+define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);
@@ -638,6 +642,7 @@ define('DISCOVERY_SCRIPT_IPMI_RECON', 4);
 // Discovery task descriptions.
 define('CLOUDWIZARD_AZURE_DESCRIPTION', 'Discovery.Cloud.Azure.Compute');
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+define('CLOUDWIZARD_GOOGLE_DESCRIPTION', 'Discovery.Cloud.GCP');
 define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 
 // Background options.

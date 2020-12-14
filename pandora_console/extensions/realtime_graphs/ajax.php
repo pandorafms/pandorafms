@@ -69,15 +69,34 @@ switch ($graph) {
 
     case 'snmp_interface':
     case 'snmp_module':
-        $snmp_address = $_POST['snmp_address'];
-        $snmp_community = $_POST['snmp_community'];
-        $snmp_ver = $_POST['snmp_ver'];
-        $snmp_oid = $_POST['snmp_oid'];
+        $snmp_address = get_parameter('snmp_address', '');
+        $snmp_community = get_parameter('snmp_community', '');
+        $snmp_ver = get_parameter('snmp_ver', '');
+        $snmp_oid = get_parameter('snmp_oid', '');
+        $snmp3_auth_user = get_parameter('snmp3_auth_user', '');
+        $snmp3_security_level = get_parameter('snmp3_security_level', '');
+        $snmp3_auth_method = get_parameter('snmp3_auth_method', '');
+        $snmp3_auth_pass = get_parameter('snmp3_auth_pass', '');
+        $snmp3_privacy_method = get_parameter('snmp3_privacy_method', '');
+        $snmp3_privacy_pass = get_parameter('snmp3_privacy_pass', '');
 
         if (empty($snmp_address) || empty($snmp_oid)) {
             $data = 0;
         } else {
-            $data = get_snmpwalk($snmp_address, $snmp_ver, $snmp_community, '', '', '', '', '', '', 0, $snmp_oid);
+            $data = get_snmpwalk(
+                $snmp_address,
+                $snmp_ver,
+                $snmp_community,
+                $snmp3_auth_user,
+                $snmp3_security_level,
+                $snmp3_auth_method,
+                $snmp3_auth_pass,
+                $snmp3_privacy_method,
+                $snmp3_privacy_pass,
+                0,
+                $snmp_oid,
+                $snmp_port
+            );
             $data_index = array_keys($data);
             $graph_title = $data_index[0];
             if (!empty($data)) {

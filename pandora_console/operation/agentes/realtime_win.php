@@ -1,18 +1,31 @@
 <?php
+/**
+ * View charts.
+ *
+ * @category   View charts Realtime.
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Don't start a session before this import.
-// The session is configured and started inside the config process.
 require_once '../../include/config.php';
 require_once $config['homedir'].'/include/auth/mysql.php';
 require_once $config['homedir'].'/include/functions.php';
@@ -25,16 +38,18 @@ require_once $config['homedir'].'/include/functions_tags.php';
 require_once $config['homedir'].'/include/functions_extensions.php';
 check_login();
 
-// Metaconsole connection to the node
+// Metaconsole connection to the node.
 $server_id = (int) get_parameter('server');
 if (is_metaconsole() && !empty($server_id)) {
     $server = metaconsole_get_connection_by_id($server_id);
 
-    // Error connecting
+    // Error connecting.
     if (metaconsole_connect($server) !== NOERR) {
         echo '<html>';
             echo '<body>';
-                ui_print_error_message(__('There was a problem connecting with the node'));
+                ui_print_error_message(
+                    __('There was a problem connecting with the node')
+                );
             echo '</body>';
         echo '</html>';
         exit;
@@ -43,7 +58,9 @@ if (is_metaconsole() && !empty($server_id)) {
 
 $user_language = get_user_language($config['id_user']);
 if (file_exists('../../include/languages/'.$user_language.'.mo')) {
-    $l10n = new gettext_reader(new CachedFileReader('../../include/languages/'.$user_language.'.mo'));
+    $l10n = new gettext_reader(
+        new CachedFileReader('../../include/languages/'.$user_language.'.mo')
+    );
     $l10n->load_tables();
 }
 
@@ -53,7 +70,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <?php
-        // Parsing the refresh before sending any header
+        // Parsing the refresh before sending any header.
         $refresh = (int) get_parameter('refresh', -1);
         if ($refresh > 0) {
             $query = ui_get_url_refresh(false);
@@ -70,7 +87,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
         <?php
-        // Include the javascript for the js charts library
+        // Include the javascript for the js charts library.
             require_once $config['homedir'].'/include/graphs/functions_flot.php';
             include_javascript_dependencies_flot_graph();
         ?>

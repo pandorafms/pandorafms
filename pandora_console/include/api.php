@@ -56,8 +56,6 @@ $user = get_parameter('user', '');
 $info = get_parameter('info', '');
 
 $other = parseOtherParameter($otherSerialize, $otherMode);
-
-$other = parseOtherParameter($otherSerialize, $otherMode);
 $apiPassword = io_output_password(
     db_get_value_filter(
         'value',

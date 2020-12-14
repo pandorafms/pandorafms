@@ -385,6 +385,8 @@ class CredentialStore extends Wizard
             // Decrypt content.
             $key['username'] = io_output_password($key['username']);
             $key['password'] = io_output_password($key['password']);
+            $key['extra_1'] = io_output_password($key['extra_1']);
+            $key['extra_2'] = io_output_password($key['extra_2']);
 
             return $key;
         }
@@ -425,6 +427,8 @@ class CredentialStore extends Wizard
                 function ($carry, $item) {
                     $item['username'] = io_output_password($item['username']);
                     $item['password'] = io_output_password($item['password']);
+                    $item['extra_1'] = io_output_password($item['extra_1']);
+                    $item['extra_2'] = io_output_password($item['extra_2']);
                     $carry[$item['identifier']] = $item['identifier'];
                     return $carry;
                 }
@@ -451,6 +455,18 @@ class CredentialStore extends Wizard
         $start = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
         $order = get_datatable_order(true);
+        if ((bool) users_is_admin() === false) {
+            $all = users_can_manage_group_all('UM');
+
+            $filter['group_list'] = array_keys(
+                users_get_groups(
+                    $config['id_user'],
+                    'UM',
+                    (bool) $all
+                )
+            );
+        }
+
         try {
             ob_start();
 
@@ -561,13 +577,28 @@ class CredentialStore extends Wizard
         $extra_1 = get_parameter('extra_1', null);
         $extra_2 = get_parameter('extra_2', null);
 
-        if (empty($identifier)) {
+        if ($product === 'GOOGLE') {
+            $google_creds = json_decode(io_safe_output($extra_1));
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->ajaxMsg(
+                    'error',
+                    __('Not a valid JSON: %s', json_last_error_msg())
+                );
+                exit;
+            }
+
+            $username = $google_creds->client_email;
+            $password = $google_creds->private_key_id;
+        }
+
+        if (empty($identifier) === true) {
             $error = __('Key identifier is required');
         } else if ($id_group === null) {
             $error = __('You must select a group where store this key!');
-        } else if (empty($product)) {
+        } else if (empty($product) === true) {
             $error = __('You must specify a product type');
-        } else if (empty($username) && (empty($password))) {
+        } else if (empty($username) === true && (empty($password) === true)) {
             $error = __('You must specify a username and/or password');
         }
 
@@ -581,10 +612,10 @@ class CredentialStore extends Wizard
             'identifier' => $identifier,
             'id_group'   => $id_group,
             'product'    => $product,
-            'username'   => io_input_password($username),
-            'password'   => io_input_password($password),
-            'extra_1'    => $extra_1,
-            'extra_2'    => $extra_2,
+            'username'   => io_input_password(io_safe_output($username)),
+            'password'   => io_input_password(io_safe_output($password)),
+            'extra_1'    => io_input_password(io_safe_output($extra_1)),
+            'extra_2'    => io_input_password(io_safe_output($extra_2)),
         ];
 
         // Spaces  are not allowed.
@@ -875,7 +906,7 @@ class CredentialStore extends Wizard
                     'AWS'    => __('Aws'),
                     'AZURE'  => __('Azure'),
                     'SAP'    => __('SAP'),
-                // 'GOOGLE' => __('Google'),
+                    'GOOGLE' => __('Google'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
                 'disabled'    => (bool) $values['product'],
@@ -887,6 +918,9 @@ class CredentialStore extends Wizard
         $pass_label = __('Password');
         $extra_1_label = __('Extra');
         $extra_2_label = __('Extra (2)');
+        $extra1_type = 'text';
+        $user = true;
+        $pass = true;
         $extra1 = true;
         $extra2 = true;
 
@@ -907,7 +941,14 @@ class CredentialStore extends Wizard
             break;
 
             case 'GOOGLE':
-                // Need further investigation.
+                $extra_1_label = __('Auth JSON');
+                $user = false;
+                $pass = false;
+                $extra1 = true;
+                $extra2 = false;
+                $extra1_type = 'textarea';
+            break;
+
             case 'CUSTOM':
             case 'SAP':
                 $user_label = __('Account ID');
@@ -919,29 +960,33 @@ class CredentialStore extends Wizard
             break;
         }
 
-        $inputs[] = [
-            'label'     => $user_label,
-            'id'        => 'div-username',
-            'arguments' => [
-                'name'        => 'username',
-                'input_class' => 'flex-row',
-                'type'        => 'text',
-                'value'       => $values['username'],
-                'return'      => true,
-            ],
-        ];
+        if ($user) {
+            $inputs[] = [
+                'label'     => $user_label,
+                'id'        => 'div-username',
+                'arguments' => [
+                    'name'        => 'username',
+                    'input_class' => 'flex-row',
+                    'type'        => 'text',
+                    'value'       => $values['username'],
+                    'return'      => true,
+                ],
+            ];
+        }
 
-        $inputs[] = [
-            'label'     => $pass_label,
-            'id'        => 'div-password',
-            'arguments' => [
-                'name'        => 'password',
-                'input_class' => 'flex-row',
-                'type'        => 'password',
-                'value'       => $values['password'],
-                'return'      => true,
-            ],
-        ];
+        if ($pass) {
+            $inputs[] = [
+                'label'     => $pass_label,
+                'id'        => 'div-password',
+                'arguments' => [
+                    'name'        => 'password',
+                    'input_class' => 'flex-row',
+                    'type'        => 'password',
+                    'value'       => $values['password'],
+                    'return'      => true,
+                ],
+            ];
+        }
 
         if ($extra1) {
             $inputs[] = [
@@ -949,8 +994,9 @@ class CredentialStore extends Wizard
                 'id'        => 'div-extra_1',
                 'arguments' => [
                     'name'        => 'extra_1',
+                    'id'          => 'text-extra_1',
                     'input_class' => 'flex-row',
-                    'type'        => 'text',
+                    'type'        => $extra1_type,
                     'value'       => $values['extra_1'],
                     'return'      => true,
                 ],
@@ -1031,14 +1077,30 @@ class CredentialStore extends Wizard
          * Handles inputs visibility based on selected product.
          */
         function calculate_inputs() {
+            if ($('#product :selected').val() != "GOOGLE") {
+                // Restore text-extra_1.
+                var val = $('#text-extra_1').val();
+                if(typeof val == 'undefined') {
+                    val = '';
+                }
+                $('#text-extra_1').remove();
+                $('#div-extra_1').append(
+                    $('<input type="text" name="extra_1" id="text-extra_1" size="50" value="'+val+'"></input>')
+                );
+            }
+
             if ($('#product :selected').val() == "CUSTOM") {
                 $('#div-username label').text('<?php echo __('User'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
             } else if ($('#product :selected').val() == "AWS") {
                 $('#div-username label').text('<?php echo __('Access key ID'); ?>');
                 $('#div-password label').text('<?php echo __('Secret access key'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
             } else if ($('#product :selected').val() == "AZURE") {
@@ -1046,13 +1108,32 @@ class CredentialStore extends Wizard
                 $('#div-password label').text('<?php echo __('Application secret'); ?>');
                 $('#div-extra_1 label').text('<?php echo __('Tenant or domain name'); ?>');
                 $('#div-extra_2 label').text('<?php echo __('Subscription id'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').show();
                 $('#div-extra_2').show();
             } else if ($('#product :selected').val() == "SAP") {
                 $('#div-username label').text('<?php echo __('Account ID.'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
+            } else if ($('#product :selected').val() == "GOOGLE") {
+                $('#div-username').hide();
+                $('#div-password').hide();
+                $('#div-extra_2').hide();
+                $('#div-extra_1 label').text('<?php echo __('Auth JSON'); ?>');
+                var val = $('#text-extra_1').val();
+                if(typeof val == 'undefined') {
+                    val = '';
+                }
+
+                $('#text-extra_1').remove();
+                $('#div-extra_1').append(
+                    $('<textarea name="extra_1" id="text-extra_1">'+val+'</textarea>')
+                );
+                $('#div-extra_1').show();
             }
         }
 

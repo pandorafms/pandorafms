@@ -5617,7 +5617,8 @@ function ui_print_module_string_value(
     $value,
     $id_agente_module,
     $current_interval,
-    $module_name=null
+    $module_name=null,
+    $server_id=0
 ) {
     global $config;
 
@@ -5662,6 +5663,7 @@ function ui_print_module_string_value(
                 'last_data'   => $value,
                 'interval'    => $current_interval,
                 'module_name' => $module_name,
+                'id_node'     => $server_id ? $server_id : 0,
             ]
         );
         $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
@@ -5769,7 +5771,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
+    $page = ui_get_full_url('operation/agentes/snapshot_view.php', false, false, false);
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 
@@ -6131,6 +6133,105 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
             echo '</div>';
         echo '</div>';
     echo '</div>';
+}
+
+
+/**
+ * Build a Query-Result editor structure
+ *
+ * @param string $name Name of the structure
+ *
+ * @return null
+ */
+function ui_query_result_editor($name='default')
+{
+    $editorSubContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_title',
+            'content' => '<p>'.__('Query').'</p>',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_editor',
+            'class' => 'query_result_editor',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons edit-button',
+            'content' => html_print_submit_button(
+                __('Execute query'),
+                'execute_query',
+                false,
+                'class="sub next"',
+                true
+            ),
+        ],
+        true
+    );
+
+    $editorContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_container',
+            'class'   => 'query_result_editor_container',
+            'content' => $editorSubContainer,
+        ],
+        true
+    );
+
+    $viewSubContainer = html_print_div(
+        [
+            'id'      => $name.'_view_title',
+            'content' => '<p>'.__('Results').'</p>',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_view',
+            'class' => 'query_result_view',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => '',
+        ],
+        true
+    );
+
+    $viewContainer = html_print_div(
+        [
+            'id'      => $name.'_view_container',
+            'class'   => 'query_result_view_container',
+            'content' => $viewSubContainer,
+        ],
+        true
+    );
+
+    html_print_div(
+        [
+            'id'      => 'query_result_container',
+            'class'   => 'databox',
+            'content' => $editorContainer.$viewContainer,
+        ]
+    );
+    // This is needed for Javascript
+    html_print_div(
+        [
+            'id'      => 'pandora_full_url',
+            'hidden'  => true,
+            'content' => ui_get_full_url(false, false, false, false),
+        ]
+    );
 }
 
 

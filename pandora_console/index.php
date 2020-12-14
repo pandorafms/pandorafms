@@ -390,6 +390,7 @@ if (! isset($config['id_user'])) {
         }
 
         $login_button_saml = get_parameter('login_button_saml', false);
+        config_update_value('2Fa_auth', '');
         if (isset($double_auth_success) && $double_auth_success) {
             // This values are true cause there are checked before complete
             // the 2nd auth step.
@@ -718,6 +719,8 @@ if (! isset($config['id_user'])) {
 
             $redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
         }
+
+        $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
@@ -1271,6 +1274,7 @@ echo '</div>';
 
 // Connection lost alert.
 ui_require_javascript_file('connection_check');
+set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');

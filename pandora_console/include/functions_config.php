@@ -721,6 +721,10 @@ function config_update_config()
                         $error_update[] = __('Double authentication');
                     }
 
+                    if (!config_update_value('2FA_all_users', get_parameter('2FA_all_users'))) {
+                        $error_update[] = __('2FA all users');
+                    }
+
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
                     }
@@ -847,6 +851,10 @@ function config_update_config()
 
                     if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
                         $error_update[] = __('Max execution event response');
+                    }
+
+                    if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
+                        $error_update[] = __('Row limit in csv log');
                     }
                 break;
 
@@ -1848,6 +1856,10 @@ function config_process_config()
         config_update_value('max_macro_fields', 10);
     }
 
+    if (!isset($config['row_limit_csv'])) {
+        config_update_value('row_limit_csv', 10000);
+    }
+
     if (!isset($config['event_purge'])) {
         config_update_value('event_purge', 15);
     }
@@ -2006,6 +2018,10 @@ function config_process_config()
 
     if (!isset($config['welcome_state'])) {
         config_update_value('welcome_state', WELCOME_STARTED);
+    }
+
+    if (!isset($config['2Fa_auth'])) {
+        config_update_value('2Fa_auth', '');
     }
 
      /*

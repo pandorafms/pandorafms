@@ -266,6 +266,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_threshold` int(4) default 0,
 	`parent_module_id` int(10) unsigned NOT NULL default 0,
 	`cps` int NOT NULL default 0,
+	`debug_content` varchar(200),
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -308,6 +309,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`al_field13` text NOT NULL,
 	`al_field14` text NOT NULL,
 	`al_field15` text NOT NULL,
+	`al_field16` text NOT NULL,
+	`al_field17` text NOT NULL,
+	`al_field18` text NOT NULL,
+	`al_field19` text NOT NULL,
+	`al_field20` text NOT NULL,
 	`description` varchar(255) default '',
 	`alert_type` int(2) unsigned NOT NULL default '0',
 	`agent` varchar(100) default '',
@@ -2619,6 +2625,27 @@ CREATE TABLE IF NOT EXISTS `tagent_module_inventory` (
 	FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tinventory_alert`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tinventory_alert`(
+    `id` int UNSIGNED NOT NULL auto_increment,
+    `id_module_inventory` int(10) NOT NULL,
+    `actions` text NOT NULL default '',
+	`id_group` mediumint(8) unsigned NULL default 0,
+    `condition` enum('WHITE_LIST', 'BLACK_LIST', 'MATCH') NOT NULL default 'WHITE_LIST',
+    `value` text NOT NULL default '',
+    `name` tinytext NOT NULL default '',
+    `description` text NOT NULL default '',
+    `time_threshold` int(10) NOT NULL default '0',
+    `last_fired` text NOT NULL default '',
+    `disable_event` tinyint(1) UNSIGNED default 0,
+    `enabled` tinyint(1) UNSIGNED default 1,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_modules_inventory`

@@ -13766,12 +13766,19 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
-    $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
-    // 1 hour by default.
-    $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
+    if (is_array($other['data']) === true) {
+        $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+        // 1 hour by default.
+        $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
-    // Graph height when send email by alert
-    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+        // Graph height when send email by alert
+        $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+    } else {
+        $graph_seconds = $other['data'];
+        $graph_threshold = 0;
+        $other['data'][1] = 0;
+        $height = 225;
+    }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));

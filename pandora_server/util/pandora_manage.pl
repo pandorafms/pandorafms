@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.750 PS201127";
+my $version = "7.0NG.751 PS201214";
 
 # save program name for logging
 my $progname = basename($0);
@@ -5754,16 +5754,22 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
-	$result = db_do ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
+
+	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 
 	if($result == "0E0"){
 		print_log "[ERROR] Group '$group_id' doesn`t exist \n\n";
 	}else{
 		if(defined($group_name)){
 			if(defined($parent_group_name)){
-				my $parent_group_id = get_group_id($dbh,$parent_group_name);
-				exist_check($parent_group_id, 'group name', $parent_group_name);
 
+				my $parent_group_id = 0;
+
+				if($parent_group_name ne 'All') {
+						$parent_group_id = get_group_id($dbh,$parent_group_name);
+						exist_check($parent_group_id, 'group name', $parent_group_name);				
+				} 
+					
 				if(defined($icon)){
 					if(defined($description)){
 						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? , description=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$description,$group_id);

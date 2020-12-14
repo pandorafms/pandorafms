@@ -1427,9 +1427,9 @@ class HostDevices extends Wizard
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
             $available_keys = CredentialStore::getKeys('CUSTOM');
-            if (check_acl($config['id_user'], 0, 'PM')) {
+            if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
-                    'index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox'
+                    'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
                 ).'" >';
                 $link_to_cs .= __('No credentials available').', ';
                 $link_to_cs .= strtolower(__('Manage credentials')).'</a>';

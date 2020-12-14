@@ -87,6 +87,10 @@ BEGIN {
 		}
 		return 0;
 	}
+
+	################################################################################
+	# initialize plugin (advanced - hashed configuration)
+	################################################################################
 	sub init {
 		my $options = shift;
 		my $conf;
@@ -129,6 +133,51 @@ BEGIN {
 	}
 
 	################################################################################
+	# initialize plugin (basic)
+	################################################################################
+	sub init_system {
+		my ($conf) = @_;
+
+		my %system;
+
+		if ($^O =~ /win/i ){
+			$system{devnull} = "NUL";
+			$system{cat}     = "type";
+			$system{os}      = "Windows";
+			$system{ps}      = "tasklist";
+			$system{grep}    = "findstr";
+			$system{echo}    = "echo";
+			$system{wcl}     = "wc -l";
+			$system{tmp}     = ".\\";
+			$system{cmdsep}  = "\&";
+		}
+		else {
+			$system{devnull} = "/dev/null";
+			$system{cat}     = "cat";
+			$system{os}      = "Linux";
+			$system{ps}      = "ps -eo pmem,pcpu,comm";
+			$system{grep}    = "grep";
+			$system{echo}    = "echo";
+			$system{wcl}     = "wc -l";
+			$system{tmp}     = "/tmp";
+			$system{cmdsep}  = ";";
+
+			if ($^O =~ /hpux/i) {
+				$system{os}      = "HPUX";
+				$system{ps}      = "ps -eo pmem,pcpu,comm";
+			}
+
+			if ($^O =~ /solaris/i ) {
+				$system{os}      = "solaris";
+				$system{ps}      = "ps -eo pmem,pcpu,comm";
+			}
+		}
+
+		$conf->{'__system'} = \%system;
+		return $conf;
+	}
+
+	################################################################################
 	## Reads a file and returns entire content or undef if error.
 	################################################################################
 	sub read_file {
@@ -148,6 +197,45 @@ BEGIN {
 		close($_FILE);
 
 		return $content;
+	}
+
+	################################################################################
+	# Mix hashses
+	################################################################################
+	sub merge_hashes {
+		my $_h1 = shift;
+		my $_h2 = shift;
+
+		if (ref($_h1) ne "HASH") {
+			return \%{$_h2} if (ref($_h2) eq "HASH");
+		}
+
+		if (ref($_h2) ne "HASH") {
+			return \%{$_h1} if (ref($_h1) eq "HASH");
+		}
+
+		if ((ref($_h1) ne "HASH") && (ref($_h2) ne "HASH")) {
+			return {};
+		}
+
+		my %ret = (%{$_h1}, %{$_h2});
+
+		return \%ret;
+	}
+
+	################################################################################
+	# is Enabled 
+	################################################################################
+	sub is_enabled {
+		my $value = shift;
+		
+		if ((defined ($value)) && looks_like_number($value) && ($value > 0)){
+			# return true
+			return 1;
+		}
+		#return false
+		return 0;
+
 	}
 
 	################################################################################

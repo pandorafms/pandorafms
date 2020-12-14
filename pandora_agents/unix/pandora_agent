@@ -23,7 +23,7 @@ Version 6.0
 =pod
  This section is copied from PandoraFMS::Omnishell. Do not develop anything here
  Go to Omnishell.pm to apply all fixes you need, and then copy entire library 
- here to allow pandora_agent run from this single file.
+ here to allow pandora_agent run from this single
 
 =cut
 BEGIN {
@@ -40,7 +40,178 @@ BEGIN {
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
 	use lib '/usr/lib/perl5';
-	use PandoraFMS::PluginTools qw/init read_configuration read_file empty trim/;
+
+	################################################################################
+	# Erase blank spaces before and after the string
+	################################################################################
+	sub trim {
+		my $string = shift;
+		if (empty($string)){
+			return "";
+		}
+
+		$string =~ s/\r//g;
+
+		chomp($string);
+		$string =~ s/^\s+//g;
+		$string =~ s/\s+$//g;
+
+		return $string;
+	}
+
+	################################################################################
+	# Empty
+	################################################################################
+	sub empty {
+		my $str = shift;
+
+		if (!(defined($str)) ){
+			return 1;
+		}
+
+		if(looks_like_number($str)){
+			return 0;
+		}
+
+		if (ref($str) eq "ARRAY") {
+			return (($#{$str}<0)?1:0);
+		}
+
+		if (ref($str) eq "HASH") {
+			my @tmp = keys %{$str};
+			return (($#tmp<0)?1:0);
+		}
+
+		if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+			return 1;
+		}
+		return 0;
+	}
+	sub init {
+		my $options = shift;
+		my $conf;
+
+		eval {
+			$conf = init_system($options);
+
+			if (defined($options->{lwp_enable})) {
+				if (empty($options->{lwp_timeout})) {
+					$options->{lwp_timeout} = 3;
+				}
+
+				$conf->{'__system'}->{ua} = LWP::UserAgent->new((keep_alive => "10"));
+				$conf->{'__system'}->{ua}->timeout($options->{lwp_timeout});
+				# Enable environmental proxy settings
+				$conf->{'__system'}->{ua}->env_proxy;
+				# Enable in-memory cookie management
+				$conf->{'__system'}->{ua}->cookie_jar( {} );
+				if ( defined($options->{ssl_verify}) && ( ($options->{ssl_verify} eq "no") || (!is_enabled($options->{ssl_verify})) ) ) {
+					# Disable verify host certificate (only needed for self-signed cert)
+					$conf->{'__system'}->{ua}->ssl_opts( 'verify_hostname' => 0 );
+					$conf->{'__system'}->{ua}->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+					# Disable library extra checks 
+					BEGIN {
+						$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
+						$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
+					}
+				}
+			}
+		};
+		if($@) {
+			# Failed
+			return {
+				error => $@
+			};
+		}
+
+		return $conf;
+	}
+
+	################################################################################
+	## Reads a file and returns entire content or undef if error.
+	################################################################################
+	sub read_file {
+		my $path = shift;
+
+		my $_FILE;
+		if( !open($_FILE, "<", $path) ) {
+
+			# failed to open, return undef
+			return undef;
+		}
+
+		# Slurp configuration file content.
+		my $content = do { local $/; <$_FILE> };
+
+		# Close file
+		close($_FILE);
+
+		return $content;
+	}
+
+	################################################################################
+	# Parses any configuration, from file (1st arg to program) or direct arguments 
+	#
+	# Custom evals are defined in an array reference of hash references:
+	# 
+	#   $custom_eval = [
+	#   	{
+	#   		'exp'    => 'regular expression to match',
+	#   		'target' => \&target_custom_method_to_parse_line
+	#   	},
+	#   	{
+	#   		'exp'    => 'another regular expression to search',
+	#   		'target' => \&target_custom_method_to_parse_line2
+	#   	},
+	#   ]
+	#
+	# Target is an user defined function wich will be invoked with following
+	# arguments:
+	# 
+	#  $config          : The configuration read to the point the regex matches
+	#  $exp             : The matching regex which fires this action
+	#  $line            : The complete line readed from the file
+	#  $file_pointer    : A pointer to the file which is being parsed.
+	#  $current_entity  : The current_entity (optional) when regex matches
+	#  
+	#  E.g.
+	#  
+	#  sub target_custom_method_to_parse_line {
+	#  	my ($config, $exp, $line, $file_pointer, $current_entity) = @_;
+	#  	
+	#  	if ($line =~ /$exp/) {
+	#  		$config->{'my_key'} = complex_operation_on_data($1,$2,$3);
+	#  	}
+	#  	
+	#  	return $config;
+	#  }
+	#
+	################################################################################
+	sub read_configuration {
+		my ($config, $separator, $custom_eval) = @_;
+
+		if ((!empty(@ARGV)) && (-f $ARGV[0])) {
+				$config = merge_hashes($config, parse_configuration(shift @ARGV, $separator, $custom_eval));
+		}
+		$config = merge_hashes($config, parse_arguments(\@ARGV));
+
+		if(is_enabled($config->{'as_agent_plugin'})) {
+			$config->{'as_server_plugin'} = 0 if (empty($config->{'as_server_plugin'}));
+		}
+		else {
+			$config->{'as_server_plugin'} = 1 if (empty($config->{'as_server_plugin'}));
+		}
+
+		if(is_enabled($config->{'as_server_plugin'})) {
+			$config->{'as_agent_plugin'} = 0 if (empty($config->{'as_agent_plugin'}));
+		}
+		else {
+			$config->{'as_agent_plugin'} = 1 if (empty($config->{'as_agent_plugin'}));
+		}
+
+		return $config;
+	}
 
 	my $YAML = 0;
 	# Dynamic load. Avoid unwanted behaviour.

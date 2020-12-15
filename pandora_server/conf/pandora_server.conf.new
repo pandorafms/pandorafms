@@ -668,10 +668,6 @@ syslog_max 65535
 # Address
 # sync_address
 
-# Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
-#logstash_host ip
-#logstash_port 10514
-
 # Pandora FMS Database HA Tool execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30
 

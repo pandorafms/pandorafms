@@ -257,7 +257,7 @@ RUN dnf install -y  --setopt=tsflags=nodocs \
         net-snmp-utils \
         sudo \
         http://firefly.artica.es/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
-        http://www6.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/wmi-1.3.14-4.el7.art.x86_64.rpm 
+        http://firefly.artica.es/centos8/wmi-1.3.14-4.el7.art.x86_64.rpm 
 
 # install utils
 RUN dnf install -y supervisor crontabs http://firefly.artica.es/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm --setopt=tsflags=nodocs

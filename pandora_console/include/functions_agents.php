@@ -2429,7 +2429,6 @@ function agents_delete_agent($id_agents, $disableACL=false)
             );
 
             foreach ($commands as $command) {
-                hd($command, true);
                 $rcmd_id = $command['rcmd_id'];
                 $rcmd = new RCMDFile($rcmd_id);
 

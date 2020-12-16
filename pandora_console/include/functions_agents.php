@@ -21,6 +21,8 @@ require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
+use PandoraFMS\Enterprise\RCMDFile as RCMDFile;
+
 
 /**
  * Return the agent if exists in the DB.
@@ -2410,10 +2412,32 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        // Delete agent in networkmap enterprise
         if (enterprise_installed()) {
+            // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
+
+            // Delete command targets with agent.
+            enterprise_include_once('include/lib/RCMDFile.class.php');
+
+            $target_filter = ['id_agent' => $id_agent];
+
+            // Retrieve all commands that have targets with specific agent id.
+            $commands = RCMDFile::getAll(
+                ['rct.rcmd_id'],
+                $target_filter
+            );
+
+            foreach ($commands as $command) {
+                hd($command, true);
+                $rcmd_id = $command['rcmd_id'];
+                $rcmd = new RCMDFile($rcmd_id);
+
+                $command_targets = [];
+
+                $command_targets = $rcmd->getTargets(false, $target_filter);
+                $rcmd->deleteTargets(array_keys($command_targets));
+            }
         }
 
         // tagente_datos_inc

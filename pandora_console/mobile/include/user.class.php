@@ -86,34 +86,41 @@ class User
     {
         $system = System::getInstance();
 
-        if ((bool) $system->getRequest('saml', false) === true) {
-            if ($system->getConfig('auth', 'mysql') !== 'saml') {
-                // Ignore.
-                return false;
-            } else {
+        if ($system->getConfig('auth', 'mysql') === 'saml') {
+            if ((bool) $system->getRequest('saml', false) === true) {
                 \enterprise_include_once('include/auth/saml.php');
                 $saml_user_id = enterprise_hook('saml_process_user_login');
                 if (!$saml_user_id) {
                     $this->logged = false;
+                    $this->errorLogin = $system->getConfig('auth_error');
+                    \enterprise_hook('saml_logout', [true]);
                 } else {
                     $this->logged = true;
                     $this->user = $saml_user_id;
                     $this->loginTime = time();
                     $this->errorLogin = false;
                 }
-
-                $this->saveLogin();
-                return $this->logged;
             }
-        } else if ($system->getConfig('auth', 'mysql') === 'saml') {
+
             // Maybe back from SAML login.
             $saml_session = $system->getSession('samlid', null);
             if ($saml_session !== null) {
                 $this->user = $system->getSession('id_usuario', null);
-                $this->loginTime = time();
-                $this->errorLogin = false;
-                $this->logged = true;
+                if ($this->user !== null) {
+                    $this->loginTime = time();
+                    $this->errorLogin = false;
+                    $this->logged = true;
+                } else {
+                    // SAML Session OK but not in DB.
+                    $this->logged = false;
+                    $this->errorLogin = __(
+                        'User cannot log in into this console, please contact administrator'
+                    );
+                }
             }
+
+            $this->saveLogin();
+            return $this->logged;
         }
 
         if (($user == null) && ($password == null)) {
@@ -265,7 +272,12 @@ class User
         if ($this->errorLogin) {
             $options['type'] = 'onStart';
             $options['title_text'] = __('Login Failed');
-            $options['content_text'] = __('User not found in database or incorrect password.');
+            if ($this->errorLogin !== false) {
+                $options['content_text'] = $this->errorLogin;
+            } else {
+                $options['content_text'] = __('User not found in database or incorrect password.');
+            }
+
             $ui->addDialog($options);
         }
 

@@ -100,6 +100,9 @@ class User
                     $this->loginTime = time();
                     $this->errorLogin = false;
                 }
+
+                $this->saveLogin();
+                return $this->logged;
             }
 
             // Maybe back from SAML login.
@@ -117,10 +120,10 @@ class User
                         'User cannot log in into this console, please contact administrator'
                     );
                 }
-            }
 
-            $this->saveLogin();
-            return $this->logged;
+                $this->saveLogin();
+                return $this->logged;
+            }
         }
 
         if (($user == null) && ($password == null)) {

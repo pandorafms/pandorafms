@@ -86,6 +86,36 @@ class User
     {
         $system = System::getInstance();
 
+        if ((bool) $system->getRequest('saml', false) === true) {
+            if ($system->getConfig('auth', 'mysql') !== 'saml') {
+                // Ignore.
+                return false;
+            } else {
+                \enterprise_include_once('include/auth/saml.php');
+                $saml_user_id = enterprise_hook('saml_process_user_login');
+                if (!$saml_user_id) {
+                    $this->logged = false;
+                } else {
+                    $this->logged = true;
+                    $this->user = $saml_user_id;
+                    $this->loginTime = time();
+                    $this->errorLogin = false;
+                }
+
+                $this->saveLogin();
+                return $this->logged;
+            }
+        } else if ($system->getConfig('auth', 'mysql') === 'saml') {
+            // Maybe back from SAML login.
+            $saml_session = $system->getSession('samlid', null);
+            if ($saml_session !== null) {
+                $this->user = $system->getSession('id_usuario', null);
+                $this->loginTime = time();
+                $this->errorLogin = false;
+                $this->logged = true;
+            }
+        }
+
         if (($user == null) && ($password == null)) {
             $user = $system->getRequest('user', null);
             $password = $system->getRequest('password', null);
@@ -205,6 +235,12 @@ class User
 
     public function logout()
     {
+        $system = System::getInstance();
+        if ($system->getConfig('auth', 'mysql') === 'saml') {
+            \enterprise_include_once('include/auth/saml.php');
+            \enterprise_hook('saml_logout');
+        }
+
         $this->user = null;
         $this->logged = false;
         $this->loginTime = false;
@@ -213,7 +249,6 @@ class User
         $this->needDoubleAuth = false;
         $this->errorDoubleAuth = false;
 
-        $system = System::getInstance();
         $system->setSession('user', null);
         $system->sessionDestroy();
     }
@@ -286,7 +321,29 @@ class User
             'name'     => 'login_btn',
         ];
         $ui->formAddSubmitButton($options);
+
         $ui->endForm();
+
+        if ($system->getConfig('auth', 'mysql') === 'saml') {
+            // Add SAML login button.
+            $ui->beginForm('');
+            $ui->formAddHtml(
+                html_print_input_hidden('action', 'login', true)
+            );
+            $ui->formAddHtml(
+                html_print_input_hidden('saml', '1', true)
+            );
+            $ui->formAddSubmitButton(
+                [
+                    'value'    => __('Login with SAML'),
+                    'icon'     => 'arrow-r',
+                    'icon_pos' => 'right',
+                    'name'     => 'login_button_saml',
+                ]
+            );
+            $ui->endForm('');
+        }
+
         $ui->contentAddHtml('</div>');
         $ui->endContent();
         $ui->showPage();

@@ -59,6 +59,12 @@ class Home
             'menu_item' => true,
             'icon'      => 'groups',
         ];
+        $items['console'] = [
+            'name'      => __('Visual consoles'),
+            'filename'  => 'vconsole.php',
+            'menu_item' => true,
+            'icon'      => 'consoles',
+        ];
 
         if (!$system->getConfig('metaconsole')) {
             $items['alerts'] = [
@@ -74,6 +80,7 @@ class Home
                 'menu_item' => true,
                 'icon'      => 'agents',
             ];
+
             $items['modules'] = [
                 'name'      => __('Modules'),
                 'filename'  => 'modules.php',

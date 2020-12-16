@@ -32,5 +32,4 @@ global $config;
 require_once $config['homedir'].'/include/functions.php';
 
 // Require needed class.
-// require_once $config['homedir'].'/include/class/NetTools.class.php';
-hd('MIS HUEVOS EN VINAGRETA');
+require_once $config['homedir'].'/include/class/NetTools.class.php';

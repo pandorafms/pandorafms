@@ -44,7 +44,7 @@ class NetTools extends HTML
      */
     public function __construct()
     {
-
+        echo 'Estoy funcionando';
     }
 
 
@@ -130,17 +130,24 @@ class NetTools extends HTML
         $table->data[4][0] = __('Snmpget path');
         $table->data[4][1] = html_print_input_text('snmpget_path', $snmpget_path, '', 40, 255, true);
 
-        echo '<form id="form_setup" method="post" >';
-        echo '<fieldset>';
-        echo '<legend>'.__('Options').'</legend>';
-        html_print_input_hidden('update_traceroute', 1);
-        html_print_table($table);
-        echo '</fieldset>';
+        $form = '<form id="form_setup" method="post" >';
+        $form .= '<fieldset>';
+        $form .= '<legend>'.__('Options').'</legend>';
+        $form .= html_print_input_hidden('update_traceroute', 1, true);
+        $form .= html_print_table($table);
+        $form .= '</fieldset>';
+        $form .= html_print_div(
+            [
+                'id'      => '',
+                'class'   => 'action-buttons',
+                'style'   => 'width: 100%',
+                'content' => html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"'),
+            ]
+        );
 
-        echo '<div class="action-buttons" style="width: '.$table->width.'">';
-        html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"');
-        echo '</div>';
-        echo '</form>';
+        $form .= '</form>';
+
+        echo $form;
     }
 
 

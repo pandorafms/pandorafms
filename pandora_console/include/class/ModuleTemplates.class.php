@@ -309,14 +309,19 @@ class ModuleTemplates extends HTML
 
             switch ($this->action) {
                 case 'update':
-                    $dbResult_tnp = db_process_sql_update(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ],
-                        ['id_np' => $this->id_np]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_update(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ],
+                            ['id_np' => $this->id_np]
+                        );
+                    }
+
                     if ($dbResult_tnp === false) {
                         $success = false;
                     } else {
@@ -352,13 +357,18 @@ class ModuleTemplates extends HTML
                 break;
 
                 case 'create':
-                    $dbResult_tnp = db_process_sql_insert(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_insert(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ]
+                        );
+                    }
+
                     // The insert gone fine!
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.

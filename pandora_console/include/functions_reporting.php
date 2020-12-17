@@ -3007,25 +3007,94 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
-
     $return['type'] = 'group_report';
 
     if (empty($content['name'])) {
         $content['name'] = __('Group Report');
     }
 
-    if (is_metaconsole()) {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true) {
+        if (isset($content['server_name']) === true
+            && empty($content['server_name']) === false
+        ) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server = metaconsole_get_connection_by_id($id_meta);
+            metaconsole_connect($server);
+
+            $data = reporting_groups_nodes($content);
+
+            if (is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $servers = metaconsole_get_connection_names();
+            if (isset($servers) === true && is_array($servers) === true) {
+                $group_stats = [
+                    'monitor_checks'            => 0,
+                    'monitor_not_init'          => 0,
+                    'monitor_unknown'           => 0,
+                    'monitor_ok'                => 0,
+                    'monitor_bad'               => 0,
+                    'monitor_warning'           => 0,
+                    'monitor_critical'          => 0,
+                    'monitor_not_normal'        => 0,
+                    'monitor_alerts'            => 0,
+                    'monitor_alerts_fired'      => 0,
+                    'monitor_alerts_fire_count' => 0,
+                    'total_agents'              => 0,
+                    'total_alerts'              => 0,
+                    'total_checks'              => 0,
+                    'alerts'                    => 0,
+                    'agents_unknown'            => 0,
+                    'monitor_health'            => 0,
+                    'alert_level'               => 0,
+                    'module_sanity'             => 0,
+                    'server_sanity'             => 0,
+                    'total_not_init'            => 0,
+                    'monitor_non_init'          => 0,
+                    'agent_ok'                  => 0,
+                    'agent_warning'             => 0,
+                    'agent_critical'            => 0,
+                    'agent_unknown'             => 0,
+                    'agent_not_init'            => 0,
+                    'global_health'             => 0,
+                    'alert_fired'               => 0,
+                ];
+
+                $count_events = 0;
+
+                foreach ($servers as $k_server => $v_server) {
+                    $id_meta = metaconsole_get_id_server($v_server);
+                    $server = metaconsole_get_connection_by_id($id_meta);
+                    metaconsole_connect($server);
+
+                    $data_node = reporting_groups_nodes($content);
+                    $count_events += $data_node['count_events'];
+                    foreach ($data_node['group_stats'] as $key => $value) {
+                        $group_stats[$key] += $value;
+                    }
+
+                    if (is_metaconsole() === true) {
+                        metaconsole_restore_db();
+                    }
+                }
+
+                $data = [
+                    'count_events' => $count_events,
+                    'group_stats'  => $group_stats,
+                ];
+            }
+        }
+    } else {
+        $data = reporting_groups_nodes($content);
     }
 
     $items_label = [
         'agent_group' => groups_get_name($content['id_group'], true),
     ];
 
-     // Apply macros
-     $title = (isset($content['name'])) ? $content['name'] : '';
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
@@ -3033,7 +3102,7 @@ function reporting_group_report($report, $content)
         );
     }
 
-    $return['server_name'] = $server[0];
+    $return['server_name'] = $content['server_name'];
     $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
@@ -3043,17 +3112,42 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+    $return['data']['count_events'] = $data['count_events'];
+
+    $return['data']['group_stats'] = $data['group_stats'];
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Return stats groups for node.
+ *
+ * @param array $content Info report.
+ *
+ * @return array Result.
+ */
+function reporting_groups_nodes($content)
+{
+    global $config;
+    $id_group = groups_safe_acl(
+        $config['id_user'],
+        $content['id_group'],
+        'ER'
+    );
 
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(' WHERE id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $sql_where = sprintf(
+            ' WHERE id_grupo IN (%s) AND estado<>1 ',
+            implode(',', $id_group)
+        );
         $events = events_get_events_grouped(
             $sql_where,
             0,
             1000,
-            is_metaconsole()
+            false
         );
     }
 
@@ -3061,19 +3155,15 @@ function reporting_group_report($report, $content)
         $events = [];
     }
 
-    $return['data']['count_events'] = count($events);
+    $return['count_events'] = count($events);
 
-    $return['data']['group_stats'] = reporting_get_group_stats(
+    $return['group_stats'] = reporting_get_group_stats(
         $content['id_group'],
         'AR',
         (bool) $content['recursion']
     );
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
-    return reporting_check_structure_content($return);
+    return $return;
 }
 
 

@@ -1351,6 +1351,13 @@ if ($is_sap) {
     $saptab = '';
 }
 
+// Network Tools tab.
+$nettools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=nettools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('Network Tools')]).'</a>';
+if ($tab == 'nettools') {
+    $nettools['active'] = true;
+} else {
+    $nettools['active'] = false;
+}
 
 $onheader = [
     'manage'             => $managetab,
@@ -1366,7 +1373,7 @@ $onheader = [
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
     'sap_view'           => $saptab,
-
+    'nettools'           => $nettools,
 ];
 
 // Added after it exists
@@ -1536,6 +1543,10 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
+    case 'nettools':
+        $tab_name = 'Net Tools';
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
@@ -1654,6 +1665,10 @@ switch ($tab) {
 
     case 'sap_view':
         include 'general/sap_view.php';
+    break;
+
+    case 'nettools':
+        include 'net_tools.php';
     break;
 
     case 'extension':

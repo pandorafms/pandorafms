@@ -1,10 +1,10 @@
 <?php
 /**
- * Network Tools Setup Tab.
+ * Network Tools view for agents.
  *
- * @category   Operations
+ * @category   Network tools for agents.
  * @package    Pandora FMS
- * @subpackage Opensource
+ * @subpackage Classic agent management view.
  * @version    1.0.0
  * @license    See below
  *
@@ -28,8 +28,8 @@
 
 // Begin.
 global $config;
-// Requires.
-require_once $config['homedir'].'/include/functions.php';
+
+require_once 'include/functions_agents.php';
 
 // Require needed class.
 require_once $config['homedir'].'/include/class/NetTools.class.php';
@@ -37,7 +37,7 @@ require_once $config['homedir'].'/include/class/NetTools.class.php';
 // Control call flow for debug window.
 try {
     // User access and validation is being processed on class constructor.
-    $obj = new NetTools('setup');
+    $obj = new NetTools('agent');
 } catch (Exception $e) {
     echo '[NetTools]'.$e->getMessage();
 

@@ -610,17 +610,67 @@ class ModuleTemplates extends HTML
             }
         } else if ($modulesToAdd != '') {
             $modulesToAddList = explode(',', $modulesToAdd);
+
+            $modulesAddedList = db_get_all_rows_in_table('tnetwork_profile_component');
+
+            $modulesToAdd = [];
+
             foreach ($modulesToAddList as $module) {
-                db_process_sql_insert(
-                    'tnetwork_profile_component',
-                    [
-                        'id_nc' => $module,
-                        'id_np' => $this->id_np,
-                    ]
-                );
+                $is_added = false;
+                foreach ($modulesAddedList as $item) {
+                    if ($item['id_nc'] === $module
+                        && $item['id_np'] === $this->id_np
+                    ) {
+                            $is_added = true;
+                    }
+                }
+
+                if ($is_added === false) {
+                    $name = io_safe_output(
+                        db_get_row_filter(
+                            'tnetwork_component',
+                            ['id_nc' => $module],
+                            'name'
+                        )
+                    );
+                    $modulesToAdd[] = $name;
+                    db_process_sql_insert(
+                        'tnetwork_profile_component',
+                        [
+                            'id_nc' => $module,
+                            'id_np' => $this->id_np,
+                        ]
+                    );
+                } else {
+                    $message = 'Some modules already exists<br>';
+                }
             }
 
-            $this->ajaxMsg('result', __('Components added sucessfully'));
+            if (empty($modulesToAdd)) {
+                $this->ajaxMsg(
+                    'error',
+                    __('The modules is already added')
+                );
+                return false;
+            }
+
+            if ($message === '') {
+                $message = 'Following modules will be added:';
+            } else {
+                $message .= 'Following modules will be added:';
+            }
+
+            $message .= '<ul>';
+            foreach ($modulesToAdd as $key => $value) {
+                $message .= '<li>'.$value['name'].'</li>';
+            }
+
+            $message .= '</ul>';
+
+            $this->ajaxMsg(
+                'result',
+                __($message)
+            );
         }
     }
 

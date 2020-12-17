@@ -40,7 +40,7 @@ class NetTools extends HTML
 
 
     /**
-     * Undocumented function
+     * Constructor.
      *
      * @param string $origin Origin of the request.
      */
@@ -64,15 +64,11 @@ class NetTools extends HTML
             }
 
             // Capture needed parameter for agent form.
-            $this->operation = get_parameter('operation', 0);
-            $this->community = get_parameter('community', 'public');
-            $this->ip = get_parameter('select_ips');
-            $this->snmp_version = get_parameter('select_version');
-
-            // Show form.
-            $this->id_agente = get_parameter('id_agente', 0);
-
-            // Capture needed parameters for agent executions.
+            $this->id_agente    = (int) get_parameter('id_agente', 0);
+            $this->operation    = (int) get_parameter('operation', 0);
+            $this->community    = (string) get_parameter('community', 'public');
+            $this->ip           = (string) get_parameter('select_ips');
+            $this->snmp_version = (string) get_parameter('select_version');
         } else if ($this->origin === 'setup') {
             if (check_acl($config['id_user'], 0, 'PM') === false) {
                 db_pandora_audit(
@@ -99,7 +95,7 @@ class NetTools extends HTML
 
 
     /**
-     * Undocumented function
+     * Run action.
      *
      * @return void
      */
@@ -133,7 +129,10 @@ class NetTools extends HTML
             $network_tools_config['dig_path']        = $this->pathDig;
             $network_tools_config['snmpget_path']    = $this->pathSnmpget;
 
-            $result = config_update_value('network_tools_config', json_encode($network_tools_config));
+            $result = config_update_value(
+                'network_tools_config',
+                json_encode($network_tools_config)
+            );
 
             ui_print_result_message(
                 $result,
@@ -259,11 +258,11 @@ class NetTools extends HTML
 
         $table->data[0][1] = html_print_select(
             [
-                1 => __('Traceroute'),
-                2 => __('Ping host & Latency'),
-                3 => __('SNMP Interface status'),
-                4 => __('Basic TCP Port Scan'),
-                5 => __('DiG/Whois Lookup'),
+                COMMAND_TRACEROUTE => __('Traceroute'),
+                COMMAND_PING       => __('Ping host & Latency'),
+                COMMAND_SNMP       => __('SNMP Interface status'),
+                COMMAND_NMAP       => __('Basic TCP Port Scan'),
+                COMMAND_DIGWHOIS   => __('DiG/Whois Lookup'),
             ],
             'operation',
             $this->operation,
@@ -316,7 +315,7 @@ class NetTools extends HTML
 
         // Output string.
         $output = '';
-        $output .= "<form name='actionbox' method='post'>";
+        $output .= '<form name="actionbox" method="post">';
         $output .= html_print_table($table, true);
         $output .= '</form>';
 
@@ -328,14 +327,10 @@ class NetTools extends HTML
             ]
         );
 
-        if ($this->operation === true) {
+        if ($this->operation !== 0) {
             // Execute form.
-            $executionResult = $this->netToolsExecution($this->operation, $this->ip, $this->community, $this->snmp_version);
-            echo $executionResult;
+            echo $this->netToolsExecution($this->operation, $this->ip, $this->community, $this->snmp_version);
         }
-
-        echo '</div>';
-
     }
 
 
@@ -346,45 +341,45 @@ class NetTools extends HTML
      *
      * @return string Path.
      */
-    private function whereIsTheCommand($command)
+    private function whereIsTheCommand(string $command)
     {
         global $config;
 
         if (isset($config['network_tools_config'])) {
-            $network_tools_config = json_decode($config['network_tools_config'], true);
+            $network_tools_config = json_decode(io_safe_output($config['network_tools_config']), true);
             $traceroute_path = $network_tools_config['traceroute_path'];
-            $ping_path = $network_tools_config['ping_path'];
-            $nmap_path = $network_tools_config['nmap_path'];
-            $dig_path = $network_tools_config['dig_path'];
-            $snmpget_path = $network_tools_config['snmpget_path'];
+            $ping_path       = $network_tools_config['ping_path'];
+            $nmap_path       = $network_tools_config['nmap_path'];
+            $dig_path        = $network_tools_config['dig_path'];
+            $snmpget_path    = $network_tools_config['snmpget_path'];
 
             switch ($command) {
                 case 'traceroute':
-                    if (!empty($traceroute_path)) {
+                    if (empty($traceroute_path) === false) {
                         return $traceroute_path;
                     }
                 break;
 
                 case 'ping':
-                    if (!empty($ping_path)) {
+                    if (empty($ping_path) === false) {
                         return $ping_path;
                     }
                 break;
 
                 case 'nmap':
-                    if (!empty($nmap_path)) {
+                    if (empty($nmap_path) === false) {
                         return $nmap_path;
                     }
                 break;
 
                 case 'dig':
-                    if (!empty($dig_path)) {
+                    if (empty($dig_path) === false) {
                         return $dig_path;
                     }
                 break;
 
                 case 'snmpget':
-                    if (!empty($snmpget_path)) {
+                    if (empty($snmpget_path) === false) {
                         return $snmpget_path;
                     }
                 break;
@@ -416,6 +411,44 @@ class NetTools extends HTML
 
 
     /**
+     * Create the output for show.
+     *
+     * @param string $command Command for execute.
+     * @param string $caption Description of the execution.
+     *
+     * @return void
+     */
+    private function performExecution(string $command='', string $caption='')
+    {
+        $output = '';
+
+        try {
+            // If caption is not added, don't show anything.
+            if (empty($caption) === false) {
+                $output .= sprintf('<h3>%s</h3>', $caption);
+            }
+
+            $output .= '<pre>';
+
+            // Only perform an execution if command is passed. Avoid errors.
+            if (empty($command) === false) {
+                ob_start();
+                system($command);
+                $output .= ob_get_clean();
+            } else {
+                $output .= __('No command for perform');
+            }
+
+            $output .= '</pre>';
+        } catch (\Throwable $th) {
+            $output = __('Something went wrong while perform the execution. Please check the configuration.');
+        }
+
+        echo $output;
+    }
+
+
+    /**
      * Execute net tools action.
      *
      * @param integer $operation    Operation.
@@ -429,146 +462,145 @@ class NetTools extends HTML
     {
         $output = '';
 
-        if (!validate_address($ip)) {
+        if (validate_address($ip) === false) {
             $output .= ui_print_error_message(
                 __('The ip or dns name entered cannot be resolved'),
                 '',
                 true
             );
         } else {
-            switch ($operation) {
-                case 1:
-                    $traceroute = $this->whereIsTheCommand('traceroute');
-                    if (empty($traceroute)) {
-                        ui_print_error_message(__('Traceroute executable does not exist.'));
-                    } else {
-                        echo '<h3>'.__('Traceroute to ').$ip.'</h3>';
-                        echo '<pre>';
-                        echo system($traceroute.' '.$ip);
-                        echo '</pre>';
-                    }
-                break;
+            if ($operation === COMMAND_SNMP) {
+                $snmp_obj = [
+                    'ip_target'      => $ip,
+                    'snmp_version'   => $snmp_version,
+                    'snmp_community' => $community,
+                    'format'         => '-Oqn',
+                ];
 
-                case 2:
-                    $ping = $this->whereIsTheCommand('ping');
-                    if (empty($ping)) {
-                        ui_print_error_message(__('Ping executable does not exist.'));
-                    } else {
-                        echo '<h3>'.__('Ping to %s', $ip).'</h3>';
-                        echo '<pre>';
-                        echo system($ping.' -c 5 '.$ip);
-                        echo '</pre>';
-                    }
-                break;
+                echo '<h3>'.__('SNMP information for ').$ip.'</h3>';
 
-                case 4:
-                    $nmap = $this->whereIsTheCommand('nmap');
-                    if (empty($nmap)) {
-                        ui_print_error_message(__('Nmap executable does not exist.'));
-                    } else {
-                        echo '<h3>'.__('Basic TCP Scan on ').$ip.'</h3>';
-                        echo '<pre>';
-                        echo system($nmap.' -F '.$ip);
-                        echo '</pre>';
-                    }
-                break;
-
-                case 5:
-                    echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
-
-                    $dig = $this->whereIsTheCommand('dig');
-                    if (empty($dig)) {
-                        ui_print_error_message(__('Dig executable does not exist.'));
-                    } else {
-                        echo '<pre>';
-                        echo system('dig '.$ip);
-                        echo '</pre>';
-                    }
-
-                    $whois = $this->whereIsTheCommand('whois');
-                    if (empty($whois)) {
-                        ui_print_error_message(__('Whois executable does not exist.'));
-                    } else {
-                        echo '<pre>';
-                        echo system('whois '.$ip);
-                        echo '</pre>';
-                    }
-                break;
-
-                case 3:
-                    $snmp_obj = [
-                        'ip_target'      => $ip,
-                        'snmp_version'   => $snmp_version,
-                        'snmp_community' => $community,
-                        'format'         => '-Oqn',
-                    ];
-
-                    $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.3.0';
-                    $result = get_h_snmpwalk($snmp_obj);
-                    echo '<h3>'.__('SNMP information for ').$ip.'</h3>';
+                $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.3.0';
+                $result = get_h_snmpwalk($snmp_obj);
+                if (empty($result) === true) {
+                    ui_print_error_message(__('Target unreachable.'));
+                    return null;
+                } else {
                     echo '<h4>'.__('Uptime').'</h4>';
                     echo '<pre>';
-                    if (empty($result)) {
-                        ui_print_error_message(__('Target unreachable.'));
-                        break;
-                    } else {
-                        echo array_pop($result);
-                    }
-
+                    echo array_pop($result);
                     echo '</pre>';
+                }
+
+                $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.1.0';
+                $result = get_h_snmpwalk($snmp_obj);
+                if (empty($result) === true) {
+                    ui_print_error_message(__('Target unreachable.'));
+                    return null;
+                } else {
                     echo '<h4>'.__('Device info').'</h4>';
                     echo '<pre>';
-                    $snmp_obj['base_oid'] = '.1.3.6.1.2.1.1.1.0';
-                    $result = get_h_snmpwalk($snmp_obj);
-                    if (empty($result)) {
-                        ui_print_error_message(__('Target unreachable.'));
-                        break;
-                    } else {
-                        echo array_pop($result);
-                    }
-
+                    echo array_pop($result);
                     echo '</pre>';
+                }
 
-                    echo '<h4>Interface Information</h4>';
+                echo '<h4>Interface Information</h4>';
 
-                    $table = new StdClass();
-                    $table->class = 'databox';
-                    $table->head = [];
-                    $table->head[] = __('Interface');
-                    $table->head[] = __('Status');
+                $table = new StdClass();
+                $table->class = 'databox';
+                $table->head = [];
+                $table->head[] = __('Interface');
+                $table->head[] = __('Status');
 
-                    $i = 0;
+                $i = 0;
 
-                    $base_oid = '.1.3.6.1.2.1.2.2.1';
-                    $idx_oids = '.1';
-                    $names_oids = '.2';
-                    $status_oids = '.8';
+                $base_oid = '.1.3.6.1.2.1.2.2.1';
+                $idx_oids = '.1';
+                $names_oids = '.2';
+                $status_oids = '.8';
 
-                    $snmp_obj['base_oid'] = $base_oid.$idx_oids;
-                    $idx = get_h_snmpwalk($snmp_obj);
+                $snmp_obj['base_oid'] = $base_oid.$idx_oids;
+                $idx = get_h_snmpwalk($snmp_obj);
 
-                    $snmp_obj['base_oid'] = $base_oid.$names_oids;
-                    $names = get_h_snmpwalk($snmp_obj);
+                $snmp_obj['base_oid'] = $base_oid.$names_oids;
+                $names = get_h_snmpwalk($snmp_obj);
 
-                    $snmp_obj['base_oid'] = $base_oid.$status_oids;
-                    $statuses = get_h_snmpwalk($snmp_obj);
+                $snmp_obj['base_oid'] = $base_oid.$status_oids;
+                $statuses = get_h_snmpwalk($snmp_obj);
 
-                    foreach ($idx as $k => $v) {
-                        $index = str_replace($base_oid.$idx_oids, '', $k);
-                        $name = $names[$base_oid.$names_oids.$index];
+                foreach ($idx as $k => $v) {
+                    $index = str_replace($base_oid.$idx_oids, '', $k);
+                    $name = $names[$base_oid.$names_oids.$index];
 
-                        $status = $statuses[$base_oid.$status_oids.$index];
+                    $status = $statuses[$base_oid.$status_oids.$index];
 
-                        $table->data[$i][0] = $name;
-                        $table->data[$i++][1] = $status;
-                    }
+                    $table->data[$i][0] = $name;
+                    $table->data[$i++][1] = $status;
+                }
 
-                    html_print_table($table);
-                break;
+                html_print_table($table);
+            } else if ($operation === COMMAND_DIGWHOIS) {
+                echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
 
-                default:
-                    // Ignore.
-                break;
+                // Dig execution.
+                $dig = $this->whereIsTheCommand('dig');
+                if (empty($dig) === true) {
+                    ui_print_error_message(__('Dig executable does not exist.'));
+                } else {
+                    $this->performExecution($dig);
+                }
+
+                // Whois execution.
+                $whois = $this->whereIsTheCommand('whois');
+                if (empty($whois) === true) {
+                    ui_print_error_message(__('Whois executable does not exist.'));
+                } else {
+                    $this->performExecution($whois);
+                }
+
+                return;
+            } else {
+                switch ($operation) {
+                    case COMMAND_TRACEROUTE:
+                        $command = $this->whereIsTheCommand('traceroute');
+                        if (empty($command) === true) {
+                            ui_print_error_message(__('Traceroute executable does not exist.'));
+                            return;
+                        } else {
+                            $stringCommand = __('Traceroute to %s', $ip);
+                            $executeCommand = sprintf('%s %s', $command, $ip);
+                        }
+                    break;
+
+                    case COMMAND_PING:
+                        $command = $this->whereIsTheCommand('ping');
+                        if (empty($command) === true) {
+                            ui_print_error_message(__('Ping executable does not exist.'));
+                            return;
+                        } else {
+                            $stringCommand = __('Ping to %s', $ip);
+                            $executeCommand = sprintf('%s -c 5 %s', $command, $ip);
+                        }
+                    break;
+
+                    case COMMAND_NMAP:
+                        $command = $this->whereIsTheCommand('nmap');
+                        if (empty($command) === true) {
+                            ui_print_error_message(__('Nmap executable does not exist.'));
+                            return;
+                        } else {
+                            $stringCommand = __('Basic TCP Scan on %s', $ip);
+                            $executeCommand = sprintf('%s -F %s', $command, $ip);
+                        }
+                    break;
+
+                    default:
+                        // Nothing to do.
+                        $stringCommand = '';
+                        $executeCommand = '';
+                    break;
+                }
+
+                $this->performExecution($executeCommand, $stringCommand);
             }
         }
 

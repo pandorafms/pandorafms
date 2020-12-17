@@ -147,7 +147,7 @@ $buttons['websocket_engine'] = [
 
 $buttons['nettools'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=nettools').'">'.html_print_image('images/nettool.png', true, ['title' => __('Websocket engine')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=nettools').'">'.html_print_image('images/nettool.png', true, ['title' => __('Network Tools')]).'</a>',
 ];
 
 if ($config['activate_gis']) {

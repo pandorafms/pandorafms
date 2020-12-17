@@ -121,6 +121,8 @@ class NetTools extends HTML
      */
     private function setupNetToolsForm()
     {
+        global $config;
+
         if ($this->updatePaths === true) {
             $network_tools_config = [];
             $network_tools_config['traceroute_path'] = $this->pathTraceroute;
@@ -140,7 +142,7 @@ class NetTools extends HTML
                 __('Set the paths.')
             );
         } else {
-            if (isset($config['network_tools_config'])) {
+            if (isset($config['network_tools_config']) === true) {
                 $network_tools_config_output = io_safe_output($config['network_tools_config']);
                 $network_tools_config = json_decode($network_tools_config_output, true);
                 // Setting paths.
@@ -345,7 +347,7 @@ class NetTools extends HTML
     {
         global $config;
 
-        if (isset($config['network_tools_config'])) {
+        if (isset($config['network_tools_config']) === true) {
             $network_tools_config = json_decode(io_safe_output($config['network_tools_config']), true);
             $traceroute_path = $network_tools_config['traceroute_path'];
             $ping_path       = $network_tools_config['ping_path'];
@@ -395,14 +397,14 @@ class NetTools extends HTML
         $result = explode(':', $output);
         $result = trim($result[1]);
 
-        if (empty($result)) {
+        if (empty($result) === true) {
             return null;
         }
 
         $result = explode(' ', $result);
         $fullpath = trim($result[0]);
 
-        if (! file_exists($fullpath)) {
+        if (file_exists($fullpath) === false) {
             return null;
         }
 

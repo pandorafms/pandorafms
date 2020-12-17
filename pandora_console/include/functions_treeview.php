@@ -529,16 +529,16 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    // Get the agent info
+    // Get the agent info.
     $agent = db_get_row('tagente', 'id_agente', $id_agente);
     if ($agent == false) {
         return;
     }
 
-    // Check all groups
+    // Check all groups.
     $groups = agents_get_all_groups_agent($id_agente, $agent['id_grupo']);
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR', false)
             && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
         ) {
@@ -548,7 +548,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -563,6 +563,12 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         include_once 'general/noaccess.php';
 
         return;
+    }
+
+    if (is_metaconsole()) {
+        if (metaconsole_connect($server_data) != NOERR) {
+            return;
+        }
     }
 
     if ($agent === false) {

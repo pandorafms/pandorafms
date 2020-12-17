@@ -4107,6 +4107,11 @@ function generator_chart_to_pdf(
     if ($type_graph_pdf === 'vbar') {
         $width_img  = $params['generals']['pdf']['width'];
         $height_img = $params['generals']['pdf']['height'];
+    } else if ($type_graph_pdf === 'combined'
+        && $params_combined['stacked'] == CUSTOM_GRAPH_VBARS
+    ) {
+        $width_img = 650;
+        $height_img = ($params['height'] + 50);
     } else {
         $width_img  = 550;
         $height_img = $params['height'];

@@ -908,6 +908,20 @@ $row++;
     );
     $row++;
 
+    $table_chars->data[$row][0] = __('Number of elements in Custom Graph');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'items_combined_charts',
+        $config['items_combined_charts'],
+        '',
+        5,
+        5,
+        true,
+        false,
+        false,
+        ''
+    );
+    $row++;
+
     $table_chars->data[$row][0] = __('Use round corners');
     $table_chars->data[$row][1] = html_print_checkbox_switch(
         'round_corner',

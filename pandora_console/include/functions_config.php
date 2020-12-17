@@ -1177,6 +1177,10 @@ function config_update_config()
                         $error_update[] = __('Default type of module charts.');
                     }
 
+                    if (!config_update_value('items_combined_charts', (string) get_parameter('items_combined_charts', 10))) {
+                        $error_update[] = __('Default Number of elements in Custom Graph.');
+                    }
+
                     if (!config_update_value('type_interface_charts', (string) get_parameter('type_interface_charts', 'line'))) {
                         $error_update[] = __('Default type of interface charts.');
                     }
@@ -2867,6 +2871,10 @@ function config_process_config()
 
     if (!isset($config['type_module_charts'])) {
         config_update_value('type_module_charts', 'area');
+    }
+
+    if (!isset($config['items_combined_charts'])) {
+        config_update_value('items_combined_charts', 10);
     }
 
     if (!isset($config['type_interface_charts'])) {

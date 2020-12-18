@@ -62,7 +62,7 @@ class Home
 
         if ((bool) $system->getConfig('legacy_vc', false) === false) {
             // Show Visual consoles only if new system is enabled.
-            $items['visualmap'] = [
+            $items['visualmaps'] = [
                 'name'      => __('Visual consoles'),
                 'filename'  => 'visualmaps.php',
                 'menu_item' => true,

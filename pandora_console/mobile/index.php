@@ -350,16 +350,15 @@ switch ($action) {
                 $agent->show();
             break;
 
+            case 'visualmaps':
+                // Show a list ov VC.
+                $vc_list = new Visualmaps();
+                $vc_list->show();
+            break;
+
             case 'visualmap':
-                $id = $system->getRequest('id', null);
-                if ($id !== null) {
-                    $vc = new Visualmap();
-                    $vc->show();
-                } else {
-                    // Show a list ov VC.
-                    $vc_list = new Visualmaps();
-                    $vc_list->show();
-                }
+                $vc = new Visualmap();
+                $vc->show();
             break;
         }
     break;

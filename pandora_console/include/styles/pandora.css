@@ -6087,3 +6087,10 @@ div.graph div.legend table {
   writing-mode: lr-tb;
   white-space: nowrap;
 }
+
+/* NetTools */
+#add_button_custom_command {
+  float: left;
+  cursor: pointer;
+  margin: -3px 0 0 1em;
+}

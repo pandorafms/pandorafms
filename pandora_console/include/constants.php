@@ -748,7 +748,7 @@ define('MODULE_TYPE_REMOTE_CMD_STRING', 36);
 define('MODULE_TYPE_REMOTE_CMD_INC', 37);
 define('MODULE_TYPE_KEEP_ALIVE', 100);
 
-// Commands for network tools.
+// Commands basics for external tools.
 define('COMMAND_TRACEROUTE', 1);
 define('COMMAND_PING', 2);
 define('COMMAND_SNMP', 3);

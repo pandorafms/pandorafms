@@ -1351,12 +1351,12 @@ if ($is_sap) {
     $saptab = '';
 }
 
-// Network Tools tab.
-$nettools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=nettools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('Network Tools')]).'</a>';
-if ($tab == 'nettools') {
-    $nettools['active'] = true;
+// External Tools tab.
+$external_tools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools')]).'</a>';
+if ($tab == 'external_tools') {
+    $external_tools['active'] = true;
 } else {
-    $nettools['active'] = false;
+    $external_tools['active'] = false;
 }
 
 $onheader = [
@@ -1373,7 +1373,7 @@ $onheader = [
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
     'sap_view'           => $saptab,
-    'nettools'           => $nettools,
+    'external_tools'     => $external_tools,
 ];
 
 // Added after it exists
@@ -1543,8 +1543,8 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
-    case 'nettools':
-        $tab_name = 'Net Tools';
+    case 'external_tools':
+        $tab_name = 'External Tools';
     break;
 
     default:
@@ -1667,8 +1667,8 @@ switch ($tab) {
         include 'general/sap_view.php';
     break;
 
-    case 'nettools':
-        include 'net_tools.php';
+    case 'external_tools':
+        include 'external_tools.php';
     break;
 
     case 'extension':

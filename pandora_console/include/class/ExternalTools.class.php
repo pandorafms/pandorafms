@@ -1,6 +1,6 @@
 <?php
 /**
- * Net Tools view Class.
+ * External Tools view Class.
  *
  * @category   Class
  * @package    Pandora FMS
@@ -33,9 +33,9 @@ global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
 
 /**
- * NetTools class
+ * External Tools class
  */
-class NetTools extends HTML
+class ExternalTools extends HTML
 {
 
 
@@ -81,6 +81,7 @@ class NetTools extends HTML
 
             // Capture needed parameters for setup form.
             $this->updatePaths = (bool) get_parameter('update_paths', 0);
+
             // Capture paths.
             $this->pathTraceroute = (string) get_parameter('traceroute_path');
             $this->pathPing       = (string) get_parameter('ping_path');
@@ -103,10 +104,10 @@ class NetTools extends HTML
     {
         if ($this->origin === 'agent') {
             // Print tool form.
-            $this->agentNetToolsForm();
+            $this->agentExternalToolsForm();
         } else if ($this->origin === 'setup') {
             // Print setup form.
-            $this->setupNetToolsForm();
+            $this->setupExternalToolsForm();
         }
 
         // Anyway, load JS.
@@ -115,11 +116,11 @@ class NetTools extends HTML
 
 
     /**
-     * Print the form for setup the network tools.
+     * Print the form for setup the external tools.
      *
      * @return void
      */
-    private function setupNetToolsForm()
+    private function setupExternalToolsForm()
     {
         global $config;
 
@@ -151,6 +152,7 @@ class NetTools extends HTML
                 $this->pathNmap       = $network_tools_config['nmap_path'];
                 $this->pathDig        = $network_tools_config['dig_path'];
                 $this->pathSnmpget    = $network_tools_config['snmpget_path'];
+                $this->pathCustomComm = ($network_tools_config['custom_command'] ?? ['a' => 'a']);
             }
         }
 
@@ -175,6 +177,70 @@ class NetTools extends HTML
         $table->data[4][0] = __('Snmpget path');
         $table->data[4][1] = html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true);
 
+        $table->data[5][0] = html_print_div(
+            [
+                'class'   => 'title_custom_commands bolder float-left',
+                'content' => __('Custom commands')
+            ],
+            true
+        );
+
+        $table->data[5][0] .= html_print_div(
+            [
+                'id'      => 'add_button_custom_command',
+                'content' => html_print_image(
+                    'images/add.png',
+                    true,
+                    ['title' => __('Add new custom command') ]
+                    )
+            ],
+            true
+        );
+
+        $table->data[6][0] = __('Command');
+        $table->data[6][1] = __('Parameters');
+
+        $i = 0;
+        $iRow = 6;
+        foreach ($this->pathCustomComm as $command) {
+            $i++;
+            $iRow++;
+
+            // Fill the fields.
+            $customCommand = ($command['custom_command'] ?? '');
+            $customParams  = ($command['custom_params'] ?? '');
+            // Attach the fields.
+            $table->rowid[$iRow] = 'custom_row_'.$i;
+            $table->data[$iRow][0] = html_print_input_text(
+                'command_custom_'.$i,
+                $customCommand,
+                '',
+                40,
+                255,
+                true
+            );
+            $table->data[$iRow][1] = html_print_input_text(
+                'params_custom_'.$i,
+                $customParams,
+                '',
+                40,
+                255,
+                true
+            );
+            $table->data[$iRow][2] = html_print_div(
+                [
+                    'id'      => 'delete_custom_'.$i,
+                    'class'   => '',
+                    'content' => html_print_image(
+                        'images/delete.png',
+                        true,
+                        ['title' => __('Delete this custom command') ]
+                    )
+                ],
+                true
+            );
+        }
+
         $form = '<form id="form_setup" method="post" >';
         $form .= '<fieldset>';
         $form .= '<legend>'.__('Options').'</legend>';
@@ -198,11 +264,11 @@ class NetTools extends HTML
 
 
     /**
-     * Print the form for use the network tools.
+     * Print the form for use the external tools.
      *
      * @return void
      */
-    private function agentNetToolsForm()
+    private function agentExternalToolsForm()
     {
         $principal_ip = db_get_sql(
             sprintf(
@@ -252,7 +318,7 @@ class NetTools extends HTML
         // Form table.
         $table = new StdClass();
         $table->class = 'databox filters w100p';
-        $table->id = 'netToolTable';
+        $table->id = 'externalToolTable';
 
         $table->data = [];
 
@@ -331,7 +397,7 @@ class NetTools extends HTML
 
         if ($this->operation !== 0) {
             // Execute form.
-            echo $this->netToolsExecution($this->operation, $this->ip, $this->community, $this->snmp_version);
+            echo $this->externalToolsExecution($this->operation, $this->ip, $this->community, $this->snmp_version);
         }
     }
 
@@ -451,7 +517,7 @@ class NetTools extends HTML
 
 
     /**
-     * Execute net tools action.
+     * Execute external tools action.
      *
      * @param integer $operation    Operation.
      * @param string  $ip           Ip.
@@ -460,7 +526,7 @@ class NetTools extends HTML
      *
      * @return string String formed result of execution.
      */
-    public function netToolsExecution(int $operation, string $ip, string $community, string $snmp_version)
+    public function externalToolsExecution(int $operation, string $ip, string $community, string $snmp_version)
     {
         $output = '';
 
@@ -623,6 +689,13 @@ class NetTools extends HTML
         ?>
             <script type='text/javascript'>
                 $(document).ready(function(){
+                    let custom_command = $('#add_button_custom_command');
+
+                    custom_command.on('click', function(){
+                        console.log('queeee pasa');
+                    });
+
+
                     mostrarColumns($('#operation :selected').val());
                 });
             

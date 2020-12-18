@@ -59,12 +59,16 @@ class Home
             'menu_item' => true,
             'icon'      => 'groups',
         ];
-        $items['console'] = [
-            'name'      => __('Visual consoles'),
-            'filename'  => 'vconsole.php',
-            'menu_item' => true,
-            'icon'      => 'consoles',
-        ];
+
+        if ((bool) $system->getConfig('legacy_vc', false) === false) {
+            // Show Visual consoles only if new system is enabled.
+            $items['visualmap'] = [
+                'name'      => __('Visual consoles'),
+                'filename'  => 'visualmaps.php',
+                'menu_item' => true,
+                'icon'      => 'visual_console',
+            ];
+        }
 
         if (!$system->getConfig('metaconsole')) {
             $items['alerts'] = [

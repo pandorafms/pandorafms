@@ -26,6 +26,12 @@ body {
   font-weight: bold;
 }
 
+td.flex-center {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
 /*INIT----------Tactical styles-----------------------------------------*/
 /* Common */
 

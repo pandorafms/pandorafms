@@ -180,7 +180,7 @@ class ExternalTools extends HTML
         $table->data[5][0] = html_print_div(
             [
                 'class'   => 'title_custom_commands bolder float-left',
-                'content' => __('Custom commands')
+                'content' => __('Custom commands'),
             ],
             true
         );
@@ -191,8 +191,8 @@ class ExternalTools extends HTML
                 'content' => html_print_image(
                     'images/add.png',
                     true,
-                    ['title' => __('Add new custom command') ]
-                    )
+                    [ 'title' => __('Add new custom command') ]
+                ),
             ],
             true
         );
@@ -234,8 +234,8 @@ class ExternalTools extends HTML
                     'content' => html_print_image(
                         'images/delete.png',
                         true,
-                        ['title' => __('Delete this custom command') ]
-                    )
+                        ['title' => __('Delete this custom command')]
+                    ),
                 ],
                 true
             );
@@ -690,15 +690,56 @@ class ExternalTools extends HTML
             <script type='text/javascript'>
                 $(document).ready(function(){
                     let custom_command = $('#add_button_custom_command');
-
-                    custom_command.on('click', function(){
-                        console.log('queeee pasa');
+                
+                    custom_command.on('click', function(event){
+                        console.log(event);
                     });
 
 
                     mostrarColumns($('#operation :selected').val());
                 });
             
+                // Manage network component oid field generation.
+                function manageCommandLines(action, type) {
+                    var fieldLines = $("tr[id*=network_component-" + type + "]").length;
+                    var protocol = $("#module_protocol").val();
+                    if (action === "add") {
+                        let lineNumber = fieldLines + 1;
+                        let textForAdd =
+                        type === "oid-list-pluginRow-snmpRow"
+                            ? "_oid_" + lineNumber + "_"
+                            : lineNumber;
+
+                        $("#network_component-manage-" + type).before(
+                        $("#network_component-" + type + "-row-1")
+                            .clone()
+                            .attr("id", "network_component-" + type + "-row-" + lineNumber)
+                        );
+
+                        $("#network_component-" + type + "-row-" + lineNumber + " input")
+                        .attr("name", "extra_field_" + protocol + "_" + lineNumber)
+                        .attr("id", "extra_field_" + protocol + "_" + lineNumber);
+
+                        $("#network_component-" + type + "-row-" + lineNumber + " td div").html(
+                        textForAdd
+                        );
+
+                        $("#del_field_button")
+                        .attr("style", "opacity: 1;")
+                        .addClass("clickable");
+                    } else if (action === "del") {
+                        if (fieldLines >= 2) {
+                        $("#network_component-" + type + "-row-" + fieldLines).remove();
+                        }
+
+                        if (fieldLines == 2) {
+                        $("#del_field_button")
+                            .attr("style", "opacity: 0.5;")
+                            .removeClass("clickable");
+                        }
+                    }
+                }
+
                 function mostrarColumns(value) {
                     if (value == 3) {
                         $('.snmpcolumn').show();

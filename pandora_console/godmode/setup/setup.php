@@ -145,9 +145,9 @@ $buttons['websocket_engine'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image('images/websocket_small.png', true, ['title' => __('Websocket engine')]).'</a>',
 ];
 
-$buttons['nettools'] = [
+$buttons['external_tools'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=nettools').'">'.html_print_image('images/nettool.png', true, ['title' => __('Network Tools')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=external_tools').'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools')]).'</a>',
 ];
 
 if ($config['activate_gis']) {
@@ -225,10 +225,10 @@ switch ($section) {
         $help_header = 'quickshell_settings';
     break;
 
-    case 'nettools':
-        $buttons['nettools']['active'] = true;
-        $subpage = ' &raquo '.__('Network Tools');
-        $help_header = 'Network_Tools';
+    case 'external_tools':
+        $buttons['external_tools']['active'] = true;
+        $subpage = ' &raquo '.__('External Tools');
+        $help_header = 'External_Tools';
     break;
 
     case 'enterprise':
@@ -303,8 +303,8 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_websocket_engine.php';
     break;
 
-    case 'nettools':
-        include_once $config['homedir'].'/godmode/setup/setup_net_tools.php';
+    case 'external_tools':
+        include_once $config['homedir'].'/godmode/setup/setup_external_tools.php';
     break;
 
     default:

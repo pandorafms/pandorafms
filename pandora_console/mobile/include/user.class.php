@@ -38,14 +38,27 @@ class User
             $system = System::getInstance();
             $user = $system->getSession('user', null);
 
+            if (is_object($user) === false) {
+                $user = json_decode($user, true);
+            }
+
             if (!empty($user)) {
-                self::$instance = $user;
+                self::$instance = new self();
+                foreach ($user as $k => $v) {
+                    self::$instance->{$k} = $v;
+                }
             } else {
                 self::$instance = new self();
             }
         }
 
         return self::$instance;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 
 
@@ -59,7 +72,7 @@ class User
             $config['id_user'] = $this->user;
 
             $system->setSessionBase('id_usuario', $this->user);
-            $system->setSession('user', $this);
+            $system->setSession('user', json_encode($this->jsonSerialize()));
 
             config_user_set_custom_config();
         }

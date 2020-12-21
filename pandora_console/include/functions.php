@@ -2249,12 +2249,16 @@ function check_login($output=true)
             return true;
         }
     } else {
+        include_once $config['homedir'].'/mobile/include/db.class.php';
+        include_once $config['homedir'].'/mobile/include/system.class.php';
         include_once $config['homedir'].'/mobile/include/user.class.php';
 
         if (isset($_SESSION['user'])) {
-            $user = $_SESSION['user'];
+            $user = User::getInstance();
             $id_user = $user->getIdUser();
             if (is_user($id_user)) {
+                $_SESSION['id_usuario'] = $id_user;
+                $config['id_user'] = $id_user;
                 return true;
             }
         }

@@ -530,3 +530,14 @@ div#main_pure {
 #select_multiple_modules_filtered > div > div > * {
   flex: auto;
 }
+
+/* Mobile trick */
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content {
+  overflow: visible;
+  overflow-x: visible;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content div.label > p {
+  margin: 0;
+}

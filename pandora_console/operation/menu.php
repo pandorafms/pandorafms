@@ -393,8 +393,6 @@ if (check_acl($config['id_user'], 0, 'ER')
     $sub['operation/events/events']['text'] = __('View events');
     $sub['operation/events/events']['id'] = 'View events';
     $sub['operation/events/events']['pages'] = ['godmode/events/events'];
-    $sub['operation/events/event_statistics']['text'] = __('Statistics');
-    $sub['operation/events/event_statistics']['id'] = 'Statistics';
 
     // If ip doesn't is in list of allowed IP, isn't show this options.
     include_once 'include/functions_api.php';

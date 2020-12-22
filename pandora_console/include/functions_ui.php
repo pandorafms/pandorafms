@@ -1473,15 +1473,16 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
         && ! file_exists($config['homedir'].'/'.$filename)
         && ! file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename)
     ) {
-        return false;
+        if (is_metaconsole() === true
+            && file_exists('/../../'.$filename) === true
+        ) {
+            $filename = '/../../'.$filename;
+        } else {
+            return false;
+        }
     }
 
-    if (is_metaconsole()) {
-        $config['css'][$name] = '/../../'.$filename;
-    } else {
-        $config['css'][$name] = $filename;
-    }
-
+    $config['css'][$name] = $filename;
     return true;
 }
 

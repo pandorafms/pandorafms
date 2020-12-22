@@ -165,7 +165,7 @@ class Home
             $options = [
                 'name'        => 'free_search',
                 'value'       => $this->global_search,
-                'placeholder' => __('Global search'),
+                'placeholder' => __('Agent search'),
             ];
             $ui->formAddInputSearch($options);
             $ui->endForm();

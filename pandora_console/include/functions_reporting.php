@@ -11339,7 +11339,7 @@ function reporting_tiny_stats(
 
     if (isset($counts_info['total_count'])) {
         $not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
-        $total_count = ($counts_info['total_count'] - $not_init);
+        $total_count = $counts_info['total_count'];
         $stats[] = [
             'name'  => 'total_count',
             'count' => $total_count,

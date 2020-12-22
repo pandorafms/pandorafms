@@ -1216,6 +1216,11 @@ if ($searchPage) {
                         $_GET[$key] = $param;
                     }
                 break;
+
+                case 'External link':
+                    $home_url = io_safe_output($home_url);
+                    echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                break;
             }
 
             if (isset($_GET['sec2'])) {

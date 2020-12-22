@@ -1363,6 +1363,12 @@ span.nobold * {
   display: block !important;
 }
 
+.status_rounded_rectangles.forced_title {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+}
+
 #list_Modules *,
 #list_agent_Modules *,
 #list_agents *,

@@ -349,6 +349,22 @@ tr.events {
   font-size: 12px !important;
 }
 
+table.event_details {
+  height: 14px;
+  color: #424242;
+}
+
+table.event_details tr th {
+  text-align: left;
+}
+
+table.event_details td:not(:first-child) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-items: start;
+}
+
 table#list_events th {
   font-size: 12px !important;
   font-weight: bolder !important;

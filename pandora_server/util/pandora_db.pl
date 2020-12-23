@@ -1055,7 +1055,7 @@ else {
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 my $history_dbh = undef;
 is_metaconsole(\%conf);
-if ($conf{'_history_db_enabled'} eq '1') {
+if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1') {
 	eval {
 		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
 		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));

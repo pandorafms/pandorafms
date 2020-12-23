@@ -153,6 +153,7 @@ define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#4a83f3');
 define('COL_MAINTENANCE', '#E4E4E4');
+define('COL_QUIET', '#5AB7E5');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');

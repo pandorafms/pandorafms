@@ -1452,7 +1452,7 @@ class AgentWizard extends HTML
         foreach (array_keys($data) as $k) {
             foreach ($modulesActivated as $key => $value) {
                 $valueStr = preg_replace('/\//', '\/', $value);
-                if (empty(preg_match('/'.$valueStr.'$/', $k)) === false) {
+                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false) {
                     if (empty(preg_match('/module-name-set/', $k)) === false) {
                         $result[$value]['name'] = $data[$k];
                     } else if (empty(preg_match('/module-description-set/', $k)) === false) {

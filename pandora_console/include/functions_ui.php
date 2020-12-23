@@ -1473,15 +1473,16 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
         && ! file_exists($config['homedir'].'/'.$filename)
         && ! file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename)
     ) {
-        return false;
+        if (is_metaconsole() === true
+            && file_exists('/../../'.$filename) === true
+        ) {
+            $filename = '/../../'.$filename;
+        } else {
+            return false;
+        }
     }
 
-    if (is_metaconsole()) {
-        $config['css'][$name] = '/../../'.$filename;
-    } else {
-        $config['css'][$name] = $filename;
-    }
-
+    $config['css'][$name] = $filename;
     return true;
 }
 
@@ -2821,7 +2822,8 @@ function ui_print_status_sets(
     $title='',
     $return=false,
     $options=false,
-    $extra_info=''
+    $extra_info='',
+    $get_status_color=true
 ) {
     global $config;
 
@@ -2830,9 +2832,13 @@ function ui_print_status_sets(
     }
 
     if (isset($options['style'])) {
-        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] .= ' display: inline-block;';
     } else {
-        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] = 'display: inline-block;';
+    }
+
+    if ($get_status_color === true) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
     if (isset($options['class'])) {
@@ -5701,7 +5707,7 @@ function ui_print_module_string_value(
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
 					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a></span>';
+					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;']).'</a></span>';
             }
         }
     }
@@ -5822,6 +5828,7 @@ function ui_get_snapshot_image($link, $is_image)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Snapshot view'),
+            'style'  => 'max-height: 20px; vertical-align: middle;',
         ]
     ).'</a>';
 

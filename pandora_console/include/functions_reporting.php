@@ -3007,25 +3007,94 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
-
     $return['type'] = 'group_report';
 
     if (empty($content['name'])) {
         $content['name'] = __('Group Report');
     }
 
-    if (is_metaconsole()) {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true) {
+        if (isset($content['server_name']) === true
+            && empty($content['server_name']) === false
+        ) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server = metaconsole_get_connection_by_id($id_meta);
+            metaconsole_connect($server);
+
+            $data = reporting_groups_nodes($content);
+
+            if (is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $servers = metaconsole_get_connection_names();
+            if (isset($servers) === true && is_array($servers) === true) {
+                $group_stats = [
+                    'monitor_checks'            => 0,
+                    'monitor_not_init'          => 0,
+                    'monitor_unknown'           => 0,
+                    'monitor_ok'                => 0,
+                    'monitor_bad'               => 0,
+                    'monitor_warning'           => 0,
+                    'monitor_critical'          => 0,
+                    'monitor_not_normal'        => 0,
+                    'monitor_alerts'            => 0,
+                    'monitor_alerts_fired'      => 0,
+                    'monitor_alerts_fire_count' => 0,
+                    'total_agents'              => 0,
+                    'total_alerts'              => 0,
+                    'total_checks'              => 0,
+                    'alerts'                    => 0,
+                    'agents_unknown'            => 0,
+                    'monitor_health'            => 0,
+                    'alert_level'               => 0,
+                    'module_sanity'             => 0,
+                    'server_sanity'             => 0,
+                    'total_not_init'            => 0,
+                    'monitor_non_init'          => 0,
+                    'agent_ok'                  => 0,
+                    'agent_warning'             => 0,
+                    'agent_critical'            => 0,
+                    'agent_unknown'             => 0,
+                    'agent_not_init'            => 0,
+                    'global_health'             => 0,
+                    'alert_fired'               => 0,
+                ];
+
+                $count_events = 0;
+
+                foreach ($servers as $k_server => $v_server) {
+                    $id_meta = metaconsole_get_id_server($v_server);
+                    $server = metaconsole_get_connection_by_id($id_meta);
+                    metaconsole_connect($server);
+
+                    $data_node = reporting_groups_nodes($content);
+                    $count_events += $data_node['count_events'];
+                    foreach ($data_node['group_stats'] as $key => $value) {
+                        $group_stats[$key] += $value;
+                    }
+
+                    if (is_metaconsole() === true) {
+                        metaconsole_restore_db();
+                    }
+                }
+
+                $data = [
+                    'count_events' => $count_events,
+                    'group_stats'  => $group_stats,
+                ];
+            }
+        }
+    } else {
+        $data = reporting_groups_nodes($content);
     }
 
     $items_label = [
         'agent_group' => groups_get_name($content['id_group'], true),
     ];
 
-     // Apply macros
-     $title = (isset($content['name'])) ? $content['name'] : '';
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
@@ -3033,7 +3102,7 @@ function reporting_group_report($report, $content)
         );
     }
 
-    $return['server_name'] = $server[0];
+    $return['server_name'] = $content['server_name'];
     $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
@@ -3043,17 +3112,42 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+    $return['data']['count_events'] = $data['count_events'];
+
+    $return['data']['group_stats'] = $data['group_stats'];
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Return stats groups for node.
+ *
+ * @param array $content Info report.
+ *
+ * @return array Result.
+ */
+function reporting_groups_nodes($content)
+{
+    global $config;
+    $id_group = groups_safe_acl(
+        $config['id_user'],
+        $content['id_group'],
+        'ER'
+    );
 
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(' WHERE id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $sql_where = sprintf(
+            ' WHERE id_grupo IN (%s) AND estado<>1 ',
+            implode(',', $id_group)
+        );
         $events = events_get_events_grouped(
             $sql_where,
             0,
             1000,
-            is_metaconsole()
+            false
         );
     }
 
@@ -3061,19 +3155,15 @@ function reporting_group_report($report, $content)
         $events = [];
     }
 
-    $return['data']['count_events'] = count($events);
+    $return['count_events'] = count($events);
 
-    $return['data']['group_stats'] = reporting_get_group_stats(
+    $return['group_stats'] = reporting_get_group_stats(
         $content['id_group'],
         'AR',
         (bool) $content['recursion']
     );
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
-    return reporting_check_structure_content($return);
+    return $return;
 }
 
 
@@ -9882,7 +9972,6 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $data['monitor_unknown'] = 0;
     $data['monitor_ok'] = 0;
     $data['monitor_bad'] = 0;
-    // Critical + Unknown + Warning
     $data['monitor_warning'] = 0;
     $data['monitor_critical'] = 0;
     $data['monitor_not_normal'] = 0;
@@ -9908,7 +9997,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
 
     $cur_time = get_system_time();
 
-    // Check for access credentials using check_acl. More overhead, much safer
+    // Check for access credentials using check_acl. More overhead, much safer.
     if (!check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
@@ -9965,113 +10054,107 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
         // Realtime stats, done by PHP Console
         // -------------------------------------------------------------------
     } else {
-        if (!empty($id_group)) {
-            // check tags for user
-            $tags = db_get_value('tags', 'tusuario_perfil', 'id_usuario', $config['id_user']);
-            if ($tags) {
-                $tags_sql = " AND tae.id_agente_modulo IN ( SELECT id_agente_modulo 
-                                                           FROM ttag_module 
-                                                           WHERE id_tag IN ($tags) ) ";
-            } else {
-                $tags_sql = '';
-            }
-
+        if (empty($id_group) === false) {
             if (is_array($id_group)) {
                 $id_group = implode(',', $id_group);
             }
 
-            // for stats modules
-            $sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
-                    SUM(tae.estado=0) as monitor_ok,
-                    SUM(tae.estado=1) as monitor_critical,
-                    SUM(tae.estado=2) as monitor_warning,
-                    SUM(tae.estado=3) as monitor_unknown,
-                    SUM(tae.estado=4) as monitor_not_init,
-                    COUNT(tae.estado) as monitor_total
+            $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+            $agent_secondary_table = (is_metaconsole() === true) ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
 
-                    FROM
-                        tagente_estado tae,
-                        tagente        ta,
-                        tagente_modulo tam,
-                        tgrupo         tg
-    
-                    WHERE 1=1
-                        AND tae.id_agente = ta.id_agente
-                        AND tae.id_agente_modulo = tam.id_agente_modulo
-                        AND ta.id_grupo = tg.id_grupo
-                        AND tam.disabled = 0
-                        AND ta.disabled = 0
-                        AND ta.id_grupo IN ($id_group) $tags_sql 
-                    GROUP BY tg.id_grupo;";
-            $data_array = db_get_all_rows_sql($sql);
-
-            $data = $data_array[0];
-
-            // Get alerts configured, except disabled
-            $data['monitor_alerts'] += groups_monitor_alerts($group_array);
-
-            // Get alert configured currently FIRED, except disabled
-            $data['monitor_alerts_fired'] += groups_monitor_fired_alerts($group_array);
-
-            // for stats agents
-            $sql = "SELECT tae.id_agente id_agente, tg.id_grupo id_grupo,
-                    SUM(tae.estado=0) as monitor_agent_ok,
-                    SUM(tae.estado=1) as monitor_agent_critical,
-                    SUM(tae.estado=2) as monitor_agent_warning,
-                    SUM(tae.estado=3) as monitor_agent_unknown,
-                    SUM(tae.estado=4) as monitor_agent_not_init,
-                    COUNT(tae.estado) as monitor_agent_total
-
+            $sql = sprintf(
+                'SELECT tg.id_grupo AS id_group,
+                    IF (SUM(modules_total) IS NULL,0,SUM(modules_total)) AS modules,
+                    IF (SUM(modules_ok) IS NULL,0,SUM(modules_ok)) AS normal,
+                    IF (SUM(modules_critical) IS NULL,0,SUM(modules_critical)) AS critical,
+                    IF (SUM(modules_warning) IS NULL,0,SUM(modules_warning)) AS warning,
+                    IF (SUM(modules_unknown) IS NULL,0,SUM(modules_unknown)) AS unknown,
+                    IF (SUM(modules_not_init) IS NULL,0,SUM(modules_not_init)) AS `non-init`,
+                    IF (SUM(alerts_fired) IS NULL,0,SUM(alerts_fired)) AS alerts_fired,
+                    IF (SUM(agents_total) IS NULL,0,SUM(agents_total)) AS agents,
+                    IF (SUM(agents_unknown) IS NULL,0,SUM(agents_unknown)) AS agents_unknown,
+                    IF (SUM(agents_critical) IS NULL,0,SUM(agents_critical)) AS agents_critical,
+                    IF (SUM(agents_warnings) IS NULL,0,SUM(agents_warnings)) AS agents_warnings,
+                    IF (SUM(agents_not_init) IS NULL,0,SUM(agents_not_init)) AS agents_not_init,
+                    IF (SUM(agents_normal) IS NULL,0,SUM(agents_normal)) AS agents_normal,
+                    UNIX_TIMESTAMP() AS utimestamp
                 FROM
-                    tagente_estado tae,
-                    tagente        ta,
-                    tagente_modulo tam,
-                    tgrupo         tg
-                    
-                WHERE 1=1
-                    AND tae.id_agente = ta.id_agente
-                    AND tae.id_agente_modulo = tam.id_agente_modulo
-                    AND ta.id_grupo = tg.id_grupo
-                    AND tam.disabled = 0
-                    AND ta.disabled = 0
-                    AND ta.id_grupo IN ($id_group) $tags_sql
-                GROUP BY tae.id_agente;";
-            $data_array_2 = db_get_all_rows_sql($sql);
+                (
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        ta.id_grupo AS g
+                    FROM %s ta
+                    WHERE ta.disabled = 0
+                        AND ta.id_grupo IN (%s)
+                    GROUP BY g
+                    UNION ALL
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        tasg.id_group AS g
+                    FROM %s ta
+                    LEFT JOIN %s tasg
+                        ON ta.id_agente = tasg.id_agent
+                    WHERE ta.disabled = 0
+                        AND (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))
+                    GROUP BY g
+                ) counters
+                RIGHT JOIN tgrupo tg
+                    ON counters.g = tg.id_grupo
+                WHERE tg.id_grupo IN (%s)
+                GROUP BY tg.id_grupo',
+                $agent_table,
+                $id_group,
+                $agent_table,
+                $agent_secondary_table,
+                $id_group,
+                $id_group,
+                $id_group
+            );
 
-            if (is_array($data_array_2) || is_object($data_array_2)) {
-                foreach ($data_array_2 as $key => $value) {
-                    if ($value['monitor_agent_critical'] != 0) {
-                        $data['agent_critical'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0) {
-                        $data['agent_warning'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] != 0
-                    ) {
-                        $data['agent_unknown'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0
-                    ) {
-                        $data['agent_ok'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] == 0
-                        && $value['monitor_agent_not_init'] != 0
-                    ) {
-                        $data['agent_not_init'] ++;
-                    }
-
-                    $data['total_agents'] ++;
-                }
-            }
-
-            // Get total count of monitors for this group, except disabled.
-            $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
-
-            // Calculate not_normal monitors
-            $data['monitor_not_normal'] += ($data['monitor_checks'] - $data['monitor_ok']);
+            $group_stat = db_get_all_rows_sql($sql);
+            $data = [
+                'monitor_checks'            => (int) $group_stat[0]['modules'],
+                'monitor_alerts'            => (int) groups_monitor_alerts($group_array),
+                'monitor_alerts_fired'      => (int) $group_stat[0]['alerts_fired'],
+                'monitor_alerts_fire_count' => (int) $group_stat[0]['alerts_fired'],
+                'monitor_ok'                => (int) $group_stat[0]['normal'],
+                'monitor_warning'           => (int) $group_stat[0]['warning'],
+                'monitor_critical'          => (int) $group_stat[0]['critical'],
+                'monitor_unknown'           => (int) $group_stat[0]['unknown'],
+                'monitor_not_init'          => (int) $group_stat[0]['non-init'],
+                'agent_not_init'            => (int) $group_stat[0]['agents_not_init'],
+                'agent_unknown'             => (int) $group_stat[0]['agents_unknown'],
+                'agent_ok'                  => (int) $group_stat[0]['agents_normal'],
+                'agent_warning'             => (int) $group_stat[0]['agents_warnings'],
+                'agent_critical'            => (int) $group_stat[0]['agents_critical'],
+                'total_checks'              => (int) $group_stat[0]['modules'],
+                'total_alerts'              => (int) groups_monitor_alerts($group_array),
+                'total_agents'              => (int) $group_stat[0]['agents'],
+                'utimestamp'                => (int) $group_stat[0]['utimestamp'],
+            ];
         }
-
-        // Get total count of monitors for this group, except disabled.
-        $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
     }
 
     if ($data['monitor_unknown'] > 0 && $data['monitor_checks'] > 0) {
@@ -11256,7 +11339,7 @@ function reporting_tiny_stats(
 
     if (isset($counts_info['total_count'])) {
         $not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
-        $total_count = ($counts_info['total_count'] - $not_init);
+        $total_count = $counts_info['total_count'];
         $stats[] = [
             'name'  => 'total_count',
             'count' => $total_count,

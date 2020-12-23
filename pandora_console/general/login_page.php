@@ -159,11 +159,31 @@ echo '<div class="container_login">';
 echo '<div class="login_page">';
     echo '<form method="post" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
         echo '<a href="'.$logo_link.'">';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image(ui_get_full_url('images/custom_logo_login/login_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(
+            'enterprise/images/custom_logo_login/login_logo.png',
+            false,
+            [
+                'class'  => 'login_logo',
+                'alt'    => 'logo',
+                'border' => 0,
+                'title'  => $logo_title,
+            ],
+            false
+        );
     } else {
-        html_print_image(ui_get_full_url('images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(
+            'enterprise/images/custom_logo_login/'.$config['custom_logo_login'],
+            false,
+            [
+                'class'  => 'login_logo',
+                'alt'    => 'logo',
+                'border' => 0,
+                'title'  => $logo_title,
+            ],
+            false
+        );
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (!isset($config['custom_logo_login'])) {
@@ -344,9 +364,27 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (isset($config['custom_splash_login'])) {
-        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0], false, true);
+        html_print_image(
+            'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
+            false,
+            [
+                'alt'    => 'splash',
+                'border' => 0,
+            ],
+            false,
+            false
+        );
     } else {
-        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
+        html_print_image(
+            'enterprise/images/custom_splash_login/splash_image_default.png',
+            false,
+            [
+                'alt'    => 'logo',
+                'border' => 0,
+            ],
+            false,
+            false
+        );
     }
 } else {
     html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);

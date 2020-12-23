@@ -193,11 +193,13 @@ if ($editGraph) {
 
 
 $count_module_array = count($module_array);
-if ($count_module_array > 10) {
+if ($count_module_array > $config['items_combined_charts']) {
     ui_print_warning_message(
         __(
-            'The maximum number of items in a chart is 10. You have %s elements, only first 10 will be displayed.',
-            $count_module_array
+            'The maximum number of items in a chart is %d. You have %d elements, only first %d will be displayed.',
+            $config['items_combined_charts'],
+            $count_module_array,
+            $config['items_combined_charts']
         )
     );
 }

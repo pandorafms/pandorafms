@@ -1,15 +1,18 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
@@ -142,7 +145,7 @@ if ($config['menu_type'] == 'classic') {
         }
 
         if ($_GET['sec'] == 'main' || !isset($_GET['sec'])) {
-            // home screen chosen by the user
+            // Home screen chosen by the user.
             $home_page = '';
             if (isset($config['id_user'])) {
                 $user_info = users_get_user_by_id($config['id_user']);
@@ -169,6 +172,7 @@ if ($config['menu_type'] == 'classic') {
                     break;
 
                     case 'Default':
+                    default:
                         $_GET['sec2'] = 'general/logon_ok';
                     break;
 
@@ -763,6 +767,7 @@ if ($config['menu_type'] == 'classic') {
                     page: 'include/ajax/order_interpreter',
                     method: 'getResult',
                     text: $('#keywords').val(),
+                    enterprise: <?php echo (int) enterprise_installed(); ?>,
                 },
                 success: function (data) {
                    $('#result_order').html(data);

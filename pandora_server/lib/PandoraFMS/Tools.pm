@@ -88,9 +88,14 @@ our @EXPORT = qw(
 	DISCOVERY_CLOUD_AWS_RDS
 	DISCOVERY_CLOUD_AZURE_COMPUTE
 	DISCOVERY_DEPLOY_AGENTS
+	DISCOVERY_APP_SAP
+	DISCOVERY_APP_DB2
+	DISCOVERY_APP_MICROSOFT_SQL_SERVER
+	DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE
 	$DEVNULL
 	$OS
 	$OS_VERSION
+	$VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
 	MODULE_NORMAL
@@ -211,6 +216,10 @@ use constant DISCOVERY_CLOUD_AWS_EC2 => 6;
 use constant DISCOVERY_CLOUD_AWS_RDS => 7;
 use constant DISCOVERY_CLOUD_AZURE_COMPUTE => 8;
 use constant DISCOVERY_DEPLOY_AGENTS => 9;
+use constant DISCOVERY_APP_SAP => 10;
+use constant DISCOVERY_APP_DB2 => 11;
+use constant DISCOVERY_APP_MICROSOFT_SQL_SERVER => 12;
+use constant DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE => 13;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
@@ -854,6 +863,24 @@ sub clean_blank {
 	$input =~ s/^\s+//g;
 	$input =~ s/\s+$//g;
 	return $input;
+}
+
+################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (is_empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
 }
 
 ################################################################################

@@ -17,7 +17,9 @@ check_login();
 
 // Security check
 $id_user = (string) get_parameter('id_user');
-if ($id_user !== $config['id_user']) {
+$FA_forced = (int) get_parameter('FA_forced');
+
+if ($id_user !== $config['id_user'] && $FA_forced != 1) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Double Authentication'

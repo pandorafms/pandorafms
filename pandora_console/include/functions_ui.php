@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1473,15 +1473,16 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
         && ! file_exists($config['homedir'].'/'.$filename)
         && ! file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/'.$filename)
     ) {
-        return false;
+        if (is_metaconsole() === true
+            && file_exists('/../../'.$filename) === true
+        ) {
+            $filename = '/../../'.$filename;
+        } else {
+            return false;
+        }
     }
 
-    if (is_metaconsole()) {
-        $config['css'][$name] = '/../../'.$filename;
-    } else {
-        $config['css'][$name] = $filename;
-    }
-
+    $config['css'][$name] = $filename;
     return true;
 }
 
@@ -2041,6 +2042,10 @@ function ui_pagination(
         'disable_user',
         'delete_user',
     ];
+
+    // Check if url has &#x20; blankspace and replace it.
+    preg_replace('/\&#x20;/', '%20', $url);
+
     $url = explode('&', $url);
 
     $finalUrl = [];
@@ -2118,7 +2123,7 @@ function ui_pagination(
             $output .= "<a class='pagination-arrows ".$other_class." offset_0'
 				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".$url.'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
         }
     }
 
@@ -2817,7 +2822,8 @@ function ui_print_status_sets(
     $title='',
     $return=false,
     $options=false,
-    $extra_info=''
+    $extra_info='',
+    $get_status_color=true
 ) {
     global $config;
 
@@ -2826,9 +2832,13 @@ function ui_print_status_sets(
     }
 
     if (isset($options['style'])) {
-        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] .= ' display: inline-block;';
     } else {
-        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] = 'display: inline-block;';
+    }
+
+    if ($get_status_color === true) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
     if (isset($options['class'])) {
@@ -4009,7 +4019,7 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
                 $url .= $key.'['.$k.']='.$v.'&';
             }
         } else {
-            $url .= $key.'='.io_safe_input($value).'&';
+            $url .= $key.'='.io_safe_input(rawurlencode($value)).'&';
         }
     }
 
@@ -5613,7 +5623,8 @@ function ui_print_module_string_value(
     $value,
     $id_agente_module,
     $current_interval,
-    $module_name=null
+    $module_name=null,
+    $server_id=0
 ) {
     global $config;
 
@@ -5658,6 +5669,7 @@ function ui_print_module_string_value(
                 'last_data'   => $value,
                 'interval'    => $current_interval,
                 'module_name' => $module_name,
+                'id_node'     => $server_id ? $server_id : 0,
             ]
         );
         $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
@@ -5695,7 +5707,7 @@ function ui_print_module_string_value(
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
 					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a></span>';
+					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;']).'</a></span>';
             }
         }
     }
@@ -5765,7 +5777,7 @@ function ui_get_snapshot_link($params, $only_params=false)
     $params = array_merge($default_params, $params);
 
     // First parameter of js winopeng_var.
-    $page = $config['homeurl'].'/operation/agentes/snapshot_view.php';
+    $page = ui_get_full_url('operation/agentes/snapshot_view.php', false, false, false);
 
     $url = $page.'?id='.$params['id_module'].'&label='.rawurlencode(urlencode(io_safe_output($params['module_name']))).'&id_node='.$params['id_node'];
 
@@ -5816,6 +5828,7 @@ function ui_get_snapshot_image($link, $is_image)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Snapshot view'),
+            'style'  => 'max-height: 20px; vertical-align: middle;',
         ]
     ).'</a>';
 
@@ -6127,4 +6140,129 @@ function ui_print_message_dialog($title, $text, $id='', $img='', $text_button=''
             echo '</div>';
         echo '</div>';
     echo '</div>';
+}
+
+
+/**
+ * Build a Query-Result editor structure
+ *
+ * @param string $name Name of the structure
+ *
+ * @return null
+ */
+function ui_query_result_editor($name='default')
+{
+    $editorSubContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_title',
+            'content' => '<p>'.__('Query').'</p>',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_editor',
+            'class' => 'query_result_editor',
+        ],
+        true
+    );
+
+    $editorSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons edit-button',
+            'content' => html_print_submit_button(
+                __('Execute query'),
+                'execute_query',
+                false,
+                'class="sub next"',
+                true
+            ),
+        ],
+        true
+    );
+
+    $editorContainer = html_print_div(
+        [
+            'id'      => $name.'_editor_container',
+            'class'   => 'query_result_editor_container',
+            'content' => $editorSubContainer,
+        ],
+        true
+    );
+
+    $viewSubContainer = html_print_div(
+        [
+            'id'      => $name.'_view_title',
+            'content' => '<p>'.__('Results').'</p>',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'id'    => $name.'_view',
+            'class' => 'query_result_view',
+        ],
+        true
+    );
+
+    $viewSubContainer .= html_print_div(
+        [
+            'class'   => 'action-buttons',
+            'content' => '',
+        ],
+        true
+    );
+
+    $viewContainer = html_print_div(
+        [
+            'id'      => $name.'_view_container',
+            'class'   => 'query_result_view_container',
+            'content' => $viewSubContainer,
+        ],
+        true
+    );
+
+    html_print_div(
+        [
+            'id'      => 'query_result_container',
+            'class'   => 'databox',
+            'content' => $editorContainer.$viewContainer,
+        ]
+    );
+    // This is needed for Javascript
+    html_print_div(
+        [
+            'id'      => 'pandora_full_url',
+            'hidden'  => true,
+            'content' => ui_get_full_url(false, false, false, false),
+        ]
+    );
+}
+
+
+/**
+ * Generate a button for reveal the content of the password field.
+ *
+ * @param string  $name   Name of the field.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_reveal_password(string $name, bool $return=false)
+{
+    if (is_metaconsole()) {
+        $imagePath = '../../images/';
+    } else {
+        $imagePath = 'images/';
+    }
+
+    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+
+    if ($return === true) {
+        return $output;
+    }
+
+    echo $output;
 }

@@ -529,25 +529,46 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         }
     }
 
-    // Get the agent info
+    // Get the agent info.
     $agent = db_get_row('tagente', 'id_agente', $id_agente);
     if ($agent == false) {
         return;
     }
 
-    // Check all groups
+    // Check all groups.
     $groups = agents_get_all_groups_agent($id_agente, $agent['id_grupo']);
-    if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW') && !$is_extra) {
+
+    if (is_metaconsole() === true) {
+        if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR', false)
+            && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
+        ) {
+            $grants_on_node = false;
+        } else {
+            $grants_on_node = true;
+        }
+    }
+
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
+
+    if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR', false)
+        && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
+        && !$is_extra
+    ) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access Agent General Information'
         );
         include_once 'general/noaccess.php';
-        if (!empty($server_data) && is_metaconsole()) {
-            metaconsole_restore_db();
-        }
 
         return;
+    }
+
+    if (is_metaconsole()) {
+        if (metaconsole_connect($server_data) != NOERR) {
+            return;
+        }
     }
 
     if ($agent === false) {
@@ -586,7 +607,11 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $hashdata = md5($hashdata);
         $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
 
-        $cellName .= '<a href="'.$url.'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        if ($grants_on_node) {
+            $cellName .= '<a href="'.$url.'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        } else {
+            $cellName .= '<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
+        }
     } else {
         $url = ui_get_full_url(
             'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente']

@@ -642,6 +642,16 @@ $table_other->data[13][1] = html_print_input_text(
     true
 );
 
+$table_other->data[14][0] = __('Row limit in csv log');
+$table_other->data[14][1] = html_print_input_text(
+    'row_limit_csv',
+    $config['row_limit_csv'],
+    '',
+    5,
+    10,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';

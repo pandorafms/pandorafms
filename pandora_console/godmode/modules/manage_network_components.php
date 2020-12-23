@@ -643,6 +643,9 @@ $url = ui_get_url_refresh(
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
+if (!empty($search_string)) {
+    $search_string = trim($search_string, '&#x20;');
+}
 
 $table = new stdClass();
 $table->width = '100%';

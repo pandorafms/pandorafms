@@ -196,6 +196,8 @@ if (is_ajax()) {
     }
 }
 
+
+
 $tab = get_parameter('tab', 'user');
 
 if ($id) {
@@ -556,15 +558,51 @@ if ($update_user) {
     if ($config['user_can_update_password']) {
         $password_new = (string) get_parameter('password_new', '');
         $password_confirm = (string) get_parameter('password_confirm', '');
+        $own_password_confirm = (string) get_parameter('own_password_confirm', '');
+
         if ($password_new != '') {
+            $correct_password = false;
+
+            $user_credentials_check = process_user_login($config['id_user'], $own_password_confirm, true);
+
+            if ($user_credentials_check !== false) {
+                $correct_password = true;
+            }
+
             if ($password_confirm == $password_new) {
-                if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
-                    $pass_ok = login_validate_pass($password_new, $id, true);
-                    if ($pass_ok != 1) {
-                        ui_print_error_message($pass_ok);
+                if ($correct_password === true || is_user_admin($config['id_user'])) {
+                    if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                        $pass_ok = login_validate_pass($password_new, $id, true);
+                        if ($pass_ok != 1) {
+                            ui_print_error_message($pass_ok);
+                        } else {
+                            $res2 = update_user_password($id, $password_new);
+                            if ($res2) {
+                                db_process_sql_insert(
+                                    'tsesion',
+                                    [
+                                        'id_sesion'   => '',
+                                        'id_usuario'  => $id,
+                                        'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                        'accion'      => 'Password&#x20;change',
+                                        'descripcion' => 'Access password updated',
+                                        'fecha'       => date('Y-m-d H:i:s'),
+                                        'utimestamp'  => time(),
+                                    ]
+                                );
+                                $res3 = save_pass_history($id, $password_new);
+                            }
+
+                            ui_print_result_message(
+                                $res1 || $res2,
+                                __('User info successfully updated'),
+                                __('Error updating user info (no change?)')
+                            );
+                        }
                     } else {
                         $res2 = update_user_password($id, $password_new);
                         if ($res2) {
+                            $res3 = save_pass_history($id, $password_new);
                             db_process_sql_insert(
                                 'tsesion',
                                 [
@@ -577,7 +615,6 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
-                            $res3 = save_pass_history($id, $password_new);
                         }
 
                         ui_print_result_message(
@@ -587,28 +624,11 @@ if ($update_user) {
                         );
                     }
                 } else {
-                    $res2 = update_user_password($id, $password_new);
-                    if ($res2) {
-                        $res3 = save_pass_history($id, $password_new);
-                        db_process_sql_insert(
-                            'tsesion',
-                            [
-                                'id_sesion'   => '',
-                                'id_usuario'  => $id,
-                                'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                                'accion'      => 'Password&#x20;change',
-                                'descripcion' => 'Access password updated',
-                                'fecha'       => date('Y-m-d H:i:s'),
-                                'utimestamp'  => time(),
-                            ]
-                        );
+                    if ($own_password_confirm === '') {
+                        ui_print_error_message(__('Password of the active user is required to perform password change'));
+                    } else {
+                        ui_print_error_message(__('Password of active user is not correct'));
                     }
-
-                    ui_print_result_message(
-                        $res1 || $res2,
-                        __('User info successfully updated'),
-                        __('Error updating user info (no change?)')
-                    );
                 }
             } else {
                 db_process_sql_insert(
@@ -757,13 +777,13 @@ if (!users_is_admin() && $config['id_user'] != $id && !$new_user) {
     $sql = sprintf(
         "SELECT tusuario_perfil.* FROM tusuario_perfil
         INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-        WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
-        $id,
+        WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 1",
+        $config['id_user'],
         $group_um_string
     );
 
     $result = db_get_all_rows_sql($sql);
-    if ($result == false || $user_info['is_admin']) {
+    if ($result == false && $user_info['is_admin'] == false) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access User Management'
@@ -875,6 +895,25 @@ if ($config['user_can_update_password']) {
         true,
         true
     ).'</span></div>';
+
+    if (!is_user_admin($config['id_user'])) {
+        $own_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input',
+                'placeholder' => __('Own password confirmation'),
+            ],
+            true,
+            true
+        ).'</span></div>';
+    }
 }
 
 $own_info = get_user_info($config['id_user']);
@@ -1128,6 +1167,28 @@ if ($config['ehorus_user_level_conf']) {
     $ehorus .= '</div>';
 }
 
+$double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $id);
+
+if ($config['double_auth_enabled'] && check_acl($config['id_user'], 0, 'PM')) {
+    $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
+    if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
+        || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
+        || check_acl($config['id_user'], 0, 'PM')
+    ) {
+        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    }
+
+    // Dialog.
+    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
+}
+
+if ($double_auth_enabled && $config['double_auth_enabled'] && $config['2FA_all_users'] != '') {
+    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+}
+
+if (isset($double_authentication)) {
+    $double_authentication .= '</div>';
+}
 
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
@@ -1167,7 +1228,7 @@ if (is_metaconsole()) {
 
 if ($id != '' && !$is_err) {
     $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
 } else {
     $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
     <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
@@ -1179,7 +1240,7 @@ echo '<div id="user_form">
     <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
-    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.'</div>
+    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.$double_authentication.'</div>
 
     <div class="edit_user_timezone">'.$timezone;
 if (!is_metaconsole()) {
@@ -1278,6 +1339,15 @@ if (!is_metaconsole()) {
 var json_profile = $('#hidden-json_profile');
 /* <![CDATA[ */
 $(document).ready (function () {
+    $("input#checkbox-double_auth").change(function (e) {
+        e.preventDefault();
+            if (this.checked) {
+                show_double_auth_activation();
+            } else {
+                show_double_auth_deactivation();
+            }
+    }); 
+
     $('input:radio[name="is_admin"]').change(function() {
         if($('#radiobtn0002').prop('checked')) {     
             $('#metaconsole_agents_manager_div').show();
@@ -1494,6 +1564,217 @@ function switch_ehorus_conf()
 
 
 }
+
+function show_double_auth_info () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    $dialogContainer.html($loadingSpinner);
+console.log(userID);
+    // Load the info page
+    var request = $.ajax({
+        url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        type: 'POST',
+        dataType: 'html',
+        data: {
+            page: 'include/ajax/double_auth.ajax',
+            id_user: userID,
+            get_double_auth_data_page: 1,
+            FA_forced: 1,
+            containerID: $dialogContainer.prop('id')
+        },
+        complete: function(xhr, textStatus) {
+            
+        },
+        success: function(data, textStatus, xhr) {
+            // isNaN = is not a number
+            if (isNaN(data)) {
+                $dialogContainer.html(data);
+            }
+            // data is a number, convert it to integer to do the compare
+            else if (Number(data) === -1) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+            }
+            else {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Error').'</div></b>'; ?>");
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error loading the data').'</div></b>'; ?>");
+        }
+    });
+
+    $("div#dialog-double_auth")
+        .css('display','block')
+        .append($dialogContainer)
+        .dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication information'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 400,
+            height: 375,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+            }
+        })
+        .show();
+
+}
+
+function show_double_auth_activation () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    $dialogContainer.html($loadingSpinner);
+
+    // Load the info page
+    var request = $.ajax({
+        url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+        type: 'POST',
+        dataType: 'html',
+        data: {
+            page: 'include/ajax/double_auth.ajax',
+            id_user: userID,
+            FA_forced: 1,
+            get_double_auth_info_page: 1,
+            containerID: $dialogContainer.prop('id')
+        },
+        complete: function(xhr, textStatus) {
+            
+        },
+        success: function(data, textStatus, xhr) {
+            // isNaN = is not a number
+            if (isNaN(data)) {
+                $dialogContainer.html(data);
+            }
+            // data is a number, convert it to integer to do the compare
+            else if (Number(data) === -1) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+            }
+            else {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Error').'</div></b>'; ?>");
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error loading the data').'</div></b>'; ?>");
+        }
+    });
+
+    $("div#dialog-double_auth").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication activation'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 500,
+            height: 400,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+
+                document.location.reload();
+            }
+        })
+        .show();
+}
+
+function show_double_auth_deactivation () {
+    var userID = '<?php echo io_safe_output($id); ?>';
+    console.log(userID);
+    var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
+    var $dialogContainer = $("div#dialog-double_auth-container");
+
+    var message = "<p><?php echo __('Are you sure?').'<br>'.__('The double authentication will be deactivated'); ?></p>";
+    var $button = $("<input type=\"button\" value=\"<?php echo __('Deactivate'); ?>\" />");
+
+    $dialogContainer
+        .empty()
+        .append(message)
+        .append($button);
+
+    var request;
+
+    $button.click(function(e) {
+        e.preventDefault();
+
+        $dialogContainer.html($loadingSpinner);
+
+        // Deactivate the double auth
+        request = $.ajax({
+            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: 'include/ajax/double_auth.ajax',
+                id_user: userID,
+                FA_forced: 1,
+                deactivate_double_auth: 1
+            },
+            complete: function(xhr, textStatus) {
+                
+            },
+            success: function(data, textStatus, xhr) {
+                console.log(data);
+                if (data === -1) {
+                    $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('Authentication error').'</div></b>'; ?>");
+                }
+                else if (data) {
+                    $dialogContainer.html("<?php echo '<b><div class=\"green\">'.__('The double autentication was deactivated successfully').'</div></b>'; ?>");
+                }
+                else {
+                    $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error deactivating the double autentication').'</div></b>'; ?>");
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error deactivating the double autentication').'</div></b>'; ?>");
+            }
+        });
+    });
+    
+
+    $("div#dialog-double_auth").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            title: "<?php echo __('Double autentication activation'); ?>",
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 300,
+            height: 150,
+            close: function(event, ui) {
+                // Abort the ajax request
+                if (typeof request != 'undefined')
+                    request.abort();
+                // Remove the contained html
+                $dialogContainer.empty();
+
+                document.location.reload();
+            }
+        })
+        .show();
+}
+
 
 /* ]]> */
 </script>

@@ -176,7 +176,7 @@ class DiscoveryTaskList extends HTML
                             'type'       => 'button',
                             'attributes' => 'class="sub upd"',
                             'return'     => true,
-                            'script'     => 'location.reload();',
+                            'script'     => 'location.href = \''.$this->url.'\';',
                         ],
                     ],
                 ],
@@ -402,8 +402,10 @@ class DiscoveryTaskList extends HTML
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
+            // Task name.
+            $table->headstyle[1] .= 'min-width: 150px; width: 300px;';
             // Name.
-            $table->headstyle[4] .= 'min-width: 100px; width: 600px;';
+            $table->headstyle[4] .= 'min-width: 100px; width: 400px;';
             // Status.
             $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.
@@ -1264,6 +1266,17 @@ class DiscoveryTaskList extends HTML
                 ],
             ]
         );
+        if (count($map->nodes) <= 1) {
+            // No nodes detected in current task definition.
+            $task = db_get_row('trecon_task', 'id_rt', $id_task);
+
+            if ((int) $task['type'] === DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE) {
+                ui_print_info_message(
+                    __('Please ensure instances or regions are being monitorized and \'scan and general monitoring\' is enabled.')
+                );
+            }
+        }
+
         $map->printMap();
     }
 

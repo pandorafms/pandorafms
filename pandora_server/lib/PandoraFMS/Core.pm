@@ -1182,11 +1182,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
-				_field11_ => $field16,
-				_field12_ => $field17,
-				_field13_ => $field18,
-				_field14_ => $field19,
-				_field15_ => $field20,
+				_field16_ => $field16,
+				_field17_ => $field17,
+				_field18_ => $field18,
+				_field19_ => $field19,
+				_field20_ => $field20,
 				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
 				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
@@ -3359,6 +3359,14 @@ sub pandora_get_credential ($$$) {
 	$key->{'password'} = pandora_output_password(
 		$pa_config,
 		safe_output($key->{'password'})
+	);
+	$key->{'extra_1'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_1'})
+	);
+	$key->{'extra_2'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_2'})
 	);
 
 	return $key;

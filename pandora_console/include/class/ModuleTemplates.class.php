@@ -309,14 +309,19 @@ class ModuleTemplates extends HTML
 
             switch ($this->action) {
                 case 'update':
-                    $dbResult_tnp = db_process_sql_update(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ],
-                        ['id_np' => $this->id_np]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_update(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ],
+                            ['id_np' => $this->id_np]
+                        );
+                    }
+
                     if ($dbResult_tnp === false) {
                         $success = false;
                     } else {
@@ -352,13 +357,18 @@ class ModuleTemplates extends HTML
                 break;
 
                 case 'create':
-                    $dbResult_tnp = db_process_sql_insert(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_insert(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ]
+                        );
+                    }
+
                     // The insert gone fine!
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.
@@ -408,6 +418,8 @@ class ModuleTemplates extends HTML
 
                 case 'export':
                     global $config;
+
+                    enterprise_include_once('include/functions_reporting_csv.php');
 
                     $id_network_profile = safe_int($this->id_np);
                     if (empty($id_network_profile)) {
@@ -500,7 +512,7 @@ class ModuleTemplates extends HTML
                     }
 
                     // Then print the first line (row names)
-                    echo '"'.implode('","', $row_names).'"';
+                    echo '"'.implode('"'.$config['csv_divider'].'"', $row_names).'"';
                     echo "\n";
 
                     // Then print the rest of the data. Encapsulate in quotes in case we have comma's in any of the descriptions
@@ -509,7 +521,19 @@ class ModuleTemplates extends HTML
                             unset($row[$bad_key]);
                         }
 
-                        echo '"'.implode('","', $row).'"';
+                        if ($config['csv_decimal_separator'] !== '.') {
+                            foreach ($row as $name => $data) {
+                                if (is_numeric($data)) {
+                                    // Get the number of decimals, if > 0, format dec comma.
+                                    $decimals = strlen(substr(strrchr($data, '.'), 1));
+                                    if ($decimals !== 0) {
+                                        $row[$name] = csv_format_numeric((float) $data, $decimals, true);
+                                    }
+                                }
+                            }
+                        }
+
+                        echo '"'.implode('"'.$config['csv_divider'].'"', $row).'"';
                         echo "\n";
                     }
 
@@ -596,17 +620,67 @@ class ModuleTemplates extends HTML
             }
         } else if ($modulesToAdd != '') {
             $modulesToAddList = explode(',', $modulesToAdd);
+
+            $modulesAddedList = db_get_all_rows_in_table('tnetwork_profile_component');
+
+            $modulesToAdd = [];
+
             foreach ($modulesToAddList as $module) {
-                db_process_sql_insert(
-                    'tnetwork_profile_component',
-                    [
-                        'id_nc' => $module,
-                        'id_np' => $this->id_np,
-                    ]
-                );
+                $is_added = false;
+                foreach ($modulesAddedList as $item) {
+                    if ($item['id_nc'] === $module
+                        && $item['id_np'] === $this->id_np
+                    ) {
+                            $is_added = true;
+                    }
+                }
+
+                if ($is_added === false) {
+                    $name = io_safe_output(
+                        db_get_row_filter(
+                            'tnetwork_component',
+                            ['id_nc' => $module],
+                            'name'
+                        )
+                    );
+                    $modulesToAdd[] = $name;
+                    db_process_sql_insert(
+                        'tnetwork_profile_component',
+                        [
+                            'id_nc' => $module,
+                            'id_np' => $this->id_np,
+                        ]
+                    );
+                } else {
+                    $message = 'Some modules already exists<br>';
+                }
             }
 
-            $this->ajaxMsg('result', __('Components added sucessfully'));
+            if (empty($modulesToAdd)) {
+                $this->ajaxMsg(
+                    'error',
+                    __('The modules is already added')
+                );
+                return false;
+            }
+
+            if ($message === '') {
+                $message = 'Following modules will be added:';
+            } else {
+                $message .= 'Following modules will be added:';
+            }
+
+            $message .= '<ul>';
+            foreach ($modulesToAdd as $key => $value) {
+                $message .= '<li>'.$value['name'].'</li>';
+            }
+
+            $message .= '</ul>';
+
+            $this->ajaxMsg(
+                'result',
+                __($message)
+            );
         }
     }
 
@@ -845,7 +919,7 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['title' => 'Export to CSV']
+                ['title' => 'Export tdaso CSV']
             );
             $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
             $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';

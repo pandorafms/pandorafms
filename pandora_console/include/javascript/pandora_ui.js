@@ -249,22 +249,24 @@ function load_modal(settings) {
             });
           } else {
             settings.form.forEach(function(element) {
-              $("#" + element + " :input").each(function() {
-                // TODO VALIDATE ALL INPUTS.
-                if (this.type == "file") {
-                  if ($(this).prop("files")[0]) {
-                    formdata.append(this.name, $(this).prop("files")[0]);
-                  }
-                } else {
-                  if ($(this).attr("type") == "checkbox") {
-                    if (this.checked) {
-                      formdata.append(this.name, "on");
+              $("#" + element + " :input, #" + element + " textarea").each(
+                function() {
+                  // TODO VALIDATE ALL INPUTS.
+                  if (this.type == "file") {
+                    if ($(this).prop("files")[0]) {
+                      formdata.append(this.name, $(this).prop("files")[0]);
                     }
                   } else {
-                    formdata.append(this.name, $(this).val());
+                    if ($(this).attr("type") == "checkbox") {
+                      if (this.checked) {
+                        formdata.append(this.name, "on");
+                      }
+                    } else {
+                      formdata.append(this.name, $(this).val());
+                    }
                   }
                 }
-              });
+              );
             });
           }
 
@@ -493,4 +495,82 @@ function generalShowMsg(data, idMsg) {
       }
     ]
   });
+}
+
+function infoMessage(data, idMsg) {
+  var title = data.title;
+  var err_messge = data.text;
+
+  if (idMsg == null) {
+    idMsg = uniqId();
+  }
+
+  if ($("#" + idMsg).length === 0) {
+    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+    $("#" + idMsg).empty();
+  }
+
+  $("#err_msg").empty();
+  $("#err_msg").html("\n\n" + err_messge);
+
+  $("#" + idMsg)
+    .dialog({
+      height: 250,
+      width: 528,
+      opacity: 1,
+      modal: true,
+      position: {
+        my: "center",
+        at: "center",
+        of: window,
+        collision: "fit"
+      },
+      title: data.title,
+      buttons: [
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+          text: "Retry",
+          click: function(e) {
+            handleConnection();
+          }
+        },
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
+          text: "Close",
+          click: function() {
+            $(this).dialog("close");
+          }
+        }
+      ],
+
+      open: function(event, ui) {
+        $(".ui-widget-overlay").addClass("error-modal-opened");
+      },
+      close: function(event, ui) {
+        $(".ui-widget-overlay").removeClass("error-modal-opened");
+      }
+    })
+    .show();
+}
+
+function reveal_password(name) {
+  var passwordElement = $("#password-" + name);
+  var revealElement = $("#reveal_password_" + name);
+  var imagesPath = "";
+
+  if ($("#hidden-metaconsole_activated").val() == 1) {
+    imagesPath = "../../images/";
+  } else {
+    imagesPath = "images/";
+  }
+
+  if (passwordElement.attr("type") == "password") {
+    passwordElement.attr("type", "text");
+    revealElement.attr("src", imagesPath + "eye_hide.png");
+  } else {
+    passwordElement.attr("type", "password");
+    revealElement.attr("src", imagesPath + "eye_show.png");
+  }
 }

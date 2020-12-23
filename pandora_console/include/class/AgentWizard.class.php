@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Agent Wizard for SNMP and WMI
  *
@@ -1453,7 +1452,7 @@ class AgentWizard extends HTML
         foreach (array_keys($data) as $k) {
             foreach ($modulesActivated as $key => $value) {
                 $valueStr = preg_replace('/\//', '\/', $value);
-                if (empty(preg_match('/'.$valueStr.'$/', $k)) === false) {
+                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false) {
                     if (empty(preg_match('/module-name-set/', $k)) === false) {
                         $result[$value]['name'] = $data[$k];
                     } else if (empty(preg_match('/module-description-set/', $k)) === false) {
@@ -1468,10 +1467,16 @@ class AgentWizard extends HTML
                                 $result[$value]['name'] = $data['module-default_name-'.$key];
                             } else if (empty(preg_match('/module-description-set/', $k)) === false) {
                                 $result[$value]['description'] = $data['module-default_description-'.$key];
+                            } else if (empty(preg_match('/module-value/', $k)) === false) {
+                                $result[$value]['value'] = $data['module-value-'.$key];
                             }
 
-                            preg_match('/^(.*)-.*?_(\d-\d)$/', $k, $matches);
+                            preg_match('/^(.*)-.*?_(\d+-\d+)$/', $k, $matches);
                             $k = $matches[1].'-0_'.$matches[2];
+                        } else {
+                            if (empty(preg_match('/module-value/', $k)) === false) {
+                                $result[$value]['value'] = $data[$k];
+                            }
                         }
                     }
 
@@ -1495,7 +1500,7 @@ class AgentWizard extends HTML
                         $result[$value]['scan_type'] = (int) $data[$k];
                     } else if (empty(preg_match('/module-execution_type/', $k)) === false) {
                         $result[$value]['execution_type'] = (int) $data[$k];
-                    } else if (empty(preg_match('/module-value/', $k)) === false) {
+                    } else if (($data['wizard_section'] !== 'snmp_interfaces_explorer') && (empty(preg_match('/module-value/', $k)) === false)) {
                         $result[$value]['value'] = $data[$k];
                     } else if (empty(preg_match('/module-macros/', $k)) === false) {
                         $result[$value]['macros'] = $data[$k];

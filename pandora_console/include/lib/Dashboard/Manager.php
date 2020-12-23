@@ -702,8 +702,8 @@ class Manager
                 FROM tdashboard td
                 LEFT JOIN twidget_dashboard twd
                     ON td.id = twd.id_dashboard
-				WHERE (td.id_group IN (%s) AND td.id_user = '') OR
-					td.id_user = '%s' %s
+				WHERE ((td.id_group IN (%s) AND td.id_user = '') OR
+					td.id_user = '%s') %s
                 GROUP BY td.id
 				ORDER BY name%s",
                     $string_groups,

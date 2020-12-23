@@ -5786,6 +5786,10 @@ div#status_pie {
   border: none;
 }
 
+#tooltip {
+  z-index: 10000;
+}
+
 /*
  * ---------------------------------------------------------------------
  * - SERVICES TABLE VIEW

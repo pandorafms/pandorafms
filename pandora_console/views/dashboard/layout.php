@@ -35,7 +35,8 @@
 
 // Js Files.
 \ui_require_javascript_file('underscore-min');
-\ui_require_javascript_file('gridstack.all');
+\ui_require_javascript_file('gridstack');
+\ui_require_javascript_file('gridstack.jQueryUI');
 \ui_require_javascript_file('pandora_dashboards');
 \ui_require_jquery_file('countdown');
 

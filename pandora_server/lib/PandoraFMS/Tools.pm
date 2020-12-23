@@ -1556,6 +1556,10 @@ sub ping ($$) {
 		1
 	);
 
+	# Set default values if config is not defined.
+	$timeout = 4 if !defined($timeout);
+	$retries = 4 if !defined($retries);
+
 	# Windows
 	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){
 		$timeout *= 1000; # Convert the timeout to milliseconds.

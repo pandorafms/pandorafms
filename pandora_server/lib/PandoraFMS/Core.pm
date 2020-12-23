@@ -5381,7 +5381,9 @@ sub pandora_self_monitoring ($$) {
 	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
 	my $read_speed = int((time - $start_performance) * 1e6);
 
-	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";

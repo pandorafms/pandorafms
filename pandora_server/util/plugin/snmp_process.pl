@@ -2,7 +2,7 @@
 ##################################################################################
 # SNMP Plugin for Pandora FMS
 # (c) Sergio Martin 2010, sergio.martin@artica.es
-# (c) 2010 Artica Soluciones Tecnologicas S.L
+# (c) 2010-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

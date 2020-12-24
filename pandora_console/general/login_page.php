@@ -17,7 +17,7 @@ if (isset($config['homedir'])) {
     $homedir = '';
 }
 
-ui_require_css_file('login');
+ui_require_css_file('login', 'include/styles/', true);
 
 require_once __DIR__.'/../include/functions_ui.php';
 require_once __DIR__.'/../include/functions.php';

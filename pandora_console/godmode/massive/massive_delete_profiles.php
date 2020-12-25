@@ -35,6 +35,13 @@ if (is_ajax()) {
         $id_profile = get_parameter('id_profile');
 
         $profile_data = db_get_all_rows_filter('tusuario_perfil', ['id_perfil' => $id_profile[0], 'id_grupo' => $id_group[0]]);
+        if (!users_is_admin()) {
+            foreach ($profile_data as $user => $values) {
+                if (users_is_admin($values['id_usuario'])) {
+                    unset($profile_data[$user]);
+                }
+            }
+        }
 
         echo json_encode(index_array($profile_data, 'id_up', 'id_usuario'));
         return;
@@ -122,13 +129,15 @@ if (check_acl($config['id_user'], 0, 'PM')) {
         'width: 100%'
     );
 } else {
-    $display_all_group = false;
+    $group_um = users_get_groups_UM($config['id_user']);
+    if (!isset($group_um[0])) {
+        $display_all_group = false;
+    }
     $data[0] .= html_print_select(
         profile_get_profiles(
             [
                 'pandora_management' => '<> 1',
                 'db_management'      => '<> 1',
-                'user_management'    => '<> 1',
             ]
         ),
         'profiles_id[]',

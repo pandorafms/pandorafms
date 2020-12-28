@@ -3723,6 +3723,8 @@ function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
  */
 function agents_get_sap_agents($id_agent)
 {
+    global $config;
+
     // Available modules.
     // If you add more modules, please update SAP.pm.
     $sap_modules = [
@@ -3745,15 +3747,25 @@ function agents_get_sap_agents($id_agent)
 
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
-        $new_ones = db_get_all_rows_sql(
-            'SELECT ta.id_agente,ta.alias
-             FROM tagente ta
-             INNER JOIN tagente_modulo tam 
-             ON tam.id_agente = ta.id_agente 
-             WHERE tam.nombre  
-             LIKE "%SAP%" 
-             GROUP BY ta.id_agente'
-        );
+        $sql = 'SELECT ta.id_agente,ta.alias, ta.id_grupo
+                 FROM tagente ta
+                 INNER JOIN tagente_modulo tam 
+                 ON tam.id_agente = ta.id_agente 
+                 WHERE tam.nombre  
+                 LIKE "%SAP%" 
+                 GROUP BY ta.id_agente';
+
+        // ACL groups.
+        $agent_groups = array_keys(users_get_groups($config['id_user']));
+        if (!empty($agent_groups)) {
+            $sql .= sprintf(
+                ' HAVING ta.id_grupo IN (%s)',
+                implode(',', $agent_groups)
+            );
+        }
+
+        $new_ones = db_get_all_rows_sql($sql);
+
         if ($new_ones === false) {
             continue;
         }

@@ -1861,6 +1861,11 @@ switch ($action) {
                             ''
                         );
 
+                        $event_filter_exclude = get_parameter(
+                            'filter_exclude',
+                            ''
+                        );
+
                         // If metaconsole is activated.
                         if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
@@ -1998,6 +2003,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
 
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2602,6 +2609,12 @@ switch ($action) {
                                     ''
                                 );
 
+                                $event_filter_exclude = get_parameter(
+                                    'filter_exclude',
+                                    ''
+                                );
+
+
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
                                 $style['filter_event_severity'] = json_encode(
@@ -2619,6 +2632,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

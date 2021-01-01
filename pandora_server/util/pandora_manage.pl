@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.751 PS201231";
+my $version = "7.0NG.751 PS210101";
 
 # save program name for logging
 my $progname = basename($0);

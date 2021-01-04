@@ -1138,6 +1138,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             );
 
             $array_os = [
+                ''          => __('No change'),
                 'inherited' => __('Inherited'),
                 'linux'     => __('Linux'),
                 'windows'   => __('Windows'),

@@ -252,9 +252,11 @@ switch ($config['dbtype']) {
                 $id_agents[] = $row['id_agente'];
             }
 
-            $address_by_user_groups = agents_get_addresses($id_agents);
-            foreach ($address_by_user_groups as $i => $a) {
-                $address_by_user_groups[$i] = '"'.$a.'"';
+            if (!empty($id_agents)) {
+                $address_by_user_groups = agents_get_addresses($id_agents);
+                foreach ($address_by_user_groups as $i => $a) {
+                    $address_by_user_groups[$i] = '"'.$a.'"';
+                }
             }
         } else {
             $rows = db_get_all_rows_filter(
@@ -288,6 +290,7 @@ if (empty($all_address_agents)) {
     $all_address_agents = [];
     array_unshift($all_address_agents, '""');
 }
+
 
 // Make query to extract traps of DB.
 switch ($config['dbtype']) {

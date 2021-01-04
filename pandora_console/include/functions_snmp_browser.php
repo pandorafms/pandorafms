@@ -1316,7 +1316,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min_ff_event_critical' => 0,
                     'ff_type'               => 0,
                     'each_ff'               => 0,
-                    'ip_target'             => $target_ip,
+                    'ip_target'             => '',
                     'configuration_data'    => '',
                     'history_data'          => 1,
                 ];

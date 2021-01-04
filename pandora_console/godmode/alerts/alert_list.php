@@ -284,9 +284,9 @@ if ($update_action) {
     }
 
     $values['module_action_threshold'] = (int) get_parameter('module_action_threshold_ajax');
-    $values['id_alert_action'] = $id_module_action;
+    $values['id_alert_action'] = $id_action;
 
-    $result = alerts_update_alert_agent_module_action($id_action, $values);
+    $result = alerts_update_alert_agent_module_action($id_module_action, $values);
     if ($result) {
         db_pandora_audit('Alert management', 'Update action '.$id_action.' in  alert '.$id_alert_module);
     } else {

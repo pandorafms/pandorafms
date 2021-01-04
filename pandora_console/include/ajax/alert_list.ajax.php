@@ -411,7 +411,11 @@ if ($show_update_action_menu) {
 
     $id_action = (int) get_parameter('id_action');
 
-    $actions = alerts_get_alert_agent_module_actions($id_alert);
+    $own_groups = users_get_groups($config['id_user'], 'LW', true);
+    $filter_groups = '';
+    $filter_groups = implode(',', array_keys($own_groups));
+    $actions = alerts_get_alert_actions_filter(true, 'id_group IN ('.$filter_groups.')');
+
     $action_option = db_get_row(
         'talert_template_module_actions',
         'id',
@@ -427,7 +431,7 @@ if ($show_update_action_menu) {
         );
         $data .= html_print_input_hidden(
             'id_module_action_ajax',
-            $id_module_action,
+            $id_action,
             true
         );
     if (! $id_agente) {
@@ -475,9 +479,9 @@ if ($show_update_action_menu) {
                 $data .= html_print_select(
                     $actions,
                     'action_select_ajax',
-                    $id_action,
+                    $action_option['id_alert_action'],
                     '',
-                    __('None'),
+                    false,
                     0,
                     true,
                     false,

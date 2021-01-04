@@ -86,7 +86,11 @@ function process_manage_delete($module_name, $id_agents, $module_status='all')
     if ($selection_delete_mode == 'agents') {
         // We are selecting "any" module for the selecteds agents
         if (($module_name[0] == '0') and (is_array($module_name)) and (count($module_name) == 1)) {
-            $filter_for_module_deletion = false;
+            if ($status_module != -1) {
+                $filter_for_module_deletion = sprintf('tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = %s OR utimestamp=0 )', $status_module);
+            } else {
+                $filter_for_module_deletion = false;
+            }
         } else {
             $filter_for_module_deletion = sprintf('tagente_modulo.nombre IN ("%s")', implode('","', $module_name));
         }

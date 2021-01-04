@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -2359,9 +2359,10 @@ function modules_get_agentmodule_data_for_humans($module)
         } else {
             $salida = ui_print_module_string_value(
                 $module['datos'],
-                $module['id_agente_modulo'],
+                $module['id'],
                 $module['current_interval'],
-                $module['module_name']
+                $module['module_name'],
+                $module['serverID'] ? $module['serverID'] : 0
             );
         }
     }
@@ -3395,16 +3396,16 @@ function recursive_get_dt_from_modules_tree(&$f_modules, $modules, $deep)
 
 /**
  * @brief Get the button with the link to open realtime stats into a new window
- *        Only to native (not satellite discovered) snmp modules.
+ * Only to native (not satellite discovered) snmp modules.
  *
- * @param  array With all the module info
- * @return string All the HTML code to paint the button
+ * @param  array $module With all the module info.
+ * @return string Link to chart.
  */
 function get_module_realtime_link_graph($module)
 {
     global $config;
 
-    // Sometimes some parameters are renamed
+    // Sometimes some parameters are renamed.
     if (!isset($module['id_tipo_modulo'])) {
         $module['id_tipo_modulo'] = $module['module_type'];
     }
@@ -3413,36 +3414,51 @@ function get_module_realtime_link_graph($module)
         $module['nombre'] = $module['module_name'];
     }
 
-    // Avoid to show on metaconsole
+    // Avoid to show on metaconsole.
     if (is_metaconsole()) {
         return '';
     }
 
-    // Realtime graph is an extension and it should be enabled
+    // Realtime graph is an extension and it should be enabled.
     if (!extensions_is_enabled_extension('realtime_graphs.php')) {
         return '';
     }
 
-    // Only to remote_snmp, remote_snmp_proc. snmp_snmp_inc
-    if ($module['id_tipo_modulo'] != 15 && $module['id_tipo_modulo'] != 16 && $module['id_tipo_modulo'] != 18) {
+    // Only to remote_snmp, remote_snmp_proc. snmp_snmp_inc.
+    if ($module['id_tipo_modulo'] != 15
+        && $module['id_tipo_modulo'] != 16
+        && $module['id_tipo_modulo'] != 18
+    ) {
         return '';
     }
 
-    // Only version 1, 2 and 2c
-    if ($module['tcp_send'] != '1' && $module['tcp_send'] != '2' && $module['tcp_send'] != '2c') {
+    // Only version 1, 2, 2c and 3
+    if ($module['tcp_send'] != '1'
+        && $module['tcp_send'] != '2'
+        && $module['tcp_send'] != '2c'
+        && $module['tcp_send'] != '3'
+    ) {
         return '';
     }
 
     $params = [
-        'graph'          => 'snmp_module',
-        'agent_alias'    => urlencode(modules_get_agentmodule_agent_alias($module['id_agente_modulo'])),
-        'module_name'    => urlencode($module['nombre']),
-        'snmp_address'   => $module['ip_target'],
-        'snmp_community' => urlencode($module['snmp_community']),
-        'snmp_oid'       => $module['snmp_oid'],
-        'snmp_ver'       => $module['tcp_send'],
-        'hide_header'    => 1,
-        'rel_path'       => '../../',
+        'graph'                => 'snmp_module',
+        'agent_alias'          => urlencode(
+            modules_get_agentmodule_agent_alias($module['id_agente_modulo'])
+        ),
+        'module_name'          => urlencode($module['nombre']),
+        'target_ip'            => $module['ip_target'],
+        'community'            => urlencode($module['snmp_community']),
+        'starting_oid'         => urlencode($module['snmp_oid']),
+        'snmp_browser_version' => urlencode($module['tcp_send']),
+        'snmp3_auth_user'      => urlencode($module['plugin_user']),
+        'snmp3_security_level' => urlencode($module['custom_string_3']),
+        'snmp3_auth_method'    => urlencode($module['plugin_parameters']),
+        'snmp3_auth_pass'      => urlencode($module['plugin_pass']),
+        'snmp3_privacy_method' => urlencode($module['custom_string_1']),
+        'snmp3_privacy_pass'   => urlencode($module['custom_string_2']),
+        'hide_header'          => 1,
+        'rel_path'             => '../../',
     ];
     // Incremental type
     if ($module['id_tipo_modulo'] == 16) {
@@ -3456,9 +3472,13 @@ function get_module_realtime_link_graph($module)
 
     $link = substr($link, 0, -1);
 
-    $win_handle = 'realtime_'.dechex(crc32($module['id_agente_modulo'].$module['nombre']));
+    $win_handle = 'realtime_';
+    $win_handle .= dechex(
+        crc32($module['id_agente_modulo'].$module['nombre'])
+    );
 
-    $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 900, 480)">'.html_print_image(
+    $link_button = '<a href="javascript:winopeng_var(\''.$link.'\',\''.$win_handle.'\', 900, 480)">';
+    $link_button .= html_print_image(
         'images/realtime_shortcut.png',
         true,
         [
@@ -3466,7 +3486,8 @@ function get_module_realtime_link_graph($module)
             'alt'    => '',
             'title'  => __('Realtime SNMP graph'),
         ]
-    ).'</a>';
+    );
+    $link_button .= '</a>';
 
     return $link_button;
 }

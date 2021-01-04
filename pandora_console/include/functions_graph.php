@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1557,7 +1557,7 @@ function graphic_combined_module(
                 }
 
                 // Only 10 item for chart.
-                if ($i > 9) {
+                if ($i >= $config['items_combined_charts']) {
                     break;
                 }
 
@@ -2153,7 +2153,12 @@ function graphic_combined_module(
         case CUSTOM_GRAPH_HBARS:
         case CUSTOM_GRAPH_VBARS:
             $label = '';
+            $i = 0;
             foreach ($module_list as $module_item) {
+                if ($i >= $config['items_combined_charts']) {
+                    break;
+                }
+
                 if (is_metaconsole() === true) {
                     $server = metaconsole_get_connection_by_id(
                         $module_item['server']
@@ -2213,6 +2218,8 @@ function graphic_combined_module(
                 if (is_metaconsole() === true) {
                     metaconsole_restore_db();
                 }
+
+                $i++;
             }
 
             $color = color_graph_array();
@@ -2267,7 +2274,7 @@ function graphic_combined_module(
 
                 $options['generals']['rotate'] = true;
                 $options['generals']['forceTicks'] = true;
-                $options['x']['labelWidth'] = $sizeLabelTickWidth;
+                $options['x']['labelWidth'] = ($params['pdf'] === true) ? 30 : $sizeLabelTickWidth;
                 $options['generals']['arrayColors'] = $color;
                 $options['grid']['backgroundColor'] = 'transparent';
                 $options['grid']['backgroundColor'] = $background_color;
@@ -3924,6 +3931,7 @@ function graph_custom_sql_graph(
             $options['generals']['arrayColors'] = $color;
             $options['x']['labelWidth'] = 75;
             if ($ttl === 2) {
+                $options['x']['labelWidth'] = 35;
                 $options['backgroundColor'] = 'transparent';
                 $options['grid']['backgroundColor'] = 'transparent';
                 $options['y']['color'] = 'transparent';

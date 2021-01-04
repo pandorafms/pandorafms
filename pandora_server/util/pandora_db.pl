@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2013 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.750 PS201126";
+my $version = "7.0NG.751 PS210104";
 
 # Pandora server configuration
 my %conf;
@@ -1055,7 +1055,7 @@ else {
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 my $history_dbh = undef;
 is_metaconsole(\%conf);
-if ($conf{'_history_db_enabled'} eq '1') {
+if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1') {
 	eval {
 		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
 		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));

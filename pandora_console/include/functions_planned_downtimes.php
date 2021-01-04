@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
@@ -246,12 +246,10 @@ function planned_downtimes_get_malformed()
     $sql = "SELECT *
 			FROM tplanned_downtime
 			WHERE type_execution = 'periodically'
-				AND ((type_periodicity = 'monthly'
+				AND (type_periodicity = 'monthly'
 						AND (periodically_day_from > periodically_day_to
 							OR (periodically_day_from = periodically_day_to
-								AND periodically_time_from >= periodically_time_to)))
-					OR (type_periodicity = 'weekly'
-						AND periodically_time_from >= periodically_time_to))";
+								AND periodically_time_from >= periodically_time_to)))";
     $malformed_downtimes = db_get_all_rows_sql($sql);
 
     if ($malformed_downtimes === false) {

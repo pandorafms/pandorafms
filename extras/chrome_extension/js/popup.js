@@ -8,7 +8,10 @@ $(document).ready(function() {
   bg = chrome.extension.getBackgroundPage();
 
   // Display the information
-  if (bg.fetchEvents().length == 0) {
+  var events = bg.fetchEvents();
+  if (!events) {
+    showError("Failed to retrieve events, please retry");
+  } else if (events.length == 0) {
     showError("No events");
   } else {
     showEvents();

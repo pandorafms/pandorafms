@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -3904,17 +3904,23 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.__('Max:').remove_right_zeros(
                     number_format(
                         $value['max'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '._('Avg:').remove_right_zeros(
                     number_format(
                         $value['avg'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.$str;
 
@@ -3978,7 +3984,8 @@ function series_type_graph_array($data, $show_elements_graph)
                     $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator']
                         )
                     ).' '.$str;
                 }
@@ -4100,6 +4107,11 @@ function generator_chart_to_pdf(
     if ($type_graph_pdf === 'vbar') {
         $width_img  = $params['generals']['pdf']['width'];
         $height_img = $params['generals']['pdf']['height'];
+    } else if ($type_graph_pdf === 'combined'
+        && $params_combined['stacked'] == CUSTOM_GRAPH_VBARS
+    ) {
+        $width_img = 650;
+        $height_img = ($params['height'] + 50);
     } else {
         $width_img  = 550;
         $height_img = $params['height'];
@@ -5911,4 +5923,5 @@ function send_test_email(
     }
 
     return $result;
+
 }

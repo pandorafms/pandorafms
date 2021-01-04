@@ -3,7 +3,7 @@ package PandoraFMS::SNMPServer;
 # Pandora FMS SNMP Console.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -49,6 +49,8 @@ my $TaskSem :shared;
 
 # Trap statistics by agent
 my %AGENTS = ();
+# Sources silenced by storm protection.
+my %SILENCEDSOURCES = ();
 
 # Index and buffer management for trap log files
 my $SNMPTRAPD =   { 'log_file' => '', 'fd' => undef, 'idx_file' => '', 'last_line' => 0, 'last_size' => 0, 'read_ahead_line' => '', 'read_ahead_pos' => 0 };
@@ -167,17 +169,26 @@ sub data_producer ($) {
 			if (! defined ($AGENTS{$source})) {
 				$AGENTS{$source}{'count'} = 1;
 				$AGENTS{$source}{'event'} = 0;
+				if (! defined ($SILENCEDSOURCES{$source})) {
+					$SILENCEDSOURCES{$source} = 0;
+				}
 			} else {
 				$AGENTS{$source}{'count'} += 1;
 			}
+			# Silence source.
+			if ((defined ($SILENCEDSOURCES{$source})) && ($SILENCEDSOURCES{$source} > $curr_time)) {
+				next;
+			}
 			if ($pa_config->{'snmp_storm_protection'} > 0 && $AGENTS{$source}{'count'} > $pa_config->{'snmp_storm_protection'}) {
 				if ($AGENTS{$source}{'event'} == 0) {
-					pandora_event ($pa_config, "Too many traps coming from $source. Silenced for " . int ($pa_config->{"snmp_storm_timeout"} / 60) . " minutes.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
+					$SILENCEDSOURCES{$source} = $curr_time + $pa_config->{'snmp_storm_silence_period'};
+					my $silenced_time = ($pa_config->{'snmp_storm_silence_period'} eq 0 ? $pa_config->{"snmp_storm_timeout"} : $pa_config->{'snmp_storm_silence_period'});
+					pandora_event ($pa_config, "Too many traps coming from $source. Silenced for " . $silenced_time . " seconds.", 0, 0, 4, 0, 0, 'system', 0, $dbh);
 				}
 				$AGENTS{$source}{'event'} = 1;
 				next;
 			}
-	
+
 			push (@tasks, $line);
 		}
 	}

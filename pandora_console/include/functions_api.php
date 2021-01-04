@@ -2,7 +2,7 @@
 
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -194,6 +194,7 @@ function returnData($returnType, $data, $separator=';')
             if (is_array($data['data'])) {
                 if (array_key_exists('list_index', $data)) {
                     if ($returnType == 'csv_head') {
+                        header('Content-type: text/csv');
                         foreach ($data['list_index'] as $index) {
                             echo $index;
                             if (end($data['list_index']) == $index) {
@@ -8445,10 +8446,16 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         return;
     }
 
-    $separator = $other['data'][0];
-    $periodSeconds = $other['data'][1];
-    $tstart = $other['data'][2];
-    $tend = $other['data'][3];
+    $separator = ';';
+    $tstart = null;
+    $tend = null;
+    $periodSeconds = null;
+    if (is_array($other) === true && is_array($other['data']) === true) {
+        $separator = $other['data'][0];
+        $periodSeconds = $other['data'][1];
+        $tstart = $other['data'][2];
+        $tend = $other['data'][3];
+    }
 
     if (($tstart != '') && ($tend != '')) {
         try {
@@ -8469,36 +8476,18 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
             $date_end = $date_end->format('U');
         } catch (Exception $e) {
             returnError('error_query_module_data', 'Error in date format. ');
+            return;
         }
-
-        $sql = sprintf(
-            'SELECT utimestamp, datos 
-            FROM tagente_datos 
-            WHERE id_agente_modulo = %d AND utimestamp > %d 
-            AND utimestamp < %d 
-            ORDER BY utimestamp DESC',
-            $id,
-            $date_start,
-            $date_end
-        );
     } else {
-        if ($periodSeconds == null) {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d 
-                ORDER BY utimestamp DESC',
-                $id
-            );
+        if ($periodSeconds !== null) {
+            $date_end = get_system_time();
+            $date_start = (get_system_time() - $periodSeconds);
         } else {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d AND utimestamp > %d 
-                ORDER BY utimestamp DESC',
-                $id,
-                (get_system_time() - $periodSeconds)
-            );
+            $date_end = get_system_time();
+            $result = modules_get_first_date($id, $tstart);
+            if ($result !== false) {
+                $date_start = $result['first_utimestamp'];
+            }
         }
     }
 
@@ -8507,13 +8496,30 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         'utimestamp',
         'datos',
     ];
-    $data['data'] = db_get_all_rows_sql($sql);
+
+    $data['data'] = array_reduce(
+        db_uncompress_module_data($id, $date_start, $date_end),
+        function ($carry, $item) {
+            if (is_array($item['data']) === true) {
+                foreach ($item['data'] as $i => $v) {
+                    $carry[] = [
+                        'utimestamp' => $v['utimestamp'],
+                        'datos'      => $v['datos'],
+                    ];
+                }
+            }
+
+            return $carry;
+        },
+        []
+    );
 
     if ($data === false) {
         returnError('error_query_module_data', 'Error in the query of module data.');
     } else if ($data['data'] == '') {
         returnError('error_query_module_data', 'No data to show.');
     } else {
+        // returnData('csv_head', $data, $separator);
         returnData('csv', $data, $separator);
     }
 }
@@ -13760,12 +13766,19 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
-    $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
-    // 1 hour by default.
-    $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
+    if (is_array($other['data']) === true) {
+        $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+        // 1 hour by default.
+        $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
-    // Graph height when send email by alert
-    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+        // Graph height when send email by alert
+        $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+    } else {
+        $graph_seconds = $other['data'];
+        $graph_threshold = 0;
+        $other['data'][1] = 0;
+        $height = 225;
+    }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));

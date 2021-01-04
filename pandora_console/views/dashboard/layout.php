@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,8 @@
 
 // Js Files.
 \ui_require_javascript_file('underscore-min');
-\ui_require_javascript_file('gridstack.all');
+\ui_require_javascript_file('gridstack');
+\ui_require_javascript_file('gridstack.jQueryUI');
 \ui_require_javascript_file('pandora_dashboards');
 \ui_require_jquery_file('countdown');
 

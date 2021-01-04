@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -248,17 +248,30 @@ if (is_ajax()) {
     return;
 }
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+
+$tab = (string) get_parameter('tab', 'groups');
+
+if ($tab != 'credbox' && ! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
     return;
+} else if ($tab == 'credbox'
+    && !check_acl($config['id_user'], 0, 'UM')
+    && !check_acl($config['id_user'], 0, 'PM')
+) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Credential Store'
+    );
+    include 'general/noaccess.php';
+    return;
 }
 
 $sec = defined('METACONSOLE') ? 'advanced' : 'gagente';
-$url_credbox  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=credbox';
+$url_credbox  = 'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox';
 $url_tree  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=tree';
 $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups';
 
@@ -294,8 +307,6 @@ $buttons['credbox'] = [
         ]
     ).'</a>',
 ];
-
-$tab = (string) get_parameter('tab', 'groups');
 
 $title = __('Groups defined in %s', get_product_name());
 // Marks correct tab.

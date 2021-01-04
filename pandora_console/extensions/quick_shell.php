@@ -251,6 +251,12 @@ function quickShell()
         $new .= $config['ws_proxy_url'].'/'.$method."';";
     }
 
+    // Update firefox issue.
+    $original = '    this.iframe_.src = \'#\';';
+    $trick = 'this.iframe_.src = \'javascript:\';';
+
+    $r = str_replace($original, $trick, $r);
+
     // Update url.
     $gotty = str_replace($url, $new, $gotty);
 

@@ -726,7 +726,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} == 1) {
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} ne "" && $conf->{'_delete_notinit'} == 1) {
 		log_message ('CHECKDB', "Deleting not-init data.");
 		my @modules = get_db_rows ($dbh,
 			'SELECT id_agente_modulo, id_agente

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -702,7 +702,7 @@ function db_get_module_ranges_unknown(
  * @param utimestamp $tend             End of the catch.
  * @param integer    $slice_size       Size of slice(default-> module_interval).
  *
- * @return hash with the data uncompressed in blocks of module_interval
+ * @return array with the data uncompressed in blocks of module_interval
  * false in case of empty result
  *
  * Note: All "unknown" data are marked as NULL

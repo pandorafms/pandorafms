@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -155,6 +155,14 @@ $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
 $uncompressed_module = true;
+
+// Users.
+$id_users = [];
+$users_groups = [];
+$select_by_group = false;
+
+$nothing = __('Local metaconsole');
+$nothing_value = 0;
 
 $graph_render = (empty($config['type_mode_graph']) === true) ? 0 : $config['type_mode_graph'];
 
@@ -726,6 +734,8 @@ switch ($action) {
                 case 'group_configuration':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $nothing = '';
+                    $nothing_value = 0;
                 break;
 
                 case 'netflow_area':
@@ -745,6 +755,22 @@ switch ($action) {
                     $period = $item['period'];
                     $description = $item['description'];
                     $top_n_value = $item['top_n_value'];
+                break;
+
+                case 'permissions_report':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+                    $id_users = array_combine(
+                        array_values($es['id_users']),
+                        array_values($es['id_users'])
+                    );
+
+                    if (isset($id_users[0]) && $id_users[0] == 0) {
+                        $id_users[0] = __('None');
+                    }
+
+                    $users_groups = $es['users_groups'];
+                    $select_by_group = $es['select_by_group'];
                 break;
 
                 default:
@@ -934,8 +960,8 @@ $class = 'databox filters';
                     'combo_server',
                     $server_name,
                     '',
-                    __('Local metaconsole'),
-                    0
+                    $nothing,
+                    $nothing_value
                 );
                 ?>
             </td>
@@ -1036,23 +1062,6 @@ $class = 'databox filters';
                     false,
                     false,
                     'set_last_value_period();'
-                );
-                ?>
-            </td>
-        </tr>
-
-        <tr id="row_resolution" style="" class="datos">
-            <td style="font-weight:bold;">
-                <?php
-                echo __('Resolution');
-                ?>
-            </td>
-            <td style="">
-                <?php
-                html_print_select(
-                    netflow_resolution_select_params(),
-                    'resolution',
-                    $resolution
                 );
                 ?>
             </td>
@@ -1896,7 +1905,14 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_query" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
+            <td style="font-weight:bold;">
+            <?php
+            echo __('SQL query').ui_print_help_tip(
+                __('The entities of the fields that contain them must be included.'),
+                true
+            );
+            ?>
+                </td>
             <td style="" id="sql_entry">
                 <?php
                 html_print_textarea('sql', 5, 25, $sql_query_report);
@@ -2846,7 +2862,102 @@ $class = 'databox filters';
             ?>
             </td>
         </tr>
+        
+        <tr id="row_profiles_group" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('Group');
+                ?>
+            </td>
+            <td>
+            <?php
+            $user_groups = users_get_groups();
 
+            // Add a selector for users without assigned group.
+            $user_groups[''] = __('Unassigned group');
+
+            html_print_select(
+                $user_groups,
+                'users_groups[]',
+                $users_groups,
+                '',
+                false,
+                '',
+                false,
+                true,
+                false,
+                '',
+                false,
+                'min-width: 180px'
+            );
+            ?>
+                </td>
+        </tr>
+
+        <tr id="row_users" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('User');
+                ?>
+            </td>
+            <td style="">
+                <?php
+                $tmp_users = db_get_all_rows_filter('tusuario', [], 'id_user');
+                foreach ($tmp_users as $key => $user) {
+                    $select_users[$user['id_user']] = $user['id_user'];
+                }
+
+                $input_data = [
+                    'type'         => 'select_multiple_filtered',
+                    'class'        => 'w80p mw600px',
+                    'name'         => 'id_users',
+                    'return'       => 0,
+                    'available'    => array_diff(
+                        $select_users,
+                        $id_users
+                    ),
+                    'selected'     => $id_users,
+                    'group_filter' => [
+                        'page'          => 'godmode/users/user_list',
+                        'method'        => 'get_users_by_group',
+                        'nothing'       => __('Unnasigned group'),
+                        'nothing_value' => -1,
+                        'id'            => $id_users,
+                    ],
+                    'texts'        => [
+                        'title-left'  => 'Available users',
+                        'title-right' => 'Selected users',
+                        'filter-item' => 'Filter user name',
+                    ],
+                    'sections'     => [
+                        'filters'               => 1,
+                        'item-selected-filters' => 0,
+                    ],
+                ];
+
+                html_print_input($input_data, 'div', true);
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_select_by_group" style="" class="datos">
+            <td style="font-weight:bold;">
+                <?php
+                echo __('Select by group');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'select_by_group',
+                    1,
+                    $select_by_group,
+                    false
+                );
+                ?>
+                </td>
+        </tr>
+        
         <tr id="row_landscape" style="" class="datos">
             <td style="font-weight:bold;">
             <?php
@@ -3707,6 +3818,14 @@ echo "<div id='message_no_interval_option'  title='".__('Item Editor Information
 echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
 echo '</div>';
 
+echo "<div id='message_no_user'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a user.').'</p>';
+echo '</div>';
+
+echo "<div id='message_no_group'  title='".__('Item Editor Information')."' style='display:none;'>";
+echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a group.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -3754,7 +3873,6 @@ $(document).ready (function () {
                 $('#checkbox-recursion').removeAttr('disabled')
             }
 
-            $("#id_agents").html('');
             $("#id_agents2").html('');
             $("#module").html('');
             $("#inventory_modules").html('');
@@ -3932,6 +4050,20 @@ $(document).ready (function () {
         });
     });
 
+    $("#checkbox-select_by_group").change(function () {
+        var select_by_group  = $('#checkbox-select_by_group').prop('checked');
+    
+    if(select_by_group == true) {
+        $("#row_users").hide(); 
+        $("#row_profiles_group").show(); 
+
+    } else {
+        $("#row_users").show(); 
+        $("#row_profiles_group").hide(); 
+
+    }
+    });
+
     $("#checkbox-fullscale").change(function(e){
         if(e.target.checked === true) {
             $("#graph_render").prop('disabled', 'disabled');
@@ -3995,6 +4127,16 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
+                case 'permissions_report':
+                if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
+                    dialog_message('#message_no_group');
+                    return false;
+                    }
+                if ($("#checkbox-select_by_group").prop("checked") == false && $("select#selected-select-id_users>option:selected").val() == 0) {
+                    dialog_message('#message_no_user');
+                    return false;
+                    }
+            break;
             default:
                 break;
         }
@@ -4116,6 +4258,18 @@ $(document).ready (function () {
                     return false;
                     }
                     break;
+            
+            case 'permissions_report':
+                if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
+                    dialog_message('#message_no_group');
+                    return false;
+                    }
+                if ($("#checkbox-select_by_group").prop("checked") == false && $("select#selected-select-id_users>option:selected").val() == 0) {
+                    dialog_message('#message_no_user');
+                    return false;
+                    }
+            break;
+
             default:
                 break;
         }
@@ -5002,6 +5156,10 @@ function chooseType() {
     $("#row_select_fields2").hide();
     $("#row_select_fields3").hide();
     $("#row_uncompressed_module").hide();
+    $("#row_users").hide();
+    $("#row_profiles_group").hide();
+    $("#row_select_by_group").hide();
+
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -5648,6 +5806,7 @@ function chooseType() {
             $("#row_group").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
+            $("#combo_server option[value='0']").remove();
             break;
 
         case 'netflow_area':
@@ -5685,7 +5844,21 @@ function chooseType() {
             $("#row_period").show();
             $("#row_quantity").show();
             break;
+
+        case 'permissions_report':
+            $("#row_description").show();
+            $("#row_users").show();
+            $("#row_profiles_group").show();
+            $("#row_select_by_group").show();
+
+            if($("#checkbox-select_by_group").prop("checked")) {
+                $("#row_users").hide();
+            } else {
+                $("#row_profiles_group").hide(); 
+            }
+            
     }
+
     switch (type) {
         case 'event_report_agent':
         case 'simple_graph':
@@ -5774,4 +5947,5 @@ function dialog_message(message_id) {
       }
     });
 }
+
 </script>

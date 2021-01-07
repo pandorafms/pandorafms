@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -4166,7 +4166,15 @@ function events_page_details($event, $server='')
     if (!empty($agent)) {
         $data = [];
         $data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
-        if (can_user_access_node()) {
+        if (can_user_access_node() && is_metaconsole() && empty($event['server_id']) === true) {
+            $data[1] = ui_print_truncate_text(
+                $agent['alias'],
+                'agent_medium',
+                true,
+                true,
+                true
+            ).ui_print_help_tip(__('This agent belongs to metaconsole, is not possible display it'), true);
+        } else if (can_user_access_node()) {
             $data[1] = ui_print_agent_name(
                 $event['id_agente'],
                 true,

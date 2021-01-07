@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -234,6 +234,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'event_report_log':
                 reporting_html_log($table, $item);
+            break;
+
+            case 'permissions_report':
+                reporting_html_permissions($table, $item);
             break;
 
             case 'availability_graph':
@@ -5648,4 +5652,118 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
     $downtimes_table .= html_print_table($table, true);
 
     return $downtimes_table;
+}
+
+
+function reporting_html_permissions($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->class = 'databox data';
+    $table1->cellpadding = 1;
+    $table1->cellspacing = 1;
+    $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
+
+    if ($item['subtype'] === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+        $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+        $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 100px;';
+        $table1->style[2] = 'text-align: left;vertical-align: top; min-width: 100px';
+
+        $table1->head = [
+            __('User ID'),
+            __('Full name'),
+            __('Permissions'),
+        ];
+
+        $table1->headstyle[0] = 'text-align: left';
+        $table1->headstyle[1] = 'text-align: left';
+        $table1->headstyle[2] = 'text-align: left';
+    }
+
+    if ($item['subtype'] === REPORT_PERMISSIONS_GROUP_BY_GROUP) {
+        $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[2] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[3] = 'text-align: left;vertical-align: top;min-width: 150px;';
+
+        $table1->headstyle[0] = 'text-align: left';
+        $table1->headstyle[1] = 'text-align: left';
+        $table1->headstyle[2] = 'text-align: left';
+        $table1->headstyle[3] = 'text-align: left';
+
+        $table1->head = [
+            __('Group'),
+            __('User ID'),
+            __('Full name'),
+            __('Permissions'),
+        ];
+    }
+
+    $table1->data = [];
+
+    foreach ($item['data'] as $data) {
+        if ($item['subtype'] === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+            $profile_group_name = '';
+            foreach ($data['user_profiles'] as $user_profile) {
+                $profile_group_name .= $user_profile.'<br />';
+            }
+
+            $row = [
+                $data['user_id'],
+                $data['user_name'],
+                $profile_group_name,
+            ];
+        }
+
+        if ($item['subtype'] === REPORT_PERMISSIONS_GROUP_BY_GROUP) {
+            $user_profile_id_users = '';
+            $user_profile_name = '';
+            $user_profile_users_name = '';
+            $group_name = $data['group_name'].'<br />';
+
+            foreach ($data['users'] as $user => $user_data) {
+                $user_profile_id_users .= $user.'<br />';
+                $user_profile_users_name .= $user_data['fullname'].'<br />';
+
+                foreach ($user_data['profiles'] as $profile) {
+                    $user_profile_id_users .= '<br />';
+                    $user_profile_users_name .= '<br />';
+                    $user_profile_name .= $profile.'<br />';
+                }
+
+                $user_profile_name .= '<br />';
+            }
+
+            $row = [
+                $group_name,
+                $user_profile_id_users,
+                $user_profile_users_name,
+                $user_profile_name,
+            ];
+        }
+
+        $table1->data[] = $row;
+
+        if ($pdf !== 0) {
+            $table1->data[] = '<br />';
+        }
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['permissions']['cell'] = 3;
+        $table->cellstyle['permissions']['cell'] = 'text-align: center;';
+        $table->data['permissions']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
 }

@@ -771,139 +771,137 @@ function move_to_networkmap(node) {
 }
 
 function edit_node(data_node, dblClick) {
-  if (enterprise_installed) {
-    var flag_edit_node = true;
-    var edit_node = null;
+  var flag_edit_node = true;
+  var edit_node = null;
 
-    //Only select one node
-    var selection = d3.selectAll(".node_selected");
-    var id;
+  //Only select one node
+  var selection = d3.selectAll(".node_selected");
+  var id;
 
-    if (selection[0].length == 1) {
-      edit_node = selection[0].pop();
-    } else if (selection[0].length > 1) {
-      edit_node = selection[0].pop();
-    } else if (dblClick) {
-      edit_node = d3.select("#id_node_" + data_node["id"] + networkmap_id);
-      edit_node = edit_node[0][0];
-    } else {
-      flag_edit_node = false;
+  if (selection[0].length == 1) {
+    edit_node = selection[0].pop();
+  } else if (selection[0].length > 1) {
+    edit_node = selection[0].pop();
+  } else if (dblClick) {
+    edit_node = d3.select("#id_node_" + data_node["id"] + networkmap_id);
+    edit_node = edit_node[0][0];
+  } else {
+    flag_edit_node = false;
+  }
+
+  if (flag_edit_node) {
+    d3.selectAll(".node_selected").classed("node_selected", false);
+    d3.select(edit_node).classed("node_selected", true);
+
+    id = d3
+      .select(edit_node)
+      .attr("id")
+      .replace("id_node_", "");
+    var id_networkmap_lenght = networkmap_id.toString().length;
+    var id_node_length = id.length - id_networkmap_lenght;
+    id = id.substring(0, id_node_length);
+    var index_node = $.inArray(data_node, graph.nodes);
+    var node_selected = graph.nodes[index_node];
+    var selected_links = get_relations(node_selected);
+
+    $("select[name='shape'] option[value='" + node_selected.shape + "']").prop(
+      "selected",
+      true
+    );
+    $("select[name='shape']").attr(
+      "onchange",
+      "javascript: change_shape(" + node_selected.id_db + ");"
+    );
+    $("#node_options-fictional_node_update_button-1 input").attr(
+      "onclick",
+      "update_fictional_node(" + node_selected.id_db + ");"
+    );
+
+    $("#node_options-node_name-2 input").attr(
+      "onclick",
+      "update_node_name(" + node_selected.id_db + ");"
+    );
+
+    var params = [];
+    params.push("get_agent_info=1");
+    params.push("id_agent=" + node_selected["id_agent"]);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    if (!enterprise_installed) {
+      params.push("page=operation/agentes/pandora_networkmap.view");
     }
 
-    if (flag_edit_node) {
-      d3.selectAll(".node_selected").classed("node_selected", false);
-      d3.select(edit_node).classed("node_selected", true);
-
-      id = d3
-        .select(edit_node)
-        .attr("id")
-        .replace("id_node_", "");
-      var id_networkmap_lenght = networkmap_id.toString().length;
-      var id_node_length = id.length - id_networkmap_lenght;
-      id = id.substring(0, id_node_length);
-      var index_node = $.inArray(data_node, graph.nodes);
-      var node_selected = graph.nodes[index_node];
-      var selected_links = get_relations(node_selected);
-
-      $(
-        "select[name='shape'] option[value='" + node_selected.shape + "']"
-      ).prop("selected", true);
-      $("select[name='shape']").attr(
-        "onchange",
-        "javascript: change_shape(" + node_selected.id_db + ");"
-      );
-      $("#node_options-fictional_node_update_button-1 input").attr(
-        "onclick",
-        "update_fictional_node(" + node_selected.id_db + ");"
-      );
-
-      $("#node_options-node_name-2 input").attr(
-        "onclick",
-        "update_node_name(" + node_selected.id_db + ");"
-      );
-
-      var params = [];
-      params.push("get_agent_info=1");
-      params.push("id_agent=" + node_selected["id_agent"]);
-      params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-
-      jQuery.ajax({
-        data: params.join("&"),
-        dataType: "json",
-        type: "POST",
-        url: window.base_url_homedir + "/ajax.php",
-        success: function(data) {
-          $("#node_details-0-1").html(
-            '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
-              node_selected["id_agent"] +
-              '">' +
-              data["alias"] +
-              "</a>"
-          );
-
-          var addresses = "";
-          if (data["adressess"] instanceof Array) {
-            for (var i; i < data["adressess"].length; i++) {
-              addresses += data["adressess"][i] + "<br>";
-            }
-          } else {
-            for (var address in data["adressess"]) {
-              addresses += address + "<br>";
-            }
-          }
-          $("#node_details-1-1").html(addresses);
-          $("#node_details-2-1").html(data["os"]);
-          $("#node_details-3-1").html(data["group"]);
-
-          $("[aria-describedby=dialog_node_edit]").css({ top: "200px" });
-          $("#foot").css({
-            top: parseInt(
-              $("[aria-describedby=dialog_node_edit]").css("height") +
-                $("[aria-describedby=dialog_node_edit]").css("top")
-            ),
-            position: "relative"
-          });
-
-          get_interface_data_to_table(node_selected, selected_links);
-        }
-      });
-
-      $("#dialog_node_edit").dialog(
-        "option",
-        "title",
-        dialog_node_edit_title.replace(
-          "%s",
-          ellipsize(node_selected["text"], 40)
-        )
-      ); // It doesn't eval the possible XSS so it's ok
-      $("#dialog_node_edit").dialog("open");
-
-      if (node_selected.id_agent == undefined || node_selected.type == 3) {
-        //Fictional node
-        $("#node_options-fictional_node_name").css("display", "");
-        $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-        $("#node_options-fictional_node_networkmap_link").css("display", "");
-        $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
-        $("#node_options-fictional_node_update_button").css("display", "");
-        $("#node_options-node_name").css("display", "none");
-        $("#node_options-node_update_button").css("display", "none");
-      } else {
-        $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-        $("#node_options-fictional_node_name").css("display", "none");
-        $("#node_options-fictional_node_networkmap_link").css(
-          "display",
-          "none"
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: window.base_url_homedir + "/ajax.php",
+      success: function(data) {
+        $("#node_details-0-1").html(
+          '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
+            node_selected["id_agent"] +
+            '">' +
+            data["alias"] +
+            "</a>"
         );
-        $("#node_options-fictional_node_update_button").css("display", "none");
-        $("#node_options-node_name").css("display", "");
-      }
 
-      //Clean
-      $("#relations_table .relation_link_row").remove();
-      //Show the no relations
-      $("#relations_table-loading").css("display", "none");
-      $("#relations_table-no_relations").css("display", "");
+        var addresses = "";
+        if (data["adressess"] instanceof Array) {
+          for (var i; i < data["adressess"].length; i++) {
+            addresses += data["adressess"][i] + "<br>";
+          }
+        } else {
+          for (var address in data["adressess"]) {
+            addresses += address + "<br>";
+          }
+        }
+        $("#node_details-1-1").html(addresses);
+        $("#node_details-2-1").html(data["os"]);
+        $("#node_details-3-1").html(data["group"]);
+
+        $("[aria-describedby=dialog_node_edit]").css({ top: "200px" });
+        $("#foot").css({
+          top: parseInt(
+            $("[aria-describedby=dialog_node_edit]").css("height") +
+              $("[aria-describedby=dialog_node_edit]").css("top")
+          ),
+          position: "relative"
+        });
+
+        get_interface_data_to_table(node_selected, selected_links);
+      }
+    });
+
+    $("#dialog_node_edit").dialog(
+      "option",
+      "title",
+      dialog_node_edit_title.replace("%s", ellipsize(node_selected["text"], 40))
+    ); // It doesn't eval the possible XSS so it's ok
+    $("#dialog_node_edit").dialog("open");
+    $("#open_version_dialog").dialog();
+
+    if (node_selected.id_agent == undefined || node_selected.type == 3) {
+      //Fictional node
+      $("#node_options-fictional_node_name").css("display", "");
+      $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
+      $("#node_options-fictional_node_networkmap_link").css("display", "");
+      $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
+      $("#node_options-fictional_node_update_button").css("display", "");
+      $("#node_options-node_name").css("display", "none");
+      $("#node_options-node_update_button").css("display", "none");
+    } else {
+      $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
+      $("#node_options-fictional_node_name").css("display", "none");
+      $("#node_options-fictional_node_networkmap_link").css("display", "none");
+      $("#node_options-fictional_node_update_button").css("display", "none");
+      $("#node_options-node_name").css("display", "");
     }
+
+    //Clean
+    $("#relations_table .relation_link_row").remove();
+    //Show the no relations
+    $("#relations_table-loading").css("display", "none");
+    $("#relations_table-no_relations").css("display", "");
   }
 }
 
@@ -2871,18 +2869,35 @@ function init_drag_and_drop() {
           });
         });
       } else {
-        var params = [];
-        params.push("update_node_alert=1");
-        params.push("map_id=" + networkmap_id);
-        params.push("page=operation/agentes/pandora_networkmap.view");
         jQuery.ajax({
-          data: params.join("&"),
           dataType: "json",
           type: "POST",
           url: window.base_url_homedir + "/ajax.php",
+          data: {
+            node: JSON.stringify(d),
+            update_node: 1,
+            page: "operation/agentes/pandora_networkmap.view"
+          },
           success: function(data) {
-            if (data["correct"]) {
-              $("#open_version_dialog").dialog();
+            if (d.state == "holding_area") {
+              //It is out the holding area
+              if (data["state"] == "") {
+                //Remove the style of nodes and links
+                //in holding area
+                d3.select("#id_node_" + d.id + networkmap_id).classed(
+                  "holding_area",
+                  false
+                );
+                d3.select(".source_" + d.id + networkmap_id).classed(
+                  "holding_area_link",
+                  false
+                );
+                d3.select(".target_" + d.id + networkmap_id).classed(
+                  "holding_area_link",
+                  false
+                );
+                graph.nodes[d.id].state = "";
+              }
             }
           }
         });

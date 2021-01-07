@@ -1,5 +1,5 @@
 #!/bin/bash
-# (c) 2011 Sancho Lerena <slerena@artica.es>
+# (c) 2021 Sancho Lerena <slerena@artica.es>
 # This is a remote agent script, to use local plugins from a distant server.
 # You can run this from a local pandora agent.
 # Run with -h to see more information

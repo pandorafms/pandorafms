@@ -29,22 +29,30 @@ function handleConnection() {
   var connected;
   var msg = "online";
 
+  var homeurl = getServerUrl();
+  if (homeurl == null || homeurl == "") {
+    return;
+  }
+
   if (navigator.onLine) {
-    isReachable(getServerUrl())
-      .then(function(online) {
-        if (online) {
-          // handle online status
-          connected = true;
-          showConnectionMessage(connected, msg);
-        } else {
-          connected = false;
-          msg = "No connectivity with server";
-          showConnectionMessage(connected, msg);
-        }
+    $.ajax({
+      url: homeurl + "include/connection_check.php",
+      type: "post",
+      dataType: "json"
+    })
+      .done(function(response) {
+        connected = true;
+        showConnectionMessage(connected, msg);
       })
-      .catch(function(err) {
-        connected = false;
-        msg = err;
+      .fail(function(err) {
+        // If test connection file is not found, do not show message.
+        if (err.status != 404) {
+          connected = false;
+          msg = err;
+        } else {
+          connected = true;
+        }
+
         showConnectionMessage(connected, msg);
       });
   } else {
@@ -56,37 +64,16 @@ function handleConnection() {
 }
 
 /**
- * Test server reachibilty and get response.
- *
- * @param {String} url
- *
- * Return {promise}
- */
-function isReachable(url) {
-  /**
-   * Note: fetch() still "succeeds" for 404s on subdirectories,
-   * which is ok when only testing for domain reachability.
-   *
-   * Example:
-   *   https://google.com/noexist does not throw
-   *   https://noexist.com/noexist does throw
-   */
-  return fetch(url, { method: "HEAD", mode: "no-cors" })
-    .then(function(resp) {
-      return resp && (resp.ok || resp.type === "opaque");
-    })
-    .catch(function(error) {
-      console.warn("[conn test failure]:", error);
-    });
-}
-
-/**
  * Gets server origin url
  */
 function getServerUrl() {
   var server_url;
 
-  server_url = window.location.origin;
+  try {
+    server_url = get_php_value("absolute_homeurl");
+  } catch (error) {
+    return "";
+  }
 
   return server_url;
 }
@@ -99,7 +86,7 @@ function getServerUrl() {
  */
 function showConnectionMessage(conn = true, msg = "") {
   var data = {};
-  if (conn) {
+  if (conn && closed == false) {
     $("div#message_dialog_connection")
       .closest(".ui-dialog-content")
       .dialog("close");
@@ -164,6 +151,7 @@ function infoMessage(data, idMsg) {
       },
       close: function(event, ui) {
         $(".ui-widget-overlay").removeClass("error-modal-opened");
+        closed = true;
       }
     })
     .show();

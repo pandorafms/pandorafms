@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com.
  * ==================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the  GNU Lesser General Public License
@@ -16,7 +16,6 @@ require_once $config['homedir'].'/include/functions_config.php';
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 require_once $config['homedir'].'/include/functions_snmp.php';
 require_once $config['homedir'].'/include/functions_network_components.php';
-
 
 global $config;
 
@@ -172,7 +171,7 @@ if (is_ajax()) {
             $id_target = explode(',', $id_items[0]);
         }
 
-        if (empty($id_items[0])) {
+        if (empty($id_items[0]) && $module_target !== 'network_component') {
             echo json_encode([0 => -1]);
             exit;
         }

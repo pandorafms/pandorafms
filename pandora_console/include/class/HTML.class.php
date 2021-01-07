@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -549,6 +549,11 @@ class HTML
                 && $input['arguments']['type'] != 'hidden_extended'
                 && $input['arguments']['type'] != 'datalist'
             ) {
+                // Raw content for attach at the start of the input.
+                if (isset($input['surround_start']) === true) {
+                    $output .= $input['surround_start'];
+                }
+
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
@@ -562,6 +567,11 @@ class HTML
                 $output .= $input['extra'];
                 if (!$direct) {
                     $output .= '</li>';
+                }
+
+                // Raw content for attach at the end of the input.
+                if (isset($input['surround_end']) === true) {
+                    $output .= $input['surround_end'];
                 }
             } else {
                 $output .= self::printInput($input['arguments']);

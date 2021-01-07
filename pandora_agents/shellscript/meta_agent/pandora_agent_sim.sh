@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Pandora FMS Agent Simulator (MetaAgent)
-# (c) 2009 Artica Soluciones Tecnológicas SL
+# (c) 2009-2021 Artica Soluciones Tecnológicas SL
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************

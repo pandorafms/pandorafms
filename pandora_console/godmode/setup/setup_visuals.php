@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -463,19 +463,15 @@ if (enterprise_installed()) {
     $row++;
 }
 
-// Title Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Title (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
-    $row++;
-}
+// Title Header.
+$table_styles->data[$row][0] = __('Title (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+$row++;
 
-// Subtitle Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Subtitle (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
-    $row++;
-}
+// Subtitle Header.
+$table_styles->data[$row][0] = __('Subtitle (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+$row++;
 
 // login title1
 if (enterprise_installed()) {
@@ -905,6 +901,20 @@ $row++;
         5,
         5,
         true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Number of elements in Custom Graph');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'items_combined_charts',
+        $config['items_combined_charts'],
+        '',
+        5,
+        5,
+        true,
+        false,
+        false,
+        ''
     );
     $row++;
 
@@ -1623,6 +1633,13 @@ var added_config1 = {
     defineTinyMCE(added_config2);
 
 $(document).ready (function () {
+
+    var enterprise = '<?php echo enterprise_installed(); ?>';
+
+    if (enterprise === '') {
+        $('#text-custom_title_header').prop( "disabled", true );
+        $('#text-custom_subtitle_header').prop( "disabled", true );
+    }
 
     // Show the cache expiration conf or not.
     $("input[name=legacy_vc]").change(function (e) {

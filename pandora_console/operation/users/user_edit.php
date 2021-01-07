@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,6 +72,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['lastname'] = get_parameter_post('lastname', $user_info['lastname']);
     $password_new = get_parameter_post('password_new', '');
     $password_confirm = get_parameter_post('password_conf', '');
+    $current_password = get_parameter_post('current_password', '');
     $upd_info['email'] = get_parameter_post('email', '');
     $upd_info['phone'] = get_parameter_post('phone', '');
     $upd_info['comments'] = get_parameter_post('comments', '');
@@ -144,21 +145,37 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     if (!empty($password_new)) {
+        $correct_password = false;
+
+        $user_credentials_check = process_user_login($config['id_user'], $current_password, true);
+
+        if ($user_credentials_check !== false) {
+            $correct_password = true;
+        }
+
         if ($config['user_can_update_password'] && $password_confirm == $password_new) {
-            if ((!$is_admin || $config['enable_pass_policy_admin'])
-                && $config['enable_pass_policy']
-            ) {
-                $pass_ok = login_validate_pass($password_new, $id, true);
-                if ($pass_ok != 1) {
-                    ui_print_error_message($pass_ok);
+            if ($correct_password === true) {
+                if ((!$is_admin || $config['enable_pass_policy_admin'])
+                    && $config['enable_pass_policy']
+                ) {
+                    $pass_ok = login_validate_pass($password_new, $id, true);
+                    if ($pass_ok != 1) {
+                        ui_print_error_message($pass_ok);
+                    } else {
+                        $return = update_user_password($id, $password_new);
+                        if ($return) {
+                            $return2 = save_pass_history($id, $password_new);
+                        }
+                    }
                 } else {
                     $return = update_user_password($id, $password_new);
-                    if ($return) {
-                        $return2 = save_pass_history($id, $password_new);
-                    }
                 }
             } else {
-                $return = update_user_password($id, $password_new);
+                if ($current_password === '') {
+                    $error_msg = __('Current password of user is required to perform password change');
+                } else {
+                    $error_msg = __('Current password of user is not correct');
+                }
             }
         } else if ($password_new !== 'NON-INIT') {
             $error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
@@ -280,9 +297,11 @@ if ($view_mode === false) {
     if ($config['user_can_update_password']) {
         $new_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('New Password')], true, true).'</span></div>';
         $new_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Password confirmation')], true, true).'</span></div>';
+        $current_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended('current_password', '', 'current_password', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Current password')], true, true).'</span></div>';
     } else {
         $new_pass = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
         $new_pass_confirm = '';
+        $current_pass = '';
     }
 }
 
@@ -634,7 +653,7 @@ if (is_metaconsole()) {
             <div class="user_edit_first_row">
                 <div class="edit_user_info white_box">
                     <div class="edit_user_info_left">'.$avatar.$user_id.'</div>
-                    <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.'</div>
+                    <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.$current_pass.'</div>
                 </div>  
                 <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
             </div> 

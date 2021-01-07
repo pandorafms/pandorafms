@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2013 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.751 PS201215";
+my $version = "7.0NG.751 PS210107";
 
 # Pandora server configuration
 my %conf;
@@ -726,7 +726,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} == 1) {
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} ne "" && $conf->{'_delete_notinit'} == 1) {
 		log_message ('CHECKDB', "Deleting not-init data.");
 		my @modules = get_db_rows ($dbh,
 			'SELECT id_agente_modulo, id_agente
@@ -967,28 +967,33 @@ sub pandora_delete_old_export_data {
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
-    my ($conf, $dbh, $ulimit_timestamp) = @_;
+	my ($conf, $dbh, $ulimit_timestamp) = @_;
 
-    my $session_timeout = $conf->{'_session_timeout'};
+	my $session_timeout = $conf->{'_session_timeout'};
 
-	if ($session_timeout ne '') {
-		if ($session_timeout == -1) {
-			# The session expires in 10 years
-			$session_timeout = 315576000;
-		} else {
-			$session_timeout *= 60;
-		}
+	# DO not erase anything if session_timeout is not set.
+	return unless (defined($session_timeout) && $session_timeout ne '');
 
-		$ulimit_timestamp = time() - $session_timeout;
+	if ($session_timeout == 0) {
+		# As defined in console.
+		$session_timeout = 90;
 	}
+
+	if ($session_timeout == -1) {
+		# The session expires in 10 years
+		$session_timeout = 315576000;
+	} else {
+		$session_timeout *= 60;
+	}
+
+	$ulimit_timestamp = time() - $session_timeout;
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 
-	db_do ($dbh, "DELETE FROM tsessions_php WHERE
-	data IS NULL OR id_session REGEXP '^cron-'");
+	db_do ($dbh, "DELETE FROM tsessions_php WHERE data IS NULL OR id_session REGEXP '^cron-'");
 }
 
 ###############################################################################
@@ -1055,7 +1060,7 @@ else {
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 my $history_dbh = undef;
 is_metaconsole(\%conf);
-if ($conf{'_history_db_enabled'} eq '1') {
+if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1') {
 	eval {
 		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
 		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));

@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2011 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2021 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -469,6 +469,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field13` text NOT NULL,
 	`field14` text NOT NULL,
 	`field15` text NOT NULL,
+	`field16` text NOT NULL,
+	`field17` text NOT NULL,
+	`field18` text NOT NULL,
+	`field19` text NOT NULL,
+	`field20` text NOT NULL,
 	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal'),
 	`value` varchar(255) default '',
 	`matches_value` tinyint(1) default 0,
@@ -502,6 +507,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field13_recovery` text NOT NULL,
 	`field14_recovery` text NOT NULL,
 	`field15_recovery` text NOT NULL,
+	`field16_recovery` text NOT NULL,
+	`field17_recovery` text NOT NULL,
+	`field18_recovery` text NOT NULL,
+	`field19_recovery` text NOT NULL,
+	`field20_recovery` text NOT NULL,
 	`priority` tinyint(4) default '0',
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`special_day` tinyint(1) default 0,

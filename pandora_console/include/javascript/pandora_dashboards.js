@@ -1,4 +1,4 @@
-/* globals $ load_modal TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
+/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
 // eslint-disable-next-line no-unused-vars
 function show_option_dialog(settings) {
   load_modal({
@@ -56,8 +56,7 @@ function showGroup() {
 
 // eslint-disable-next-line no-unused-vars
 function initialiceLayout(data) {
-  var $grid = $(".grid-stack");
-  $grid.gridstack({
+  var grid = GridStack.init({
     float: true,
     column: 12,
     alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -71,9 +70,7 @@ function initialiceLayout(data) {
     draggable: false
   });
 
-  var grid = $grid.data("gridstack");
-
-  var positionGrid = $grid[0].getBoundingClientRect();
+  var positionGrid = 0; //grid[0].getBoundingClientRect();
   // var gridHeight = positionGrid.height;
   var gridWidth = positionGrid.width;
 
@@ -198,8 +195,8 @@ function initialiceLayout(data) {
         addSpinner(element);
 
         // Width and height.
-        var newWidth = elem.attr("data-gs-width");
-        var newHeight = elem.attr("data-gs-height");
+        var newWidth = $(elem).attr("data-gs-width");
+        var newHeight = $(elem).attr("data-gs-height");
 
         $.ajax({
           method: "post",
@@ -237,7 +234,7 @@ function initialiceLayout(data) {
               var parentElement = $("#widget-" + id).parent();
               grid.enableMove(parentElement, true);
               grid.enableResize(parentElement, true);
-              grid.grid.float = false;
+              grid.float(false);
             }
           },
           error: function(error) {
@@ -451,7 +448,7 @@ function initialiceLayout(data) {
     if ($("#checkbox-edit-mode").is(":checked")) {
       grid.movable(".grid-stack-item", true);
       grid.resizable(".grid-stack-item", true);
-      grid.grid.float = false;
+      grid.float(false);
       $(".header-options").show();
       $(".add-widget").show();
       $(".new-widget-message").hide();
@@ -460,7 +457,7 @@ function initialiceLayout(data) {
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
-      grid.grid.float = true;
+      grid.float(true);
       $(".header-options").hide();
       $(".add-widget").hide();
       $(".new-widget-message").show();

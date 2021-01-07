@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,6 +86,7 @@ function snmp_browser_get_html_tree(
     $count = 0;
     $total = (count(array_keys($tree['__LEAVES__'])) - 1);
     $last_array[$depth] = $last;
+    $class = 'item_'.$depth;
 
     if ($depth > 0) {
         $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
@@ -97,7 +98,7 @@ function snmp_browser_get_html_tree(
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.'" style="margin: 0; padding: 0;">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
@@ -616,7 +617,7 @@ function snmp_browser_print_oid(
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);

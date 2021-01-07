@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -3360,6 +3360,14 @@ sub pandora_get_credential ($$$) {
 		$pa_config,
 		safe_output($key->{'password'})
 	);
+	$key->{'extra_1'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_1'})
+	);
+	$key->{'extra_2'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_2'})
+	);
 
 	return $key;
 }
@@ -5373,7 +5381,9 @@ sub pandora_self_monitoring ($$) {
 	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
 	my $read_speed = int((time - $start_performance) * 1e6);
 
-	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -6468,7 +6478,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 
 =cut
 

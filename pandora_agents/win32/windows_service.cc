@@ -1,6 +1,6 @@
 /* Library to create a Windows service for Win32.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
    Based on Snort code.
   

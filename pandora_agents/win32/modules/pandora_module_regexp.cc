@@ -1,7 +1,7 @@
 /* Pandora regexp module. This module searches a file for matches of
    a regular expression.
 
-   Copyright (C) 2008 Artica ST.
+   Copyright (c) 2008-2021 Artica ST.
    Written by Ramon Novoa.
 
    This program is free software; you can redistribute it and/or modify

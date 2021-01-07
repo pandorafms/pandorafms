@@ -8,6 +8,23 @@ div#vc-controls {
   position: fixed;
   top: 30px;
   right: 20px;
+  width: 350px;
+  background-color: #ececec;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+div#vc-controls div#menu_tab {
+  margin: 0px;
+}
+
+div#vc-controls ul.white-box-content {
+  background-color: #ececec;
+  border: 0px;
 }
 
 div#vc-controls div.vc-title,

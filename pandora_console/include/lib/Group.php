@@ -106,6 +106,23 @@ class Group extends Entity
 
 
     /**
+     * Alias of 'nombre'.
+     *
+     * @param string|null $name Name of group.
+     *
+     * @return string|void Name assigned or void if set operation.
+     */
+    public function name(?string $name=null)
+    {
+        if ($name === null) {
+            return $this->nombre();
+        }
+
+        return $this->nombre($name);
+    }
+
+
+    /**
      * Retrieves a list of groups fitered.
      *
      * @param array $filter Filters to be applied.

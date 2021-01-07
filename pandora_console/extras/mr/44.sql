@@ -12,4 +12,6 @@ ADD COLUMN `field16` TEXT NOT NULL AFTER `field15`
 ,ADD COLUMN `field19_recovery` TEXT NOT NULL AFTER `field18_recovery`
 ,ADD COLUMN `field20_recovery` TEXT NOT NULL AFTER `field19_recovery`;
 
+ALTER TABLE `trecon_task` MODIFY COLUMN `review_mode` TINYINT(1) UNSIGNED DEFAULT 1;
+
 COMMIT;

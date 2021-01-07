@@ -133,6 +133,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     if (!isset($group_um[0])) {
         $display_all_group = false;
     }
+
     $data[0] .= html_print_select(
         profile_get_profiles(
             [

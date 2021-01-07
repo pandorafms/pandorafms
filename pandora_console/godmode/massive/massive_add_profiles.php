@@ -132,6 +132,7 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     if (!isset($group_um[0])) {
         $display_all_group = false;
     }
+
     $data[0] .= html_print_select(
         profile_get_profiles(
             [
@@ -182,8 +183,8 @@ $info_users = [];
 // Is admin.
 if (users_is_admin()) {
     $info_users = users_get_info($users_order, 'id_user');
-// has PM permission.
-} elseif (check_acl($config['id_user'], 0, 'PM')) {
+    // has PM permission.
+} else if (check_acl($config['id_user'], 0, 'PM')) {
     $info_users = users_get_info($users_order, 'id_user');
     foreach ($info_users as $id_user => $value) {
         if (users_is_admin($id_user)) {
@@ -197,7 +198,7 @@ if (users_is_admin()) {
     }
 
     foreach ($info as $key => $value) {
-	if (!$value['is_admin']) {
+        if (!$value['is_admin']) {
             $info_users[$key] = $value['id_user'];
         }
     }

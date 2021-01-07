@@ -64,7 +64,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
         $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -390,8 +390,8 @@ if ($config['history_db_enabled'] == 1) {
 
     $config_history = false;
     if ($config['history_db_connection']) {
-        $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+        $history_connect = mysql_db_process_sql(
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -408,6 +408,7 @@ if ($config['history_db_enabled'] == 1) {
             if (isset($config_history_array) && is_array($config_history_array)) {
                 foreach ($config_history_array as $key => $value) {
                     $config_history[$value['token']] = $value['value'];
+                    $config_history = true;
                 }
             }
         } else {

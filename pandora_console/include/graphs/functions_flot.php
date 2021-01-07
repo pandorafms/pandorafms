@@ -2,7 +2,7 @@
 
 // Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
-// Copyright (c) 2007-2011 Artica, info@artica.es
+// Copyright (c) 2007-2021 Artica, info@artica.es
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
 // (LGPL) as published by the Free Software Foundation; version 2

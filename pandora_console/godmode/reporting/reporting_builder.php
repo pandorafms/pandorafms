@@ -96,7 +96,7 @@ function dialog_message(message_id) {
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1432,10 +1432,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -2054,6 +2051,14 @@ switch ($action) {
                                 }
                             break;
 
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users', 0);
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2134,10 +2139,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -2667,6 +2669,14 @@ switch ($action) {
                                 } else {
                                     $style['label'] = '';
                                 }
+                            break;
+
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users');
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
                             break;
 
                             default:

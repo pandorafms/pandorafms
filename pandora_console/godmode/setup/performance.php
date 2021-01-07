@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -640,6 +640,16 @@ $table_other->data[13][1] = html_print_input_text(
     '',
     5,
     5,
+    true
+);
+
+$table_other->data[14][0] = __('Row limit in csv log');
+$table_other->data[14][1] = html_print_input_text(
+    'row_limit_csv',
+    $config['row_limit_csv'],
+    '',
+    5,
+    10,
     true
 );
 

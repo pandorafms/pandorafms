@@ -1,19 +1,19 @@
-#elasticsearch_container {
+#query_result_container {
   display: flex;
 }
 
-.elasticsearch_editor_container {
+.query_result_editor_container {
   width: 30%;
 }
 
-.elasticsearch_editor_container p {
+.query_result_editor_container p {
   padding-left: 40px;
   font-size: medium;
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
-.elasticsearch_editor {
+.query_result_editor {
   width: 100%;
   height: 65em;
   border-top: 1px solid #e2e2e2;
@@ -24,19 +24,19 @@
   border-radius: 4px;
 }
 
-.elasticsearch_view_container {
+.query_result_view_container {
   width: 70%;
   margin-left: 30px;
 }
 
-.elasticsearch_view_container p {
+.query_result_view_container p {
   padding-left: 40px;
   font-size: medium;
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
-.elasticsearch_view {
+.query_result_view {
   min-height: 65em;
   border-top: 1px solid #e2e2e2;
   border-left: 1px solid #e2e2e2;

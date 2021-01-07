@@ -541,7 +541,7 @@ function setOID() {
 }
 
 /**
- * Create module on selected module_target (agent, networlk component or policy).
+ * Create module on selected module_target (agent, network component or policy).
  *
  * @param string module_target Target to create module.
  * @param return_values Return snmp values.

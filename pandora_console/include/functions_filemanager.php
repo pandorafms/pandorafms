@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -117,32 +117,16 @@ if (!function_exists('mime_content_type')) {
 global $config;
 
 
-$homedir_filemanager = trim($config['homedir']);
-$sec2 = get_parameter('sec2');
-if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
-    $homedir_filemanager .= '/attachment/collection/';
-}
-
-$upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
-
-if ($upload_file_or_zip) {
-    $decompress = get_parameter('decompress');
-    if (!$decompress) {
-        $upload_file = true;
-        $upload_zip = false;
-    } else {
-        $upload_file = false;
-        $upload_zip = true;
-    }
-} else {
-    $upload_file = (bool) get_parameter('upload_file');
-    $upload_zip = (bool) get_parameter('upload_zip');
-}
-
-// Upload file
-if ($upload_file) {
-    // Load global vars
+function upload_file($upload_file_or_zip, $default_real_directory)
+{
     global $config;
+
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+
+    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+        $homedir_filemanager .= '/attachment/collection/';
+    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -156,42 +140,101 @@ if ($upload_file) {
         return;
     }
 
-    if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
-        $filename = $_FILES['file']['name'];
-        $filesize = $_FILES['file']['size'];
-        $real_directory = io_safe_output((string) get_parameter('real_directory'));
-        $directory = io_safe_output((string) get_parameter('directory'));
-        $umask = io_safe_output((string) get_parameter('umask', ''));
-
-        $hash = get_parameter('hash', '');
-        $testHash = md5($real_directory.$directory.$config['dbpass']);
-
-        if ($hash != $testHash) {
-            $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
+    if ($upload_file_or_zip) {
+        $decompress = get_parameter('decompress');
+        if (!$decompress) {
+            $upload_file = true;
+            $upload_zip = false;
         } else {
-            // Copy file to directory and change name
-            if ($directory == '') {
-                $nombre_archivo = $real_directory.'/'.$filename;
-            } else {
-                $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
-            }
+            $upload_file = false;
+            $upload_zip = true;
+        }
+    } else {
+        $upload_file = (bool) get_parameter('upload_file');
+        $upload_zip = (bool) get_parameter('upload_zip');
+    }
 
-            if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
-                $config['filemanager']['message'] = ui_print_error_message(__('Upload error'), '', true);
+    // Upload file
+    if ($upload_file) {
+        if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
+            $filename = $_FILES['file']['name'];
+            $filesize = $_FILES['file']['size'];
+            $real_directory = io_safe_output((string) get_parameter('real_directory'));
+            $directory = io_safe_output((string) get_parameter('directory'));
+            $umask = io_safe_output((string) get_parameter('umask', ''));
+
+            if (strpos($real_directory, $default_real_directory) !== 0) {
+                // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+                ui_print_error_message(__('Security error'));
             } else {
-                if ($umask !== '') {
-                    chmod($nombre_archivo, $umask);
+                // Copy file to directory and change name
+                if ($directory == '') {
+                    $nombre_archivo = $real_directory.'/'.$filename;
+                } else {
+                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
                 }
 
-                $config['filemanager']['correct_upload_file'] = 1;
-                $config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
+                if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
+                    $config['filemanager']['message'] = ui_print_error_message(__('Upload error'));
+                } else {
+                    if ($umask !== '') {
+                        chmod($nombre_archivo, $umask);
+                    }
 
-                // Delete temporal file
-                unlink($_FILES['file']['tmp_name']);
+                    $config['filemanager']['correct_upload_file'] = 1;
+                    ui_print_success_message(__('Upload correct'));
+
+                    // Delete temporal file
+                    unlink($_FILES['file']['tmp_name']);
+                }
+            }
+        }
+    }
+
+    // Upload zip
+    if ($upload_zip) {
+        if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
+            $filename = $_FILES['file']['name'];
+            $filesize = $_FILES['file']['size'];
+            $real_directory = (string) get_parameter('real_directory');
+            $real_directory = io_safe_output($real_directory);
+            $directory = (string) get_parameter('directory');
+            $directory = io_safe_output($directory);
+
+            if (strpos($real_directory, $default_real_directory) !== 0) {
+                // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+                ui_print_error_message(__('Security error'));
+            } else {
+                // Copy file to directory and change name
+                if ($directory == '') {
+                    $nombre_archivo = $real_directory.'/'.$filename;
+                } else {
+                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
+                }
+
+                if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
+                    ui_print_error_message(__('Attach error'));
+                } else {
+                    // Delete temporal file
+                    unlink($_FILES['file']['tmp_name']);
+
+                    // Extract the zip file
+                    $zip = new ZipArchive;
+                    $pathname = $homedir_filemanager.'/'.$directory.'/';
+
+                    if ($zip->open($nombre_archivo) === true) {
+                        $zip->extractTo($pathname);
+                        unlink($nombre_archivo);
+                    }
+
+                    ui_print_success_message(__('Upload correct'));
+                    $config['filemanager']['correct_upload_file'] = 1;
+                }
             }
         }
     }
 }
+
 
 if (isset($_SERVER['CONTENT_LENGTH'])) {
     // Control the max_post_size exceed
@@ -201,11 +244,17 @@ if (isset($_SERVER['CONTENT_LENGTH'])) {
     }
 }
 
-// Create text file
-$create_text_file = (bool) get_parameter('create_text_file');
-if ($create_text_file) {
-    // Load global vars
+
+function create_text_file($default_real_directory)
+{
     global $config;
+
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+
+    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+        $homedir_filemanager .= '/attachment/collection/';
+    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -228,11 +277,9 @@ if ($create_text_file) {
         $directory = io_safe_output($directory);
         $umask = (string) get_parameter('umask', '');
 
-        $hash = get_parameter('hash', '');
-        $testHash = md5($real_directory.$directory.$config['dbpass']);
-
-        if ($hash != $testHash) {
-            ui_print_error_message(__('Security error'), '', true);
+        if (strpos($real_directory, $default_real_directory) !== 0) {
+            // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+            ui_print_error_message(__('Security error'));
         } else {
             if ($directory == '') {
                 $nombre_archivo = $real_directory.'/'.$filename;
@@ -241,79 +288,27 @@ if ($create_text_file) {
             }
 
             if (! @touch($nombre_archivo)) {
-                $config['filemanager']['message'] = ui_print_error_message(__('Error creating file'), '', true);
+                $config['filemanager']['message'] = ui_print_error_message(__('Error creating file'));
             } else {
                 if ($umask !== '') {
                     chmod($nombre_archivo, $umask);
                 }
 
-                $config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
+                ui_print_success_message(__('Upload correct'));
+
                 $config['filemanager']['correct_upload_file'] = 1;
             }
         }
     } else {
-        $config['filemanager']['message'] = ui_print_error_message(__('Error creating file with empty name'), '', true);
+        ui_print_error_message(__('Error creating file with empty name'));
     }
 }
 
-// Upload zip
-if ($upload_zip) {
-    // Load global vars
-    global $config;
 
-    $config['filemanager'] = [];
-    $config['filemanager']['correct_upload_file'] = 0;
-    $config['filemanager']['message'] = null;
-
-    check_login();
-
-    if (! check_acl($config['id_user'], 0, 'AW')) {
-        db_pandora_audit('ACL Violation', 'Trying to access File manager');
-        include 'general/noaccess.php';
-        return;
-    }
-
-    if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
-        $filename = $_FILES['file']['name'];
-        $filesize = $_FILES['file']['size'];
-        $real_directory = (string) get_parameter('real_directory');
-        $real_directory = io_safe_output($real_directory);
-        $directory = (string) get_parameter('directory');
-        $directory = io_safe_output($directory);
-
-        $hash = get_parameter('hash', '');
-        $testHash = md5($real_directory.$directory.$config['dbpass']);
-
-        if ($hash != $testHash) {
-            $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
-        } else {
-            // Copy file to directory and change name
-            if ($directory == '') {
-                $nombre_archivo = $real_directory.'/'.$filename;
-            } else {
-                $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
-            }
-
-            if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
-                $config['filemanager']['message'] = ui_print_error_message(__('Attach error'), '', true);
-            } else {
-                // Delete temporal file
-                unlink($_FILES['file']['tmp_name']);
-
-                // Extract the zip file
-                $zip = new ZipArchive;
-                $pathname = $homedir_filemanager.'/'.$directory.'/';
-
-                if ($zip->open($nombre_archivo) === true) {
-                    $zip->extractTo($pathname);
-                    unlink($nombre_archivo);
-                }
-
-                $config['filemanager']['message'] = ui_print_success_message(__('Upload correct'), '', true);
-                $config['filemanager']['correct_upload_file'] = 1;
-            }
-        }
-    }
+$homedir_filemanager = trim($config['homedir']);
+$sec2 = get_parameter('sec2');
+if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+    $homedir_filemanager .= '/attachment/collection/';
 }
 
 // CREATE DIR

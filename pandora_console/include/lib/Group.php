@@ -136,7 +136,7 @@ class Group extends Entity
         if (empty($filter['id_user']) === true) {
             // By default query current user groups.
             $filter['id_user'] = false;
-        } else if (!\users_is_admin()) {
+        } else if ((bool) \users_is_admin() === false) {
             // Override user queried if user is not an admin.
             $filter['id_user'] = false;
         }
@@ -243,8 +243,9 @@ class Group extends Entity
         if (isset($config['centralized_management']) === true
             && $config['centralized_management'] > 0
         ) {
+            $msg = 'cannot be modified in a centralized management environment';
             throw new \Exception(
-                get_class($this).' error, cannot be modified while centralized management environment.'
+                get_class($this).' error, '.$msg
             );
         }
 

@@ -201,6 +201,7 @@ function load_modal(settings) {
           var flagError = false;
           if (Array.isArray(settings.form) === false) {
             $("#" + settings.form + " :input").each(function() {
+              var input = this;
               if (this.checkValidity() === false) {
                 $(this).attr("title", this.validationMessage);
                 $(this).tooltip({
@@ -209,6 +210,9 @@ function load_modal(settings) {
                     my: "right bottom",
                     at: "right top",
                     using: function(position, feedback) {
+                      if (input.className == "select2-hidden-accessible")
+                        position.left += width / 1.7;
+                      console.log(position);
                       $(this).css(position);
                       $("<div>")
                         .addClass("arrow")

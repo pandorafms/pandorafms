@@ -136,16 +136,20 @@ if ($action == 'new') {
 $table->data[1][0] = __('Group:');
 
 
-$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-    $config['id_user'],
-    'RW',
-    true,
-    'id_group',
-    $idGroup,
-    '',
-    '',
-    '',
-    true
+$table->data[1][1] = '<div class="w250px">'.html_print_input(
+    [
+        'type'           => 'select_groups',
+        'id_user'        => $config['id_user'],
+        'privilege'      => 'RW',
+        'returnAllGroup' => true,
+        'name'           => 'id_group',
+        'selected'       => $idGroup,
+        'script'         => '',
+        'nothing'        => '',
+        'nothing_value'  => '',
+        'return'         => true,
+        'required'       => true,
+    ]
 ).'</div>';
 $backgrounds_list = list_files(
     $config['homedir'].'/images/console/background/',

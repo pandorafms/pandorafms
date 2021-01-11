@@ -159,6 +159,7 @@ class ExternalTools extends HTML
         // Make the table for show the form.
         $table = new stdClass();
         $table->width = '100%';
+        $table->id = 'commandsTable';
 
         $table->data = [];
 
@@ -191,7 +192,11 @@ class ExternalTools extends HTML
                 'content' => html_print_image(
                     'images/add.png',
                     true,
-                    [ 'title' => __('Add new custom command') ]
+                    [
+                        'title'   => __('Add new custom command'),
+                        'onclick' => 'manageCommandLines(event)',
+                        'id'      => 'img_add_button_custom_command',
+                    ]
                 ),
             ],
             true
@@ -200,45 +205,29 @@ class ExternalTools extends HTML
         $table->data[6][0] = __('Command');
         $table->data[6][1] = __('Parameters');
 
-        $i = 0;
-        $iRow = 6;
-        foreach ($this->pathCustomComm as $command) {
-            $i++;
-            $iRow++;
+        $i = 1;
+        $iRow = 7;
 
-            // Fill the fields.
-            $customCommand = ($command['custom_command'] ?? '');
-            $customParams  = ($command['custom_params'] ?? '');
-            // Attach the fields.
+        if (empty($this->pathCustomComm) === true) {
             $table->rowid[$iRow] = 'custom_row_'.$i;
-            $table->data[$iRow][0] = html_print_input_text(
-                'command_custom_'.$i,
-                $customCommand,
-                '',
-                40,
-                255,
-                true
-            );
-            $table->data[$iRow][1] = html_print_input_text(
-                'params_custom_'.$i,
-                $customParams,
-                '',
-                40,
-                255,
-                true
-            );
-            $table->data[$iRow][2] = html_print_div(
-                [
-                    'id'      => 'delete_custom_'.$i,
-                    'class'   => '',
-                    'content' => html_print_image(
-                        'images/delete.png',
-                        true,
-                        ['title' => __('Delete this custom command')]
-                    ),
-                ],
-                true
-            );
+
+            $table->data[$iRow][0] = $this->customCommandPair('command', $i);
+            $table->data[$iRow][1] = $this->customCommandPair('params', $i);
+            $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
+        } else {
+            foreach ($this->pathCustomComm as $command) {
+                $i++;
+                $iRow++;
+
+                // Fill the fields.
+                $customCommand = ($command['custom_command'] ?? '');
+                $customParams  = ($command['custom_params'] ?? '');
+                // Attach the fields.
+                $table->rowid[$iRow] = 'custom_row_'.$i;
+                $table->data[$iRow][0] = $this->customCommandPair('command', $i, $customCommand);
+                $table->data[$iRow][1] = $this->customCommandPair('params', $i, $customParams);
+                $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
+            }
         }
 
         $form = '<form id="form_setup" method="post" >';
@@ -260,6 +249,60 @@ class ExternalTools extends HTML
         $form .= '</form>';
 
         echo $form;
+    }
+
+
+    /**
+     * Prints the custom command fields.
+     *
+     * @param string  $type  Type of field.
+     * @param integer $index Control index.
+     * @param string  $value Value of this field.
+     *
+     * @return string
+     */
+    private function customCommandPair($type, $index=0, $value='')
+    {
+        $output = '';
+
+        switch ($type) {
+            case 'command':
+            case 'params':
+                $output = html_print_input_text(
+                    $type.'_custom_'.$index,
+                    $value,
+                    '',
+                    40,
+                    255,
+                    true
+                );
+            break;
+
+            case 'delete':
+                $output = html_print_div(
+                    [
+                        'id'      => 'delete_button_custom_'.$index,
+                        'class'   => '',
+                        'content' => html_print_image(
+                            'images/delete.png',
+                            true,
+                            [
+                                'title'   => __('Delete this custom command'),
+                                'onclick' => 'manageCommandLines(event)',
+                                'id'      => 'img_delete_button_custom_'.$index,
+                            ]
+                        ),
+                    ],
+                    true
+                );
+            break;
+
+            default:
+                // Do none.
+            break;
+        }
+
+        return $output;
     }
 
 
@@ -690,52 +733,69 @@ class ExternalTools extends HTML
             <script type='text/javascript'>
                 $(document).ready(function(){
                     let custom_command = $('#add_button_custom_command');
-                
-                    custom_command.on('click', function(event){
-                        console.log(event);
-                    });
-
 
                     mostrarColumns($('#operation :selected').val());
                 });
             
                 // Manage network component oid field generation.
-                function manageCommandLines(action, type) {
-                    var fieldLines = $("tr[id*=network_component-" + type + "]").length;
-                    var protocol = $("#module_protocol").val();
-                    if (action === "add") {
-                        let lineNumber = fieldLines + 1;
-                        let textForAdd =
-                        type === "oid-list-pluginRow-snmpRow"
-                            ? "_oid_" + lineNumber + "_"
-                            : lineNumber;
+                function manageCommandLines(event) {
+                    let buttonId = event.target.id;
+                    let parentId = event.target.parentElement.id;
+                    let action = parentId.split('_');
+                    action = action[0];
 
-                        $("#network_component-manage-" + type).before(
-                        $("#network_component-" + type + "-row-1")
-                            .clone()
-                            .attr("id", "network_component-" + type + "-row-" + lineNumber)
+                    if (action === 'add') {
+                        let fieldLines = $("tr[id*=custom_row_]").length;
+                        let fieldLinesAdded = fieldLines + 1;
+
+                        // Ensure the first erase button is clickable
+                        $("#img_delete_button_custom_1")
+                            .attr("style", "opacity: 1;")
+                            .addClass("clickable");
+
+                        $("#custom_row_" + fieldLines).after(
+                            $("#custom_row_" + fieldLines)
+                                .clone()
+                                .attr("id", 'custom_row_'+fieldLinesAdded)
                         );
+                        let rowCommand = Array.from($("#custom_row_"+fieldLinesAdded).children());
 
-                        $("#network_component-" + type + "-row-" + lineNumber + " input")
-                        .attr("name", "extra_field_" + protocol + "_" + lineNumber)
-                        .attr("id", "extra_field_" + protocol + "_" + lineNumber);
+                        rowCommand.forEach(function(value, index){
+                            let thisId = $(value).attr("id");
+                            let separatedId = thisId.split("-");
+                            let fieldLinesAddedForNewId = parseInt(separatedId[1]) + 1;
+                            let thisNewId = separatedId[0] + "-" + fieldLinesAddedForNewId + "-" + separatedId[2];
+                            // Assignation of new Id for this cell
+                            $(value).attr("id", thisNewId);
 
-                        $("#network_component-" + type + "-row-" + lineNumber + " td div").html(
-                        textForAdd
-                        );
+                            // Children text fields.
+                            if (parseInt(separatedId[2]) === 0) {
+                                $("#text-command_custom_"+fieldLines, "#"+thisNewId)
+                                    .attr("name", "command_custom_"+fieldLinesAdded)
+                                    .attr("id", "text-command_custom_"+fieldLinesAdded);
+                            } else if (parseInt(separatedId[2]) === 1) {
+                                $("#text-params_custom_"+fieldLines, "#"+thisNewId)
+                                    .attr("id", "text-params_custom_"+fieldLinesAdded)
+                                    .attr("name", "params_custom_"+fieldLinesAdded);
+                            } else if (parseInt(separatedId[2]) === 2) {
+                                $("#img_delete_button_custom_"+fieldLines, "#"+thisNewId)
+                                    .attr("id", "img_delete_button_custom_"+fieldLinesAdded);
+                            }
+                        });
 
-                        $("#del_field_button")
-                        .attr("style", "opacity: 1;")
-                        .addClass("clickable");
-                    } else if (action === "del") {
-                        if (fieldLines >= 2) {
-                        $("#network_component-" + type + "-row-" + fieldLines).remove();
+                    } else if (action === 'delete') {
+                        let buttonIdDivided = buttonId.split("_");
+                        let lineNumber = buttonIdDivided[buttonIdDivided.length-1];
+                        let lineCount = parseInt($("tr[id*=custom_row_]").length);
+
+                        if (parseInt(lineNumber) >= 1 && lineCount > 1) {
+                            $("#custom_row_" + lineNumber).remove();
                         }
 
-                        if (fieldLines == 2) {
-                        $("#del_field_button")
-                            .attr("style", "opacity: 0.5;")
-                            .removeClass("clickable");
+                        if (lineCount === 1) {
+                            $("[id*=img_delete_button_custom_]")
+                                .attr("style", "opacity: 0.5;")
+                                .removeClass("clickable");
                         }
                     }
                 }

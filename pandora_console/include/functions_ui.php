@@ -3808,7 +3808,11 @@ function ui_toggle(
     if ($clean === false) {
         $header_class = 'white_table_graph_header';
     } else {
-        $main_class = '';
+        if ($main_class == 'box-shadow white_table_graph') {
+            // Default value, clean class.
+            $main_class = '';
+        }
+
         $container_class = 'white-box-content-clean';
     }
 
@@ -3837,14 +3841,14 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'class' => 'float-left',
+                    'style' => 'object-fit: contain; margin-right:10px;',
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]
             );
         }
 
-        $output .= '&nbsp;&nbsp';
         $output .= '<b>'.$name.'</b>';
     } else {
         $output .= $name;

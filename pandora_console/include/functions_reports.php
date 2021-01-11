@@ -890,10 +890,12 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    $types['permissions_report'] = [
-        'optgroup' => __('Permissions report'),
-        'name'     => __('Permissions report'),
-    ];
+    if ($template === false) {
+        $types['permissions_report'] = [
+            'optgroup' => __('Permissions report'),
+            'name'     => __('Permissions report'),
+        ];
+    }
 
     return $types;
 }

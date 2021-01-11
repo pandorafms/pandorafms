@@ -288,7 +288,6 @@ function snmp_browser_get_tree(
             ''
         );
     } else {
-        hd('entra por igual a 0', true);
         switch ($version) {
             case '1':
                 $snmp_version = SNMP::VERSION_1;

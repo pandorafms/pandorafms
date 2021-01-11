@@ -566,6 +566,10 @@ function html_print_select_groups(
         $required
     );
 
+    if ($required !== false) {
+        $require_message = __('Please select an item from this list.');
+    }
+
     if (empty($size) === true) {
         $size = '100%';
     }
@@ -585,6 +589,13 @@ function html_print_select_groups(
         $(document).ready(function() {
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    this.setCustomValidity('<?php echo $require_message; ?>');
+                        <?php
+                    }
+                    ?>
                     $(this).select2({
                         multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
                         placeholder: "<?php echo __('Please select...'); ?>",

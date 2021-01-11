@@ -132,7 +132,7 @@ if ($edit_container) {
         $id_parent = get_parameter('id_parent', 0);
         $description = io_safe_input(get_parameter('description', ''));
         $id_group = get_parameter('container_id_group', 0);
-    } else {
+    } else if ((bool) $id_container !== false) {
         $tcontainer = db_get_row_sql('SELECT * FROM tcontainer WHERE id_container = '.$id_container);
         $name = $tcontainer['name'];
         $id_parent = $tcontainer['parent'];
@@ -142,13 +142,21 @@ if ($edit_container) {
 }
 
 if ($add_container) {
-    $values = [
-        'name'        => $name,
-        'description' => $description,
-        'parent'      => $id_parent,
-        'id_group'    => $id_group,
-    ];
-    $id_container = db_process_sql_insert('tcontainer', $values);
+    if ((bool) $name !== false) {
+        $values = [
+            'name'        => $name,
+            'description' => $description,
+            'parent'      => $id_parent,
+            'id_group'    => $id_group,
+        ];
+        $id_container = db_process_sql_insert('tcontainer', $values);
+    } else {
+        $error = ui_print_error_message(
+            __('Container name is missing.'),
+            '',
+            true
+        );
+    }
 }
 
 if ($update_container) {
@@ -188,6 +196,9 @@ ui_print_page_header(
 
 if ($add_container) {
     ui_print_result_message($id_container, __('Container stored successfully'), __('There was a problem storing container'));
+    if (empty($error) === false) {
+        echo $error;
+    }
 }
 
 if ($update_container) {
@@ -207,6 +218,8 @@ if ($id_container === '1') {
     echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' disabled='1'";
 } else {
     echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' ";
+    // Using latest style...
+    echo ' required ';
 }
 
 if ($edit_container) {
@@ -223,12 +236,22 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
 
 echo "<td style='width: 12%;'><b>".__('Group').'</b></td><td>';
 echo '<div class="w250px">';
-if ($id_container === '1') {
-    echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', true);
-} else {
-    echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', false);
-}
-
+echo html_print_input(
+    [
+        'type'           => 'select_groups',
+        'id_user'        => $config['id_user'],
+        'privilege'      => 'RW',
+        'returnAllGroup' => $return_all_groups,
+        'name'           => 'container_id_group',
+        'selected'       => $id_group,
+        'script'         => '',
+        'nothing'        => '',
+        'nothing_value'  => '',
+        'return'         => false,
+        'required'       => true,
+        'disabled'       => ($id_container === '1'),
+    ]
+);
 echo '</div>';
 echo '</td></tr>';
 
@@ -575,11 +598,13 @@ if ($edit_container) {
         echo '</tr>';
     echo '</table>';
 
-    $total_item = db_get_all_rows_sql('SELECT count(*) FROM tcontainer_item WHERE id_container = '.$id_container);
-    $result_item = db_get_all_rows_sql('SELECT * FROM tcontainer_item WHERE id_container = '.$id_container.' LIMIT 10 OFFSET '.$offset);
+    if ((bool) $id_container !== false) {
+        $total_item = db_get_all_rows_sql('SELECT count(*) FROM tcontainer_item WHERE id_container = '.$id_container);
+        $result_item = db_get_all_rows_sql('SELECT * FROM tcontainer_item WHERE id_container = '.$id_container.' LIMIT 10 OFFSET '.$offset);
+    }
 
     if (!$result_item) {
-        echo "<div class='nf'>".__('There are no defined item container').'</div>';
+        echo "<div class='nf'>".__('There are no items in this container.').'</div>';
     } else {
         ui_pagination($total_item[0]['count(*)'], false, $offset, 10);
         $table = new stdClass();

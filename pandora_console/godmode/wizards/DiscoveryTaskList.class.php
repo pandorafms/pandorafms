@@ -562,6 +562,7 @@ class DiscoveryTaskList extends HTML
                 } else {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
+                        && (int) $task['type'] === DISCOVERY_HOSTDEVICES
                     ) {
                         $can_be_reviewed = true;
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';

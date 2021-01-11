@@ -94,7 +94,7 @@ if ($edit_graph) {
 } else {
     $id_agent = 0;
     $id_module = 0;
-    $id_group = 0;
+    $id_group = null;
     $period = SECONDS_1DAY;
     $factor = 1;
     $stacked = 4;
@@ -134,28 +134,36 @@ $own_info = get_user_info($config['id_user']);
 
 $output .= '<td><b>'.__('Group').'</b></td><td>';
 if (check_acl($config['id_user'], 0, 'RW')) {
-    $output .= html_print_select_groups(
-        $config['id_user'],
-        'RW',
-        true,
-        'graph_id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
+    $output .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RW',
+            'returnAllGroup' => true,
+            'name'           => 'graph_id_group',
+            'selected'       => $id_group,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+        ]
     );
 } else if (check_acl($config['id_user'], 0, 'RM')) {
-    $output .= html_print_select_groups(
-        $config['id_user'],
-        'RM',
-        true,
-        'graph_id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
+    $output .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RM',
+            'returnAllGroup' => true,
+            'name'           => 'graph_id_group',
+            'selected'       => $id_group,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+        ]
     );
 }
 

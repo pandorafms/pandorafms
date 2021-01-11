@@ -95,7 +95,9 @@ function process_user_login($login, $pass, $api=false)
 
     // 2. Try local.
     if ($login_remote === false
-        && ($config['fallback_local_auth'] || is_user_admin($login))
+        && ($config['fallback_local_auth']
+        || is_user_admin($login)
+        || strtolower($config['auth']) == 'mysql')
     ) {
         return process_user_login_local($login, $pass, $api);
     } else {

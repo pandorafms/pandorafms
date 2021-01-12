@@ -13773,11 +13773,15 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
         // Graph height when send email by alert
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+
+        // Graph width (optional).
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : 225;
     } else {
         $graph_seconds = $other['data'];
         $graph_threshold = 0;
         $other['data'][1] = 0;
         $height = 225;
+        $width = '90%';
     }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {

@@ -65,7 +65,7 @@ class ExternalTools extends HTML
 
             // Capture needed parameter for agent form.
             $this->id_agente    = (int) get_parameter('id_agente', 0);
-            $this->operation    = (int) get_parameter('operation', 0);
+            $this->operation    = get_parameter('operation', 0);
             $this->community    = (string) get_parameter('community', 'public');
             $this->ip           = (string) get_parameter('select_ips');
             $this->snmp_version = (string) get_parameter('select_version');
@@ -88,6 +88,20 @@ class ExternalTools extends HTML
             $this->pathNmap       = (string) get_parameter('nmap_path');
             $this->pathDig        = (string) get_parameter('dig_path');
             $this->pathSnmpget    = (string) get_parameter('snmpget_path');
+
+            // Capture custom commands.
+            $this->pathCustomComm = [];
+            foreach ($_REQUEST as $customKey => $customValue) {
+                if ((bool) preg_match('/command_custom_/', $customKey) === true) {
+                    $temporaryCustomCommandId = explode('_', $customKey);
+                    $customCommandId = $temporaryCustomCommandId[2];
+                    // Define array for host the command/parameters pair data.
+                    $this->pathCustomComm[$customValue] = [];
+                    // Ensure the information.
+                    $this->pathCustomComm[$customValue]['command_custom'] = (string) get_parameter('command_custom_'.$customCommandId);
+                    $this->pathCustomComm[$customValue]['params_custom'] = (string) get_parameter('params_custom_'.$customCommandId);
+                }
+            }
         }
 
         return $this;
@@ -125,16 +139,20 @@ class ExternalTools extends HTML
         global $config;
 
         if ($this->updatePaths === true) {
-            $network_tools_config = [];
-            $network_tools_config['traceroute_path'] = $this->pathTraceroute;
-            $network_tools_config['ping_path']       = $this->pathPing;
-            $network_tools_config['nmap_path']       = $this->pathNmap;
-            $network_tools_config['dig_path']        = $this->pathDig;
-            $network_tools_config['snmpget_path']    = $this->pathSnmpget;
+            $external_tools_config = [];
+            $external_tools_config['traceroute_path'] = $this->pathTraceroute;
+            $external_tools_config['ping_path']       = $this->pathPing;
+            $external_tools_config['nmap_path']       = $this->pathNmap;
+            $external_tools_config['dig_path']        = $this->pathDig;
+            $external_tools_config['snmpget_path']    = $this->pathSnmpget;
+
+            if (empty($this->pathCustomComm) === false) {
+                $external_tools_config['custom_commands'] = $this->pathCustomComm;
+            }
 
             $result = config_update_value(
-                'network_tools_config',
-                json_encode($network_tools_config)
+                'external_tools_config',
+                json_encode($external_tools_config)
             );
 
             ui_print_result_message(
@@ -143,16 +161,16 @@ class ExternalTools extends HTML
                 __('Set the paths.')
             );
         } else {
-            if (isset($config['network_tools_config']) === true) {
-                $network_tools_config_output = io_safe_output($config['network_tools_config']);
-                $network_tools_config = json_decode($network_tools_config_output, true);
+            if (isset($config['external_tools_config']) === true) {
+                $external_tools_config_output = io_safe_output($config['external_tools_config']);
+                $external_tools_config = json_decode($external_tools_config_output, true);
                 // Setting paths.
-                $this->pathTraceroute = $network_tools_config['traceroute_path'];
-                $this->pathPing       = $network_tools_config['ping_path'];
-                $this->pathNmap       = $network_tools_config['nmap_path'];
-                $this->pathDig        = $network_tools_config['dig_path'];
-                $this->pathSnmpget    = $network_tools_config['snmpget_path'];
-                $this->pathCustomComm = ($network_tools_config['custom_command'] ?? ['a' => 'a']);
+                $this->pathTraceroute = $external_tools_config['traceroute_path'];
+                $this->pathPing       = $external_tools_config['ping_path'];
+                $this->pathNmap       = $external_tools_config['nmap_path'];
+                $this->pathDig        = $external_tools_config['dig_path'];
+                $this->pathSnmpget    = $external_tools_config['snmpget_path'];
+                $this->pathCustomComm = ($external_tools_config['custom_commands'] ?? ['a' => 'a']);
             }
         }
 
@@ -203,7 +221,7 @@ class ExternalTools extends HTML
         );
 
         $table->data[6][0] = __('Command');
-        $table->data[6][1] = __('Parameters');
+        $table->data[6][1] = __('Parameters').ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true);
 
         $i = 1;
         $iRow = 7;
@@ -216,17 +234,17 @@ class ExternalTools extends HTML
             $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
         } else {
             foreach ($this->pathCustomComm as $command) {
-                $i++;
-                $iRow++;
-
                 // Fill the fields.
-                $customCommand = ($command['custom_command'] ?? '');
-                $customParams  = ($command['custom_params'] ?? '');
+                $customCommand = ($command['command_custom'] ?? '');
+                $customParams  = ($command['params_custom'] ?? '');
                 // Attach the fields.
                 $table->rowid[$iRow] = 'custom_row_'.$i;
                 $table->data[$iRow][0] = $this->customCommandPair('command', $i, $customCommand);
                 $table->data[$iRow][1] = $this->customCommandPair('params', $i, $customParams);
                 $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
+                // Add another command.
+                $i++;
+                $iRow++;
             }
         }
 
@@ -313,6 +331,8 @@ class ExternalTools extends HTML
      */
     private function agentExternalToolsForm()
     {
+        global $config;
+
         $principal_ip = db_get_sql(
             sprintf(
                 'SELECT direccion FROM tagente WHERE id_agente = %d',
@@ -358,6 +378,23 @@ class ExternalTools extends HTML
             }
         );
 
+        // Get the list of available commands.
+        $commandList = [
+            COMMAND_TRACEROUTE => __('Traceroute'),
+            COMMAND_PING       => __('Ping host & Latency'),
+            COMMAND_SNMP       => __('SNMP Interface status'),
+            COMMAND_NMAP       => __('Basic TCP Port Scan'),
+            COMMAND_DIGWHOIS   => __('DiG/Whois Lookup'),
+        ];
+
+        // Adding custom commands.
+        $tempCustomCommandsList = json_decode(io_safe_output($config['external_tools_config']), true);
+        $customCommandsList     = $tempCustomCommandsList['custom_commands'];
+
+        foreach ($customCommandsList as $customCommandKey => $customCommandValue) {
+            $commandList[$customCommandKey] = $customCommandKey;
+        }
+
         // Form table.
         $table = new StdClass();
         $table->class = 'databox filters w100p';
@@ -368,13 +405,7 @@ class ExternalTools extends HTML
         $table->data[0][0] = __('Operation');
 
         $table->data[0][1] = html_print_select(
-            [
-                COMMAND_TRACEROUTE => __('Traceroute'),
-                COMMAND_PING       => __('Ping host & Latency'),
-                COMMAND_SNMP       => __('SNMP Interface status'),
-                COMMAND_NMAP       => __('Basic TCP Port Scan'),
-                COMMAND_DIGWHOIS   => __('DiG/Whois Lookup'),
-            ],
+            $commandList,
             'operation',
             $this->operation,
             'mostrarColumns(this.value)',
@@ -456,13 +487,13 @@ class ExternalTools extends HTML
     {
         global $config;
 
-        if (isset($config['network_tools_config']) === true) {
-            $network_tools_config = json_decode(io_safe_output($config['network_tools_config']), true);
-            $traceroute_path = $network_tools_config['traceroute_path'];
-            $ping_path       = $network_tools_config['ping_path'];
-            $nmap_path       = $network_tools_config['nmap_path'];
-            $dig_path        = $network_tools_config['dig_path'];
-            $snmpget_path    = $network_tools_config['snmpget_path'];
+        if (isset($config['external_tools_config']) === true) {
+            $external_tools_config = json_decode(io_safe_output($config['external_tools_config']), true);
+            $traceroute_path = $external_tools_config['traceroute_path'];
+            $ping_path       = $external_tools_config['ping_path'];
+            $nmap_path       = $external_tools_config['nmap_path'];
+            $dig_path        = $external_tools_config['dig_path'];
+            $snmpget_path    = $external_tools_config['snmpget_path'];
 
             switch ($command) {
                 case 'traceroute':
@@ -562,14 +593,14 @@ class ExternalTools extends HTML
     /**
      * Execute external tools action.
      *
-     * @param integer $operation    Operation.
-     * @param string  $ip           Ip.
-     * @param string  $community    Community.
-     * @param string  $snmp_version SNMP version.
+     * @param mixed  $operation    Operation.
+     * @param string $ip           Ip.
+     * @param string $community    Community.
+     * @param string $snmp_version SNMP version.
      *
      * @return string String formed result of execution.
      */
-    public function externalToolsExecution(int $operation, string $ip, string $community, string $snmp_version)
+    public function externalToolsExecution($operation, string $ip, string $community, string $snmp_version)
     {
         $output = '';
 
@@ -705,9 +736,29 @@ class ExternalTools extends HTML
                     break;
 
                     default:
-                        // Nothing to do.
-                        $stringCommand = '';
-                        $executeCommand = '';
+                        global $config;
+
+                        $tempCustomCommandsList = json_decode(io_safe_output($config['external_tools_config']), true);
+                        $customCommandsList     = $tempCustomCommandsList['custom_commands'];
+                        // If the selected operation exists or not.
+                        if (isset($customCommandsList[$operation]) === true) {
+                            // Setting custom commands.
+                            $customCommand  = $customCommandsList[$operation]['command_custom'];
+                            $customParams   = $customCommandsList[$operation]['params_custom'];
+                            // If '_address_' macro is setted, attach to execution.
+                            if ((bool) preg_match('/_address_/', $customParams) === true) {
+                                $customParams   = preg_replace('/_address_/', $ip, $customParams);
+                                $stringCommand  = __('Performing %s execution on %s', $customCommand, $ip);
+                            } else {
+                                $stringCommand  = __('Performing %s execution', $customCommand);
+                            }
+
+                            $executeCommand = sprintf('%s %s', $customCommand, $customParams);
+                        } else {
+                            // Nothing to do.
+                            $stringCommand = '';
+                            $executeCommand = '';
+                        }
                     break;
                 }
 
@@ -801,7 +852,7 @@ class ExternalTools extends HTML
                 }
 
                 function mostrarColumns(value) {
-                    if (value == 3) {
+                    if (parseInt(value) === 3) {
                         $('.snmpcolumn').show();
                     }
                     else {

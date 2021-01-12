@@ -346,14 +346,40 @@ function parse_mysqli_dump($connection, $url)
 }
 
 
-function random_name($size)
+/**
+ * Generate a random password
+ *
+ * Admits a huge mount of ASCII chars.
+ *
+ * @param integer $size Size of the password returned.
+ *
+ * @return string $output
+ */
+function random_name(int $size)
 {
-    $temp = '';
-    for ($a = 0; $a < $size; $a++) {
-        $temp = $temp.chr(rand(126, 33));
+    $output = '';
+
+    $rangeSeed = [
+        '48:57',
+        '65:90',
+        '97:122',
+        '33:47',
+    ];
+
+    // Size of the password must be over 4.
+    $size = ($size >= count($rangeSeed)) ? $size : count($rangeSeed);
+
+    $auxIndex = 0;
+    for ($i = 0; $i < $size; $i++) {
+        $tmpSeedValues = explode(':', $rangeSeed[$auxIndex]);
+        $output = $output.chr(rand($tmpSeedValues[1], $tmpSeedValues[0]));
+        $auxIndex++;
+        if ($auxIndex >= 4) {
+            $auxIndex = 0;
+        }
     }
 
-    return $temp;
+    return str_shuffle($output);
 }
 
 

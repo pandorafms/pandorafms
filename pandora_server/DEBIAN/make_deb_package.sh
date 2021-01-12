@@ -2,7 +2,7 @@
 
 # Pandora FMS- http://pandorafms.com
 # ==================================================
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 # Please see http:#pandorafms.org for full contribution list
 
 # This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.750-201027"
+pandora_version="7.0NG.751-210112"
 
 package_cpan=0
 package_pandora=1

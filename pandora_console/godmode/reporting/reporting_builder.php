@@ -96,7 +96,7 @@ function dialog_message(message_id) {
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1380,11 +1380,12 @@ switch ($action) {
                 switch ($action) {
                     case 'update':
                         $values = [];
-                        $server_name = get_parameter('server_id');
-                        if (is_metaconsole() && $server_name != '') {
-                            $id_meta = metaconsole_get_id_server($server_name);
+                        $server_id = get_parameter('server_id', 0);
+                        if (is_metaconsole() === true
+                            && empty($server_id) === false
+                        ) {
                             $connection = metaconsole_get_connection_by_id(
-                                $id_meta
+                                $server_id
                             );
                             metaconsole_connect($connection);
                             $values['server_name'] = $connection['server_name'];
@@ -1431,10 +1432,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -1811,13 +1809,10 @@ switch ($action) {
                             'combo_modulegroup'
                         );
                         $values['id_group'] = get_parameter('combo_group');
-                        $values['server_name'] = get_parameter('server_name');
 
-                        if ($values['server_name'] == '') {
-                            $values['server_name'] = get_parameter(
-                                'combo_server'
-                            );
-                        }
+                        $values['server_name'] = get_parameter(
+                            'combo_server'
+                        );
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))
@@ -1867,9 +1862,7 @@ switch ($action) {
                         );
 
                         // If metaconsole is activated.
-                        if ($config['metaconsole'] == 1
-                            && defined('METACONSOLE')
-                        ) {
+                        if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
                                 || ($values['type'] == 'automatic_custom_graph')
                             ) {
@@ -2058,6 +2051,14 @@ switch ($action) {
                                 }
                             break;
 
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users', 0);
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2138,10 +2139,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -2671,6 +2669,14 @@ switch ($action) {
                                 } else {
                                     $style['label'] = '';
                                 }
+                            break;
+
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users');
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
                             break;
 
                             default:

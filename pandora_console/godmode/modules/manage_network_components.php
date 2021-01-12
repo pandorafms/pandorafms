@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -258,7 +258,7 @@ if ($id_modulo === COMPONENT_TYPE_WIZARD) {
     if ($execution_type === EXECUTION_TYPE_PLUGIN || $module_protocol === 'wmi') {
         // Search all parameters received with extra_fields.
         foreach ($_REQUEST as $parameter => $thisValue) {
-            // Extra fields (OIDs Macros or WMI Extra fields)
+            // Extra fields (OIDs Macros or WMI Extra fields).
             if (preg_match('/extra_field_'.$module_protocol.'_/', $parameter) !== 0) {
                 $tmpParameter = explode('_', $parameter);
                 $extra_fields['extra_field_'.$tmpParameter[3]] = get_parameter($parameter);
@@ -330,7 +330,7 @@ if ($create_component) {
 
     if ($name && !$name_check) {
         $id = network_components_create_network_component(
-            strip_tags(io_safe_input($name), '<br>'),
+            $name,
             $type,
             $id_group,
             [
@@ -431,7 +431,7 @@ if ($update_component) {
             $id,
             [
                 'type'                  => $type,
-                'name'                  => strip_tags(io_safe_input($name, '<br>')),
+                'name'                  => $name,
                 'id_group'              => $id_group,
                 'description'           => $description,
                 'module_interval'       => $module_interval,
@@ -643,6 +643,9 @@ $url = ui_get_url_refresh(
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
+if (!empty($search_string)) {
+    $search_string = trim($search_string, '&#x20;');
+}
 
 $table = new stdClass();
 $table->width = '100%';

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -278,6 +278,11 @@ class TopNEventByGroupWidget extends Widget
         ];
 
         // Groups.
+        $selected_groups = [];
+        if ($values['groupId']) {
+            $selected_groups = explode(',', $values['groupId'][0]);
+        }
+
         $inputs[] = [
             'label'     => __('Groups'),
             'arguments' => [
@@ -285,7 +290,7 @@ class TopNEventByGroupWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groupId'][0]),
+                'selected'       => $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
             ],

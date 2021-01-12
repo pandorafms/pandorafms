@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -2871,17 +2871,8 @@ function alerts_get_agent_modules(
         );
         $agent_modules = db_get_all_rows_sql($sql);
     } else {
-        $groups = groups_get_children($id_grupo, true);
+        $groups = groups_get_children_ids($id_grupo, true);
         if (empty($groups) === false) {
-            $groups = array_reduce(
-                $groups,
-                function ($carry, $item) {
-                    $carry[] = $item['id_grupo'];
-                    return $carry;
-                },
-                [$id_grupo]
-            );
-
             $sql = sprintf(
                 'SELECT distinct(atm.id_agent_module)
                     FROM talert_template_modules atm

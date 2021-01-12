@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -115,7 +115,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $return_all_group,
             'ag_group',
             $ag_group,
-            'this.form.submit();',
+            '',
             '',
             0,
             false,
@@ -126,7 +126,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
         );
         echo "</li></ul></li><li class='second_elements'><ul><li>";
         echo __('Group Recursion');
-        html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
+        html_print_checkbox('recursion', 1, $recursion, false, false, '');
         echo '</li><li>';
         echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
         echo '</li></ul></li></ul>';
@@ -143,7 +143,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $ag_groups = [];
             $ag_groups = (array) $ag_group;
             if ($recursion) {
-                $ag_groups = groups_get_id_recursive($ag_group, true);
+                $ag_groups = groups_get_children_ids($ag_group, true);
             }
         } else if ($own_info['is_admin']) {
             $returnAllGroups = 1;

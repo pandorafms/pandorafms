@@ -348,6 +348,27 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `tinventory_alert`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tinventory_alert`(
+    `id` int UNSIGNED NOT NULL auto_increment,
+    `id_module_inventory` int(10) NOT NULL,
+    `actions` text NOT NULL default '',
+	`id_group` mediumint(8) unsigned NULL default 0,
+    `condition` enum('WHITE_LIST', 'BLACK_LIST', 'MATCH') NOT NULL default 'WHITE_LIST',
+    `value` text NOT NULL default '',
+    `name` tinytext NOT NULL default '',
+    `description` text NOT NULL default '',
+    `time_threshold` int(10) NOT NULL default '0',
+    `last_fired` text NOT NULL default '',
+    `disable_event` tinyint(1) UNSIGNED default 0,
+    `enabled` tinyint(1) UNSIGNED default 1,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `ttrap_custom_values`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
@@ -1246,27 +1267,43 @@ ALTER TABLE talert_templates ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
-ALTER TABLE talert_snmp ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,
 	MODIFY COLUMN `al_field14` text NOT NULL,
 	MODIFY COLUMN `al_field15` text NOT NULL;
+
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
@@ -1405,6 +1442,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.00097656250000":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
@@ -1481,6 +1519,7 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
+ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -2485,6 +2524,7 @@ ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 -- Update table `tuser_task`
 -- ----------------------------------------------------------------------
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
+INSERT IGNORE INTO tuser_task VALUES (8, 'cron_task_generate_csv_log', 'a:1:{i:0;a:2:{s:11:"description";s:14:"Send to e-mail";s:4:"type";s:4:"text";}}', 'Send csv log');
 
 -- ----------------------------------------------------------------------
 -- ADD message in table 'tnews'

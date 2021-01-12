@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -408,7 +408,7 @@ if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
     if ($recursion) {
-        $ag_groups = groups_get_id_recursive($ag_group, true);
+        $ag_groups = groups_get_children_ids($ag_group, true);
     }
 
     $user_groups_to_sql = implode(',', $ag_groups);
@@ -754,7 +754,6 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     // Create agent button.
     echo '<div style="text-align: right;">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_input_hidden('new_agent', 1);
     html_print_submit_button(
         __('Create agent'),
         'crt-2',

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -88,7 +88,7 @@ if (is_ajax()) {
 
     if ($get_agents_group_json) {
         $id_group = (int) get_parameter('id_group');
-        $recursion = (bool) get_parameter('recursion');
+        $recursion = (get_parameter_switch('recursion', 'false') === 'true');
         $id_os = get_parameter('id_os', '');
         $agent_name = get_parameter('name', '');
 
@@ -146,14 +146,24 @@ if (is_ajax()) {
 
         // Perform search.
         $agents = agents_get_group_agents(
+            // Id_group.
             $id_group,
+            // Search.
             $filter,
+            // Case.
             'lower',
-            false,
+            // NoACL.
+            true,
+            // ChildGroups.
             $recursion,
+            // Serialized.
             false,
+            // Separator.
             '|',
-            $cluster_mode
+            // Add_alert_bulk_op.
+            $cluster_mode,
+            // Force_serialized.
+            false
         );
 
         if (empty($agents)) {

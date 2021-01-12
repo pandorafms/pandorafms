@@ -26,11 +26,13 @@ else
 	`/usr/local/share/pandora_agent/inst_utilities/print_conf.pl /usr/local/share/pandora_agent/pandora_agent.conf remote_config $REMOTECFG`
 	
 	# Create agent directories and files
-	mkdir -p /usr/local/share/pandora_agent/collections
-	mkdir -p /usr/local/share/pandora_agent/commands
+	mkdir -p /usr/local/bin/
+	mkdir -p /usr/local/share/man/man1/
+	mkdir -p /usr/local/share/pandora_agent/collections/
+	mkdir -p /usr/local/share/pandora_agent/commands/
 	mkdir -p /etc/pandora/
-	mkdir -p /var/spool/pandora/data_out
-	mkdir -p /var/log/pandora
+	mkdir -p /var/spool/pandora/data_out/
+	mkdir -p /var/log/pandora/
 	mv pandora_agent.conf /etc/pandora/
 	touch /var/log/pandora/pandora_agent.log
 
@@ -70,9 +72,9 @@ ln -s /usr/local/share/pandora_agent/collections /etc/pandora/collections
 
 
 # Copy manuals
-cp -f man/man1/pandora_agent.1.gz /usr/local/share/man/man1
+cp -f man/man1/pandora_agent.1.gz /usr/local/share/man/man1/
 chmod 644 /usr/local/share/man/man1/pandora_agent.1.gz
-cp -f man/man1/tentacle_client.1.gz /usr/local/share/man/man1
+cp -f man/man1/tentacle_client.1.gz /usr/local/share/man/man1/
 chmod 644 /usr/local/share/man/man1/tentacle_client.1.gz
 
 # Create newsyslog entry

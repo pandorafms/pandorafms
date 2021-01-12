@@ -2,7 +2,7 @@
 
 // Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
-// Copyright (c) 2007-2011 Artica, info@artica.es
+// Copyright (c) 2007-2021 Artica, info@artica.es
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
 // (LGPL) as published by the Free Software Foundation; version 2
@@ -346,13 +346,7 @@ function menu_graph(
         $threshold = true;
     }
 
-    $return .= "<div id='general_menu_$graph_id' class='menu_graph' style='
-                    width: 20px;
-                    height: 150px;
-                    left:100%;
-                    position: absolute;
-                    top: 0px;
-                    background-color: tranparent;'>";
+    $return .= "<div id='general_menu_$graph_id' class='menu_graph'>";
     $return .= "<div id='menu_$graph_id' "."style='display: none; ".'text-align: center;'.'position: relative;'."border-bottom: 0px;'>
         <a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$params['homeurl']."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
     if ($threshold) {
@@ -745,13 +739,12 @@ function flot_slicesbar_graph(
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     $height = ((int) $height + 15);
-    if ($stat_win) {
-        $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px; display: inline-block;'></div>";
-    } else {
-        $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px;'></div>";
-    }
 
-    $return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
+    $style = 'width:'.$width.'%;';
+    $style .= 'height:'.$height.'px;';
+    $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
+
+    $return .= "<div id='value_".$graph_id."' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 
     // Set a weird separator to serialize and unserialize
     // passing data from php to javascript.

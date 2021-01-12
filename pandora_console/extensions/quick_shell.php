@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -251,6 +251,12 @@ function quickShell()
         $new .= $config['ws_proxy_url'].'/'.$method."';";
     }
 
+    // Update firefox issue.
+    $original = '    this.iframe_.src = \'#\';';
+    $trick = 'this.iframe_.src = \'javascript:\';';
+
+    $r = str_replace($original, $trick, $r);
+
     // Update url.
     $gotty = str_replace($url, $new, $gotty);
 
@@ -468,6 +474,7 @@ function quickShellSettings()
         100,
         true
     );
+    $hidden->data[1][1] .= ui_print_reveal_password('gotty_pass', true);
 
     html_print_table($t);
 

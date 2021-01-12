@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,11 +193,13 @@ if ($editGraph) {
 
 
 $count_module_array = count($module_array);
-if ($count_module_array > 10) {
+if ($count_module_array > $config['items_combined_charts']) {
     ui_print_warning_message(
         __(
-            'The maximum number of items in a chart is 10. You have %s elements, only first 10 will be displayed.',
-            $count_module_array
+            'The maximum number of items in a chart is %d. You have %d elements, only first %d will be displayed.',
+            $config['items_combined_charts'],
+            $count_module_array,
+            $config['items_combined_charts']
         )
     );
 }

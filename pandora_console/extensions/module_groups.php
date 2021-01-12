@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,7 +86,6 @@ function mainModuleGroups()
     );
     $info = $tree_group->getArray();
     $info = groupview_plain_groups($info);
-    $counter = count($info);
     $offset = get_parameter('offset', 0);
     $agent_group_search = get_parameter('agent_group_search', '');
     $module_group_search = get_parameter('module_group_search', '');
@@ -133,6 +132,8 @@ function mainModuleGroups()
     } else {
         $ids_group = -1;
     }
+
+    $counter = count($info);
 
     $condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
     $condition_warning  = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);

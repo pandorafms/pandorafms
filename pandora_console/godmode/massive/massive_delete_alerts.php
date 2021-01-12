@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ if (is_ajax()) {
         $keys_prefix = (string) get_parameter('keys_prefix', '');
 
         if ($recursion) {
-            $groups = groups_get_id_recursive($id_group, true);
+            $groups = groups_get_children_ids($id_group, true);
         } else {
             $groups = [$id_group];
         }

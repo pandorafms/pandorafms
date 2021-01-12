@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -311,7 +311,7 @@ if ($user_filter != 0 && empty($id_name) && !$update_from_filter_table) {
 }
 
 // Build the condition of the events query.
-$sql_post = '';
+$sql_post = ' WHERE 1=1 ';
 
 $id_user = $config['id_user'];
 
@@ -1214,7 +1214,7 @@ if ($group_rep == 0) {
     $sql = 'SELECT COUNT(DISTINCT id_evento)
 			FROM $event_table te
 			$event_lj
-			WHERE 1=1 $sql_post';
+			$sql_post';
     $total_events = (int) db_get_sql($sql);
 } else if ($group_rep == 1) {
     $total_events = events_get_events_grouped(
@@ -1477,7 +1477,8 @@ $(document).ready( function() {
                             $("#text-id_extra").val(val);
                         if (i == 'user_comment')
                             $("#text-user_comment").val(val);
-                        
+                        if (i == 'module_search')
+                            $("#text-module_search").val(val);
                         if(i == 'id_source_event')
                             $("#text-id_source_event").val(val);
                         }

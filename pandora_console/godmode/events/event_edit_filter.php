@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,16 @@ if ($update || $create) {
     $id_agent = (int) get_parameter('id_agent');
     $text_module = get_parameter('text_module', '');
     $id_agent_module = (int) get_parameter('module_search_hidden');
+    if ($text_module === '') {
+        $text_module = io_safe_output(
+            db_get_value_filter(
+                'nombre',
+                'tagente_modulo',
+                ['id_agente_modulo' => $id_agent_module]
+            )
+        );
+    }
+
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');

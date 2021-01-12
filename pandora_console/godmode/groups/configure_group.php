@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -168,7 +168,15 @@ if ($id_group) {
     }
 } else {
     $table->data[2][1] = '<div class="w250px inline">';
-    $table->data[2][1] .= html_print_select_groups(false, 'AR', true, 'id_parent', $id_parent, '', '', '', true);
+    $table->data[2][1] .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'name'           => 'id_parent',
+            'selected'       => $id_parent,
+            'return'         => true,
+            'returnAllGroup' => true,
+        ]
+    );
     $table->data[2][1] .= '</div>';
 }
 

@@ -249,22 +249,24 @@ function load_modal(settings) {
             });
           } else {
             settings.form.forEach(function(element) {
-              $("#" + element + " :input").each(function() {
-                // TODO VALIDATE ALL INPUTS.
-                if (this.type == "file") {
-                  if ($(this).prop("files")[0]) {
-                    formdata.append(this.name, $(this).prop("files")[0]);
-                  }
-                } else {
-                  if ($(this).attr("type") == "checkbox") {
-                    if (this.checked) {
-                      formdata.append(this.name, "on");
+              $("#" + element + " :input, #" + element + " textarea").each(
+                function() {
+                  // TODO VALIDATE ALL INPUTS.
+                  if (this.type == "file") {
+                    if ($(this).prop("files")[0]) {
+                      formdata.append(this.name, $(this).prop("files")[0]);
                     }
                   } else {
-                    formdata.append(this.name, $(this).val());
+                    if ($(this).attr("type") == "checkbox") {
+                      if (this.checked) {
+                        formdata.append(this.name, "on");
+                      }
+                    } else {
+                      formdata.append(this.name, $(this).val());
+                    }
                   }
                 }
-              });
+              );
             });
           }
 
@@ -551,4 +553,24 @@ function infoMessage(data, idMsg) {
       }
     })
     .show();
+}
+
+function reveal_password(name) {
+  var passwordElement = $("#password-" + name);
+  var revealElement = $("#reveal_password_" + name);
+  var imagesPath = "";
+
+  if ($("#hidden-metaconsole_activated").val() == 1) {
+    imagesPath = "../../images/";
+  } else {
+    imagesPath = "images/";
+  }
+
+  if (passwordElement.attr("type") == "password") {
+    passwordElement.attr("type", "text");
+    revealElement.attr("src", imagesPath + "eye_hide.png");
+  } else {
+    passwordElement.attr("type", "password");
+    revealElement.attr("src", imagesPath + "eye_show.png");
+  }
 }

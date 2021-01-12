@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -941,7 +941,7 @@ function tags_get_acl_tags_event_condition(
         }
 
         // Group condition (The module belongs to an agent of the group X)
-        // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));.
+        // $group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_children_ids($group_id, true))));.
         $group_condition = '('.$id_grupo_table_pretag.'id_grupo = '.$group_id.' OR '.$alt_id_grupo_table_pretag.'id_group = '.$group_id.')';
 
         // Tags condition (The module has at least one of the restricted tags).
@@ -1350,7 +1350,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags=[], $children
     foreach ($user_tags as $user_tag) {
         $tags_user = $user_tag['tags'];
         $id_group_user = $user_tag['id_grupo'];
-        $childrens = groups_get_childrens($id_group_user, null, true);
+        $childrens = groups_get_children($id_group_user, null, true);
 
         if (empty($childrens)) {
             $group_ids = $id_group_user;
@@ -1421,7 +1421,7 @@ function tags_get_agents_counter($id_tag, $groups_and_tags=[], $agent_filter=[],
                 $tags_arr = explode(',', $tags);
                 foreach ($tags_arr as $tag) {
                     if ($tag == $id_tag) {
-                        $hierarchy_groups = groups_get_id_recursive($group_id);
+                        $hierarchy_groups = groups_get_children_ids($group_id);
                         $groups_id = array_merge($groups_id, $hierarchy_groups);
                     }
                 }
@@ -1923,7 +1923,7 @@ function tags_get_monitors_counter($id_tag, $groups_and_tags=[], $agent_filter=[
                 $tags_arr = explode(',', $tags);
                 foreach ($tags_arr as $tag) {
                     if ($tag == $id_tag) {
-                        $hierarchy_groups = groups_get_id_recursive($group_id);
+                        $hierarchy_groups = groups_get_children_ids($group_id);
                         $groups_id = array_merge($groups_id, $hierarchy_groups);
                     }
                 }
@@ -2219,7 +2219,7 @@ function tags_monitors_fired_alerts($id_tag, $groups_and_tags=[], $id_agente=fal
                 $tags_arr = explode(',', $tags);
                 foreach ($tags_arr as $tag) {
                     if ($tag == $id_tag) {
-                        $hierarchy_groups = groups_get_id_recursive($group_id);
+                        $hierarchy_groups = groups_get_children_ids($group_id);
                         $groups_id = array_merge($groups_id, $hierarchy_groups);
                     }
                 }
@@ -2283,7 +2283,7 @@ function tags_get_monitors_alerts($id_tag, $groups_and_tags=[], $id_agente=false
                 $tags_arr = explode(',', $tags);
                 foreach ($tags_arr as $tag) {
                     if ($tag == $id_tag) {
-                        $hierarchy_groups = groups_get_id_recursive($group_id);
+                        $hierarchy_groups = groups_get_children_ids($group_id);
                         $groups_id = array_merge($groups_id, $hierarchy_groups);
                     }
                 }

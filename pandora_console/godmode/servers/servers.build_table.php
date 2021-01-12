@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,8 +91,20 @@ foreach ($servers as $server) {
 
     // Status
     $data[1] = ui_print_status_image(STATUS_SERVER_OK, '', true);
-    if (($server['status'] == 0) || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)) {
-        $data[1] = ui_print_status_image(STATUS_SERVER_DOWN, '', true);
+    if ($server['status'] == -1) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_CRASH,
+            __('Server has crashed.'),
+            true
+        );
+    } else if (($server['status'] == 0)
+        || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)
+    ) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_DOWN,
+            __('Server is stopped.'),
+            true
+        );
     }
 
     // Type

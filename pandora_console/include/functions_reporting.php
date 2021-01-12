@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -689,6 +689,13 @@ function reporting_make_reporting_data(
 
             case 'last_value':
                 $report['contents'][] = reporting_last_value(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'permissions_report':
+                $report['contents'][] = reporting_permissions(
                     $report,
                     $content
                 );
@@ -1840,10 +1847,23 @@ function reporting_event_report_group(
         $history = true;
     }
 
-    $return['title'] = $content['name'];
+    $group_name = groups_get_name($content['id_group'], true);
+
+    $items_label = ['agent_group' => $group_name];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
-    $return['subtitle'] = groups_get_name($content['id_group'], true);
+    $return['subtitle'] = $group_name;
     if (!empty($content['style']['event_filter_search'])) {
         $return['subtitle'] .= ' ('.$content['style']['event_filter_search'].')';
     }
@@ -2122,7 +2142,16 @@ function reporting_event_report_module(
         'module_description' => $module_description,
     ];
 
-    $return['title'] = $content['name'];
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.io_safe_output($module_name);
@@ -2230,17 +2259,43 @@ function reporting_inventory_changes($report, $content, $type)
         metaconsole_connect($server);
     }
 
-    $return['title'] = $content['name'];
+    $es = json_decode($content['external_source'], true);
+
+    $id_agent = $es['id_agents'];
+    $module_name = $es['inventory_modules'];
+    $id_agent_module = modules_get_agentmodule_id($module_name, $id_agent);
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'id_agent'          => $id_agent,
+        'id_agent_module'   => $id_agent_module,
+        'agent_description' => $agent_description,
+        'agent_group'       => $agent_group,
+        'agent_address'     => $agent_address,
+        'agent_alias'       => $agent_alias,
+    ];
+
+     // Apply macros.
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = agents_get_alias($content['id_agent']);
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-
-    $es = json_decode($content['external_source'], true);
-
-    $id_agent = $es['id_agents'];
-    $module_name = $es['inventory_modules'];
 
     switch ($type) {
         case 'data':
@@ -2299,12 +2354,6 @@ function reporting_inventory($report, $content, $type)
         metaconsole_connect($server);
     }
 
-    $return['title'] = $content['name'];
-    $return['landscape'] = $content['landscape'];
-    $return['pagebreak'] = $content['pagebreak'];
-    $return['description'] = $content['description'];
-    $return['date'] = reporting_get_date_text($report, $content);
-
     $es = json_decode($content['external_source'], true);
 
     $id_agent = $es['id_agents'];
@@ -2312,6 +2361,35 @@ function reporting_inventory($report, $content, $type)
     if (empty($module_name)) {
         $module_name = [0 => 0];
     }
+
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+
+    $items_label = [
+        'type'              => $return['type'],
+        'id_agent'          => $id_agent,
+        'agent_description' => $agent_description,
+        'agent_group'       => $agent_group,
+        'agent_address'     => $agent_address,
+        'agent_alias'       => $agent_alias,
+    ];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
 
     $date = $es['date'];
     $description = $content['description'];
@@ -2929,21 +3007,103 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
-
     $return['type'] = 'group_report';
 
     if (empty($content['name'])) {
         $content['name'] = __('Group Report');
     }
 
-    if (is_metaconsole()) {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true) {
+        if (isset($content['server_name']) === true
+            && empty($content['server_name']) === false
+        ) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server = metaconsole_get_connection_by_id($id_meta);
+            metaconsole_connect($server);
+
+            $data = reporting_groups_nodes($content);
+
+            if (is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $servers = metaconsole_get_connection_names();
+            if (isset($servers) === true && is_array($servers) === true) {
+                $group_stats = [
+                    'monitor_checks'            => 0,
+                    'monitor_not_init'          => 0,
+                    'monitor_unknown'           => 0,
+                    'monitor_ok'                => 0,
+                    'monitor_bad'               => 0,
+                    'monitor_warning'           => 0,
+                    'monitor_critical'          => 0,
+                    'monitor_not_normal'        => 0,
+                    'monitor_alerts'            => 0,
+                    'monitor_alerts_fired'      => 0,
+                    'monitor_alerts_fire_count' => 0,
+                    'total_agents'              => 0,
+                    'total_alerts'              => 0,
+                    'total_checks'              => 0,
+                    'alerts'                    => 0,
+                    'agents_unknown'            => 0,
+                    'monitor_health'            => 0,
+                    'alert_level'               => 0,
+                    'module_sanity'             => 0,
+                    'server_sanity'             => 0,
+                    'total_not_init'            => 0,
+                    'monitor_non_init'          => 0,
+                    'agent_ok'                  => 0,
+                    'agent_warning'             => 0,
+                    'agent_critical'            => 0,
+                    'agent_unknown'             => 0,
+                    'agent_not_init'            => 0,
+                    'global_health'             => 0,
+                    'alert_fired'               => 0,
+                ];
+
+                $count_events = 0;
+
+                foreach ($servers as $k_server => $v_server) {
+                    $id_meta = metaconsole_get_id_server($v_server);
+                    $server = metaconsole_get_connection_by_id($id_meta);
+                    metaconsole_connect($server);
+
+                    $data_node = reporting_groups_nodes($content);
+                    $count_events += $data_node['count_events'];
+                    foreach ($data_node['group_stats'] as $key => $value) {
+                        $group_stats[$key] += $value;
+                    }
+
+                    if (is_metaconsole() === true) {
+                        metaconsole_restore_db();
+                    }
+                }
+
+                $data = [
+                    'count_events' => $count_events,
+                    'group_stats'  => $group_stats,
+                ];
+            }
+        }
+    } else {
+        $data = reporting_groups_nodes($content);
     }
 
-    $return['server_name'] = $server[0];
-    $return['title'] = io_safe_output($content['name']);
+    $items_label = [
+        'agent_group' => groups_get_name($content['id_group'], true),
+    ];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['server_name'] = $content['server_name'];
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = groups_get_name($content['id_group'], true);
@@ -2952,17 +3112,42 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+    $return['data']['count_events'] = $data['count_events'];
+
+    $return['data']['group_stats'] = $data['group_stats'];
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Return stats groups for node.
+ *
+ * @param array $content Info report.
+ *
+ * @return array Result.
+ */
+function reporting_groups_nodes($content)
+{
+    global $config;
+    $id_group = groups_safe_acl(
+        $config['id_user'],
+        $content['id_group'],
+        'ER'
+    );
 
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(' AND id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $sql_where = sprintf(
+            ' WHERE id_grupo IN (%s) AND estado<>1 ',
+            implode(',', $id_group)
+        );
         $events = events_get_events_grouped(
             $sql_where,
             0,
             1000,
-            is_metaconsole()
+            false
         );
     }
 
@@ -2970,15 +3155,15 @@ function reporting_group_report($report, $content)
         $events = [];
     }
 
-    $return['data']['count_events'] = count($events);
+    $return['count_events'] = count($events);
 
-    $return['data']['group_stats'] = reporting_get_group_stats($content['id_group']);
+    $return['group_stats'] = reporting_get_group_stats(
+        $content['id_group'],
+        'AR',
+        (bool) $content['recursion']
+    );
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
-    return reporting_check_structure_content($return);
+    return $return;
 }
 
 
@@ -3034,6 +3219,15 @@ function reporting_event_report_agent(
         'agent_alias'       => $agent_alias,
     ];
 
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
     if ($config['metaconsole']) {
         metaconsole_restore_db();
     }
@@ -3047,7 +3241,7 @@ function reporting_event_report_agent(
     }
 
     $return['label'] = $label;
-    $return['title'] = io_safe_output($content['name']);
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = io_safe_output($agent_alias);
@@ -3258,7 +3452,16 @@ function reporting_historical_data($report, $content)
         'module_description' => $module_description,
     ];
 
-    $return['title'] = $content['name'];
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
@@ -3383,7 +3586,16 @@ function reporting_database_serialized($report, $content)
         'module_description' => $module_description,
     ];
 
-    $return['title'] = $content['name'];
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
@@ -3537,7 +3749,37 @@ function reporting_last_value($report, $content)
         $content['id_agent_module']
     );
 
-    $return['title'] = $content['name'];
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
@@ -3573,6 +3815,128 @@ function reporting_last_value($report, $content)
 }
 
 
+function reporting_permissions($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'permissions_report';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('Permissions report');
+    }
+
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $external_source = io_safe_input(json_decode($content['external_source'], true));
+    $id_users = $external_source['id_users'];
+    $id_groups = $external_source['users_groups'];
+
+    // Select subtype: group by user or by group.
+    $select_by_group = $external_source['select_by_group'];
+    $return['subtype'] = (int) $select_by_group;
+
+    if ($select_by_group === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+        foreach ($id_users as $id_user) {
+            $user_name = db_get_value_filter('fullname', 'tusuario', ['id_user' => $id_user]);
+
+            $sql = sprintf(
+                "SELECT name, id_grupo FROM tusuario_perfil
+                INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
+                WHERE tusuario_perfil.id_usuario like '%s'",
+                $id_user
+            );
+
+            $profiles = db_get_all_rows_sql($sql);
+
+            $user_profiles = [];
+            if (empty($profiles)) {
+                $user_profiles[] = __('The user doesn\'t have any assigned profile/group');
+            } else {
+                foreach ($profiles as $user_profile) {
+                    $user_profiles[] = $user_profile['name'].' / '.groups_get_name($user_profile['id_grupo'], true);
+                }
+            }
+
+            $data[] = [
+                'user_id'       => io_safe_output($id_user),
+                'user_name'     => io_safe_output($user_name),
+                'user_profiles' => io_safe_output($user_profiles),
+            ];
+        }
+    } else {
+        $group_users = [];
+        foreach ($id_groups as $id_group) {
+            if ($id_group === '') {
+                $group_name = __('Unnasigned group');
+                $sql = 'SELECT tusuario.id_user, tusuario.fullname FROM tusuario 
+                        LEFT OUTER JOIN tusuario_perfil
+                        ON tusuario.id_user = tusuario_perfil.id_usuario
+                        WHERE tusuario_perfil.id_usuario IS NULL';
+                $group_users = db_get_all_rows_sql($sql);
+                $group_name = __('Unassigned group');
+            } else {
+                $group_name = groups_get_name($id_group, true);
+                $group_users = users_get_user_users(
+                    $id_group,
+                    'AR',
+                    false,
+                    [
+                        'id_user',
+                        'fullname',
+
+                    ],
+                    [$id_group]
+                );
+            }
+
+            $row['users'] = [];
+            foreach ($group_users as $user) {
+                 $id_user = $user['id_user'];
+
+                // Get user fullanme.
+                $row['users'][$id_user]['fullname'] = $user['fullname'];
+
+                if ($id_group === '') {
+                    $row['users'][$id_user]['profiles'][] = __('The user doesn\'t have any assigned profile/group');
+                } else {
+                    // Incluide id group = 0 for 'All' profile.
+                    $sql = sprintf(
+                        "SELECT id_perfil FROM tusuario_perfil 
+                            WHERE id_usuario LIKE '%s' 
+                            AND (
+                                id_grupo LIKE '%s'
+                                OR id_grupo LIKE '0'
+                                )",
+                        $id_user,
+                        $id_group
+                    );
+
+                    $user_profiles_id  = db_get_all_rows_sql($sql);
+
+                    foreach ($user_profiles_id as $profile_id) {
+                        $row['users'][$id_user]['profiles'][] = profile_get_name($profile_id['id_perfil']);
+                    }
+                }
+            }
+
+            $data[] = [
+                'group_name' => $group_name,
+                'users'      => $row['users'],
+            ];
+        }
+    }
+
+    $return['data'] = [];
+    $return['data'] = $data;
+
+    return reporting_check_structure_content($return);
+}
+
+
 function reporting_group_configuration($report, $content)
 {
     global $config;
@@ -3592,7 +3956,18 @@ function reporting_group_configuration($report, $content)
 
     $group_name = groups_get_name($content['id_group'], true);
 
-    $return['title'] = $content['name'];
+    $items_label = ['agent_group' => $group_name];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
@@ -3667,7 +4042,18 @@ function reporting_network_interfaces_report($report, $content, $type='dinamic',
 
     $group_name = groups_get_name($content['id_group']);
 
-    $return['title'] = $content['name'];
+    $items_label = ['_agentgroup_' => $group_name];
+
+      // Apply macros
+      $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
@@ -3903,7 +4289,18 @@ function reporting_alert_report_group($report, $content)
 
     $group_name = groups_get_name($content['id_group'], true);
 
-    $return['title'] = $content['name'];
+    $items_label = ['agent_group' => $group_name];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $group_name;
@@ -3912,7 +4309,7 @@ function reporting_alert_report_group($report, $content)
 
     $agent_modules = alerts_get_agent_modules(
         $content['id_group'],
-        $content['recursion']
+        (((string) $content['id_group'] === '0') ? true : $content['recursion'])
     );
 
     if (empty($alerts)) {
@@ -4086,7 +4483,16 @@ function reporting_alert_report_agent($report, $content)
         'agent_alias'       => $agent_alias,
     ];
 
-    $return['title'] = $content['name'];
+     // Apply macros.
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias;
@@ -4256,7 +4662,16 @@ function reporting_alert_report_module($report, $content)
         'module_description' => $module_description,
     ];
 
-    $return['title'] = $content['name'];
+     // Apply macros.
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
@@ -4539,7 +4954,16 @@ function reporting_monitor_report($report, $content)
         'module_description' => $module_description,
     ];
 
-    $return['title'] = $content['name'];
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
@@ -4731,11 +5155,57 @@ function reporting_prediction_date($report, $content)
     );
     $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
-    $return['title'] = $content['name'];
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $description = (isset($content['description'])) ? $content['description'] : '';
+    if ($description != '') {
+        $description = reporting_label_macro(
+            $items_label,
+            $description
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = $description;
     $return['date'] = reporting_get_date_text($report, $content);
     $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 
@@ -4786,7 +5256,45 @@ function reporting_projection_graph(
     $agent_name = io_safe_output(modules_get_agentmodule_agent_alias($content['id_agent_module']));
     $agent_name_db = io_safe_output(modules_get_agentmodule_agent_name($content['id_agent_module']));
 
-    $return['title']       = $content['name'];
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title']       = $title;
     $return['subtitle']    = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date']        = reporting_get_date_text($report, $content);
@@ -4865,7 +5373,36 @@ function reporting_agent_configuration($report, $content)
         $content['name'] = __('Agent configuration');
     }
 
-    $return['title'] = $content['name'];
+    $sql = '
+    SELECT *
+    FROM tagente
+    WHERE id_agente='.$content['id_agent'];
+    $agent_data = db_get_row_sql($sql);
+
+    $id_agent = $content['id_agent'];
+    $agent_alias = $agent_data['alias'];
+    $agent_group = groups_get_name($agent_data['id_grupo']);
+    $agent_description = $agent_data['comentarios'];
+    $agent_address = $agent_data['direccion'];
+
+    $items_label = [
+        'id_agent'          => $id_agent,
+        'agent_description' => $agent_description,
+        'agent_group'       => $agent_group,
+        'agent_address'     => $agent_address,
+        'agent_alias'       => $agent_alias,
+    ];
+
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
@@ -4879,20 +5416,14 @@ function reporting_agent_configuration($report, $content)
         metaconsole_connect($server);
     }
 
-    $sql = '
-        SELECT *
-        FROM tagente
-        WHERE id_agente='.$content['id_agent'];
-    $agent_data = db_get_row_sql($sql);
-
     $agent_configuration = [];
-    $agent_configuration['name'] = $agent_data['alias'];
-    $agent_configuration['group'] = groups_get_name($agent_data['id_grupo']);
+    $agent_configuration['name'] = $agent_alias;
+    $agent_configuration['group'] = $agent_group;
     $agent_configuration['group_icon'] = ui_print_group_icon($agent_data['id_grupo'], true, '', '', false);
     $agent_configuration['os'] = os_get_name($agent_data['id_os']);
     $agent_configuration['os_icon'] = ui_print_os_icon($agent_data['id_os'], true, true);
-    $agent_configuration['address'] = $agent_data['direccion'];
-    $agent_configuration['description'] = $agent_data['comentarios'];
+    $agent_configuration['address'] = $agent_address;
+    $agent_configuration['description'] = $agent_description;
     $agent_configuration['enabled'] = (int) !$agent_data['disabled'];
     $agent_configuration['group'] = $report['group'];
     $modules = agents_get_modules($content['id_agent']);
@@ -4979,6 +5510,16 @@ function reporting_agent_configuration($report, $content)
 }
 
 
+/**
+ * Report Min, Max and Avg.
+ *
+ * @param array   $report  Info report.
+ * @param array   $content Content report.
+ * @param string  $type    Type report.
+ * @param boolean $pdf     Is pdf.
+ *
+ * @return array Data draw report.
+ */
 function reporting_value($report, $content, $type, $pdf=false)
 {
     global $config;
@@ -4993,16 +5534,17 @@ function reporting_value($report, $content, $type, $pdf=false)
             $return['type'] = 'min_value';
         break;
 
-        case 'avg':
-            $return['type'] = 'avg_value';
-        break;
-
         case 'sum':
             $return['type'] = 'sumatory';
         break;
+
+        case 'avg':
+        default:
+            $return['type'] = 'avg_value';
+        break;
     }
 
-    if (empty($content['name'])) {
+    if (empty($content['name']) === true) {
         switch ($type) {
             case 'max':
                 $content['name'] = __('Max. Value');
@@ -5012,17 +5554,18 @@ function reporting_value($report, $content, $type, $pdf=false)
                 $content['name'] = __('Min. Value');
             break;
 
-            case 'avg':
-                $content['name'] = __('AVG. Value');
-            break;
-
             case 'sum':
                 $content['name'] = __('Summatory');
+            break;
+
+            case 'avg':
+            default:
+                $content['name'] = __('AVG. Value');
             break;
         }
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
 
         $server = metaconsole_get_connection_by_id($id_meta);
@@ -5045,13 +5588,59 @@ function reporting_value($report, $content, $type, $pdf=false)
         $content['id_agent_module']
     );
 
-    $return['title'] = $content['name'];
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $label = (isset($content['name'])) ? $content['name'] : '';
+    if ($label != '') {
+        $label = reporting_label_macro(
+            $items_label,
+            $label
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
     $return['description'] = $content['description'];
     $return['date'] = reporting_get_date_text($report, $content);
-    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $return['label'] = $label;
     $return['agents'] = [$content['id_agent']];
     $return['id_agent'] = $content['id_agent'];
     $return['id_agent_module'] = $content['id_agent_module'];
@@ -5060,14 +5649,15 @@ function reporting_value($report, $content, $type, $pdf=false)
     $return['agent_name'] = $agent_name;
     $return['module_name'] = $module_name;
 
+    $only_image = false;
     if ($pdf) {
-        $only_image = 1;
+        $only_image = true;
     }
 
     $params = [
         'agent_module_id'    => $content['id_agent_module'],
         'period'             => $content['period'],
-        'width'              => '600px',
+        'width'              => '90%',
         'pure'               => false,
         'date'               => $report['datetime'],
         'only_image'         => $only_image,
@@ -5086,6 +5676,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         case 'max':
         case 'min':
         case 'avg':
+        default:
             $divisor = get_data_multiplier($unit);
 
             if ($content['lapse_calc'] == 0) {
@@ -5107,6 +5698,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                     break;
 
                     case 'avg':
+                    default:
                         $value = reporting_get_agentmodule_data_average(
                             $content['id_agent_module'],
                             $content['period'],
@@ -5118,7 +5710,14 @@ function reporting_value($report, $content, $type, $pdf=false)
                 if (!$config['simple_module_value']) {
                     $formated_value = $value;
                 } else {
-                    $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
+                    $formated_value = format_for_graph(
+                        $value,
+                        $config['graph_precision'],
+                        '.',
+                        ',',
+                        $divisor,
+                        $unit
+                    );
                 }
             } else {
                 $return['visual_format'] = $content['visual_format'];
@@ -5126,17 +5725,51 @@ function reporting_value($report, $content, $type, $pdf=false)
                 switch ($type) {
                     case 'max':
                         $params['force_interval'] = 'max_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_max(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
 
                     case 'min':
                         $params['force_interval'] = 'min_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_min(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
 
                     case 'avg':
+                    default:
                         $params['force_interval'] = 'avg_only';
-                        $value = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['period'], $report['datetime']), $config['graph_precision'], '.', ',', $divisor, $unit);
+                        $value = format_for_graph(
+                            reporting_get_agentmodule_data_average(
+                                $content['id_agent_module'],
+                                $content['period'],
+                                $report['datetime']
+                            ),
+                            $config['graph_precision'],
+                            '.',
+                            ',',
+                            $divisor,
+                            $unit
+                        );
                     break;
                 }
 
@@ -5166,15 +5799,49 @@ function reporting_value($report, $content, $type, $pdf=false)
                         if ($i > $time_begin['utimestamp']) {
                             switch ($type) {
                                 case 'max':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_max($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_max(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
 
                                 case 'min':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_min($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_min(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
 
                                 case 'avg':
-                                    $row[__('Maximun')] = format_for_graph(reporting_get_agentmodule_data_average($content['id_agent_module'], $content['lapse'], ($i + $content['lapse'])), $config['graph_precision'], '.', ',', $divisor, $unit);
+                                default:
+                                    $row[__('Maximun')] = format_for_graph(
+                                        reporting_get_agentmodule_data_average(
+                                            $content['id_agent_module'],
+                                            $content['lapse'],
+                                            ($i + $content['lapse'])
+                                        ),
+                                        $config['graph_precision'],
+                                        '.',
+                                        ',',
+                                        $divisor,
+                                        $unit
+                                    );
                                 break;
                             }
                         } else {
@@ -5185,7 +5852,7 @@ function reporting_value($report, $content, $type, $pdf=false)
                     }
                 }
 
-                if ($config['metaconsole']) {
+                if (is_metaconsole() === true) {
                     metaconsole_restore_db();
                 }
 
@@ -5205,7 +5872,14 @@ function reporting_value($report, $content, $type, $pdf=false)
             } else {
                 $divisor = get_data_multiplier($unit);
 
-                $formated_value = format_for_graph($value, $config['graph_precision'], '.', ',', $divisor, $unit);
+                $formated_value = format_for_graph(
+                    $value,
+                    $config['graph_precision'],
+                    '.',
+                    ',',
+                    $divisor,
+                    $unit
+                );
             }
         break;
     }
@@ -5215,7 +5889,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         'formated_value' => $formated_value,
     ];
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -5320,7 +5994,7 @@ function reporting_sql($report, $content)
             )
         );
     } else {
-        $sql = io_safe_output($content['external_source']);
+        $sql = $content['external_source'];
     }
 
     // Check if exist sql macro
@@ -7592,7 +8266,42 @@ function reporting_increment($report, $content)
         $content['name'] = __('Increment');
     }
 
-    $return['title'] = $content['name'];
+    $id_agent = $content['id_agent'];
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
@@ -8216,6 +8925,10 @@ function reporting_custom_graph(
         $content['name'] = __('Simple graph');
     }
 
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+
     $agent_description = agents_get_description($id_agent);
     $agent_group = agents_get_agent_group($id_agent);
     $agent_address = agents_get_address($id_agent);
@@ -8228,13 +8941,42 @@ function reporting_custom_graph(
         $id_agent_module
     );
 
-    $return['title'] = $content['name'];
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+    // Apply macros
+    $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $description = (isset($content['description'])) ? $content['description'] : '';
+    if ($description != '') {
+        $description = reporting_label_macro(
+            $items_label,
+            $description
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $graphs[0]['name'];
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = $description;
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -8378,6 +9120,23 @@ function reporting_simple_graph(
         'module_description' => $module_description,
     ];
 
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $description = (isset($content['description'])) ? $content['description'] : '';
+    if ($description != '') {
+        $description = reporting_label_macro(
+            $items_label,
+            $description
+        );
+    }
+
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
@@ -8386,14 +9145,14 @@ function reporting_simple_graph(
         );
     }
 
-    $return['title'] = io_safe_output($content['name']);
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_alias.' - '.$module_name;
     $return['agent_name_db'] = agents_get_name($id_agent);
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
-    $return['description'] = io_safe_output($content['description']);
+    $return['description'] = $description;
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -8969,7 +9728,7 @@ function reporting_get_agents_detailed_event(
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats($id_group=0, $access='AR')
+function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
 {
     global $config;
 
@@ -9071,16 +9830,19 @@ function reporting_get_group_stats($id_group=0, $access='AR')
         // Store the groups where we are quering
         $covered_groups = [];
         $group_array = [];
-        foreach ($id_group as $group) {
-            $children = groups_get_childrens($group);
 
-            // Show empty groups only if they have children with agents
-            // $group_array = array();
-            foreach ($children as $sub) {
-                // If the group is quering previously, we ingore it
-                if (!in_array($sub['id_grupo'], $covered_groups)) {
-                    array_push($covered_groups, $sub['id_grupo']);
-                    array_push($group_array, $sub['id_grupo']);
+        foreach ($id_group as $group) {
+            if ($recursion === true) {
+                $children = groups_get_children($group);
+
+                // Show empty groups only if they have children with agents
+                // $group_array = array();
+                foreach ($children as $sub) {
+                    // If the group is quering previously, we ingore it
+                    if (!in_array($sub['id_grupo'], $covered_groups)) {
+                        array_push($covered_groups, $sub['id_grupo']);
+                        array_push($group_array, $sub['id_grupo']);
+                    }
                 }
             }
 
@@ -9210,7 +9972,6 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $data['monitor_unknown'] = 0;
     $data['monitor_ok'] = 0;
     $data['monitor_bad'] = 0;
-    // Critical + Unknown + Warning
     $data['monitor_warning'] = 0;
     $data['monitor_critical'] = 0;
     $data['monitor_not_normal'] = 0;
@@ -9236,7 +9997,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
 
     $cur_time = get_system_time();
 
-    // Check for access credentials using check_acl. More overhead, much safer
+    // Check for access credentials using check_acl. More overhead, much safer.
     if (!check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
@@ -9293,113 +10054,107 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
         // Realtime stats, done by PHP Console
         // -------------------------------------------------------------------
     } else {
-        if (!empty($id_group)) {
-            // check tags for user
-            $tags = db_get_value('tags', 'tusuario_perfil', 'id_usuario', $config['id_user']);
-            if ($tags) {
-                $tags_sql = " AND tae.id_agente_modulo IN ( SELECT id_agente_modulo 
-                                                           FROM ttag_module 
-                                                           WHERE id_tag IN ($tags) ) ";
-            } else {
-                $tags_sql = '';
-            }
-
+        if (empty($id_group) === false) {
             if (is_array($id_group)) {
                 $id_group = implode(',', $id_group);
             }
 
-            // for stats modules
-            $sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
-                    SUM(tae.estado=0) as monitor_ok,
-                    SUM(tae.estado=1) as monitor_critical,
-                    SUM(tae.estado=2) as monitor_warning,
-                    SUM(tae.estado=3) as monitor_unknown,
-                    SUM(tae.estado=4) as monitor_not_init,
-                    COUNT(tae.estado) as monitor_total
+            $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+            $agent_secondary_table = (is_metaconsole() === true) ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
 
-                    FROM
-                        tagente_estado tae,
-                        tagente        ta,
-                        tagente_modulo tam,
-                        tgrupo         tg
-    
-                    WHERE 1=1
-                        AND tae.id_agente = ta.id_agente
-                        AND tae.id_agente_modulo = tam.id_agente_modulo
-                        AND ta.id_grupo = tg.id_grupo
-                        AND tam.disabled = 0
-                        AND ta.disabled = 0
-                        AND ta.id_grupo IN ($id_group) $tags_sql 
-                    GROUP BY tg.id_grupo;";
-            $data_array = db_get_all_rows_sql($sql);
-
-            $data = $data_array[0];
-
-            // Get alerts configured, except disabled
-            $data['monitor_alerts'] += groups_monitor_alerts($group_array);
-
-            // Get alert configured currently FIRED, except disabled
-            $data['monitor_alerts_fired'] += groups_monitor_fired_alerts($group_array);
-
-            // for stats agents
-            $sql = "SELECT tae.id_agente id_agente, tg.id_grupo id_grupo,
-                    SUM(tae.estado=0) as monitor_agent_ok,
-                    SUM(tae.estado=1) as monitor_agent_critical,
-                    SUM(tae.estado=2) as monitor_agent_warning,
-                    SUM(tae.estado=3) as monitor_agent_unknown,
-                    SUM(tae.estado=4) as monitor_agent_not_init,
-                    COUNT(tae.estado) as monitor_agent_total
-
+            $sql = sprintf(
+                'SELECT tg.id_grupo AS id_group,
+                    IF (SUM(modules_total) IS NULL,0,SUM(modules_total)) AS modules,
+                    IF (SUM(modules_ok) IS NULL,0,SUM(modules_ok)) AS normal,
+                    IF (SUM(modules_critical) IS NULL,0,SUM(modules_critical)) AS critical,
+                    IF (SUM(modules_warning) IS NULL,0,SUM(modules_warning)) AS warning,
+                    IF (SUM(modules_unknown) IS NULL,0,SUM(modules_unknown)) AS unknown,
+                    IF (SUM(modules_not_init) IS NULL,0,SUM(modules_not_init)) AS `non-init`,
+                    IF (SUM(alerts_fired) IS NULL,0,SUM(alerts_fired)) AS alerts_fired,
+                    IF (SUM(agents_total) IS NULL,0,SUM(agents_total)) AS agents,
+                    IF (SUM(agents_unknown) IS NULL,0,SUM(agents_unknown)) AS agents_unknown,
+                    IF (SUM(agents_critical) IS NULL,0,SUM(agents_critical)) AS agents_critical,
+                    IF (SUM(agents_warnings) IS NULL,0,SUM(agents_warnings)) AS agents_warnings,
+                    IF (SUM(agents_not_init) IS NULL,0,SUM(agents_not_init)) AS agents_not_init,
+                    IF (SUM(agents_normal) IS NULL,0,SUM(agents_normal)) AS agents_normal,
+                    UNIX_TIMESTAMP() AS utimestamp
                 FROM
-                    tagente_estado tae,
-                    tagente        ta,
-                    tagente_modulo tam,
-                    tgrupo         tg
-                    
-                WHERE 1=1
-                    AND tae.id_agente = ta.id_agente
-                    AND tae.id_agente_modulo = tam.id_agente_modulo
-                    AND ta.id_grupo = tg.id_grupo
-                    AND tam.disabled = 0
-                    AND ta.disabled = 0
-                    AND ta.id_grupo IN ($id_group) $tags_sql
-                GROUP BY tae.id_agente;";
-            $data_array_2 = db_get_all_rows_sql($sql);
+                (
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        ta.id_grupo AS g
+                    FROM %s ta
+                    WHERE ta.disabled = 0
+                        AND ta.id_grupo IN (%s)
+                    GROUP BY g
+                    UNION ALL
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        tasg.id_group AS g
+                    FROM %s ta
+                    LEFT JOIN %s tasg
+                        ON ta.id_agente = tasg.id_agent
+                    WHERE ta.disabled = 0
+                        AND (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))
+                    GROUP BY g
+                ) counters
+                RIGHT JOIN tgrupo tg
+                    ON counters.g = tg.id_grupo
+                WHERE tg.id_grupo IN (%s)
+                GROUP BY tg.id_grupo',
+                $agent_table,
+                $id_group,
+                $agent_table,
+                $agent_secondary_table,
+                $id_group,
+                $id_group,
+                $id_group
+            );
 
-            if (is_array($data_array_2) || is_object($data_array_2)) {
-                foreach ($data_array_2 as $key => $value) {
-                    if ($value['monitor_agent_critical'] != 0) {
-                        $data['agent_critical'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0) {
-                        $data['agent_warning'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] != 0
-                    ) {
-                        $data['agent_unknown'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0
-                    ) {
-                        $data['agent_ok'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] == 0
-                        && $value['monitor_agent_not_init'] != 0
-                    ) {
-                        $data['agent_not_init'] ++;
-                    }
-
-                    $data['total_agents'] ++;
-                }
-            }
-
-            // Get total count of monitors for this group, except disabled.
-            $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
-
-            // Calculate not_normal monitors
-            $data['monitor_not_normal'] += ($data['monitor_checks'] - $data['monitor_ok']);
+            $group_stat = db_get_all_rows_sql($sql);
+            $data = [
+                'monitor_checks'            => (int) $group_stat[0]['modules'],
+                'monitor_alerts'            => (int) groups_monitor_alerts($group_array),
+                'monitor_alerts_fired'      => (int) $group_stat[0]['alerts_fired'],
+                'monitor_alerts_fire_count' => (int) $group_stat[0]['alerts_fired'],
+                'monitor_ok'                => (int) $group_stat[0]['normal'],
+                'monitor_warning'           => (int) $group_stat[0]['warning'],
+                'monitor_critical'          => (int) $group_stat[0]['critical'],
+                'monitor_unknown'           => (int) $group_stat[0]['unknown'],
+                'monitor_not_init'          => (int) $group_stat[0]['non-init'],
+                'agent_not_init'            => (int) $group_stat[0]['agents_not_init'],
+                'agent_unknown'             => (int) $group_stat[0]['agents_unknown'],
+                'agent_ok'                  => (int) $group_stat[0]['agents_normal'],
+                'agent_warning'             => (int) $group_stat[0]['agents_warnings'],
+                'agent_critical'            => (int) $group_stat[0]['agents_critical'],
+                'total_checks'              => (int) $group_stat[0]['modules'],
+                'total_alerts'              => (int) groups_monitor_alerts($group_array),
+                'total_agents'              => (int) $group_stat[0]['agents'],
+                'utimestamp'                => (int) $group_stat[0]['utimestamp'],
+            ];
         }
-
-        // Get total count of monitors for this group, except disabled.
-        $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
     }
 
     if ($data['monitor_unknown'] > 0 && $data['monitor_checks'] > 0) {
@@ -10584,7 +11339,7 @@ function reporting_tiny_stats(
 
     if (isset($counts_info['total_count'])) {
         $not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
-        $total_count = ($counts_info['total_count'] - $not_init);
+        $total_count = $counts_info['total_count'];
         $stats[] = [
             'name'  => 'total_count',
             'count' => $total_count,
@@ -12872,11 +13627,57 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         )
     );
 
-    $return['title'] = $content['name'];
+    $id_agent = agents_get_module_id(
+        $content['id_agent_module']
+    );
+
+    $id_agent_module = $content['id_agent_module'];
+    $agent_description = agents_get_description($id_agent);
+    $agent_group = agents_get_agent_group($id_agent);
+    $agent_address = agents_get_address($id_agent);
+    $agent_alias = agents_get_alias($id_agent);
+    $module_name = modules_get_agentmodule_name(
+        $id_agent_module
+    );
+
+    $module_description = modules_get_agentmodule_descripcion(
+        $id_agent_module
+    );
+
+    $items_label = [
+        'type'               => $return['type'],
+        'id_agent'           => $id_agent,
+        'id_agent_module'    => $id_agent_module,
+        'agent_description'  => $agent_description,
+        'agent_group'        => $agent_group,
+        'agent_address'      => $agent_address,
+        'agent_alias'        => $agent_alias,
+        'module_name'        => $module_name,
+        'module_description' => $module_description,
+    ];
+
+     // Apply macros
+     $title = (isset($content['name'])) ? $content['name'] : '';
+    if ($title != '') {
+        $title = reporting_label_macro(
+            $items_label,
+            $title
+        );
+    }
+
+    $description = (isset($content['description'])) ? $content['description'] : '';
+    if ($description != '') {
+        $description = reporting_label_macro(
+            $items_label,
+            $description
+        );
+    }
+
+    $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
     $return['subtitle'] = $agent_name.' - '.$module_name;
-    $return['description'] = $content['description'];
+    $return['description'] = $description;
     $return['date'] = reporting_get_date_text(
         $report,
         $content

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,8 +37,16 @@ function insert_item_report($report_id, $values)
 
         ui_print_result_message(
             $result,
-            sprintf(__("Success add '%s' item in report '%s'."), $values['type'], $name),
-            sprintf(__("Error create '%s' item in report '%s'."), $values['type'], $name)
+            sprintf(
+                __("Success add '%s' item in report '%s'."),
+                $values['type'],
+                $name
+            ),
+            sprintf(
+                __("Error create '%s' item in report '%s'."),
+                $values['type'],
+                $name
+            )
         );
     }
 }
@@ -55,9 +63,12 @@ function process_upload_xml_report($xml, $group_filter=0)
             $posible_name = $values['name'];
             $exist = true;
             $loops = 30;
-            // Loops to exit or tries
+            // Loops to exit or tries.
             while ($exist && $loops > 0) {
-                $exist = (bool) db_get_row_filter('treport', ['name' => io_safe_input($posible_name)]);
+                $exist = (bool) db_get_row_filter(
+                    'treport',
+                    ['name' => io_safe_input($posible_name)]
+                );
 
                 if ($exist) {
                     $loops--;
@@ -74,7 +85,7 @@ function process_upload_xml_report($xml, $group_filter=0)
                 );
                 break;
             } else if ($loops != 30) {
-                ui_print_error_message(
+                ui_print_warning_message(
                     sprintf(
                         __("Warning create '%s' report, the name exist, the report have a name %s."),
                         $reportElement->name,
@@ -89,13 +100,22 @@ function process_upload_xml_report($xml, $group_filter=0)
             break;
         }
 
-        $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $reportElement->group);
-        if ($id_group === false) {
-            ui_print_error_message(__("Error the report haven't group."));
-            break;
+        if (isset($reportElement->group) === true
+            && empty($reportElement->group) === false
+        ) {
+            $id_group = db_get_value(
+                'id_grupo',
+                'tgrupo',
+                'nombre',
+                $reportElement->group
+            );
+            if ($id_group === false) {
+                ui_print_error_message(__("Error the report haven't group."));
+                break;
+            }
         }
 
-        if (isset($reportElement->description)) {
+        if (isset($reportElement->description) === true) {
             $values['description'] = $reportElement->description;
         }
 
@@ -108,9 +128,19 @@ function process_upload_xml_report($xml, $group_filter=0)
         );
 
         if ($id_report) {
-            db_pandora_audit('Report management', 'Create report '.$id_report, false, false);
+            db_pandora_audit(
+                'Report management',
+                'Create report '.$id_report,
+                false,
+                false
+            );
         } else {
-            db_pandora_audit('Report management', 'Fail to create report', false, false);
+            db_pandora_audit(
+                'Report management',
+                'Fail to create report',
+                false,
+                false
+            );
             break;
         }
 
@@ -119,45 +149,52 @@ function process_upload_xml_report($xml, $group_filter=0)
 
             $values = [];
             $values['id_report'] = $id_report;
-            if (isset($item['description'])) {
+            if (isset($item['description']) === true) {
                 $values['description'] = io_safe_input($item['description']);
             }
 
-            if (isset($item['period'])) {
+            if (isset($item['period']) === true) {
                 $values['period'] = io_safe_input($item['period']);
             }
 
-            if (isset($item['type'])) {
+            if (isset($item['type']) === true) {
                 $values['type'] = io_safe_input($item['type']);
             }
 
             $agents_item = [];
-            if (isset($item['agent'])) {
+            if (isset($item['agent']) === true) {
                 $agents = agents_get_agents(
                     ['id_grupo' => $group_filter],
                     [
                         'id_agente',
-                        'nombre',
+                        'alias',
                     ]
                 );
 
-                $agent_clean = str_replace(['[', ']'], '', $item['agent']);
+                $agent_clean = str_replace(
+                    [
+                        '[',
+                        ']',
+                    ],
+                    '',
+                    io_safe_output($item['agent'])
+                );
                 $regular_expresion = ($agent_clean != $item['agent']);
 
                 foreach ($agents as $agent) {
                     if ($regular_expresion) {
-                        if ((bool) preg_match('/'.$agent_clean.'/', io_safe_output($agent['nombre']))) {
-                            $agents_item[$agent['id_agente']]['name'] = $agent['nombre'];
+                        if ((bool) preg_match('/'.$agent_clean.'/', io_safe_output($agent['alias']))) {
+                            $agents_item[$agent['id_agente']]['name'] = $agent['alias'];
                         }
                     } else {
-                        if ($agent_clean == io_safe_output($agent['nombre'])) {
-                            $agents_item[$agent['id_agente']]['name'] = $agent['nombre'];
+                        if ($agent_clean == io_safe_output($agent['alias'])) {
+                            $agents_item[$agent['id_agente']]['name'] = $agent['alias'];
                         }
                     }
                 }
             }
 
-            if (isset($item['module'])) {
+            if (isset($item['module']) === true) {
                 $module_clean = str_replace(['[', ']'], '', $item['module']);
                 $regular_expresion = ($module_clean != $item['module']);
 

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -149,7 +149,7 @@ if (is_ajax()) {
 
 ui_require_javascript_file('openlayers.pandora');
 
-$new_agent = (bool) get_parameter('new_agent');
+$new_agent = (empty($id_agente)) ? true : false;
 
 if (! isset($id_agente) && ! $new_agent) {
     db_pandora_audit('ACL Violation', 'Trying to access agent manager witout an agent');
@@ -1222,6 +1222,7 @@ ui_require_jquery_file('bgiframe');
 
     $(document).ready (function() {
 
+        var $id_agent = '<?php echo $id_agente; ?>';
         var previous_primary_group_select;
         $("#grupo").on('focus', function () {
             previous_primary_group_select = this.value;
@@ -1276,12 +1277,14 @@ ui_require_jquery_file('bgiframe');
             }
         });
 
-        paint_qrcode(
-            "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
-            "#qr_code_agent_view",
-            128,
-            128
-        );
+        if (typeof $id_agent !== 'undefined' && $id_agent !== '0') {
+            paint_qrcode(
+                "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
+                "#qr_code_agent_view",
+                128,
+                128
+            );
+        }
         $("#text-agente").prop('readonly', true);
 
     });

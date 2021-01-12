@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,19 @@ if (isset($banned_directories[$directory])) {
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
 echo '<h4>'.__('Index of %s', $directory).'</h4>';
+
+$upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
+$create_text_file = (bool) get_parameter('create_text_file');
+
+$default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
+
+if ($upload_file_or_zip) {
+    upload_file($upload_file_or_zip, $default_real_directory);
+}
+
+if ($create_text_file) {
+    create_text_file($default_real_directory);
+}
 
 filemanager_file_explorer(
     $real_directory,

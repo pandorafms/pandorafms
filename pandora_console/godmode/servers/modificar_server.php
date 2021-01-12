@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,7 +140,7 @@ if (isset($_GET['server'])) {
             ui_print_error_message(__('There was a problem deleting the server'));
         }
     } else if (isset($_GET['update'])) {
-        $address = trim(get_parameter_post('address'), '&#x20;');
+        $address = trim(io_safe_output(get_parameter_post('address')), ' ');
         $description = trim(get_parameter_post('description'), '&#x20;');
         $id_server = get_parameter_post('server');
         $exec_proxy = get_parameter_post('exec_proxy');

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,7 +64,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
         $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -390,8 +390,8 @@ if ($config['history_db_enabled'] == 1) {
 
     $config_history = false;
     if ($config['history_db_connection']) {
-        $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+        $history_connect = mysql_db_process_sql(
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -408,6 +408,7 @@ if ($config['history_db_enabled'] == 1) {
             if (isset($config_history_array) && is_array($config_history_array)) {
                 foreach ($config_history_array as $key => $value) {
                     $config_history[$value['token']] = $value['value'];
+                    $config_history = true;
                 }
             }
         } else {
@@ -639,6 +640,16 @@ $table_other->data[13][1] = html_print_input_text(
     '',
     5,
     5,
+    true
+);
+
+$table_other->data[14][0] = __('Row limit in csv log');
+$table_other->data[14][1] = html_print_input_text(
+    'row_limit_csv',
+    $config['row_limit_csv'],
+    '',
+    5,
+    10,
     true
 );
 

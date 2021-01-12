@@ -359,6 +359,7 @@ function random_name(int $size)
 {
     $output = '';
 
+    // Range pair of ASCII position for allow A-Z, a-z, 0-9 and special chars.
     $rangeSeed = [
         '48:57',
         '65:90',
@@ -366,7 +367,7 @@ function random_name(int $size)
         '33:47',
     ];
 
-    // Size of the password must be over 4.
+    // Size of the password must be over range seed count.
     $size = ($size >= count($rangeSeed)) ? $size : count($rangeSeed);
 
     $auxIndex = 0;
@@ -379,6 +380,7 @@ function random_name(int $size)
         }
     }
 
+    // Remix the string for strong the password.
     return str_shuffle($output);
 }
 

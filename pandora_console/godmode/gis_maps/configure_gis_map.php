@@ -30,6 +30,14 @@ require_once 'include/functions_gis.php';
 $idMap = (int) get_parameter('map_id', 0);
 $action = get_parameter('action', 'new_map');
 
+$gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
+
+if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
+    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    include 'general/noaccess.php';
+    return;
+}
+
 $sec2 = get_parameter_get('sec2');
 $sec2 = safe_url_extraclean($sec2);
 

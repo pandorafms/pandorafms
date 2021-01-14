@@ -95,9 +95,9 @@ $groupId = $visualConsoleData['groupId'];
 $visualConsoleName = $visualConsoleData['name'];
 
 // ACL.
-$aclRead = check_acl($config['id_user'], $groupId, 'VR');
-$aclWrite = check_acl($config['id_user'], $groupId, 'VW');
-$aclManage = check_acl($config['id_user'], $groupId, 'VM');
+$aclRead = check_acl_restricted_all($config['id_user'], $groupId, 'VR');
+$aclWrite = check_acl_restricted_all($config['id_user'], $groupId, 'VW');
+$aclManage = check_acl_restricted_all($config['id_user'], $groupId, 'VM');
 
 if (!$aclRead && !$aclWrite && !$aclManage) {
     db_pandora_audit(

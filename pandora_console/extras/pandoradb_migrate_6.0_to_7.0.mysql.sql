@@ -3868,3 +3868,103 @@ INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_gro
 
 INSERT IGNORE INTO `tpen` VALUES (171,'dlink','D-Link Systems, Inc.'),(14988,'mikrotik','MikroTik'),(6486,'alcatel','Alcatel-Lucent Enterprise'),(41112,'ubiquiti','Ubiquiti Networks, Inc.'),(207,'telesis','Allied Telesis, Inc.'),(10002,'frogfoot','Frogfoot Networks'),(2,'ibm','IBM'),(4,'unix','Unix'),(63,'apple','Apple Computer, Inc.'),(674,'dell','Dell Inc.'),(111,'oracle','Oracle'),(116,'hitachi','Hitachi, Ltd.'),(173,'netlink','Netlink'),(188,'ascom','Ascom'),(6574,'synology','Synology Inc.'),(3861,'fujitsu','Fujitsu Network Communications, Inc.'),(53526,'dell','Dell ATC'),(52627,'apple','Apple Inc'),(19464,'hitachi','Hitachi Communication Technologies, Ltd.'),(13062,'ascom','Ascom');
 
+CREATE TABLE IF NOT EXISTS `tipam_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`network` varchar(100) NOT NULL default '',
+	`name_network` varchar(255) default '',
+	`description` text NOT NULL,
+	`location` tinytext NOT NULL,
+	`id_recon_task` int(10) unsigned NOT NULL,
+	`scan_interval` tinyint(2) default 1,
+	`monitoring` tinyint(2) default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`lightweight_mode` tinyint(2) default 0,
+	`users_operator` text,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_ip` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_network` bigint(20) unsigned NOT NULL default 0,
+	`id_agent` int(10) unsigned NOT NULL,
+	`forced_agent` tinyint(2) NOT NULL default '0',
+	`ip` varchar(100) NOT NULL default '',
+	`ip_dec` int(10) unsigned NOT NULL,
+	`id_os` int(10) unsigned NOT NULL,
+	`forced_os` tinyint(2) NOT NULL default '0',
+	`hostname` tinytext NOT NULL,
+	`forced_hostname` tinyint(2) NOT NULL default '0',
+	`comments` text NOT NULL,
+	`alive` tinyint(2) NOT NULL default '0',
+	`managed` tinyint(2) NOT NULL default '0',
+	`reserved` tinyint(2) NOT NULL default '0',
+	`time_last_check` datetime NOT NULL default '1970-01-01 00:00:00',
+	`time_create` datetime NOT NULL default '1970-01-01 00:00:00',
+	`users_operator` text,
+	`time_last_edit` datetime NOT NULL default '1970-01-01 00:00:00',
+	`enabled` tinyint(2) NOT NULL default '1',
+	`generate_events` tinyint(2) NOT NULL default '0',
+	`leased` tinyint(2) DEFAULT '0',
+	`leased_expiration` bigint(20) DEFAULT '0',
+	`mac_address` varchar(20) DEFAULT NULL,
+	`leased_mode` tinyint(2) DEFAULT '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_vlan` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_vlan`) REFERENCES tipam_vlan(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text default '',
+	`address` varchar(250) NOT NULL,
+	`mask` varchar(250) NOT NULL,
+	`subneting_mask` varchar(250) default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_supernet` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+SET @insert_type = 3;
+SET @insert_name = 'IPAM Recon';
+SET @insert_description = 'This script is used to automatically detect network hosts availability and name, used as Recon Custom Script in the recon task. Parameters used are:\n\n* custom_field1 = network. i.e.: 192.168.100.0/24\n* custom_field2 = associated IPAM network id. i.e.: 4. Please do not change this value, it is assigned automatically in IPAM management.\n\nSee documentation for more information.';
+SET @insert_script = '/usr/share/pandora_server/util/recon_scripts/IPAMrecon.pl';
+SET @insert_macros = '{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""}}';
+INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`)
+SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (
+	SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name
+	UNION
+	SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`,
+	@insert_type as `type`,
+	@insert_name as `name`,
+	@insert_description as `description`,
+	@insert_script as `script`,
+	@insert_macros as `macros`
+) t limit 1;
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';

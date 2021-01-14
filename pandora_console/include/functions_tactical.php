@@ -1,16 +1,46 @@
 <?php
+/**
+ * Tactical view functions script
+ *
+ * @category   Functions
+ * @package    Pandora FMS
+ * @subpackage Tactical View
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
+
+
+/**
+ * Undocumented function
+ *
+ * @param  boolean $id_user
+ * @param  boolean $user_strict
+ * @param  [type]  $acltags
+ * @param  boolean $returnAllGroup
+ * @param  string  $mode
+ * @param  array   $agent_filter
+ * @param  array   $module_filter
+ * @return void
+ */
 function tactical_get_data($id_user=false, $user_strict=false, $acltags, $returnAllGroup=false, $mode='group', $agent_filter=[], $module_filter=[])
 {
     global $config;
@@ -368,7 +398,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                 break;
 
                 case AGENT_MODULE_STATUS_NORMAL_ALERT:
-
+                    // Do nothing.
                 break;
 
                 case AGENT_MODULE_STATUS_NORMAL:

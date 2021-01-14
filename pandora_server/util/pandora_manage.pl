@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.750 PS201130";
+my $version = "7.0NG.751 PS210114";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2015 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";
@@ -5754,16 +5754,22 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
-	$result = db_do ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
+
+	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 
 	if($result == "0E0"){
 		print_log "[ERROR] Group '$group_id' doesn`t exist \n\n";
 	}else{
 		if(defined($group_name)){
 			if(defined($parent_group_name)){
-				my $parent_group_id = get_group_id($dbh,$parent_group_name);
-				exist_check($parent_group_id, 'group name', $parent_group_name);
 
+				my $parent_group_id = 0;
+
+				if($parent_group_name ne 'All') {
+						$parent_group_id = get_group_id($dbh,$parent_group_name);
+						exist_check($parent_group_id, 'group name', $parent_group_name);				
+				} 
+					
 				if(defined($icon)){
 					if(defined($description)){
 						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? , description=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$description,$group_id);

@@ -1,6 +1,6 @@
 ' nettraffic.vbs
 ' Pandora FMS Agent Plugin for Microsoft Windows (All platfforms)
-' (c) 2014 Sancho Lerena <slerena@artica.es>
+' (c) 2021 Sancho Lerena <slerena@artica.es>
 ' Returns total bytes in network since bootup and % of network use
 ' ----------------------------------------------------------------
 ' usage: cscript //B nettraffic.vbs

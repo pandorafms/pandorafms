@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -562,6 +562,7 @@ class DiscoveryTaskList extends HTML
                 } else {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
+                        && (int) $task['type'] === DISCOVERY_HOSTDEVICES
                     ) {
                         $can_be_reviewed = true;
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
@@ -1202,7 +1203,10 @@ class DiscoveryTaskList extends HTML
         $output = '';
 
         // Header information.
-        if ((int) $task['status'] <= 0 && empty($summary)) {
+        if ((int) $task['status'] <= 0
+            && empty($summary)
+            && $task['id_recon_script'] == 0
+        ) {
             $output .= ui_print_info_message(
                 __('This task has never executed'),
                 '',
@@ -1250,6 +1254,17 @@ class DiscoveryTaskList extends HTML
                 ],
             ]
         );
+        if (count($map->nodes) <= 1) {
+            // No nodes detected in current task definition.
+            $task = db_get_row('trecon_task', 'id_rt', $id_task);
+
+            if ((int) $task['type'] === DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE) {
+                ui_print_info_message(
+                    __('Please ensure instances or regions are being monitorized and \'scan and general monitoring\' is enabled.')
+                );
+            }
+        }
+
         $map->printMap();
     }
 

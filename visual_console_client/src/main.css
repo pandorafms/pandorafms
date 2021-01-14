@@ -525,9 +525,15 @@ li#li-timeZone-item > select:not(:first-child) {
 
 div.label,
 div.simple-value {
-  display: inline-table;
   min-width: fit-content;
   min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+div.simple-value > div {
+  max-height: -webkit-fill-available;
 }
 
 div.module-graph .parent_graph p table tr {

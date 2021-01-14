@@ -1889,7 +1889,7 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
     } else {
         // Delete only if the centralised mode is disabled.
         $headers = getallheaders();
-        if (!isset($headers['idk']) || !is_management_allowed($headers['idk'])) {
+        if (isset($headers['idk']) === false || is_management_allowed($headers['idk']) === false) {
             returnError('centralized');
             exit;
         }
@@ -1901,17 +1901,6 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
 
         if ($agent_by_alias) {
             $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
-        } else {
-            $idAgent = agents_get_agent_id($id, true);
-        }
-
-        if (!$agent_by_alias) {
-            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
-                return;
-            }
-        }
-
-        if ($agent_by_alias) {
             foreach ($idsAgents as $id) {
                 if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
                     continue;
@@ -1924,6 +1913,11 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
                 }
             }
         } else {
+            $idAgent = agents_get_agent_id($id, true);
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+                return;
+            }
+
             $result = agents_delete_agent($idAgent, true);
         }
     }

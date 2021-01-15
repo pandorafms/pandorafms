@@ -244,18 +244,26 @@ class AgentModuleWidget extends Widget
             'label' => __('Filter modules'),
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM') || $this->values['mGroup'] == 0) {
+            $return_all_group = true;
+        }
+
         $inputs[] = [
             'class'     => 'flex flex-row',
             'id'        => 'select_multiple_modules_filtered',
             'arguments' => [
-                'type'               => 'select_multiple_modules_filtered',
-                'uniqId'             => $this->cellId,
-                'mGroup'             => $this->values['mGroup'],
-                'mRecursion'         => $this->values['mRecursion'],
-                'mModuleGroup'       => $this->values['mModuleGroup'],
-                'mAgents'            => $this->values['mAgents'],
-                'mShowCommonModules' => $this->values['mShowCommonModules'],
-                'mModules'           => $this->values['mModules'],
+                'type'                     => 'select_multiple_modules_filtered',
+                'uniqId'                   => $this->cellId,
+                'mGroup'                   => $this->values['mGroup'],
+                'mRecursion'               => $this->values['mRecursion'],
+                'mModuleGroup'             => $this->values['mModuleGroup'],
+                'mAgents'                  => $this->values['mAgents'],
+                'mShowCommonModules'       => $this->values['mShowCommonModules'],
+                'mModules'                 => $this->values['mModules'],
+                'mShowSelectedOtherGroups' => true,
+                'mReturnAllGroup'          => $return_all_group,
             ],
         ];
 
@@ -324,10 +332,6 @@ class AgentModuleWidget extends Widget
         }
 
         foreach ($agents as $agent) {
-            if (!users_access_to_agent($agent['id_agente'])) {
-                continue;
-            }
-
             $row = [];
             $row['agent_status'] = agents_get_status(
                 $agent['id_agente'],
@@ -335,9 +339,17 @@ class AgentModuleWidget extends Widget
             );
             $row['agent_name'] = $agent['nombre'];
             $row['agent_alias'] = $agent['alias'];
-            $agent_modules = agents_get_modules(
+
+            $sql = sprintf(
+                'SELECT id_agente_modulo, nombre
+                FROM tagente_modulo
+                WHERE id_agente = %d',
                 $agent['id_agente']
             );
+
+            $agent_modules = db_get_all_rows_sql($sql);
+
+            $agent_modules = array_combine(array_column($agent_modules, 'id_agente_modulo'), array_column($agent_modules, 'nombre'));
 
             $row['modules'] = [];
             foreach ($modules_by_name as $module) {

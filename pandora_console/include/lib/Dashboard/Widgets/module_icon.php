@@ -480,31 +480,10 @@ class ModuleIconWidget extends Widget
         $output = '';
 
         $id_group = \agents_get_agent_group($this->values['agentId']);
-        if (check_acl($config['id_user'], $id_group, 'AR') === 0) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
 
         $modulesAgent = \modules_get_agentmodule_agent(
             $this->values['moduleId']
         );
-
-        if ($modulesAgent !== (int) $this->values['agentId']) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
 
         $data_module = \modules_get_last_value(
             $this->values['moduleId']

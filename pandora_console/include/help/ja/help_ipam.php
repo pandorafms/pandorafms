@@ -31,23 +31,23 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 </tr>
 <tr>
 <td>エージェント未割当<br><br>イベント無効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>エージェント割当済<br><br>イベント無効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>エージェント未割当<br><br>イベント有効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>エージェント割当済<br><br>イベント有効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>未管理</th>
@@ -59,8 +59,8 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 </tr>
 <tr>
 <td style="width: 100px;">IP アドレスが管理されていない場合、応答があるかどうかだけを見ることができます。</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>未割当</th>

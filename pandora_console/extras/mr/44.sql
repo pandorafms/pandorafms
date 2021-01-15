@@ -133,4 +133,6 @@ ADD COLUMN `field16` TEXT NOT NULL AFTER `field15`
 
 ALTER TABLE `trecon_task` MODIFY COLUMN `review_mode` TINYINT(1) UNSIGNED DEFAULT 1;
 
+ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
+
 COMMIT;

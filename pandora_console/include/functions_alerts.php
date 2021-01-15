@@ -2192,7 +2192,7 @@ function get_group_alerts(
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg
 									ON ta.id_agente = tasg.id_agent
-								WHERE ta.disable = 0
+								WHERE ta.disabled = 0
                                     AND
 										id_grupo IN ('.implode(',', $id_group).')
 										OR id_group IN ('.implode(',', $id_group).'))';

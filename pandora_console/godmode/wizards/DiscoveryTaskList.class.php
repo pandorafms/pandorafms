@@ -450,6 +450,10 @@ class DiscoveryTaskList extends HTML
             $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
+                if ($this->aclMulticheck('AR|AW|AM', $task['id_group']) === false) {
+                    continue;
+                }
+
                 $no_operations = false;
                 $data = [];
                 $server_name = servers_get_name($task['id_recon_server']);
@@ -759,7 +763,7 @@ class DiscoveryTaskList extends HTML
                         if ($ipam === true) {
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 sprintf(
-                                    'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
+                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
                                     $tipam_task_id
                                 )
                             ).'">'.html_print_image(
@@ -768,7 +772,7 @@ class DiscoveryTaskList extends HTML
                                 ['title' => __('Edit task')]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
+                                'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
                                 true,

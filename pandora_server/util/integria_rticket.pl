@@ -3,7 +3,7 @@
 ########################################################################
 # Integria IMS - Remote Ticket Tool (via WEB API) 
 ########################################################################
-# Copyright (c) 2013 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2013-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -61,7 +61,7 @@ Optional parameters:
 ##############################################################################
 sub tool_api_init () {
 	
-	print "\nIntegria IMS Remote Ticket Tool Copyright (c) 2013-2015 Artica ST\n";
+	print "\nIntegria IMS Remote Ticket Tool Copyright (c) 2013-2021 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.integriaims.com\n\n";
 	

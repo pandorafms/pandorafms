@@ -30,23 +30,23 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 </tr>
 <tr>
 <td>No assigned agent<br><br>Disabled events</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>With assigned agent<br><br>Disabled events</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>No assigned agent<br><br>Activated events</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>With assigned agent<br><br>Activated events</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>Not managed</th>
@@ -58,8 +58,8 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 </tr>
 <tr>
 <td style="width: 100px;">If an IP address is not managed, you can only view if is responding or not.</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>Not assigned</th>

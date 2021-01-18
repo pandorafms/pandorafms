@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ################################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -1555,6 +1555,10 @@ sub ping ($$) {
 		$pa_config->{'icmp_checks'},
 		1
 	);
+
+	# Set default values if config is not defined.
+	$timeout = 4 if !defined($timeout);
+	$retries = 4 if !defined($retries);
 
 	# Windows
 	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){

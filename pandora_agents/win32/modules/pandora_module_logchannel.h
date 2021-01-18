@@ -1,7 +1,7 @@
 /* Pandora logchannel module. This module checks for log events that match a given
    pattern using XML functions provided by wevtapi.
 
-   Copyright (C) 2017 Artica ST.
+   Copyright (c) 2017-2021 Artica ST.
    Written by Fermin Hernandez.
 
    This program is free software; you can redistribute it and/or modify

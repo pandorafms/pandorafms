@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.751 PS201217";
+my $version = "7.0NG.751 PS210118";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2015 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";

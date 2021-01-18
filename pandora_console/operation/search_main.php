@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,7 +67,7 @@ $table->data[0][8] = html_print_image('images/chart_curve.png', true, ['title' =
 $table->data[0][9] = "<a href='index.php?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalGraphs).'</a>';
 $table->data[0][10] = html_print_image('images/reporting.png', true, ['title' => __('Reports found')]);
 $table->data[0][11] = "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalReports).'</a>';
-$table->data[0][12] = html_print_image('images/visual_console_green.png', true, ['title' => __('Maps found')]);
+$table->data[0][12] = html_print_image('images/visual_console_green.png', true, ['title' => __('Visual consoles')]);
 $table->data[0][13] = "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".sprintf(__('%s Found'), $totalMaps).'</a>';
 if (enterprise_installed()) {
     $table->data[0][14] = html_print_image('images/policies.png', true, ['title' => __('Policies')]);

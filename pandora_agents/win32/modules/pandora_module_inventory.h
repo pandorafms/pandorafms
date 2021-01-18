@@ -1,8 +1,8 @@
 /* Pandora Inventory module. These module makes an inventory of the machine where
 the agent is instaled.
 
-   Copyright (C) 2009 Artica ST.
-   Written by Pablo de la Concepción
+   Copyright (c) 2009-2021 Artica ST.
+   Written by Pablo de la Concepciï¿½n
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

@@ -147,7 +147,7 @@ function agents_locate_agent(string $field)
  *
  * @param string $alias Agent alias.
  *
- * @return integer Id from the agent.
+ * @return array|boolean Agents ids or false if error.
  */
 function agents_get_agent_id_by_alias($alias)
 {

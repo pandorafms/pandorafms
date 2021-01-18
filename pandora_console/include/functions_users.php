@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -752,6 +752,11 @@ function users_get_groups_UM($id_user)
     foreach ($groups as $key => $group) {
         if (!isset($return[$group['id_grupo']]) || (isset($return[$group['id_grupo']]) && $group['user_management'] != 0)) {
             $return[$group['id_grupo']] = $group['user_management'];
+            $children = groups_get_children($group['id_grupo'], false, 'UM', false);
+            foreach ($children as $key => $child_group) {
+                $return[$child_group['id_grupo']] = $group['user_management'];
+            }
+
             if ($group['id_grupo'] == '0') {
                 $return['group_all'] = $group['id_grupo'];
             }

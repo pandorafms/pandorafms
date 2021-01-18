@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1427,9 +1427,9 @@ class HostDevices extends Wizard
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
             $available_keys = CredentialStore::getKeys('CUSTOM');
-            if (check_acl($config['id_user'], 0, 'PM')) {
+            if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
-                    'index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox'
+                    'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
                 ).'" >';
                 $link_to_cs .= __('No credentials available').', ';
                 $link_to_cs .= strtolower(__('Manage credentials')).'</a>';

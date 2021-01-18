@@ -2,7 +2,7 @@
 
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -1888,24 +1888,19 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
         }
     } else {
         // Delete only if the centralised mode is disabled.
-        if (is_central_policies_on_node()) {
+        $headers = getallheaders();
+        if (isset($headers['idk']) === false || is_management_allowed($headers['idk']) === false) {
             returnError('centralized');
             exit;
         }
 
+        // Support for Pandora Enterprise.
+        if (license_free() === false) {
+            define('PANDORA_ENTERPRISE', true);
+        }
+
         if ($agent_by_alias) {
             $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
-        } else {
-            $idAgent = agents_get_agent_id($id, true);
-        }
-
-        if (!$agent_by_alias) {
-            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
-                return;
-            }
-        }
-
-        if ($agent_by_alias) {
             foreach ($idsAgents as $id) {
                 if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
                     continue;
@@ -1918,6 +1913,11 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
                 }
             }
         } else {
+            $idAgent = agents_get_agent_id($id, true);
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+                return;
+            }
+
             $result = agents_delete_agent($idAgent, true);
         }
     }
@@ -13766,12 +13766,19 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
-    $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
-    // 1 hour by default.
-    $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
+    if (is_array($other['data']) === true) {
+        $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+        // 1 hour by default.
+        $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
-    // Graph height when send email by alert
-    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+        // Graph height when send email by alert
+        $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+    } else {
+        $graph_seconds = $other['data'];
+        $graph_threshold = 0;
+        $other['data'][1] = 0;
+        $height = 225;
+    }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));

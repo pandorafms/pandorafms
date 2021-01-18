@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -153,6 +153,7 @@ define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#4a83f3');
 define('COL_MAINTENANCE', '#E4E4E4');
+define('COL_QUIET', '#5AB7E5');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -622,7 +623,8 @@ define('DISCOVERY_CLOUD_AZURE_COMPUTE', 8);
 define('DISCOVERY_DEPLOY_AGENTS', 9);
 define('DISCOVERY_APP_SAP', 10);
 define('DISCOVERY_APP_DB2', 11);
-
+define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
+define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);
@@ -641,6 +643,7 @@ define('DISCOVERY_SCRIPT_IPMI_RECON', 4);
 // Discovery task descriptions.
 define('CLOUDWIZARD_AZURE_DESCRIPTION', 'Discovery.Cloud.Azure.Compute');
 define('CLOUDWIZARD_AWS_DESCRIPTION', 'Discovery.Cloud.AWS.EC2');
+define('CLOUDWIZARD_GOOGLE_DESCRIPTION', 'Discovery.Cloud.GCP');
 define('CLOUDWIZARD_VMWARE_DESCRIPTION', 'Discovery.App.VMware');
 
 // Background options.

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -643,6 +643,9 @@ $url = ui_get_url_refresh(
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
+if (!empty($search_string)) {
+    $search_string = trim($search_string, '&#x20;');
+}
 
 $table = new stdClass();
 $table->width = '100%';

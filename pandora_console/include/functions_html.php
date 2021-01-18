@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -1772,7 +1772,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline">';
+    echo '<div id="'.$uniq_name.'_default" style="width:auto;display:inline">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -2910,13 +2910,17 @@ function html_print_textarea(
     $attributes='',
     $return=false,
     $class='',
-    $disable=false
+    $disable=false,
+    $id=false
 ) {
     $disabled = ($disable) ? 'disabled' : '';
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
+    if ($id === false) {
+        $id = 'textarea_'.$name;
+    }
+
+    $output = '<textarea id="'.$id.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
     $output .= '</textarea>';
-
     if ($return) {
         return $output;
     }
@@ -4602,7 +4606,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false)
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['id']) === true) ? $data['id'] : false)
             );
         break;
 

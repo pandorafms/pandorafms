@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,6 +86,7 @@ function snmp_browser_get_html_tree(
     $count = 0;
     $total = (count(array_keys($tree['__LEAVES__'])) - 1);
     $last_array[$depth] = $last;
+    $class = 'item_'.$depth;
 
     if ($depth > 0) {
         $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
@@ -97,7 +98,7 @@ function snmp_browser_get_html_tree(
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" style="margin: 0; padding: 0;">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.'" style="margin: 0; padding: 0;">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
@@ -263,122 +264,148 @@ function snmp_browser_get_tree(
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
     $snmp3_privacy_pass='',
-    $snmp3_context_engine_id=null
+    $snmp3_context_engine_id=null,
+    $server_to_exec=0
 ) {
     global $config;
 
-    switch ($version) {
-        case '1':
-            $snmp_version = SNMP::VERSION_1;
-        break;
-
-        case '2':
-            $snmp_version = SNMP::VERSION_2C;
-        break;
-
-        case '2c':
-            $snmp_version = SNMP::VERSION_2C;
-        break;
-
-        case '3':
-            $snmp_version = SNMP::VERSION_3;
-            $community = $snmp3_auth_user;
-        break;
-
-        default:
-            $snmp_version = SNMP::VERSION_2C;
-        break;
-    }
-
-    $snmp_session = new SNMP($snmp_version, $target_ip, $community);
-    $snmp_session->oid_output_format = SNMP_OID_OUTPUT_MODULE;
-
-      // Set security if SNMP Version is 3.
-    if ($snmp_version == SNMP::VERSION_3) {
-        $snmp_session->setSecurity(
+    if ($server_to_exec != 0) {
+        $output = get_snmpwalk(
+            $target_ip,
+            $version,
+            $community,
+            $snmp3_auth_user,
             $snmp3_security_level,
             $snmp3_auth_method,
             $snmp3_auth_pass,
             $snmp3_privacy_method,
             $snmp3_privacy_pass,
+            0,
+            $starting_oid,
             '',
-            $snmp3_context_engine_id
+            $server_to_exec,
+            '',
+            ''
         );
-    }
+    } else {
+        switch ($version) {
+            case '1':
+                $snmp_version = SNMP::VERSION_1;
+            break;
 
-    $mibs_dir = $config['homedir'].'/attachment/mibs';
-    $_dir = opendir($mibs_dir);
+            case '2':
+                $snmp_version = SNMP::VERSION_2C;
+            break;
 
-    // Future. Recomemended: Use a global config limit of MIBs loaded.
-    while (($mib_file = readdir($_dir)) !== false) {
-        if ($mib_file == '..' || $mib_file == '.') {
-            continue;
+            case '2c':
+                $snmp_version = SNMP::VERSION_2C;
+            break;
+
+            case '3':
+                $snmp_version = SNMP::VERSION_3;
+                $community = $snmp3_auth_user;
+            break;
+
+            default:
+                $snmp_version = SNMP::VERSION_2C;
+            break;
         }
 
-        $rs = snmp_read_mib($mibs_dir.'/'.$mib_file);
-        if ($rs !== true) {
-            error_log('Failed while reading MIB file: '.$mib_file);
+        $snmp_session = new SNMP($snmp_version, $target_ip, $community);
+        $snmp_session->oid_output_format = SNMP_OID_OUTPUT_MODULE;
+
+          // Set security if SNMP Version is 3.
+        if ($snmp_version == SNMP::VERSION_3) {
+            $snmp_session->setSecurity(
+                $snmp3_security_level,
+                $snmp3_auth_method,
+                $snmp3_auth_pass,
+                $snmp3_privacy_method,
+                $snmp3_privacy_pass,
+                '',
+                $snmp3_context_engine_id
+            );
         }
-    }
 
-    closedir($_dir);
+        $mibs_dir = $config['homedir'].'/attachment/mibs';
+        $_dir = opendir($mibs_dir);
 
-    $output = $snmp_session->walk($starting_oid);
-    if ($output == false) {
-        $output = $snmp_session->getError();
+        // Future. Recomemended: Use a global config limit of MIBs loaded.
+        while (($mib_file = readdir($_dir)) !== false) {
+            if ($mib_file == '..' || $mib_file == '.') {
+                continue;
+            }
+
+            $rs = snmp_read_mib($mibs_dir.'/'.$mib_file);
+            if ($rs !== true) {
+                error_log('Failed while reading MIB file: '.$mib_file);
+            }
+        }
+
+        closedir($_dir);
+
+        $output = $snmp_session->walk($starting_oid);
+        if ($output == false) {
+            $output = $snmp_session->getError();
+            $snmp_session->close();
+            return $output;
+        }
+
         $snmp_session->close();
-        return $output;
     }
 
-    $snmp_session->close();
+    // Build the tree if output comes filled.
+    if (empty($output) === false) {
+        $oid_tree = ['__LEAVES__' => []];
+        foreach ($output as $oid => $value) {
+            // Parse the OID.
+            $oid_len = strlen($oid);
+            $group = 0;
+            $sub_oid = '';
+            $ptr = &$oid_tree['__LEAVES__'];
 
-    // Build the tree.
-    $oid_tree = ['__LEAVES__' => []];
-    foreach ($output as $oid => $value) {
-        // Parse the OID.
-        $oid_len = strlen($oid);
-        $group = 0;
-        $sub_oid = '';
-        $ptr = &$oid_tree['__LEAVES__'];
+            for ($i = 0; $i < $oid_len; $i++) {
+                // "X.Y.Z"
+                if ($oid[$i] == '"') {
+                    $group = ($group ^ 1);
+                }
 
-        for ($i = 0; $i < $oid_len; $i++) {
-            // "X.Y.Z"
-            if ($oid[$i] == '"') {
-                $group = ($group ^ 1);
+                // Move to the next element of the OID.
+                if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
+                    // Skip the next ":".
+                    if ($oid[$i] == ':') {
+                        $i++;
+                    }
+
+                    // Starting dot.
+                    if ($sub_oid == '') {
+                        continue;
+                    }
+
+                    if (! isset($ptr[$sub_oid]) || ! isset($ptr[$sub_oid]['__LEAVES__'])) {
+                        $ptr[$sub_oid]['__LEAVES__'] = [];
+                    }
+
+                    $ptr = &$ptr[$sub_oid]['__LEAVES__'];
+                    $sub_oid = '';
+                } else {
+                    if ($oid[$i] != '"') {
+                        $sub_oid .= $oid[$i];
+                    }
+                }
             }
 
-            // Move to the next element of the OID.
-            if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
-                // Skip the next ":".
-                if ($oid[$i] == ':') {
-                    $i++;
-                }
-
-                // Starting dot.
-                if ($sub_oid == '') {
-                    continue;
-                }
-
-                if (! isset($ptr[$sub_oid]) || ! isset($ptr[$sub_oid]['__LEAVES__'])) {
-                    $ptr[$sub_oid]['__LEAVES__'] = [];
-                }
-
-                $ptr = &$ptr[$sub_oid]['__LEAVES__'];
-                $sub_oid = '';
-            } else {
-                if ($oid[$i] != '"') {
-                    $sub_oid .= $oid[$i];
-                }
-            }
+            // The last element will contain the full OID.
+            $ptr[$sub_oid] = [
+                '__OID__'   => $oid,
+                '__VALUE__' => $value,
+            ];
+            $ptr = &$ptr[$sub_oid];
+            $sub_oid = '';
         }
-
-        // The last element will contain the full OID.
-        $ptr[$sub_oid] = [
-            '__OID__'   => $oid,
-            '__VALUE__' => $value,
-        ];
-        $ptr = &$ptr[$sub_oid];
-        $sub_oid = '';
+    } else {
+        $oid_tree = __('The server did not return any response.');
+        error_log($oid_tree);
     }
 
     return $oid_tree;
@@ -616,7 +643,7 @@ function snmp_browser_print_oid(
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);

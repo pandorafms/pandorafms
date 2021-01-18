@@ -364,6 +364,14 @@ class EventsListWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+        $selected_groups_array = explode(',', $values['groupId'][0]);
+
+        if (users_can_manage_group_all('RM') || in_array(0, $selected_groups_array) === true) {
+            // Return all group if user has permissions or it is a currently selected group.
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -372,9 +380,10 @@ class EventsListWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groupId'][0]),
+                'selected'       => $selected_groups_array,
                 'return'         => true,
                 'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -429,7 +438,14 @@ class EventsListWidget extends Widget
         global $config;
 
         $output = '';
-        $user_groups = \users_get_groups();
+
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $user_groups = \users_get_groups(false, 'AR', $return_all_group);
 
         ui_require_css_file('events', 'include/styles/', true);
         ui_require_css_file('tables', 'include/styles/', true);
@@ -440,14 +456,6 @@ class EventsListWidget extends Widget
         if (empty($this->values['groupId']) === true) {
             $output .= __('You must select some group');
             return $output;
-        }
-
-        foreach ($this->values['groupId'] as $id_group) {
-            // Sanity check for user access.
-            if (isset($user_groups[$id_group]) === false) {
-                $output .= __('You must select some group');
-                return;
-            }
         }
 
         $useTags = \tags_has_user_acl_tags($config['id_user']);
@@ -465,9 +473,20 @@ class EventsListWidget extends Widget
         $filter = [];
         // Group all.
         if (in_array(0, $this->values['groupId'])) {
-            $filter['id_grupo'] = array_keys(users_get_groups());
+            $filter['id_grupo'] = array_keys($user_groups);
         } else {
-            $filter['id_grupo'] = $this->values['groupId'];
+            $filter['id_grupo'] = array_intersect($this->values['groupId'], array_keys($user_groups));
+        }
+
+        if (empty($filter['id_grupo'])) {
+            $output .= '<div class="container-center">';
+            $output .= \ui_print_error_message(
+                __('You have no access'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            return $output;
         }
 
         $filter['utimestamp'] = '>'.$unixtime;

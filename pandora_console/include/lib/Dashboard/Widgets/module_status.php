@@ -457,29 +457,7 @@ class ModuleStatusWidget extends Widget
         $id_agent = $this->values['agentId'];
         $id_group = agents_get_agent_group($id_agent);
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === 0) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
-
         $id_module = $this->values['moduleId'];
-
-        if (modules_get_agentmodule_agent($id_module) !== (int) $id_agent) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
 
         $icon = $this->values['imageSrc'];
         $label = $this->values['label'];

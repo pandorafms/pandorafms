@@ -3716,7 +3716,8 @@ function visual_map_get_user_layouts(
     $only_names=false,
     $filter=false,
     $returnAllGroup=true,
-    $favourite=false
+    $favourite=false,
+    $check_user_groups=true
 ) {
     if (! is_array($filter)) {
         $filter = [];
@@ -3763,7 +3764,21 @@ function visual_map_get_user_layouts(
         unset($filter['group']);
     }
 
-    if (!empty($groups)) {
+    $return_all_group = false;
+
+    if (users_can_manage_group_all()) {
+        $return_all_group = true;
+    }
+
+    if (isset($filter['can_manage_group_all'])) {
+        if ($filter['can_manage_group_all'] === false) {
+            unset($groups[0]);
+        }
+
+        unset($filter['can_manage_group_all']);
+    }
+
+    if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';
         }

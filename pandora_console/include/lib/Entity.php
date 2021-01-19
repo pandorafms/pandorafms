@@ -61,12 +61,12 @@ abstract class Entity
     /**
      * Instances a new object using array definition.
      *
-     * @param string $class_str Class name.
      * @param array  $data      Fields data.
+     * @param string $class_str Class name.
      *
      * @return object With current definition.
      */
-    public static function build(string $class_str, array $data=[])
+    public static function build(array $data=[], string $class_str=__CLASS__)
     {
         $obj = new $class_str();
         // Set values.

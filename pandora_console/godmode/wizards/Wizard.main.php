@@ -31,9 +31,6 @@ global $config;
 
 require_once $config['homedir'].'/vendor/autoload.php';
 require_once $config['homedir'].'/include/class/HTML.class.php';
-
-use \HTML;
-
  /**
   * Global Wizard generic class. Needs to be inherited.
   *

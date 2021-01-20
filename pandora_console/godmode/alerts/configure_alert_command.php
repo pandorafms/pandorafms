@@ -48,15 +48,18 @@ if (is_metaconsole() === true) {
     );
 }
 
-
-if ($update_command) {
-    $id = (int) get_parameter('id');
+if ($id > 0) {
     $alert = alerts_get_alert_command($id);
-    if ($alert['internal']) {
+
+    if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'LM')) {
         db_pandora_audit('ACL Violation', 'Trying to access Alert Management');
         include 'general/noaccess.php';
         exit;
     }
+}
+
+if ($update_command) {
+    $alert = alerts_get_alert_command($id);
 
     $name = (string) get_parameter('name');
     $command = (string) get_parameter('command');
@@ -216,12 +219,18 @@ $table->data['command'][1] = html_print_textarea(
     $is_central_policies_on_node
 );
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('LM') === true) {
+    $return_all_group = true;
+}
+
 $table->colspan['group'][1] = 3;
 $table->data['group'][0] = __('Group');
 $table->data['group'][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     'LM',
-    true,
+    $return_all_group,
     'id_group',
     $id_group,
     false,

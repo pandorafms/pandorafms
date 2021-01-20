@@ -55,6 +55,15 @@ if (defined('METACONSOLE')) {
 if ($a_template !== false) {
     // If user tries to duplicate/edit a template with group=ALL
     if ($a_template['id_group'] == 0) {
+        if (users_can_manage_group_all('LM') === false) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access Alert Management'
+                );
+            include 'general/noaccess.php';
+            exit;
+        }
+
         // Header
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
@@ -1091,18 +1100,18 @@ if ($step == 2) {
     $table->data[0][1] .= '&nbsp;&nbsp;'.__('Group');
     $groups = users_get_groups();
     $own_info = get_user_info($config['id_user']);
-    // Only display group "All" if user is administrator or has "PM" privileges.
-    if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-        $display_all_group = true;
-    } else {
-        $display_all_group = false;
+
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LM') === true) {
+        $return_all_group = true;
     }
 
     $table->data[0][1] .= '&nbsp;';
     $table->data[0][1] .= '<div class="w250px inline">'.html_print_select_groups(
         false,
         'AR',
-        $display_all_group,
+        $return_all_group,
         'id_group',
         $id_group,
         '',

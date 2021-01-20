@@ -300,7 +300,11 @@ if ($pure === false) {
             );
         echo '</div>';
         echo '</div>';
-        echo html_print_checkbox_switch('edit-mode', 1, false, true);
+
+        if ($aclWrite || $aclManage) {
+            echo html_print_checkbox_switch('edit-mode', 1, false, true);
+        }
+
         echo '</div>';
     }
 }

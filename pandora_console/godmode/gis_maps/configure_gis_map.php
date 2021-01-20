@@ -461,14 +461,15 @@ $table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id
 	</tr> ".gis_add_conection_maps_in_form($map_connection_list).'
 </table>';
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'MM')) {
-    $display_all_group = true;
-} else {
-    $display_all_group = false;
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('MM') === true) {
+    $return_all_group = true;
 }
 
 $table->data[2][0] = __('Group');
-$table->data[2][1] = html_print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
+$table->data[2][1] = html_print_select_groups(false, 'IW', $return_all_group, 'map_group_id', $map_group_id, '', '', '', true);
 
 $table->data[3][0] = __('Default zoom');
 $table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);

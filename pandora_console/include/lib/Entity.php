@@ -149,7 +149,10 @@ abstract class Entity
     {
         // Prioritize written methods over dynamic ones.
         if (method_exists($this, $methodName) === true) {
-            return $this->{$methodName}($params);
+            return call_user_func_array(
+                $this->{$methodName},
+                $params
+            );
         }
 
         // Enterprise capabilities.

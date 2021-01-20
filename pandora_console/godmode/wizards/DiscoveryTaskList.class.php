@@ -494,7 +494,7 @@ class DiscoveryTaskList extends HTML
                     if (check_acl($config['id_user'], 0, 'AW')) {
                         $data[0] = '<span class="link" onclick="force_task(\'';
                         $data[0] .= ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$task['id_recon_server'].'&force='.$task['id_rt']
                         );
                         $data[0] .= '\'';
                         if ($task['type'] == DISCOVERY_HOSTDEVICES) {

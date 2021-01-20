@@ -13090,7 +13090,8 @@ function api_get_special_days($thrash1, $thrash2, $other, $thrash3)
         $separator = $other['data'][0];
     }
 
-    $filter = false;
+    $user_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM')));
+    $filter = "id_group IN ($user_groups)";
 
     $special_days = @db_get_all_rows_filter('talert_special_days', $filter);
 
@@ -13127,17 +13128,17 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
 
-    $check_id_special_day = db_get_value('id', 'talert_special_days', 'date', $special_day);
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $check_id_special_day = db_get_value_filter('id', 'talert_special_days', ['date' => $special_day, 'id_group' => $idGroup]);
 
     if ($check_id_special_day) {
         returnError('error_create_special_day', __('Error creating special day. Specified day already exists.'));
@@ -13155,7 +13156,7 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
     } else {
         $group = groups_get_group_by_id($idGroup);
 
-        if ($group == false) {
+        if ($idGroup != 0 && $group == false) {
             returnError('error_create_special_day', __('Error creating special day. Id_group doesn\'t exist.'));
             return;
         }
@@ -13641,15 +13642,15 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
+
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
 
     if ($id_special_day == '') {
         returnError('error_update_special_day', __('Error updating special day. Id cannot be left blank.'));
@@ -13660,6 +13661,13 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 
     if (!$check_id_special_day) {
         returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exist.'));
+        return;
+    }
+
+    $id_group_org = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+
+    if (!check_acl($config['id_user'], $id_group_org, 'LM', true)) {
+        returnError('forbidden', 'string');
         return;
     }
 
@@ -13722,6 +13730,12 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
 
     if (!$check_id_special_day) {
         returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exist.'));
+        return;
+    }
+
+    $id_group = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+    if (!check_acl($config['id_user'], $id_group, 'LM', true)) {
+        returnError('forbidden', 'string');
         return;
     }
 

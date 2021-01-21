@@ -153,7 +153,7 @@ $alert_status_filter['notfired'] = __('Not fired');
 $alert_status_filter['disabled'] = __('Disabled');
 
 $form_filter .= "<tr><td style='font-weight: bold;'>".__('Status').'</td><td>';
-$form_filter .= html_print_select($alert_status_filter, 'filter', $filter, '', '', '', true);
+$form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
 $form_filter .= '</td></tr>';
 if (defined('METACONSOLE')) {
     $form_filter .= '<tr>';
@@ -187,6 +187,10 @@ $total = 0;
 $where = '';
 
 if ($searchFlag) {
+    if ($status_alert != -1 && $status_alert != '') {
+        $where .= ' ';
+    }
+
     if ($priority != -1 && $priority != '') {
         $where .= ' AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = '.$priority.')';
     }
@@ -396,7 +400,7 @@ switch ($sortField) {
     break;
 }
 
-$form_params = '&template_name='.$templateName.'&agent_name='.$agentName.'&module_name='.$moduleName.'&action_id='.$actionID.'&field_content='.$fieldContent.'&priority='.$priority.'&enabledisable='.$enabledisable.'&standby='.$standby.'&ag_group='.$ag_group;
+$form_params = '&template_name='.$templateName.'&agent_name='.$agentName.'&module_name='.$moduleName.'&action_id='.$actionID.'&field_content='.$fieldContent.'&priority='.$priority.'&enabledisable='.$enabledisable.'&standby='.$standby.'&ag_group='.$ag_group.'&status_alert='.$status_alert;
 $sort_params = '&sort_field='.$sortField.'&sort='.$sort;
 
 if ($id_agente) {

@@ -144,6 +144,17 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
 
 $form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
 $form_filter .= '</td></tr>';
+
+$alert_status_filter = [];
+$alert_status_filter['all_enabled'] = __('All (Enabled)');
+$alert_status_filter['all'] = __('All');
+$alert_status_filter['fired'] = __('Fired');
+$alert_status_filter['notfired'] = __('Not fired');
+$alert_status_filter['disabled'] = __('Disabled');
+
+$form_filter .= "<tr><td style='font-weight: bold;'>".__('Status').'</td><td>';
+$form_filter .= html_print_select($alert_status_filter, 'filter', $filter, '', '', '', true);
+$form_filter .= '</td></tr>';
 if (defined('METACONSOLE')) {
     $form_filter .= '<tr>';
     $form_filter .= "<td colspan='6' align='right'>";

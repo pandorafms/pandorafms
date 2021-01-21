@@ -900,7 +900,11 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table='', $force_
         }
 
         $in_group = implode(',', $without_tags);
-        $condition .= sprintf('(tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))', $in_group, $in_group);
+        if ($has_secondary) {
+            $condition .= sprintf('(tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))', $in_group, $in_group);
+        } else {
+            $condition .= sprintf('(tagente.id_grupo IN (%s))', $in_group);
+        }
     }
 
     $condition = !empty($condition) ? "($condition)" : '';

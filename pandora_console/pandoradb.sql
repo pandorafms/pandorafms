@@ -3877,3 +3877,101 @@ CREATE TABLE `tnode_relations` (
 	`node_address` VARCHAR(60) NOT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`network` varchar(100) NOT NULL default '',
+	`name_network` varchar(255) default '',
+	`description` text NOT NULL,
+	`location` tinytext NOT NULL,
+	`id_recon_task` int(10) unsigned NOT NULL,
+	`scan_interval` tinyint(2) default 1,
+	`monitoring` tinyint(2) default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`lightweight_mode` tinyint(2) default 0,
+	`users_operator` text,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_ip`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_ip` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_network` bigint(20) unsigned NOT NULL default 0,
+	`id_agent` int(10) unsigned NOT NULL,
+	`forced_agent` tinyint(2) NOT NULL default '0',
+	`ip` varchar(100) NOT NULL default '',
+	`ip_dec` int(10) unsigned NOT NULL,
+	`id_os` int(10) unsigned NOT NULL,
+	`forced_os` tinyint(2) NOT NULL default '0',
+	`hostname` tinytext NOT NULL,
+	`forced_hostname` tinyint(2) NOT NULL default '0',
+	`comments` text NOT NULL,
+	`alive` tinyint(2) NOT NULL default '0',
+	`managed` tinyint(2) NOT NULL default '0',
+	`reserved` tinyint(2) NOT NULL default '0',
+	`time_last_check` datetime NOT NULL default '1970-01-01 00:00:00',
+	`time_create` datetime NOT NULL default '1970-01-01 00:00:00',
+	`users_operator` text,
+	`time_last_edit` datetime NOT NULL default '1970-01-01 00:00:00',
+	`enabled` tinyint(2) NOT NULL default '1',
+	`generate_events` tinyint(2) NOT NULL default '0',
+	`leased` tinyint(2) DEFAULT '0',
+	`leased_expiration` bigint(20) DEFAULT '0',
+	`mac_address` varchar(20) DEFAULT NULL,
+	`leased_mode` tinyint(2) DEFAULT '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_vlan`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_vlan` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_vlan_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_vlan_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_vlan` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_vlan`) REFERENCES tipam_vlan(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_supernet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_supernet` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text default '',
+	`address` varchar(250) NOT NULL,
+	`mask` varchar(250) NOT NULL,
+	`subneting_mask` varchar(250) default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_supernet_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_supernet` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

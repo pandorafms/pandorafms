@@ -826,7 +826,9 @@ sub pandora_load_config {
 			$pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
-			$pa_config->{"verbosity"} = clean_blank($1); 
+			if ($pa_config->{"verbosity"} == 0) {
+				$pa_config->{"verbosity"} = clean_blank($1);
+			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"server_threshold"} = clean_blank($1); 

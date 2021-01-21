@@ -4778,7 +4778,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 }
 
                 if ($data['from_wux'] === true) {
-                    $string_filter = ' AND id_tipo_modulo = 25 ';
+                    $string_filter = ' AND id_tipo_modulo = 25';
+                }
+
+                if (isset($data['filter_modules']) && !empty($data['filter_modules'])) {
+                    $string_filter = ' AND id_agente_modulo IN ('.implode(',', $data['filter_modules']).')';
                 }
 
                 $sql = sprintf(

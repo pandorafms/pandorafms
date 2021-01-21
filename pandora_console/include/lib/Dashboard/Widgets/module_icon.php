@@ -342,6 +342,7 @@ class ModuleIconWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
+                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
             ],
         ];
 

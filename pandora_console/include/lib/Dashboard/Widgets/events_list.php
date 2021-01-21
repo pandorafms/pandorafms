@@ -367,7 +367,7 @@ class EventsListWidget extends Widget
         $return_all_group = false;
         $selected_groups_array = explode(',', $values['groupId'][0]);
 
-        if (users_can_manage_group_all('RM') || in_array(0, $selected_groups_array) === true) {
+        if (users_can_manage_group_all('RM') || ($selected_groups_array[0] !== '' && in_array(0, $selected_groups_array) === true)) {
             // Return all group if user has permissions or it is a currently selected group.
             $return_all_group = true;
         }

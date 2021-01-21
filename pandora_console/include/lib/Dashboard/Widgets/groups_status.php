@@ -278,7 +278,7 @@ class GroupsStatusWidget extends Widget
         $url .= '&refr=60&group_id='.$this->values['groupId'];
         $data .= '<h1>';
         $data .= '<a href="'.$url.'">';
-        $data .= $user_groups[$this->values['groupId']];
+        $data .= groups_get_name($this->values['groupId']);
         $data .= '</a>';
         $data .= '</h1></div>';
 

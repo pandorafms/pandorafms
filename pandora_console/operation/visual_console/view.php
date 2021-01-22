@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -470,11 +470,17 @@ ui_require_css_file('form');
             var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
             var replacement = '$1' + newProps.id + '$2';
 
+            var regex_hash = /(hash=)[^&]+(&?)/gi;
+            var replacement_hash = '$1' + newProps.hash + '$2';
             // Tab links.
             var menuLinks = document.querySelectorAll("div#menu_tab a");
             if (menuLinks !== null) {
                 menuLinks.forEach(function (menuLink) {
                     menuLink.href = menuLink.href.replace(regex, replacement);
+                    menuLink.href = menuLink.href.replace(
+                        regex_hash,
+                        replacement_hash
+                    );
                 });
             }
 
@@ -487,6 +493,7 @@ ui_require_css_file('form');
             // Change the URL (if the browser has support).
             if ("history" in window) {
                 var href = window.location.href.replace(regex, replacement);
+                href = href.replace(regex_hash, replacement_hash);
                 window.history.replaceState({}, document.title, href);
             }
         }

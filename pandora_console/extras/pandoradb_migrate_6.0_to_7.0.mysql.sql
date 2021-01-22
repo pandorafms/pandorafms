@@ -348,6 +348,27 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `tinventory_alert`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tinventory_alert`(
+    `id` int UNSIGNED NOT NULL auto_increment,
+    `id_module_inventory` int(10) NOT NULL,
+    `actions` text NOT NULL default '',
+	`id_group` mediumint(8) unsigned NULL default 0,
+    `condition` enum('WHITE_LIST', 'BLACK_LIST', 'MATCH') NOT NULL default 'WHITE_LIST',
+    `value` text NOT NULL default '',
+    `name` tinytext NOT NULL default '',
+    `description` text NOT NULL default '',
+    `time_threshold` int(10) NOT NULL default '0',
+    `last_fired` text NOT NULL default '',
+    `disable_event` tinyint(1) UNSIGNED default 0,
+    `enabled` tinyint(1) UNSIGNED default 1,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `ttrap_custom_values`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
@@ -1246,27 +1267,43 @@ ALTER TABLE talert_templates ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
-ALTER TABLE talert_snmp ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,
 	MODIFY COLUMN `al_field14` text NOT NULL,
 	MODIFY COLUMN `al_field15` text NOT NULL;
+
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
@@ -1482,6 +1519,7 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
+ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -2486,6 +2524,7 @@ ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 -- Update table `tuser_task`
 -- ----------------------------------------------------------------------
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
+INSERT IGNORE INTO tuser_task VALUES (8, 'cron_task_generate_csv_log', 'a:1:{i:0;a:2:{s:11:"description";s:14:"Send to e-mail";s:4:"type";s:4:"text";}}', 'Send csv log');
 
 -- ----------------------------------------------------------------------
 -- ADD message in table 'tnews'
@@ -3829,3 +3868,103 @@ INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_gro
 
 INSERT IGNORE INTO `tpen` VALUES (171,'dlink','D-Link Systems, Inc.'),(14988,'mikrotik','MikroTik'),(6486,'alcatel','Alcatel-Lucent Enterprise'),(41112,'ubiquiti','Ubiquiti Networks, Inc.'),(207,'telesis','Allied Telesis, Inc.'),(10002,'frogfoot','Frogfoot Networks'),(2,'ibm','IBM'),(4,'unix','Unix'),(63,'apple','Apple Computer, Inc.'),(674,'dell','Dell Inc.'),(111,'oracle','Oracle'),(116,'hitachi','Hitachi, Ltd.'),(173,'netlink','Netlink'),(188,'ascom','Ascom'),(6574,'synology','Synology Inc.'),(3861,'fujitsu','Fujitsu Network Communications, Inc.'),(53526,'dell','Dell ATC'),(52627,'apple','Apple Inc'),(19464,'hitachi','Hitachi Communication Technologies, Ltd.'),(13062,'ascom','Ascom');
 
+CREATE TABLE IF NOT EXISTS `tipam_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`network` varchar(100) NOT NULL default '',
+	`name_network` varchar(255) default '',
+	`description` text NOT NULL,
+	`location` tinytext NOT NULL,
+	`id_recon_task` int(10) unsigned NOT NULL,
+	`scan_interval` tinyint(2) default 1,
+	`monitoring` tinyint(2) default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`lightweight_mode` tinyint(2) default 0,
+	`users_operator` text,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_ip` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_network` bigint(20) unsigned NOT NULL default 0,
+	`id_agent` int(10) unsigned NOT NULL,
+	`forced_agent` tinyint(2) NOT NULL default '0',
+	`ip` varchar(100) NOT NULL default '',
+	`ip_dec` int(10) unsigned NOT NULL,
+	`id_os` int(10) unsigned NOT NULL,
+	`forced_os` tinyint(2) NOT NULL default '0',
+	`hostname` tinytext NOT NULL,
+	`forced_hostname` tinyint(2) NOT NULL default '0',
+	`comments` text NOT NULL,
+	`alive` tinyint(2) NOT NULL default '0',
+	`managed` tinyint(2) NOT NULL default '0',
+	`reserved` tinyint(2) NOT NULL default '0',
+	`time_last_check` datetime NOT NULL default '1970-01-01 00:00:00',
+	`time_create` datetime NOT NULL default '1970-01-01 00:00:00',
+	`users_operator` text,
+	`time_last_edit` datetime NOT NULL default '1970-01-01 00:00:00',
+	`enabled` tinyint(2) NOT NULL default '1',
+	`generate_events` tinyint(2) NOT NULL default '0',
+	`leased` tinyint(2) DEFAULT '0',
+	`leased_expiration` bigint(20) DEFAULT '0',
+	`mac_address` varchar(20) DEFAULT NULL,
+	`leased_mode` tinyint(2) DEFAULT '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_vlan` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_vlan`) REFERENCES tipam_vlan(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text default '',
+	`address` varchar(250) NOT NULL,
+	`mask` varchar(250) NOT NULL,
+	`subneting_mask` varchar(250) default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_supernet` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+SET @insert_type = 3;
+SET @insert_name = 'IPAM Recon';
+SET @insert_description = 'This script is used to automatically detect network hosts availability and name, used as Recon Custom Script in the recon task. Parameters used are:\n\n* custom_field1 = network. i.e.: 192.168.100.0/24\n* custom_field2 = associated IPAM network id. i.e.: 4. Please do not change this value, it is assigned automatically in IPAM management.\n\nSee documentation for more information.';
+SET @insert_script = '/usr/share/pandora_server/util/recon_scripts/IPAMrecon.pl';
+SET @insert_macros = '{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""}}';
+INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`)
+SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (
+	SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name
+	UNION
+	SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`,
+	@insert_type as `type`,
+	@insert_name as `name`,
+	@insert_description as `description`,
+	@insert_script as `script`,
+	@insert_macros as `macros`
+) t limit 1;
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';

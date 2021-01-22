@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -138,7 +138,8 @@ if ($update || $create) {
                 ['id_agente_modulo' => $id_agent_module]
             )
         );
-    }    
+    }
+
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');
@@ -204,12 +205,16 @@ if ($update) {
 }
 
 if ($create) {
-    $id = db_process_sql_insert('tevent_filter', $values);
+    if (!empty($values['id_name'])) {
+        $id = db_process_sql_insert('tevent_filter', $values);
 
-    if ($id === false) {
-        ui_print_error_message('Error creating filter');
+        if ($id === false) {
+            ui_print_error_message('Error creating filter');
+        } else {
+            ui_print_success_message('Filter created successfully');
+        }
     } else {
-        ui_print_success_message('Filter created successfully');
+        ui_print_error_message('Filter name must not be empty');
     }
 }
 

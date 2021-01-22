@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -234,6 +234,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'event_report_log':
                 reporting_html_log($table, $item);
+            break;
+
+            case 'permissions_report':
+                reporting_html_permissions($table, $item);
             break;
 
             case 'availability_graph':
@@ -1492,7 +1496,7 @@ function reporting_html_inventory_changes($table, $item, $pdf=0)
 function reporting_html_inventory($table, $item, $pdf=0)
 {
     $return_pdf = '';
-    if (!empty($item['failed'])) {
+    if (empty($item['failed']) === false) {
         if ($pdf === 0) {
             $table->colspan['failed']['cell'] = 3;
             $table->cellstyle['failed']['cell'] = 'text-align: center;';
@@ -1501,59 +1505,76 @@ function reporting_html_inventory($table, $item, $pdf=0)
             $return_pdf .= $item['failed'];
         }
     } else {
-        foreach ($item['data'] as $module_item) {
-            $table1 = new stdClass();
-            $table1->width = '99%';
+        // Grouped type inventory.
+        $type_modules = array_reduce(
+            $item['data'],
+            function ($carry, $it) {
+                $carry[$it['name']][] = $it;
+                return $carry;
+            },
+            []
+        );
 
-            $first = reset($module_item['data']);
-            $count_columns = count($first);
+        if (isset($type_modules) === true
+            && is_array($type_modules) === true
+        ) {
+            foreach ($type_modules as $key_type_module => $type_module) {
+                $table1 = new stdClass();
+                $table1->width = '99%';
+                $table1->data = [];
+                $table1->head = [];
+                $table1->cellstyle = [];
+                $table1->headstyle = [];
+                if (isset($type_module) === true
+                    && is_array($type_module) === true
+                ) {
+                    foreach ($type_module as $key_type => $module) {
+                        if (isset($module['data']) === true
+                            && is_array($module['data']) === true
+                        ) {
+                            array_pop($module['data']);
+                            foreach ($module['data'] as $k_module => $v_module) {
+                                $str_key = $key_type_module.'-'.$key_type.'-'.$k_module;
+                                $table1->head[0] = __('Agent');
+                                $table1->head[1] = __('Module');
+                                $table1->head[2] = __('Date');
+                                $table1->headstyle[0] = 'text-align: left';
+                                $table1->headstyle[1] = 'text-align: left';
+                                $table1->headstyle[2] = 'text-align: left';
+                                $table1->cellstyle[$str_key][0] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][1] = 'text-align: left;';
+                                $table1->cellstyle[$str_key][2] = 'text-align: left;';
+                                $table1->data[$str_key][0] = $module['agent_name'];
+                                $table1->data[$str_key][1] = $key_type_module;
+                                $dateModule = explode(' ', $module['timestamp']);
+                                $table1->data[$str_key][2] = $dateModule[0];
+                                if (isset($v_module) === true
+                                    && is_array($v_module) === true
+                                ) {
+                                    foreach ($v_module as $k => $v) {
+                                        $table1->head[$k] = $k;
+                                        $table1->headstyle[$k] = 'text-align: left';
+                                        $table1->cellstyle[$str_key][$k] = 'text-align: left;';
+                                        $table1->data[$str_key][$k] = $v;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-            $table1->cellstyle[0][0] = 'background: #373737; color: #FFF;';
-            $table1->data[0][0] = $module_item['agent_name'];
-            if ($count_columns == 1) {
-                $table1->colspan[0][0] = ($count_columns + 1);
-            } else {
-                $table1->colspan[0][0] = $count_columns;
-            }
-
-            $table1->cellstyle[1][0] = 'background: #373737; color: #FFF;';
-            $table1->cellstyle[1][1] = 'background: #373737; color: #FFF;';
-            $table1->data[1][0] = $module_item['name'];
-            if (($count_columns - 1) > 0) {
-                $table1->colspan[1][0] = ($count_columns - 1);
-            }
-
-            $table1->data[1][1] = $module_item['timestamp'];
-
-            $table1->cellstyle[2] = array_pad(
-                [],
-                $count_columns,
-                'background: #373737; color: #FFF;'
-            );
-            $table1->data[2] = array_keys($first);
-            if (($count_columns - 1) == 0) {
-                $table1->colspan[2][0] = ($count_columns + 1);
-            }
-
-            $table1->data = array_merge(
-                $table1->data,
-                $module_item['data']
-            );
-
-            if ($pdf === 0) {
-                $table->colspan[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = 3;
-                $table->data[$module_item['name'].'_'.$module_item['id_agente']]['cell'] = html_print_table(
-                    $table1,
-                    true
-                );
-            } else {
-                $table1->title = $item['title'];
-                $table1->titleclass = 'title_table_pdf';
-                $table1->titlestyle = 'text-align:left;';
-                $return_pdf .= html_print_table(
-                    $table1,
-                    true
-                );
+                if ($pdf === 0) {
+                    $table->colspan[$key_type_module]['cell'] = 3;
+                    $table->data[$key_type_module]['cell'] = html_print_table(
+                        $table1,
+                        true
+                    );
+                } else {
+                    $return_pdf .= html_print_table(
+                        $table1,
+                        true
+                    );
+                }
             }
         }
     }
@@ -5631,4 +5652,118 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
     $downtimes_table .= html_print_table($table, true);
 
     return $downtimes_table;
+}
+
+
+function reporting_html_permissions($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->class = 'databox data';
+    $table1->cellpadding = 1;
+    $table1->cellspacing = 1;
+    $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
+
+    if ($item['subtype'] === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+        $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+        $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 100px;';
+        $table1->style[2] = 'text-align: left;vertical-align: top; min-width: 100px';
+
+        $table1->head = [
+            __('User ID'),
+            __('Full name'),
+            __('Permissions'),
+        ];
+
+        $table1->headstyle[0] = 'text-align: left';
+        $table1->headstyle[1] = 'text-align: left';
+        $table1->headstyle[2] = 'text-align: left';
+    }
+
+    if ($item['subtype'] === REPORT_PERMISSIONS_GROUP_BY_GROUP) {
+        $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[2] = 'text-align: left;vertical-align: top;min-width: 150px;';
+        $table1->style[3] = 'text-align: left;vertical-align: top;min-width: 150px;';
+
+        $table1->headstyle[0] = 'text-align: left';
+        $table1->headstyle[1] = 'text-align: left';
+        $table1->headstyle[2] = 'text-align: left';
+        $table1->headstyle[3] = 'text-align: left';
+
+        $table1->head = [
+            __('Group'),
+            __('User ID'),
+            __('Full name'),
+            __('Permissions'),
+        ];
+    }
+
+    $table1->data = [];
+
+    foreach ($item['data'] as $data) {
+        if ($item['subtype'] === REPORT_PERMISSIONS_NOT_GROUP_BY_GROUP) {
+            $profile_group_name = '';
+            foreach ($data['user_profiles'] as $user_profile) {
+                $profile_group_name .= $user_profile.'<br />';
+            }
+
+            $row = [
+                $data['user_id'],
+                $data['user_name'],
+                $profile_group_name,
+            ];
+        }
+
+        if ($item['subtype'] === REPORT_PERMISSIONS_GROUP_BY_GROUP) {
+            $user_profile_id_users = '';
+            $user_profile_name = '';
+            $user_profile_users_name = '';
+            $group_name = $data['group_name'].'<br />';
+
+            foreach ($data['users'] as $user => $user_data) {
+                $user_profile_id_users .= $user.'<br />';
+                $user_profile_users_name .= $user_data['fullname'].'<br />';
+
+                foreach ($user_data['profiles'] as $profile) {
+                    $user_profile_id_users .= '<br />';
+                    $user_profile_users_name .= '<br />';
+                    $user_profile_name .= $profile.'<br />';
+                }
+
+                $user_profile_name .= '<br />';
+            }
+
+            $row = [
+                $group_name,
+                $user_profile_id_users,
+                $user_profile_users_name,
+                $user_profile_name,
+            ];
+        }
+
+        $table1->data[] = $row;
+
+        if ($pdf !== 0) {
+            $table1->data[] = '<br />';
+        }
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['permissions']['cell'] = 3;
+        $table->cellstyle['permissions']['cell'] = 'text-align: center;';
+        $table->data['permissions']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table1,
+            true
+        );
+    }
 }

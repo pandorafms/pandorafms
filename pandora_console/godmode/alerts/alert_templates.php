@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,7 +148,7 @@ if ($update_template) {
     $recovery_notify = (bool) get_parameter('recovery_notify');
 
     $fields_recovery = [];
-    for ($i = 1; $i <= 10; $i++) {
+    for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $values['field'.$i] = (string) get_parameter('field'.$i);
         $values['field'.$i.'_recovery'] = ($recovery_notify) ? (string) get_parameter('field'.$i.'_recovery') : '';
     }

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -115,6 +115,13 @@ function io_safe_input($value)
     // Fixed the ° character.
     // TICKET: 1223
     $valueHtmlEncode = str_replace('&deg;', '&#176;', $valueHtmlEncode);
+
+    // Fixed the ¿ charater.
+    $valueHtmlEncode = str_replace('&iquest;', '¿', $valueHtmlEncode);
+    // Fixed the ¡ charater.
+    $valueHtmlEncode = str_replace('&iexcl;', '¡', $valueHtmlEncode);
+    // Fixed the € charater.
+    $valueHtmlEncode = str_replace('&euro;', '€', $valueHtmlEncode);
 
     // Replace some characteres for html entities
     for ($i = 0; $i < 33; $i++) {

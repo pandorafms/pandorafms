@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,44 +75,13 @@ function users_extension_main_god($god=true)
         $table->head = [];
 
         $table->head[0] = __('User');
-        $table->head[1] = __('IP');
-        $table->head[2] = __('Date');
+        $table->head[1] = __('Date');
 
         $rowPair = true;
         $iterator = 0;
 
         // Get data
         foreach ($rows as $row) {
-            // Get ip_origin of the last login of the user
-            switch ($config['dbtype']) {
-                case 'mysql':
-                case 'postgresql':
-                    $ip_origin = db_get_value_sql(
-                        sprintf(
-                            "SELECT ip_origen 
-						FROM tsesion 
-						WHERE id_usuario = '%s'
-						AND descripcion = '".io_safe_input('Logged in')."' 
-						ORDER BY fecha DESC",
-                            $row['id_user']
-                        )
-                    );
-                break;
-
-                case 'oracle':
-                    $ip_origin = db_get_value_sql(
-                        sprintf(
-                            "SELECT ip_origen 
-						FROM tsesion
-						WHERE id_usuario = '%s'
-						AND to_char(descripcion) = '".io_safe_input('Logged in')."' 
-						ORDER BY fecha DESC",
-                            $row['id_user']
-                        )
-                    );
-                break;
-            }
-
             if ($rowPair) {
                 $table->rowclass[$iterator] = 'rowPair';
             } else {
@@ -124,8 +93,7 @@ function users_extension_main_god($god=true)
 
             $data = [];
             $data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$row['id_user'].'">'.$row['id_user'].'</a>';
-            $data[1] = $ip_origin;
-            $data[2] = date($config['date_format'], $row['last_connect']);
+            $data[1] = date($config['date_format'], $row['last_connect']);
             array_push($table->data, $data);
         }
 

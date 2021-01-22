@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -248,17 +248,30 @@ if (is_ajax()) {
     return;
 }
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+
+$tab = (string) get_parameter('tab', 'groups');
+
+if ($tab != 'credbox' && ! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
     return;
+} else if ($tab == 'credbox'
+    && !check_acl($config['id_user'], 0, 'UM')
+    && !check_acl($config['id_user'], 0, 'PM')
+) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Credential Store'
+    );
+    include 'general/noaccess.php';
+    return;
 }
 
 $sec = defined('METACONSOLE') ? 'advanced' : 'gagente';
-$url_credbox  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=credbox';
+$url_credbox  = 'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox';
 $url_tree  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=tree';
 $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups';
 
@@ -294,8 +307,6 @@ $buttons['credbox'] = [
         ]
     ).'</a>',
 ];
-
-$tab = (string) get_parameter('tab', 'groups');
 
 $title = __('Groups defined in %s', get_product_name());
 // Marks correct tab.
@@ -419,45 +430,52 @@ if ($update_group) {
         $aviable_name = false;
     }
 
+    // Check if group name is unique.
+    $check = db_get_value_filter(
+        'nombre',
+        'tgrupo',
+        [
+            'nombre'   => $name,
+            'id_grupo' => $id_group,
+        ],
+        'AND NOT'
+    );
+
     // Check if name field is empty.
-    if ($name != '' && $aviable_name === true) {
-        $sql = sprintf(
-            'UPDATE tgrupo
-             SET nombre = "%s",
-                icon = "%s",
-                disabled = %d,
-                parent = %d,
-                custom_id = "%s",
-                propagate = %d,
-                id_skin = %d,
-                description = "%s",
-                contact = "%s",
-                other = "%s",
-                password = "%s"
-            WHERE id_grupo = %d',
-            $name,
-            empty($icon) ? '' : substr($icon, 0, -4),
-            !$alerts_enabled,
-            $id_parent,
-            $custom_id,
-            $propagate,
-            $skin,
-            $description,
-            $contact,
-            $other,
-            $group_pass,
-            $id_group
-        );
+    if ($name != '') {
+        if (!$check) {
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => $id_parent,
+                    'disabled'    => !$alerts_enabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                ];
 
-        $result = db_process_sql($sql);
-    } else {
-        $result = false;
-    }
+                $result = db_process_sql_update(
+                    'tgrupo',
+                    $values,
+                    ['id_grupo' => $id_group]
+                );
+            }
 
-    if ($result !== false) {
-        ui_print_success_message(__('Group successfully updated'));
+            if ($result) {
+                ui_print_success_message(__('Group successfully updated'));
+            } else {
+                ui_print_error_message(__('There was a problem modifying group'));
+            }
+        } else {
+            ui_print_error_message(__('Each group must have a different name'));
+        }
     } else {
-        ui_print_error_message(__('There was a problem modifying group'));
+        ui_print_error_message(__('Group must have a name'));
     }
 }
 

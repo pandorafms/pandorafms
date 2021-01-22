@@ -146,11 +146,9 @@ $form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_gro
 $form_filter .= '</td></tr>';
 
 $alert_status_filter = [];
-$alert_status_filter['all_enabled'] = __('All (Enabled)');
 $alert_status_filter['all'] = __('All');
 $alert_status_filter['fired'] = __('Fired');
 $alert_status_filter['notfired'] = __('Not fired');
-$alert_status_filter['disabled'] = __('Disabled');
 
 $form_filter .= "<tr><td style='font-weight: bold;'>".__('Status').'</td><td>';
 $form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
@@ -187,8 +185,12 @@ $total = 0;
 $where = '';
 
 if ($searchFlag) {
-    if ($status_alert != -1 && $status_alert != '') {
-        $where .= ' ';
+    if ($status_alert == 'fired' && $status_alert != 'all') {
+        $where .= ' AND id_alert_template IN (SELECT id FROM talert_template_modules WHERE times_fired > 0)';
+    }
+
+    if ($status_alert == 'notfired' && $status_alert != 'all') {
+        $where .= ' AND id_alert_template IN (SELECT id FROM talert_template_modules WHERE times_fired = 0)';
     }
 
     if ($priority != -1 && $priority != '') {

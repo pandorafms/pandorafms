@@ -325,7 +325,7 @@ respective locations:
     root@blackbox01:/tmp/pandora/pandora_agents/linux# ./pandora_agent_installer
 --install
 
-    Pandora FMS Agent Installer 1.0 (c) 2007 Sancho Lerena
+    Pandora FMS Agent Installer 1.0 (c) 2021 Sancho Lerena
     This program is licensed under GPL2 Terms. http://pandora.sourceforge.net
 
     Checking default dir /usr/share/pandora_agent...

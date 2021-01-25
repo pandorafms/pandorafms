@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2408,6 +2408,9 @@ class AgentWizard extends HTML
             }
         }
 
+        // If value comes empty, must return a "Empty" value for view it in console.
+        $value = (empty($value) === true) ? '<i>'.__('Empty').'</i>' : $value;
+
         return $value;
     }
 
@@ -3329,7 +3332,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = $tmp[1];
+                    $output[$index[0]] = ($tmp[1] ?? '');
                 }
             }
         }

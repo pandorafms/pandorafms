@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# (c) 2014 Sancho Lerena
+# (c) 2021 Sancho Lerena
 # (c) Artica Soluciones Tecnologicas
 
 # Packet loss ICMP measurement remote plugin

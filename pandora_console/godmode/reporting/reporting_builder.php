@@ -96,7 +96,7 @@ function dialog_message(message_id) {
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -157,6 +157,26 @@ $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure', 0);
 $schedule_report = get_parameter('schbutton', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
+
+if ($action == 'edit' && $idReport > 0) {
+    $report_group = db_get_value(
+        'id_group',
+        'treport',
+        'id_report',
+        $idReport
+    );
+
+    if (! check_acl_restricted_all($config['id_user'], $report_group, 'RW')
+        && ! check_acl_restricted_all($config['id_user'], $report_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access report builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
 
 if ($schedule_report != '') {
     $id_user_task = 1;
@@ -909,8 +929,8 @@ switch ($action) {
 
                 $data = [];
 
-                if (check_acl($config['id_user'], $report['id_group'], 'RW')
-                    || check_acl($config['id_user'], $report['id_group'], 'RM')
+                if (check_acl_restricted_all($config['id_user'], $report['id_group'], 'RW')
+                    || check_acl_restricted_all($config['id_user'], $report['id_group'], 'RM')
                 ) {
                     $data[0] = '<a href="'.$config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.$report['id_report'].'&pure='.$pure.'">'.ui_print_truncate_text($report['name'], 70).'</a>';
                 } else {
@@ -994,7 +1014,7 @@ switch ($action) {
 
                 switch ($type_access_selected) {
                     case 'group_view':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group'],
                             'RW'
@@ -1005,7 +1025,7 @@ switch ($action) {
                     break;
 
                     case 'group_edit':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group_edit'],
                             'RW'

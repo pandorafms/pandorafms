@@ -2,7 +2,7 @@
 // This file is an example on how things must NEVER be done.
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -594,10 +594,6 @@ $table->data[2][5] = html_print_input_text('min_hours_status', $min_hours_val, '
 
 $table->data[3][0] = '<span id="datatypetittle" ';
 
-if (!$_GET['sort']) {
-    $table->data[3][0] .= 'style="display:none"';
-}
-
 $table->data[3][0] .= '>'.__('Data type').'</span>';
 
 
@@ -671,10 +667,6 @@ switch ($moduletype) {
 
 $a = db_get_all_rows_sql($sql);
 $table->data[3][1] .= '<select id="datatype" name="datatype" ';
-
-if (!$_GET['sort']) {
-    $table->data[3][1] .= 'style="display:none"';
-}
 
 $table->data[3][1] .= '>';
 

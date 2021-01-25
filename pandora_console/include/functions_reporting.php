@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -9962,7 +9962,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR')
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
 {
     global $config;
 
@@ -9998,7 +9998,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $cur_time = get_system_time();
 
     // Check for access credentials using check_acl. More overhead, much safer.
-    if (!check_acl($config['id_user'], $id_group, $access)) {
+    if ($ignore_permissions === false && !check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
 
@@ -11339,7 +11339,7 @@ function reporting_tiny_stats(
 
     if (isset($counts_info['total_count'])) {
         $not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
-        $total_count = ($counts_info['total_count'] - $not_init);
+        $total_count = $counts_info['total_count'];
         $stats[] = [
             'name'  => 'total_count',
             'count' => $total_count,

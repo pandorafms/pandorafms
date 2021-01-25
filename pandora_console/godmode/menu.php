@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -382,6 +382,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');
         $sub['tools/diagnostics']['id'] = 'Diagnostic info';
         enterprise_hook('omnishell');
+        enterprise_hook('ipam_submenu');
 
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';

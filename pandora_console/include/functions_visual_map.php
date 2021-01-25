@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -1712,7 +1712,7 @@ function visual_map_print_item(
                 $img_style_title = strip_tags($label);
                 if ($layoutData['type'] == STATIC_GRAPH) {
                     if ($layoutData['id_agente_modulo'] != 0) {
-                        if ($layoutData['id_metaconsole'] != 0) {
+                        if (is_metaconsole() && $layoutData['id_metaconsole'] != 0) {
                             // Metaconsole db connection
                             $connection = db_get_row_filter(
                                 'tmetaconsole_setup',
@@ -3716,7 +3716,8 @@ function visual_map_get_user_layouts(
     $only_names=false,
     $filter=false,
     $returnAllGroup=true,
-    $favourite=false
+    $favourite=false,
+    $check_user_groups=true
 ) {
     if (! is_array($filter)) {
         $filter = [];
@@ -3763,7 +3764,21 @@ function visual_map_get_user_layouts(
         unset($filter['group']);
     }
 
-    if (!empty($groups)) {
+    $return_all_group = false;
+
+    if (users_can_manage_group_all()) {
+        $return_all_group = true;
+    }
+
+    if (isset($filter['can_manage_group_all'])) {
+        if ($filter['can_manage_group_all'] === false) {
+            unset($groups[0]);
+        }
+
+        unset($filter['can_manage_group_all']);
+    }
+
+    if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';
         }

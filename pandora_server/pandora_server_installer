@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.750"
-PI_BUILD="201112"
+PI_VERSION="7.0NG.751"
+PI_BUILD="210125"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -262,6 +262,7 @@ install () {
 				ln -s /usr/local/bin/pandora_server $DESTDIR$PREFIX/bin
 				ln -s /usr/local/bin/pandora_exec $DESTDIR$PREFIX/bin
 				ln -s /usr/local/bin/tentacle_server $DESTDIR$PREFIX/bin
+				ln -s /usr/local/bin/tentacle_client $DESTDIR$PREFIX/bin
 			fi
 		fi
 	fi
@@ -495,7 +496,9 @@ uninstall () {
 	rm -f  $DESTDIR$PANDORA_SERVER 2> /dev/null 
 	rm -f  $DESTDIR$PREFIX/bin/pandora_server 2> /dev/null
 	rm -f  $DESTDIR$PREFIX/bin/pandora_exec 2> /dev/null
-	rm -f  $DESTDIR$PREFIX/bin/tentacle_server 2> /dev/null
+	# Do not remove tentacle files if agent is still installed...
+	[ -e $DESTDIR$PREFIX/bin/pandora_agent ] || rm -f  $DESTDIR$PREFIX/bin/tentacle_server 2> /dev/null
+	[ -e $DESTDIR$PREFIX/bin/pandora_agent ] || rm -f  $DESTDIR$PREFIX/bin/tentacle_client 2> /dev/null
 	rm -Rf $DESTDIR$PANDORA_HOME
 	rm -f  $DESTDIR/etc/cron.hourly/pandora_db
 	rm -f  $DESTDIR/etc/logrotate.d/pandora_server

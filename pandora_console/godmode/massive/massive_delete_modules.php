@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,7 +86,11 @@ function process_manage_delete($module_name, $id_agents, $module_status='all')
     if ($selection_delete_mode == 'agents') {
         // We are selecting "any" module for the selecteds agents
         if (($module_name[0] == '0') and (is_array($module_name)) and (count($module_name) == 1)) {
-            $filter_for_module_deletion = false;
+            if ($status_module != -1) {
+                $filter_for_module_deletion = sprintf('tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = %s OR utimestamp=0 )', $status_module);
+            } else {
+                $filter_for_module_deletion = false;
+            }
         } else {
             $filter_for_module_deletion = sprintf('tagente_modulo.nombre IN ("%s")', implode('","', $module_name));
         }
@@ -450,7 +454,7 @@ $table->data['form_modules_2'][1] = html_print_select(
     '',
     false,
     'width:100%'
-);
+).' '.__('Select all modules').' '.html_print_checkbox('select_all_modules', 1, false, true, false, '', false, "class='static'");
 
 $table->data['form_modules_2'][2] = __('When select modules');
 $table->data['form_modules_2'][2] .= '<br>';
@@ -522,7 +526,8 @@ $table->data['form_agents_3'][1] = html_print_select(
     '',
     false,
     'width:100%'
-);
+).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'");
+
 $table->data['form_agents_3'][2] = __('When select agents');
 $table->data['form_agents_3'][2] .= '<br>';
 $table->data['form_agents_3'][2] .= html_print_select(
@@ -588,6 +593,44 @@ if ($selection_mode == 'modules') {
 var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
 
 $(document).ready (function () {
+    $("#checkbox-select_all_modules").change(function() {
+        if( $('#checkbox-select_all_modules').prop('checked')) {
+            $("#module_name option").prop('selected', 'selected');
+            $("#module_name").trigger('change');
+        } else {
+            $("#module_name option").prop('selected', false);
+            $("#module_name").trigger('change');
+        }
+    });
+
+    $("#module_name").change(function() {
+        var options_length = $("#module_name option").length;
+        var options_selected_length = $("#module_name option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_modules').prop("checked", false);
+        }
+    });
+
+    $("#checkbox-select_all_agents").change(function() {
+        if( $('#checkbox-select_all_agents').prop('checked')) {
+            $("#id_agents option").prop('selected', 'selected');
+            $("#id_agents").trigger('change');
+        } else {
+            $("#id_agents option").prop('selected', false);
+            $("#id_agents").trigger('change');
+        }
+    });
+
+    $("#id_agents").change(function() {
+        var options_length = $("#id_agents option").length;
+        var options_selected_length = $("#id_agents option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_agents').prop("checked", false);
+        }
+    });
+
     $("#id_agents").change(agent_changed_by_multiple_agents);
     $("#module_name").change(module_changed_by_multiple_modules);
     
@@ -680,7 +723,7 @@ $(document).ready (function () {
         $('#groups_select').val(-1);
     }
     
-    $('input[type=checkbox]').change (
+    $('input[type=checkbox]').not(".static").change (
         function () {
             if (this.id == "checkbox-force_type") {
                 if (this.checked) {

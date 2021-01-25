@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -80,9 +80,15 @@ if ($edit_networkmap) {
     } else {
         $id_group = $values['id_group'];
 
+        $id_group_acl_check = $id_group_map;
+
+        if ($id_group_map === null) {
+            $id_group_acl_check = $values['id_group_map'];
+        }
+
         // ACL for the network map.
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -265,6 +271,12 @@ if ($not_found) {
         true
     );
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('AR') === true) {
+        $return_all_group = true;
+    }
+
     $table->data[1][0] = __('Group');
     $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
         // Id_user.
@@ -272,7 +284,7 @@ if ($not_found) {
         // Privilege.
         'AR',
         // ReturnAllGroup.
-        true,
+        $return_all_group,
         // Name.
         'id_group_map',
         // Selected.
@@ -313,7 +325,7 @@ if ($not_found) {
     $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
     $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Recon task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
+    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
 
     $table->data['source_data_recon_task'][0] = __('Source from recon task');
     $table->data['source_data_recon_task'][0] .= ui_print_help_tip(

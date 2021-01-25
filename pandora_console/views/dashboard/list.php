@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -155,6 +155,11 @@ if (empty($dashboards) === true) {
         $data['full_screen'] .= '</a>';
 
         if ($manageDashboards === 1) {
+            $data['copy'] = '';
+            $data['delete'] = '';
+        }
+
+        if (check_acl_restricted_all($config['id_user'], $dashboard['id_group'], 'RM')) {
             $dataQueryCopy = [
                 'dashboardId'   => $dashboard['id'],
                 'copyDashboard' => 1,

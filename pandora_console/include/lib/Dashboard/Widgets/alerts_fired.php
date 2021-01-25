@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -215,13 +215,19 @@ class AlertsFiredWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM') || $values['groupId'] == 0) {
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Group'),
             'arguments' => [
                 'type'           => 'select_groups',
                 'name'           => 'groupId',
-                'returnAllGroup' => true,
+                'returnAllGroup' => $return_all_group,
                 'privilege'      => 'AR',
                 'selected'       => $values['groupId'],
                 'return'         => true,

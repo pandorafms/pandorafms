@@ -113,7 +113,9 @@ function reloadContent(id, url, options, side, noneStr) {
   data.side = side;
   data.group_recursion = $("#checkbox-id-group-recursion-" + current).prop(
     "checked"
-  );
+  )
+    ? 1
+    : 0;
   data.group_id = $("#id-group-" + current).val();
 
   $.ajax({
@@ -139,8 +141,8 @@ function reloadContent(id, url, options, side, noneStr) {
 
       for (var [value, label] of items) {
         if (
-          $("#" + opposite + " option[value=" + value + "]").length == 0 &&
-          $("#tmp-" + current + " option[value=" + value + "]").length == 0
+          $("#" + opposite + " option[value='" + value + "']").length == 0 &&
+          $("#tmp-" + current + " option[value='" + value + "']").length == 0
         ) {
           // Does not exist in opposite box nor is filtered.
           $("#" + current).append(new Option(label, value));

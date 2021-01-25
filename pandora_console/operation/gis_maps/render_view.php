@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,8 +114,8 @@ $controls = [
 $layers = gis_get_layers($idMap);
 
 // Render map
-$has_management_acl = check_acl($config['id_user'], $map['group_id'], 'MW')
-    || check_acl($config['id_user'], $map['group_id'], 'MM');
+$has_management_acl = check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+    || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM');
 
 $buttons = [];
 

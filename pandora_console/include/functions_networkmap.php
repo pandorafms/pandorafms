@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1234,7 +1234,8 @@ function networkmap_get_networkmaps(
     $id_user=null,
     $type=null,
     $optgrouped=true,
-    $strict_user=false
+    $strict_user=false,
+    $return_all_group=true
 ) {
     global $config;
 
@@ -1245,7 +1246,7 @@ function networkmap_get_networkmaps(
     // Configure filters
     $where = [];
     $where['type'] = MAP_TYPE_NETWORKMAP;
-    $where['id_group'] = array_keys(users_get_groups($id_user));
+    $where['id_group'] = array_keys(users_get_groups($id_user, 'AR', $return_all_group));
     if (!empty($type)) {
         $where['subtype'] = $type;
     }

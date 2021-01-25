@@ -1,16 +1,18 @@
 <?php
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
@@ -61,6 +63,11 @@ if ($add_action) {
     $values[db_escape_key_identifier('al_field13')] = get_parameter('field13_value');
     $values[db_escape_key_identifier('al_field14')] = get_parameter('field14_value');
     $values[db_escape_key_identifier('al_field15')] = get_parameter('field15_value');
+    $values[db_escape_key_identifier('al_field16')] = get_parameter('field16_value');
+    $values[db_escape_key_identifier('al_field17')] = get_parameter('field17_value');
+    $values[db_escape_key_identifier('al_field18')] = get_parameter('field18_value');
+    $values[db_escape_key_identifier('al_field19')] = get_parameter('field19_value');
+    $values[db_escape_key_identifier('al_field20')] = get_parameter('field20_value');
 
     $result = db_process_sql_insert('talert_snmp_action', $values);
 }
@@ -123,6 +130,11 @@ if ($save_alert || $modify_alert) {
     $al_field13 = (string) get_parameter_post('field13_value');
     $al_field14 = (string) get_parameter_post('field14_value');
     $al_field15 = (string) get_parameter_post('field15_value');
+    $al_field16 = (string) get_parameter_post('field16_value');
+    $al_field17 = (string) get_parameter_post('field17_value');
+    $al_field18 = (string) get_parameter_post('field18_value');
+    $al_field19 = (string) get_parameter_post('field19_value');
+    $al_field20 = (string) get_parameter_post('field20_value');
     $max_alerts = (int) get_parameter_post('max_alerts', 1);
     $min_alerts = (int) get_parameter_post('min_alerts', 0);
     $priority = (int) get_parameter_post('priority', 0);
@@ -195,6 +207,11 @@ if ($save_alert || $modify_alert) {
             'al_field13'                           => $al_field13,
             'al_field14'                           => $al_field14,
             'al_field15'                           => $al_field15,
+            'al_field16'                           => $al_field16,
+            'al_field17'                           => $al_field17,
+            'al_field18'                           => $al_field18,
+            'al_field19'                           => $al_field19,
+            'al_field20'                           => $al_field20,
             'description'                          => $description,
             'agent'                                => $source_ip,
             'custom_oid'                           => $custom_value,
@@ -267,7 +284,9 @@ if ($save_alert || $modify_alert) {
 			al_field5 = '%s', al_field6 = '%s',al_field7 = '%s',
 			al_field8 = '%s', al_field9 = '%s',al_field10 = '%s',
 			al_field11 = '%s', al_field12 = '%s', al_field13 = '%s',
-			al_field14 = '%s', al_field15 = '%s',
+			al_field14 = '%s', al_field15 = '%s', al_field16 = '%s',
+            al_field17 = '%s', al_field18 = '%s', al_field19 = '%s',
+            al_field20 = '%s',
 			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
@@ -318,6 +337,11 @@ if ($save_alert || $modify_alert) {
             $al_field13,
             $al_field14,
             $al_field15,
+            $al_field16,
+            $al_field17,
+            $al_field18,
+            $al_field19,
+            $al_field20,
             $description,
             $source_ip,
             $custom_value,
@@ -417,6 +441,11 @@ if ($update_alert || $duplicate_alert) {
     $al_field13 = $alert['al_field13'];
     $al_field14 = $alert['al_field14'];
     $al_field15 = $alert['al_field15'];
+    $al_field16 = $alert['al_field16'];
+    $al_field17 = $alert['al_field17'];
+    $al_field18 = $alert['al_field18'];
+    $al_field19 = $alert['al_field19'];
+    $al_field20 = $alert['al_field20'];
     $max_alerts = $alert['max_alerts'];
     $min_alerts = $alert['min_alerts'];
     $priority = $alert['priority'];
@@ -465,6 +494,15 @@ if ($update_alert || $duplicate_alert) {
     $position = $alert['position'];
     $disable_event = $alert['disable_event'];
     $group = $alert['id_group'];
+
+    if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access SNMP Alert Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else if ($create_alert) {
     // Variable init
     $id_as = -1;
@@ -490,6 +528,11 @@ if ($update_alert || $duplicate_alert) {
     $al_field13 = '';
     $al_field14 = '';
     $al_field15 = '';
+    $al_field16 = '';
+    $al_field17 = '';
+    $al_field18 = '';
+    $al_field19 = '';
+    $al_field20 = '';
     $max_alerts = 1;
     $min_alerts = 0;
     $priority = 0;
@@ -547,10 +590,11 @@ if ($duplicate_alert) {
 		id_alert, al_field1, al_field2, al_field3, 
 		al_field4, al_field5, al_field6, al_field7,
 		al_field8, al_field9, al_field10, al_field11, 
-		al_field12, al_field13, al_field14, al_field15,
-		description, alert_type, agent, custom_oid, oid, time_threshold,
-		times_fired, last_fired, max_alerts, min_alerts,
-		internal_counter, priority,
+        al_field12, al_field13, al_field14, al_field15,
+        al_field16, al_field17, al_field18, al_field19,
+        al_field20, description, alert_type, agent, custom_oid,
+        oid, time_threshold, times_fired, last_fired,
+        max_alerts, min_alerts, internal_counter, priority,
 		'.db_escape_key_identifier('_snmp_f1_').',
 		'.db_escape_key_identifier('_snmp_f2_').',
 		'.db_escape_key_identifier('_snmp_f3_').',
@@ -597,6 +641,11 @@ if ($duplicate_alert) {
         $al_field13,
         $al_field14,
         $al_field15,
+        $al_field16,
+        $al_field17,
+        $al_field18,
+        $al_field19,
+        $al_field20,
         $description,
         $alert_type,
         $source_ip,
@@ -774,13 +823,19 @@ if ($create_alert || $update_alert) {
     html_print_input_text('source_ip', $source_ip, '', 20);
     echo '</td></tr>';
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LW') === true) {
+        $return_all_group = true;
+    }
+
     // Group
     echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
     echo '<div class="w250px">';
     html_print_select_groups(
         $config['id_user'],
         'AR',
-        true,
+        $return_all_group,
         'group',
         $group,
         '',
@@ -998,6 +1053,11 @@ if ($create_alert || $update_alert) {
         'al_field13' => $al_field13,
         'al_field14' => $al_field14,
         'al_field15' => $al_field15,
+        'al_field16' => $al_field16,
+        'al_field17' => $al_field17,
+        'al_field18' => $al_field18,
+        'al_field19' => $al_field19,
+        'al_field20' => $al_field20,
     ];
 
     // Hidden div with help hint to fill with javascript
@@ -1301,9 +1361,16 @@ if ($create_alert || $update_alert) {
         $url = 'index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'id_alert_snmp='.$row['id_as'].'&'.'update_alert=1';
         $data[1] = '<table>';
         $data[1] .= '<tr>';
-        $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+            $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+        } else {
+            $data[1] .= alerts_get_alert_action_name($row['id_alert']);
+        }
+
         $other_actions = db_get_all_rows_filter('talert_snmp_action', ['id_alert_snmp' => $row['id_as']]);
         $data[1] .= '</tr>';
+
 
         if ($other_actions != false) {
             foreach ($other_actions as $action) {
@@ -1315,6 +1382,7 @@ if ($create_alert || $update_alert) {
         }
 
         $data[1] .= '</table>';
+
 
         $data[2] = $row['agent'];
         $data[3] = $row['oid'];
@@ -1328,18 +1396,23 @@ if ($create_alert || $update_alert) {
             $data[7] = __('Never');
         }
 
-        $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
 
 
-        $data[9] = html_print_checkbox_extended(
-            'delete_ids[]',
-            $row['id_as'],
-            false,
-            false,
-            false,
-            'class="chk_delete"',
-            true
-        );
+                $data[9] = html_print_checkbox_extended(
+                    'delete_ids[]',
+                    $row['id_as'],
+                    false,
+                    false,
+                    false,
+                    'class="chk_delete"',
+                    true
+                );
+        } else {
+            $data[8] = '';
+            $data[9] = '';
+        }
 
         $idx = count($table->data);
         // The current index of the table is 1 less than the count of table data so we count before adding to table->data
@@ -1421,6 +1494,11 @@ if ($create_alert || $update_alert) {
                     'al_field13' => $al_field13,
                     'al_field14' => $al_field14,
                     'al_field15' => $al_field15,
+                    'al_field16' => $al_field16,
+                    'al_field17' => $al_field17,
+                    'al_field18' => $al_field18,
+                    'al_field19' => $al_field19,
+                    'al_field20' => $al_field20,
                 ];
 
                 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,7 +145,9 @@ if ($view_graph) {
 
     $options = [];
 
-    if (check_acl($config['id_user'], 0, 'RW')) {
+    if (check_acl_restricted_all($config['id_user'], $graph['id_group'], 'RW')
+        || check_acl_restricted_all($config['id_user'], $graph['id_group'], 'RM')
+    ) {
         $options = [
             'graph_list'   => [
                 'active' => false,
@@ -158,6 +160,13 @@ if ($view_graph) {
             'graph_editor' => [
                 'active' => false,
                 'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/builder.png', true, ['title' => __('Graph editor')]).'</a>',
+            ],
+        ];
+    } else {
+        $options = [
+            'graph_list' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
             ],
         ];
     }
@@ -275,7 +284,7 @@ if ($view_graph) {
     echo '</td>';
 
     echo "<td class='datos'>";
-    echo "<div style='float:left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maximum thresholds').'</b>'.ui_print_help_tip(__('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'), true);
+    echo "<div style='float:left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maxiddmum thresholds').'</b>'.ui_print_help_tip(__('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'), true);
 
     html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
     echo '</div>';

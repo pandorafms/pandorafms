@@ -1,6 +1,6 @@
 /* 
    
-   Copyright (C) 2009 Artica ST.
+   Copyright (c) 2009-2021 Artica ST.
    Written by Ramon Novoa
   
    This program is free software; you can redistribute it and/or modify

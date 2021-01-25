@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,16 @@ $event_response_id = get_parameter('id_response', 0);
 
 if ($event_response_id > 0) {
     $event_response = db_get_row('tevent_response', 'id', $event_response_id);
+
+    // ACL check for event response edition.
+    if (!check_acl_restricted_all($config['id_user'], $event_response['id_group'], 'PM')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Group Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else {
     $event_response = [];
     $event_response['name'] = '';
@@ -84,8 +94,14 @@ $data[1] = html_print_input_text(
 );
 $data[1] .= html_print_input_hidden('id_response', $event_response['id'], true);
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('PM') === true) {
+    $return_all_group = true;
+}
+
 $data[2] = __('Group');
-$data[3] = html_print_select_groups(false, 'PM', true, 'id_group', $event_response['id_group'], '', '', '', true);
+$data[3] = html_print_select_groups(false, 'PM', $return_all_group, 'id_group', $event_response['id_group'], '', '', '', true);
 $table->data[0] = $data;
 
 $data = [];

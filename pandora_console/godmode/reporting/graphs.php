@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,7 +88,11 @@ ui_print_page_header(__('Reporting').' &raquo; '.__('Custom graphs'), 'images/ch
 
 // Delete module SQL code
 if ($delete_graph) {
-    if ($report_w || $report_m) {
+    $graph_group = db_get_value('id_group', 'tgraph', 'id_graph', $id);
+
+    if (check_acl_restricted_all($config['id_user'], $graph_group, 'RW')
+        || check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
+    ) {
         $exist = db_get_value('id_graph', 'tgraph_source', 'id_graph', $id);
         if ($exist) {
             $result = db_process_sql_delete('tgraph_source', ['id_graph' => $id]);
@@ -299,16 +303,17 @@ $table_aux = new stdClass();
 
                 $data[4] = '';
                 $table->cellclass[][4] = 'action_buttons';
-                if (($report_w || $report_m)) {
+                if (check_acl_restricted_all($config['id_user'], $graph['id_group'], 'RM')
+                    || check_acl_restricted_all($config['id_user'], $graph['id_group'], 'RW')
+                ) {
                     $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image('images/config.png', true).'</a>';
                 }
 
-                if ($report_m) {
+                $data[5] = '';
+                if (check_acl_restricted_all($config['id_user'], $graph['id_group'], 'RM')) {
                     $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
                     return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
-                }
 
-                if ($report_m) {
                     $data[5] .= html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
                 }
 

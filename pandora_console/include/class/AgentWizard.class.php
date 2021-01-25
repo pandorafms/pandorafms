@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Agent Wizard for SNMP and WMI
  *
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1453,7 +1452,7 @@ class AgentWizard extends HTML
         foreach (array_keys($data) as $k) {
             foreach ($modulesActivated as $key => $value) {
                 $valueStr = preg_replace('/\//', '\/', $value);
-                if (empty(preg_match('/'.$valueStr.'$/', $k)) === false) {
+                if (empty(preg_match('/-'.$valueStr.'$/', $k)) === false) {
                     if (empty(preg_match('/module-name-set/', $k)) === false) {
                         $result[$value]['name'] = $data[$k];
                     } else if (empty(preg_match('/module-description-set/', $k)) === false) {
@@ -1468,10 +1467,16 @@ class AgentWizard extends HTML
                                 $result[$value]['name'] = $data['module-default_name-'.$key];
                             } else if (empty(preg_match('/module-description-set/', $k)) === false) {
                                 $result[$value]['description'] = $data['module-default_description-'.$key];
+                            } else if (empty(preg_match('/module-value/', $k)) === false) {
+                                $result[$value]['value'] = $data['module-value-'.$key];
                             }
 
-                            preg_match('/^(.*)-.*?_(\d-\d)$/', $k, $matches);
+                            preg_match('/^(.*)-.*?_(\d+-\d+)$/', $k, $matches);
                             $k = $matches[1].'-0_'.$matches[2];
+                        } else {
+                            if (empty(preg_match('/module-value/', $k)) === false) {
+                                $result[$value]['value'] = $data[$k];
+                            }
                         }
                     }
 
@@ -1495,7 +1500,7 @@ class AgentWizard extends HTML
                         $result[$value]['scan_type'] = (int) $data[$k];
                     } else if (empty(preg_match('/module-execution_type/', $k)) === false) {
                         $result[$value]['execution_type'] = (int) $data[$k];
-                    } else if (empty(preg_match('/module-value/', $k)) === false) {
+                    } else if (($data['wizard_section'] !== 'snmp_interfaces_explorer') && (empty(preg_match('/module-value/', $k)) === false)) {
                         $result[$value]['value'] = $data[$k];
                     } else if (empty(preg_match('/module-macros/', $k)) === false) {
                         $result[$value]['macros'] = $data[$k];
@@ -2402,6 +2407,9 @@ class AgentWizard extends HTML
                 $value .= ' '.$unit;
             }
         }
+
+        // If value comes empty, must return a "Empty" value for view it in console.
+        $value = (empty($value) === true) ? '<i>'.__('Empty').'</i>' : $value;
 
         return $value;
     }
@@ -3324,7 +3332,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = $tmp[1];
+                    $output[$index[0]] = ($tmp[1] ?? '');
                 }
             }
         }

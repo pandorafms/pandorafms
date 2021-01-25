@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,6 +82,20 @@ $update_graph = (bool) get_parameter('update_graph', false);
 $change_weight = (bool) get_parameter('change_weight', false);
 $change_label = (bool) get_parameter('change_label', false);
 $id_graph = (int) get_parameter('id', 0);
+
+if ($id_graph > 0) {
+    $graph_group = db_get_value('id_group', 'tgraph', 'id_graph', $id_graph);
+    if (!check_acl_restricted_all($config['id_user'], $graph_group, 'RW')
+        && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access graph builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
 
 if ($id_graph !== 0) {
     $sql = "SELECT * FROM tgraph 

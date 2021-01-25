@@ -601,45 +601,6 @@ function cron_list_table()
                     }
 
                     $data[1] = $task['id_usuario'];
-                    $data[2] = db_get_value(
-                        'name',
-                        'tuser_task',
-                        'id',
-                        $task['id_user_task']
-                    );
-
-                    $args = unserialize($task['args']);
-                    $report = reports_get_report($args[0]);
-
-                    // Check ACL in reports_get_report return false.
-                    if ($report === false) {
-                        continue;
-                    }
-
-                    $path = $args[1];
-                    $data[2] .= '<br>- '.__('Report').": <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer";
-                    $data[2] .= '&id='.$args[0]."'>".$report['name'].'</a>';
-                    $data[2] .= '<br>- '.__('Path').': '.$path.'</a>';
-                break;
-
-                case 'cron_task_save_xml_report_to_disk':
-                case 'cron_task_save_json_report_to_disk':
-                case 'cron_task_save_csv_report_to_disk':
-
-                    if ($write_perms || $manage_pandora) {
-                        $data[0]  = '<a href="'.$url;
-                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
-                        $data[0] .= html_print_image(
-                            'images/target.png',
-                            true,
-                            ['title' => __('Force run')]
-                        );
-                        $data[0] .= '</a>';
-                    } else {
-                        $data[0] = '';
-                    }
-
-                    $data[1] = $task['id_usuario'];
                     $data[2] = db_get_value('name', 'tuser_task', 'id', $task['id_user_task']);
                     $args = unserialize($task['args']);
                     $report = reports_get_report($args[0]);
@@ -650,9 +611,12 @@ function cron_list_table()
                     }
 
                     $path = $args[1];
+                    $report_type = $args[3];
                     $data[2] .= '<br>- '.__('Report').": <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer";
                     $data[2] .= '&id='.$args[0]."'>".$report['name'].'</a>';
                     $data[2] .= '<br>- '.__('Path').': '.$path.'</a>';
+                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
+
                 break;
 
                 case 'cron_task_do_backup':

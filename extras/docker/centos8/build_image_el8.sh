@@ -64,6 +64,7 @@ wget $oconsoleurl
 wget $oserverurl
 
 if [ "$BASEBUILD" == 1 ] ; then
+	docker pull centos:8
 	# Open Base image
 	echo "building Base el8 image"
 	cd $DOCKER_PATH/base
@@ -71,9 +72,12 @@ if [ "$BASEBUILD" == 1 ] ; then
 	echo "Taging Open stack el8 latest image before upload"	
 	docker tag $OBASE_IMAGE:$VERSION  $OBASE_IMAGE:latest
 	echo -e ">>>> \n"
+else 
+	docker pull pandorafms/pandorafms-open-base-el8
 fi
 
 if [ "$DBBUILD" == 1 ] ; then
+	docker pull percona:5.7
 	# Percona image
 	echo "building Percona image"
 	cd $OPEN/extras/docker/percona

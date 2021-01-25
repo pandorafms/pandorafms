@@ -28,7 +28,7 @@
 
 // Begin.
 require_once __DIR__.'/vendor/autoload.php';
-use \PandoraFMS\WebSockets\WSManager;
+use \PandoraFMS\Websockets\WSManager;
 
 // Set to true to get full output.
 $debug = false;

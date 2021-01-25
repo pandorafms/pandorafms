@@ -69,3 +69,6 @@ enterprise/extensions/ipam/include/javascript/IpamMapController.js
 enterprise/extensions/ipam/ipam_action.php
 enterprise/extensions/ipam.php
 enterprise/extensions/ipam
+include/lib/WSManager.php
+include/lib/WebSocketServer.php
+include/lib/WebSocketUser.php

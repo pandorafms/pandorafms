@@ -1422,7 +1422,11 @@ if ($step == 2) {
         case "unknown":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
             $("#template-example").show ();
-            
+
+            if ($("#text-min_alerts").val() > 0 ) {
+                unknown = <?php echo "'".__('The alert would fire when the module is in unknown status. Warning: unknown_updates of pandora_server.conf must be equal to 1')."'"; ?>;
+            }
+
             /* Show example */
             $("span#example").empty ().append (unknown);
             break;

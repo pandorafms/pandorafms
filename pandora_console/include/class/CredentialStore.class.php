@@ -351,7 +351,21 @@ class CredentialStore extends Wizard
             return db_get_value_sql($sql);
         }
 
-        return db_get_all_rows_sql($sql);
+        $return = db_get_all_rows_sql($sql);
+
+        // Filter out those items of group all that cannot be edited by user.
+        $return = array_filter(
+            $return,
+            function ($item) {
+                if ($item['id_group'] == 0 && users_can_manage_group_all('AR') === false) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+
+        return $return;
     }
 
 
@@ -857,6 +871,12 @@ class CredentialStore extends Wizard
             $values = [];
         }
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('AR') === true) {
+            $return_all_group = true;
+        }
+
         $form = [
             'action'   => '#',
             'id'       => 'modal_form',
@@ -886,7 +906,7 @@ class CredentialStore extends Wizard
                 'id'             => 'id_group',
                 'input_class'    => 'flex-row',
                 'type'           => 'select_groups',
-                'returnAllGroup' => true,
+                'returnAllGroup' => $return_all_group,
                 'selected'       => $values['id_group'],
                 'return'         => true,
                 'class'          => 'w50p',
@@ -1045,6 +1065,7 @@ class CredentialStore extends Wizard
         * Process datatable item before draw it.
         */
         function process_datatables_item(item) {
+
             id = item.identifier;
 
             idrow = '<b><a href="javascript:" onclick="show_form(\'';

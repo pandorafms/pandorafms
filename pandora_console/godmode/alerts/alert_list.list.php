@@ -123,11 +123,15 @@ $form_filter .= "</td style='font-weight: bold;'>";
 $form_filter .= '</tr>';
 
 $form_filter .= '<tr>';
-$form_filter .= "<td style='font-weight: bold;'>".__('Enabled / Disabled').'</td><td>';
+$form_filter .= "<td style='font-weight: bold;'>".__('Status').'</td><td>';
 $ed_list = [];
-$ed_list[0] = __('Enabled');
-$ed_list[1] = __('Disabled');
-$form_filter .= html_print_select($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1, true);
+$alert_status_filter = [];
+$alert_status_filter['all_enabled'] = __('All (Enabled)');
+$alert_status_filter['all'] = __('All');
+$alert_status_filter['fired'] = __('Fired');
+$alert_status_filter['notfired'] = __('Not fired');
+$alert_status_filter['disabled'] = __('Disabled');
+$form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
 $form_filter .= "</td><td style='font-weight: bold;'>".__('Standby').'</td><td>';
 $sb_list = [];
 $sb_list[1] = __('Standby on');
@@ -145,14 +149,6 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_
 $form_filter .= html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false);
 $form_filter .= '</td></tr>';
 
-$alert_status_filter = [];
-$alert_status_filter['all'] = __('All');
-$alert_status_filter['fired'] = __('Fired');
-$alert_status_filter['notfired'] = __('Not fired');
-
-$form_filter .= "<tr><td style='font-weight: bold;'>".__('Status').'</td><td>';
-$form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
-$form_filter .= '</td></tr>';
 if (defined('METACONSOLE')) {
     $form_filter .= '<tr>';
     $form_filter .= "<td colspan='6' align='right'>";
@@ -183,14 +179,13 @@ $simple_alerts = [];
 
 $total = 0;
 $where = '';
-
 if ($searchFlag) {
-    if ($status_alert == 'fired' && $status_alert != 'all') {
-        $where .= ' AND id_alert_template IN (SELECT id FROM talert_template_modules WHERE times_fired > 0)';
+    if ($status_alert === 'fired') {
+        $where .= ' AND talert_template_modules.times_fired > 0';
     }
 
-    if ($status_alert == 'notfired' && $status_alert != 'all') {
-        $where .= ' AND id_alert_template IN (SELECT id FROM talert_template_modules WHERE times_fired = 0)';
+    if ($status_alert === 'notfired') {
+        $where .= ' AND talert_template_modules.times_fired = 0';
     }
 
     if ($priority != -1 && $priority != '') {
@@ -223,8 +218,12 @@ if ($searchFlag) {
         $where .= ' AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = '.$actionID.') OR talert_template_modules.id IN (SELECT id FROM talert_template_modules ttm WHERE ttm.id_alert_template IN (SELECT tat.id FROM talert_templates tat WHERE tat.id_alert_action = '.$actionID.'))';
     }
 
-    if ($enabledisable != -1 && $enabledisable != '') {
-        $where .= ' AND talert_template_modules.disabled ='.$enabledisable;
+    if ($status_alert === 'disabled') {
+        $where .= ' AND talert_template_modules.disabled = 1';
+    }
+
+    if ($status_alert === 'all_enabled') {
+        $where .= ' AND talert_template_modules.disabled = 0';
     }
 
     if ($standby != -1 && $standby != '') {

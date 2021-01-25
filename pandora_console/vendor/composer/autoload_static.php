@@ -391,6 +391,8 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Mpdf\\Utils\\PdfDate' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/PdfDate.php',
         'Mpdf\\Utils\\UtfString' => __DIR__ . '/..' . '/mpdf/mpdf/src/Utils/UtfString.php',
         'PandoraFMS\\Agent' => __DIR__ . '/../..' . '/include/lib/Agent.php',
+        'PandoraFMS\\Core\\Config' => __DIR__ . '/../..' . '/include/lib/Core/Config.php',
+        'PandoraFMS\\Core\\DBMantainer' => __DIR__ . '/../..' . '/include/lib/Core/DBMantainer.php',
         'PandoraFMS\\Dashboard\\Cell' => __DIR__ . '/../..' . '/include/lib/Dashboard/Cell.php',
         'PandoraFMS\\Dashboard\\Manager' => __DIR__ . '/../..' . '/include/lib/Dashboard/Manager.php',
         'PandoraFMS\\Dashboard\\Widget' => __DIR__ . '/../..' . '/include/lib/Dashboard/Widget.php',

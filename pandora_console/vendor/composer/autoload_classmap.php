@@ -309,6 +309,8 @@ return array(
     'Mpdf\\Utils\\PdfDate' => $vendorDir . '/mpdf/mpdf/src/Utils/PdfDate.php',
     'Mpdf\\Utils\\UtfString' => $vendorDir . '/mpdf/mpdf/src/Utils/UtfString.php',
     'PandoraFMS\\Agent' => $baseDir . '/include/lib/Agent.php',
+    'PandoraFMS\\Core\\Config' => $baseDir . '/include/lib/Core/Config.php',
+    'PandoraFMS\\Core\\DBMantainer' => $baseDir . '/include/lib/Core/DBMantainer.php',
     'PandoraFMS\\Dashboard\\Cell' => $baseDir . '/include/lib/Dashboard/Cell.php',
     'PandoraFMS\\Dashboard\\Manager' => $baseDir . '/include/lib/Dashboard/Manager.php',
     'PandoraFMS\\Dashboard\\Widget' => $baseDir . '/include/lib/Dashboard/Widget.php',

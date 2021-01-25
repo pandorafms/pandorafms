@@ -2408,6 +2408,9 @@ class AgentWizard extends HTML
             }
         }
 
+        // If value comes empty, must return a "Empty" value for view it in console.
+        $value = (empty($value) === true) ? '<i>'.__('Empty').'</i>' : $value;
+
         return $value;
     }
 
@@ -3329,7 +3332,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = $tmp[1];
+                    $output[$index[0]] = ($tmp[1] ?? '');
                 }
             }
         }

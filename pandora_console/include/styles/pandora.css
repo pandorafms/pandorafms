@@ -478,6 +478,10 @@ select:-internal-list-box {
   width: 290px;
   max-width: 290px;
 }
+.w600px {
+  width: 600px;
+  max-width: 600px;
+}
 .mw120px {
   min-width: 120px;
 }

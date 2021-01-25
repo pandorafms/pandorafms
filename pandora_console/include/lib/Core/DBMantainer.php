@@ -34,6 +34,12 @@ namespace PandoraFMS\Core;
  */
 final class DBMantainer
 {
+    const ESSENTIAL_TABLES = [
+        'tagente_datos',
+        'tagente_datos_string',
+        'tevento',
+        'tconfig',
+    ];
 
     /**
      * Database user.
@@ -105,6 +111,13 @@ final class DBMantainer
      */
     private $lastError;
 
+    /**
+     * Connected to engine and database.
+     *
+     * @var boolean
+     */
+    private $ready;
+
 
     /**
      * Initialize DBMaintainer object.
@@ -146,11 +159,11 @@ final class DBMantainer
             $this->host,
             $this->user,
             $this->pass,
-            $this->name,
+            null,
             $this->port
         );
 
-        if ($dbc->connect_error === false) {
+        if ((bool) $dbc->connect_error === true) {
             $this->dbh = null;
             $this->connected = false;
             $this->lastError = $dbc->connect_errno.': '.$dbc->connect_error;
@@ -160,10 +173,16 @@ final class DBMantainer
                 $dbc->set_charset($this->charset);
             }
 
-            $this->connected = true;
-            $this->lastError = null;
-        }
+            if ($this->dbh->select_db($this->name) === false) {
+                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+                $this->ready = false;
+            } else {
+                $this->lastError = null;
+                $this->ready = true;
+            }
 
+            $this->connected = true;
+        }
     }
 
 
@@ -183,6 +202,100 @@ final class DBMantainer
 
 
     /**
+     * Retrieve all rows from given query in array format.
+     *
+     * @param string $query Query.
+     *
+     * @return array  Results.
+     */
+    private function getAllRows(string $query)
+    {
+        if ($this->ready !== true) {
+            $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+            return [];
+        }
+
+        $rs = $this->dbh->query($query);
+
+        $results = [];
+
+        do {
+            $row = $rs->fetch_array(MYSQLI_ASSOC);
+            if ((bool) $row !== false) {
+                $results[] = $row;
+            }
+        } while ((bool) $row !== false);
+
+        return $results;
+    }
+
+
+    /**
+     * Verifies schema against running db.
+     *
+     * @return boolean Success or not.
+     */
+    public function verifySchema()
+    {
+        if ($this->ready !== true) {
+            return false;
+        }
+
+        $missing_essential_tables = $this->verifyTables();
+
+        return !(bool) count($missing_essential_tables);
+    }
+
+
+    /**
+     * Verifies tables against running db.
+     *
+     * @return boolean Applied or not.
+     */
+    public function verifyTables()
+    {
+        global $config;
+
+        $t = \db_get_all_rows_sql(
+            sprintf(
+                'SHOW TABLES FROM %s',
+                $config['dbname']
+            )
+        );
+
+        $tables = [];
+        foreach ($t as $v) {
+            $tables[] = array_shift($v);
+        }
+
+        $t = $this->getAllRows(
+            sprintf(
+                'SHOW TABLES FROM %s',
+                $this->name
+            )
+        );
+        $myTables = [];
+        foreach ($t as $k => $v) {
+            $myTables[] = array_shift($v);
+        }
+
+        $differences = array_diff($tables, $myTables);
+
+        if (count($differences) > 0) {
+            $this->lastError = sprintf(
+                'Warning, following tables does not exist in target: %s',
+                join(', ', $differences)
+            );
+        }
+
+        // Exclude extension tables.
+        $differences = array_intersect($differences, self::ESSENTIAL_TABLES);
+
+        return $differences;
+    }
+
+
+    /**
      * Install PandoraFMS database schema in current target.
      *
      * @return boolean Installation is success or not.
@@ -197,8 +310,33 @@ final class DBMantainer
             return true;
         }
 
-        $this->lastError = 'Pending installation';
-        return false;
+        if ($this->ready !== true) {
+            // Not ready, create database in target.
+            $rc = $this->dbh->query(
+                sprintf(
+                    'CREATE DATABASE %s',
+                    $this->name
+                )
+            );
+
+            if ($rc === false) {
+                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+                return false;
+            }
+
+            if ($this->dbh->select_db($this->name) === false) {
+                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+                return false;
+            }
+
+            // Already connected and ready to execute commands.
+            $this->ready = true;
+        } else if ($this->verifySchema() === true) {
+            $this->installed = true;
+            return true;
+        }
+
+        return $this->applyDump(Config::get('homedir', '').'/pandoradb.sql');
 
     }
 
@@ -244,6 +382,48 @@ final class DBMantainer
         }
 
         return true;
+    }
+
+
+    /**
+     * This function keeps same functionality as install.php:parse_mysqli_dump.
+     *
+     * @param string $path Path where SQL dump file is stored.
+     *
+     * @return boolean Success or not.
+     */
+    private function applyDump(string $path)
+    {
+        if (file_exists($path) === true) {
+            $file_content = file($path);
+            $query = '';
+            foreach ($file_content as $sql_line) {
+                if (trim($sql_line) !== ''
+                    && strpos($sql_line, '-- ') === false
+                ) {
+                    $query .= $sql_line;
+                    if ((bool) preg_match("/;[\040]*\$/", $sql_line) === true) {
+                        $result = $this->dbh->query($query);
+                        if ((bool) $result === false) {
+                            $this->lastError = $this->dbh->errnum.': ';
+                            $this->lastERror .= $this->dbh->error;
+                            return false;
+                        }
+
+                        $query = '';
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // File does not exist.
+        $this->lastError = sprintf(
+            'File %s does not exist',
+            $path
+        );
+        return false;
     }
 
 

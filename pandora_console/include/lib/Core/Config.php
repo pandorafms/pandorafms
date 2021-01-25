@@ -29,8 +29,8 @@
 // Begin.
 namespace PandoraFMS\Core;
 
-require_once __DIR__.'/../../include/config.php';
-require_once __DIR__.'/../../include/functions_config.php';
+require_once __DIR__.'/../../config.php';
+require_once __DIR__.'/../../functions_config.php';
 
 /**
  * Config class to operate console configuration.
@@ -38,21 +38,57 @@ require_once __DIR__.'/../../include/functions_config.php';
 final class Config
 {
 
+    /**
+     * History database settings (tconfig).
+     *
+     * @var array
+     */
+    private static $settings = [];
+
+
+    /**
+     * Load history database settings.
+     */
+    private static function loadHistoryDBSettings()
+    {
+        if (self::$settings === null) {
+            $data = \db_get_all_rows_filter('tconfig', [], false, 'AND', true);
+            self::$settings = array_reduce(
+                $data,
+                function ($carry, $item) {
+                    $carry[$item['token']] = $item['value'];
+                },
+                []
+            );
+        }
+    }
+
 
     /**
      * Retrieve configuration token.
      *
-     * @param string $token   Token to retrieve.
-     * @param mixed  $default Default value if not found.
+     * @param string  $token      Token to retrieve.
+     * @param mixed   $default    Default value if not found.
+     * @param boolean $history_db Search for token in history_db.
      *
      * @return mixed Configuration token.
      */
-    public static function get(string $token, $default=null)
-    {
-        global $config;
+    public static function get(
+        string $token,
+        $default=null,
+        bool $history_db=false
+    ) {
+        if ($history_db === true) {
+            self::loadHistoryDBSettings();
+            if (isset(self::$settings[$token]) === true) {
+                return self::$settings[$token];
+            }
+        } else {
+            global $config;
 
-        if (isset($config[$token]) === true) {
-            return $config[$token];
+            if (isset($config[$token]) === true) {
+                return $config[$token];
+            }
         }
 
         return $default;
@@ -63,15 +99,21 @@ final class Config
     /**
      * Set configuration token.
      *
-     * @param string $token Token to set.
-     * @param mixed  $value Value to be.
+     * @param string  $token      Token to set.
+     * @param mixed   $value      Value to be.
+     * @param boolean $history_db Save to history_db settings.
      *
      * @return void
      */
-    public static function set(string $token, $value)
+    public static function set(string $token, $value, bool $history_db=false)
     {
-        if (self::get($token) === null) {
-            config_update_value($token, $value);
+        if ($history_db !== false) {
+            if (self::get($token, null, $history_db) === null) {
+            }
+        } else {
+            if (self::get($token) === null) {
+                config_update_value($token, $value);
+            }
         }
     }
 

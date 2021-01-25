@@ -1249,13 +1249,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $uniqId = $data['uniqId'];
 
+    $return_all_group = isset($data['mReturnAllGroup']) ? $data['mReturnAllGroup'] : true;
+
     // Group.
     $output = '<div>';
     $output .= html_print_input(
         [
             'label'          => __('Group'),
             'name'           => 'filtered-module-group-'.$uniqId,
-            'returnAllGroup' => true,
+            'returnAllGroup' => $return_all_group,
             'privilege'      => 'AR',
             'type'           => 'select_groups',
             'return'         => true,
@@ -1312,6 +1314,15 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $agents = [];
     }
 
+    if ($data['mShowSelectedOtherGroups']) {
+        $selected_agents = explode(',', $data['mAgents']);
+        foreach ($selected_agents as $agent_id) {
+            if (!array_key_exists($agent_id, $agents)) {
+                $agents[$agent_id] = agents_get_alias($agent_id);
+            }
+        }
+    }
+
     $output .= html_print_input(
         [
             'label'    => __('Agents'),
@@ -1349,6 +1360,17 @@ function html_print_select_multiple_modules_filtered(array $data):string
         $data['mShowCommonModules'],
         false
     );
+
+    if ($data['mShowSelectedOtherGroups']) {
+        $selected_modules_ids = explode(',', $data['mModules']);
+
+        foreach ($selected_modules_ids as $id) {
+            if (!array_key_exists($id, $all_modules)) {
+                $module_data = modules_get_agentmodule($id);
+                $all_modules[$id] = $module_data['nombre'];
+            }
+        }
+    }
 
     $output .= html_print_input(
         [
@@ -4756,7 +4778,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 }
 
                 if ($data['from_wux'] === true) {
-                    $string_filter = ' AND id_tipo_modulo = 25 ';
+                    $string_filter = ' AND id_tipo_modulo = 25';
+                }
+
+                if (isset($data['filter_modules']) && !empty($data['filter_modules'])) {
+                    $string_filter = ' AND id_agente_modulo IN ('.implode(',', $data['filter_modules']).')';
                 }
 
                 $sql = sprintf(

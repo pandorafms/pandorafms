@@ -9962,7 +9962,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR')
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
 {
     global $config;
 
@@ -9998,7 +9998,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $cur_time = get_system_time();
 
     // Check for access credentials using check_acl. More overhead, much safer.
-    if (!check_acl($config['id_user'], $id_group, $access)) {
+    if ($ignore_permissions === false && !check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
 

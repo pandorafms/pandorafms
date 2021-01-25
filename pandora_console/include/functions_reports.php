@@ -150,6 +150,10 @@ function reports_get_reports(
             ) {
                 continue;
             }
+        } else {
+            if ($returnAllGroup === false) {
+                continue;
+            }
         }
 
         array_push($reports, $report);

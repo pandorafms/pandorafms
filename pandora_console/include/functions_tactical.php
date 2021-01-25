@@ -413,7 +413,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
         $total_agentes = agents_get_agents(false, ['count(DISTINCT id_agente) as total_agents'], 'AR', false, false, 1);
         $list['_total_agents_'] = $total_agentes[0]['total_agents'];
 
-        $list['_monitor_checks_'] = ($list['_monitors_not_init_'] + $list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
+        $list['_monitor_checks_'] = ($list['_monitors_unknown_'] + $list['_monitors_warning_'] + $list['_monitors_critical_'] + $list['_monitors_ok_']);
 
         // Calculate not_normal monitors
         $list['_monitor_not_normal_'] = ($list['_monitor_checks_'] - $list['_monitors_ok_']);

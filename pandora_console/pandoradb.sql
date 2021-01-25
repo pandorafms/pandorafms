@@ -2070,7 +2070,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttag` ( 
 	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
-	`name` varchar(100) NOT NULL default '', 
+	`name` text NOT NULL default '', 
 	`description` text NOT NULL, 
 	`url` mediumtext NOT NULL,
 	`email` text NULL,

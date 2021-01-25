@@ -1402,6 +1402,7 @@ ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 -- Table `ttag`
 -- ---------------------------------------------------------------------
 ALTER TABLE `ttag` ADD COLUMN `previous_name` text NULL;
+ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`

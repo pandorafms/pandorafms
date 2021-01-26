@@ -229,6 +229,9 @@ if ($create_agent) {
     if ($alias == '') {
         $agent_creation_error = __('No agent alias specified');
         $agent_created_ok = 0;
+    } else if (group_allow_more_agents($grupo) === false) {
+        $agent_creation_error = __('Agent cannot be created due to the maximum agent limit for this group');
+        $agent_created_ok = 0;
     } else {
         if ($alias_as_name) {
             $sql = 'SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"';
@@ -947,6 +950,8 @@ if ($update_agent) {
 
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
+    } else if (group_allow_more_agents($grupo) === false) {
+        ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));
     } else {

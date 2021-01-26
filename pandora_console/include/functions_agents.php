@@ -1,22 +1,32 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Agents
+ * Agents Functions.
+ *
+ * @category   Agents functions.
+ * @package    Pandora FMS
+ * @subpackage User interface.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
@@ -229,6 +239,25 @@ function agents_create_agent(
 
     if (!empty($ip_address)) {
             $values['direccion'] = $ip_address;
+    }
+
+    // Check if group has limit or overrides the agent limit.
+    if (group_allow_more_agents($id_group) === false) {
+        // Capture the group name.
+        $groupName = db_get_value(
+            'nombre',
+            'tgrupo',
+            ['id_grupo' => $id_group]
+        );
+        // Notice this issue.
+        db_pandora_audit(
+            'Agent management',
+            sprintf(
+                'Agent cannot be created due to the maximum agent limit for group "%s"',
+                $groupName
+            )
+        );
+        return false;
     }
 
     $id_agent = db_process_sql_insert('tagente', $values);
@@ -3799,4 +3828,22 @@ function agents_get_last_status_change($id_agent)
     $row = db_get_row_sql($sql);
 
     return $row['last_status_change'];
+}
+
+
+/**
+ * Checks if group allow more agents due itself limitation.
+ *
+ * @param  integer $id_group Id of the group
+ * @return boolean True if allow more agents.
+ */
+function group_allow_more_agents(int $id_group):bool
+{
+    $groupMaxAgents   = (int) db_get_value('max_agents', 'tgrupo', sprintf('id_grupo = %d', $id_group));
+    $groupCountAgents = (int) db_get_num_rows(sprintf('SELECT nombre FROM tagente WHERE id_grupo = "%s"', $id_group));
+
+    // If `max_agents` is not defined or the count of agents in the group is below of max agents allowed.
+    $output = ($groupMaxAgents === 0 || $groupCountAgents < $groupMaxAgents);
+
+    return $output;
 }

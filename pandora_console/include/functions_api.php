@@ -1359,6 +1359,12 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
         return;
     }
 
+    // Check if group allow more agents or have limit stablished.
+    if (group_allow_more_agents($idGroup) === false) {
+        returnError('Agent cannot be updated due to the maximum agent limit for this group');
+        return;
+    }
+
     // Check selected parent
     if ($idParent != 0) {
         $parentCheck = agents_check_access_agent($idParent);
@@ -1561,6 +1567,8 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         returnError('agent_name_exist', 'The name of agent yet exist in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('id_grupo_not_exist', 'The group don`t exist.');
+    } else if (group_allow_more_agents($grupo) === false) {
+        returnError('Agent cannot be created due to the maximum agent limit for this group');
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('id_os_not_exist', 'The OS don`t exist.');
     } else if ($server_name === false) {

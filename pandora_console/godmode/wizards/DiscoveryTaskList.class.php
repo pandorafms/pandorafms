@@ -1218,7 +1218,7 @@ class DiscoveryTaskList extends HTML
 
         // Header information.
         if ((int) $task['status'] <= 0 && empty($summary)) {
-            if ($task['type'] == DISCOVERY_APP_VMWARE) {
+            if ($task['type'] == DISCOVERY_APP_VMWARE && $task['utimestamp'] != 0) {
                 $outputMessage = __('Task completed.');
             } else {
                 $outputMessage = __('This task has never executed');

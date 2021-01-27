@@ -187,8 +187,7 @@ function load_modal(settings) {
         var formdata = new FormData();
         if (settings.extradata) {
           settings.extradata.forEach(function(item) {
-            if (item.value != undefined)
-              formdata.append(item.name, item.value);
+            if (item.value != undefined) formdata.append(item.name, item.value);
           });
         }
         formdata.append("page", settings.onsubmit.page);
@@ -215,7 +214,7 @@ function load_modal(settings) {
                 }
               });
               $(this).tooltip("open");
-  
+
               var element = $(this);
               setTimeout(
                 function(element) {
@@ -282,8 +281,8 @@ function load_modal(settings) {
             data: formdata,
             dataType: settings.onsubmit.dataType,
             success: function(data) {
-                console.log("successsssssssssssss");
-                console.log(data);
+              console.log("successsssssssssssss");
+              console.log(data);
               if (settings.ajax_callback != undefined) {
                 if (settings.idMsgCallback != undefined) {
                   settings.ajax_callback(data, settings.idMsgCallback);
@@ -304,17 +303,20 @@ function load_modal(settings) {
           document.getElementById(settings.form).submit();
         }
       }
-    }
+    };
 
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
       click: function() {
-        if (settings.onsubmit != undefined && settings.onsubmit.onConfirmSubmit != undefined) {
-            settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
+        if (
+          settings.onsubmit != undefined &&
+          settings.onsubmit.onConfirmSubmit != undefined
+        ) {
+          settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
         } else {
-            btnClickHandler($(this));
+          btnClickHandler($(this));
         }
       },
       error: function(data) {

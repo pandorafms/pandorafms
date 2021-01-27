@@ -231,6 +231,62 @@ final class DBMaintainer
 
 
     /**
+     * Return first row available for given query.
+     *
+     * @param string $query Query to retrieve (1 row only).
+     *
+     * @return array Row.
+     */
+    private function getRow(string $query)
+    {
+        if ($this->ready !== true) {
+            $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+            return [];
+        }
+
+        $query .= ' LIMIT 1';
+        $rs = $this->dbh->query($query);
+        if ($rs !== false) {
+            return $rs->fetch_array(MYSQLI_ASSOC);
+        }
+
+        // Error.
+        return false;
+    }
+
+
+    /**
+     * Retrieve value from given query.
+     *
+     * @param string $table  Table to query.
+     * @param string $key    Field to retrieve.
+     * @param array  $filter Filters to apply.
+     * @param string $join   AND by default.
+     *
+     * @return mixed|null Value retrieved or null if not found.
+     */
+    private function getValue(
+        string $table,
+        string $key,
+        array $filter,
+        string $join='AND'
+    ) {
+        $query = sprintf(
+            'SELECT %s FROM %s WHERE 1=1 %s',
+            $key,
+            $table,
+            \db_format_array_where_clause_sql($filter, $join)
+        );
+        $result = $this->getRow($query);
+        if ($result !== false) {
+            return $result[$key];
+        }
+
+        return false;
+    }
+
+
+    /**
      * Verifies schema against running db.
      *
      * @return boolean Success or not.
@@ -356,9 +412,14 @@ final class DBMaintainer
             return false;
         }
 
+        $last_mr = Config::get('MR', null);
+        $last_mr_curr = $this->getValue('tconfig', 'value', ['token' => 'MR']);
+
+        hd($last_mr);
+        hd($last_mr_curr);
+
         $this->lastError = 'Pending update';
         return false;
-
     }
 
 

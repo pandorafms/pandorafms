@@ -123,8 +123,8 @@ if ($delete_layout || $copy_layout) {
 
     // ACL for the visual console
     // $vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
-    $vconsole_write = check_acl($config['id_user'], $group_id, 'VW');
-    $vconsole_manage = check_acl($config['id_user'], $group_id, 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW');
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM');
 
     if (!$vconsole_write && !$vconsole_manage) {
         db_pandora_audit(
@@ -441,8 +441,10 @@ if (!$maps && !is_metaconsole()) {
         $data[1] = ui_print_group_icon($map['id_group'], true);
         $data[2] = db_get_sql('SELECT COUNT(*) FROM tlayout_data WHERE id_layout = '.$map['id']);
 
-        // Fix: IW was the old ACL for report editing, now is RW
-        if ($vconsoles_write || $vconsoles_manage) {
+        $vconsoles_write_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VW');
+        $vconsoles_manage_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VM');
+
+        if ($vconsoles_write_action_btn || $vconsoles_manage_action_btn) {
             if (!is_metaconsole()) {
                 $table->cellclass[] = [
                     3 => 'action_buttons',

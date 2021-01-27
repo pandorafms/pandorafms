@@ -4296,7 +4296,7 @@ sub on_demand_macro($$$$$$;$) {
 		if ($field_value eq ''){
 			$field_value = 'Module ' . $field_number . " not found";
 		}
-		elsif ($unit_mod ne '') {
+		elsif (defined($unit_mod) && $unit_mod ne '') {
 			$field_value .= $unit_mod;
 		}
 		

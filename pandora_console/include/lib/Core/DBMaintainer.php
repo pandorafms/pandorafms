@@ -272,7 +272,7 @@ final class DBMaintainer
         string $join='AND'
     ) {
         $query = sprintf(
-            'SELECT %s FROM %s WHERE 1=1 %s',
+            'SELECT %s FROM %s WHERE %s',
             $key,
             $table,
             \db_format_array_where_clause_sql($filter, $join)
@@ -352,6 +352,45 @@ final class DBMaintainer
 
 
     /**
+     * Updates or creates a token in remote tconfig.
+     *
+     * @param string $token Token to be set.
+     * @param mixed  $value Value for given token.
+     *
+     * @return boolean Success or not.
+     */
+    private function setConfigToken(string $token, $value)
+    {
+        $prev = $this->getValue('tconfig', 'value', ['token' => $token]);
+        // If failed or not found, then insert.
+        if ($prev === false || $prev === null) {
+                // Create.
+                $rs = $this->dbh->query(
+                    sprintf(
+                        'INSERT INTO `tconfig` (`token`, `value`)
+                         VALUES ("%s", "%s")',
+                        $token,
+                        $value
+                    )
+                );
+        } else {
+            // Update.
+            $rs = $this->dbh->query(
+                sprintf(
+                    'UPDATE `tconfig`
+                         SET `value`= "%s"
+                        WHERE `token` = "%s"',
+                    $value,
+                    $token
+                )
+            );
+        }
+
+        return ($rs !== false);
+    }
+
+
+    /**
      * Install PandoraFMS database schema in current target.
      *
      * @return boolean Installation is success or not.
@@ -392,7 +431,19 @@ final class DBMaintainer
             return true;
         }
 
-        return $this->applyDump(Config::get('homedir', '').'/pandoradb.sql');
+        $result = $this->applyDump(Config::get('homedir', '').'/pandoradb.sql');
+
+        // Set MR version according pandoradb_data.
+        $data_content = file_get_contents(
+            Config::get('homedir', '').'/pandoradb_data.sql'
+        );
+        if (preg_match('/\(\'MR\'\,\s*(\d+)\)/', $data_content, $matches) > 0) {
+            $target_mr = $matches[1];
+        }
+
+        $cnf_update = $this->setConfigToken('MR', (int) $target_mr);
+
+        return $result && $cnf_update;
 
     }
 
@@ -412,13 +463,51 @@ final class DBMaintainer
             return false;
         }
 
-        $last_mr = Config::get('MR', null);
-        $last_mr_curr = $this->getValue('tconfig', 'value', ['token' => 'MR']);
+        $last_mr = (int) Config::get('MR', null);
+        $last_mr_curr = (int) $this->getValue(
+            'tconfig',
+            'value',
+            ['token' => 'MR']
+        );
 
-        hd($last_mr);
-        hd($last_mr_curr);
+        if ($last_mr_curr < $last_mr) {
+            while ($last_mr_curr < $last_mr) {
+                $last_mr_curr++;
 
-        $this->lastError = 'Pending update';
+                $path = Config::get('homedir', '');
+                $file = sprintf('/extras/mr/%d.sql', $last_mr_curr);
+                $updated_file = sprintf(
+                    '/extras/mr/updated/%d.sql',
+                    $last_mr_curr
+                );
+
+                $filename = $path.$file;
+                if (file_exists($path.$file) !== true) {
+                    // File does not exist, maybe already udpated in active DB?
+                    $filename = $path.$updated_file;
+                    if (file_exists($filename) !== false) {
+                        $this->lastError = 'Unable to locate MR update #';
+                        $this->lastError .= $last_mr_curr;
+                        return false;
+                    }
+                }
+
+                if ($this->applyDump($filename) !== true) {
+                    $err = 'Unable to apply MR update #';
+                    $err .= $last_mr_curr.': ';
+                    $this->lastError = $err.$this->lastError;
+                    return false;
+                }
+            }
+        }
+
+        if ($last_mr_curr === $last_mr) {
+            $this->setConfigToken('MR', $last_mr_curr);
+
+            return true;
+        }
+
+        $this->lastError = 'Unknown database schema version, check MR in both active and historical database';
         return false;
     }
 
@@ -466,8 +555,8 @@ final class DBMaintainer
                     if ((bool) preg_match("/;[\040]*\$/", $sql_line) === true) {
                         $result = $this->dbh->query($query);
                         if ((bool) $result === false) {
-                            $this->lastError = $this->dbh->errnum.': ';
-                            $this->lastERror .= $this->dbh->error;
+                            $this->lastError = $this->dbh->errno.': ';
+                            $this->lastError .= $this->dbh->error;
                             return false;
                         }
 

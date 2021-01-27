@@ -26,7 +26,10 @@
  * ============================================================================
  */
 
- // Config functions.
+// Config functions.
+require_once __DIR__.'/../vendor/autoload.php';
+use PandoraFMS\Core\DBMaintainer;
+use PandoraFMS\Core\Config;
 
 
 /**
@@ -147,6 +150,8 @@ function config_update_config()
     }
 
     $error_update = [];
+    $errors = [];
+    $warnings = [];
 
     $sec2 = get_parameter('sec2');
 
@@ -1448,24 +1453,33 @@ function config_update_config()
                 break;
 
                 case 'hist_db':
+                    if ($config['dbname'] == get_parameter('history_db_name')
+                        && $config['dbport'] == get_parameter('history_db_port')
+                        && $config['dbhost'] == io_input_password(get_parameter('history_db_host'))
+                    ) {
+                        // Same definition for active and historical database!
+                        // This is a critical error.
+                        $errors[] = __('Active and historical database cannot be the same.');
+                    } else {
+                        if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
+                            $error_update[] = __('Host');
+                        }
+
+                        if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
+                            $error_update[] = __('Port');
+                        }
+
+                        if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
+                            $error_update[] = __('Database name');
+                        }
+                    }
+
                     if (!config_update_value('history_db_enabled', get_parameter('history_db_enabled'))) {
                         $error_update[] = __('Enable history database');
                     }
 
                     if (!config_update_value('history_event_enabled', get_parameter('history_event_enabled'))) {
                         $error_update[] = __('Enable history event');
-                    }
-
-                    if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
-                        $error_update[] = __('Host');
-                    }
-
-                    if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
-                        $error_update[] = __('Port');
-                    }
-
-                    if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
-                        $error_update[] = __('Database name');
                     }
 
                     if (!config_update_value('history_db_user', get_parameter('history_db_user'))) {
@@ -1507,6 +1521,72 @@ function config_update_config()
                     ) {
                         $error_update[] = __('Delay');
                     }
+
+                    if ((bool) $config['history_db_enabled'] === true) {
+                        $dbm = new DBMaintainer(
+                            [
+                                'host' => $config['history_db_host'],
+                                'port' => $config['history_db_port'],
+                                'name' => $config['history_db_name'],
+                                'user' => $config['history_db_user'],
+                                'pass' => $config['history_db_pass'],
+                            ]
+                        );
+
+                        // Performs several checks and installs if needed.
+                        if ($dbm->check() === false) {
+                            $errors[] = $dbm->getLastError();
+                        }
+                    }
+
+                    // Historical configuration tokens (stored in historical db).
+                    if (Config::set(
+                        'days_purge',
+                        get_parameter('history_dbh_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database purge');
+                    }
+
+                    if (Config::set(
+                        'days_compact',
+                        get_parameter('history_dbh_days_compact'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database days compact');
+                    }
+
+                    if (Config::set(
+                        'step_compact',
+                        get_parameter('history_dbh_step_compact'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database step compact');
+                    }
+
+                    if (Config::set(
+                        'event_purge',
+                        get_parameter('history_dbh_events_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database events purge');
+                    }
+
+                    if (Config::set(
+                        'string_purge',
+                        get_parameter('history_dbh_string_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database string purge');
+                    }
+
+                    // Disable history db in history db.
+                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':
@@ -1673,6 +1753,14 @@ function config_update_config()
     } else {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = true;
+    }
+
+    if (count($errors) > 0) {
+        $config['error_config_update_config']['errors'] = $errors;
+    }
+
+    if (count($warnings) > 0) {
+        $config['error_config_update_config']['warnings'] = $warnings;
     }
 
     enterprise_include_once('include/functions_policies.php');

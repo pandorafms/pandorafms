@@ -32,7 +32,7 @@ namespace PandoraFMS\Core;
 /**
  * Class to handle database mantainer (not queries).
  */
-final class DBMantainer
+final class DBMaintainer
 {
     const ESSENTIAL_TABLES = [
         'tagente_datos',

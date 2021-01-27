@@ -48,19 +48,48 @@ final class Config
 
     /**
      * Load history database settings.
+     *
+     * @return void
      */
     private static function loadHistoryDBSettings()
     {
-        if (self::$settings === null) {
-            $data = \db_get_all_rows_filter('tconfig', [], false, 'AND', true);
-            self::$settings = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    $carry[$item['token']] = $item['value'];
-                },
-                []
-            );
+        global $config;
+
+        if ((bool) $config['history_db_enabled'] === false) {
+            return;
         }
+
+        // Connect if needed.
+        if (isset($config['history_db_connection']) === false
+            || $config['history_db_connection'] === false
+        ) {
+            ob_start();
+            $config['history_db_connection'] = db_connect(
+                $config['history_db_host'],
+                $config['history_db_name'],
+                $config['history_db_user'],
+                io_output_password($config['history_db_pass']),
+                $config['history_db_port'],
+                false
+            );
+            ob_get_clean();
+        }
+
+        $data = \db_get_all_rows_sql(
+            'SELECT * FROM `tconfig`',
+            false,
+            false,
+            $config['history_db_connection']
+        );
+
+        self::$settings = array_reduce(
+            $data,
+            function ($carry, $item) {
+                $carry[$item['token']] = $item['value'];
+                return $carry;
+            },
+            []
+        );
     }
 
 
@@ -80,6 +109,7 @@ final class Config
     ) {
         if ($history_db === true) {
             self::loadHistoryDBSettings();
+
             if (isset(self::$settings[$token]) === true) {
                 return self::$settings[$token];
             }
@@ -103,18 +133,46 @@ final class Config
      * @param mixed   $value      Value to be.
      * @param boolean $history_db Save to history_db settings.
      *
-     * @return void
+     * @return boolean Success or not.
      */
     public static function set(string $token, $value, bool $history_db=false)
     {
+        global $config;
+
+        $rs = false;
+
         if ($history_db !== false) {
             if (self::get($token, null, $history_db) === null) {
+                // Create.
+                $rs = \db_process_sql(
+                    sprintf(
+                        'INSERT INTO `tconfig` (`token`, `value`)
+                         VALUES ("%s", "%s")',
+                        $token,
+                        $value
+                    ),
+                    'affected_rows',
+                    $config['history_db_connection']
+                );
+            } else {
+                // Update.
+                $rs = \db_process_sql(
+                    sprintf(
+                        'UPDATE `tconfig`
+                         SET `value`= "%s"
+                        WHERE `token` = "%s"',
+                        $value,
+                        $token
+                    ),
+                    'affected_rows',
+                    $config['history_db_connection']
+                );
             }
         } else {
-            if (self::get($token) === null) {
-                config_update_value($token, $value);
-            }
+            $rs = \config_update_value($token, $value);
         }
+
+        return ($rs !== false);
     }
 
 

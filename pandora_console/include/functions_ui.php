@@ -3747,18 +3747,22 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code            Html code.
- * @param string  $name            Name of the link.
- * @param string  $title           Title of the link.
- * @param string  $id              Block id.
- * @param boolean $hidden_default  If the div will be hidden by default (default: true).
- * @param boolean $return          Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class    Toggle class.
- * @param string  $container_class Container class.
- * @param string  $main_class      Main object class.
- * @param string  $img_a           Image (closed).
- * @param string  $img_b           Image (opened).
- * @param string  $clean           Do not encapsulate with class boxes, clean print.
+ * @param string      $code              Html code.
+ * @param string      $name              Name of the link.
+ * @param string      $title             Title of the link.
+ * @param string      $id                Block id.
+ * @param boolean     $hidden_default    If the div will be hidden by default (default: true).
+ * @param boolean     $return            Whether to return an output string or echo now (default: true).
+ * @param string      $toggle_class      Toggle class.
+ * @param string      $container_class   Container class.
+ * @param string      $main_class        Main object class.
+ * @param string      $img_a             Image (closed).
+ * @param string      $img_b             Image (opened).
+ * @param string      $clean             Do not encapsulate with class boxes, clean print.
+ * @param boolean     $reverseImg        Reverse image.
+ * @param boolean     $swtich            Use switch input instead image.
+ * @param string      $attributes_switch Switch attributes (class...).
+ * @param string|null $switch_name       Use custom switch input name or generate one.
  *
  * @return string HTML.
  */
@@ -3777,7 +3781,8 @@ function ui_toggle(
     $clean=false,
     $reverseImg=false,
     $switch=false,
-    $attributes_switch=''
+    $attributes_switch='',
+    $switch_name=null
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3813,7 +3818,9 @@ function ui_toggle(
             $main_class = '';
         }
 
-        $container_class = 'white-box-content-clean';
+        if ($container_class == 'white-box-content') {
+            $container_class = 'white-box-content-clean';
+        }
     }
 
     // Link to toggle.
@@ -3821,11 +3828,15 @@ function ui_toggle(
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
+            if (empty($switch_name) === true) {
+                $switch_name = 'box_enable_toggle'.$uniqid;
+            }
+
             $output .= html_print_div(
                 [
                     'class'   => 'float-left',
                     'content' => html_print_checkbox_switch_extended(
-                        'box_enable_toggle'.$uniqid,
+                        $switch_name,
                         1,
                         ($hidden_default === true) ? 0 : 1,
                         false,
@@ -3895,7 +3906,7 @@ function ui_toggle(
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
-    $output .= "		$('#checkbox-box_enable_toggle".$uniqid."').click(function() {\n";
+    $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
     $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
@@ -3910,13 +3921,13 @@ function ui_toggle(
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', true);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', false);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";
     $output .= "		});\n";
     $output .= "	});\n";
@@ -3947,7 +3958,11 @@ function ui_toggle(
  *  - main_class
  *  - img_a
  *  - img_b
- *  - clean.
+ *  - clean
+ *  - reverseImg
+ *  - switch
+ *  - attributes_switch
+ *  - switch_name.
  *
  * @return string HTML code with toggle content.
  */
@@ -3965,7 +3980,11 @@ function ui_print_toggle($data)
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
         (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
-        (isset($data['clean']) === true) ? $data['clean'] : false
+        (isset($data['clean']) === true) ? $data['clean'] : false,
+        (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
+        (isset($data['switch']) === true) ? $data['switch'] : false,
+        (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
+        (isset($data['switch_name']) === true) ? $data['switch_name'] : null
     );
 }
 

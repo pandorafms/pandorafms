@@ -21,24 +21,32 @@ bold="\e[1m"
 cyan="\e[0;36m"
 reset="\e[0m"
 
-# initialice logfile 
-echo 'Starting deploy' > $LOGFILE
-
-# reference
-# echo -e "${red}fail${reset}"
-# echo -e "${green}adios${reset}"
-
 # Functions
 
 execute_cmd () {
     local cmd="$1"
     local msg="$2"
-    
-    echo -en "> ${cyan}$msg... ${reset}"
+
+    echo -e "${cyan}$msg...${reset}"
     $cmd &>> $LOGFILE
     if [ $? -ne 0 ]; then
         echo -e "${red}Fail${reset}"
+        [ "$3" ] && echo "$3"
         echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
+        rm -rf $HOME/pandora_deploy_tmp &>> $LOGFILE
+        exit 1
+    else
+        echo -e "\e[1A\e ${cyan}$msg...${reset} ${green}OK${reset}"
+        return 0
+    fi
+}
+
+check_cmd_status () {
+    if [ $? -ne 0 ]; then
+        echo -e "${red}Fail${reset}"
+        [ "$1" ] && echo "$1"
+        echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
+        rm -rf $HOME/pandora_deploy_tmp/*.rpm* &>> $LOGFILE
         exit 1
     else
         echo -e "${green}OK${reset}"
@@ -46,44 +54,87 @@ execute_cmd () {
     fi
 }
 
+check_pre_pandora () {
+    export MYSQL_PWD=$DBPASS
+    
+    echo -en "${cyan}Checking environment ... ${reset}"
+    rpm -qa | grep pandora &>> /dev/null && local fail=true
+    [ -d "$CONSOLE_PATH" ] && local fail=true
+    [ -f /usr/bin/pandora_server ] && local fail=true
+    echo "use $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST &>> /dev/null && local fail=true
+
+    [ ! $fail ]
+    check_cmd_status 'Error there is a current Pandora FMS installation on this node, please remove it to execute a clean install'
+}
+
 check_repo_connection () {
     execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
-    execute_cmd "ping -c 2 support.artica.es" "Checking Artica repo connection"
-    execute_cmd "ping -c 2 firefly.artica.es" "Checking Firefly repo connection"
+    execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
+    execute_cmd "ping -c 2 support.artica.es" "Checking Enterprise repo"
 }
 
 check_root_permissions () {
-    echo -en "> ${cyan}Checking root account... ${reset}"
+    echo -en "${cyan}Checking root account... ${reset}"
     if [ "$(whoami)" != "root" ]; then
         echo -e "${red}Fail${reset}"
         echo "Please use a root account or sudo for installing PandoraFMS"
         echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
         exit 1
 
-    else 
-        echo -e "${green}OK${reset}" 
+    else
+        echo -e "${green}OK${reset}"
     fi
 }
 
-## Main 
+## Main
+
+# Centos Version
+if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
+         printf "${red}Error this is not a Centos Base system, this installer is compatible with Centos systems only${reset}\n"
+         exit 1
+fi
+
+execute_cmd "grep -i centos /etc/redhat-release" "Checking Centos" 'Error This is not a Centos Base system'
+
+echo -en "${cyan}Check Centos Version...${reset}"
+[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '7' ]
+check_cmd_status 'Error OS version, Centos 7 is expected'
+
+# initialice logfile
+execute_cmd "echo 'Starting deploy' > $LOGFILE" "All installer activity is logged on $LOGFILE"
 
 # Pre checks
-check_repo_connection 
+# Root permisions
 check_root_permissions
 
-# Creating working directory
+# Pre installed pandora
+check_pre_pandora
 
+# Connectivity
+check_repo_connection
+
+# Systemd
+execute_cmd "systemctl status" "Cheking SystemD" 'This is not a SystemD enable system, if tryng to use in a docker env plese check: https://github.com/pandorafms/pandorafms/tree/develop/extras/docker/centos8'
+
+# Check memomry greather or equal to 2G
+execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -le 2000000 ]" 'Checking memory (required: 2 GB)'
+
+# Check disk size at least 10 Gb free space
+execute_cmd "[ $(df -BM / | tail -1 | awk '{print $4}' | tr -d M) -gt 10000 ]" 'Checking Disk (required: 10 GB free min)'
+
+# Execute tools check
+execute_cmd "awk --version" 'Checking needed tools: awk'
+execute_cmd "grep --version" 'Checking needed tools: grep'
+execute_cmd "sed --version" 'Checking needed tools: sed'
+execute_cmd "yum --version" 'Checking needed tools: yum'
+
+# Creating working directory
+rm -rf $HOME/pandora_deploy_tmp/*.rpm* &>> $LOGFILE
 mkdir $HOME/pandora_deploy_tmp &>> $LOGFILE
 execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_deploy_tmp"
 
-rm -rf $HOME/pandora_deploy_tmp/*.rpm*
-
-# Downloading Pandora Packages
-
+#Installing wget
 execute_cmd "yum install -y wget" "Installing wget"
-execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_server-7.0NG.751.noarch.rpm" "Downloading Pandora FMS Server community"
-execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_console-7.0NG.751.noarch.rpm" "Downloading Pandora FMS Console community"
-execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_agent_unix-7.0NG.751_x86_64.rpm" "Downloading Pandora FMS Agent community"
 
 #Installing extra repositiries
 extra_repos=" \
@@ -94,10 +145,10 @@ http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
 execute_cmd "yum install -y $extra_repos" "Installing extra repositories"
-execute_cmd "yum-config-manager --enable remi-php73" "Configuring PHP 7.3"
+execute_cmd "yum-config-manager --enable remi-php73" "Configuring PHP"
 
 # Install percona Database
-rm -rf /etc/my.cnf
+[ -f /etc/resolv.conf ] && rm -rf /etc/my.cnf
 execute_cmd "yum install -y Percona-Server-server-57" "Installing Percona Server"
 
 # Console dependencies
@@ -184,6 +235,7 @@ execute_cmd "yum install -y $console_dependencies" "Installing Pandora FMS Conso
 
 # Server dependencies
 server_dependencies=" \
+    perl \
     vim \
     fping \
     perl-IO-Compress \
@@ -235,23 +287,16 @@ execute_cmd "echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config" "Adding SSH b
 #Configuring Database
 execute_cmd "systemctl start mysqld" "Starting database engine"
 export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
-echo """ 
+echo """
     SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Pandor4!');
     UNINSTALL PLUGIN validate_password;
     SET PASSWORD FOR 'root'@'localhost' = PASSWORD('pandora');
-    """ | mysql --connect-expired-password -uroot 
+    """ | mysql --connect-expired-password -uroot
 
 export MYSQL_PWD=$DBPASS
-echo -en "> ${cyan}Creating Pandora FMS database...${reset}" 
+echo -en "${cyan}Creating Pandora FMS database...${reset}"
 echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
-
-if [ $? -ne 0 ]; then
-    echo -e "${red}Fail${reset}"
-    echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
-    exit 1
-else
-    echo -e "${green}OK${reset}"
-fi
+check_cmd_status 'Error creating database pandora, is this an empty node? if you have a previus installation please contact with support.'
 
 echo "GRANT ALL PRIVILEGES ON $DBNAME.* TO \"$DBUSER\"@'%' identified by \"$DBPASS\"" | mysql -uroot -P$DBPORT -h$DBHOST
 
@@ -303,36 +348,33 @@ EO_CONFIG_F
 
 execute_cmd "systemctl restart mysqld" "Configuring database engine"
 
-# Enable Services
-execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
-execute_cmd "systemctl enable httpd --now" "Enabling HTTPD service"
-
+# Downloading Pandora Packages
+execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm" "Downloading Pandora FMS Server community"
+execute_cmd "wget http://firefly.artica.es/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm" "Downloading Pandora FMS Console community"
+execute_cmd "wget http://firefly.artica.es/centos7/pandorafms_agent_unix-7.0NG.751_x86_64.rpm" "Downloading Pandora FMS Agent community"
 
 # Install Pandora
 execute_cmd "yum install -y $HOME/pandora_deploy_tmp/pandorafms*.rpm" "installing PandoraFMS packages"
 
+# Copy gotty utility
+execute_cmd "wget https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz" 'Dowloading gotty util'
+tar xvzf gotty_linux_amd64.tar.gz &>> $LOGFILE
+execute_cmd "mv gotty /usr/bin/" 'Installing gotty util'
+
+# Enable Services
+execute_cmd "systemctl enable mysqld --now" "Enabling Database service"
+execute_cmd "systemctl enable httpd --now" "Enabling HTTPD service"
+
 # Populate Database
-echo -en "> ${cyan}Loading pandoradb.sql to $DBNAME database...${reset}" 
+echo -en "${cyan}Loading pandoradb.sql to $DBNAME database...${reset}"
 mysql -u$DBUSER -P$DBPORT -h$DBHOST $DBNAME < $PANDORA_CONSOLE/pandoradb.sql &>> $LOGFILE
-if [ $? -ne 0 ]; then
-    echo -e "${red}Fail${reset}"
-    echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
-    exit 1
-else
-    echo -e "${green}OK${reset}"
-fi
+check_cmd_status 'Error Loading database schema'
 
-echo -en "> ${cyan}Loading pandoradb_data.sql to $DBNAME database...${reset}" 
+echo -en "${cyan}Loading pandoradb_data.sql to $DBNAME database...${reset}"
 mysql -u$DBUSER -P$DBPORT -h$DBHOST $DBNAME < $PANDORA_CONSOLE/pandoradb_data.sql &>> $LOGFILE
-if [ $? -ne 0 ]; then
-    echo -e "${red}Fail${reset}"
-    echo "Error installing Pandora FMS for detailed error please check log: $LOGFILE"
-    exit 1
-else
-    echo -e "${green}OK${reset}"
-fi
+check_cmd_status 'Error Loading database schema data'
 
-# configure console
+# Configure console
 cat > $CONSOLE_PATH/include/config.php << EO_CONFIG_F
 <?php
 \$config["dbtype"] = "mysql";
@@ -341,8 +383,8 @@ cat > $CONSOLE_PATH/include/config.php << EO_CONFIG_F
 \$config["dbpass"]="$DBPASS";
 \$config["dbhost"]="$DBHOST";
 \$config["homedir"]="$PANDORA_CONSOLE";
-\$config["homeurl"]="/pandora_console";	
-error_reporting(0); 
+\$config["homeurl"]="/pandora_console";
+error_reporting(0);
 \$ownDir = dirname(__FILE__) . '/';
 include (\$ownDir . "config_process.php");
 
@@ -357,13 +399,29 @@ cat > /etc/httpd/conf.d/pandora.conf << EO_CONFIG_F
 
 EO_CONFIG_F
 
-# Temporal quitar htaccess
+# Add ws proxy options to apache.
+cat >> /etc/httpd/conf.modules.d/00-proxy.conf << 'EO_HTTPD_MOD'
+LoadModule proxy_wstunnel_module modules/mod_proxy_wstunnel.so
 
+EO_HTTPD_MOD
+
+cat >> /etc/httpd/conf.d/wstunnel.conf << 'EO_HTTPD_WSTUNNEL'
+ProxyRequests Off
+<Proxy *>
+    Require all granted
+</Proxy>
+
+ProxyPass /ws ws://127.0.0.1:8080
+ProxyPassReverse /ws ws://127.0.0.1:8080
+
+EO_HTTPD_WSTUNNEL
+
+# Temporal quitar htaccess
 sed -i -e "s/php_flag engine off//g" $PANDORA_CONSOLE/images/.htaccess
 sed -i -e "s/php_flag engine off//g" $PANDORA_CONSOLE/attachment/.htaccess
 
 # Fixing console permissions
-chmod 600 $CONSOLE_PATH/include/config.php	
+chmod 600 $CONSOLE_PATH/include/config.php
 chown apache. $CONSOLE_PATH/include/config.php
 mv $CONSOLE_PATH/install.php $CONSOLE_PATH/install.done
 
@@ -401,6 +459,97 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/$VERSION/client64/lib
 export ORACLE_HOME=/usr/lib/oracle/$VERSION/client64
 EOF_ENV
 
+# Kernel optimization
+cat >> /etc/sysctl.conf <<EO_KO
+# Pandora FMS Optimization
+
+# default=5
+net.ipv4.tcp_syn_retries = 3
+
+# default=5
+net.ipv4.tcp_synack_retries = 3
+
+# default=1024
+net.ipv4.tcp_max_syn_backlog = 65536
+
+# default=124928
+net.core.wmem_max = 8388608
+
+# default=131071
+net.core.rmem_max = 8388608
+
+# default = 128
+net.core.somaxconn = 1024
+
+# default = 20480
+net.core.optmem_max = 81920
+
+EO_KO
+
+execute_cmd "sysctl --system" "Applying Kernel optimization"
+
+# Fix pandora_server.{log,error} permissions to allow Console check them
+chown pandora:apache /var/log/pandora
+chmod g+s /var/log/pandora
+
+cat > /etc/logrotate.d/pandora_server <<EO_LR
+/var/log/pandora/pandora_server.log 
+/var/log/pandora/web_socket.log
+/var/log/pandora/pandora_server.error {
+	su root apache
+	weekly
+	missingok
+	size 300000
+	rotate 3
+	maxage 90
+	compress
+	notifempty
+	copytruncate
+	create 660 pandora apache
+}
+
+/var/log/pandora/pandora_snmptrap.log {
+	su root apache
+	weekly
+	missingok
+	size 500000
+	rotate 1
+	maxage 30
+	notifempty
+	copytruncate
+	create 660 pandora apache
+}
+
+EO_LR
+
+cat > /etc/logrotate.d/pandora_agent <<EO_LRA
+/var/log/pandora/pandora_agent.log {
+	su root apache
+	weekly
+	missingok
+	size 300000
+	rotate 3
+	maxage 90
+	compress
+	notifempty
+	copytruncate
+}
+
+EO_LRA
+
+chmod 0644 /etc/logrotate.d/pandora_server
+chmod 0644 /etc/logrotate.d/pandora_agent
+
+# Add websocket engine start script.
+mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/
+chmod +x /etc/init.d/pandora_websocket_engine
+
+# Start Websocket engine
+/etc/init.d/pandora_websocket_engine start &>> $LOGFILE
+
+# Configure websocket to be started at start.
+systemctl enable pandora_websocket_engine &>> $LOGFILE
+
 # Enable pandora ha service
 systemctl enable pandora_server --now &>> $LOGFILE
 execute_cmd "systemctl start pandora_server" "Starting Pandora FMS Server"
@@ -411,14 +560,18 @@ execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 
 # Enabling condole cron
 execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
-
-## Enabling agent 
+echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+## Enabling agent
 systemctl enable pandora_agent_daemon &>> $LOGFILE
 execute_cmd "systemctl start pandora_agent_daemon" "starting Pandora FMS Agent"
 
 execute_cmd "echo done" "Pandora FMS Community installed"
+cd
+execute_cmd "rm -rf $HOME/pandora_deploy_tmp" "Removing temporary files"
 
 GREEN='\033[01;32m'
 NONE='\033[0m'
 
-ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v -e "172.1[0-9].0.1" | awk '{print $2}' | awk -v g=$GREEN -v n=$NONE -F '/' '{printf "\n-> Go to "g"http://"$1"/pandora_console"n" to manage this server \n"}'
+[ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)
+printf " -> Go to Public ${green}http://"$ipplublic"/pandora_console${reset} to manage this server"
+ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v -e "172.1[0-9].0.1" | awk '{print $2}' | awk -v g=$GREEN -v n=$NONE -F '/' '{printf "\n -> Go to Local "g"http://"$1"/pandora_console"n" to manage this server \n -> Use this credentials to login in the console "g"[ User: admin / Password: pandora ]"n" \n"}'

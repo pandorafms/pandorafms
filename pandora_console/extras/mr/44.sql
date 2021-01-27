@@ -150,7 +150,6 @@ UPDATE `tuser_task_scheduled` SET
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"XML";s:15:"first_execution"')
     WHERE `id_user_task` = 6;
 
-COMMIT;
 ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 
 COMMIT;

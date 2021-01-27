@@ -393,9 +393,11 @@ final class DBMaintainer
     /**
      * Install PandoraFMS database schema in current target.
      *
+     * @param boolean $check_only Check and return, do not perform actions.
+     *
      * @return boolean Installation is success or not.
      */
-    public function install()
+    public function install(bool $check_only=false)
     {
         if ($this->connect() !== true) {
             return false;
@@ -407,6 +409,11 @@ final class DBMaintainer
 
         if ($this->ready !== true) {
             // Not ready, create database in target.
+            if ($check_only === true) {
+                $this->lastError = 'Database does not exist in target';
+                return false;
+            }
+
             $rc = $this->dbh->query(
                 sprintf(
                     'CREATE DATABASE %s',
@@ -428,7 +435,13 @@ final class DBMaintainer
             $this->ready = true;
         } else if ($this->verifySchema() === true) {
             $this->installed = true;
+            $this->lastError = null;
             return true;
+        }
+
+        if ($check_only === true) {
+            $this->lastError = 'Schema not applied in target';
+            return false;
         }
 
         $result = $this->applyDump(Config::get('homedir', '').'/pandoradb.sql');
@@ -451,9 +464,11 @@ final class DBMaintainer
     /**
      * Updates PandoraFMS database schema in current target.
      *
+     * @param boolean $check_only Perform only test without update.
+     *
      * @return boolean Current installation is up to date.
      */
-    public function update()
+    public function update(bool $check_only=false)
     {
         if ($this->connect() !== true) {
             return false;
@@ -463,15 +478,43 @@ final class DBMaintainer
             return false;
         }
 
-        $last_mr = (int) Config::get('MR', null);
+        // Set MR version according pandoradb_data.
+        $data_content = file_get_contents(
+            Config::get('homedir', '').'/pandoradb_data.sql'
+        );
+        if (preg_match('/\(\'MR\'\,\s*(\d+)\)/', $data_content, $matches) > 0) {
+            $target_mr = $matches[1];
+        }
+
+        $active_mr = (int) Config::get('MR', null);
         $last_mr_curr = (int) $this->getValue(
             'tconfig',
             'value',
             ['token' => 'MR']
         );
 
-        if ($last_mr_curr < $last_mr) {
-            while ($last_mr_curr < $last_mr) {
+        if ($check_only === true) {
+            if ($active_mr === $last_mr_curr) {
+                return true;
+            }
+
+            $this->lastError = sprintf(
+                'Database schema not up to date: #%d should be #%d',
+                $last_mr_curr,
+                $active_mr
+            );
+            if ($active_mr < $target_mr) {
+                $this->lastError .= sprintf(
+                    ' (latest available: #%d)',
+                    $target_mr
+                );
+            }
+
+            return false;
+        }
+
+        if ($last_mr_curr < $active_mr) {
+            while ($last_mr_curr < $active_mr) {
                 $last_mr_curr++;
 
                 $path = Config::get('homedir', '');
@@ -501,7 +544,7 @@ final class DBMaintainer
             }
         }
 
-        if ($last_mr_curr === $last_mr) {
+        if ($last_mr_curr === $active_mr) {
             $this->setConfigToken('MR', $last_mr_curr);
 
             return true;
@@ -513,11 +556,12 @@ final class DBMaintainer
 
 
     /**
-     * Verifies current target database is connected, installed and updated.
+     * Process database checks perform required actions.
+     * Returns true if it is connected, installed and updated.
      *
      * @return boolean Status of the installation.
      */
-    public function check()
+    public function process()
     {
         if ($this->connect() !== true) {
             return false;
@@ -532,6 +576,52 @@ final class DBMaintainer
         }
 
         return true;
+    }
+
+
+    /**
+     * Check if target has schema updated.
+     *
+     * @return boolean
+     */
+    public function isUpdated()
+    {
+        return $this->update(true);
+    }
+
+
+    /**
+     * Check if target has schema installed.
+     *
+     * @return boolean
+     */
+    public function isInstalled()
+    {
+        return $this->install(true);
+    }
+
+
+    /**
+     * Checks if current target is connected, installed and updated.
+     *
+     * @return boolean Status of the database schema.
+     */
+    public function check()
+    {
+        if ($this->connect() !== true) {
+            return false;
+        }
+
+        if ($this->isInstalled() !== true) {
+            return false;
+        }
+
+        if ($this->isUpdated() !== true) {
+            return false;
+        }
+
+        return true;
+
     }
 
 

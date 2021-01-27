@@ -702,8 +702,8 @@ class Manager
                 FROM tdashboard td
                 LEFT JOIN twidget_dashboard twd
                     ON td.id = twd.id_dashboard
-				WHERE (td.id_group IN (%s) AND td.id_user = '') OR
-					td.id_user = '%s' %s
+				WHERE ((td.id_group IN (%s) AND td.id_user = '') OR
+					td.id_user = '%s') %s
                 GROUP BY td.id
 				ORDER BY name%s",
                     $string_groups,
@@ -1008,6 +1008,7 @@ class Manager
                     'dashboardName'  => $this->dashboardFields['name'],
                     'hash'           => self::generatePublicHash(),
                     'publicLink'     => $this->publicLink,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         } else {
@@ -1025,6 +1026,7 @@ class Manager
                     'cells'          => $this->cells,
                     'cellModeSlides' => $this->cellModeSlides,
                     'cellId'         => ($this->cellId === 0) ? $this->cells[0]['id'] : $this->cellId,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         }

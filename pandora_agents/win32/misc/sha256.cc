@@ -1,6 +1,6 @@
 /* Pandora agents service for Win32.
    
-   Copyright (C) 2016 Artica ST.
+   Copyright (c) 2016-2021 Artica ST.
    Written by Ramon Novoa.
   
    This program is free software; you can redistribute it and/or modify

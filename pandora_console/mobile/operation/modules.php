@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -684,7 +684,8 @@ class Modules
                         ]
                     );
 
-                    $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
+                    // Row 7.
+                    $row[__('Data')] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
                 } else {
                     if ($system->getConfig('metaconsole')) {
                         $row[__('Data')] = '<span style="white-space: nowrap;">';
@@ -695,9 +696,18 @@ class Modules
                         $row[__('Data')] .= '&server_id='.$module['server_id'];
                         $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
                         $row[__('Data')] .= $output.'</a></span>';
-                        $row[7] = $row[__('Data')];
+                        // Row 7.
+                        $row[__('Data')];
                     } else {
-                        $row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">'.'<span style="display: none;" class="show_collapside">'.$row[__('Status')].'&nbsp;&nbsp;</span>'.'<a data-ajax="false" class="ui-link" '.'href="index.php?page=module_graph&id='.$module['id_agente_modulo'].'&id_agent='.$this->id_agent.'">'.$output.'</a>'.'</span>';
+                        // Row 7.
+                        $row[__('Data')] = '<span style="white-space: nowrap;">';
+                        $row[__('Data')] .= '<span style="display: none;" class="show_collapside">';
+                        $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
+                        $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
+                        $row[__('Data')] .= 'href="index.php?page=module_graph&id=';
+                        $row[__('Data')] .= $module['id_agente_modulo'];
+                        $row[__('Data')] .= '&id_agent='.$this->id_agent.'">';
+                        $row[__('Data')] .= $output.'</a></span>';
                     }
                 }
 

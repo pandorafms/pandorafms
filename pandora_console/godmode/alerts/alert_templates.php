@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,7 +148,7 @@ if ($update_template) {
     $recovery_notify = (bool) get_parameter('recovery_notify');
 
     $fields_recovery = [];
-    for ($i = 1; $i <= 10; $i++) {
+    for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $values['field'.$i] = (string) get_parameter('field'.$i);
         $values['field'.$i.'_recovery'] = ($recovery_notify) ? (string) get_parameter('field'.$i.'_recovery') : '';
     }
@@ -401,13 +401,17 @@ foreach ($templates as $template) {
 
     $data = [];
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
+    if (check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')) {
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
+    } else {
+        $data[0] = $template['name'];
+    }
 
     $data[1] = ui_print_group_icon($template['id_group'], true);
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (is_central_policies_on_node() === false
-        && check_acl($config['id_user'], $template['id_group'], 'LM')
+        && check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';

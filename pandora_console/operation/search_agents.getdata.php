@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,8 @@ if ($searchAgents) {
     $userGroups = users_get_groups($config['id_user'], 'AR', false);
     $id_userGroups = array_keys($userGroups);
 
+    $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
+
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a
@@ -188,10 +190,10 @@ if ($searchAgents) {
     if ($id != '') {
         $aux = $id[0]['id_agent'];
         $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%cd ".$stringSearchSQL."%%' OR
-						t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-                        t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-                        t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-						t1.id_agente = $aux";
+            t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t1.id_agente = $aux";
 
         if (count($id) >= 2) {
             for ($i = 1; $i < count($id); $i++) {
@@ -201,10 +203,15 @@ if ($searchAgents) {
         }
     } else {
         $search_sql = " t1.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-			t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
+            t2.nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
             t1.direccion COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
             t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
-			t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'";
+            t1.alias COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'";
+    }
+
+    if ($has_secondary === true) {
+        $search_sql .= " OR (tasg.id_group IS NOT NULL AND
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%'))";
     }
 
     $sql = "
@@ -235,7 +242,7 @@ if ($searchAgents) {
 			AND (
 				".$search_sql.'
 			)
-	';
+    ';
 
     $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.comentarios, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
     if ($only_count) {

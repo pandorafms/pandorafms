@@ -1,6 +1,6 @@
 /* Pandora agent service for Win32.
    
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
   
    This program is free software; you can redistribute it and/or modify
@@ -117,7 +117,7 @@ namespace Pandora {
 					     const char *svc_description);
 		
 		void           start        ();
-		int            sendXml      (Pandora_Module_List *modules);
+		int            sendXml      (Pandora_Module_List *modules, string extra = "");
         void           sendBufferedXml (string path, copy_func_p copy_func, bool secondary_buffer);
 		Pandora_Agent_Conf *getConf ();
 		string         getEHKey (string ehorus_conf);

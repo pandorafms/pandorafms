@@ -1,7 +1,7 @@
 /* Pandora freedisk module. These modules check the free space in a
    logical drive.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify

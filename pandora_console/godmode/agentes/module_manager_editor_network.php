@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -464,7 +464,7 @@ $data[1] = html_print_select(
     $disabledBecauseInPolicy
 );
 
-$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gagente&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
+$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
 
 $array_os = [
     'inherited' => __('Inherited'),

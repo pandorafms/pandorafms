@@ -3,7 +3,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -535,7 +535,7 @@ $table_advanced->data[0][1] = html_print_input_text(
 );
 
 $table_advanced->data[0][3] = __('Unit');
-$table_advanced->data[0][4] = html_print_input_text (
+$table_advanced->data[0][4] = html_print_input_text(
     'unit',
     $unit,
     '',
@@ -548,17 +548,17 @@ $table_advanced->data[0][4] = html_print_input_text (
     $classdisabledBecauseInPolicy
 );
 // $table_advanced->colspan[1][4] = 3;
-//$table_advanced->data[0][4] = html_print_extended_select_for_unit(
-//    'unit',
-//    $unit,
-//    '',
-//    '',
-//    '0',
-//    false,
-//    true,
-//    false,
-//    false
-//);
+// $table_advanced->data[0][4] = html_print_extended_select_for_unit(
+// 'unit',
+// $unit,
+// '',
+// '',
+// '0',
+// false,
+// true,
+// false,
+// false
+// );
 $table_advanced->colspan[0][4] = 3;
 
 $module_id_policy_module = 0;

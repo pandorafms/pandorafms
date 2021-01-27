@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.750";
-my $pandora_build = "201125";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210127";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -321,6 +321,7 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmp_storm_silence_period"} = 0; # 7.0
 	$pa_config->{"snmp_delay"} = 0; # > 6.0SP3
 	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
 	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
@@ -674,6 +675,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmp_storm_silence_period\s+(\d+)/i) { 
+			$pa_config->{'snmp_storm_silence_period'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_delay\s+(\d+)/i) { 
 			$pa_config->{'snmp_delay'}= clean_blank($1); 

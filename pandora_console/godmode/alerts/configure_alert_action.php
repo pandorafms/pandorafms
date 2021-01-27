@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,15 @@ if ($id) {
 
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
+
+    if (!check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Alert Management'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
 }
 
 // Hidden div with help hint to fill with javascript.
@@ -168,10 +177,16 @@ $table->data[1][0] = __('Group');
 
 $own_info = get_user_info($config['id_user']);
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('LW') === true) {
+    $return_all_group = true;
+}
+
 $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     'LW',
-    true,
+    $return_all_group,
     'group',
     $group,
     '',

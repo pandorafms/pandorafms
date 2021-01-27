@@ -3,7 +3,7 @@ package PandoraFMS::PredictionServer;
 # Pandora FMS Prediction Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -108,13 +108,16 @@ sub data_producer ($) {
 			ORDER BY last_execution_try ASC ', safe_input($pa_config->{'servername'}));
 	}
 	else {
+		# If is metaconsole server, will evaluate orphan modules also.
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo),
 				tagente_modulo.flag, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado
 			WHERE ((server_name = ?)
 				OR (server_name = ANY(SELECT name
 					FROM tserver
-					WHERE status = 0 AND server_type = ?)))
+					WHERE status = 0 AND server_type = ?))
+				OR ((server_name = 0 OR server_name IS NULL) AND 1=?)
+				)
 				AND tagente_modulo.id_agente = tagente.id_agente
 				AND tagente.disabled = 0
 				AND tagente_modulo.disabled = 0
@@ -123,7 +126,11 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC', safe_input($pa_config->{'servername'}), PREDICTIONSERVER);
+			ORDER BY last_execution_try ASC',
+			safe_input($pa_config->{'servername'}),
+			PREDICTIONSERVER,
+			is_metaconsole($pa_config)
+		);
 	}
 	
 	foreach my $row (@rows) {

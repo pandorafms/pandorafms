@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -229,7 +229,26 @@ class MapsMadeByUser extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
-        $fields = \visual_map_get_user_layouts($config['id_user'], true);
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $fields = \visual_map_get_user_layouts(
+            $config['id_user'],
+            true,
+            ['can_manage_group_all' => $return_all_group],
+            $return_all_group
+        );
+
+        // If currently selected graph is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['vcId'] !== null && !array_key_exists($values['vcId'], $fields)) {
+            $selected_vc = db_get_value('name', 'tlayout', 'id', $values['vcId']);
+
+            $fields[$values['vcId']] = $selected_vc;
+        }
 
         // Visual console.
         $inputs[] = [
@@ -308,20 +327,6 @@ class MapsMadeByUser extends Widget
         $groupId = $visualConsoleData['groupId'];
         $visualConsoleName = $visualConsoleData['name'];
 
-        // ACL.
-        $aclRead = check_acl($config['id_user'], $groupId, 'VR');
-        $aclWrite = check_acl($config['id_user'], $groupId, 'VW');
-        $aclManage = check_acl($config['id_user'], $groupId, 'VM');
-
-        if ($aclRead === 0 && $aclWrite === 0 && $aclManage === 0) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access visual console without group access'
-            );
-            include 'general/noaccess.php';
-            exit;
-        }
-
         $uniq = uniqid();
 
         $output = '<div class="container-center">';
@@ -368,26 +373,27 @@ class MapsMadeByUser extends Widget
         // of the visual consoles.
         $output .= '<style type="text/css">';
         $output .= '.c-'.$uniq.', .c-'.$uniq.' *:not(.parent_graph p table tr td span) { font-size: '.(8 * $ratio_t).'pt; line-height:'.(8 * ($ratio_t) * 1.5).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_4pt, .c-'.$uniq.' .visual_font_size_4pt * { font-size: '.(4 * $ratio_t).'pt; line-height:'.(4 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_6pt, .c-'.$uniq.' .visual_font_size_6pt * { font-size: '.(6 * $ratio_t).'pt; line-height:'.(6 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_8pt, .c-'.$uniq.' .visual_font_size_8pt * { font-size: '.(8 * $ratio_t).'pt; line-height:'.(8 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_10pt, .c-'.$uniq.' .visual_font_size_10pt * { font-size: '.(10 * $ratio_t).'pt; line-height:'.(10 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_12pt, .c-'.$uniq.' .visual_font_size_12pt * { font-size: '.(12 * $ratio_t).'pt; line-height:'.(12 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_14pt, .c-'.$uniq.' .visual_font_size_14pt * { font-size: '.(14 * $ratio_t).'pt; line-height:'.(14 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_18pt, .c-'.$uniq.' .visual_font_size_18pt * { font-size: '.(18 * $ratio_t).'pt; line-height:'.(18 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_24pt, .c-'.$uniq.' .visual_font_size_24pt * { font-size: '.(24 * $ratio_t).'pt; line-height:'.(24 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_28pt, .c-'.$uniq.' .visual_font_size_28pt * { font-size: '.(28 * $ratio_t).'pt; line-height:'.(28 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_36pt, .c-'.$uniq.' .visual_font_size_36pt * { font-size: '.(36 * $ratio_t).'pt; line-height:'.(36 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_48pt, .c-'.$uniq.' .visual_font_size_48pt * { font-size: '.(48 * $ratio_t).'pt; line-height:'.(48 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_60pt, .c-'.$uniq.' .visual_font_size_60pt * { font-size: '.(60 * $ratio_t).'pt; line-height:'.(60 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_72pt, .c-'.$uniq.' .visual_font_size_72pt * { font-size: '.(72 * $ratio_t).'pt; line-height:'.(72 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_84pt, .c-'.$uniq.' .visual_font_size_84pt * { font-size: '.(84 * $ratio_t).'pt; line-height:'.(84 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_96pt, .c-'.$uniq.' .visual_font_size_96pt * { font-size: '.(96 * $ratio_t).'pt; line-height:'.(96 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_116pt, .c-'.$uniq.' .visual_font_size_116pt * { font-size: '.(116 * $ratio_t).'pt; line-height:'.(116 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_128pt, .c-'.$uniq.' .visual_font_size_128pt * { font-size: '.(128 * $ratio_t).'pt; line-height:'.(128 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_140pt, .c-'.$uniq.' .visual_font_size_140pt * { font-size: '.(140 * $ratio_t).'pt; line-height:'.(140 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_154pt, .c-'.$uniq.' .visual_font_size_154pt * { font-size: '.(154 * $ratio_t).'pt; line-height:'.(154 * ($ratio_t)).'pt; }';
-        $output .= '.c-'.$uniq.' .visual_font_size_196pt, .c-'.$uniq.' .visual_font_size_196pt * { font-size: '.(196 * $ratio_t).'pt; line-height:'.(196 * ($ratio_t)).'pt; }';
+        $output .= '.c-'.$uniq.' .visual-console-item-label table tr td span { font-size: '.(4 * $ratio_t).'pt; line-height:'.(4 * $ratio_t * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_4pt, .c-'.$uniq.' .visual_font_size_4pt * { font-size: '.(4 * $ratio_t).'pt; line-height:'.(4 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_6pt, .c-'.$uniq.' .visual_font_size_6pt * { font-size: '.(6 * $ratio_t).'pt; line-height:'.(6 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_8pt, .c-'.$uniq.' .visual_font_size_8pt * { font-size: '.(8 * $ratio_t).'pt; line-height:'.(8 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_10pt, .c-'.$uniq.' .visual_font_size_10pt * { font-size: '.(10 * $ratio_t).'pt; line-height:'.(10 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_12pt, .c-'.$uniq.' .visual_font_size_12pt * { font-size: '.(12 * $ratio_t).'pt; line-height:'.(12 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_14pt, .c-'.$uniq.' .visual_font_size_14pt * { font-size: '.(14 * $ratio_t).'pt; line-height:'.(14 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_18pt, .c-'.$uniq.' .visual_font_size_18pt * { font-size: '.(18 * $ratio_t).'pt; line-height:'.(18 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_24pt, .c-'.$uniq.' .visual_font_size_24pt * { font-size: '.(24 * $ratio_t).'pt; line-height:'.(24 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_28pt, .c-'.$uniq.' .visual_font_size_28pt * { font-size: '.(28 * $ratio_t).'pt; line-height:'.(28 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_36pt, .c-'.$uniq.' .visual_font_size_36pt * { font-size: '.(36 * $ratio_t).'pt; line-height:'.(36 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_48pt, .c-'.$uniq.' .visual_font_size_48pt * { font-size: '.(48 * $ratio_t).'pt; line-height:'.(48 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_60pt, .c-'.$uniq.' .visual_font_size_60pt * { font-size: '.(60 * $ratio_t).'pt; line-height:'.(60 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_72pt, .c-'.$uniq.' .visual_font_size_72pt * { font-size: '.(72 * $ratio_t).'pt; line-height:'.(72 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_84pt, .c-'.$uniq.' .visual_font_size_84pt * { font-size: '.(84 * $ratio_t).'pt; line-height:'.(84 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_96pt, .c-'.$uniq.' .visual_font_size_96pt * { font-size: '.(96 * $ratio_t).'pt; line-height:'.(96 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_116pt, .c-'.$uniq.' .visual_font_size_116pt * { font-size: '.(116 * $ratio_t).'pt; line-height:'.(116 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_128pt, .c-'.$uniq.' .visual_font_size_128pt * { font-size: '.(128 * $ratio_t).'pt; line-height:'.(128 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_140pt, .c-'.$uniq.' .visual_font_size_140pt * { font-size: '.(140 * $ratio_t).'pt; line-height:'.(140 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_154pt, .c-'.$uniq.' .visual_font_size_154pt * { font-size: '.(154 * $ratio_t).'pt; line-height:'.(154 * ($ratio_t) * 1.8).'pt; }';
+        $output .= '.c-'.$uniq.' .visual_font_size_196pt, .c-'.$uniq.' .visual_font_size_196pt * { font-size: '.(196 * $ratio_t).'pt; line-height:'.(196 * ($ratio_t) * 1.8).'pt; }';
         $output .= '.c-'.$uniq.' .flot-text, .c-'.$uniq.' .flot-text * { font-size: '.(8 * $ratio_t).'pt !important; line-height:'.(8 * ($ratio_t)).'pt !important; }';
         $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.time {font-size: '.(50 * $ratio_t).'px !important; line-height: '.(50 * $ratio_t).'px !important;}';
         $output .= '.c-'.$uniq.' .visual-console-item .digital-clock span.date {font-size: '.(25 * $ratio_t).'px !important; line-height: '.(25 * $ratio_t).'px !important;}';

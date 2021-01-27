@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -80,7 +80,16 @@ $options['list_reports'] = [
     ).'</a>',
 ];
 
-if (check_acl($config['id_user'], 0, 'RW')) {
+if ($id_report > 0) {
+    $report_group = db_get_value(
+        'id_group',
+        'treport',
+        'id_report',
+        $id_report
+    );
+}
+
+if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
     $options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
         'images/op_reporting.png',
         true,

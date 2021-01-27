@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,53 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
     );
     include 'general/noaccess.php';
     exit;
+}
+
+if (is_ajax()) {
+    $method = get_parameter('method');
+    $group_id = get_parameter('group_id');
+    $group_recursion = (bool) get_parameter('group_recursion', 0);
+    $return_all = false;
+
+    if ($group_id == -1) {
+        $sql = 'SELECT tusuario.id_user FROM tusuario 
+                        LEFT OUTER JOIN tusuario_perfil
+                        ON tusuario.id_user = tusuario_perfil.id_usuario
+                        WHERE tusuario_perfil.id_usuario IS NULL';
+
+        $users = io_safe_output(db_get_all_rows_sql($sql));
+
+        foreach ($users as $key => $user) {
+            $ret_user[$user['id_user']] = $user['id_user'];
+        }
+
+        echo json_encode($ret_user);
+        return;
+    }
+
+    if ($group_id == 0) {
+        $users = io_safe_output(db_get_all_rows_filter('tusuario', [], 'id_user'));
+        foreach ($users as $key => $user) {
+            $ret_user[$user['id_user']] = $user['id_user'];
+        }
+
+        echo json_encode($ret_user);
+        return;
+    }
+
+    if ($method === 'get_users_by_group') {
+        if ($group_recursion === true) {
+            $group_id = groups_get_children_ids($group_id);
+        }
+
+        $users_id = io_safe_output(users_get_user_users(false, 'AR', false, null, $group_id));
+        foreach ($users_id as $key => $user_id) {
+            $ret_id[$user_id] = $user_id;
+        }
+
+        echo json_encode($ret_id);
+        return;
+    }
 }
 
 $sortField = get_parameter('sort_field');
@@ -444,12 +491,6 @@ foreach ($info as $user_id => $user_info) {
         foreach ($group_um as $key => $value) {
             if (isset($user_profiles_aux[$key])) {
                 $user_profiles[$key] = $user_profiles_aux[$key];
-                if ($user_profiles_aux[$key]['user_management'] == 1) {
-                    $user_info['edit'] = 0;
-                } else {
-                    $user_info['edit'] = 1;
-                }
-
                 unset($user_profiles_aux[$key]);
             }
         }
@@ -547,7 +588,11 @@ foreach ($info as $user_id => $user_info) {
             $total_profile++;
         }
 
-            $data[4] .= '</div>';
+        if (isset($user_info['not_delete'])) {
+            $data[4] .= __('Other profiles are also assigned.').ui_print_help_tip(__('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'), true);
+        }
+
+        $data[4] .= '</div>';
     } else {
         $data[4] .= __('The user doesn\'t have any assigned profile/group');
     }

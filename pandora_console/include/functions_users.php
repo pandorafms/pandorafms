@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -123,10 +123,15 @@ function users_get_groups_for_select(
     $returnAllColumns=false,
     $id_groups=null,
     $keys_field='id_grupo',
-    $ajax_format=false
+    $ajax_format=false,
+    $check_user_can_manage_all=false
 ) {
     if ($id_groups === false) {
         $id_groups = null;
+    }
+
+    if ($check_user_can_manage_all === true && users_can_manage_group_all($privilege) === false) {
+        $returnAllGroup = false;
     }
 
     $user_groups = users_get_groups(
@@ -616,7 +621,8 @@ function users_get_user_users(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $fields=null
+    $fields=null,
+    $filter_group=[]
 ) {
     global $config;
 
@@ -625,8 +631,12 @@ function users_get_user_users(
     $user_users = [];
     $array_user_group = [];
 
-    foreach ($user_groups as $id_user_group => $name_user_group) {
-        $array_user_group[] = $id_user_group;
+    if (empty($filter_group)) {
+        foreach ($user_groups as $id_user_group => $name_user_group) {
+            $array_user_group[] = $id_user_group;
+        }
+    } else {
+        $array_user_group = $filter_group;
     }
 
     $group_users = groups_get_users($array_user_group, false, $returnAllGroup);
@@ -747,6 +757,11 @@ function users_get_groups_UM($id_user)
     foreach ($groups as $key => $group) {
         if (!isset($return[$group['id_grupo']]) || (isset($return[$group['id_grupo']]) && $group['user_management'] != 0)) {
             $return[$group['id_grupo']] = $group['user_management'];
+            $children = groups_get_children($group['id_grupo'], false, 'UM', false);
+            foreach ($children as $key => $child_group) {
+                $return[$child_group['id_grupo']] = $group['user_management'];
+            }
+
             if ($group['id_grupo'] == '0') {
                 $return['group_all'] = $group['id_grupo'];
             }
@@ -830,4 +845,26 @@ function users_get_user_profile($id_user)
     }
 
     return $user_profiles;
+}
+
+
+/**
+ * Obtiene una matriz con la informacion de cada usuario que pertenece a un grupo
+ *
+ * @param  string User id
+ * @return array Return .
+ */
+function users_get_users_group_by_group($id_group)
+{
+    $sql = sprintf(
+        "SELECT tusuario.* FROM tusuario 
+        LEFT JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user 
+        AND tusuario_perfil.id_grupo = '%s'
+        GROUP BY tusuario_perfil.id_usuario",
+        $id_group
+    );
+
+    $users = db_get_all_rows_sql($sql);
+
+    return $users;
 }

@@ -3,7 +3,7 @@ package PandoraFMS::WMIServer;
 # Pandora FMS WMI Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -220,7 +220,7 @@ sub data_consumer ($$) {
 		my $col_number;
 
     for(my $i = 0; $i < @output_col; $i++ ) {
-        if( $output_col[$i] =~ /$selected_col/ ) {
+        if( $output_col[$i] =~ /$selected_col/i ) {
         		$col_number = $i;	
             last;
         }

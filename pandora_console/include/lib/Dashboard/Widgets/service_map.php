@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -254,6 +254,15 @@ class ServiceMapWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $services_res = services_get_services();
+
+        // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['serviceId'] !== null && !in_array($values['serviceId'], array_column($services_res, 'id'))) {
+            $selected_service = db_get_row('tservice', 'id', $values['serviceId']);
+
+            $services_res[] = $selected_service;
+        }
+
         $services = [0 => __('None')];
         if ($services_res !== false) {
             $fields = array_reduce(

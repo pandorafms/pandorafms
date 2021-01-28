@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -234,7 +234,7 @@ function profile_print_profile_table($id)
         $sql = sprintf(
             "SELECT tusuario_perfil.* FROM tusuario_perfil
             INNER JOIN tperfil ON tperfil.id_perfil = tusuario_perfil.id_perfil
-            WHERE id_usuario like '%s' AND id_grupo IN (%s) AND user_management = 0",
+            WHERE id_usuario like '%s' AND id_grupo IN (%s)",
             $id,
             $group_um_string
         );

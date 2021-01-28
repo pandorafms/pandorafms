@@ -6,7 +6,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,6 +82,7 @@ $table_remote->data['ehorus_user'] = $row;
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('ehorus_pass', true);
 $table_remote->data['ehorus_pass'] = $row;
 
 // Directory hostname.

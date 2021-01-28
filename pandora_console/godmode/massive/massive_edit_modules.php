@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,9 @@ $update = (bool) get_parameter_post('update');
 
 if ($update) {
     $agents_ = '';
+
+    $module_status = get_parameter('status_module');
+
     if ($selection_mode == 'modules') {
         $agents_ = [];
 
@@ -109,7 +112,7 @@ if ($update) {
                 }
 
                 foreach ($module_name as $mod_name) {
-                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
+                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
                     $success += (int) $result;
                 }
@@ -132,7 +135,7 @@ if ($update) {
                 }
 
                 foreach ($module_name as $mod_name) {
-                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $modules_selection_mode);
+                    $result = process_manage_edit($mod_name['nombre'], $id_agent, $module_status, $modules_selection_mode);
                     $count++;
                     $success += (int) $result;
                 }
@@ -150,7 +153,7 @@ if ($update) {
             }
 
             foreach ($modules_ as $module_) {
-                $result = process_manage_edit($module_, $agent_, $modules_selection_mode);
+                $result = process_manage_edit($module_, $agent_, $module_status, $modules_selection_mode);
                 $count++;
                 $success += (int) $result;
             }
@@ -406,7 +409,8 @@ $table->data['form_modules_2'][1] = html_print_select(
     true,
     true,
     true
-);
+).' '.__('Select all modules').' '.html_print_checkbox('select_all_modules', 1, false, true, false, '', false, "class='static'");
+
 $table->data['form_modules_2'][2] = __('When select modules');
 $table->data['form_modules_2'][2] .= '<br>';
 $table->data['form_modules_2'][2] .= html_print_select(
@@ -491,7 +495,7 @@ $table->data['form_agents_3'][1] = html_print_select(
     true,
     true,
     false
-);
+).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'");
 
 $table->data['form_agents_3'][2] = __('When select agents');
 $table->data['form_agents_3'][2] .= '<br>';
@@ -1137,6 +1141,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             );
 
             $array_os = [
+                ''          => __('No change'),
                 'inherited' => __('Inherited'),
                 'linux'     => __('Linux'),
                 'windows'   => __('Windows'),
@@ -1212,7 +1217,45 @@ $(document).ready (function () {
             return false;
         }
     });
-    
+
+    $("#checkbox-select_all_modules").change(function() {
+        if( $('#checkbox-select_all_modules').prop('checked')) {
+            $("#module_name option").prop('selected', 'selected');
+            $("#module_name").trigger('change');
+        } else {
+            $("#module_name option").prop('selected', false);
+            $("#module_name").trigger('change');
+        }
+    });
+
+    $("#module_name").change(function() {
+        var options_length = $("#module_name option").length;
+        var options_selected_length = $("#module_name option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_modules').prop("checked", false);
+        }
+    });
+
+    $("#checkbox-select_all_agents").change(function() {
+        if( $('#checkbox-select_all_agents').prop('checked')) {
+            $("#id_agents option").prop('selected', 'selected');
+            $("#id_agents").trigger('change');
+        } else {
+            $("#id_agents option").prop('selected', false);
+            $("#id_agents").trigger('change');
+        }
+    });
+
+    $("#id_agents").change(function() {
+        var options_length = $("#id_agents option").length;
+        var options_selected_length = $("#id_agents option:selected").length;
+
+        if (options_selected_length < options_length) {
+            $('#checkbox-select_all_agents').prop("checked", false);
+        }
+    });
+
     $("#text-custom_ip_target").hide();
     
     $("#id_agents").change(agent_changed_by_multiple_agents);
@@ -1463,7 +1506,7 @@ $(document).ready (function () {
         $('#groups_select').val(-1);
     }
     
-    $('input[type=checkbox]').change (
+    $('input[type=checkbox]').not(".static").change (
         function () {
             if (this.id == "checkbox-force_type") {
                 if (this.checked) {
@@ -1859,7 +1902,7 @@ function disabled_status () {
 /* ]]> */
 </script>
 <?php
-function process_manage_edit($module_name, $agents_select=null, $module_status='all')
+function process_manage_edit($module_name, $agents_select=null, $module_status='-1', $selection_mode='all')
 {
     if (is_int($module_name) && $module_name < 0) {
         ui_print_error_message(__('No modules selected'));
@@ -2149,6 +2192,20 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
     }
 
     foreach ($modules as $module) {
+        if ($module_status !== '-1') {
+            if (modules_is_not_init($module['id_agente_modulo']) === true) {
+                if ($module_status != AGENT_MODULE_STATUS_NO_DATA && $module_status != AGENT_MODULE_STATUS_NOT_INIT) {
+                    continue;
+                }
+            } else {
+                $status = modules_get_agentmodule_status($module['id_agente_modulo']);
+
+                if ($module_status !== $status) {
+                    continue;
+                }
+            }
+        }
+
         // Set tcp_send value according to module type since the purpose of this field in database varies in case of SNMP modules.
         if ($module['id_tipo_modulo'] >= 15 && $module['id_tipo_modulo'] <= 18) {
             if ($snmp_version != '') {

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2890,14 +2890,12 @@ class NetworkMap
             $list_networkmaps = [];
         }
 
-        $output .= '<div id="open_version_dialog" style="display: none;">';
-        $output .= __(
-            'In the Open version of %s can not be edited nodes or map',
-            get_product_name()
-        );
-        $output .= '</div>';
+        $id = 'dialog_node_edit';
+        if (!enterprise_installed()) {
+            $id = 'open_version_dialog';
+        }
 
-        $output .= '<div id="dialog_node_edit" style="display: none;" title="';
+        $output .= '<div id="'.$id.'" style="display: none;" title="';
         $output .= __('Edit node').'">';
         $output .= '<div style="text-align: left; width: 100%;">';
 
@@ -3016,14 +3014,16 @@ class NetworkMap
             true
         );
 
-        $output .= ui_toggle(
-            html_print_table($table, true),
-            __('Node options'),
-            __('Node options'),
-            '',
-            true,
-            true
-        );
+        if (enterprise_installed()) {
+            $output .= ui_toggle(
+                html_print_table($table, true),
+                __('Node options'),
+                __('Node options'),
+                '',
+                true,
+                true
+            );
+        }
 
         $table = new StdClass();
         $table->id = 'relations_table';
@@ -3077,14 +3077,16 @@ class NetworkMap
             true
         );
 
-        $output .= ui_toggle(
-            html_print_table($table, true),
-            __('Relations'),
-            __('Relations'),
-            '',
-            true,
-            true
-        );
+        if (enterprise_installed()) {
+            $output .= ui_toggle(
+                html_print_table($table, true),
+                __('Relations'),
+                __('Relations'),
+                '',
+                true,
+                true
+            );
+        }
 
         $output .= '</div></div>';
 
@@ -3497,39 +3499,41 @@ class NetworkMap
      *
      * @return string HTML code.
      */
-    public function printMap($return=false)
+    public function printMap($return=false, $ignore_acl=false)
     {
         global $config;
 
         $networkmap = $this->map;
 
-        // ACL.
-        $networkmap_read = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MR'
-        );
-        $networkmap_write = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MW'
-        );
-        $networkmap_manage = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MM'
-        );
-
-        if (!$networkmap_read
-            && !$networkmap_write
-            && !$networkmap_manage
-        ) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
+        if ($ignore_acl === false) {
+            // ACL.
+            $networkmap_read = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MR'
             );
-            include 'general/noaccess.php';
-            return '';
+            $networkmap_write = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MW'
+            );
+            $networkmap_manage = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MM'
+            );
+
+            if (!$networkmap_read
+                && !$networkmap_write
+                && !$networkmap_manage
+            ) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access networkmap'
+                );
+                include 'general/noaccess.php';
+                return '';
+            }
         }
 
         $user_readonly = !$networkmap_write && !$networkmap_manage;

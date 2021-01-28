@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -136,13 +136,16 @@ class Module extends Entity
     /**
      * Creates a module object from given data. Avoid query duplication.
      *
-     * @param array $data Module information.
+     * @param array  $data      Module information.
+     * @param string $class_str Class type.
      *
      * @return PandoraFMS\Module Object.
      */
-    public static function build(array $data=[])
-    {
-        $obj = new Module();
+    public static function build(
+        array $data=[],
+        string $class_str='\PandoraFMS\Module'
+    ) {
+        $obj = new $class_str();
 
         // Set values.
         foreach ($data as $k => $v) {

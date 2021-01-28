@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -277,9 +277,20 @@ class TopNEventByModuleWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
         $selected_groups = [];
         if ($values['groupId']) {
             $selected_groups = explode(',', $values['groupId'][0]);
+
+            if (users_can_manage_group_all('RM') || in_array(0, $selected_groups) === true) {
+                // Return all group if user has permissions or it is a currently selected group.
+                $return_all_group = true;
+            }
+        } else {
+            if (users_can_manage_group_all('RM')) {
+                $return_all_group = true;
+            }
         }
 
         // Groups.
@@ -293,6 +304,7 @@ class TopNEventByModuleWidget extends Widget
                 'selected'       => $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 

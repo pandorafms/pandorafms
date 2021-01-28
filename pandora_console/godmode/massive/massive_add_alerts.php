@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,15 +106,31 @@ function process_manage_add($id_alert_template, $id_agents, $module_names)
         return false;
     }
 
+    $modules_id = [];
+
     foreach ($module_names as $module) {
         foreach ($id_agents as $id_agent) {
-            $module_id = modules_get_agentmodule_id($module, $id_agent);
-            $modules_id[] = $module_id['id_agente_modulo'];
-        }
-    }
+            if ($module == '0') {
+                    // Get all modules of agent.
+                    $agent_modules = db_get_all_rows_filter(
+                        'tagente_modulo',
+                        ['id_agente' => $id_agent],
+                        'id_agente_modulo'
+                    );
 
-    if (count($module_names) == 1 && $module_names[0] == '0') {
-        $modules_id = agents_common_modules($id_agents, false, true);
+                    $agent_modules_id = array_map(
+                        function ($field) {
+                            return $field['id_agente_modulo'];
+                        },
+                        $agent_modules
+                    );
+
+                    $modules_id = array_merge($modules_id, $agent_modules_id);
+            } else {
+                $module_id = modules_get_agentmodule_id($module, $id_agent);
+                $modules_id[] = $module_id['id_agente_modulo'];
+            }
+        }
     }
 
     $conttotal = 0;

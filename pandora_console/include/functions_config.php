@@ -1557,21 +1557,12 @@ function config_update_config()
                     }
 
                     if (Config::set(
-                        'days_compact',
-                        get_parameter('history_dbh_days_compact'),
+                        'history_partitions_auto',
+                        get_parameter_switch('history_partitions_auto'),
                         true
                     ) !== true
                     ) {
                         $error_update[] = __('Historical database days compact');
-                    }
-
-                    if (Config::set(
-                        'step_compact',
-                        get_parameter('history_dbh_step_compact'),
-                        true
-                    ) !== true
-                    ) {
-                        $error_update[] = __('Historical database step compact');
                     }
 
                     if (Config::set(

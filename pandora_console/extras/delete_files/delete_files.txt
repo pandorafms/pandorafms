@@ -1,5 +1,6 @@
 operation/servers/recon_view.php
 operation/users/webchat.php
+operation/events/event_statistics.php
 include/javascript/webchat.js
 attachment/pandora_chat.log.json.txt
 attachment/pandora_chat.user_list.json.txt
@@ -69,6 +70,8 @@ enterprise/extensions/ipam/include/javascript/IpamMapController.js
 enterprise/extensions/ipam/ipam_action.php
 enterprise/extensions/ipam.php
 enterprise/extensions/ipam
+enterprise/extensions/disabled/visual_console_manager.php
+enterprise/extensions/visual_console_manager.php
 include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php

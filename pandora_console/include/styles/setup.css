@@ -13,3 +13,8 @@ span.subtitle-2 {
 .no-borders {
   border: 0 !important;
 }
+
+input[type="text"],
+input[type="number"] {
+  width: 220px;
+}

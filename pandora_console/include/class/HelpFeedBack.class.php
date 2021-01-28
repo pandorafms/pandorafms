@@ -236,6 +236,7 @@ class HelpFeedBack extends Wizard
      */
     public function sendMailMethod()
     {
+        global $config;
         $suggestion = get_parameter('type', 'false');
         $feedback_text = get_parameter('feedback_text', null);
         $feedback_mail = get_parameter('feedback_email', null);

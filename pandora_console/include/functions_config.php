@@ -28,6 +28,8 @@
 
 // Config functions.
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/functions.php';
+enterprise_include_once('include/functions_config.php');
 use PandoraFMS\Core\DBMaintainer;
 use PandoraFMS\Core\Config;
 
@@ -1534,7 +1536,12 @@ function config_update_config()
                         );
 
                         // Performs several checks and installs if needed.
-                        if ($dbm->check() === false) {
+                        if ($dbm->checkDatabaseDefinition() === true
+                            && $dbm->isInstalled() === false
+                        ) {
+                            // Target is ready but several tasks are pending.
+                            $dbm->process();
+                        } else if ($dbm->check() !== true) {
                             $errors[] = $dbm->getLastError();
                         }
                     }

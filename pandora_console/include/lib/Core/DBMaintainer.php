@@ -391,6 +391,40 @@ final class DBMaintainer
 
 
     /**
+     * Create database only (not schema) in target.
+     *
+     * @return boolean Success or not.
+     */
+    public function checkDatabaseDefinition()
+    {
+        if ($this->ready === true) {
+            return true;
+        }
+
+        $rc = $this->dbh->query(
+            sprintf(
+                'CREATE DATABASE %s',
+                $this->name
+            )
+        );
+
+        if ($rc === false) {
+            $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+            return false;
+        }
+
+        if ($this->dbh->select_db($this->name) === false) {
+            $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+            return false;
+        }
+
+        // Already connected and ready to execute commands.
+        $this->ready = true;
+        return true;
+    }
+
+
+    /**
      * Install PandoraFMS database schema in current target.
      *
      * @param boolean $check_only Check and return, do not perform actions.
@@ -414,25 +448,9 @@ final class DBMaintainer
                 return false;
             }
 
-            $rc = $this->dbh->query(
-                sprintf(
-                    'CREATE DATABASE %s',
-                    $this->name
-                )
-            );
-
-            if ($rc === false) {
-                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
+            if ($this->checkDatabaseDefinition() === false) {
                 return false;
             }
-
-            if ($this->dbh->select_db($this->name) === false) {
-                $this->lastError = $this->dbh->errno.': '.$this->dbh->error;
-                return false;
-            }
-
-            // Already connected and ready to execute commands.
-            $this->ready = true;
         } else if ($this->verifySchema() === true) {
             $this->installed = true;
             $this->lastError = null;

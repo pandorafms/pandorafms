@@ -75,12 +75,18 @@ final class Config
             ob_get_clean();
         }
 
+        ob_start();
         $data = \db_get_all_rows_sql(
             'SELECT * FROM `tconfig`',
             false,
             false,
             $config['history_db_connection']
         );
+        ob_get_clean();
+
+        if (is_array($data) !== true) {
+            return [];
+        }
 
         self::$settings = array_reduce(
             $data,

@@ -12,6 +12,7 @@ DBNAME=pandora
 DBUSER=pandora
 DBPASS=pandora
 DBPORT=3306
+S_VERSION='2021012801'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # Ansi color code variables
@@ -87,6 +88,7 @@ check_root_permissions () {
 }
 
 ## Main
+echo 'Starting PandoraFMS Community deployment $S_VERSION'
 
 # Centos Version
 if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
@@ -101,7 +103,7 @@ echo -en "${cyan}Check Centos Version...${reset}"
 check_cmd_status 'Error OS version, Centos 7 is expected'
 
 # initialice logfile
-execute_cmd "echo 'Starting deploy' > $LOGFILE" "All installer activity is logged on $LOGFILE"
+execute_cmd "echo 'Starting community deployment #S_VERSION' > $LOGFILE" "All installer activity is logged on $LOGFILE"
 
 # Pre checks
 # Root permisions
@@ -381,7 +383,7 @@ cat > $CONSOLE_PATH/include/config.php << EO_CONFIG_F
 \$config["dbname"]="$DBNAME";
 \$config["dbuser"]="$DBUSER";
 \$config["dbpass"]="$DBPASS";
-\$config["dbhost"]="$DBHOST";
+\$config["dbhost"]="localhost";
 \$config["homedir"]="$PANDORA_CONSOLE";
 \$config["homeurl"]="/pandora_console";
 error_reporting(0);

@@ -12,6 +12,7 @@ DBNAME=pandora
 DBUSER=pandora
 DBPASS=pandora
 DBPORT=3306
+S_VERSION='v1.0'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # Ansi color code variables
@@ -87,6 +88,7 @@ check_root_permissions () {
 }
 
 ## Main
+echo 'Starting PandoraFMS Community deployment $S_VERSION'
 
 # Centos Version
 if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
@@ -381,7 +383,7 @@ cat > $CONSOLE_PATH/include/config.php << EO_CONFIG_F
 \$config["dbname"]="$DBNAME";
 \$config["dbuser"]="$DBUSER";
 \$config["dbpass"]="$DBPASS";
-\$config["dbhost"]="$DBHOST";
+\$config["dbhost"]="localhost";
 \$config["homedir"]="$PANDORA_CONSOLE";
 \$config["homeurl"]="/pandora_console";
 error_reporting(0);

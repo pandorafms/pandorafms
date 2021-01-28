@@ -88,7 +88,7 @@ check_root_permissions () {
 }
 
 ## Main
-echo 'Starting PandoraFMS Community deployment $S_VERSION'
+echo "Starting PandoraFMS Community deployment ver. $S_VERSION"
 
 # Centos Version
 if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
@@ -103,7 +103,8 @@ echo -en "${cyan}Check Centos Version...${reset}"
 check_cmd_status 'Error OS version, Centos 7 is expected'
 
 # initialice logfile
-execute_cmd "echo 'Starting community deployment #S_VERSION' > $LOGFILE" "All installer activity is logged on $LOGFILE"
+execute_cmd "echo 'Starting community deployment' > $LOGFILE" "All installer activity is logged on $LOGFILE"
+echo "Community installer version: $S_VERSION" >> $LOGFILE
 
 # Pre checks
 # Root permisions

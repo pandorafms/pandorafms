@@ -41,7 +41,6 @@ if (!$is_metaconsole) {
     $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
     $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
     $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
-    $url_visual_console_manager         = 'index.php?sec=screen&sec2=enterprise/extensions/visual_console_manager';
 }
 
 $buttons['visual_console'] = [

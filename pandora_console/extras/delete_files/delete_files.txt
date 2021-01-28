@@ -1,5 +1,6 @@
 operation/servers/recon_view.php
 operation/users/webchat.php
+operation/events/event_statistics.php
 include/javascript/webchat.js
 attachment/pandora_chat.log.json.txt
 attachment/pandora_chat.user_list.json.txt

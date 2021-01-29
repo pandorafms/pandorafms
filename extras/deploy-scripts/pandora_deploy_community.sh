@@ -269,7 +269,7 @@ execute_cmd "yum install -y $vmware_dependencies" "Installing Oracle Instant cli
 
 # Disabling SELINUX and firewalld
 setenforce 0
-sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/sysconfig/selinux
+sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config 
 systemctl disable firewalld --now &>> $LOGFILE
 
 

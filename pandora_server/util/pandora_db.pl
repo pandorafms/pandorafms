@@ -1021,8 +1021,8 @@ sub pandora_delete_old_session_data {
 ###############################################################################
 # Main
 ###############################################################################
-sub pandoradb_main ($$$) {
-	my ($conf, $dbh, $history_dbh) = @_;
+sub pandoradb_main ($$$;$) {
+	my ($conf, $dbh, $history_dbh, $running_in_history) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
@@ -1043,8 +1043,12 @@ sub pandoradb_main ($$$) {
 		}
 	}
 
+	# Only active database should be compacted. Disabled for historical database.
 	# Compact on if enable and DaysCompact are below DaysPurge 
-	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
+	if (!$running_in_history
+		&& ($conf->{'_onlypurge'} == 0)
+		&& ($conf->{'_days_compact'} < $conf->{'_days_purge'})
+	) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
 	}
 
@@ -1126,7 +1130,8 @@ if (defined($history_dbh)) {
 	pandoradb_main(
 		$h_conf,
 		$history_dbh,
-		undef
+		undef,
+		1 # Disable certain funcionality while runningn in historical database.
 	);
 
 }

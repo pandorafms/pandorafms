@@ -187,6 +187,17 @@ final class DBMaintainer
 
 
     /**
+     * Return connection statuis.
+     *
+     * @return boolean
+     */
+    public function isConnected()
+    {
+        return $this->connected;
+    }
+
+
+    /**
      * Retrieve last error.
      *
      * @return string Error message.

@@ -269,23 +269,9 @@ execute_cmd "yum install -y $vmware_dependencies" "Installing Oracle Instant cli
 
 # Disabling SELINUX and firewalld
 setenforce 0
-sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/sysconfig/selinux
+sed -i -e "s/^SELINUX=.*/SELINUX=disabled/g" /etc/selinux/config 
 systemctl disable firewalld --now &>> $LOGFILE
 
-cat > /etc/issue.net << EOF_banner
-
-Welcome to Pandora FMS appliance on CentOS
-------------------------------------------
-$(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to http://"$1"/pandora_console to manage this server"}')
-
-You can find more information at http://pandorafms.com
-
-EOF_banner
-
-rm -f /etc/issue
-ln -s /etc/issue.net /etc/issue
-
-execute_cmd "echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config" "Adding SSH banner"
 
 #Configuring Database
 execute_cmd "systemctl start mysqld" "Starting database engine"
@@ -568,13 +554,32 @@ echo "* * * * * root wget -q -O - --no-check-certificate http://127.0.0.1/pandor
 systemctl enable pandora_agent_daemon &>> $LOGFILE
 execute_cmd "systemctl start pandora_agent_daemon" "starting Pandora FMS Agent"
 
+#SSH banner
+[ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)
+
+cat > /etc/issue.net << EOF_banner
+
+Welcome to Pandora FMS appliance on CentOS
+------------------------------------------
+Go to Public http://$ipplublic/pandora_console$to to login web console
+$(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')
+
+You can find more information at http://pandorafms.com
+
+EOF_banner
+
+rm -f /etc/issue
+ln -s /etc/issue.net /etc/issue
+
+echo 'Banner /etc/issue.net' >> /etc/ssh/sshd_config
+
+# Remove temporary files
 execute_cmd "echo done" "Pandora FMS Community installed"
 cd
 execute_cmd "rm -rf $HOME/pandora_deploy_tmp" "Removing temporary files"
 
+# Print nice finish message
 GREEN='\033[01;32m'
 NONE='\033[0m'
-
-[ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)
 printf " -> Go to Public ${green}http://"$ipplublic"/pandora_console${reset} to manage this server"
 ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v -e "172.1[0-9].0.1" | awk '{print $2}' | awk -v g=$GREEN -v n=$NONE -F '/' '{printf "\n -> Go to Local "g"http://"$1"/pandora_console"n" to manage this server \n -> Use this credentials to login in the console "g"[ User: admin / Password: pandora ]"n" \n"}'

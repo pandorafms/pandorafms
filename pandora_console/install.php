@@ -364,7 +364,7 @@ function random_name(int $size)
         '48:57',
         '65:90',
         '97:122',
-        '33:47',
+        '40:47',
     ];
 
     // Size of the password must be over range seed count.

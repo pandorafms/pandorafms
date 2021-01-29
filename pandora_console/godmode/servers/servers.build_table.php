@@ -79,6 +79,13 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 
 $table->data = [];
 $names_servers = [];
+$master = 1;
+// The server with the highest number in master, will be the real master.
+foreach ($servers as $server) {
+    if ($server['master'] > $master) {
+        $master = $server['master'];
+    }
+}
 
 foreach ($servers as $server) {
     $data = [];
@@ -109,7 +116,7 @@ foreach ($servers as $server) {
 
     // Type
     $data[2] = '<span style="white-space:nowrap;">'.$server['img'];
-    if ($server['master'] == 1) {
+    if ($server['master'] == $master) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
 

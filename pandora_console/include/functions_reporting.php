@@ -189,6 +189,14 @@ function reporting_make_reporting_data(
 
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
+
+    usort(
+        $contents,
+        function ($a, $b) {
+            return ($a['order'] <=> $b['order']);
+        }
+    );
+
     foreach ($contents as $content) {
         $content['name'] = io_safe_input($content['name']);
         $content['description'] = io_safe_input($content['description']);

@@ -110,8 +110,10 @@ then
     systemctl enable pandora_agent_daemon.service
     if [ "$?" -gt 0 ]
     then
-	    chkconfig pandora_agent_daemon on || echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
+        chkconfig pandora_agent_daemon on || echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
     fi
+else 
+    chkconfig pandora_agent_daemon on || echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
 fi
 
 if [ "$1" -gt 1 ]

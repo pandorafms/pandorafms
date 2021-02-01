@@ -72,17 +72,18 @@ final class Config
                 $config['history_db_port'],
                 false
             );
+
+            if ($config['history_db_connection'] !== false) {
+                $data = \db_get_all_rows_sql(
+                    'SELECT * FROM `tconfig`',
+                    false,
+                    false,
+                    $config['history_db_connection']
+                );
+            }
+
             ob_get_clean();
         }
-
-        ob_start();
-        $data = \db_get_all_rows_sql(
-            'SELECT * FROM `tconfig`',
-            false,
-            false,
-            $config['history_db_connection']
-        );
-        ob_get_clean();
 
         if (is_array($data) !== true) {
             return [];
@@ -119,6 +120,8 @@ final class Config
             if (isset(self::$settings[$token]) === true) {
                 return self::$settings[$token];
             }
+
+            return $default;
         } else {
             global $config;
 

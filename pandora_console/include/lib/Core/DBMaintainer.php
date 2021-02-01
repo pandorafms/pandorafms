@@ -230,12 +230,14 @@ final class DBMaintainer
 
         $results = [];
 
-        do {
-            $row = $rs->fetch_array(MYSQLI_ASSOC);
-            if ((bool) $row !== false) {
-                $results[] = $row;
-            }
-        } while ((bool) $row !== false);
+        if ($rs !== false) {
+            do {
+                $row = $rs->fetch_array(MYSQLI_ASSOC);
+                if ((bool) $row !== false) {
+                    $results[] = $row;
+                }
+            } while ((bool) $row !== false);
+        }
 
         return $results;
     }
@@ -412,6 +414,10 @@ final class DBMaintainer
             return true;
         }
 
+        if ($this->dbh === null) {
+            return false;
+        }
+
         $rc = $this->dbh->query(
             sprintf(
                 'CREATE DATABASE %s',
@@ -503,7 +509,7 @@ final class DBMaintainer
             return false;
         }
 
-        if ($this->install() !== true) {
+        if ($this->install($check_only) !== true) {
             return false;
         }
 
@@ -564,7 +570,7 @@ final class DBMaintainer
                     }
                 }
 
-                if ($this->applyDump($filename) !== true) {
+                if ($this->applyDump($filename, true) !== true) {
                     $err = 'Unable to apply MR update #';
                     $err .= $last_mr_curr.': ';
                     $this->lastError = $err.$this->lastError;
@@ -631,6 +637,23 @@ final class DBMaintainer
 
 
     /**
+     * Checks if target is ready to connect.
+     *
+     * @return boolean
+     */
+    public function isReady()
+    {
+        if ($this->ready === true) {
+            return true;
+        }
+
+        $this->connect();
+
+        return $this->ready;
+    }
+
+
+    /**
      * Checks if current target is connected, installed and updated.
      *
      * @return boolean Status of the database schema.
@@ -657,29 +680,37 @@ final class DBMaintainer
     /**
      * This function keeps same functionality as install.php:parse_mysqli_dump.
      *
-     * @param string $path Path where SQL dump file is stored.
+     * @param string  $path          Path where SQL dump file is stored.
+     * @param boolean $transactional Use transactions from file (true) (MRs).
      *
      * @return boolean Success or not.
      */
-    private function applyDump(string $path)
+    private function applyDump(string $path, bool $transactional=false)
     {
         if (file_exists($path) === true) {
-            $file_content = file($path);
-            $query = '';
-            foreach ($file_content as $sql_line) {
-                if (trim($sql_line) !== ''
-                    && strpos($sql_line, '-- ') === false
-                ) {
-                    $query .= $sql_line;
-                    if ((bool) preg_match("/;[\040]*\$/", $sql_line) === true) {
-                        $result = $this->dbh->query($query);
-                        if ((bool) $result === false) {
-                            $this->lastError = $this->dbh->errno.': ';
-                            $this->lastError .= $this->dbh->error;
-                            return false;
-                        }
+            if ($transactional === true) {
+                global $config;
+                // MR are loaded in transactions.
+                include_once $config['homedir'].'/include/db/mysql.php';
+                return db_run_sql_file($path);
+            } else {
+                $file_content = file($path);
+                $query = '';
+                foreach ($file_content as $sql_line) {
+                    if (trim($sql_line) !== ''
+                        && strpos($sql_line, '-- ') === false
+                    ) {
+                        $query .= $sql_line;
+                        if ((bool) preg_match("/;[\040]*\$/", $sql_line) === true) {
+                            $result = $this->dbh->query($query);
+                            if ((bool) $result === false) {
+                                $this->lastError = $this->dbh->errno.': ';
+                                $this->lastError .= $this->dbh->error;
+                                return false;
+                            }
 
-                        $query = '';
+                            $query = '';
+                        }
                     }
                 }
             }

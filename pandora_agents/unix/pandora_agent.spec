@@ -107,13 +107,14 @@ then
     cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
 	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
     # Enable the services on SystemD
-    systemctl enable pandora_agent_daemon.service
-    if [ "$?" -gt 0 ]
-    then
-        chkconfig pandora_agent_daemon on || echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
-    fi
+    systemctl enable pandora_agent_daemon.service || chkconfig pandora_agent_daemon on
 else 
-    chkconfig pandora_agent_daemon on || echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
+    chkconfig pandora_agent_daemon on
+fi
+
+if [ "$?" -gt 0 ]
+then
+    echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
 fi
 
 if [ "$1" -gt 1 ]

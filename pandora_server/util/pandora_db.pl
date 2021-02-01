@@ -1134,6 +1134,9 @@ if (defined($history_dbh)) {
 		1 # Disable certain funcionality while runningn in historical database.
 	);
 
+	# Handle partitions.
+	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);
+	
 }
 
 # Release the lock

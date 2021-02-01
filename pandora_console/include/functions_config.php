@@ -1558,11 +1558,11 @@ function config_update_config()
 
                     if (Config::set(
                         'history_partitions_auto',
-                        get_parameter_switch('history_partitions_auto'),
+                        get_parameter_switch('history_partitions_auto', 0),
                         true
                     ) !== true
                     ) {
-                        $error_update[] = __('Historical database days compact');
+                        $error_update[] = __('Historical database partitions');
                     }
 
                     if (Config::set(

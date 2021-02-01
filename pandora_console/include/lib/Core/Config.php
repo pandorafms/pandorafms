@@ -73,16 +73,16 @@ final class Config
                 false
             );
 
-            if ($config['history_db_connection'] !== false) {
-                $data = \db_get_all_rows_sql(
-                    'SELECT * FROM `tconfig`',
-                    false,
-                    false,
-                    $config['history_db_connection']
-                );
-            }
-
             ob_get_clean();
+        }
+
+        if ($config['history_db_connection'] !== false) {
+            $data = \db_get_all_rows_sql(
+                'SELECT * FROM `tconfig`',
+                false,
+                false,
+                $config['history_db_connection']
+            );
         }
 
         if (is_array($data) !== true) {

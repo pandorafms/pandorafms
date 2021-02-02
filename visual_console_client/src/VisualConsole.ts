@@ -588,6 +588,9 @@ export default class VisualConsole {
           endY: endY
         });
 
+        // Update parents...
+        this.buildRelations(item.id, startX, startY);
+
         if (save) {
           let debouncedLinePositionSave = debounce(
             500,
@@ -868,7 +871,7 @@ export default class VisualConsole {
   /**
    * Create line elements which connect the elements with their parents.
    */
-  public buildRelations(): void {
+  public buildRelations(itemId?: number, x?: number, y?: number): void {
     // Clear relations.
     this.clearRelations();
     // Add relations.
@@ -876,7 +879,22 @@ export default class VisualConsole {
       if (item.props.parentId !== null) {
         const parent = this.elementsById[item.props.parentId];
         const child = this.elementsById[item.props.id];
-        if (parent && child) this.addRelationLine(parent, child);
+
+        if (parent && child) {
+          if (itemId != undefined) {
+            if (item.props.parentId == itemId) {
+              // Update parent line position.
+              this.addRelationLine(parent, child, x, y);
+            } else if (item.props.id == itemId) {
+              // Update child line position.
+              this.addRelationLine(parent, child, undefined, undefined, x, y);
+            } else {
+              this.addRelationLine(parent, child);
+            }
+          } else {
+            this.addRelationLine(parent, child);
+          }
+        }
       }
     });
   }
@@ -1002,7 +1020,11 @@ export default class VisualConsole {
    */
   private addRelationLine(
     parent: Item<ItemProps>,
-    child: Item<ItemProps>
+    child: Item<ItemProps>,
+    parentX?: number,
+    parentY?: number,
+    childX?: number,
+    childY?: number
   ): Line {
     const identifier = `${parent.props.id}|${child.props.id}`;
     if (this.relations[identifier] != null) {
@@ -1010,8 +1032,25 @@ export default class VisualConsole {
     }
 
     // Get the items center.
-    const { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
-    const { x: endX, y: endY } = this.getVisualCenter(child.props, child);
+    let { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
+    let { x: endX, y: endY } = this.getVisualCenter(child.props, child);
+
+    // Overwrite positions if needed (while moving it!).
+    if (parentX != null) {
+      startX = parentX;
+    }
+
+    if (parentY != null) {
+      startY = parentY;
+    }
+
+    if (childX != null) {
+      endX = childX;
+    }
+
+    if (childY != null) {
+      endY = childY;
+    }
 
     // Line inherits child element status.
     const line = new Line(

@@ -646,6 +646,13 @@ export default class VisualConsole {
     // Create lines.
     this.buildRelations();
 
+    // Re-attach all connected lines if any.
+    this.elements.forEach(item => {
+      if (item instanceof Line) {
+        this.refreshLink(item);
+      }
+    });
+
     this.containerRef.addEventListener("click", this.handleContainerClick);
   }
 

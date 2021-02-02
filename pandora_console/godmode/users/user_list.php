@@ -232,20 +232,20 @@ if (isset($_GET['user_del'])) {
         if (defined('METACONSOLE') && isset($_GET['delete_all'])) {
             $servers = metaconsole_get_servers();
             foreach ($servers as $server) {
-                // Connect to the remote console
-                metaconsole_connect($server);
+                // Connect to the remote console.
+                if (metaconsole_connect($server) === NOERR) {
+                    // Delete the user
+                    $result = delete_user($id_user);
+                    if ($result) {
+                        db_pandora_audit(
+                            'User management',
+                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                        );
+                    }
 
-                // Delete the user
-                $result = delete_user($id_user);
-                if ($result) {
-                    db_pandora_audit(
-                        'User management',
-                        __('Deleted user %s from metaconsole', io_safe_input($id_user))
-                    );
+                    // Restore the db connection.
+                    metaconsole_restore_db();
                 }
-
-                // Restore the db connection
-                metaconsole_restore_db();
 
                 // Log to the metaconsole too
                 if ($result) {
@@ -613,7 +613,9 @@ foreach ($info as $user_id => $user_info) {
         $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
         if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && !isset($user_info['not_delete'])) {
             $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
-            if (defined('METACONSOLE')) {
+            if ((bool) is_metaconsole() === true
+                && (bool) can_user_access_node() === true
+            ) {
                 $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
             }
         } else {

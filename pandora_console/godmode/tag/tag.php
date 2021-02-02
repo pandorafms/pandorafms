@@ -66,6 +66,7 @@ if (is_ajax()) {
                 function ($counter, $server) use ($id_tag) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_local_modules_count($id_tag);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;
@@ -83,6 +84,7 @@ if (is_ajax()) {
                 function ($counter, $server) use ($id_tag) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_policy_modules_count($id_tag);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;
@@ -261,6 +263,7 @@ if (!empty($result)) {
                 function ($counter, $server) use ($tag_id) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_modules_count($tag_id);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;

@@ -1436,15 +1436,21 @@ if ($get_extended_event) {
         $related = events_page_related($event, $server);
     }
 
+    $connected = true;
     if ($meta) {
-        metaconsole_connect($server);
+        if (metaconsole_connect($server) === NOERR) {
+            $connected = true;
+        } else {
+            $connected = false;
+        }
     }
 
-    $custom_fields = events_page_custom_fields($event);
+    if ($connected === true) {
+        $custom_fields = events_page_custom_fields($event);
+        $custom_data = events_page_custom_data($event);
+    }
 
-    $custom_data = events_page_custom_data($event);
-
-    if ($meta) {
+    if ($meta && $connected === true) {
         metaconsole_restore_db();
     }
 

@@ -282,7 +282,7 @@ export default class VisualConsole {
     });
 
     // Move lines conneted with this item.
-    this.updateLinesConnected(e.item.props, e.newPosition);
+    this.updateLinesConnected(e.item.props, e.newPosition, false);
 
     // console.log(`Moved element #${e.item.props.id}`, e);
   };
@@ -293,6 +293,8 @@ export default class VisualConsole {
    */
   private handleElementMovementFinished: (e: ItemMovedEvent) => void = e => {
     this.movedEventManager.emit(e);
+    // Move lines conneted with this item.
+    this.updateLinesConnected(e.item.props, e.newPosition, true);
     // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
 
@@ -551,8 +553,9 @@ export default class VisualConsole {
    * @param item Item moved.
    * @param newPosition New location for item.
    * @param oldPosition Old location for item.
+   * @param save Save to ajax or not.
    */
-  protected updateLinesConnected(item: ItemProps, to: Position) {
+  protected updateLinesConnected(item: ItemProps, to: Position, save: boolean) {
     if (this.lineLinks[item.id] == null) {
       return;
     }
@@ -585,28 +588,33 @@ export default class VisualConsole {
           endY: endY
         });
 
-        let debouncedLinePositionSave = debounce(500, (options: AnyObject) => {
-          this.lineMovedEventManager.emit({
-            item: options.line,
-            startPosition: {
-              x: options.startX,
-              y: options.startY
-            },
-            endPosition: {
-              x: options.endX,
-              y: options.endY
+        if (save) {
+          let debouncedLinePositionSave = debounce(
+            500,
+            (options: AnyObject) => {
+              this.lineMovedEventManager.emit({
+                item: options.line,
+                startPosition: {
+                  x: options.startX,
+                  y: options.startY
+                },
+                endPosition: {
+                  x: options.endX,
+                  y: options.endY
+                }
+              });
             }
-          });
-        });
+          );
 
-        // Save line positon.
-        debouncedLinePositionSave({
-          line: line,
-          startX: startX,
-          startY: startY,
-          endX: endX,
-          endY: endY
-        });
+          // Save line positon.
+          debouncedLinePositionSave({
+            line: line,
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY
+          });
+        }
       }
     });
   }

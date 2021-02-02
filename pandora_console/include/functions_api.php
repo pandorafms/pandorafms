@@ -375,6 +375,102 @@ function api_get_test_event_replication_db()
 
 
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
+
+
+/**
+ * Example: http://localhost/pandora_console/include/api.php?op=get&op2=license&user=admin&apipass=1234&pass=pandora&return_type=json
+ * Retrieve license information.
+ *
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param string $returnType Return type (string, json...).
+ *
+ * @return void
+ */
+function api_get_license($trash1, $trash2, $trash3, $returnType='json')
+{
+    global $config;
+    check_login();
+
+    if (! check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', $returnType);
+        return;
+    }
+
+    enterprise_include_once('include/functions_license.php');
+    $license = enterprise_hook('license_get_info');
+    if ($license === ENTERPRISE_NOT_HOOK) {
+        // Not an enterprise environment?
+        if (license_free()) {
+            $license = 'PANDORA_FREE';
+        }
+
+        returnData(
+            $returnType,
+            [
+                'type' => 'array',
+                'data' => ['license_mode' => $license],
+            ]
+        );
+        return;
+    }
+
+    returnData(
+        $returnType,
+        [
+            'type' => 'array',
+            'data' => $license,
+        ]
+    );
+
+}
+
+
+/**
+ * Retrieve license status agents or modules left.
+ *
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param string $returnType Return type (string, json...).
+ *
+ * @return void
+ */
+function api_get_license_remaining(
+    $trash1,
+    $trash2,
+    $trash3,
+    $returnType='json'
+) {
+    enterprise_include_once('include/functions_license.php');
+    $license = enterprise_hook('license_get_info');
+    if ($license === ENTERPRISE_NOT_HOOK) {
+        if (license_free()) {
+            returnData(
+                $returnType,
+                [
+                    'type' => 'integer',
+                    'data' => PHP_INT_MAX,
+                ]
+            );
+        } else {
+            returnError('get-license', 'Failed to verify license.');
+        }
+
+        return;
+    }
+
+    returnData(
+        $returnType,
+        [
+            'type' => 'integer',
+            'data' => ($license['limit'] - $license['count_enabled']),
+        ]
+    );
+}
+
+
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
     $returnAllGroup = true;

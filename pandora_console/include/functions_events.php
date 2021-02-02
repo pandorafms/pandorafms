@@ -3952,6 +3952,7 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_data_') !== false
+        && $eventObj !== null
         && $eventObj->module() !== null
     ) {
         $target = str_replace(
@@ -3959,14 +3960,27 @@ function events_get_response_target(
             $eventObjt->module()->lastValue(),
             $target
         );
+    } else {
+        $target = str_replace(
+            '_data_',
+            __('N/A'),
+            $target
+        );
     }
 
     if (strpos($target, '_moduledescription_') !== false
+        && $eventObj !== null
         && $eventObj->module() !== null
     ) {
         $target = str_replace(
             '_moduledescription_',
             io_safe_output($eventObjt->module()->description()),
+            $target
+        );
+    } else {
+        $target = str_replace(
+            '_moduledescription_',
+            __('N/A'),
             $target
         );
     }

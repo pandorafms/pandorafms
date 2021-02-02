@@ -31,23 +31,23 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 </tr>
 <tr>
 <td>Sin agente asignado<br><br>Eventos desactivados</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>Con agente asignado<br><br>Eventos desactivados</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>Sin agente asignado<br><br>Eventos activados</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>Con agente asignado<br><br>Eventos activados</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>Sin administrar</th>
@@ -59,8 +59,8 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 </tr>
 <tr>
 <td style="width: 100px;">Independientemente de la configuración, si el host no está administrado solo se diferenciará entre si está vivo y no responde</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td style="text-align:center;"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>No asignado</th>

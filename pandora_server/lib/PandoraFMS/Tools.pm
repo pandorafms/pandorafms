@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ################################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -88,9 +88,14 @@ our @EXPORT = qw(
 	DISCOVERY_CLOUD_AWS_RDS
 	DISCOVERY_CLOUD_AZURE_COMPUTE
 	DISCOVERY_DEPLOY_AGENTS
+	DISCOVERY_APP_SAP
+	DISCOVERY_APP_DB2
+	DISCOVERY_APP_MICROSOFT_SQL_SERVER
+	DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE
 	$DEVNULL
 	$OS
 	$OS_VERSION
+	$VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
 	MODULE_NORMAL
@@ -211,6 +216,10 @@ use constant DISCOVERY_CLOUD_AWS_EC2 => 6;
 use constant DISCOVERY_CLOUD_AWS_RDS => 7;
 use constant DISCOVERY_CLOUD_AZURE_COMPUTE => 8;
 use constant DISCOVERY_DEPLOY_AGENTS => 9;
+use constant DISCOVERY_APP_SAP => 10;
+use constant DISCOVERY_APP_DB2 => 11;
+use constant DISCOVERY_APP_MICROSOFT_SQL_SERVER => 12;
+use constant DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE => 13;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
@@ -854,6 +863,24 @@ sub clean_blank {
 	$input =~ s/^\s+//g;
 	$input =~ s/\s+$//g;
 	return $input;
+}
+
+################################################################################
+# Erase blank spaces before and after the string
+################################################################################
+sub trim {
+	my $string = shift;
+	if (is_empty($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
 }
 
 ################################################################################
@@ -1528,6 +1555,10 @@ sub ping ($$) {
 		$pa_config->{'icmp_checks'},
 		1
 	);
+
+	# Set default values if config is not defined.
+	$timeout = 4 if !defined($timeout);
+	$retries = 4 if !defined($retries);
 
 	# Windows
 	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){
@@ -2431,7 +2462,7 @@ sub p_decode_json {
 	
 	if ($JSON::VERSION > 2.90) {
 		# Initialize JSON manager.
-		my $json = JSON->new->allow_nonref;
+		my $json = JSON->new->utf8->allow_nonref;
 		$decoded_data = $json->decode($data);
 	} else {
 		$decoded_data = decode_json($data);

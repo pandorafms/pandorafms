@@ -7,7 +7,7 @@
  * @license See below
  * Pandora FMS - http://pandorafms.com
  * * ==================================================
- * * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * * Please see http://pandorafms.org for full contribution list
  * * This program is free software; you can redistribute it and/or
  * * modify it under the terms of the GNU General Public License
@@ -189,6 +189,10 @@ if (is_ajax()) {
                     100,
                     true
                 );
+                $row['control'] .= ui_print_reveal_password(
+                    'ldap_admin_pass',
+                    true
+                );
                 $table->data['ldap_admin_pass'] = $row;
             break;
 
@@ -217,9 +221,32 @@ if (is_ajax()) {
             'double_auth_enabled',
             1,
             $config['double_auth_enabled'],
-            true
+            true,
+            false,
+            'showAndHide()'
         );
         $table->data['double_auth_enabled'] = $row;
+
+        // Enable 2FA for all users.
+        // Set default value.
+        set_unless_defined($config['2FA_all_users'], false);
+        $row = [];
+        $row['name'] = __('Force 2FA for all users is enabled');
+        $row['control'] .= html_print_checkbox_switch(
+            '2FA_all_users',
+            1,
+            $config['2FA_all_users'],
+            true
+        );
+
+        if (!$config['double_auth_enabled']) {
+            $table->rowclass['2FA_all_users'] = 'invisible';
+        } else {
+            $table->rowclass['2FA_all_users'] = '';
+        }
+
+            $table->data['2FA_all_users'] = $row;
+
 
         // Session timeout.
         // Default session timeout.
@@ -313,6 +340,22 @@ echo '</form>';
 ?>
 
 <script type="text/javascript">
+
+    function showAndHide() {
+        if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {
+                $('#table1-2FA_all_users').removeClass('invisible');
+                $('#table1-2FA_all_users-name').removeClass('invisible');
+                $('#table1-2FA_all_users-control').removeClass('invisible');
+                $('#table1-2FA_all_users').show();
+            } else {
+                $('#table1-2FA_all_users').hide();
+        }
+    }
+    $( document ).ready(function() {   
+
+    });
+    //For change autocreate remote users
+
     $('#auth').on('change', function(){
         type_auth = $('#auth').val();
         $.ajax({

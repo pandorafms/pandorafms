@@ -2,7 +2,7 @@
 
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -194,6 +194,7 @@ function returnData($returnType, $data, $separator=';')
             if (is_array($data['data'])) {
                 if (array_key_exists('list_index', $data)) {
                     if ($returnType == 'csv_head') {
+                        header('Content-type: text/csv');
                         foreach ($data['list_index'] as $index) {
                             echo $index;
                             if (end($data['list_index']) == $index) {
@@ -1570,7 +1571,9 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             $nombre_agente = $alias;
         }
 
-        if ($direccion_agente != '') {
+        $exists_ip = false;
+
+        if ($config['unique_ip'] && $direccion_agente != '') {
             $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
         }
 
@@ -1885,24 +1888,19 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
         }
     } else {
         // Delete only if the centralised mode is disabled.
-        if (is_central_policies_on_node()) {
+        $headers = getallheaders();
+        if (isset($headers['idk']) === false || is_management_allowed($headers['idk']) === false) {
             returnError('centralized');
             exit;
         }
 
+        // Support for Pandora Enterprise.
+        if (license_free() === false) {
+            define('PANDORA_ENTERPRISE', true);
+        }
+
         if ($agent_by_alias) {
             $idsAgents = agents_get_agent_id_by_alias(io_safe_input($id));
-        } else {
-            $idAgent = agents_get_agent_id($id, true);
-        }
-
-        if (!$agent_by_alias) {
-            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
-                return;
-            }
-        }
-
-        if ($agent_by_alias) {
             foreach ($idsAgents as $id) {
                 if (!util_api_check_agent_and_print_error($id['id_agente'], 'string', 'AD')) {
                     continue;
@@ -1915,6 +1913,11 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
                 }
             }
         } else {
+            $idAgent = agents_get_agent_id($id, true);
+            if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
+                return;
+            }
+
             $result = agents_delete_agent($idAgent, true);
         }
     }
@@ -8443,10 +8446,16 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         return;
     }
 
-    $separator = $other['data'][0];
-    $periodSeconds = $other['data'][1];
-    $tstart = $other['data'][2];
-    $tend = $other['data'][3];
+    $separator = ';';
+    $tstart = null;
+    $tend = null;
+    $periodSeconds = null;
+    if (is_array($other) === true && is_array($other['data']) === true) {
+        $separator = $other['data'][0];
+        $periodSeconds = $other['data'][1];
+        $tstart = $other['data'][2];
+        $tend = $other['data'][3];
+    }
 
     if (($tstart != '') && ($tend != '')) {
         try {
@@ -8467,36 +8476,18 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
             $date_end = $date_end->format('U');
         } catch (Exception $e) {
             returnError('error_query_module_data', 'Error in date format. ');
+            return;
         }
-
-        $sql = sprintf(
-            'SELECT utimestamp, datos 
-            FROM tagente_datos 
-            WHERE id_agente_modulo = %d AND utimestamp > %d 
-            AND utimestamp < %d 
-            ORDER BY utimestamp DESC',
-            $id,
-            $date_start,
-            $date_end
-        );
     } else {
-        if ($periodSeconds == null) {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d 
-                ORDER BY utimestamp DESC',
-                $id
-            );
+        if ($periodSeconds !== null) {
+            $date_end = get_system_time();
+            $date_start = (get_system_time() - $periodSeconds);
         } else {
-            $sql = sprintf(
-                'SELECT utimestamp, datos 
-                FROM tagente_datos 
-                WHERE id_agente_modulo = %d AND utimestamp > %d 
-                ORDER BY utimestamp DESC',
-                $id,
-                (get_system_time() - $periodSeconds)
-            );
+            $date_end = get_system_time();
+            $result = modules_get_first_date($id, $tstart);
+            if ($result !== false) {
+                $date_start = $result['first_utimestamp'];
+            }
         }
     }
 
@@ -8505,13 +8496,30 @@ function api_get_module_data($id, $thrash1, $other, $returnType)
         'utimestamp',
         'datos',
     ];
-    $data['data'] = db_get_all_rows_sql($sql);
+
+    $data['data'] = array_reduce(
+        db_uncompress_module_data($id, $date_start, $date_end),
+        function ($carry, $item) {
+            if (is_array($item['data']) === true) {
+                foreach ($item['data'] as $i => $v) {
+                    $carry[] = [
+                        'utimestamp' => $v['utimestamp'],
+                        'datos'      => $v['datos'],
+                    ];
+                }
+            }
+
+            return $carry;
+        },
+        []
+    );
 
     if ($data === false) {
         returnError('error_query_module_data', 'Error in the query of module data.');
     } else if ($data['data'] == '') {
         returnError('error_query_module_data', 'No data to show.');
     } else {
+        // returnData('csv_head', $data, $separator);
         returnData('csv', $data, $separator);
     }
 }
@@ -13082,7 +13090,8 @@ function api_get_special_days($thrash1, $thrash2, $other, $thrash3)
         $separator = $other['data'][0];
     }
 
-    $filter = false;
+    $user_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM')));
+    $filter = "id_group IN ($user_groups)";
 
     $special_days = @db_get_all_rows_filter('talert_special_days', $filter);
 
@@ -13119,17 +13128,17 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
 
-    $check_id_special_day = db_get_value('id', 'talert_special_days', 'date', $special_day);
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $check_id_special_day = db_get_value_filter('id', 'talert_special_days', ['date' => $special_day, 'id_group' => $idGroup]);
 
     if ($check_id_special_day) {
         returnError('error_create_special_day', __('Error creating special day. Specified day already exists.'));
@@ -13147,7 +13156,7 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
     } else {
         $group = groups_get_group_by_id($idGroup);
 
-        if ($group == false) {
+        if ($idGroup != 0 && $group == false) {
             returnError('error_create_special_day', __('Error creating special day. Id_group doesn\'t exist.'));
             return;
         }
@@ -13633,15 +13642,15 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
+
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
 
     if ($id_special_day == '') {
         returnError('error_update_special_day', __('Error updating special day. Id cannot be left blank.'));
@@ -13652,6 +13661,13 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 
     if (!$check_id_special_day) {
         returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exist.'));
+        return;
+    }
+
+    $id_group_org = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+
+    if (!check_acl($config['id_user'], $id_group_org, 'LM', true)) {
+        returnError('forbidden', 'string');
         return;
     }
 
@@ -13717,6 +13733,12 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
         return;
     }
 
+    $id_group = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+    if (!check_acl($config['id_user'], $id_group, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
     $return = alerts_delete_alert_special_day($id_special_day);
 
     if (is_error($return)) {
@@ -13758,12 +13780,19 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
-    $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
-    // 1 hour by default.
-    $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
+    if (is_array($other['data']) === true) {
+        $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+        // 1 hour by default.
+        $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
-    // Graph height when send email by alert
-    $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : null;
+        // Graph height when send email by alert
+        $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+    } else {
+        $graph_seconds = $other['data'];
+        $graph_threshold = 0;
+        $other['data'][1] = 0;
+        $height = 225;
+    }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
         // returnError('error_module_graph', __(''));

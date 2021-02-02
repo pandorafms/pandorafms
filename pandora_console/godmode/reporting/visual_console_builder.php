@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,8 +85,8 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
 
     // ACL for the existing visual console
     // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
-    $vconsole_write = check_acl($config['id_user'], $visualConsole['id_group'], 'VW');
-    $vconsole_manage = check_acl($config['id_user'], $visualConsole['id_group'], 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VW');
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VM');
 } else {
     db_pandora_audit(
         'ACL Violation',
@@ -143,8 +143,8 @@ switch ($activeTab) {
 
                 // ACL for the new visual console
                 // $vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
-                $vconsole_write_new = check_acl($config['id_user'], $idGroup, 'VW');
-                $vconsole_manage_new = check_acl($config['id_user'], $idGroup, 'VM');
+                $vconsole_write_new = check_acl_restricted_all($config['id_user'], $idGroup, 'VW');
+                $vconsole_manage_new = check_acl_restricted_all($config['id_user'], $idGroup, 'VM');
 
                 // The user should have permissions on the new group
                 if (!$vconsole_write_new && !$vconsole_manage_new) {

@@ -708,13 +708,26 @@ li#li-timeZone-item > select:not(:first-child) {
 
 div.label,
 div.simple-value {
-  display: inline-table;
   min-width: -webkit-fit-content;
   min-width: -moz-fit-content;
   min-width: fit-content;
   min-height: -webkit-fit-content;
   min-height: -moz-fit-content;
   min-height: fit-content;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+div.simple-value > div {
+  max-height: -webkit-fill-available;
 }
 
 div.module-graph .parent_graph p table tr {

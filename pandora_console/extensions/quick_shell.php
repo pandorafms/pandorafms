@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,12 +94,23 @@ function quickShell()
         config_update_value('gotty_ssh_port', 8081);
     }
 
+    // Context to allow self-signed certs.
+    $context = stream_context_create(
+        [
+            'http' => [ 'method' => 'GET'],
+            'ssl'  => [
+                'verify_peer'      => false,
+                'verify_peer_name' => false,
+            ],
+        ]
+    );
+
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
 
-        $test = file_get_contents($ws_url);
+        $test = file_get_contents($ws_url, false, $context);
         if ($test === false) {
             ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
             $wiz->printForm(
@@ -197,8 +208,9 @@ function quickShell()
         return;
     }
 
-    // If rediretion is enabled, we will try to connect to http:// or https:// endpoint.
-    $test = get_headers($ws_url);
+    // If rediretion is enabled, we will try to connect using
+    // http:// or https:// endpoint.
+    $test = get_headers($ws_url, null, $context);
     if ($test === false) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();
@@ -250,6 +262,12 @@ function quickShell()
         $new = "var url = '";
         $new .= $config['ws_proxy_url'].'/'.$method."';";
     }
+
+    // Update firefox issue.
+    $original = '    this.iframe_.src = \'#\';';
+    $trick = 'this.iframe_.src = \'javascript:\';';
+
+    $r = str_replace($original, $trick, $r);
 
     // Update url.
     $gotty = str_replace($url, $new, $gotty);
@@ -468,6 +486,7 @@ function quickShellSettings()
         100,
         true
     );
+    $hidden->data[1][1] .= ui_print_reveal_password('gotty_pass', true);
 
     html_print_table($t);
 

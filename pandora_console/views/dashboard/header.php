@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -194,7 +194,7 @@ if ($config['public_dashboard'] === true) {
         'combo_refresh_countdown'     => $comboRefreshCountdown,
     ];
 } else if ($config['pure']) {
-    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list'      => $back_to_dashboard_list,
             'normalscreen'                => $normalscreen,
@@ -221,7 +221,7 @@ if ($config['public_dashboard'] === true) {
         }
     }
 } else {
-    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list' => $back_to_dashboard_list,
             'fullscreen'             => $fullscreen,

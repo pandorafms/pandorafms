@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,6 +15,7 @@
 // This file only uses data retrieved in a request.
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
+enterprise_include_once('include/functions_reporting_csv.php');
 
 global $config;
 
@@ -49,7 +50,10 @@ $filename = io_safe_output($filename);
  * );
  */
 $output_csv = function ($data, $filename) {
-    $separator = (string) get_parameter('separator', ';');
+    global $config;
+
+    $separator = (string) $config['csv_divider'];
+
     $excel_encoding = (bool) get_parameter('excel_encoding', false);
 
     // CSV Output
@@ -68,9 +72,15 @@ $output_csv = function ($data, $filename) {
                 throw new Exception(__('An error occured exporting the data'));
         }
 
+        // Get key for item value.
+        $value_key = array_search('value', $items['head']);
+
         $head_line = implode($separator, $items['head']);
         echo $head_line."\n";
         foreach ($items['data'] as $item) {
+             // Find value and replace csv decimal separator.
+            $item[$value_key] = csv_format_numeric($item[$value_key]);
+
             $item = str_replace('--> '.__('Selected'), '', $item);
             $line = implode($separator, $item);
 

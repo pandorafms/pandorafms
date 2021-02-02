@@ -3,7 +3,7 @@ package PandoraFMS::NetworkServer;
 # Pandora FMS Network Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -498,7 +498,7 @@ sub exec_network_module ($$$$) {
 			$module_data = pandora_ping_latency ($pa_config, $ip_target, $timeout, $retries);
 			
 			if (defined($module_data)) {
-				$module_result = 0; # Successful
+				$module_result = 1; # Unsuccessful
 			}
 		}
 

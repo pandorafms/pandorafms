@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,9 +97,9 @@ $bheight = $layout['height'];
 $pure_url = '&pure='.$config['pure'];
 
 // ACL
-$vconsole_read = check_acl($config['id_user'], $id_group, 'VR');
-$vconsole_write = check_acl($config['id_user'], $id_group, 'VW');
-$vconsole_manage = check_acl($config['id_user'], $id_group, 'VM');
+$vconsole_read = check_acl_restricted_all($config['id_user'], $id_group, 'VR');
+$vconsole_write = check_acl_restricted_all($config['id_user'], $id_group, 'VW');
+$vconsole_manage = check_acl_restricted_all($config['id_user'], $id_group, 'VM');
 
 if (! $vconsole_read && !$vconsole_write && !$vconsole_manage) {
     db_pandora_audit(

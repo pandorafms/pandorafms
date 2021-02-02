@@ -88,6 +88,7 @@ final class Container extends Model
             'height'            => (int) $data['height'],
             'backgroundURL'     => static::extractBackgroundUrl($data),
             'relationLineWidth' => (int) $data['relationLineWidth'],
+            'hash'              => static::extractHash($data),
         ];
     }
 
@@ -199,6 +200,22 @@ final class Container extends Model
 
 
     /**
+     * Extract a hash.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing hash (not empty) or null.
+     */
+    private static function extractHash(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['hash']),
+            null
+        );
+    }
+
+
+    /**
      * Extract a background color value.
      *
      * @param array $data Unknown input data structure.
@@ -278,6 +295,10 @@ final class Container extends Model
                 false
             );
         }
+
+        $row['hash'] = md5(
+            $config['dbpass'].$row['id'].$config['id_user']
+        );
 
         return \io_safe_output($row);
     }

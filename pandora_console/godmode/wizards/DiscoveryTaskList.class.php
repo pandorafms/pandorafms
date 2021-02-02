@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -176,7 +176,7 @@ class DiscoveryTaskList extends HTML
                             'type'       => 'button',
                             'attributes' => 'class="sub upd"',
                             'return'     => true,
-                            'script'     => 'location.reload();',
+                            'script'     => 'location.href = \''.$this->url.'\';',
                         ],
                     ],
                 ],
@@ -402,12 +402,14 @@ class DiscoveryTaskList extends HTML
                 $table->headstyle[$i] = 'text-align: left;';
             }
 
+            // Task name.
+            $table->headstyle[1] .= 'min-width: 150px; width: 300px;';
             // Name.
-            $table->headstyle[4] .= 'min-width: 100px; width: 600px;';
+            $table->headstyle[4] .= 'min-width: 100px; width: 400px;';
             // Status.
             $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[6] .= 'min-width: 200px; width: 200px;';
             // Progress.
             $table->headstyle[7] .= 'min-width: 50px; width: 150px;';
             // Updated at.
@@ -448,6 +450,10 @@ class DiscoveryTaskList extends HTML
             $table->align[9] = 'left';
 
             foreach ($recon_tasks as $task) {
+                if ($this->aclMulticheck('AR|AW|AM', $task['id_group']) === false) {
+                    continue;
+                }
+
                 $no_operations = false;
                 $data = [];
                 $server_name = servers_get_name($task['id_recon_server']);
@@ -546,20 +552,31 @@ class DiscoveryTaskList extends HTML
                         true
                     );
                 } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
-                    if ($task['status'] <= 0
-                        && empty($task['summary']) === false
-                    ) {
-                        $data[5] = __('Done');
-                    } else if ($task['utimestamp'] == 0
-                        && empty($task['summary'])
-                    ) {
-                        $data[5] = __('Not started');
+                    if ($task['type'] == DISCOVERY_APP_VMWARE) {
+                        if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
+                            $data[5] = __('Done');
+                        } else if ($task['status'] > 0) {
+                            $data[5] = __('Pending');
+                        } else {
+                            $data[5] = __('Not started');
+                        }
                     } else {
-                        $data[5] = __('Pending');
+                        if ($task['status'] <= 0
+                            && empty($task['summary']) === false
+                        ) {
+                            $data[5] = __('Done');
+                        } else if ($task['utimestamp'] == 0
+                            && empty($task['summary'])
+                        ) {
+                            $data[5] = __('Not started');
+                        } else {
+                            $data[5] = __('Pending');
+                        }
                     }
                 } else {
                     if ($task['status'] <= 0
                         && empty($task['summary']) === false
+                        && (int) $task['type'] === DISCOVERY_HOSTDEVICES
                     ) {
                         $can_be_reviewed = true;
                         $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
@@ -756,7 +773,7 @@ class DiscoveryTaskList extends HTML
                         if ($ipam === true) {
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 sprintf(
-                                    'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=%d',
+                                    'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=edit&id=%d',
                                     $tipam_task_id
                                 )
                             ).'">'.html_print_image(
@@ -765,7 +782,7 @@ class DiscoveryTaskList extends HTML
                                 ['title' => __('Edit task')]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
-                                'index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=delete&id='.$tipam_task_id
+                                'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
                                 true,
@@ -1201,8 +1218,14 @@ class DiscoveryTaskList extends HTML
 
         // Header information.
         if ((int) $task['status'] <= 0 && empty($summary)) {
+            if ($task['type'] == DISCOVERY_APP_VMWARE && $task['utimestamp'] != 0) {
+                $outputMessage = __('Task completed.');
+            } else {
+                $outputMessage = __('This task has never executed');
+            }
+
             $output .= ui_print_info_message(
-                __('This task has never executed'),
+                $outputMessage,
                 '',
                 true
             );
@@ -1248,6 +1271,17 @@ class DiscoveryTaskList extends HTML
                 ],
             ]
         );
+        if (count($map->nodes) <= 1) {
+            // No nodes detected in current task definition.
+            $task = db_get_row('trecon_task', 'id_rt', $id_task);
+
+            if ((int) $task['type'] === DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE) {
+                ui_print_info_message(
+                    __('Please ensure instances or regions are being monitorized and \'scan and general monitoring\' is enabled.')
+                );
+            }
+        }
+
         $map->printMap();
     }
 

@@ -1,6 +1,6 @@
 ' windows_product_key.vbs
 ' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
-' (c) 2015 Sancho Lerena <slerena@artica.es>
+' (c) 2021 Sancho Lerena <slerena@artica.es>
 ' This plugin extends agent inventory feature. Only enterprise version
 ' ----------------------------------------------------------------
 

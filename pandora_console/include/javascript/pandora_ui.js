@@ -173,83 +173,79 @@ function load_modal(settings) {
   }
 
   if (settings.modal.ok != undefined) {
-    required_buttons.push({
-      class:
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-      text: settings.modal.ok,
-      click: function() {
-        if (AJAX_RUNNING) return;
-        if (settings.onsubmit != undefined) {
-          if (settings.onsubmit.preaction != undefined) {
-            settings.onsubmit.preaction();
-          }
-          AJAX_RUNNING = 1;
-          if (settings.onsubmit.dataType == undefined) {
-            settings.onsubmit.dataType = "html";
-          }
+    var btnClickHandler = function(d) {
+      if (AJAX_RUNNING) return;
+      if (settings.onsubmit != undefined) {
+        if (settings.onsubmit.preaction != undefined) {
+          settings.onsubmit.preaction();
+        }
+        AJAX_RUNNING = 1;
+        if (settings.onsubmit.dataType == undefined) {
+          settings.onsubmit.dataType = "html";
+        }
 
-          var formdata = new FormData();
-          if (settings.extradata) {
-            settings.extradata.forEach(function(item) {
-              if (item.value != undefined)
-                formdata.append(item.name, item.value);
-            });
-          }
-          formdata.append("page", settings.onsubmit.page);
-          formdata.append("method", settings.onsubmit.method);
+        var formdata = new FormData();
+        if (settings.extradata) {
+          settings.extradata.forEach(function(item) {
+            if (item.value != undefined) formdata.append(item.name, item.value);
+          });
+        }
+        formdata.append("page", settings.onsubmit.page);
+        formdata.append("method", settings.onsubmit.method);
 
-          var flagError = false;
-          if (Array.isArray(settings.form) === false) {
-            $("#" + settings.form + " :input").each(function() {
-              if (this.checkValidity() === false) {
-                $(this).attr("title", this.validationMessage);
-                $(this).tooltip({
-                  tooltipClass: "uitooltip",
-                  position: {
-                    my: "right bottom",
-                    at: "right top",
-                    using: function(position, feedback) {
-                      $(this).css(position);
-                      $("<div>")
-                        .addClass("arrow")
-                        .addClass(feedback.vertical)
-                        .addClass(feedback.horizontal)
-                        .appendTo(this);
-                    }
+        var flagError = false;
+        if (Array.isArray(settings.form) === false) {
+          $("#" + settings.form + " :input").each(function() {
+            if (this.checkValidity() === false) {
+              $(this).attr("title", this.validationMessage);
+              $(this).tooltip({
+                tooltipClass: "uitooltip",
+                position: {
+                  my: "right bottom",
+                  at: "right top",
+                  using: function(position, feedback) {
+                    $(this).css(position);
+                    $("<div>")
+                      .addClass("arrow")
+                      .addClass(feedback.vertical)
+                      .addClass(feedback.horizontal)
+                      .appendTo(this);
                   }
-                });
-                $(this).tooltip("open");
+                }
+              });
+              $(this).tooltip("open");
 
-                var element = $(this);
-                setTimeout(
-                  function(element) {
-                    element.tooltip("destroy");
-                    element.removeAttr("title");
-                  },
-                  3000,
-                  element
-                );
+              var element = $(this);
+              setTimeout(
+                function(element) {
+                  element.tooltip("destroy");
+                  element.removeAttr("title");
+                },
+                3000,
+                element
+              );
 
-                flagError = true;
+              flagError = true;
+            }
+
+            if (this.type == "file") {
+              if ($(this).prop("files")[0]) {
+                formdata.append(this.name, $(this).prop("files")[0]);
               }
-
-              if (this.type == "file") {
-                if ($(this).prop("files")[0]) {
-                  formdata.append(this.name, $(this).prop("files")[0]);
+            } else {
+              if ($(this).attr("type") == "checkbox") {
+                if (this.checked) {
+                  formdata.append(this.name, "on");
                 }
               } else {
-                if ($(this).attr("type") == "checkbox") {
-                  if (this.checked) {
-                    formdata.append(this.name, "on");
-                  }
-                } else {
-                  formdata.append(this.name, $(this).val());
-                }
+                formdata.append(this.name, $(this).val());
               }
-            });
-          } else {
-            settings.form.forEach(function(element) {
-              $("#" + element + " :input").each(function() {
+            }
+          });
+        } else {
+          settings.form.forEach(function(element) {
+            $("#" + element + " :input, #" + element + " textarea").each(
+              function() {
                 // TODO VALIDATE ALL INPUTS.
                 if (this.type == "file") {
                   if ($(this).prop("files")[0]) {
@@ -264,45 +260,63 @@ function load_modal(settings) {
                     formdata.append(this.name, $(this).val());
                   }
                 }
-              });
-            });
-          }
-
-          if (flagError === false) {
-            if (
-              settings.onsubmitClose != undefined &&
-              settings.onsubmitClose == 1
-            ) {
-              $(this).dialog("close");
-            }
-
-            $.ajax({
-              method: "post",
-              url: settings.url,
-              processData: false,
-              contentType: false,
-              data: formdata,
-              dataType: settings.onsubmit.dataType,
-              success: function(data) {
-                if (settings.ajax_callback != undefined) {
-                  if (settings.idMsgCallback != undefined) {
-                    settings.ajax_callback(data, settings.idMsgCallback);
-                  } else {
-                    settings.ajax_callback(data);
-                  }
-                }
-                AJAX_RUNNING = 0;
               }
-            });
-          } else {
-            AJAX_RUNNING = 0;
+            );
+          });
+        }
+
+        if (flagError === false) {
+          if (
+            settings.onsubmitClose != undefined &&
+            settings.onsubmitClose == 1
+          ) {
+            d.dialog("close");
           }
+
+          $.ajax({
+            method: "post",
+            url: settings.url,
+            processData: false,
+            contentType: false,
+            data: formdata,
+            dataType: settings.onsubmit.dataType,
+            success: function(data) {
+              console.log("successsssssssssssss");
+              console.log(data);
+              if (settings.ajax_callback != undefined) {
+                if (settings.idMsgCallback != undefined) {
+                  settings.ajax_callback(data, settings.idMsgCallback);
+                } else {
+                  settings.ajax_callback(data);
+                }
+              }
+              AJAX_RUNNING = 0;
+            }
+          });
         } else {
-          // No onsumbit configured. Directly close.
-          $(this).dialog("close");
-          if (document.getElementById(settings.form) != undefined) {
-            document.getElementById(settings.form).submit();
-          }
+          AJAX_RUNNING = 0;
+        }
+      } else {
+        // No onsumbit configured. Directly close.
+        d.dialog("close");
+        if (document.getElementById(settings.form) != undefined) {
+          document.getElementById(settings.form).submit();
+        }
+      }
+    };
+
+    required_buttons.push({
+      class:
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+      text: settings.modal.ok,
+      click: function() {
+        if (
+          settings.onsubmit != undefined &&
+          settings.onsubmit.onConfirmSubmit != undefined
+        ) {
+          settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
+        } else {
+          btnClickHandler($(this));
         }
       },
       error: function(data) {
@@ -493,4 +507,82 @@ function generalShowMsg(data, idMsg) {
       }
     ]
   });
+}
+
+function infoMessage(data, idMsg) {
+  var title = data.title;
+  var err_messge = data.text;
+
+  if (idMsg == null) {
+    idMsg = uniqId();
+  }
+
+  if ($("#" + idMsg).length === 0) {
+    $("body").append('<div title="' + title + '" id="' + idMsg + '"></div>');
+    $("#" + idMsg).empty();
+  }
+
+  $("#err_msg").empty();
+  $("#err_msg").html("\n\n" + err_messge);
+
+  $("#" + idMsg)
+    .dialog({
+      height: 250,
+      width: 528,
+      opacity: 1,
+      modal: true,
+      position: {
+        my: "center",
+        at: "center",
+        of: window,
+        collision: "fit"
+      },
+      title: data.title,
+      buttons: [
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+          text: "Retry",
+          click: function(e) {
+            handleConnection();
+          }
+        },
+        {
+          class:
+            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
+          text: "Close",
+          click: function() {
+            $(this).dialog("close");
+          }
+        }
+      ],
+
+      open: function(event, ui) {
+        $(".ui-widget-overlay").addClass("error-modal-opened");
+      },
+      close: function(event, ui) {
+        $(".ui-widget-overlay").removeClass("error-modal-opened");
+      }
+    })
+    .show();
+}
+
+function reveal_password(name) {
+  var passwordElement = $("#password-" + name);
+  var revealElement = $("#reveal_password_" + name);
+  var imagesPath = "";
+
+  if ($("#hidden-metaconsole_activated").val() == 1) {
+    imagesPath = "../../images/";
+  } else {
+    imagesPath = "images/";
+  }
+
+  if (passwordElement.attr("type") == "password") {
+    passwordElement.attr("type", "text");
+    revealElement.attr("src", imagesPath + "eye_hide.png");
+  } else {
+    passwordElement.attr("type", "password");
+    revealElement.attr("src", imagesPath + "eye_show.png");
+  }
 }

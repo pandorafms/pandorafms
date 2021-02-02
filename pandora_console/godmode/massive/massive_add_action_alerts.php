@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,10 +67,30 @@ if ($add) {
             $modules = get_parameter('module');
             $modules_id = [];
             if (!empty($modules)) {
+                $modules_id = [];
+
                 foreach ($modules as $module) {
                     foreach ($id_agents as $id_agent) {
-                        $module_id = modules_get_agentmodule_id($module, $id_agent);
-                        $modules_id[] = $module_id['id_agente_modulo'];
+                        if ($module == '0') {
+                                // Get all modules of agent.
+                                $agent_modules = db_get_all_rows_filter(
+                                    'tagente_modulo',
+                                    ['id_agente' => $id_agent],
+                                    'id_agente_modulo'
+                                );
+
+                                $agent_modules_id = array_map(
+                                    function ($field) {
+                                        return $field['id_agente_modulo'];
+                                    },
+                                    $agent_modules
+                                );
+
+                                $modules_id = array_merge($modules_id, $agent_modules_id);
+                        } else {
+                            $module_id = modules_get_agentmodule_id($module, $id_agent);
+                            $modules_id[] = $module_id['id_agente_modulo'];
+                        }
                     }
                 }
 

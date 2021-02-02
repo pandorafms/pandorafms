@@ -2031,8 +2031,8 @@ class Item extends CachedModel
                         break;
 
                         default:
-                            // Line not parent.
-                        break;
+                            // Lines could not be parents.
+                        continue 2;
                     }
 
                     if (isset($data['agentAlias']) === true

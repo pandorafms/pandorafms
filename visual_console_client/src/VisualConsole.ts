@@ -588,9 +588,6 @@ export default class VisualConsole {
           endY: endY
         });
 
-        // Update parents...
-        this.buildRelations(item.id, startX, startY);
-
         if (save) {
           let debouncedLinePositionSave = debounce(
             500,
@@ -620,6 +617,9 @@ export default class VisualConsole {
         }
       }
     });
+
+    // Update parents...
+    this.buildRelations(item.id, to.x + item.width / 2, to.y + item.height / 2);
   }
 
   public constructor(

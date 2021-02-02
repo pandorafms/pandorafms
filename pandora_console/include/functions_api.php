@@ -428,6 +428,7 @@ function api_get_license($trash1, $trash2, $trash3, $returnType='json')
 
 
 /**
+ * Example: http://localhost/pandora_console/include/api.php?op=get&op2=license_remaining&user=admin&apipass=1234&pass=pandora&return_type=json
  * Retrieve license status agents or modules left.
  *
  * @param null   $trash1     Not used.

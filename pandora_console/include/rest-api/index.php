@@ -9,6 +9,10 @@ if (!is_ajax()) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+
+// Require also some stuff from Pandora FMS.
+enterprise_include('include/functions_metaconsole.php');
+
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
 use Models\VisualConsole\Item as Item;
@@ -121,6 +125,7 @@ if ($getVisualConsole === true) {
     } catch (Throwable $e) {
         // Bad params.
         http_response_code(400);
+        hd($e);
         return;
     }
 

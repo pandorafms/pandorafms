@@ -870,6 +870,9 @@ export default class VisualConsole {
 
   /**
    * Create line elements which connect the elements with their parents.
+   *
+   * When itemId is being moved, overwrite position of the 'parent' or 'child'
+   * endpoints of the line, using X and Y values.
    */
   public buildRelations(itemId?: number, x?: number, y?: number): void {
     // Clear relations.
@@ -892,6 +895,7 @@ export default class VisualConsole {
               this.addRelationLine(parent, child);
             }
           } else {
+            // No movements default behaviour.
             this.addRelationLine(parent, child);
           }
         }

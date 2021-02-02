@@ -281,8 +281,6 @@ function load_modal(settings) {
             data: formdata,
             dataType: settings.onsubmit.dataType,
             success: function(data) {
-              console.log("successsssssssssssss");
-              console.log(data);
               if (settings.ajax_callback != undefined) {
                 if (settings.idMsgCallback != undefined) {
                   settings.ajax_callback(data, settings.idMsgCallback);

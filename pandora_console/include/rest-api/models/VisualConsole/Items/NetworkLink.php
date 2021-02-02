@@ -491,6 +491,7 @@ final class NetworkLink extends Model
      * @param array $data Input data.
      *
      * @return string JSON encoded results to be stored in DB.
+     * @throws \Exception If cannot connect to node if needed.
      */
     private static function buildLabels(array $data)
     {
@@ -513,120 +514,166 @@ final class NetworkLink extends Model
          *
          */
 
-        if (isset($links['start']) === true) {
-            $linkedStart = $links['start']['id'];
-            if (is_numeric($links['start']['id_agente_modulo']) === true
-                && $links['start']['id_agente_modulo'] > 0
-            ) {
-                $module = new \PandoraFMS\Module(
-                    (int) $links['start']['id_agente_modulo']
-                );
+        try {
+            if (isset($links['start']) === true) {
+                $linkedStart = $links['start']['id'];
+                if (is_numeric($links['start']['id_agente_modulo']) === true
+                    && $links['start']['id_agente_modulo'] > 0
+                ) {
+                    if (isset($links['start']['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        $cnn = \enterprise_hook(
+                            'metaconsole_get_connection_by_id',
+                            [ $links['start']['id_metaconsole'] ]
+                        );
 
-                if ((bool) $module->isInterfaceModule() === true) {
-                    $interface_name = $module->getInterfaceName();
-                    $interface = array_shift(
-                        $module->agent()->getInterfaces(
-                            [$interface_name]
-                        )
+                        if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                            throw new \Exception(__('Failed to connect to node'));
+                        }
+                    }
+
+                    $module = new \PandoraFMS\Module(
+                        (int) $links['start']['id_agente_modulo']
                     );
 
-                    $outOctets = 0;
-                    $inOctets = 0;
-                    $unitIn = '';
-                    $unitOut = '';
+                    if ((bool) $module->isInterfaceModule() === true) {
+                        $interface_name = $module->getInterfaceName();
+                        $interface = array_shift(
+                            $module->agent()->getInterfaces(
+                                [$interface_name]
+                            )
+                        );
 
-                    if (isset($interface['ifOutOctets']) === true) {
-                        $outOctets = $interface['ifOutOctets']->lastValue();
-                        $unitOut = $interface['ifOutOctets']->unit();
-                    } else if (isset($interface['ifHCOutOctets']) === true) {
-                        $outOctets = $interface['ifHCOutOctets']->lastValue();
-                        $unitOut = $interface['ifHCOutOctets']->unit();
-                    }
-
-                    if (isset($interface['ifInOctets']) === true) {
-                        $inOctets = $interface['ifInOctets']->lastValue();
-                        $unitIn = $interface['ifInOctets']->unit();
-                    } else if (isset($interface['ifHCInOctets']) === true) {
-                        $inOctets = $interface['ifHCInOctets']->lastValue();
-                        $unitIn = $interface['ifHCInOctets']->unit();
-                    }
-
-                    if (empty($outOctets) === true) {
                         $outOctets = 0;
-                    }
-
-                    if (empty($inOctets) === true) {
                         $inOctets = 0;
+                        $unitIn = '';
+                        $unitOut = '';
+
+                        if (isset($interface['ifOutOctets']) === true) {
+                            $outOctets = $interface['ifOutOctets']->lastValue();
+                            $unitOut = $interface['ifOutOctets']->unit();
+                        } else if (isset($interface['ifHCOutOctets']) === true) {
+                            $outOctets = $interface['ifHCOutOctets']->lastValue();
+                            $unitOut = $interface['ifHCOutOctets']->unit();
+                        }
+
+                        if (isset($interface['ifInOctets']) === true) {
+                            $inOctets = $interface['ifInOctets']->lastValue();
+                            $unitIn = $interface['ifInOctets']->unit();
+                        } else if (isset($interface['ifHCInOctets']) === true) {
+                            $inOctets = $interface['ifHCInOctets']->lastValue();
+                            $unitIn = $interface['ifHCInOctets']->unit();
+                        }
+
+                        if (empty($outOctets) === true) {
+                            $outOctets = 0;
+                        }
+
+                        if (empty($inOctets) === true) {
+                            $inOctets = 0;
+                        }
+
+                        $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
+                        $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
+
+                        $labelStart = $interface_name;
+                        $labelStart .= ' (in): '.$inOctets;
+
+                        $labelStart .= '<br>'.$interface_name;
+                        $labelStart .= ' (out): '.$outOctets;
                     }
 
-                    $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
-                    $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
-
-                    $labelStart = $interface_name;
-                    $labelStart .= ' (in): '.$inOctets;
-
-                    $labelStart .= '<br>'.$interface_name;
-                    $labelStart .= ' (out): '.$outOctets;
+                    if (isset($links['start']['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            $labelStart = $e->getMessage();
         }
 
-        if (isset($links['end']) === true) {
-            $linkedEnd = $links['end']['id'];
-            if (is_numeric($links['end']['id_agente_modulo']) === true
-                && $links['end']['id_agente_modulo'] > 0
-            ) {
-                $module = new \PandoraFMS\Module(
-                    (int) $links['end']['id_agente_modulo']
-                );
+        try {
+            if (isset($links['end']) === true) {
+                $linkedEnd = $links['end']['id'];
+                if (is_numeric($links['end']['id_agente_modulo']) === true
+                    && $links['end']['id_agente_modulo'] > 0
+                ) {
+                    if (isset($links['end']['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        $cnn = \enterprise_hook(
+                            'metaconsole_get_connection_by_id',
+                            [$links['end']['id_metaconsole']]
+                        );
 
-                if ((bool) $module->isInterfaceModule() === true) {
-                    $interface_name = $module->getInterfaceName();
-                    $interface = array_shift(
-                        $module->agent()->getInterfaces(
-                            [$interface_name]
-                        )
+                        if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                            throw new \Exception(__('Failed to connect to node'));
+                        }
+                    }
+
+                    $module = new \PandoraFMS\Module(
+                        (int) $links['end']['id_agente_modulo']
                     );
 
-                    $outOctets = 0;
-                    $inOctets = 0;
-                    $unitIn = '';
-                    $unitOut = '';
+                    if ((bool) $module->isInterfaceModule() === true) {
+                        $interface_name = $module->getInterfaceName();
+                        $interface = array_shift(
+                            $module->agent()->getInterfaces(
+                                [$interface_name]
+                            )
+                        );
 
-                    if (isset($interface['ifOutOctets']) === true) {
-                        $outOctets = $interface['ifOutOctets']->lastValue();
-                        $unitOut = $interface['ifOutOctets']->unit();
-                    } else if (isset($interface['ifHCOutOctets']) === true) {
-                        $outOctets = $interface['ifHCOutOctets']->lastValue();
-                        $unitOut = $interface['ifHCOutOctets']->unit();
-                    }
-
-                    if (isset($interface['ifInOctets']) === true) {
-                        $inOctets = $interface['ifInOctets']->lastValue();
-                        $unitIn = $interface['ifInOctets']->unit();
-                    } else if (isset($interface['ifHCInOctets']) === true) {
-                        $inOctets = $interface['ifHCInOctets']->lastValue();
-                        $unitIn = $interface['ifHCInOctets']->unit();
-                    }
-
-                    if (empty($outOctets) === true) {
                         $outOctets = 0;
-                    }
-
-                    if (empty($inOctets) === true) {
                         $inOctets = 0;
+                        $unitIn = '';
+                        $unitOut = '';
+
+                        if (isset($interface['ifOutOctets']) === true) {
+                            $outOctets = $interface['ifOutOctets']->lastValue();
+                            $unitOut = $interface['ifOutOctets']->unit();
+                        } else if (isset($interface['ifHCOutOctets']) === true) {
+                            $outOctets = $interface['ifHCOutOctets']->lastValue();
+                            $unitOut = $interface['ifHCOutOctets']->unit();
+                        }
+
+                        if (isset($interface['ifInOctets']) === true) {
+                            $inOctets = $interface['ifInOctets']->lastValue();
+                            $unitIn = $interface['ifInOctets']->unit();
+                        } else if (isset($interface['ifHCInOctets']) === true) {
+                            $inOctets = $interface['ifHCInOctets']->lastValue();
+                            $unitIn = $interface['ifHCInOctets']->unit();
+                        }
+
+                        if (empty($outOctets) === true) {
+                            $outOctets = 0;
+                        }
+
+                        if (empty($inOctets) === true) {
+                            $inOctets = 0;
+                        }
+
+                        $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
+                        $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
+
+                        $labelEnd = $interface_name;
+                        $labelEnd .= ' (in): '.$inOctets;
+
+                        $labelEnd .= '<br>'.$interface_name;
+                        $labelEnd .= ' (out): '.$outOctets;
                     }
 
-                    $outOctets = sprintf('%0.3f %s', $outOctets, $unitOut);
-                    $inOctets = sprintf('%0.3f %s', $inOctets, $unitIn);
-
-                    $labelEnd = $interface_name;
-                    $labelEnd .= ' (in): '.$inOctets;
-
-                    $labelEnd .= '<br>'.$interface_name;
-                    $labelEnd .= ' (out): '.$outOctets;
+                    if (isset($links['end']['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            $labelEnd = $e->getMessage();
         }
 
         return json_encode(

@@ -484,6 +484,7 @@ final class Container extends Model
             $item = $class::fromDB($row);
         } catch (\Throwable $e) {
             // TODO: Log this?
+            error_log(obhd($e));
         }
 
         return $item;

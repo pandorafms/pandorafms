@@ -4619,6 +4619,19 @@ function events_display_instructions($event_type='', $inst=[], $italic=true, $ev
     if ($event_type === 'alert_fired') {
         if ($event !== null) {
             // Retrieve alert template type.
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                 enterprise_include_once('include/functions_metaconsole.php');
+                $r = enterprise_hook(
+                    'metaconsole_connect',
+                    [
+                        null,
+                        $event['server_id'],
+                    ]
+                );
+            }
+
             $event_type = db_get_value_sql(
                 sprintf(
                     'SELECT ta.type
@@ -4629,6 +4642,12 @@ function events_display_instructions($event_type='', $inst=[], $italic=true, $ev
                     $event['id_alert_am']
                 )
             );
+
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                enterprise_hook('metaconsole_restore_db');
+            }
         }
     }
 

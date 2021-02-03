@@ -3670,6 +3670,7 @@ function visual_map_print_visual_map(
         $layout_data['label'] = visual_map_macro($layout_data['label'], $layout_data['id_agente_modulo']);
 
         switch ($layout_data['type']) {
+            case NETWORK_LINK:
             case LINE_ITEM:
                 visual_map_print_user_lines($layout_data, $proportion);
             break;
@@ -4396,6 +4397,9 @@ function visual_map_type_in_js($type)
             break;
         case LINE_ITEM:
         return 'line_item';
+
+        case NETWORK_LINK:
+        return 'network_link';
 
         case COLOR_CLOUD:
         return 'color_cloud';

@@ -87,7 +87,12 @@ function load_modal(settings) {
     div.id = "div-modal-" + uniq;
     div.style.display = "none";
 
-    document.getElementById("main").append(div);
+    if (document.getElementById("main") == null) {
+      // MC env.
+      document.getElementById("page").append(div);
+    } else {
+      document.getElementById("main").append(div);
+    }
 
     var id_modal_target = "#div-modal-" + uniq;
 
@@ -281,8 +286,6 @@ function load_modal(settings) {
             data: formdata,
             dataType: settings.onsubmit.dataType,
             success: function(data) {
-              console.log("successsssssssssssss");
-              console.log(data);
               if (settings.ajax_callback != undefined) {
                 if (settings.idMsgCallback != undefined) {
                   settings.ajax_callback(data, settings.idMsgCallback);
@@ -379,6 +382,8 @@ function load_modal(settings) {
           //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
+          $(this).dialog("destroy");
+
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
@@ -386,14 +391,12 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-
-          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
-      // console.log(data);
+      console.error(data);
     }
   });
 }

@@ -1462,8 +1462,8 @@ class Item extends CachedModel
             $result['linked_layout_node_id'] = $linked_layout_node_id;
         }
 
-        if ($id_layout_linked > 0 && $linked_layout_node_id > 0) {
-            // VC in node linked, force link status to enabled.
+        if ($id_layout_linked > 0) {
+            // If VC linked, force link status to enabled.
             $result['enable_link'] = 1;
         }
 

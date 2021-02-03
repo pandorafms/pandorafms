@@ -87,7 +87,12 @@ function load_modal(settings) {
     div.id = "div-modal-" + uniq;
     div.style.display = "none";
 
-    document.getElementById("main").append(div);
+    if (document.getElementById("main") == null) {
+      // MC env.
+      document.getElementById("page").append(div);
+    } else {
+      document.getElementById("main").append(div);
+    }
 
     var id_modal_target = "#div-modal-" + uniq;
 

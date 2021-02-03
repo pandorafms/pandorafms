@@ -660,12 +660,26 @@ class View extends \HTML
                 'stacked'        => $stacked,
             ];
 
-            if ((bool) is_metaconsole() === true) {
-                $params['id_server'] = $server_id;
+            // Interface FROM.
+            if (isset($itemFrom['id_metaconsole']) === true
+                && (bool) is_metaconsole() === true
+            ) {
+                $cnn = \enterprise_hook(
+                    'metaconsole_get_connection_by_id',
+                    [ $itemFrom['id_metaconsole'] ]
+                );
+
+                if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                    throw new \Exception(__('Failed to connect to node'));
+                }
+
+                $params['server_id'] = $itemFrom['id_metaconsole'];
+            } else {
+                $params['server_id'] = null;
             }
 
-            // Interface FROM.
             $from = new \PandoraFMS\Module((int) $itemFrom['id_agente_modulo']);
+
             if ((bool) $from->isInterfaceModule() === true) {
                 $interface_name = $from->getInterfaceName();
                 if ($interface_name !== null) {
@@ -703,6 +717,12 @@ class View extends \HTML
                     // Graph.
                     echo '<div id="stat-win-interface-graph from">';
 
+                    if (isset($itemFrom['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
+
                     \graphic_combined_module(
                         array_values($interface_traffic_modules),
                         $params,
@@ -711,10 +731,34 @@ class View extends \HTML
 
                     echo '</div>';
                 }
+            } else {
+                if (isset($itemFrom['id_metaconsole']) === true
+                    && (bool) is_metaconsole() === true
+                ) {
+                    \enterprise_hook('metaconsole_restore_db');
+                }
             }
 
             // Interface TO.
+            if (isset($itemTo['id_metaconsole']) === true
+                && (bool) is_metaconsole() === true
+            ) {
+                $cnn = \enterprise_hook(
+                    'metaconsole_get_connection_by_id',
+                    [ $itemTo['id_metaconsole'] ]
+                );
+
+                if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                    throw new \Exception(__('Failed to connect to node'));
+                }
+
+                $params['server_id'] = $itemTo['id_metaconsole'];
+            } else {
+                $params['server_id'] = null;
+            }
+
             $to = new \PandoraFMS\Module((int) $itemTo['id_agente_modulo']);
+
             if ((bool) $to->isInterfaceModule() === true) {
                 $interface_name = $to->getInterfaceName();
                 if ($interface_name !== null) {
@@ -752,6 +796,12 @@ class View extends \HTML
                     // Graph.
                     echo '<div id="stat-win-interface-graph to">';
 
+                    if (isset($itemTo['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
+
                     \graphic_combined_module(
                         array_values($interface_traffic_modules),
                         $params,
@@ -759,6 +809,12 @@ class View extends \HTML
                     );
 
                     echo '</div>';
+                }
+            } else {
+                if (isset($itemTo['id_metaconsole']) === true
+                    && (bool) is_metaconsole() === true
+                ) {
+                    \enterprise_hook('metaconsole_restore_db');
                 }
             }
         } catch (\Exception $e) {

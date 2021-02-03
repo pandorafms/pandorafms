@@ -3945,15 +3945,16 @@ function events_get_response_target(
             events_display_instructions(
                 $event['event_type'],
                 $instructions,
-                false
+                false,
+                $eventObjt->toArray()
             ),
             $target
         );
     }
 
     if (strpos($target, '_data_') !== false
-        && $eventObj !== null
-        && $eventObj->module() !== null
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
     ) {
         $target = str_replace(
             '_data_',
@@ -3969,12 +3970,12 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_moduledescription_') !== false
-        && $eventObj !== null
-        && $eventObj->module() !== null
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
     ) {
         $target = str_replace(
             '_moduledescription_',
-            io_safe_output($eventObjt->module()->description()),
+            io_safe_output($eventObjt->module()->descripcion()),
             $target
         );
     } else {
@@ -4467,7 +4468,14 @@ function events_page_details($event, $server='')
 
     $data = [];
     $data[0] = __('Instructions');
-    $data[1] = html_entity_decode(events_display_instructions($event['event_type'], $event, true));
+    $data[1] = html_entity_decode(
+        events_display_instructions(
+            $event['event_type'],
+            $event,
+            true,
+            $event
+        )
+    );
     $table_details->data[] = $data;
 
     $data = [];
@@ -4598,13 +4606,31 @@ function events_display_status($status)
  *                            instructions.
  * @param boolean $italic     Display N/A between italic html marks if
  *                            instruction is not found.
+ * @param array   $eventObj   Event object.
  *
  * @return string Safe output.
  */
-function events_display_instructions($event_type='', $inst=[], $italic=true)
+function events_display_instructions($event_type='', $inst=[], $italic=true, $event=null)
 {
+    if ($event_type === 'alert_fired') {
+        if ($event !== null) {
+            // Retrieve alert template type.
+            $event_type = db_get_value_sql(
+                sprintf(
+                    'SELECT ta.type
+                    FROM talert_templates ta
+                    INNER JOIN talert_template_modules tam
+                        ON ta.id=tam.id_alert_template
+                    WHERE tam.id = %d',
+                    $event['id_alert_am']
+                )
+            );
+        }
+    }
+
     switch ($event_type) {
         case 'going_unknown':
+        case 'unknown':
             if ($inst['unknown_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['unknown_instructions']));
             }
@@ -4612,6 +4638,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_warning':
         case 'going_down_warning':
+        case 'warning':
             if ($inst['warning_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['warning_instructions']));
             }
@@ -4619,6 +4646,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_critical':
         case 'going_down_critical':
+        case 'critical':
             if ($inst['critical_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['critical_instructions']));
             }
@@ -7209,7 +7237,12 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_event_instruction_') !== false) {
         $value = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $event,
+                false,
+                $event
+            ),
             $value
         );
     }

@@ -74,14 +74,29 @@ class Event extends Entity
             parent::__construct($table);
         }
 
-        if ($this->id_agente() !== null) {
-            $this->linkedAgent = new Agent($this->id_agente());
+        try {
+            if ((bool) \is_metaconsole() === true
+                && $this->server_id() !== null
+            ) {
+                $this->nodeId = $this->server_id();
+            }
+
+            $this->connectNode();
+
+            if ($this->id_agente() !== null) {
+                $this->linkedAgent = new Agent((int) $this->id_agente());
+            }
+
+            if ($this->id_agentmodule() !== null) {
+                $this->linkedModule = new Module((int) $this->id_agentmodule());
+            }
+        } catch (\Exception $e) {
+            // Do not link items if failed to find them.
+            $this->restoreConnection();
         }
 
-        if ($this->id_agentmodule() !== null) {
-            $this->linkedModule = new Module($this->id_agentmodule());
-        }
-
+        // Restore if needed.
+        $this->restoreConnection();
     }
 
 

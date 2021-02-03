@@ -91,8 +91,10 @@ class Module extends Entity
      * @return PandoraFMS\Module found or null if not found.
      * @throws \Exception On error.
      */
-    public static function search(array $params, ?int $limit=0)
-    {
+    public static function search(
+        array $params,
+        ?int $limit=0
+    ) {
         if (empty($params) === true) {
             return null;
         }
@@ -192,20 +194,39 @@ class Module extends Entity
      *
      * @param integer|null $id_agent_module Module id.
      * @param boolean      $link_agent      Link agent object.
+     * @param integer|null $nodeId          Target node (if metaconsole
+     *                                      environment).
      *
      * @throws \Exception On error.
      */
     public function __construct(
         ?int $id_agent_module=null,
-        bool $link_agent=false
+        bool $link_agent=false,
+        ?int $nodeId=null
     ) {
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
-            parent::__construct(
-                'tagente_modulo',
-                ['id_agente_modulo' => $id_agent_module]
-            );
+            if ($nodeId !== null) {
+                $this->nodeId = $nodeId;
+            }
+
+            try {
+                // Connect to node if needed.
+                $this->connectNode();
+
+                parent::__construct(
+                    'tagente_modulo',
+                    ['id_agente_modulo' => $id_agent_module]
+                );
+
+                // Restore.
+                $this->restoreConnection();
+            } catch (\Exception $e) {
+                $this->restoreConnection();
+                // Forward exception.
+                throw $e;
+            }
 
             if ($this->nombre() === 'delete_pending') {
                 return null;
@@ -229,14 +250,22 @@ class Module extends Entity
         }
 
         try {
+            // Connect to node if needed.
+            $this->connectNode();
+
             // Customize certain fields.
             $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
+
+            // Restore.
+            $this->restoreConnection();
         } catch (\Exception $e) {
+            // Restore.
+            $this->restoreConnection();
+
             $this->status = new Modulestatus();
         }
 
         // Customize certain fields.
-        $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
         $this->moduleType = new ModuleType($this->id_tipo_modulo());
 
         // Include some enterprise dependencies.
@@ -267,8 +296,15 @@ class Module extends Entity
     {
         if ($this->linkedAgent === null) {
             try {
+                // Connect to node if needed.
+                $this->connectNode();
                 $this->linkedAgent = new Agent($this->id_agente());
+                // Connect to node if needed.
+                $this->restoreConnection();
             } catch (\Exception $e) {
+                // Connect to node if needed.
+                $this->restoreConnection();
+
                 // Unexistent agent.
                 return null;
             }

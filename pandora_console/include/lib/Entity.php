@@ -57,6 +57,20 @@ abstract class Entity
      */
     private $enterprise;
 
+    /**
+     * MC Node id.
+     *
+     * @var integer|null
+     */
+    protected $nodeId = null;
+
+    /**
+     * Connected to external node.
+     *
+     * @var boolean
+     */
+    private $connected = false;
+
 
     /**
      * Instances a new object using array definition.
@@ -190,6 +204,53 @@ abstract class Entity
     public function toArray()
     {
         return $this->fields;
+    }
+
+
+    /**
+     * Connects to current nodeId target.
+     * If no nodeId is defined, then returns without doing anything.
+     *
+     * @return void
+     * @throws \Exception On error.
+     */
+    public function connectNode()
+    {
+        if ($this->nodeId === null) {
+            return;
+        }
+
+        \enterprise_include_once('include/functions_metaconsole.php');
+        $r = \enterprise_hook(
+            'metaconsole_connect',
+            [
+                null,
+                $this->nodeId,
+            ]
+        );
+
+        if ($r !== NOERR) {
+            throw new \Exception(
+                __('Cannot connect to node %d', $this->nodeId)
+            );
+        }
+
+        $this->connected = true;
+    }
+
+
+    /**
+     * Restore connection after connectNode.
+     *
+     * @return void
+     */
+    public function restoreConnection()
+    {
+        if ($this->connected === true) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_hook('metaconsole_restore_db');
+        }
+
     }
 
 

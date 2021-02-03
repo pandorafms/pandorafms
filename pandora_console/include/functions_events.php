@@ -3718,6 +3718,14 @@ function events_get_response_target(
 ) {
     global $config;
 
+    include_once $config['homedir'].'/vendor/autoload.php';
+
+    try {
+        $eventObjt = new PandoraFMS\Event($event_id);
+    } catch (Exception $e) {
+        $eventObjt = new PandoraFMS\Event();
+    }
+
     // If server_id > 0, it's a metaconsole query.
     $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
@@ -3915,9 +3923,69 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_event_instruction_') !== false) {
+        // Fallback to module instructions if not defined in event.
+        $instructions = [];
+
+        foreach ([
+            'warning_instructions',
+            'critical_instructions',
+            'unknown_instructions',
+        ] as $i) {
+            $instructions[$i] = $event[$i];
+            if (empty($instructions[$i]) === true
+                && $eventObjt->module() !== null
+            ) {
+                try {
+                    $instructions[$i] = $eventObjt->module()->{$i}();
+                } catch (Exception $e) {
+                    // Method not found.
+                    $instructions[$i] = null;
+                }
+            }
+        }
+
         $target = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $instructions,
+                false,
+                $eventObjt->toArray()
+            ),
+            $target
+        );
+    }
+
+    if (strpos($target, '_data_') !== false
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
+    ) {
+        $target = str_replace(
+            '_data_',
+            $eventObjt->module()->lastValue(),
+            $target
+        );
+    } else {
+        $target = str_replace(
+            '_data_',
+            __('N/A'),
+            $target
+        );
+    }
+
+    if (strpos($target, '_moduledescription_') !== false
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
+    ) {
+        $target = str_replace(
+            '_moduledescription_',
+            io_safe_output($eventObjt->module()->descripcion()),
+            $target
+        );
+    } else {
+        $target = str_replace(
+            '_moduledescription_',
+            __('N/A'),
             $target
         );
     }
@@ -4404,7 +4472,14 @@ function events_page_details($event, $server='')
 
     $data = [];
     $data[0] = __('Instructions');
-    $data[1] = html_entity_decode(events_display_instructions($event['event_type'], $event, true));
+    $data[1] = html_entity_decode(
+        events_display_instructions(
+            $event['event_type'],
+            $event,
+            true,
+            $event
+        )
+    );
     $table_details->data[] = $data;
 
     $data = [];
@@ -4535,13 +4610,50 @@ function events_display_status($status)
  *                            instructions.
  * @param boolean $italic     Display N/A between italic html marks if
  *                            instruction is not found.
+ * @param array   $eventObj   Event object.
  *
  * @return string Safe output.
  */
-function events_display_instructions($event_type='', $inst=[], $italic=true)
+function events_display_instructions($event_type='', $inst=[], $italic=true, $event=null)
 {
+    if ($event_type === 'alert_fired') {
+        if ($event !== null) {
+            // Retrieve alert template type.
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                 enterprise_include_once('include/functions_metaconsole.php');
+                $r = enterprise_hook(
+                    'metaconsole_connect',
+                    [
+                        null,
+                        $event['server_id'],
+                    ]
+                );
+            }
+
+            $event_type = db_get_value_sql(
+                sprintf(
+                    'SELECT ta.type
+                    FROM talert_templates ta
+                    INNER JOIN talert_template_modules tam
+                        ON ta.id=tam.id_alert_template
+                    WHERE tam.id = %d',
+                    $event['id_alert_am']
+                )
+            );
+
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                enterprise_hook('metaconsole_restore_db');
+            }
+        }
+    }
+
     switch ($event_type) {
         case 'going_unknown':
+        case 'unknown':
             if ($inst['unknown_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['unknown_instructions']));
             }
@@ -4549,6 +4661,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_warning':
         case 'going_down_warning':
+        case 'warning':
             if ($inst['warning_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['warning_instructions']));
             }
@@ -4556,6 +4669,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_critical':
         case 'going_down_critical':
+        case 'critical':
             if ($inst['critical_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['critical_instructions']));
             }
@@ -7146,7 +7260,12 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_event_instruction_') !== false) {
         $value = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $event,
+                false,
+                $event
+            ),
             $value
         );
     }

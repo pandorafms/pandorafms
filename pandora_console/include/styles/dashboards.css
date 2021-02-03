@@ -407,6 +407,10 @@ table.group_modules_status_box tr td span a {
   text-align: center;
 }
 
+table.widget_agent_module tbody tr td {
+  padding: 5px;
+}
+
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
 }

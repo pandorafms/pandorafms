@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2821,7 +2821,8 @@ function ui_print_status_sets(
     $title='',
     $return=false,
     $options=false,
-    $extra_info=''
+    $extra_info='',
+    $get_status_color=true
 ) {
     global $config;
 
@@ -2830,9 +2831,13 @@ function ui_print_status_sets(
     }
 
     if (isset($options['style'])) {
-        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] .= ' display: inline-block;';
     } else {
-        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] = 'display: inline-block;';
+    }
+
+    if ($get_status_color === true) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
     if (isset($options['class'])) {
@@ -3803,7 +3808,11 @@ function ui_toggle(
     if ($clean === false) {
         $header_class = 'white_table_graph_header';
     } else {
-        $main_class = '';
+        if ($main_class == 'box-shadow white_table_graph') {
+            // Default value, clean class.
+            $main_class = '';
+        }
+
         $container_class = 'white-box-content-clean';
     }
 
@@ -3832,14 +3841,14 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'class' => 'float-left',
+                    'style' => 'object-fit: contain; margin-right:10px;',
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]
             );
         }
 
-        $output .= '&nbsp;&nbsp';
         $output .= '<b>'.$name.'</b>';
     } else {
         $output .= $name;
@@ -4087,13 +4096,17 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 function ui_forced_public_url()
 {
     global $config;
-    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+
+    $exclusions = [];
+    if (empty($config['public_url_exclusions']) === false) {
+        $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+    }
 
     if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
         return false;
     }
 
-    return (bool) $config['force_public_url'];
+    return isset($config['force_public_url']) && (bool) $config['force_public_url'];
 }
 
 
@@ -5701,7 +5714,7 @@ function ui_print_module_string_value(
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
 					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a></span>';
+					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;']).'</a></span>';
             }
         }
     }
@@ -5822,6 +5835,7 @@ function ui_get_snapshot_image($link, $is_image)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Snapshot view'),
+            'style'  => 'max-height: 20px; vertical-align: middle;',
         ]
     ).'</a>';
 

@@ -87,7 +87,12 @@ function load_modal(settings) {
     div.id = "div-modal-" + uniq;
     div.style.display = "none";
 
-    document.getElementById("main").append(div);
+    if (document.getElementById("main") == null) {
+      // MC env.
+      document.getElementById("page").append(div);
+    } else {
+      document.getElementById("main").append(div);
+    }
 
     var id_modal_target = "#div-modal-" + uniq;
 
@@ -173,138 +178,148 @@ function load_modal(settings) {
   }
 
   if (settings.modal.ok != undefined) {
+    var btnClickHandler = function(d) {
+      if (AJAX_RUNNING) return;
+      if (settings.onsubmit != undefined) {
+        if (settings.onsubmit.preaction != undefined) {
+          settings.onsubmit.preaction();
+        }
+        AJAX_RUNNING = 1;
+        if (settings.onsubmit.dataType == undefined) {
+          settings.onsubmit.dataType = "html";
+        }
+
+        var formdata = new FormData();
+        if (settings.extradata) {
+          settings.extradata.forEach(function(item) {
+            if (item.value != undefined) formdata.append(item.name, item.value);
+          });
+        }
+        formdata.append("page", settings.onsubmit.page);
+        formdata.append("method", settings.onsubmit.method);
+
+        var flagError = false;
+        if (Array.isArray(settings.form) === false) {
+          $("#" + settings.form + " :input").each(function() {
+            if (this.checkValidity() === false) {
+              $(this).attr("title", this.validationMessage);
+              $(this).tooltip({
+                tooltipClass: "uitooltip",
+                position: {
+                  my: "right bottom",
+                  at: "right top",
+                  using: function(position, feedback) {
+                    $(this).css(position);
+                    $("<div>")
+                      .addClass("arrow")
+                      .addClass(feedback.vertical)
+                      .addClass(feedback.horizontal)
+                      .appendTo(this);
+                  }
+                }
+              });
+              $(this).tooltip("open");
+
+              var element = $(this);
+              setTimeout(
+                function(element) {
+                  element.tooltip("destroy");
+                  element.removeAttr("title");
+                },
+                3000,
+                element
+              );
+
+              flagError = true;
+            }
+
+            if (this.type == "file") {
+              if ($(this).prop("files")[0]) {
+                formdata.append(this.name, $(this).prop("files")[0]);
+              }
+            } else {
+              if ($(this).attr("type") == "checkbox") {
+                if (this.checked) {
+                  formdata.append(this.name, "on");
+                }
+              } else {
+                formdata.append(this.name, $(this).val());
+              }
+            }
+          });
+        } else {
+          settings.form.forEach(function(element) {
+            $("#" + element + " :input, #" + element + " textarea").each(
+              function() {
+                // TODO VALIDATE ALL INPUTS.
+                if (this.type == "file") {
+                  if ($(this).prop("files")[0]) {
+                    formdata.append(this.name, $(this).prop("files")[0]);
+                  }
+                } else {
+                  if ($(this).attr("type") == "checkbox") {
+                    if (this.checked) {
+                      formdata.append(this.name, "on");
+                    }
+                  } else {
+                    formdata.append(this.name, $(this).val());
+                  }
+                }
+              }
+            );
+          });
+        }
+
+        if (flagError === false) {
+          if (
+            settings.onsubmitClose != undefined &&
+            settings.onsubmitClose == 1
+          ) {
+            d.dialog("close");
+          }
+
+          $.ajax({
+            method: "post",
+            url: settings.url,
+            processData: false,
+            contentType: false,
+            data: formdata,
+            dataType: settings.onsubmit.dataType,
+            success: function(data) {
+              if (settings.ajax_callback != undefined) {
+                if (settings.idMsgCallback != undefined) {
+                  settings.ajax_callback(data, settings.idMsgCallback);
+                } else {
+                  settings.ajax_callback(data);
+                }
+              }
+              AJAX_RUNNING = 0;
+            }
+          });
+        } else {
+          AJAX_RUNNING = 0;
+        }
+      } else {
+        // No onsumbit configured. Directly close.
+        d.dialog("close");
+        if (document.getElementById(settings.form) != undefined) {
+          document.getElementById(settings.form).submit();
+        }
+      }
+    };
+
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
       click: function() {
-        if (AJAX_RUNNING) return;
-        if (settings.onsubmit != undefined) {
-          if (settings.onsubmit.preaction != undefined) {
-            settings.onsubmit.preaction();
-          }
-          AJAX_RUNNING = 1;
-          if (settings.onsubmit.dataType == undefined) {
-            settings.onsubmit.dataType = "html";
-          }
-
-          var formdata = new FormData();
-          if (settings.extradata) {
-            settings.extradata.forEach(function(item) {
-              if (item.value != undefined)
-                formdata.append(item.name, item.value);
-            });
-          }
-          formdata.append("page", settings.onsubmit.page);
-          formdata.append("method", settings.onsubmit.method);
-
-          var flagError = false;
-          if (Array.isArray(settings.form) === false) {
-            $("#" + settings.form + " :input").each(function() {
-              if (this.checkValidity() === false) {
-                $(this).attr("title", this.validationMessage);
-                $(this).tooltip({
-                  tooltipClass: "uitooltip",
-                  position: {
-                    my: "right bottom",
-                    at: "right top",
-                    using: function(position, feedback) {
-                      $(this).css(position);
-                      $("<div>")
-                        .addClass("arrow")
-                        .addClass(feedback.vertical)
-                        .addClass(feedback.horizontal)
-                        .appendTo(this);
-                    }
-                  }
-                });
-                $(this).tooltip("open");
-
-                var element = $(this);
-                setTimeout(
-                  function(element) {
-                    element.tooltip("destroy");
-                    element.removeAttr("title");
-                  },
-                  3000,
-                  element
-                );
-
-                flagError = true;
-              }
-
-              if (this.type == "file") {
-                if ($(this).prop("files")[0]) {
-                  formdata.append(this.name, $(this).prop("files")[0]);
-                }
-              } else {
-                if ($(this).attr("type") == "checkbox") {
-                  if (this.checked) {
-                    formdata.append(this.name, "on");
-                  }
-                } else {
-                  formdata.append(this.name, $(this).val());
-                }
-              }
-            });
-          } else {
-            settings.form.forEach(function(element) {
-              $("#" + element + " :input, #" + element + " textarea").each(
-                function() {
-                  // TODO VALIDATE ALL INPUTS.
-                  if (this.type == "file") {
-                    if ($(this).prop("files")[0]) {
-                      formdata.append(this.name, $(this).prop("files")[0]);
-                    }
-                  } else {
-                    if ($(this).attr("type") == "checkbox") {
-                      if (this.checked) {
-                        formdata.append(this.name, "on");
-                      }
-                    } else {
-                      formdata.append(this.name, $(this).val());
-                    }
-                  }
-                }
-              );
-            });
-          }
-
-          if (flagError === false) {
-            if (
-              settings.onsubmitClose != undefined &&
-              settings.onsubmitClose == 1
-            ) {
-              $(this).dialog("close");
-            }
-
-            $.ajax({
-              method: "post",
-              url: settings.url,
-              processData: false,
-              contentType: false,
-              data: formdata,
-              dataType: settings.onsubmit.dataType,
-              success: function(data) {
-                if (settings.ajax_callback != undefined) {
-                  if (settings.idMsgCallback != undefined) {
-                    settings.ajax_callback(data, settings.idMsgCallback);
-                  } else {
-                    settings.ajax_callback(data);
-                  }
-                }
-                AJAX_RUNNING = 0;
-              }
-            });
-          } else {
-            AJAX_RUNNING = 0;
-          }
+        if (
+          settings.onsubmit != undefined &&
+          settings.onsubmit.onConfirmSubmit != undefined
+        ) {
+          settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
         } else {
-          // No onsumbit configured. Directly close.
-          $(this).dialog("close");
-          if (document.getElementById(settings.form) != undefined) {
-            document.getElementById(settings.form).submit();
-          }
+          btnClickHandler($(this));
         }
       },
       error: function(data) {
@@ -367,6 +382,8 @@ function load_modal(settings) {
           //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
+          $(this).dialog("destroy");
+
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
@@ -374,14 +391,12 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-
-          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
-      // console.log(data);
+      console.error(data);
     }
   });
 }

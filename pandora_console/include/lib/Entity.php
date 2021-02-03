@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,12 +61,12 @@ abstract class Entity
     /**
      * Instances a new object using array definition.
      *
-     * @param string $class_str Class name.
      * @param array  $data      Fields data.
+     * @param string $class_str Class name.
      *
      * @return object With current definition.
      */
-    public static function build(string $class_str, array $data=[])
+    public static function build(array $data=[], string $class_str=__CLASS__)
     {
         $obj = new $class_str();
         // Set values.

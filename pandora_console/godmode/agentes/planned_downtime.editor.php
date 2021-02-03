@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -143,16 +143,29 @@ $user_groups_ad = array_keys(
     users_get_groups($config['id_user'], $access)
 );
 
+// Check AD permission on downtime.
+$downtime_group = db_get_value(
+    'id_group',
+    'tplanned_downtime',
+    'id',
+    $id_downtime
+);
+
+if ($id_downtime > 0) {
+    if (!check_acl_restricted_all($config['id_user'], $downtime_group, 'AW')
+        && !check_acl_restricted_all($config['id_user'], $downtime_group, 'AD')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access downtime scheduler'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
+}
+
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION.
 if ($insert_downtime_agent === 1) {
-    // Check AD permission on downtime.
-    $downtime_group = db_get_value(
-        'id_group',
-        'tplanned_downtime',
-        'id',
-        $id_downtime
-    );
-
     if ($downtime_group === false
         || !in_array($downtime_group, $user_groups_ad)
     ) {
@@ -644,11 +657,20 @@ $table->data[0][1] = html_print_input_text(
     true,
     $disabled_in_execution
 );
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('AW') === true
+    || users_can_manage_group_all('AD') === true
+) {
+    $return_all_group = true;
+}
+
 $table->data[1][0] = __('Group');
 $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     false,
     $access,
-    true,
+    $return_all_group,
     'id_group',
     $id_group,
     '',

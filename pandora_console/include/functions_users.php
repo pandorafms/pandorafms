@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -123,10 +123,15 @@ function users_get_groups_for_select(
     $returnAllColumns=false,
     $id_groups=null,
     $keys_field='id_grupo',
-    $ajax_format=false
+    $ajax_format=false,
+    $check_user_can_manage_all=false
 ) {
     if ($id_groups === false) {
         $id_groups = null;
+    }
+
+    if ($check_user_can_manage_all === true && users_can_manage_group_all($privilege) === false) {
+        $returnAllGroup = false;
     }
 
     $user_groups = users_get_groups(

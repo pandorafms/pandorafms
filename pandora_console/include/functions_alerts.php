@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -2125,6 +2125,8 @@ function get_group_alerts(
         $disabled = $filter;
     }
 
+    $filter .= ' AND talert_template_modules.disabled = 0 ';
+
     switch ($disabled) {
         case 'notfired':
             $filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -2181,7 +2183,7 @@ function get_group_alerts(
                 if (empty($id_group)) {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo
-						WHERE 1 = 0';
+                        WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo
@@ -2190,7 +2192,8 @@ function get_group_alerts(
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg
 									ON ta.id_agente = tasg.id_agent
-								WHERE
+								WHERE ta.disabled = 0
+                                    AND
 										id_grupo IN ('.implode(',', $id_group).')
 										OR id_group IN ('.implode(',', $id_group).'))';
                 }
@@ -2199,7 +2202,7 @@ function get_group_alerts(
 					FROM tagente_modulo
 					WHERE delete_pending = 0
 						AND id_agente IN (SELECT id_agente
-							FROM tagente WHERE id_grupo = '.$idGroup.')';
+							FROM tagente WHERE id_grupo = '.$idGroup.' AND tagente.disabled = 0)';
             }
         } else {
             // ALL GROUP

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -558,15 +558,51 @@ if ($update_user) {
     if ($config['user_can_update_password']) {
         $password_new = (string) get_parameter('password_new', '');
         $password_confirm = (string) get_parameter('password_confirm', '');
+        $own_password_confirm = (string) get_parameter('own_password_confirm', '');
+
         if ($password_new != '') {
+            $correct_password = false;
+
+            $user_credentials_check = process_user_login($config['id_user'], $own_password_confirm, true);
+
+            if ($user_credentials_check !== false) {
+                $correct_password = true;
+            }
+
             if ($password_confirm == $password_new) {
-                if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
-                    $pass_ok = login_validate_pass($password_new, $id, true);
-                    if ($pass_ok != 1) {
-                        ui_print_error_message($pass_ok);
+                if ($correct_password === true || is_user_admin($config['id_user'])) {
+                    if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                        $pass_ok = login_validate_pass($password_new, $id, true);
+                        if ($pass_ok != 1) {
+                            ui_print_error_message($pass_ok);
+                        } else {
+                            $res2 = update_user_password($id, $password_new);
+                            if ($res2) {
+                                db_process_sql_insert(
+                                    'tsesion',
+                                    [
+                                        'id_sesion'   => '',
+                                        'id_usuario'  => $id,
+                                        'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                        'accion'      => 'Password&#x20;change',
+                                        'descripcion' => 'Access password updated',
+                                        'fecha'       => date('Y-m-d H:i:s'),
+                                        'utimestamp'  => time(),
+                                    ]
+                                );
+                                $res3 = save_pass_history($id, $password_new);
+                            }
+
+                            ui_print_result_message(
+                                $res1 || $res2,
+                                __('User info successfully updated'),
+                                __('Error updating user info (no change?)')
+                            );
+                        }
                     } else {
                         $res2 = update_user_password($id, $password_new);
                         if ($res2) {
+                            $res3 = save_pass_history($id, $password_new);
                             db_process_sql_insert(
                                 'tsesion',
                                 [
@@ -579,7 +615,6 @@ if ($update_user) {
                                     'utimestamp'  => time(),
                                 ]
                             );
-                            $res3 = save_pass_history($id, $password_new);
                         }
 
                         ui_print_result_message(
@@ -589,28 +624,11 @@ if ($update_user) {
                         );
                     }
                 } else {
-                    $res2 = update_user_password($id, $password_new);
-                    if ($res2) {
-                        $res3 = save_pass_history($id, $password_new);
-                        db_process_sql_insert(
-                            'tsesion',
-                            [
-                                'id_sesion'   => '',
-                                'id_usuario'  => $id,
-                                'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                                'accion'      => 'Password&#x20;change',
-                                'descripcion' => 'Access password updated',
-                                'fecha'       => date('Y-m-d H:i:s'),
-                                'utimestamp'  => time(),
-                            ]
-                        );
+                    if ($own_password_confirm === '') {
+                        ui_print_error_message(__('Password of the active user is required to perform password change'));
+                    } else {
+                        ui_print_error_message(__('Password of active user is not correct'));
                     }
-
-                    ui_print_result_message(
-                        $res1 || $res2,
-                        __('User info successfully updated'),
-                        __('Error updating user info (no change?)')
-                    );
                 }
             } else {
                 db_process_sql_insert(
@@ -877,6 +895,25 @@ if ($config['user_can_update_password']) {
         true,
         true
     ).'</span></div>';
+
+    if (!is_user_admin($config['id_user'])) {
+        $own_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input',
+                'placeholder' => __('Own password confirmation'),
+            ],
+            true,
+            true
+        ).'</span></div>';
+    }
 }
 
 $own_info = get_user_info($config['id_user']);
@@ -1191,7 +1228,7 @@ if (is_metaconsole()) {
 
 if ($id != '' && !$is_err) {
     $div_user_info = '<div class="edit_user_info_left">'.$avatar.$user_id_create.'</div>
-    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';
+    <div class="edit_user_info_right">'.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$own_pass_confirm.$global_profile.'</div>';
 } else {
     $div_user_info = '<div class="edit_user_info_left">'.$avatar.'</div>
     <div class="edit_user_info_right">'.$user_id_create.$user_id_update_view.$full_name.$new_pass.$new_pass_confirm.$global_profile.'</div>';

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -316,6 +316,7 @@ class ModuleValueWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
+                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
             ],
         ];
 
@@ -382,29 +383,7 @@ class ModuleValueWidget extends Widget
         $id_agent = $this->values['agentId'];
         $id_group = agents_get_agent_group($id_agent);
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === 0) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
-
         $id_module = $this->values['moduleId'];
-
-        if (modules_get_agentmodule_agent($id_module) !== (int) $id_agent) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
 
         $data_module = \modules_get_last_value($id_module);
 

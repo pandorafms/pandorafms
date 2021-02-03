@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -170,8 +170,13 @@ if ($maps !== false) {
         $data['name'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$map['id_tgis_map'].'">'.$map['map_name'].'</a> ';
         $data['group'] = ui_print_group_icon($map['group_id'], true);
 
-        if ($edit_gis_maps) {
-            if ($display_default_column) {
+        $data['default'] = '';
+        $data['op'] = '';
+
+        if (check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+            || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM')
+        ) {
+            if (check_acl_restricted_all($config['id_user'], 0, 'MM')) {
                 $checked = false;
                 if ($map['default_map']) {
                     $checked = true;

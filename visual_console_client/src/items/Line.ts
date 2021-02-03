@@ -8,9 +8,9 @@ import {
 import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 import TypedEvent, { Listener, Disposable } from "../lib/TypedEvent";
 
-interface LineProps extends ItemProps {
+export interface LineProps extends ItemProps {
   // Overrided properties.
-  readonly type: ItemType.LINE_ITEM;
+  type: number;
   label: null;
   isLinkEnabled: false;
   parentId: null;
@@ -20,6 +20,16 @@ interface LineProps extends ItemProps {
   endPosition: Position;
   lineWidth: number;
   color: string | null;
+  viewportOffsetX: number;
+  viewportOffsetY: number;
+  labelEnd: string;
+  labelStart: string;
+  linkedEnd: number | null;
+  linkedStart: number | null;
+  labelEndWidth: number;
+  labelEndHeight: number;
+  labelStartWidth: number;
+  labelStartHeight: number;
 }
 
 /**
@@ -54,7 +64,17 @@ export function linePropsDecoder(data: AnyObject): LineProps | never {
       y: parseIntOr(data.endY, 0)
     },
     lineWidth: parseIntOr(data.lineWidth || data.borderWidth, 1),
-    color: notEmptyStringOr(data.borderColor || data.color, null)
+    color: notEmptyStringOr(data.borderColor || data.color, null),
+    viewportOffsetX: 0,
+    viewportOffsetY: 0,
+    labelEnd: notEmptyStringOr(data.labelEnd, ""),
+    labelEndWidth: parseIntOr(data.labelEndWidth, 0),
+    linkedEnd: data.linkedEnd,
+    linkedStart: data.linkedStart,
+    labelEndHeight: parseIntOr(data.labelEndHeight, 0),
+    labelStart: notEmptyStringOr(data.labelStart, ""),
+    labelStartWidth: parseIntOr(data.labelStartWidth, 0),
+    labelStartHeight: parseIntOr(data.labelStartHeight, 0)
   };
 
   /*
@@ -82,20 +102,20 @@ export interface LineMovedEvent {
 }
 
 export default class Line extends Item<LineProps> {
-  private circleRadius = 8;
+  protected circleRadius = 8;
   // To control if the line movement is enabled.
-  private moveMode: boolean = false;
+  protected moveMode: boolean = false;
   // To control if the line is moving.
-  private isMoving: boolean = false;
+  protected isMoving: boolean = false;
 
   // Event manager for moved events.
-  private readonly lineMovedEventManager = new TypedEvent<LineMovedEvent>();
+  public readonly lineMovedEventManager = new TypedEvent<LineMovedEvent>();
   // List of references to clean the event listeners.
-  private readonly lineMovedEventDisposables: Disposable[] = [];
+  protected readonly lineMovedEventDisposables: Disposable[] = [];
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedStartPositionMovementSave = debounce(
+  protected debouncedStartPositionMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
@@ -110,13 +130,13 @@ export default class Line extends Item<LineProps> {
   );
   // This property will store the function
   // to clean the movement listener.
-  private removeStartPositionMovement: Function | null = null;
+  protected removeStartPositionMovement: Function | null = null;
 
   /**
    * Start the movement funtionality for the start position.
    * @param element Element to move inside its container.
    */
-  private initStartPositionMovementListener(
+  protected initStartPositionMovementListener(
     element: HTMLElement,
     container: HTMLElement
   ): void {
@@ -124,8 +144,8 @@ export default class Line extends Item<LineProps> {
       element,
       (x: Position["x"], y: Position["y"]) => {
         // Calculate the center of the circle.
-        x += this.circleRadius;
-        y += this.circleRadius;
+        x += this.circleRadius - this.props.viewportOffsetX / 2;
+        y += this.circleRadius - this.props.viewportOffsetY / 2;
 
         const startPosition = { x, y };
 
@@ -153,7 +173,7 @@ export default class Line extends Item<LineProps> {
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedEndPositionMovementSave = debounce(
+  protected debouncedEndPositionMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
       this.isMoving = false;
@@ -168,13 +188,13 @@ export default class Line extends Item<LineProps> {
   );
   // This property will store the function
   // to clean the movement listener.
-  private removeEndPositionMovement: Function | null = null;
+  protected removeEndPositionMovement: Function | null = null;
 
   /**
    * End the movement funtionality for the end position.
    * @param element Element to move inside its container.
    */
-  private initEndPositionMovementListener(
+  protected initEndPositionMovementListener(
     element: HTMLElement,
     container: HTMLElement
   ): void {
@@ -182,8 +202,8 @@ export default class Line extends Item<LineProps> {
       element,
       (x: Position["x"], y: Position["y"]) => {
         // Calculate the center of the circle.
-        x += this.circleRadius;
-        y += this.circleRadius;
+        x += this.circleRadius - this.props.viewportOffsetX / 2;
+        y += this.circleRadius - this.props.viewportOffsetY / 2;
 
         this.isMoving = true;
         this.props = {
@@ -231,6 +251,11 @@ export default class Line extends Item<LineProps> {
 
     this.moveMode = meta.editMode;
     this.init();
+
+    super.resizeElement(
+      Math.max(props.width, props.viewportOffsetX),
+      Math.max(props.height, props.viewportOffsetY)
+    );
   }
 
   /**
@@ -272,27 +297,33 @@ export default class Line extends Item<LineProps> {
     const element: HTMLDivElement = document.createElement("div");
     element.className = "line";
 
-    const {
+    let {
       x, // Box x
       y, // Box y
       width, // Box width
       height, // Box height
-      lineWidth, // Line thickness
+      lineWidth, // Line thickness,
+      viewportOffsetX, // viewport width,
+      viewportOffsetY, // viewport heigth,
       startPosition, // Line start position
       endPosition, // Line end position
       color // Line color
     } = this.props;
 
-    const x1 = startPosition.x - x + lineWidth / 2;
-    const y1 = startPosition.y - y + lineWidth / 2;
-    const x2 = endPosition.x - x + lineWidth / 2;
-    const y2 = endPosition.y - y + lineWidth / 2;
+    width = width + viewportOffsetX;
+    height = height + viewportOffsetY;
+
+    const x1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const y1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
+    const x2 = endPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const y2 = endPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
 
     // SVG container.
     const svg = document.createElementNS(svgNS, "svg");
     // Set SVG size.
     svg.setAttribute("width", `${width + lineWidth}`);
     svg.setAttribute("height", `${height + lineWidth}`);
+
     const line = document.createElementNS(svgNS, "line");
     line.setAttribute("x1", `${x1}`);
     line.setAttribute("y1", `${y1}`);
@@ -308,21 +339,26 @@ export default class Line extends Item<LineProps> {
   }
 
   protected updateDomElement(element: HTMLElement): void {
-    const {
+    let {
       x, // Box x
       y, // Box y
       width, // Box width
       height, // Box height
       lineWidth, // Line thickness
+      viewportOffsetX, // viewport width,
+      viewportOffsetY, // viewport heigth,
       startPosition, // Line start position
       endPosition, // Line end position
       color // Line color
     } = this.props;
 
-    const x1 = startPosition.x - x + lineWidth / 2;
-    const y1 = startPosition.y - y + lineWidth / 2;
-    const x2 = endPosition.x - x + lineWidth / 2;
-    const y2 = endPosition.y - y + lineWidth / 2;
+    width = width + viewportOffsetX;
+    height = height + viewportOffsetY;
+
+    const x1 = startPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const y1 = startPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
+    const x2 = endPosition.x - x + lineWidth / 2 + viewportOffsetX / 2;
+    const y2 = endPosition.y - y + lineWidth / 2 + viewportOffsetY / 2;
 
     const svgs = element.getElementsByTagName("svg");
 
@@ -352,9 +388,6 @@ export default class Line extends Item<LineProps> {
     }
 
     if (this.moveMode) {
-      const startIsLeft = startPosition.x - endPosition.x <= 0;
-      const startIsTop = startPosition.y - endPosition.y <= 0;
-
       let startCircle: HTMLElement = document.createElement("div");
       let endCircle: HTMLElement = document.createElement("div");
 
@@ -384,12 +417,8 @@ export default class Line extends Item<LineProps> {
       startCircle.style.borderRadius = "50%";
       startCircle.style.backgroundColor = `${color}`;
       startCircle.style.position = "absolute";
-      startCircle.style.left = startIsLeft
-        ? `-${this.circleRadius}px`
-        : `${width + lineWidth - this.circleRadius}px`;
-      startCircle.style.top = startIsTop
-        ? `-${this.circleRadius}px`
-        : `${height + lineWidth - this.circleRadius}px`;
+      startCircle.style.left = `${x1 - this.circleRadius}px`;
+      startCircle.style.top = `${y1 - this.circleRadius}px`;
 
       endCircle.classList.add(
         "visual-console-item-line-circle",
@@ -400,12 +429,8 @@ export default class Line extends Item<LineProps> {
       endCircle.style.borderRadius = "50%";
       endCircle.style.backgroundColor = `${color}`;
       endCircle.style.position = "absolute";
-      endCircle.style.left = startIsLeft
-        ? `${width + lineWidth - 8}px`
-        : `-${this.circleRadius}px`;
-      endCircle.style.top = startIsTop
-        ? `${height + lineWidth - this.circleRadius}px`
-        : `-${this.circleRadius}px`;
+      endCircle.style.left = `${x2 - this.circleRadius}px`;
+      endCircle.style.top = `${y2 - this.circleRadius}px`;
 
       if (element.parentElement !== null) {
         const circles = element.parentElement.getElementsByClassName(

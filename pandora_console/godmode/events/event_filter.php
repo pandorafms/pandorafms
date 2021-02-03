@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,19 @@ $multiple_delete = (bool) get_parameter('multiple_delete', 0);
 
 if ($delete) {
     $id = (int) get_parameter('id');
+
+    $filter_group = (int) db_get_value('id_group', 'tevent_filter', 'id_filter', $id);
+
+    if (!check_acl_restricted_all($config['id_user'], $filter_group, 'EW')
+        && !check_acl_restricted_all($config['id_user'], $filter_group, 'EM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access events filter editor'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 
     $id_filter = db_get_value('id_filter', 'tevent_filter', 'id_filter', $id);
 
@@ -151,13 +164,27 @@ foreach ($filters as $filter) {
     $data = [];
 
     $data[0] = html_print_checkbox_extended('delete_multiple[]', $filter['id_filter'], false, false, '', 'class="check_delete"', true);
-    $data[1] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'&pure='.$config['pure'].'">'.$filter['id_name'].'</a>';
+
+    if (!check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EW')
+        && !check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EM')
+    ) {
+        $data[1] = $filter['id_name'];
+    } else {
+        $data[1] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&id='.$filter['id_filter'].'&pure='.$config['pure'].'">'.$filter['id_name'].'</a>';
+    }
+
     $data[2] = ui_print_group_icon($filter['id_group_filter'], true);
     $data[3] = events_get_event_types($filter['event_type']);
     $data[4] = events_get_status($filter['status']);
     $data[5] = events_get_severity_types($filter['severity']);
-    $table->cellclass[][6] = 'action_buttons';
-    $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    $data[6] = '';
+
+    if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EW')
+        || check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EM')
+    ) {
+        $table->cellclass[][6] = 'action_buttons';
+        $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    }
 
     array_push($table->data, $data);
 }

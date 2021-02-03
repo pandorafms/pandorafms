@@ -5,7 +5,7 @@
 // |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
 //
 // ============================================================================
-// Copyright (c) 2007-2010 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
 // This code is NOT free software. This code is NOT licenced under GPL2 licence
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
@@ -57,8 +57,8 @@ if (enterprise_installed()) {
 
         // ACL for the network map.
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -145,8 +145,8 @@ if (enterprise_installed()) {
 
 
         // ACL for the new network map
-        $networkmap_write_new = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -230,8 +230,8 @@ if ($new_networkmap || $save_networkmap) {
 
         // ACL for the network map
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -420,8 +420,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         return;
     }
 
-    $networkmap_write = check_acl($config['id_user'], $id_group_map_old, 'MW');
-    $networkmap_manage = check_acl($config['id_user'], $id_group_map_old, 'MM');
+    $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MW');
+    $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MM');
 
     if (!$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(
@@ -440,8 +440,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         // ACL for the new network map
         $id_group_map = (int) get_parameter('id_group_map', 0);
-        $networkmap_write_new = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -727,9 +727,9 @@ switch ($tab) {
 
             foreach ($network_maps as $network_map) {
                 // ACL for the network map
-                $networkmap_read = check_acl($config['id_user'], $network_map['id_group_map'], 'MR');
-                $networkmap_write = check_acl($config['id_user'], $network_map['id_group_map'], 'MW');
-                $networkmap_manage = check_acl($config['id_user'], $network_map['id_group_map'], 'MM');
+                $networkmap_read = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MR');
+                $networkmap_write = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MW');
+                $networkmap_manage = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MM');
 
                 if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
                     db_pandora_audit(
@@ -784,6 +784,10 @@ switch ($tab) {
                 }
 
                 $data['groups'] = ui_print_group_icon($network_map['id_group_map'], true);
+
+                $data['copy'] = '';
+                $data['edit'] = '';
+                $data['delete'] = '';
 
                 if ($networkmap_write || $networkmap_manage) {
                     $table->cellclass[] = [

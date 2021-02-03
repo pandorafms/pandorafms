@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -271,6 +271,7 @@ foreach ($layoutDatas as $layoutData) {
             );
         break;
 
+        case NETWORK_LINK:
         case LINE_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/line_item.png',
@@ -303,6 +304,7 @@ foreach ($layoutDatas as $layoutData) {
     switch ($layoutData['type']) {
         case ICON:
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the label.
             $table->data[($i + 1)][0] = '';
@@ -345,6 +347,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Width and height
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the width and height.
             $table->data[($i + 1)][2] = '';
@@ -361,6 +364,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Position
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the width and height.
             $table->data[($i + 1)][3] = '';
@@ -375,6 +379,7 @@ foreach ($layoutDatas as $layoutData) {
     // Parent
     switch ($layoutData['type']) {
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
         case COLOR_CLOUD:
             $table->data[($i + 1)][4] = '';
@@ -434,6 +439,7 @@ foreach ($layoutDatas as $layoutData) {
         case BOX_ITEM:
         case ICON:
         case LABEL:
+        case NETWORK_LINK:
         case LINE_ITEM:
             $table->data[($i + 2)][0] = '';
         break;
@@ -494,6 +500,7 @@ foreach ($layoutDatas as $layoutData) {
         case ICON:
         case LABEL:
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
         case GROUP_ITEM:
             $table->data[($i + 2)][1] = '';
@@ -598,6 +605,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Map linked
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
         case BOX_ITEM:
         case AUTO_SLA_GRAPH:

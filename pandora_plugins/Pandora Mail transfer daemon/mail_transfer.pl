@@ -3,7 +3,7 @@
 # Pandora FMS Mail Transfer
 # This is a tool for transfering Pandora FMS data files by mail (SMTP/POP)
 ##########################################################################
-# Copyright (c) 2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2011-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

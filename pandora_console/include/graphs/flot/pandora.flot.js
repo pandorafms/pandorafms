@@ -493,7 +493,12 @@ $.fn.HUseTooltip = function() {
         // var y = item.datapoint[1];
 
         var color = item.series.color;
-        showTooltip(pos.pageX, pos.pageY, color, "<strong>" + x + "</strong>");
+        showTooltip(
+          item.pageX,
+          item.pageY,
+          color,
+          "<strong>" + x + "</strong>"
+        );
       }
     } else {
       $("#tooltip").remove();

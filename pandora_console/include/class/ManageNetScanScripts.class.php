@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -350,28 +350,21 @@ class ManageNetScanScripts extends Wizard
             ['id_recon_script' => $id_script]
         );
 
+        $result_dlt2 = db_process_sql_delete(
+            'trecon_task',
+            ['id_recon_script' => $id_script]
+        );
+
         if (!$result_dlt) {
             $result = [
                 'error' => 1,
                 'msg'   => __('Problem deleting Net scan Scripts'),
             ];
         } else {
-            $result_dlt2 = db_process_sql_delete(
-                'trecon_task',
-                ['id_recon_script' => $id_script]
-            );
-
-            if (!$result_dlt2) {
-                $result = [
-                    'error' => 1,
-                    'msg'   => __('Problem deleting Net scan Scripts'),
-                ];
-            } else {
-                $result = [
-                    'error' => 0,
-                    'msg'   => __('Deleted successfully'),
-                ];
-            }
+            $result = [
+                'error' => 0,
+                'msg'   => __('Deleted successfully'),
+            ];
         }
 
         return $result;

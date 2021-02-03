@@ -3,7 +3,7 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ################################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -1556,6 +1556,10 @@ sub ping ($$) {
 		1
 	);
 
+	# Set default values if config is not defined.
+	$timeout = 4 if !defined($timeout);
+	$retries = 4 if !defined($retries);
+
 	# Windows
 	if (($^O eq "MSWin32") || ($^O eq "MSWin32-x64") || ($^O eq "cygwin")){
 		$timeout *= 1000; # Convert the timeout to milliseconds.
@@ -2458,7 +2462,7 @@ sub p_decode_json {
 	
 	if ($JSON::VERSION > 2.90) {
 		# Initialize JSON manager.
-		my $json = JSON->new->allow_nonref;
+		my $json = JSON->new->utf8->allow_nonref;
 		$decoded_data = $json->decode($data);
 	} else {
 		$decoded_data = decode_json($data);

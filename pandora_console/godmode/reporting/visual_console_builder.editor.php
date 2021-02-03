@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,7 @@ foreach ($layoutDatas as $layoutData) {
     }
 
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             visual_map_print_user_line_handles($layoutData);
             visual_map_print_user_lines($layoutData);

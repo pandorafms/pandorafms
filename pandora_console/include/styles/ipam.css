@@ -1,0 +1,243 @@
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2019 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
+
+.mask_example,
+#ipv4_example,
+#ipv6_example {
+  font-size: xx-small;
+  font-weight: normal;
+  margin-left: 5px;
+}
+
+.mode_img {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.os_mode_img {
+  float: left;
+  margin-right: 0px;
+}
+
+.hidden {
+  display: none;
+}
+
+fieldset {
+  padding-top: 0px;
+}
+
+fieldset legend {
+  text-align: left;
+}
+
+.ui-autocomplete-input {
+  width: 120px;
+}
+
+.ball_addr_status {
+  float: left;
+  margin-right: 3px;
+  margin-top: 2px;
+  width: 8px;
+}
+
+.add_comments_button {
+  cursor: pointer;
+}
+
+.ipam_icon {
+  float: left;
+  display: inline;
+  text-align: center;
+  background: #fff;
+  position: relative;
+}
+
+.ipam_icon img {
+  display: block;
+}
+
+.address_os_icon {
+  position: absolute;
+  bottom: +12px;
+  right: 0px;
+}
+
+.address_os_icon img {
+  width: 16px;
+}
+
+.comment_icon {
+  position: absolute;
+  right: 0px;
+}
+
+.comment_icon img {
+  width: 16px;
+}
+
+.address_config_icon {
+  position: absolute;
+  bottom: -6px;
+  right: 0px;
+}
+
+.address_disabled_icon,
+.address_os_icon {
+  position: absolute;
+  bottom: -5px;
+  left: 0px;
+  width: 18px;
+}
+
+.address_config_icon img {
+  width: 18px;
+}
+
+.address_disabled_icon {
+  position: absolute;
+  bottom: -6px;
+  left: 0px;
+  width: 18px;
+}
+
+.address_image {
+  cursor: pointer;
+}
+
+/* Big icons */
+
+.ipam_icon_big {
+  margin: 10px;
+  padding: 5px 5px;
+  border-radius: 10px;
+  width: 90px;
+}
+
+.ipam_icon_big img {
+  margin: 8px auto;
+  margin-top: 8px;
+}
+
+/* Tiny icons */
+
+.ipam_icon_tiny {
+  margin: 6px;
+  padding: 3px 3px;
+  border-radius: 7px;
+  width: 55px;
+  font-size: 6.5pt;
+}
+
+.ipam_icon_tiny img {
+  margin: 5px auto;
+  margin-top: 5px;
+}
+
+/* Un-reserved ip background */
+.reserved {
+  background: #dbffff;
+}
+
+.unreserved {
+  background: #ffffff;
+}
+
+.unreserved_dhcp {
+  background: #ebebeb;
+}
+
+.container_network {
+  margin: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.detailts_network {
+  width: 35%;
+}
+
+.statistics_network {
+  width: 50%;
+}
+
+.button_network {
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button_network input {
+  margin-right: 30px;
+}
+
+.vlan_statistics p {
+  margin-left: 10px;
+  font-style: italic;
+}
+
+.vlan_statistics div div {
+  width: 95%;
+}
+
+.container_button {
+  display: flex;
+  height: 200px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.container_button_int {
+  border: 1px solid #e1e2e1;
+  height: 150px;
+  width: 125px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.container_button_int:hover {
+  background: #e2e2e2;
+}
+
+.button_add_net {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.button_add_net img {
+  vertical-align: middle;
+}
+
+.button_add_net span {
+  margin-top: 10px;
+}

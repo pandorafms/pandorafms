@@ -553,6 +553,10 @@ export function addMovementListener(
     // Disable the drag temporarily.
     element.draggable = false;
 
+    // Fix for Firefox browser.
+    element.setAttribute("ondragstart", "return false;");
+    element.setAttribute("draggable", "false");
+
     // Store the difference between the cursor and
     // the initial coordinates of the element.
     const elementOffset = getOffset(element, container);

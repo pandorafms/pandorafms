@@ -2,7 +2,7 @@
 // This file is an example on how things must NEVER be done.
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,7 @@ if (! defined('METACONSOLE')) {
         exit();
     }
 } else {
+    $section = (string) get_parameter('sec', 'estado');
     ui_meta_print_header(__('Monitor view'));
 }
 
@@ -593,10 +594,6 @@ $table->data[2][5] = html_print_input_text('min_hours_status', $min_hours_val, '
 
 $table->data[3][0] = '<span id="datatypetittle" ';
 
-if (!$_GET['sort']) {
-    $table->data[3][0] .= 'style="display:none"';
-}
-
 $table->data[3][0] .= '>'.__('Data type').'</span>';
 
 
@@ -671,10 +668,6 @@ switch ($moduletype) {
 $a = db_get_all_rows_sql($sql);
 $table->data[3][1] .= '<select id="datatype" name="datatype" ';
 
-if (!$_GET['sort']) {
-    $table->data[3][1] .= 'style="display:none"';
-}
-
 $table->data[3][1] .= '>';
 
 $table->data[3][1] .= '<option name="datatype" value="">'.__('All').'</option>';
@@ -740,7 +733,7 @@ foreach ($custom_fields as $custom_field) {
     $table_custom_fields->data[] = $row;
 }
 
-$filters = '<form method="post" action="index.php?sec=view&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
+$filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 if (is_metaconsole()) {
     $table->colspan[4][0] = 7;
     $table->cellstyle[4][0] = 'padding: 10px;';
@@ -755,7 +748,7 @@ if (is_metaconsole()) {
 
     $filters .= html_print_table($table, true);
     $filters .= '</form>';
-    ui_toggle($filters, __('Show Options'), '', '', false);
+    ui_toggle($filters, __('Show filters'), '', '', false);
 } else {
     $table->colspan[4][0] = 7;
     $table->cellstyle[4][0] = 'padding-left: 10px;';
@@ -1141,16 +1134,16 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 
 // Urls to sort the table.
-$url_agent_name = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_type = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_module_name = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_server_type = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_interval = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_status = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_status = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_data = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_timestamp_up = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
-$url_timestamp_down = 'index.php?sec=view&sec2=operation/agentes/status_monitor';
+$url_agent_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_module_name = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_server_type = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_interval = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_status = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_data = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_timestamp_up = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
+$url_timestamp_down = 'index.php?sec='.$section.'&sec2=operation/agentes/status_monitor';
 
 $url_agent_name .= '&refr='.$refr.'&datatype='.$datatype.'&moduletype='.$moduletype.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;
 $url_type .= '&datatype='.$datatype.'&moduletype='.$moduletype.'&refr='.$refr.'&modulegroup='.$modulegroup.'&offset='.$offset.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&ag_modulename='.$ag_modulename.'&status='.$status.$ag_custom_fields_params;

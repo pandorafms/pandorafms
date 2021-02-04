@@ -3282,13 +3282,6 @@ class AgentWizard extends HTML
             return $__cached_walks[$key];
         }
 
-        if (defined(caca)) {
-            hd($oid);
-            hd($tree_oid);
-            hd($__cached_walks);
-            die();
-        }
-
         $output = [];
         $temporal = get_snmpwalk(
             $this->targetIp,

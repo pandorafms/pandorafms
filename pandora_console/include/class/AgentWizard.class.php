@@ -5234,7 +5234,7 @@ class AgentWizard extends HTML
                     title: "<?php echo __('Modules about to be created'); ?>",
                     message: function() {
                         var id = "div-" + uniqId();
-                        var loading = "<?php echo __('Loading'); ?>" + "...";
+                        var loading = "<?php echo __('Loading, this operation might take several minutes...'); ?>";
                         var datas = {};
 
                         let inputs = document.querySelectorAll("input,textarea");

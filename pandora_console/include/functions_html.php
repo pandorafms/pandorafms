@@ -3586,7 +3586,7 @@ function html_print_checkbox_switch_extended(
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id="'.$id.'"';
     }
 
     if ($script != '') {

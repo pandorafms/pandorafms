@@ -3594,6 +3594,8 @@ class AgentWizard extends HTML
     ) {
         $output = '';
         foreach ($blocks as $idBlock => $block) {
+            $md5IdBlock = hash('md5', $idBlock);
+
             // Data with all components.
             $blockData = $block['data'];
 
@@ -3627,7 +3629,7 @@ class AgentWizard extends HTML
                         '',
                         'form="form-create-modules" class="interfaz_select"',
                         true,
-                        ''
+                        $md5IdBlock
                     );
                     $blockTitle .= '<b>'.$block['name'];
                     $blockTitle .= '&nbsp;&nbsp;';
@@ -3813,7 +3815,7 @@ class AgentWizard extends HTML
                         false,
                         false,
                         '',
-                        '',
+                        $md5IdBlock,
                         '',
                         '',
                         false,
@@ -3853,7 +3855,7 @@ class AgentWizard extends HTML
                             false,
                             false,
                             '',
-                            '',
+                            $md5IdBlock,
                             '',
                             '',
                             false,
@@ -3876,7 +3878,7 @@ class AgentWizard extends HTML
                             false,
                             false,
                             '',
-                            '',
+                            $md5IdBlock,
                             '',
                             '',
                             false,
@@ -3919,7 +3921,7 @@ class AgentWizard extends HTML
                             false,
                             false,
                             '',
-                            '',
+                            $md5IdBlock,
                             '',
                             '',
                             false,
@@ -3942,7 +3944,7 @@ class AgentWizard extends HTML
                             false,
                             false,
                             '',
-                            '',
+                            $md5IdBlock,
                             '',
                             '',
                             false,
@@ -4024,7 +4026,7 @@ class AgentWizard extends HTML
                     'module-active-'.$uniqueId,
                     $module['module_enabled'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4033,7 +4035,7 @@ class AgentWizard extends HTML
                     'module-type-'.$uniqueId,
                     $module['type'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4042,7 +4044,7 @@ class AgentWizard extends HTML
                     'module-unit-'.$uniqueId,
                     $module['unit'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4051,7 +4053,7 @@ class AgentWizard extends HTML
                     'module-value-'.$uniqueId,
                     $module['value'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4060,7 +4062,7 @@ class AgentWizard extends HTML
                     'module-macros-'.$uniqueId,
                     base64_encode($module['macros']),
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4069,7 +4071,7 @@ class AgentWizard extends HTML
                     'module-name-oid-'.$uniqueId,
                     $module['name_oid'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4078,7 +4080,7 @@ class AgentWizard extends HTML
                     'module-scan_type-'.$uniqueId,
                     $module['scan_type'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4087,7 +4089,7 @@ class AgentWizard extends HTML
                     'module-execution_type-'.$uniqueId,
                     $module['execution_type'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4096,7 +4098,7 @@ class AgentWizard extends HTML
                     'module-query_class-'.$uniqueId,
                     $module['query_class'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4105,7 +4107,7 @@ class AgentWizard extends HTML
                     'module-query_key_field-'.$uniqueId,
                     $module['query_key_field'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4114,7 +4116,7 @@ class AgentWizard extends HTML
                     'module-scan_filters-'.$uniqueId,
                     $module['scan_filters'],
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4123,7 +4125,7 @@ class AgentWizard extends HTML
                     'module-query_filters-'.$uniqueId,
                     base64_encode($module['query_filters']),
                     true,
-                    false,
+                    $md5IdBlock,
                     'form="form-create-modules"'
                 );
 
@@ -4134,7 +4136,7 @@ class AgentWizard extends HTML
                         'module-default_name-'.$uniqueId,
                         $module['name'],
                         true,
-                        false,
+                        $md5IdBlock,
                         'form="form-create-modules"'
                     );
 
@@ -4142,7 +4144,7 @@ class AgentWizard extends HTML
                         'module-default_description-'.$uniqueId,
                         $module['description'],
                         true,
-                        false,
+                        $md5IdBlock,
                         'form="form-create-modules"'
                     );
                 }
@@ -5235,10 +5237,25 @@ class AgentWizard extends HTML
                         var loading = "<?php echo __('Loading'); ?>" + "...";
                         var datas = {};
 
-                        let inputs = document.getElementsByTagName("input");
+                        let inputs = document.querySelectorAll("input,textarea");
 
                         for (let input of inputs) {
-                            datas[input.name] = input.value;
+                            let id = input.className;
+                            let chkbox =document.getElementById('interfaz_select_'+id);
+                            if (chkbox != undefined
+                                && chkbox.checked == false
+                            ) {
+                                // Skip disabled containers.
+                                continue;
+                            }
+
+                            if (input.type != "checkbox") {
+                                datas[input.name] = input.value;
+                            }
+                            if (input.type == "checkbox" && input.checked) {
+                                datas[input.name] = input.value;
+                            }
+
                         };
 
                         $.ajax({

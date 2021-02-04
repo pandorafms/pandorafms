@@ -978,6 +978,7 @@ class AgentWizard extends HTML
         // The PEN is hosted in the seventh position.
         $tmpPEN = explode('.', $output_oid[0]);
         $pen = $tmpPEN[7];
+
         // Then look in DB if the PEN is registered.
         $penFound = db_get_value('manufacturer', 'tpen', 'pen', $pen);
         if ($penFound === false) {
@@ -1045,7 +1046,7 @@ class AgentWizard extends HTML
         $receivedOid = $this->snmpwalkValues(
             $oidExplore,
             false,
-            false
+            true
         );
 
         if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {

@@ -260,6 +260,13 @@ class AgentWizard extends HTML
      */
     private $moduleBlocks;
 
+    /**
+     * Extra arguments for SNMP call.
+     *
+     * @var string
+     */
+    private $extraArguments = '';
+
 
     /**
      * Constructor
@@ -2959,6 +2966,12 @@ class AgentWizard extends HTML
 
                     $snmpwalkCombined = [];
                     foreach ($snmpwalkNames as $index => $name) {
+                        if (isset($name) !== true
+                            || isset($snmpwalkValues[$index]) !== true
+                        ) {
+                            continue;
+                        }
+
                         $snmpwalkCombined[$index] = [
                             'name'  => $name,
                             'value' => $snmpwalkValues[$index],

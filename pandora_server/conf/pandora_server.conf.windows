@@ -295,7 +295,7 @@ max_log_size 1048576
 
 max_queue_files 250
 
-# Use the XML file last modification time as timestamp.
+# If set to 0, the timestamp attribute in XML data files will be ignored and the system time will be used instead.
 
 # use_xml_timestamp 1
 

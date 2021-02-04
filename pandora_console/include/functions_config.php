@@ -864,6 +864,14 @@ function config_update_config()
                     if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
                         $error_update[] = __('Row limit in csv log');
                     }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
+                    }
                 break;
 
                 case 'vis':
@@ -1870,6 +1878,32 @@ function config_process_config()
 
     if (!isset($config['row_limit_csv'])) {
         config_update_value('row_limit_csv', 10000);
+    }
+
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
     }
 
     if (!isset($config['event_purge'])) {

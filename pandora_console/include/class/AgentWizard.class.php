@@ -913,16 +913,34 @@ class AgentWizard extends HTML
      */
     public function performSNMPInterfaces($receivedOid)
     {
+        // Path for get the IPs (ipv4).
+        $snmpIpDiscover = '.1.3.6.1.2.1.4.34.1.4.1.4';
+        $snmpIpIndexes  = '.1.3.6.1.2.1.4.34.1.3.1.4';
+
+        $ipsResult = [];
+        // In this case we need the full information provided by snmpwalk.
+        $ipsResult = $this->snmpwalkValues($snmpIpDiscover, false, true);
+        $indexes = $this->snmpwalkValues($snmpIpIndexes, false, true);
+
+        $unicastIpReferences = [];
+        foreach ($indexes as $k => $v) {
+            $key = str_replace($snmpIpIndexes.'.', '', $k);
+            // Only catch the unicast records.
+            if ((preg_match('/unicast/', $ipsResult[$snmpIpDiscover.'.'.$key]) === 1)) {
+                $value = explode(': ', $v)[1];
+                $unicastIpReferences[$value] = $key;
+            }
+        }
+
         // Create a list with the interfaces.
         $interfaces = [];
-        foreach ($receivedOid as $keyOid => $nameOid) {
-            list($nameKey, $indexKey) = explode(
-                '.',
-                str_replace('IF-MIB::', '', $keyOid)
-            );
-            list($typeValue, $value) = explode(': ', $nameOid);
+        foreach ($receivedOid as $indexKey => $name) {
+            if ($indexKey[0] === '.') {
+                $indexKey = substr($indexKey, 1, strlen($indexKey));
+            }
+
             // Set the name of interface.
-            $interfaces[$indexKey]['name'] = $value;
+            $interfaces[$indexKey]['name'] = $name;
             // Get the description.
             $interfaces[$indexKey]['descr'] = $this->snmpgetValue(
                 '.1.3.6.1.2.1.2.2.1.2.'.$indexKey
@@ -933,40 +951,8 @@ class AgentWizard extends HTML
             );
             // Get unicast IP address.
             $interfaces[$indexKey]['ip'] = '';
-            // Path for get the IPs (ipv4).
-            $snmpIpDiscover = '.1.3.6.1.2.1.4.34.1.4.1.4';
-            $ipsResult = [];
-            // In this case we need the full information provided by snmpwalk.
-            $snmpwalkIps = sprintf(
-                'snmpwalk -On -v%s -c %s %s %s',
-                $this->version,
-                $this->community,
-                $this->targetIp,
-                $snmpIpDiscover
-            );
-            exec($snmpwalkIps, $ipsResult);
-            foreach ($ipsResult as $ipResult) {
-                list($ipOidDirection, $ipOidValue) = explode(' = ', $ipResult);
-                // Only catch the unicast records.
-                if ((preg_match('/unicast/', $ipOidValue) === 1)) {
-                    $tmpIpOidDirection = str_replace(
-                        $snmpIpDiscover,
-                        '',
-                        $ipOidDirection
-                    );
-                    $snmpIpIndexDiscover = '.1.3.6.1.2.1.4.34.1.3.1.4';
-                    $snmpIpIndexDiscover .= $tmpIpOidDirection;
-                    $snmpgetIpIndex = $this->snmpgetValue($snmpIpIndexDiscover);
-                    // If this Ip index number match with the current index key.
-                    if ($snmpgetIpIndex === $indexKey) {
-                        $interfaces[$indexKey]['ip'] .= substr(
-                            $tmpIpOidDirection,
-                            1
-                        );
-                    }
-                } else {
-                    continue;
-                }
+            if (isset($unicastIpReferences[$indexKey]) === true) {
+                $interfaces[$indexKey]['ip'] = '';
             }
         }
 
@@ -1029,21 +1015,10 @@ class AgentWizard extends HTML
         if ($this->wizardSection === 'snmp_interfaces_explorer') {
             // Check if thereis x64 counters.
             $snmp_tmp = '.1.3.6.1.2.1.31.1.1.1.6';
-            $check_x64 = get_snmpwalk(
-                $this->targetIp,
-                $this->version,
-                $this->community,
-                $this->authUserV3,
-                $this->securityLevelV3,
-                $this->authMethodV3,
-                $this->authPassV3,
-                $this->privacyMethodV3,
-                $this->privacyPassV3,
-                0,
+            $check_x64 = $this->snmpwalkValues(
                 $snmp_tmp,
-                $this->targetPort,
-                $this->server,
-                $this->extraArguments
+                false,
+                true
             );
 
             if ($check_x64) {
@@ -1056,21 +1031,10 @@ class AgentWizard extends HTML
 
             // Explore interface names.
             $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
-            $receivedOid = get_snmpwalk(
-                $this->targetIp,
-                $this->version,
-                $this->community,
-                $this->authUserV3,
-                $this->securityLevelV3,
-                $this->authMethodV3,
-                $this->authPassV3,
-                $this->privacyMethodV3,
-                $this->privacyPassV3,
-                0,
+            $receivedOid = $this->snmpwalkValues(
                 $oidExplore,
-                $this->targetPort,
-                $this->server,
-                $this->extraArguments
+                false,
+                true
             );
         } else {
             // Get the device PEN.
@@ -1078,21 +1042,10 @@ class AgentWizard extends HTML
         }
 
         // Doc Interfaces de red.
-        $receivedOid = get_snmpwalk(
-            $this->targetIp,
-            $this->version,
-            $this->community,
-            $this->authUserV3,
-            $this->securityLevelV3,
-            $this->authMethodV3,
-            $this->authPassV3,
-            $this->privacyMethodV3,
-            $this->privacyPassV3,
-            0,
+        $receivedOid = $this->snmpwalkValues(
             $oidExplore,
-            $this->targetPort,
-            $this->server,
-            $this->extraArguments
+            false,
+            false
         );
 
         if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {
@@ -1100,21 +1053,10 @@ class AgentWizard extends HTML
 
             $oidExplore = '1.3.6.1.2.1.2.2.1.2';
             // Doc Interfaces de red.
-            $receivedOid = get_snmpwalk(
-                $this->targetIp,
-                $this->version,
-                $this->community,
-                $this->authUserV3,
-                $this->securityLevelV3,
-                $this->authMethodV3,
-                $this->authPassV3,
-                $this->privacyMethodV3,
-                $this->privacyPassV3,
-                0,
+            $receivedOid = $this->snmpwalkValues(
                 $oidExplore,
-                $this->targetPort,
-                $this->server,
-                $this->extraArguments
+                false,
+                false
             );
         }
 
@@ -2442,6 +2384,7 @@ class AgentWizard extends HTML
 
             // Get current value.
             $currentValue = $this->snmpgetValue($moduleData['value']);
+
             // It unit of measure have data, attach to current value.
             if (empty($moduleData['module_unit']) === false) {
                 $currentValue .= ' '.$moduleData['module_unit'];
@@ -2577,6 +2520,7 @@ class AgentWizard extends HTML
 
                 // Get current value.
                 $currentValue = $this->snmpgetValue($moduleData['value']);
+
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
                     $decimals = (is_float($currentValue) === true) ? 2 : 0;
@@ -3263,32 +3207,26 @@ class AgentWizard extends HTML
      */
     private function snmpgetValue(string $oid, ?bool $full_output=false)
     {
-        $output = get_snmpwalk(
-            $this->targetIp,
-            $this->version,
-            $this->community,
-            $this->authUserV3,
-            $this->securityLevelV3,
-            $this->authMethodV3,
-            $this->authPassV3,
-            $this->privacyMethodV3,
-            $this->privacyPassV3,
-            0,
-            $oid,
-            $this->targetPort,
-            $this->server,
-            $this->extraArguments,
-            (($full_output === false) ? '-Oa -On' : '-Oa')
-        );
+        if ($oid[0] !== '.') {
+            $oid = '.'.$oid;
+        }
+
+        $output = $this->snmpwalkValues($oid, false, true, true);
 
         if (is_array($output) === true) {
             foreach ($output as $k => $v) {
-                if ($full_output === true) {
-                    return $k.' = '.$v;
+                if ($k[0] !== '.') {
+                    $k = '.'.$k;
                 }
 
-                $value = explode(': ', $v, 2);
-                return $value[1];
+                if ($k == $oid) {
+                    if ($full_output === true) {
+                        return $k.' = '.$v;
+                    }
+
+                    $value = explode(': ', $v, 2);
+                    return $value[1];
+                }
             }
         }
 
@@ -3301,11 +3239,56 @@ class AgentWizard extends HTML
      *
      * @param string  $oid         Oid for get the values.
      * @param boolean $full_output Array with full output.
+     * @param boolean $pure        Return results as received by get_snmwalk.
+     * @param boolean $get         If get operation, adjust key.
      *
      * @return array
      */
-    private function snmpwalkValues(string $oid, bool $full_output=false)
-    {
+    private function snmpwalkValues(
+        string $oid,
+        bool $full_output=false,
+        bool $pure=false,
+        bool $get=false
+    ) {
+        static $__cached_walks;
+
+        if ($__cached_walks === null) {
+            $__cached_walks = [];
+        }
+
+        if ($oid[0] !== '.') {
+            $oid = '.'.$oid;
+        }
+
+        if ($get === true) {
+            // Request from snmpget. Cache is in tree.
+            $tree_oid = strrev($oid);
+            $tree_oid = strrev(
+                substr(
+                    $tree_oid,
+                    (strpos($tree_oid, '.') + 1),
+                    strlen($tree_oid)
+                )
+            );
+
+            $key = $tree_oid.'-'.((int) $full_output).'-'.((int) $pure);
+            // Request entire sub-tree.
+            $oid = $tree_oid;
+        } else {
+            $key = $oid.'-'.((int) $full_output).'-'.((int) $pure);
+        }
+
+        if (isset($__cached_walks[$key]) === true) {
+            return $__cached_walks[$key];
+        }
+
+        if (defined(caca)) {
+            hd($oid);
+            hd($tree_oid);
+            hd($__cached_walks);
+            die();
+        }
+
         $output = [];
         $temporal = get_snmpwalk(
             $this->targetIp,
@@ -3325,6 +3308,11 @@ class AgentWizard extends HTML
             (($full_output === false) ? '-Oa -On' : '-Oa')
         );
 
+        if ($pure === true) {
+            $__cached_walks[$key] = $temporal;
+            return $temporal;
+        }
+
         if (empty($temporal) === false) {
             foreach ($temporal as $key => $oid_unit) {
                 if ($full_output === true) {
@@ -3337,6 +3325,7 @@ class AgentWizard extends HTML
             }
         }
 
+        $__cached_walks[$key] = $output;
         return $output;
     }
 

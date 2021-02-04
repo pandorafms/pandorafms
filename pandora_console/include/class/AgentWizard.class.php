@@ -971,12 +971,13 @@ class AgentWizard extends HTML
     public function performSNMPGeneral($receivedOid)
     {
         // Getting the Symbolic Name of the OID.
-        $symbolicName = explode('OID:', array_shift($receivedOid));
-        // Translate the Symbolic Name to numeric OID.
-        $output_oid = '';
-        exec('snmptranslate -On '.$symbolicName[1], $output_oid);
+        if (is_array($receivedOid) === false) {
+            // No PEN.
+            return;
+        }
+
         // The PEN is hosted in the seventh position.
-        $tmpPEN = explode('.', $output_oid[0]);
+        $tmpPEN = explode('.', array_shift($receivedOid));
         $pen = $tmpPEN[7];
 
         // Then look in DB if the PEN is registered.
@@ -1046,7 +1047,7 @@ class AgentWizard extends HTML
         $receivedOid = $this->snmpwalkValues(
             $oidExplore,
             false,
-            true
+            false
         );
 
         if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {
@@ -1057,7 +1058,7 @@ class AgentWizard extends HTML
             $receivedOid = $this->snmpwalkValues(
                 $oidExplore,
                 false,
-                false
+                true
             );
         }
 
@@ -1140,17 +1141,7 @@ class AgentWizard extends HTML
     public function listModulesToCreate()
     {
         $data = get_parameter('data', '');
-
         $data = json_decode(io_safe_output($data), true);
-
-        $data = array_reduce(
-            $data,
-            function ($carry, $item) {
-                $carry[$item['name']] = $item['value'];
-                return $carry;
-            },
-            []
-        );
 
         $candidateModules = $this->candidateModuleToCreate($data);
         $this->sectionUrl = $this->baseUrl.'&wizard_section='.$this->wizardSection;
@@ -5229,15 +5220,21 @@ class AgentWizard extends HTML
                     message: function() {
                         var id = "div-" + uniqId();
                         var loading = "<?php echo __('Loading'); ?>" + "...";
+                        var datas = {};
+
+                        let inputs = document.getElementsByTagName("input");
+
+                        for (let input of inputs) {
+                            datas[input.name] = input.value;
+                        };
+
                         $.ajax({
                             method: "post",
                             url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
                             data: {
                                 page: "<?php echo $this->ajaxController; ?>",
                                 method: "listModulesToCreate",
-                                data: JSON.stringify(
-                                    $('#form-create-modules').serializeArray()
-                                ),
+                                data: JSON.stringify(datas),
                                 id_agente: "<?php echo $this->idAgent; ?>",
                                 id: "<?php echo $this->idPolicy; ?>"
                             },

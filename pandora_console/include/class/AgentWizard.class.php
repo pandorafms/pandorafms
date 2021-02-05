@@ -3673,6 +3673,13 @@ class AgentWizard extends HTML
                 $blockComponentList .= $component['component_id'].',';
             }
 
+            $is_up = false;
+            if ($this->getOperStatus($idBlock) === 1
+                && $this->getAdminSTatus($idBlock) === 1
+            ) {
+                $is_up = true;
+            }
+
             $blockComponentList = chop($blockComponentList, ',');
             // Title of Block.
             if ($isInterface === true) {
@@ -3683,15 +3690,16 @@ class AgentWizard extends HTML
                     );
                     $blockTitle .= '</b>';
                 } else {
-                    $blockTitle = html_print_checkbox_switch_extended(
-                        'interfaz_select_'.$idBlock,
-                        1,
-                        true,
-                        false,
-                        '',
-                        'form="form-create-modules" class="interfaz_select" ',
-                        true,
-                        $md5IdBlock
+                    $blockTitle = html_print_input(
+                        [
+                            'type'       => 'switch',
+                            'name'       => 'interfaz_select_'.$idBlock,
+                            'value'      => $is_up,
+                            'disabled'   => false,
+                            'attributes' => 'form="form-create-modules" class="interfaz_select" ',
+                            'return'     => true,
+                            'id'         => $md5IdBlock,
+                        ]
                     );
                     $blockTitle .= '<b>'.$block['name'];
                     $blockTitle .= '&nbsp;&nbsp;';
@@ -5093,13 +5101,6 @@ class AgentWizard extends HTML
                 var regex = new RegExp(string, 'i');
                 var interfaces = $('.interfaces_search');
 
-                console.log(string);
-                console.log('adminstatus');
-                console.log(filter_online);
-
-                console.log('operstatus');
-                console.log(filter_up);
-
                 interfaces.each(function() {
                     if (string == ''
                     && filter_up == false
@@ -5122,7 +5123,6 @@ class AgentWizard extends HTML
                     }
                     
                     if (filter_up == true) {
-                        console.log($(this));
                         if ($(this).attr('operstatus') != 1) {
                             $(this).addClass('hidden');
                         }
@@ -5323,29 +5323,18 @@ class AgentWizard extends HTML
              * Controls checkboxes for modules.
              */
             function switchBlockControlInterfaces(e) {
-                var string = $('#text-filter-search').val();
-                if (string == '') {
-                    if (e.checked) {
-                        $(".interfaz_select").prop("checked", true);
-                    } else {
-                        $(".interfaz_select").prop("checked", false);
-                    }
-                } else {
-                    var regex = new RegExp(string);
-                    var interfaces = $('.interfaces_search');
-                    interfaces.each(function() {
-                        if (this.id.match(regex)) {
-                            $(this).removeClass('hidden');
-                            if (e.checked) {
-                                $("input[name='interfaz_select_" + this.id + "']")
-                                    .prop("checked", true);
-                            } else {
-                                $("input[name='interfaz_select_" + this.id + "']")
-                                    .prop("checked", false);
-                            }
-                        }
-                    });
+                // Apply filters if not done yet.
+                //filterInterfaces();
+                // Select targets.
+                var interfaces = document.querySelectorAll(
+                    '.interfaces_search:not(.hidden)'
+                );
+
+                // Apply selection.
+                for (let iface of interfaces) {
+                    iface.querySelector('input[type="checkbox"]').checked = e.checked;
                 }
+
             }
 
             /**

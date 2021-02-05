@@ -3748,22 +3748,23 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code              Html code.
- * @param string  $name              Name of the link.
- * @param string  $title             Title of the link.
- * @param string  $id                Block id.
- * @param boolean $hidden_default    If the div will be hidden by default (default: true).
- * @param boolean $return            Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class      Toggle class.
- * @param string  $container_class   Container class.
- * @param string  $main_class        Main object class.
- * @param string  $img_a             Image (closed).
- * @param string  $img_b             Image (opened).
- * @param string  $clean             Do not encapsulate with class boxes, clean print.
- * @param boolean $reverseImg        Reverse img.
- * @param boolean $switch            Use switch.
- * @param string  $attributes_switch Switch attributes.
- * @param string  $toggl_attr        Main box extra attributes.
+ * @param string       $code              Html code.
+ * @param string       $name              Name of the link.
+ * @param string       $title             Title of the link.
+ * @param string       $id                Block id.
+ * @param boolean      $hidden_default    If the div will be hidden by default (default: true).
+ * @param boolean      $return            Whether to return an output string or echo now (default: true).
+ * @param string       $toggle_class      Toggle class.
+ * @param string       $container_class   Container class.
+ * @param string       $main_class        Main object class.
+ * @param string       $img_a             Image (closed).
+ * @param string       $img_b             Image (opened).
+ * @param string       $clean             Do not encapsulate with class boxes, clean print.
+ * @param boolean      $reverseImg        Reverse img.
+ * @param boolean      $switch            Use switch.
+ * @param string       $attributes_switch Switch attributes.
+ * @param string       $toggl_attr        Main box extra attributes.
+ * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
  *
  * @return string HTML.
  */
@@ -3783,7 +3784,8 @@ function ui_toggle(
     $reverseImg=false,
     $switch=false,
     $attributes_switch='',
-    $toggl_attr=''
+    $toggl_attr='',
+    $switch_on=null
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3833,7 +3835,7 @@ function ui_toggle(
                     'content' => html_print_checkbox_switch_extended(
                         'box_enable_toggle'.$uniqid,
                         1,
-                        ($hidden_default === true) ? 0 : 1,
+                        ($switch_on === null) ? (($hidden_default === true) ? 0 : 1) : $switch_on,
                         false,
                         '',
                         $attributes_switch,
@@ -3963,7 +3965,8 @@ function ui_print_toggle($data)
         (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
         (isset($data['switch']) === true) ? $data['switch'] : false,
         (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
-        (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : ''
+        (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : '',
+        (isset($data['switch_on']) === true) ? $data['switch_on'] : null
     );
 }
 

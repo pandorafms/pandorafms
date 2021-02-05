@@ -959,7 +959,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 1;
+		exit 0;
 	}
 
 	print_module($conf, {
@@ -968,7 +968,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 1;
+	exit 0;
 }
 
 ################################################################################

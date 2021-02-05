@@ -34,7 +34,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.752";
-my $pandora_build = "210202";
+my $pandora_build = "210205";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -959,7 +959,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 0;
+		exit 1;
 	}
 
 	print_module($conf, {
@@ -968,7 +968,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 0;
+	exit 1;
 }
 
 ################################################################################
@@ -991,17 +991,16 @@ sub logger {
 	my ($conf, $tag, $message) = @_;
 	my $file = $conf->{'log'};
 
-	print_error($conf, "[ERROR] Log file is not defined.		exit 1;
-	}
+	print_error($conf, "[ERROR] Log file is not defined.", 0, 1) unless defined($file);
 
-	print_module($conf, {
-		name  => (empty($conf->{'global_plugin_module'})?"Plugin execution result " . $0:$conf->{'global_plugin_module'}),
-		type  => "generic_proc",
-		value => $value,
-		desc  => $msg,
-	});
-	exit 1;
- {
+	# Log rotation
+	if (defined($file) && -e $file && (stat($file))[7] > 32000000) {
+		rename ($file, $file.'.old');
+	}
+	my $LOGFILE;
+	if ($log_aux_flag == 0) {
+		# Log starts
+		if (! open ($LOGFILE, "> $file")) {
 			print_error ($conf, "[ERROR] Could not open logfile '$file'", 0, 1);
 		}
 		$log_aux_flag = 1;

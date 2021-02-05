@@ -233,6 +233,17 @@ class AgentWizard extends HTML
     private $interfacesFound;
 
     /**
+     * Some useful information about interfaces:
+     * `name` => [
+     *    operstatus
+     *    adminstatus
+     * ]
+     *
+     * @var array
+     */
+    private $interfacesData;
+
+    /**
      * X64 Interfaces
      *
      * @var boolean
@@ -2428,42 +2439,59 @@ class AgentWizard extends HTML
             'action' => $this->sectionUrl,
             'id'     => 'form-filter-interfaces',
             'method' => 'POST',
-            'class'  => 'modal flex flex-row',
+            'class'  => 'modal flex flex-row searchbox',
             'extra'  => '',
         ];
-        // Inputs.
-        $inputs = [];
 
-        $inputs[] = [
-            'direct'        => 1,
-            'class'         => 'select-interfaces',
-            'block_content' => [
-                [
-                    'label'     => __('Select all filtered interfaces'),
-                    'arguments' => [
-                        'name'    => 'select-all-interfaces',
-                        'type'    => 'switch',
-                        'class'   => '',
-                        'return'  => true,
-                        'value'   => 1,
-                        'onclick' => 'switchBlockControlInterfaces(this);',
+        // Inputs.
+        $inputs = [
+            [
+                'direct'        => 1,
+                'class'         => 'select-interfaces',
+                'block_content' => [
+                    [
+                        'label'     => __('Select all filtered interfaces'),
+                        'arguments' => [
+                            'name'    => 'select-all-interfaces',
+                            'type'    => 'switch',
+                            'class'   => '',
+                            'return'  => true,
+                            'value'   => 1,
+                            'onclick' => 'switchBlockControlInterfaces(this);',
+                        ],
                     ],
                 ],
             ],
-        ];
-
-        $inputs[] = [
-            'direct'        => 1,
-            'block_content' => [
-                [
-                    'label'     => __('Search'),
-                    'id'        => 'txt-filter-search',
-                    'arguments' => [
-                        'name'   => 'filter-search',
-                        'type'   => 'text',
-                        'class'  => '',
-                        'return' => true,
-                    ],
+            [
+                'label'     => __('Search'),
+                'id'        => 'txt-filter-search',
+                'class'     => 'textbox',
+                'arguments' => [
+                    'name'   => 'filter-search',
+                    'type'   => 'text',
+                    'return' => true,
+                ],
+            ],
+            [
+                'label'     => __('OperStatus UP'),
+                'arguments' => [
+                    'name'     => 'search-oper',
+                    'type'     => 'switch',
+                    'id'       => 'search-oper',
+                    'onchange' => 'filterInterfaces()',
+                    'value'    => 0,
+                    'return'   => true,
+                ],
+            ],
+            [
+                'label'     => __('AdminStatus UP'),
+                'arguments' => [
+                    'name'     => 'search-admin',
+                    'type'     => 'switch',
+                    'id'       => 'search-admin',
+                    'onchange' => 'filterInterfaces()',
+                    'value'    => 0,
+                    'return'   => true,
                 ],
             ],
         ];
@@ -3574,6 +3602,40 @@ class AgentWizard extends HTML
 
 
     /**
+     * Retrieve operstatus for given interface.
+     *
+     * @param string $interface_name Interface name.
+     *
+     * @return integer OperStatus.
+     */
+    private function getOperStatus(string $interface_name)
+    {
+        if (is_array($this->interfacesData[$interface_name]) === true) {
+            return (int) $this->interfacesData[$interface_name]['operstatus'];
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Retrieve adminstatus for given interface.
+     *
+     * @param string $interface_name Interface name.
+     *
+     * @return integer AdminStatus.
+     */
+    private function getAdminStatus(string $interface_name)
+    {
+        if (is_array($this->interfacesData[$interface_name]) === true) {
+            return (int) $this->interfacesData[$interface_name]['adminstatus'];
+        }
+
+        return 0;
+    }
+
+
+    /**
      * Create the tables with toggle interface for show the modules availables.
      *
      * @param mixed   $blocks           Info getted.
@@ -3627,7 +3689,7 @@ class AgentWizard extends HTML
                         true,
                         false,
                         '',
-                        'form="form-create-modules" class="interfaz_select"',
+                        'form="form-create-modules" class="interfaz_select" ',
                         true,
                         $md5IdBlock
                     );
@@ -4156,6 +4218,10 @@ class AgentWizard extends HTML
 
             $open = true;
             $buttonSwitch = false;
+            $attr = 'operstatus="'.$this->getOperStatus($idBlock).'" ';
+            $attr .= 'adminstatus="';
+            $attr .= $this->getAdminStatus($idBlock).'" ';
+
             $class = 'box-shadow white_table_graph interfaces_search';
             $reverseImg = true;
             if ($isPrincipal === true) {
@@ -4165,22 +4231,25 @@ class AgentWizard extends HTML
                 $reverseImg = false;
             }
 
-            $output .= ui_toggle(
-                $content,
-                $blockTitle,
-                '',
-                $idBlock,
-                $open,
-                true,
-                '',
-                'white-box-content',
-                $class,
-                'images/arrow_down_green.png',
-                'images/arrow_right_green.png',
-                false,
-                $reverseImg,
-                $buttonSwitch,
-                'form="form-create-modules"'
+            $output .= ui_print_toggle(
+                [
+                    'content'           => $content,
+                    'name'              => $blockTitle,
+                    'title'             => '',
+                    'id'                => $idBlock,
+                    'hidden_default'    => $open,
+                    'return'            => true,
+                    'toggle_class'      => '',
+                    'container_class'   => 'white-box-content',
+                    'main_class'        => $class,
+                    'img_a'             => 'images/arrow_down_green.png',
+                    'img_b'             => 'images/arrow_right_green.png',
+                    'clean'             => false,
+                    'reverseImg'        => $reverseImg,
+                    'switch'            => $buttonSwitch,
+                    'attributes_switch' => 'form="form-create-modules"',
+                    'toggl_attr'        => $attr,
+                ]
             );
         }
 
@@ -4221,15 +4290,34 @@ class AgentWizard extends HTML
         // Definition object.
         $definition = [];
 
+        // Fulfill extra info.
+        $this->interfacesData[$data['name']] = [];
+
         // IfOperStatus.
         $adminStatusValue = 1;
         if (empty($data) === false) {
             $adminStatusValue = $this->snmpgetValue(
                 '1.3.6.1.2.1.2.2.1.7.'.$value
             );
+
             preg_match('/\((\d+?)\)/', $adminStatusValue, $match);
             $adminStatusValue = (int) $match[1];
         }
+
+        // IfOperStatus.
+        $operStatusValue = 1;
+        if (empty($data) === false) {
+            $operStatusValue = $this->snmpgetValue(
+                '1.3.6.1.2.1.2.2.1.8.'.$value
+            );
+
+            preg_match('/\((\d+?)\)/', $operStatusValue, $match);
+            $operStatusValue = (int) $match[1];
+        }
+
+        // Store aux data.
+        $this->interfacesData[$data['name']]['adminstatus'] = $adminStatusValue;
+        $this->interfacesData[$data['name']]['operstatus'] = $operStatusValue;
 
         if ($adminStatusValue === 3) {
             $min_warning = 3;
@@ -4996,6 +5084,53 @@ class AgentWizard extends HTML
         ob_start();
         ?>
         <script type="text/javascript">
+
+            function filterInterfaces() {
+                var string = $('#text-filter-search').val().trim();
+                var filter_online = document.getElementById('search-admin').checked;
+                var filter_up = document.getElementById('search-oper').checked;
+
+                var regex = new RegExp(string, 'i');
+                var interfaces = $('.interfaces_search');
+
+                console.log(string);
+                console.log('adminstatus');
+                console.log(filter_online);
+
+                console.log('operstatus');
+                console.log(filter_up);
+
+                interfaces.each(function() {
+                    if (string == ''
+                    && filter_up == false
+                    && filter_online == false
+                    ) {
+                        $(this).removeClass('hidden');
+                        return;
+                    }
+                    
+                    if (this.id.match(regex)) {
+                        $(this).removeClass('hidden');
+                    } else {
+                        $(this).addClass('hidden');
+                    }
+
+                    if (filter_online == true) {
+                        if ($(this).attr('adminstatus') != 1) {
+                            $(this).addClass('hidden');
+                        }
+                    }
+                    
+                    if (filter_up == true) {
+                        console.log($(this));
+                        if ($(this).attr('operstatus') != 1) {
+                            $(this).addClass('hidden');
+                        }
+                    }
+                });
+            }
+
+
             $(document).ready(function() {
                 // Meta.
                 var meta = "<?php echo is_metaconsole(); ?>";
@@ -5009,20 +5144,7 @@ class AgentWizard extends HTML
 
                 // Filter search interfaces snmp.
                 $('#text-filter-search').keyup(function() {
-                    var string = $('#text-filter-search').val();
-                    var regex = new RegExp(string);
-                    var interfaces = $('.interfaces_search');
-                    interfaces.each(function() {
-                        if (string == '') {
-                            $(this).removeClass('hidden');
-                        } else {
-                            if (this.id.match(regex)) {
-                                $(this).removeClass('hidden');
-                            } else {
-                                $(this).addClass('hidden');
-                            }
-                        }
-                    });
+                    filterInterfaces();
                 });
 
                 // Loading.

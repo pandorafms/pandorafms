@@ -2923,7 +2923,7 @@ function ui_progress(
     $id = uniqid();
 
     ui_require_css_file('progress');
-    $output .= '<span id="'.$id.'" class="progress_main" data-label="'.$text;
+    $output = '<span id="'.$id.'" class="progress_main" data-label="'.$text;
     $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
     $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
@@ -3076,7 +3076,7 @@ function ui_progress_extend(
     ui_require_css_file('progress');
 
     // Main container.
-    $output .= '<div class="progress_main_noborder" ';
+    $output = '<div class="progress_main_noborder" ';
     $output .= '" style="width:'.$data['width'].'%;';
     $output .= ' height:'.$data['height'].'em;">';
 
@@ -3419,6 +3419,7 @@ function ui_print_datatable(array $parameters)
         $js .= $parameters['drawCallback'];
     }
 
+    $columns = '';
     for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
         if ($i != (count($parameters['columns']) - 3)) {
             $columns .= $i.',';
@@ -3747,18 +3748,22 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code            Html code.
- * @param string  $name            Name of the link.
- * @param string  $title           Title of the link.
- * @param string  $id              Block id.
- * @param boolean $hidden_default  If the div will be hidden by default (default: true).
- * @param boolean $return          Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class    Toggle class.
- * @param string  $container_class Container class.
- * @param string  $main_class      Main object class.
- * @param string  $img_a           Image (closed).
- * @param string  $img_b           Image (opened).
- * @param string  $clean           Do not encapsulate with class boxes, clean print.
+ * @param string  $code              Html code.
+ * @param string  $name              Name of the link.
+ * @param string  $title             Title of the link.
+ * @param string  $id                Block id.
+ * @param boolean $hidden_default    If the div will be hidden by default (default: true).
+ * @param boolean $return            Whether to return an output string or echo now (default: true).
+ * @param string  $toggle_class      Toggle class.
+ * @param string  $container_class   Container class.
+ * @param string  $main_class        Main object class.
+ * @param string  $img_a             Image (closed).
+ * @param string  $img_b             Image (opened).
+ * @param string  $clean             Do not encapsulate with class boxes, clean print.
+ * @param boolean $reverseImg        Reverse img.
+ * @param boolean $switch            Use switch.
+ * @param string  $attributes_switch Switch attributes.
+ * @param string  $toggl_attr        Main box extra attributes.
  *
  * @return string HTML.
  */
@@ -3777,7 +3782,8 @@ function ui_toggle(
     $clean=false,
     $reverseImg=false,
     $switch=false,
-    $attributes_switch=''
+    $attributes_switch='',
+    $toggl_attr=''
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3817,7 +3823,7 @@ function ui_toggle(
     }
 
     // Link to toggle.
-    $output = '<div class="'.$main_class.'" id="'.$id.'">';
+    $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
@@ -3953,7 +3959,11 @@ function ui_print_toggle($data)
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
         (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
-        (isset($data['clean']) === true) ? $data['clean'] : false
+        (isset($data['clean']) === true) ? $data['clean'] : false,
+        (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
+        (isset($data['switch']) === true) ? $data['switch'] : false,
+        (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
+        (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : ''
     );
 }
 
@@ -5661,12 +5671,6 @@ function ui_print_module_string_value(
         $value = io_safe_input($value);
     }
 
-    $is_snapshot = is_snapshot_data($module['datos']);
-    $is_large_image = is_text_to_black_string($module['datos']);
-    if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
-        $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
-    }
-
     $is_snapshot = is_snapshot_data($value);
     $is_large_image = is_text_to_black_string($value);
     if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
@@ -5733,6 +5737,7 @@ function ui_print_module_string_value(
  */
 function ui_print_tags_view($title='', $tags=[])
 {
+    $tv = '';
     if (!empty($title)) {
         $tv .= '<div class="tag-wrapper">';
         $tv .= '<h3>'.$title.'</h3>';
@@ -6071,6 +6076,7 @@ function ui_print_comments($comments)
         }
     }
 
+    $last_comment = [];
     foreach ($comments_array as $comm) {
         // Show the comments more recent first.
         if (is_array($comm)) {

@@ -1340,6 +1340,28 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $disabled = $other['data'][11];
     $description = $other['data'][12];
 
+    // Check parameters.
+    if ($idGroup == 0) {
+        $agent_update_error = __('The agent could not be modified. For security reasons, use a group other than 0.');
+        returnError('generic error', $agent_update_error);
+        return;
+    }
+
+    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"');
+    if ($alias == '' && $alias_as_name === 0) {
+        returnError('alias_not_specified', 'No agent alias specified');
+        return;
+    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$idGroup) === false) {
+        returnError('id_grupo_not_exist', 'The group doesn`t exist.');
+        return;
+    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$idOS) === false) {
+        returnError('id_os_not_exist', 'The OS doesn`t exist.');
+        return;
+    } else if ($server_name === false) {
+        returnError('server_not_exist', 'The '.get_product_name().' Server doesn`t exist.');
+        return;
+    }
+
     if ($cascadeProtection == 1) {
         if (($idParent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo

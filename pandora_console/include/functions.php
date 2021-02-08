@@ -2001,6 +2001,10 @@ function get_snmpwalk(
 ) {
     global $config;
 
+    if (empty($ip_target) === true) {
+        return [];
+    }
+
     // Note: quick_print is ignored
     // Fix for snmp port
     if (!empty($snmp_port)) {

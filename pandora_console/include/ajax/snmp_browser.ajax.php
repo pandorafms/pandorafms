@@ -25,6 +25,7 @@ if (is_ajax()) {
     $method = (string) get_parameter('method', '');
     $action = (string) get_parameter('action', '');
     $target_ip = (string) get_parameter('target_ip', '');
+    $target_port = (string) get_parameter('target_port', '');
     $community = (string) io_safe_output((get_parameter('community', '')));
     $snmp_version = (string) get_parameter('snmp_browser_version', '');
     $snmp3_auth_user = io_safe_output(get_parameter('snmp3_browser_auth_user'));
@@ -63,7 +64,8 @@ if (is_ajax()) {
             $snmp3_privacy_method,
             $snmp3_privacy_pass,
             'null',
-            $server_to_exec
+            $server_to_exec,
+            $target_port
         );
         if (! is_array($snmp_tree)) {
             echo $snmp_tree;

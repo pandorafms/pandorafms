@@ -1,3 +1,4 @@
+/* globals $,jQuery */
 // Load the SNMP tree via AJAX
 function snmpBrowse() {
   // Empty the SNMP tree
@@ -15,6 +16,7 @@ function snmpBrowse() {
 
   // Read the target IP and community
   var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
   var community = $("#text-community").val();
   var starting_oid = $("#text-starting_oid").val();
   var snmp_version = $("#snmp_browser_version").val();
@@ -25,13 +27,13 @@ function snmpBrowse() {
   var snmp3_auth_pass = $("#password-snmp3_browser_auth_pass").val();
   var snmp3_privacy_method = $("#snmp3_browser_privacy_method").val();
   var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
-  var server_to_exec = $("#server_to_exec").val();
   var ajax_url = $("#hidden-ajax_url").val();
 
   // Prepare the AJAX call
 
   var params = {};
   params["target_ip"] = target_ip;
+  params["target_port"] = target_port;
   params["community"] = community;
   params["starting_oid"] = starting_oid;
   params["snmp_browser_version"] = snmp_version;
@@ -52,7 +54,6 @@ function snmpBrowse() {
     type: "POST",
     url: (action = ajax_url),
     async: true,
-    timeout: 120000,
     success: function(data) {
       // Hide the spinner
       $("#spinner").css("display", "none");
@@ -62,6 +63,9 @@ function snmpBrowse() {
 
       // Manage click and select events.
       snmp_browser_events_manage();
+    },
+    error: function(e) {
+      $("#snmp_browser").html(e);
     }
   });
 }
@@ -499,6 +503,7 @@ function checkSNMPVersion() {
 function snmpBrowserWindow() {
   // Keep elements in the form and the SNMP browser synced
   $("#text-target_ip").val($("#text-ip_target").val());
+  $("#target_port").val($("#text-tcp_port").val());
   $("#text-community").val($("#text-snmp_community").val());
   $("#snmp_browser_version").val($("#snmp_version").val());
   $("#text-snmp3_browser_auth_user").val($("#text-snmp3_auth_user").val());
@@ -525,7 +530,7 @@ function snmpBrowserWindow() {
         opacity: 0.5,
         background: "black"
       },
-      width: 920,
+      width: 1000,
       height: 500
     });
 }

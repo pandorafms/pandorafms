@@ -2812,7 +2812,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {

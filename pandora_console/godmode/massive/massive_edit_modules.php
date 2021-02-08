@@ -1185,6 +1185,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             // Hack to translate text "none" in PHP to javascript
             echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
             echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
+            ui_require_javascript_file('massive_operations');
             ui_require_jquery_file('pandora.controls');
 
             if ($selection_mode == 'modules') {
@@ -1213,7 +1214,7 @@ $(document).ready (function () {
             get_parameters_count + post_parameters_count;
         
         if (count_parameters > limit_parameters_massive) {
-            alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+            showMassiveOperationMessage('<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>');
             return false;
         }
     });

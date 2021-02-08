@@ -316,11 +316,15 @@ $submit_template_enabled = get_parameter('id_alert_template_enabled');
 $submit_template_not_standby = get_parameter('id_alert_template_not_standby');
 $submit_template_standby = get_parameter('id_alert_template_standby');
 $submit_add = get_parameter('crtbutton');
-
-echo '<div id="loading" display="none">';
-echo html_print_image('images/wait.gif', true, ['border' => '0']).'<br />';
-echo '<strong>'.__('Please wait...').'</strong>';
-echo '</div>';
+// Waiting spinner.
+ui_print_spinner(__('Loading'));
+// Modal for show messages.
+html_print_div(
+    [
+        'id'      => 'massive_modal',
+        'content' => '',
+    ]
+);
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -338,12 +342,12 @@ echo '</div>';
             confirm_status =
                 confirm("<?php echo __('Are you sure?'); ?>");
             if (confirm_status)
-                $("#loading").css("display", "");
+                showSpinner();
             else
                 return false;
         });
         
-        $("#loading").css("display", "none");
+        hideSpinner();
     });
 </script>
 

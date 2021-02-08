@@ -792,6 +792,7 @@ p.center {
   cursor: help;
 }
 
+/* Legacy spinner */
 #loading {
   position: fixed;
   width: 200px;
@@ -799,6 +800,18 @@ p.center {
   text-align: center;
   top: 50%;
   background-color: #999999;
+  padding: 20px;
+}
+
+/* New standard spinner */
+#loading_spinner {
+  position: fixed;
+  margin-left: 30%;
+  text-align: center;
+  top: 50%;
+  background-color: #fff;
+  border: 2px solid #82b92e;
+  box-shadow: 2px 2px 2px #9dbba1;
   padding: 20px;
 }
 

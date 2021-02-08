@@ -259,6 +259,7 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
+ui_require_javascript_file('massive_operations');
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
 ?>
@@ -276,7 +277,7 @@ $(document).ready (function () {
             get_parameters_count + post_parameters_count;
         
         if (count_parameters > limit_parameters_massive) {
-            alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+            showMassiveOperationMessage();
             return false;
         }
     });

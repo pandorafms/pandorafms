@@ -1094,17 +1094,55 @@ function snmp_browser_print_container(
  */
 function snmp_browser_create_modules_snmp(string $module_target, array $snmp_values, ?array $id_target)
 {
+    $target_ip = null;
+    $community = null;
+    $target_oid = null;
+    $snmp_version = null;
+    $snmp3_auth_user = null;
+    $snmp3_security_level = null;
+    $snmp3_auth_method = null;
+    $snmp3_auth_pass = null;
+    $snmp3_privacy_method = null;
+    $snmp3_privacy_pass = null;
+
     if (is_array($snmp_values)) {
-        $snmp_version = $snmp_values['snmp_browser_version'];
-        $community = $snmp_values['community'];
-        $target_ip = $snmp_values['target_ip'];
-        $snmp3_auth_user = $snmp_values['snmp3_browser_auth_user'];
-        $snmp3_security_level = $snmp_values['snmp3_browser_security_level'];
-        $snmp3_auth_method = $snmp_values['snmp3_browser_auth_method'];
-        $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
-        $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
-        $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
-        $targets_oids = $snmp_values['oids'];
+        if (isset($snmp_values['snmp_browser_version']) === true) {
+            $snmp_version = $snmp_values['snmp_browser_version'];
+        }
+
+        if (isset($snmp_values['community']) === true) {
+            $community = $snmp_values['community'];
+        }
+
+        if (isset($snmp_values['target_ip']) === true) {
+            $target_ip = $snmp_values['target_ip'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_auth_user']) === true) {
+            $snmp3_auth_user = $snmp_values['snmp3_browser_auth_user'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_security_level']) === true) {
+            $snmp3_security_level = $snmp_values['snmp3_browser_security_level'];
+        };
+        if (isset($snmp_values['snmp3_browser_auth_method']) === true) {
+            $snmp3_auth_method = $snmp_values['snmp3_browser_auth_method'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_auth_pass']) === true) {
+            $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
+        }
+
+        if (isset($snmp_values['snmp3_privacy_method']) === true) {
+            $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
+        };
+        if (isset($snmp_values['snmp3_browser_privacy_pass']) === true) {
+            $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
+        }
+
+        if (isset($snmp_values['oids']) === true) {
+            $targets_oids = $snmp_values['oids'];
+        }
     }
 
      $fail_modules = [];
@@ -1326,7 +1364,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             }
         }
 
-        if (is_array($ids)) {
+        if (isset($ids) === true && is_array($ids) === true) {
             foreach ($ids as $id) {
                 // Id < 0 for error codes.
                 if (!$id || $id < 0) {
@@ -1354,6 +1392,8 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
  */
 function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $return=false)
 {
+    global $config;
+
     // String for labels.
     switch ($target) {
         case 'agent':
@@ -1365,7 +1405,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         break;
     }
 
-    $output .= "<form target='_blank' id='create_module_massive' action='#' method='post'>";
+    $output = "<form target='_blank' id='create_module_massive' action='#' method='post'>";
 
     $strict_user = db_get_value(
         'strict_acl',

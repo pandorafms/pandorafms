@@ -107,7 +107,7 @@ try {
                 );
 
                 // Div for error/succes dialog.
-                $output .= '<div id="snmp_result_msg" style="display:none"></div>';
+                $output = '<div id="snmp_result_msg" style="display:none"></div>';
 
                 // Dialog error.
                 $output .= '<div id="dialog_error" style="display:none" title="'.__('SNMP modules').'">';
@@ -183,6 +183,7 @@ try {
         if ($method == 'snmp_browser_create_modules') {
             // Get target ids from form.
             $id_items = get_parameter('id_item2', null);
+            $id_target = null;
             if (empty($id_items) === false) {
                 $id_target = explode(',', $id_items[0]);
             }
@@ -263,7 +264,5 @@ try {
         }
     }
 } catch (\Exception $e) {
-    $e->getMessage();
-} finally {
-    exit;
+    hd($e);
 }

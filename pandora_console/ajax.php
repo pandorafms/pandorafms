@@ -148,7 +148,9 @@ if (__PAN_XHPROF__ === 1) {
 }
 
 
-if ($config['force_instant_logout'] === true) {
+if (isset($config['force_instant_logout']) === true
+    && $config['force_instant_logout'] === true
+) {
     // Force user logout.
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();

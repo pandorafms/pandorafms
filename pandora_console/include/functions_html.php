@@ -536,6 +536,8 @@ function html_print_select_groups(
         $include_groups[$nothing_value] = $nothing;
     }
 
+    $json_exclusions = '';
+    $json_inclusions = '';
     if (is_array($delete_groups) === true) {
         $json_exclusions = json_encode($delete_groups);
     }

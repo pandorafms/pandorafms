@@ -139,7 +139,6 @@ function snmp_browser_show_add_module_massive(module_target = 'agent') {
     var snmp_extradata = snmp_browser_create_modules(module_target);
     // Load dinamically modal form.
     load_modal({
-        target: $('#modal'),
         form: 'snmp_browser_add_module_form',
         extradata: [
             {

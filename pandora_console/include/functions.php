@@ -2001,6 +2001,10 @@ function get_snmpwalk(
 ) {
     global $config;
 
+    if (empty($ip_target) === true) {
+        return [];
+    }
+
     // Note: quick_print is ignored
     // Fix for snmp port
     if (!empty($snmp_port)) {
@@ -4459,7 +4463,7 @@ function get_help_info($section_name)
 {
     global $config;
 
-    $user_language = get_user_language($id_user);
+    $user_language = get_user_language($config['id_user']);
 
     $es = false;
     $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:';

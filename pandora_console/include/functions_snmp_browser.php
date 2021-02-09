@@ -364,17 +364,18 @@ function snmp_browser_get_tree(
 /**
  * Retrieve data for the specified OID.
  *
- * @param string  $target_ip            IP of the SNMP agent.
- * @param string  $community            SNMP community to use.
- * @param string  $target_oid           SNMP OID to query.
- * @param string  $version              Version SNMP.
- * @param string  $snmp3_auth_user      User snmp3.
- * @param string  $snmp3_security_level Security level snmp3.
- * @param string  $snmp3_auth_method    Method snmp3.
- * @param string  $snmp3_auth_pass      Pass snmp3.
- * @param string  $snmp3_privacy_method Privicy method snmp3.
- * @param string  $snmp3_privacy_pass   Pass Method snmp3.
- * @param integer $server_to_exec       Execute with other server.
+ * @param string       $target_ip            IP of the SNMP agent.
+ * @param string       $community            SNMP community to use.
+ * @param string       $target_oid           SNMP OID to query.
+ * @param string       $version              Version SNMP.
+ * @param string       $snmp3_auth_user      User snmp3.
+ * @param string       $snmp3_security_level Security level snmp3.
+ * @param string       $snmp3_auth_method    Method snmp3.
+ * @param string       $snmp3_auth_pass      Pass snmp3.
+ * @param string       $snmp3_privacy_method Privicy method snmp3.
+ * @param string       $snmp3_privacy_pass   Pass Method snmp3.
+ * @param integer      $server_to_exec       Execute with other server.
+ * @param integer|null $target_port          Target port.
  *
  * @return mixed OID data.
  */
@@ -389,7 +390,8 @@ function snmp_browser_get_oid(
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
     $snmp3_privacy_pass='',
-    $server_to_exec=0
+    $server_to_exec=0,
+    $target_port=''
 ) {
     global $config;
 
@@ -402,24 +404,40 @@ function snmp_browser_get_oid(
     }
 
     $output = get_snmpwalk(
+        // Ip_target.
         $target_ip,
+        // Snmp_version.
         $version,
+        // Snmp_community.
         $community,
+        // Snmp3_auth_user.
         $snmp3_auth_user,
+        // Snmp3_security_level.
         $snmp3_security_level,
+        // Snmp3_auth_method.
         $snmp3_auth_method,
+        // Snmp3_auth_pass.
         $snmp3_auth_pass,
+        // Snmp3_privacy_method.
         $snmp3_privacy_method,
+        // Snmp3_privacy_pass.
         $snmp3_privacy_pass,
+        // Quick_print.
         0,
+        // Base_oid.
         $target_oid,
-        '',
+        // Snmp_port.
+        $target_port,
+        // Server_to_exec.
         $server_to_exec,
+        // Extra_arguments.
         '',
+        // Format.
         '-On'
     );
 
     $oid_data['oid'] = $target_oid;
+
     foreach ($output as $oid => $value) {
         $oid = trim($oid);
         $oid_data['numeric_oid'] = $oid;
@@ -443,7 +461,8 @@ function snmp_browser_get_oid(
             $snmptranslate_bin = $config['snmptranslate'];
         }
 
-        if ($server_to_exec != 0) {
+        if ($server_to_exec != 0 && enterprise_installed()) {
+            $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
             $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
 
             if (empty($server_data['port'])) {
@@ -523,7 +542,7 @@ function snmp_browser_print_oid(
 ) {
     $output = '';
 
-    // OID information table
+    // OID information table.
     $table = new StdClass();
     $table->width = '100%';
     $table->size = [];
@@ -1088,15 +1107,22 @@ function snmp_browser_print_container(
 /**
  * Create selected oids as modules on selected target.
  *
- * @param  string     $module_target Target where modules will be created (network componen, agent or policy).
- * @param  array      $targets_oids  Modules oids.
- * @param  array      $values        SNMP conf values.
- * @param  array|null $id_target     (Optional) Id target where modules will be created.
- * @return array        $fail_modules
+ * @param string      $module_target  Target where modules will be created (network componen, agent or policy).
+ * @param array       $targets_oids   Modules oids.
+ * @param array       $values         SNMP conf values.
+ * @param array|null  $id_target      (Optional) Id target where modules will be created.
+ * @param string|null $server_to_exec Remote server to execute command.
+ *
+ * @return array Failed modules.
  */
-function snmp_browser_create_modules_snmp(string $module_target, array $snmp_values, ?array $id_target)
-{
+function snmp_browser_create_modules_snmp(
+    string $module_target,
+    array $snmp_values,
+    ?array $id_target,
+    ?string $server_to_exec=null
+) {
     $target_ip = null;
+    $target_port = null;
     $community = null;
     $target_oid = null;
     $snmp_version = null;
@@ -1118,6 +1144,10 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
 
         if (isset($snmp_values['target_ip']) === true) {
             $target_ip = $snmp_values['target_ip'];
+        }
+
+        if (isset($snmp_values['target_port']) === true) {
+            $target_port = $snmp_values['target_port'];
         }
 
         if (isset($snmp_values['snmp3_browser_auth_user']) === true) {
@@ -1160,8 +1190,15 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             $snmp3_auth_method,
             $snmp3_auth_pass,
             $snmp3_privacy_method,
-            $snmp3_privacy_pass
+            $snmp3_privacy_pass,
+            $server_to_exec,
+            $target_port
         );
+
+        if (isset($oid['numeric_oid']) === false) {
+            $fail_modules[] = $target_oid;
+            continue;
+        }
 
         if (empty($oid['description'])) {
             $description = '';
@@ -1253,7 +1290,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min'                   => 0,
                     'tcp_send'              => $snmp_version,
                     'tcp_rcv'               => '',
-                    'tcp_port'              => 0,
+                    'tcp_port'              => $target_port,
                     'snmp_oid'              => $oid['numeric_oid'],
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
@@ -1313,7 +1350,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min'                   => 0,
                     'tcp_send'              => $snmp_version,
                     'tcp_rcv'               => '',
-                    'tcp_port'              => 0,
+                    'tcp_port'              => $target_port,
                     'snmp_oid'              => $oid['numeric_oid'],
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
@@ -1596,6 +1633,10 @@ function snmp_browser_print_create_policy()
 {
     $table = new stdClass();
 
+    $name = get_parameter('name');
+    $id_group = get_parameter('id_group');
+    $description = get_parameter('description');
+
     $table->width = '100%';
     $table->class = 'databox filters';
     $table->style = [];
@@ -1606,7 +1647,8 @@ function snmp_browser_print_create_policy()
     $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
 
     $table->data[1][0] = __('Group');
-    $table->data[1][1] = html_print_select_groups(
+    $table->data[1][1] = '<div class="flex flex-row"><div class="w90p">';
+    $table->data[1][1] .= html_print_select_groups(
         false,
         'AW',
         false,
@@ -1616,10 +1658,10 @@ function snmp_browser_print_create_policy()
         '',
         '',
         true
-    );
+    ).'</div>';
     $table->data[1][1] .= ' <span id="group_preview">';
     $table->data[1][1] .= ui_print_group_icon($id_group, true, 'groups_small', '', false);
-    $table->data[1][1] .= '</span>';
+    $table->data[1][1] .= '</span></div>';
 
     $table->data[2][0] = __('Description');
     $table->data[2][1] = html_print_textarea('description', 3, 30, $description, '', true);

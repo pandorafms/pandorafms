@@ -576,6 +576,7 @@ function snmp_browser_create_modules(module_target, return_post = true) {
     .get();
 
   var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
   var community = $("#text-community").val();
   var snmp_version = $("#snmp_browser_version").val();
   var snmp3_auth_user = $("#text-snmp3_browser_auth_user").val();
@@ -605,6 +606,7 @@ function snmp_browser_create_modules(module_target, return_post = true) {
   var snmp_conf = {};
 
   snmp_conf["target_ip"] = target_ip;
+  snmp_conf["target_port"] = target_port;
   snmp_conf["community"] = community;
   snmp_conf["oids"] = oids;
   snmp_conf["snmp_browser_version"] = snmp_version;

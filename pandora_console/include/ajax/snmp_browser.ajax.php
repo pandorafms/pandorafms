@@ -205,7 +205,12 @@ try {
                 $snmp_conf_values[$snmp_conf['name']] = $snmp_conf['value'];
             }
 
-            $fail_modules = snmp_browser_create_modules_snmp($module_target, $snmp_conf_values, $id_target);
+            $fail_modules = snmp_browser_create_modules_snmp(
+                $module_target,
+                $snmp_conf_values,
+                $id_target,
+                $server_to_exec
+            );
 
             // Return fail modules for error/success message.
             echo json_encode($fail_modules);
@@ -264,5 +269,5 @@ try {
         }
     }
 } catch (\Exception $e) {
-    hd($e);
+    echo $e->getMessage();
 }

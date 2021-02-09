@@ -64,8 +64,18 @@ function snmpBrowse() {
       // Manage click and select events.
       snmp_browser_events_manage();
     },
-    error: function(e) {
-      $("#snmp_browser").html(e);
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      $("#spinner").css("display", "none");
+      $("#snmp_browser").html(
+        "<p>Status: " +
+          textStatus +
+          "</p><p>" +
+          "Error: " +
+          errorThrown +
+          "</p><p>" +
+          XMLHttpRequest.responseText +
+          "</p>"
+      );
     }
   });
 }

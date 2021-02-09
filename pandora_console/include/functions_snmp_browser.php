@@ -782,7 +782,9 @@ function snmp_browser_print_container(
             'script'     => 'snmpBrowse()',
             'attributes' => 'class="sub search" style="margin-top:0px;"',
             'return'     => true,
-        ]
+        ],
+        'div',
+        true
     );
 
     // SNMP v3 options.

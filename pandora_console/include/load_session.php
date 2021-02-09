@@ -219,7 +219,9 @@ function enable_session_handlers()
 {
     global $config;
 
-    if ($config['_using_pandora_sessionhandlers'] !== true) {
+    if (isset($config['_using_pandora_sessionhandlers']) !== true
+        || $config['_using_pandora_sessionhandlers'] !== true
+    ) {
         if (session_status() !== PHP_SESSION_NONE) {
             // Close previous version.
             session_write_close();

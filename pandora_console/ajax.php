@@ -80,9 +80,8 @@ if (isset($_GET['loginhash']) === true) {
     } else {
         include_once 'general/login_page.php';
         db_pandora_audit('Logon Failed (loginhash', '', 'system');
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -169,7 +168,6 @@ if ($config['force_instant_logout'] === true) {
 }
 
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }

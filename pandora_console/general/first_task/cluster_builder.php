@@ -24,6 +24,14 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
+\ui_print_page_header(
+    __('Monitoring').' &raquo; '.__('Clusters'),
+    'images/chart.png',
+    false,
+    '',
+    false
+);
+
 ui_require_css_file('first_task');
 ?>
 <?php

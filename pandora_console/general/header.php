@@ -877,7 +877,9 @@ if ($config['menu_type'] == 'classic') {
         blinkpubli();
 
         <?php
-        if ($_GET['refr'] || $do_refresh === true) {
+        if ($_GET['refr']
+            || (isset($do_refresh) === true && $do_refresh === true)
+        ) {
             if ($_GET['sec2'] == 'operation/events/events') {
                 $autorefresh_draw = true;
             }
@@ -941,7 +943,7 @@ if ($config['menu_type'] == 'classic') {
                     var newValue = btoa(JSON.stringify(values));           
                     <?php
                     // Check if the url has the parameter fb64.
-                    if ($_GET['fb64']) {
+                    if (isset($_GET['fb64']) === true) {
                         $fb64 = $_GET['fb64'];
                         ?>
                             var fb64 = '<?php echo $fb64; ?>';  

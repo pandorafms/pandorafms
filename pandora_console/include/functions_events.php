@@ -675,6 +675,33 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
  *
  * @param array   $fields          Fields to retrieve.
  * @param array   $filter          Filters to be applied.
+ *                    Available filters:
+ *                    [
+ *                       'date_from'
+ *                       'time_from'
+ *                       'date_to'
+ *                       'time_to'
+ *                       'event_view_hr'
+ *                       'id_agent'
+ *                       'event_type'
+ *                       'severity'
+ *                       'id_group_filter'
+ *                       'status'
+ *                       'agent_alias'
+ *                       'search'
+ *                       'id_extra'
+ *                       'id_source_event'
+ *                       'user_comment'
+ *                       'source'
+ *                       'id_user_ack'
+ *                       'tag_with'
+ *                       'tag_without'
+ *                       'filter_only_alert'
+ *                       'module_search'
+ *                       'group_rep'
+ *                       'server_id'
+ *                    ].
+ *
  * @param integer $offset          Offset (pagination).
  * @param integer $limit           Limit (pagination).
  * @param string  $order           Sort order.
@@ -683,6 +710,8 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
  * @param boolean $return_sql      Return SQL (true) or execute it (false).
  * @param string  $having          Having filter.
  * @param boolean $validatedEvents If true, evaluate validated events.
+ * @param boolean $recursiveGroups If true, filtered groups and their children
+ *                                 will be search.
  *
  * @return array Events.
  * @throws Exception On error.
@@ -697,7 +726,8 @@ function events_get_all(
     $history=false,
     $return_sql=false,
     $having='',
-    $validatedEvents=false
+    $validatedEvents=false,
+    $recursiveGroups=true
 ) {
     global $config;
 
@@ -873,17 +903,56 @@ function events_get_all(
     }
 
     $groups = $filter['id_group_filter'];
-    if (isset($groups) === true && $groups > 0) {
-        $children = groups_get_children($groups);
+    if ((bool) $user_is_admin === false
+        && isset($groups) === false
+    ) {
+        // Not being filtered by group but not an admin, limit results.
+        $groups = array_keys(users_get_groups(false, 'AR'));
+    }
 
-        $_groups = [ $groups ];
-        if (empty($children) === false) {
-            foreach ($children as $child) {
-                $_groups[] = (int) $child['id_grupo'];
+    if (isset($groups) === true
+        && (is_array($groups) === true || ($groups > 0))
+    ) {
+        if ($recursiveGroups === true) {
+            // Add children groups.
+            $children = [];
+            if (is_array($groups) === true) {
+                foreach ($groups as $g) {
+                    $children = array_merge(
+                        groups_get_children($g),
+                        $children
+                    );
+                }
+            } else {
+                $children = groups_get_children($groups);
             }
+
+            if (is_array($groups) === true) {
+                $_groups = $groups;
+            } else {
+                $_groups = [ $groups ];
+            }
+
+            if (empty($children) === false) {
+                foreach ($children as $child) {
+                    $_groups[] = (int) $child['id_grupo'];
+                }
+            }
+
+            if ((bool) $user_is_admin === false) {
+                $user_groups = users_get_groups(false, 'AR');
+                $_groups = array_intersect(
+                    $_groups,
+                    array_keys($user_groups)
+                );
+            }
+
+            $groups = $_groups;
         }
 
-        $groups = $_groups;
+        if (is_array($groups) === false) {
+            $groups = [ $groups ];
+        }
 
         $sql_filters[] = sprintf(
             ' AND (te.id_grupo IN (%s) OR tasg.id_group IN (%s))',
@@ -1466,6 +1535,8 @@ function events_get_all(
 
 
 /**
+ * @deprecated Use events_get_all instead.
+ *
  * Get all rows of events from the database, that
  * pass the filter, and can get only some fields.
  *
@@ -1502,7 +1573,9 @@ function events_get_all(
  */
 function events_get_events($filter=false, $fields=false)
 {
-    if ($filter['criticity'] == EVENT_CRIT_WARNING_OR_CRITICAL) {
+    if (isset($filter['criticity']) === true
+        && (int) $filter['criticity'] === EVENT_CRIT_WARNING_OR_CRITICAL
+    ) {
         $filter['criticity'] = [
             EVENT_CRIT_WARNING,
             EVENT_CRIT_CRITICAL,
@@ -7362,4 +7435,41 @@ function events_get_instructions($event)
     $output .= '</center>';
 
     return $output;
+}
+
+
+/**
+ * Return class name matching criticity received.
+ *
+ * @param integer $criticity Event's criticity.
+ *
+ * @return string
+ */
+function events_get_criticity_class($criticity)
+{
+    switch ($criticity) {
+        case EVENT_CRIT_CRITICAL:
+        return 'datos_red';
+
+        case EVENT_CRIT_MAINTENANCE:
+        return 'datos_grey';
+
+        case EVENT_CRIT_INFORMATIONAL:
+        return 'datos_blue';
+
+        case EVENT_CRIT_MAJOR:
+        return 'datos_pink';
+
+        case EVENT_CRIT_MINOR:
+        return 'datos_pink';
+
+        case EVENT_CRIT_NORMAL:
+        return 'datos_green';
+
+        case EVENT_CRIT_WARNING:
+        return 'datos_yellow';
+
+        default:
+        return 'datos_blue';
+    }
 }

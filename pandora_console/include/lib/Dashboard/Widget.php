@@ -21,7 +21,7 @@ class Widget
      *
      * @var integer
      */
-    private $cellId;
+    protected $cellId;
 
     /**
      * Widget Id.
@@ -99,8 +99,6 @@ class Widget
      */
     public function getOptionsWidget():array
     {
-        global $config;
-
         $result = [];
         if (empty($this->dataCell['options']) === false) {
             $result = \json_decode($this->dataCell['options'], true);
@@ -588,6 +586,39 @@ class Widget
         ];
 
         return $result;
+    }
+
+
+    /**
+     * Get description should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getDescription()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Load should be implemented for each child.
+     *
+     * @return string
+     */
+    public function load()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Get name should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getName()
+    {
+        return '**NOT DEFINED**';
     }
 
 

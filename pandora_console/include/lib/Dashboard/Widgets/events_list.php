@@ -246,6 +246,10 @@ class EventsListWidget extends Widget
             $values['groupRecursion'] = $decoder['groupRecursion'];
         }
 
+        if (isset($decoder['customFilter']) === true) {
+            $values['customFilter'] = $decoder['customFilter'];
+        }
+
         if (isset($decoder['groupId']) === true) {
             $values['groupId'] = $decoder['groupId'];
         }
@@ -255,6 +259,17 @@ class EventsListWidget extends Widget
         }
 
         return $values;
+    }
+
+
+    /**
+     * Aux javascript to be run after form load.
+     *
+     * @return string
+     */
+    public function getFormJS(): string
+    {
+        return '$( document ).ready(function() {event_widget_options();});';
     }
 
 
@@ -274,6 +289,21 @@ class EventsListWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        // Select pre built filter.
+        $inputs[] = [
+            'label'     => \__('Custom filters'),
+            'arguments' => [
+                'type'          => 'select',
+                'id'            => 'select-custom-filter',
+                'fields'        => \events_get_event_filter_select(false),
+                'name'          => 'customFilter',
+                'script'        => 'event_widget_options();',
+                'nothing'       => \__('None'),
+                'nothing_value' => -1,
+                'selected'      => $this->values['customFilter'],
+            ],
+        ];
+
         $fields = \get_event_types();
         $fields['not_normal'] = \__('Not normal');
 
@@ -292,6 +322,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'          => 'select',
                 'fields'        => $fields,
+                'class'         => 'event-widget-input',
                 'name'          => 'eventType',
                 'selected'      => $values['eventType'],
                 'return'        => true,
@@ -306,6 +337,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'name'   => 'maxHours',
                 'type'   => 'number',
+                'class'  => 'event-widget-input',
                 'value'  => $values['maxHours'],
                 'return' => true,
                 'min'    => 0,
@@ -328,6 +360,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $fields,
+                'class'    => 'event-widget-input',
                 'name'     => 'limit',
                 'selected' => $values['limit'],
                 'return'   => true,
@@ -346,6 +379,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $fields,
+                'class'    => 'event-widget-input',
                 'name'     => 'eventStatus',
                 'selected' => $values['eventStatus'],
                 'return'   => true,
@@ -360,6 +394,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'          => 'select',
                 'fields'        => $fields,
+                'class'         => 'event-widget-input',
                 'name'          => 'severity',
                 'selected'      => $values['severity'],
                 'return'        => true,
@@ -386,6 +421,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'           => 'select_groups',
                 'name'           => 'groupId[]',
+                'class'          => 'event-widget-input',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
                 'selected'       => $selected_groups_array,
@@ -401,6 +437,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'   => 'switch',
                 'name'   => 'groupRecursion',
+                'class'  => 'event-widget-input',
                 'value'  => $values['groupRecursion'],
                 'return' => true,
             ],
@@ -414,6 +451,7 @@ class EventsListWidget extends Widget
             'arguments' => [
                 'type'          => 'select',
                 'fields'        => $fields,
+                'class'         => 'event-widget-input',
                 'name'          => 'tagsId[]',
                 'selected'      => explode(',', $values['tagsId'][0]),
                 'return'        => true,
@@ -445,6 +483,7 @@ class EventsListWidget extends Widget
         $values['groupId'] = \get_parameter_switch('groupId', []);
         $values['tagsId'] = \get_parameter_switch('tagsId', []);
         $values['groupRecursion'] = \get_parameter_switch('groupRecursion', 0);
+        $values['customFilter'] = \get_parameter('customFilter', -1);
 
         return $values;
     }
@@ -460,14 +499,6 @@ class EventsListWidget extends Widget
         global $config;
 
         $output = '';
-
-        $return_all_group = false;
-
-        if ((bool) \users_can_manage_group_all('RM') === true) {
-            $return_all_group = true;
-        }
-
-        $user_groups = \users_get_groups(false, 'AR', $return_all_group);
 
         \ui_require_css_file('events', 'include/styles/', true);
         \ui_require_css_file('tables', 'include/styles/', true);
@@ -494,39 +525,51 @@ class EventsListWidget extends Widget
         $filter = [];
         $order = [];
 
-        // Filtering.
-        $filter['event_view_hr'] = $hours;
-
-        // Group.
-        $filter['id_group_filter'] = $this->values['groupId'];
-        if (empty($filter['id_group_filter']) === true
-            || $filter['id_group_filter'][0] === ''
-            || $filter['id_group_filter'][0] === '0'
-        ) {
-            // No filter specified. Don't filter at all...
-            $filter['id_group_filter'] = null;
-        }
-
-        // Tags.
-        if (empty($this->values['tagsId']) === false) {
+        $customFilter = \events_get_event_filter($this->values['customFilter']);
+        if ($customFilter !== false) {
+            $filter = $customFilter;
             $filter['tag_with'] = base64_encode(
-                json_encode($this->values['tagsId'])
+                json_encode($filter['tag_with'])
             );
-        }
 
-        // Severity.
-        if (isset($this->values['severity']) === true) {
-            $filter['severity'] = $this->values['severity'];
-        }
+            $filter['tag_without'] = base64_encode(
+                json_encode($filter['tag_without'])
+            );
+        } else {
+            // Filtering.
+            $filter['event_view_hr'] = $hours;
 
-        // Event types.
-        if (empty($this->values['eventType']) === false) {
-            $filter['event_type'] = $this->values['eventType'];
-        }
+            // Group.
+            $filter['id_group_filter'] = $this->values['groupId'];
+            if (empty($filter['id_group_filter']) === true
+                || $filter['id_group_filter'][0] === ''
+                || $filter['id_group_filter'][0] === '0'
+            ) {
+                // No filter specified. Don't filter at all...
+                $filter['id_group_filter'] = null;
+            }
 
-        // Event status.
-        if ((int) $this->values['eventStatus'] !== -1) {
-            $filter['status'] = $this->values['eventStatus'];
+            // Tags.
+            if (empty($this->values['tagsId']) === false) {
+                $filter['tag_with'] = base64_encode(
+                    json_encode($this->values['tagsId'])
+                );
+            }
+
+            // Severity.
+            if (isset($this->values['severity']) === true) {
+                $filter['severity'] = $this->values['severity'];
+            }
+
+            // Event types.
+            if (empty($this->values['eventType']) === false) {
+                $filter['event_type'] = $this->values['eventType'];
+            }
+
+            // Event status.
+            if ((int) $this->values['eventStatus'] !== -1) {
+                $filter['status'] = $this->values['eventStatus'];
+            }
         }
 
         // Order.
@@ -636,6 +679,12 @@ class EventsListWidget extends Widget
                     $data[1] .= '</a>';
                 } else {
                     $data[1] = '&nbsp;';
+                }
+
+                if (isset($event['event_rep']) === true
+                    && $event['event_rep'] > 1
+                ) {
+                    $data[1] .= ' ('.$event['event_rep'].')';
                 }
 
                 // Group.

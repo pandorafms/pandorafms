@@ -1362,6 +1362,7 @@ class Manager
 
         $instance = $this->instanceWidget();
         $htmlInputs = $instance->getFormInputs([]);
+        $js = $instance->getFormJS();
 
         View::render(
             'dashboard/configurationWidgets',
@@ -1369,6 +1370,7 @@ class Manager
                 'dashboardId' => $this->dashboardId,
                 'cellId'      => $this->cellId,
                 'htmlInputs'  => $htmlInputs,
+                'js'          => $js,
             ]
         );
 

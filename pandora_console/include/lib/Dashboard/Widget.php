@@ -622,4 +622,15 @@ class Widget
     }
 
 
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        return '';
+    }
+
+
 }

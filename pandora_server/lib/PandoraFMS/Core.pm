@@ -679,7 +679,12 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		$alert->{'critical_instructions'} = $critical_instructions;
 		$alert->{'warning_instructions'} = $warning_instructions;
 		$alert->{'unknown_instructions'} = $unknown_instructions;
-		
+
+		# Generate event only if not quieted by module or agent.
+		return if ((ref($module) eq 'HASH' && $module->{'quiet'} != "0")
+			|| (ref($agent) eq 'HASH' && $agent->{'quiet'} != "0")
+			|| (ref($alert) eq 'HASH' && $alert->{'disable_event'} != "0"));
+
 		# Generate an event
 		if ($table eq 'tevent_alert') {
 			pandora_event ($pa_config, "Alert ceased (" .

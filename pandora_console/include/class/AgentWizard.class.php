@@ -972,6 +972,16 @@ class AgentWizard extends HTML
             if (isset($unicastIpReferences[$indexKey]) === true) {
                 $interfaces[$indexKey]['ip'] = '';
             }
+
+            // Get interface alias.
+            $interfaces[$indexKey]['alias'] = $this->snmpgetValue(
+                '.1.3.6.1.2.1.31.1.1.1.18.'.$indexKey
+            );
+
+            // Get interface speed.
+            $interfaces[$indexKey]['speed'] = $this->snmpgetValue(
+                '.1.3.6.1.2.1.2.2.1.5.'.$indexKey
+            );
         }
 
         // Save the interfaces found for process later.
@@ -4291,6 +4301,12 @@ class AgentWizard extends HTML
                 $moduleDescription .= '';
             }
 
+            if (empty($data['alias']) === false) {
+                $moduleDescription .= 'Alias: '.$data['alias'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
             $name   = $data['name'].'_';
             $value  = $data['index'];
         }
@@ -4401,6 +4417,32 @@ class AgentWizard extends HTML
         if (empty($definition_temp) === false) {
             $definition = array_merge($definition, $definition_temp);
         }
+
+        // LocIfInCRC.
+        $moduleName = $name.'locIfInCRC';
+        $definition['locIfInCRC'] = [
+            'module_name'        => $moduleName,
+            'module_type'        => MODULE_TYPE_REMOTE_SNMP_INC,
+            'module_description' => sprintf(
+                '(%s%s)',
+                $moduleDescription,
+                $moduleName
+            ),
+            'module_info'        => 'Number of input packets which had cyclic redundancy checksum errors.',
+            'execution_type'     => 'network',
+            'value'              => '1.3.6.1.4.1.9.2.2.1.1.12.'.$value,
+            'module_unit'        => 'packets/s',
+            'default_enabled'    => true,
+            'module_enabled'     => false,
+            'module_thresholds'  => [
+                'min_warning'  => '0',
+                'max_warning'  => '0',
+                'inv_warning'  => false,
+                'min_critical' => '0',
+                'max_critical' => '0',
+                'inv_critical' => false,
+            ],
+        ];
 
         // Continue with common x86 and x84 modules.
         // IfAdminStatus.
@@ -4555,6 +4597,12 @@ class AgentWizard extends HTML
 
             if (empty($data['ip']) === false) {
                 $moduleDescription .= 'IP: '.$data['ip'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            if (empty($data['alias']) === false) {
+                $moduleDescription .= 'Alias: '.$data['alias'].' - ';
             } else {
                 $moduleDescription .= '';
             }
@@ -4744,6 +4792,12 @@ class AgentWizard extends HTML
 
             if (empty($data['ip']) === false) {
                 $moduleDescription .= 'IP: '.$data['ip'].' - ';
+            } else {
+                $moduleDescription .= '';
+            }
+
+            if (empty($data['alias']) === false) {
+                $moduleDescription .= 'Alias: '.$data['alias'].' - ';
             } else {
                 $moduleDescription .= '';
             }

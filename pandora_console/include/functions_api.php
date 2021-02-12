@@ -3209,7 +3209,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
 
     $agent_by_alias = false;
 
-    if ($other['data'][30] === '1') {
+    if ($other['data'][31] === '1') {
         $agent_by_alias = true;
     }
 

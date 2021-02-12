@@ -2042,19 +2042,18 @@ sub api_create_group {
 #   -> means $context (v3)
 # 
 #  Configuration hash
-# 
-# 	$snmp{version}
-# 	$snmp{community}
-# 	$snmp{host}
-# 	$snmp{oid}
-# 	$snmp{port}
-#	$snmp{securityName}
-#	$snmp{context
-#	$snmp{securityLevel}
-#	$snmp{authProtocol}
-#	$snmp{authKey}
-#	$snmp{privProtocol}
-#	$snmp{privKey}
+#   $snmp{version}
+#   $snmp{community}
+#   $snmp{host}
+#   $snmp{oid}
+#   $snmp{port}
+#	  $snmp{securityName}
+#	  $snmp{context
+#	  $snmp{securityLevel}
+#	  $snmp{authProtocol}
+#	  $snmp{authKey}
+#	  $snmp{privProtocol}
+#	  $snmp{privKey}
 ################################################################################
 sub snmp_walk {
 	my $snmp = shift;

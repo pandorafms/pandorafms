@@ -937,8 +937,8 @@ class AgentWizard extends HTML
 
         $ipsResult = [];
         // In this case we need the full information provided by snmpwalk.
-        $ipsResult = $this->snmpwalkValues($snmpIpDiscover, false, true);
-        $indexes = $this->snmpwalkValues($snmpIpIndexes, false, true);
+        $ipsResult = $this->snmpWalkValues($snmpIpDiscover, false, true);
+        $indexes = $this->snmpWalkValues($snmpIpIndexes, false, true);
 
         $unicastIpReferences = [];
         foreach ($indexes as $k => $v) {
@@ -960,11 +960,11 @@ class AgentWizard extends HTML
             // Set the name of interface.
             $interfaces[$indexKey]['name'] = $name;
             // Get the description.
-            $interfaces[$indexKey]['descr'] = $this->snmpgetValue(
+            $interfaces[$indexKey]['descr'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.2.'.$indexKey
             );
             // Get the MAC address.
-            $interfaces[$indexKey]['mac'] = $this->snmpgetValue(
+            $interfaces[$indexKey]['mac'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.6.'.$indexKey
             );
             // Get unicast IP address.
@@ -974,12 +974,12 @@ class AgentWizard extends HTML
             }
 
             // Get interface alias.
-            $interfaces[$indexKey]['alias'] = $this->snmpgetValue(
+            $interfaces[$indexKey]['alias'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.31.1.1.1.18.'.$indexKey
             );
 
             // Get interface speed.
-            $interfaces[$indexKey]['speed'] = $this->snmpgetValue(
+            $interfaces[$indexKey]['speed'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.5.'.$indexKey
             );
         }
@@ -1045,7 +1045,7 @@ class AgentWizard extends HTML
         if ($this->wizardSection === 'snmp_interfaces_explorer') {
             // Check if thereis x64 counters.
             $snmp_tmp = '.1.3.6.1.2.1.31.1.1.1.6';
-            $check_x64 = $this->snmpwalkValues(
+            $check_x64 = $this->snmpWalkValues(
                 $snmp_tmp,
                 false,
                 true
@@ -1061,7 +1061,7 @@ class AgentWizard extends HTML
 
             // Explore interface names.
             $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
-            $receivedOid = $this->snmpwalkValues(
+            $receivedOid = $this->snmpWalkValues(
                 $oidExplore,
                 false,
                 true
@@ -1072,7 +1072,7 @@ class AgentWizard extends HTML
         }
 
         // Doc Interfaces de red.
-        $receivedOid = $this->snmpwalkValues(
+        $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
             false
@@ -1083,7 +1083,7 @@ class AgentWizard extends HTML
 
             $oidExplore = '1.3.6.1.2.1.2.2.1.2';
             // Doc Interfaces de red.
-            $receivedOid = $this->snmpwalkValues(
+            $receivedOid = $this->snmpWalkValues(
                 $oidExplore,
                 false,
                 true
@@ -2403,7 +2403,7 @@ class AgentWizard extends HTML
             }
 
             // Get current value.
-            $currentValue = $this->snmpgetValue($moduleData['value']);
+            $currentValue = $this->snmpGetValue($moduleData['value']);
 
             // It unit of measure have data, attach to current value.
             if (empty($moduleData['module_unit']) === false) {
@@ -2556,7 +2556,7 @@ class AgentWizard extends HTML
                 }
 
                 // Get current value.
-                $currentValue = $this->snmpgetValue($moduleData['value']);
+                $currentValue = $this->snmpGetValue($moduleData['value']);
 
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
@@ -2927,7 +2927,7 @@ class AgentWizard extends HTML
                 // Common for FIXED Scan types.
                 // If _nameOID_ macro exists, stablish the name getted.
                 if (empty($module['name_oid']) === false) {
-                    $nameValue = $this->snmpgetValue($module['name_oid']);
+                    $nameValue = $this->snmpGetValue($module['name_oid']);
                     $moduleBlocks[$k]['name'] = str_replace(
                         '_nameOID_',
                         $nameValue,
@@ -2941,7 +2941,7 @@ class AgentWizard extends HTML
                         $module['value'] = 0;
                     }
 
-                    $value = $this->snmpgetValue($module['value']);
+                    $value = $this->snmpGetValue($module['value']);
                     // If the value is missing, we must not show this module.
                     if (empty($value) === true) {
                         unset($moduleBlocks[$k]);
@@ -2963,7 +2963,7 @@ class AgentWizard extends HTML
                     // OIDs and get his values.
                     foreach ($macros as $key => $oid) {
                         if (preg_match('/extra_field_/', $key) !== 0) {
-                            $value = (float) $this->snmpgetValue($oid);
+                            $value = (float) $this->snmpGetValue($oid);
 
                             // If the value not exists,
                             // we must not create a module.
@@ -2999,20 +2999,20 @@ class AgentWizard extends HTML
             } else {
                 if ($module['execution_type'] == EXECUTION_TYPE_NETWORK) {
                     // Get the values of snmpwalk.
-                    $snmpwalkNames = $this->snmpwalkValues($module['name_oid']);
-                    $snmpwalkValues = $this->snmpwalkValues($module['value']);
+                    $snmpwalkNames = $this->snmpWalkValues($module['name_oid']);
+                    $snmpWalkValues = $this->snmpWalkValues($module['value']);
 
                     $snmpwalkCombined = [];
                     foreach ($snmpwalkNames as $index => $name) {
                         if (isset($name) !== true
-                            || isset($snmpwalkValues[$index]) !== true
+                            || isset($snmpWalkValues[$index]) !== true
                         ) {
                             continue;
                         }
 
                         $snmpwalkCombined[$index] = [
                             'name'  => $name,
-                            'value' => $snmpwalkValues[$index],
+                            'value' => $snmpWalkValues[$index],
                         ];
                     }
 
@@ -3062,7 +3062,7 @@ class AgentWizard extends HTML
 
                     $snmpwalkNamesTmp = [];
                     // Is needed the index and the values of snmpwalk.
-                    $snmpwalkNamesTmp = $this->snmpwalkValues(
+                    $snmpwalkNamesTmp = $this->snmpWalkValues(
                         $module['name_oid'],
                         true
                     );
@@ -3082,7 +3082,7 @@ class AgentWizard extends HTML
                         foreach ($oids as $oidName => $oid) {
                             $currentOid = $oid.'.'.$tmpSecond[0];
                             $macros['macros'][$oidName] = $currentOid;
-                            $currentOidValue = $this->snmpgetValue($currentOid);
+                            $currentOidValue = $this->snmpGetValue($currentOid);
                             // If for any reason the value comes empty, add 1.
                             if ($currentOidValue == '') {
                                 $currentOidValue = 1;
@@ -3241,6 +3241,58 @@ class AgentWizard extends HTML
 
 
     /**
+     * Returns associated PEN code of this device.
+     *
+     * @return integer|null PEN oid or null if not found.
+     */
+    private function getPEN()
+    {
+        $oid = '.1.3.6.1.2.1.1.2.0';
+        $output = $this->snmpWalkValues($oid, false, true, true);
+
+        static $pen;
+
+        if (isset($pen) === true) {
+            return $pen;
+        }
+
+        if (is_array($output) === true
+            && isset($output[$oid]) === true
+        ) {
+            // Output should be an array with only 1 element.
+            $pen = (int) explode('.', $output[$oid])[7];
+        }
+
+        if ($pen === 0) {
+            return null;
+        }
+
+        return $pen;
+    }
+
+
+    /**
+     * Returns the index oid matching selected expected value.
+     *
+     * @param string $oidTree       Tree to search in.
+     * @param string $expectedValue Expected value.
+     *
+     * @return string|false Index where expected value is stored or false if not
+     *                      found.
+     */
+    private function snmpGetValueInverse($oidTree, $expectedValue)
+    {
+        $oidTree = $this->snmpWalkValues($oidTree);
+
+        if (is_array($oidTree) === false) {
+            return false;
+        }
+
+        return array_search($expectedValue, $oidTree);
+    }
+
+
+    /**
      * Perform a snmpget for get a value from provided oid.
      *
      * @param string  $oid         Oid for get the value.
@@ -3248,13 +3300,13 @@ class AgentWizard extends HTML
      *
      * @return mixed String when response, null if error.
      */
-    private function snmpgetValue(string $oid, ?bool $full_output=false)
+    private function snmpGetValue(string $oid, ?bool $full_output=false)
     {
         if ($oid[0] !== '.') {
             $oid = '.'.$oid;
         }
 
-        $output = $this->snmpwalkValues($oid, false, true, true);
+        $output = $this->snmpWalkValues($oid, false, true, true);
 
         if (is_array($output) === true) {
             foreach ($output as $k => $v) {
@@ -3287,7 +3339,7 @@ class AgentWizard extends HTML
      *
      * @return array
      */
-    private function snmpwalkValues(
+    private function snmpWalkValues(
         string $oid,
         bool $full_output=false,
         bool $pure=false,
@@ -4286,7 +4338,7 @@ class AgentWizard extends HTML
     {
         $moduleDescription  = '';
         $name               = '';
-        $value              = '1';
+        $value              = '_generic_';
         // Unpack the array with data.
         if (empty($data) === false) {
             if (empty($data['mac']) === false) {
@@ -4320,7 +4372,7 @@ class AgentWizard extends HTML
         // IfOperStatus.
         $adminStatusValue = 1;
         if (empty($data) === false) {
-            $adminStatusValue = $this->snmpgetValue(
+            $adminStatusValue = $this->snmpGetValue(
                 '1.3.6.1.2.1.2.2.1.7.'.$value
             );
 
@@ -4331,7 +4383,7 @@ class AgentWizard extends HTML
         // IfOperStatus.
         $operStatusValue = 1;
         if (empty($data) === false) {
-            $operStatusValue = $this->snmpgetValue(
+            $operStatusValue = $this->snmpGetValue(
                 '1.3.6.1.2.1.2.2.1.8.'.$value
             );
 
@@ -4408,9 +4460,11 @@ class AgentWizard extends HTML
             'ifOutNUcastPkts / ifHCOutNUcastPkts',
         ];
 
-        if ($name == '') {
+        if ($name === '') {
             foreach ($definition_temp as $module => $module_def) {
-                $definition_temp[$module]['module_name'] = array_shift($general_module_names);
+                $definition_temp[$module]['module_name'] = array_shift(
+                    $general_module_names
+                );
             }
         }
 
@@ -4443,6 +4497,59 @@ class AgentWizard extends HTML
                 'inv_critical' => false,
             ],
         ];
+
+        // Manufacturer specific modules.
+        $pen = $this->getPEN();
+        switch ($pen) {
+            case 9:
+                // CISCO.
+                $valueTranslated = $this->snmpGetValueInverse(
+                    '.1.3.6.1.4.1.9.5.1.4.1.1.11.1',
+                    $value
+                );
+                if ($valueTranslated === false && $value !== '_generic_') {
+                    $duplexMismatchOID = null;
+                } else {
+                    $duplexMismatchOID = '.1.3.6.1.4.1.9.5.1.4.1.1.10.1';
+                    $duplexMismatchOID .= $valueTranslated;
+                    $minc = 2.5;
+                    $maxc = 3.5;
+                }
+            break;
+
+            // TODO: Add here extra manufacturers.
+            default:
+                // Unknown.
+                $duplexMismatchOID = null;
+            break;
+        }
+
+        if (isset($duplexMismatchOID) === true) {
+            // Duplex mismatch.
+            $moduleName = $name.'DuplexMismatch';
+            $definition['DuplexMismatch'] = [
+                'module_name'        => $moduleName,
+                'module_type'        => MODULE_TYPE_REMOTE_SNMP,
+                'module_description' => sprintf(
+                    '(%s%s)',
+                    $moduleDescription,
+                    $moduleName
+                ),
+                'module_info'        => 'Indicates whether the port is operating in half-duplex, full-duplex, disagree or auto negotiation mode. If the port could not agree with the far end on port duplex, the port will be in disagree(3) mode.',
+                'execution_type'     => 'network',
+                'value'              => $duplexMismatchOID,
+                'default_enabled'    => true,
+                'module_enabled'     => false,
+                'module_thresholds'  => [
+                    'min_warning'  => '0',
+                    'max_warning'  => '0',
+                    'inv_warning'  => false,
+                    'min_critical' => $minc,
+                    'max_critical' => $maxc,
+                    'inv_critical' => false,
+                ],
+            ];
+        }
 
         // Continue with common x86 and x84 modules.
         // IfAdminStatus.

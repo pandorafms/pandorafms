@@ -6277,8 +6277,9 @@ function ui_print_reveal_password(string $name, bool $return=false)
 
 /**
  * Generate a spinner box for waiting times
+ * TIP: It's made for Massive Operations, but it migth used in entire project.
  *
- * @param string  $text   Text for show in spinner. English Loading for default.
+ * @param string  $text   Text for show in spinner. English term Loading for default.
  * @param boolean $return If true, return the string with the formed element.
  *
  * @return string

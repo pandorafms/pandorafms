@@ -1,17 +1,32 @@
 <?php
+/**
+ * Main view for Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars.
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -26,6 +41,7 @@ if (! check_acl($config['id_user'], 0, 'AW')) {
 require_once 'include/functions_agents.php';
 require_once 'include/functions_alerts.php';
 require_once 'include/functions_modules.php';
+require_once 'include/functions_massive_operations.php';
 
 enterprise_include('godmode/massive/massive_operations.php');
 
@@ -325,30 +341,40 @@ html_print_div(
         'content' => '',
     ]
 );
+
+// Load common JS files.
+ui_require_javascript_file('massive_operations');
+
 ?>
 
 <script language="javascript" type="text/javascript">
+/* <![CDATA[ */
     $(document).ready (function () {
-        $('#manage_config_form').submit( function() {
-            confirm_status =
-                confirm("<?php echo __('Are you sure?'); ?>");
-            if (confirm_status)
-                $("#loading").css("display", "");
-            else
+        $('#button-go').click( function(e) {
+            var limitParametersMassive = <?php echo $config['limit_parameters_massive']; ?>;
+            var thisForm = e.target.form.id;
+
+            var get_parameters_count = window.location.href.slice(
+                window.location.href.indexOf('?') + 1).split('&').length;
+            var post_parameters_count = $('#'+thisForm).serializeArray().length;
+            var totalCount = get_parameters_count + post_parameters_count;
+
+            var contents = {};
+
+            contents.html = '<?php echo __('No changes have been made because they exceed the maximum allowed (%d). Make fewer changes or contact the administrator.', $config['limit_parameters_massive']); ?>';
+            contents.title = '<?php echo __('Massive operations'); ?>';
+            contents.question = '<?php echo __('Are you sure?'); ?>';
+            contents.ok = '<?php echo __('OK'); ?>';
+            contents.cancel = '<?php echo __('Cancel'); ?>';
+
+            var operation = massiveOperationValidation(contents, totalCount, limitParametersMassive, thisForm);
+
+            if (operation == false) {
                 return false;
+            }
         });
-        
-        $('[id^=form]').submit( function() {
-            confirm_status =
-                confirm("<?php echo __('Are you sure?'); ?>");
-            if (confirm_status)
-                showSpinner();
-            else
-                return false;
-        });
-        
-        hideSpinner();
     });
+/* ]]> */
 </script>
 
 <?php

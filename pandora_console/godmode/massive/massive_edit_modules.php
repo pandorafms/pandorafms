@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for edit modules in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -280,9 +295,6 @@ $table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-bl
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
-$table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
-$table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
-$table->data['form_modules_1'][0] .= '</span>';
 
 $types[0] = __('All');
 $table->colspan['form_modules_1'][1] = 2;
@@ -1161,31 +1173,37 @@ $table->data['edit1'][1] = '<table width="100%">';
                 ''
             );
 
-            if (!empty($id_plugin)) {
-                $preload = db_get_sql("SELECT description FROM tplugin WHERE id = $id_plugin");
+            if (empty($id_plugin) === false) {
+                $preload = db_get_sql(
+                    sprintf(
+                        'SELECT description FROM tplugin WHERE id = %s',
+                        $id_plugin
+                    )
+                );
                 $preload = io_safe_output($preload);
                 $preload = str_replace("\n", '<br>', $preload);
             } else {
                 $preload = '';
             }
 
-            $table->data['edit21'][1] = '<span style="font-weight: normal;" id="plugin_description">'.$preload.'</span>';
+            $table->data['edit21'][1] = sprintf(
+                '<span style="font-weight: normal;" id="plugin_description">%s</span>',
+                $preload
+            );
 
-
-            echo '<form method="post" '.'action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" '.'id="form_edit">';
+            echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
             html_print_table($table);
 
-            echo '<div class="action-buttons" style="width: '.$table->width.'">';
-            html_print_input_hidden('update', 1);
-            html_print_submit_button(__('Update'), 'go', false, 'class="sub upd"');
-            echo '</div>';
+            attachActionButton('update', 'update', $table->width);
+
             echo '</form>';
 
             echo '<h3 class="error invisible" id="message"> </h3>';
-            // Hack to translate text "none" in PHP to javascript
+            // Hack to translate text "none" in PHP to javascript.
             echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
             echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
-            ui_require_javascript_file('massive_operations');
+            // Load JS files.
+            ui_require_javascript_file('pandora_modules');
             ui_require_jquery_file('pandora.controls');
 
             if ($selection_mode == 'modules') {
@@ -1197,27 +1215,11 @@ $table->data['edit1'][1] = '<table width="100%">';
             }
 
             ?>
-<script type="text/javascript">flag_load_plugin_component = false;</script>
-<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
-var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+flag_load_plugin_component = false;
 
 $(document).ready (function () {
-    $("#form_edit").submit(function() {
-        var get_parameters_count = window.location.href.slice(
-            window.location.href.indexOf('?') + 1).split('&').length;
-        var post_parameters_count = $("#form_edit").serializeArray().length;
-        
-        var count_parameters =
-            get_parameters_count + post_parameters_count;
-        
-        if (count_parameters > limit_parameters_massive) {
-            showMassiveOperationMessage('<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>');
-            return false;
-        }
-    });
 
     $("#checkbox-select_all_modules").change(function() {
         if( $('#checkbox-select_all_modules').prop('checked')) {
@@ -1341,7 +1343,7 @@ $(document).ready (function () {
             }
         }
         
-        $("#module_loading").show ();
+        showSpinner();
         $("tr#delete_table-edit1, tr#delete_table-edit0, tr#delete_table-edit2").hide ();
         $("#module_name").attr ("disabled", "disabled")
         $("#module_name option[value!=0]").remove ();
@@ -1352,7 +1354,7 @@ $(document).ready (function () {
                     option = $("<option></option>").attr ("value", value["nombre"]).html (value["nombre"]);
                     $("#module_name").append (option);
                 });
-                $("#module_loading").hide ();
+                hideSpinner();
                 $("#module_name").removeAttr ("disabled");
                 //Filter modules. Call the function when the select is fully loaded.
                 var textNoData = "<?php echo __('None'); ?>";
@@ -1865,7 +1867,6 @@ function changePluginSelect() {
                     $('#hidden-macros').val(data['base64']);
                     
                     jQuery.each (data['array'], function (i, macro) {
-                        console.log(macro);
                         if (macro['desc'] != '') {
                             $("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td style='font-weight:bold;'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
                         }

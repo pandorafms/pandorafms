@@ -813,6 +813,7 @@ p.center {
   border: 2px solid #82b92e;
   box-shadow: 2px 2px 2px #9dbba1;
   padding: 20px;
+  z-index: 100;
 }
 
 .tactical_set legend {

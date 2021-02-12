@@ -5296,6 +5296,7 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
     } else {
         $groups = users_get_groups($config['id_user'], 'LM', false);
     }
+
     if ($groups[$id_group] === null) {
         returnError(
             'error_create_alert_template',
@@ -5311,58 +5312,58 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
     }
 
     $values = [
-        'description'     => $other['data'][1],
-        'field1'          => $other['data'][3],
-        'field2'          => $other['data'][4],
-        'field3'          => $other['data'][5],
-        'value'           => $other['data'][6],
-        'matches_value'   => $other['data'][7],
-        'max_value'       => $other['data'][8],
-        'min_value'       => $other['data'][9],
-        'time_threshold'  => $other['data'][10],
-        'max_alerts'      => $other['data'][11],
-        'min_alerts'      => $other['data'][12],
-        'time_from'       => $other['data'][13],
-        'time_to'         => $other['data'][14],
-        'monday'          => $other['data'][15],
-        'tuesday'         => $other['data'][16],
-        'wednesday'       => $other['data'][17],
-        'thursday'        => $other['data'][18],
-        'friday'          => $other['data'][19],
-        'saturday'        => $other['data'][20],
-        'sunday'          => $other['data'][21],
-        'recovery_notify' => $other['data'][22],
-        'field2_recovery' => $other['data'][23],
-        'field3_recovery' => $other['data'][24],
-        'priority'        => $other['data'][25],
-        'id_group'        => $other['data'][26],
-        'special_day'     => $other['data'][27],
+        'description'              => $other['data'][1],
+        'field1'                   => $other['data'][3],
+        'field2'                   => $other['data'][4],
+        'field3'                   => $other['data'][5],
+        'value'                    => $other['data'][6],
+        'matches_value'            => $other['data'][7],
+        'max_value'                => $other['data'][8],
+        'min_value'                => $other['data'][9],
+        'time_threshold'           => $other['data'][10],
+        'max_alerts'               => $other['data'][11],
+        'min_alerts'               => $other['data'][12],
+        'time_from'                => $other['data'][13],
+        'time_to'                  => $other['data'][14],
+        'monday'                   => $other['data'][15],
+        'tuesday'                  => $other['data'][16],
+        'wednesday'                => $other['data'][17],
+        'thursday'                 => $other['data'][18],
+        'friday'                   => $other['data'][19],
+        'saturday'                 => $other['data'][20],
+        'sunday'                   => $other['data'][21],
+        'recovery_notify'          => $other['data'][22],
+        'field2_recovery'          => $other['data'][23],
+        'field3_recovery'          => $other['data'][24],
+        'priority'                 => $other['data'][25],
+        'id_group'                 => $other['data'][26],
+        'special_day'              => $other['data'][27],
         'min_alerts_reset_counter' => $other['data'][28],
-        'field1_recovery' => $other['data'][29],
-        'field4'          => $other['data'][30],
-        'field5'          => $other['data'][31],
-        'field6'          => $other['data'][32],
-        'field7'          => $other['data'][33],
-        'field8'          => $other['data'][34],
-        'field9'          => $other['data'][35],
-        'field10'         => $other['data'][36],
-        'field11'         => $other['data'][37],
-        'field12'         => $other['data'][38],
-        'field13'         => $other['data'][39],
-        'field14'         => $other['data'][40],
-        'field15'         => $other['data'][41],
-        'field4_recovery' => $other['data'][42],
-        'field5_recovery' => $other['data'][43],
-        'field6_recovery' => $other['data'][44],
-        'field7_recovery' => $other['data'][45],
-        'field8_recovery' => $other['data'][46],
-        'field9_recovery' => $other['data'][47],
-        'field10_recovery' => $other['data'][48],
-        'field11_recovery' => $other['data'][49],
-        'field12_recovery' => $other['data'][50],
-        'field13_recovery' => $other['data'][51],
-        'field14_recovery' => $other['data'][52],
-        'field15_recovery' => $other['data'][53],
+        'field1_recovery'          => $other['data'][29],
+        'field4'                   => $other['data'][30],
+        'field5'                   => $other['data'][31],
+        'field6'                   => $other['data'][32],
+        'field7'                   => $other['data'][33],
+        'field8'                   => $other['data'][34],
+        'field9'                   => $other['data'][35],
+        'field10'                  => $other['data'][36],
+        'field11'                  => $other['data'][37],
+        'field12'                  => $other['data'][38],
+        'field13'                  => $other['data'][39],
+        'field14'                  => $other['data'][40],
+        'field15'                  => $other['data'][41],
+        'field4_recovery'          => $other['data'][42],
+        'field5_recovery'          => $other['data'][43],
+        'field6_recovery'          => $other['data'][44],
+        'field7_recovery'          => $other['data'][45],
+        'field8_recovery'          => $other['data'][46],
+        'field9_recovery'          => $other['data'][47],
+        'field10_recovery'         => $other['data'][48],
+        'field11_recovery'         => $other['data'][49],
+        'field12_recovery'         => $other['data'][50],
+        'field13_recovery'         => $other['data'][51],
+        'field14_recovery'         => $other['data'][52],
+        'field15_recovery'         => $other['data'][53],
     ];
 
     if ($other['data'][2] != '') {
@@ -5428,12 +5429,14 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
     } else {
         $groups = users_get_groups($config['id_user'], 'LM', false);
     }
+
     $id_group_org = $result_template['id_group'];
     if ($other['data'][27] === null) {
         $id_group_new = $id_group_org;
     } else {
         $id_group_new = $other['data'][27];
     }
+
     if ($groups[$id_group_org] === null || $groups[$id_group_new] === null) {
         returnError(
             'error_create_alert_template',
@@ -5573,6 +5576,7 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
     } else {
         $groups = users_get_groups($config['id_user'], 'LM', false);
     }
+
     $id_group = $result_template['id_group'];
     if ($groups[$id_group] === null) {
         returnError('forbidden', 'string');
@@ -13939,7 +13943,8 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'image_treshold'     => $graph_threshold,
     ];
 
-    $graph_html = grafico_modulo_sparse($params);
+    // Format MIME RFC 2045 (line break 76 chars).
+    $graph_html = chunk_split(grafico_modulo_sparse($params));
 
     if ($other['data'][1]) {
         header('Content-type: text/html');

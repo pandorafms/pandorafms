@@ -38,9 +38,6 @@ Pandora FMS Server plugin for bandwidth monitoring $VERSION
 
 Where OPTIONS could be:
 
-[OIDS]
-    -use_x64         Use x64 counters (1) or not (0).
-
 [SNMP]
     -community       community
     -version         SNMP version (1,2c,3)
@@ -179,7 +176,11 @@ sub prepare_tree {
 
     my $inOctets = snmp_get(\%inOctets_call);
     if (ref($inOctets) eq "HASH") {
-      $inOctets = $inOctets->{'data'};
+      if ($inOctets->{'data'} eq '') {
+        $inOctets = 0;
+      } else {
+        $inOctets = int $inOctets->{'data'};
+      }
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
@@ -196,7 +197,11 @@ sub prepare_tree {
 
     my $outOctets = snmp_get(\%outOctets_call);
     if (ref($outOctets) eq "HASH") {
-      $outOctets = $outOctets->{'data'};
+      if ($outOctets->{'data'} eq '') {
+        $outOctets = 0;
+      } else {
+        $outOctets = int $outOctets->{'data'};
+      }
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
@@ -213,7 +218,12 @@ sub prepare_tree {
 
     my $duplex = snmp_get(\%duplex_call);
     if (ref($duplex) eq "HASH") {
-      $duplex = $duplex->{'data'};
+      if ($duplex->{'data'} eq '') {
+        $duplex = 0;
+      } else {
+        $duplex = int $duplex->{'data'};
+      }
+      
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
@@ -230,21 +240,24 @@ sub prepare_tree {
 
     my $speed = snmp_get(\%speed);
     if (ref($speed) eq "HASH") {
-      $speed = $speed->{'data'};
+      $speed = int $speed->{'data'};
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
     }
 
-    $tree->{$value} = {
-      'duplex' => int $duplex,
-      'speed'  => int $speed,
-      'now'    => {
-        'timestamp' => time(),
-        'inOctets'  => int $inOctets,
-        'outOctets' => int $outOctets,
-      },
-    }
+    {
+      no warnings "uninitialized";
+      $tree->{$value} = {
+        'duplex' => int $duplex,
+        'speed'  => int $speed,
+        'now'    => {
+          'timestamp' => time(),
+          'inOctets'  => int $inOctets,
+          'outOctets' => int $outOctets,
+        },
+      };
+    };
   }
 
   load_data($config, $tree);
@@ -380,6 +393,7 @@ sub get_bandwidth {
         $bandwidth = ($input_bandwidth + $output_bandwidth) / 2;
       }
       else {
+        no warnings "uninitialized";
         logger($config, 'info', "Failed to calculate bandwidth, unknown duplex mode: [" . $tree->{$iface}{'duplex_mode'} . "]");
       }
     }
@@ -409,7 +423,6 @@ if ($#ARGV < 0) {
 my $_config = {
   'oid_base' => ".1.3.6.1.2.1",
   'as_agent_plugin' => 1,
-  'use_x64' => 0,
   'x86_indexes' => {
     '__idx__'   => ".2.2.1.1",
     'duplex'    => ".10.7.2.1.19",
@@ -449,6 +462,18 @@ $config->{'host'} = '127.0.0.1'   if empty($config->{'host'});
 $config->{'port'} = '161'         if empty($config->{'port'});
 $config->{'tmp_separator'} = ';'  if empty($config->{'tmp_separator'});
 $config->{'tmp'}           = (($^O =~ /win/)?$ENV{'TMP'}:'/tmp')  if empty($config->{'tmp'});
+
+if(snmp_walk({
+    %{$config},
+    'oid' => '.1.3.6.1.2.1.31.1.1.1.6'
+  })
+) {
+  # x64 counters available.
+  $config->{'use_x64'} = 1;
+} else {
+  # x64 counters not available.
+  $config->{'use_x64'} = 1;
+}
 
 # Create unique name for tmp and log file for host
 my $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'host'};

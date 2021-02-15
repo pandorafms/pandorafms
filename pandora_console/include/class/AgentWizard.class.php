@@ -1337,7 +1337,6 @@ class AgentWizard extends HTML
         $content .= html_print_table($table, true);
 
         echo $content;
-        return;
     }
 
 
@@ -1431,6 +1430,15 @@ class AgentWizard extends HTML
                                 $result[$value]['description'] = $data['module-default_description-'.$key];
                             } else if (empty(preg_match('/module-value/', $k)) === false) {
                                 $result[$value]['value'] = $data['module-value-'.$key];
+                            } else if (empty(preg_match('/module-macros/', $k)) === false) {
+                                $result[$value]['macros'] = $data['module-macros-'.$key];
+                                continue;
+                            } else if (empty(preg_match('/module-id_plugin/', $k)) === false) {
+                                $result[$value]['id_plugin'] = $data['module-id_plugin-'.$key];
+                                continue;
+                            } else if (empty(preg_match('/module-id_modulo/', $k)) === false) {
+                                $result[$value]['id_modulo'] = $data['module-id_modulo-'.$key];
+                                continue;
                             }
 
                             preg_match('/^(.*)-.*?_(\d+-\d+)$/', $k, $matches);
@@ -2062,35 +2070,42 @@ class AgentWizard extends HTML
                     } else {
                         $tmp->ip_target($this->targetIp);
                         $tmp->id_modulo(MODULE_PLUGIN);
-                        $fieldsPlugin = db_get_value_sql(
-                            sprintf(
-                                'SELECT macros FROM tplugin WHERE id=%d',
-                                (int) $infoMacros['server_plugin']
-                            )
-                        );
 
-                        if ($fieldsPlugin !== false) {
-                            $fieldsPlugin = json_decode($fieldsPlugin, true);
-                            $i = 1;
-                            foreach ($infoMacros as $key => $value) {
-                                if (empty(preg_match('/_snmp_field/', $key)) === false) {
-                                    $new_macros = [];
-                                    foreach ($fieldsPlugin as $k => $v) {
-                                        if ($v['macro'] === preg_replace('/_snmp_field/', '', $key)) {
-                                            $fieldsPlugin[$k]['value'] = $this->replacementMacrosPlugin(
-                                                $value,
-                                                $infoMacros['macros']
-                                            );
-                                            $i++;
-                                            continue;
+                        if (empty($candidate['macros']) === true) {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+
+                            if ($fieldsPlugin !== false) {
+                                $fieldsPlugin = json_decode($fieldsPlugin, true);
+                                $i = 1;
+                                foreach ($infoMacros as $key => $value) {
+                                    if (empty(preg_match('/_snmp_field/', $key)) === false) {
+                                        $new_macros = [];
+                                        foreach ($fieldsPlugin as $k => $v) {
+                                            if ($v['macro'] === preg_replace('/_snmp_field/', '', $key)) {
+                                                $fieldsPlugin[$k]['value'] = $this->replacementMacrosPlugin(
+                                                    $value,
+                                                    $infoMacros['macros']
+                                                );
+                                                $i++;
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        $tmp->id_plugin($infoMacros['server_plugin']);
-                        $tmp->macros(json_encode($fieldsPlugin));
+                            $tmp->id_plugin($infoMacros['server_plugin']);
+                            $tmp->macros(json_encode($fieldsPlugin));
+                        } else {
+                            // Use definition provided.
+                            $tmp->id_plugin($candidate['id_plugin']);
+                            $tmp->macros(base64_decode($candidate['macros']));
+                        }
                     }
                 }
             } else if ($this->protocol === 'wmi') {
@@ -2403,7 +2418,18 @@ class AgentWizard extends HTML
             }
 
             // Get current value.
-            $currentValue = $this->snmpGetValue($moduleData['value']);
+            if (in_array(
+                $moduleData['module_type'],
+                [
+                    MODULE_TYPE_REMOTE_SNMP,
+                    MODULE_TYPE_REMOTE_SNMP_INC,
+                    MODULE_TYPE_REMOTE_SNMP_STRING,
+                    MODULE_TYPE_REMOTE_SNMP_PROC,
+                ]
+            ) === true
+            ) {
+                $currentValue = $this->snmpGetValue($moduleData['value']);
+            }
 
             // It unit of measure have data, attach to current value.
             if (empty($moduleData['module_unit']) === false) {
@@ -2413,6 +2439,7 @@ class AgentWizard extends HTML
             // Stablish the data for show.
             $generalInterfaceModulesUpdated[] = [
                 'component_id'   => $component_id_number++,
+                'execution_type' => $moduleData['execution_type'],
                 'name'           => $moduleData['module_name'],
                 'type'           => $moduleData['module_type'],
                 'description'    => $moduleData['module_info'],
@@ -2425,6 +2452,9 @@ class AgentWizard extends HTML
                 'module_enabled' => $moduleData['default_enabled'],
                 'name_oid'       => $moduleData['value'],
                 'value'          => $moduleData['value'],
+                'id_plugin'      => $moduleData['id_plugin'],
+                'macros'         => $moduleData['macros'],
+                'id_modulo'      => $moduleData['id_modulo'],
             ];
         }
 
@@ -2556,7 +2586,20 @@ class AgentWizard extends HTML
                 }
 
                 // Get current value.
-                $currentValue = $this->snmpGetValue($moduleData['value']);
+                $currentValue = '';
+
+                if (in_array(
+                    $moduleData['module_type'],
+                    [
+                        MODULE_TYPE_REMOTE_SNMP,
+                        MODULE_TYPE_REMOTE_SNMP_INC,
+                        MODULE_TYPE_REMOTE_SNMP_STRING,
+                        MODULE_TYPE_REMOTE_SNMP_PROC,
+                    ]
+                ) === true
+                ) {
+                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                }
 
                 // Format current value with thousands and decimals.
                 if (is_numeric($currentValue) === true) {
@@ -2572,6 +2615,7 @@ class AgentWizard extends HTML
                 // Stablish the data for show.
                 $interfaceModulesUpdated[] = [
                     'component_id'   => $component_id_number++,
+                    'execution_type' => $moduleData['execution_type'],
                     'name'           => $moduleData['module_name'],
                     'type'           => $moduleData['module_type'],
                     'description'    => $moduleData['module_description'],
@@ -2585,6 +2629,9 @@ class AgentWizard extends HTML
                     'current_value'  => $currentValue,
                     'name_oid'       => $moduleData['value'],
                     'value'          => $moduleData['value'],
+                    'id_plugin'      => $moduleData['id_plugin'],
+                    'macros'         => $moduleData['macros'],
+                    'id_modulo'      => $moduleData['id_modulo'],
                 ];
             }
 
@@ -4189,14 +4236,49 @@ class AgentWizard extends HTML
                     'form="form-create-modules"'
                 );
 
-                // Macro module.
-                $data[6] .= html_print_input_hidden(
-                    'module-macros-'.$uniqueId,
-                    base64_encode($module['macros']),
-                    true,
-                    $md5IdBlock,
-                    'form="form-create-modules"'
-                );
+                if (empty($module['macros']) === false) {
+                    // Macro module.
+                    $data[6] .= html_print_input_hidden(
+                        'module-macros-'.$uniqueId,
+                        base64_encode($module['macros']),
+                        true,
+                        $md5IdBlock,
+                        'form="form-create-modules"'
+                    );
+                }
+
+                if (empty($module['execution_type']) === false) {
+                    // Id plugin.
+                    $data[6] .= html_print_input_hidden(
+                        'module-execution_type-'.$uniqueId,
+                        $module['execution_type'],
+                        true,
+                        $md5IdBlock,
+                        'form="form-create-modules"'
+                    );
+                }
+
+                if (empty($module['id_modulo']) === false) {
+                    // Id module.
+                    $data[6] .= html_print_input_hidden(
+                        'module-id_modulo-'.$uniqueId,
+                        $module['id_modulo'],
+                        true,
+                        $md5IdBlock,
+                        'form="form-create-modules"'
+                    );
+                }
+
+                if (empty($module['id_plugin']) === false) {
+                    // Id plugin.
+                    $data[6] .= html_print_input_hidden(
+                        'module-id_plugin-'.$uniqueId,
+                        $module['id_plugin'],
+                        true,
+                        $md5IdBlock,
+                        'form="form-create-modules"'
+                    );
+                }
 
                 // Macro module.
                 $data[6] .= html_print_input_hidden(
@@ -4549,6 +4631,85 @@ class AgentWizard extends HTML
                     'inv_critical' => false,
                 ],
             ];
+        }
+
+        // Bandwidth plugin.
+        static $plugin;
+        if ($plugin === null) {
+            $plugin = \db_get_row_filter(
+                'tplugin',
+                [ 'name' => 'Network&#x20;bandwidth&#x20;SNMP' ]
+            );
+        }
+
+        if ($plugin !== false) {
+            // Network Bandwidth is installed.
+            $plugin_id = $plugin['id'];
+            $macros = json_decode($plugin['macros'], 1);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // SNMP Version.
+                $macros[1]['value'] = $this->version;
+
+                // Community.
+                $macros[2]['value'] = $this->community;
+
+                // Host.
+                $macros[3]['value'] = $this->targetIp;
+
+                // Port.
+                $macros[4]['value'] = $this->targetPort;
+
+                // Interface index filter.
+                $macros[5]['value'] = $value;
+
+                // SecurityName.
+                $macros[6]['value'] = $this->authUserV3;
+
+                // SecurityContext.
+                $macros[7]['value'] = $this->community;
+
+                // SecurityLevel.
+                $macros[8]['value'] = $this->securityLevelV3;
+
+                // AuthProtocol.
+                $macros[9]['value'] = $this->authMethodV3;
+
+                // AuthKey.
+                $macros[10]['value'] = $this->authPassV3;
+
+                // PrivProtocol.
+                $macros[11]['value'] = $this->privacyMethodV3;
+
+                // PrivKey.
+                $macros[11]['value'] = $this->privacyPassV3;
+
+                $moduleName = $name.'Bandwidth';
+                $definition['Bandwidth'] = [
+                    'module_name'        => $moduleName,
+                    'module_type'        => MODULE_TYPE_NUMERIC,
+                    'module_description' => sprintf(
+                        '(%s%s)',
+                        $moduleDescription,
+                        $moduleName
+                    ),
+                    'module_info'        => 'Amount of digital information sent and received from this inteerface over a particular time (see interval).',
+                    'execution_type'     => EXECUTION_TYPE_PLUGIN,
+                    'id_plugin'          => $plugin_id,
+                    'id_modulo'          => MODULE_PLUGIN,
+                    'macros'             => json_encode($macros),
+                    'default_enabled'    => true,
+                    'module_enabled'     => false,
+                    'module_unit'        => '%',
+                    'module_thresholds'  => [
+                        'min_warning'  => '0',
+                        'max_warning'  => '0',
+                        'inv_warning'  => false,
+                        'min_critical' => '85',
+                        'max_critical' => '0',
+                        'inv_critical' => false,
+                    ],
+                ];
+            }
         }
 
         // Continue with common x86 and x84 modules.

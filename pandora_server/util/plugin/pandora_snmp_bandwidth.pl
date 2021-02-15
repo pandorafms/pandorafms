@@ -56,6 +56,7 @@ Where OPTIONS could be:
 [EXTRA]
     -ifIndex         Target interface to retrieve, if not specified, total
                      bandwith will be reported.
+    -uniqid          Use custom temporary file name.
 
 Note: You can also use snmpget/snmpwalk argument notation,
 e.g. -v is equal to -version, -c to -community, etc.
@@ -124,6 +125,9 @@ sub update_config_key ($) {
   if ($arg eq 'ifIndex') {
     return "ifIndex";
   }
+if ($arg eq 'uniqid') {
+	return "uniqid";
+}
 }
 
 ################################################################################
@@ -477,6 +481,10 @@ if(snmp_walk({
 
 # Create unique name for tmp and log file for host
 my $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'host'};
+
+if (!empty($config->{'uniqid'})) {
+  $filename = $config->{'tmp'}.'/pandora_bandwith_'.$config->{'uniqid'};
+}
 
 # Replace every dot for underscore
 $filename =~ tr/./_/;

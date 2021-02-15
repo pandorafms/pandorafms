@@ -4681,10 +4681,10 @@ class AgentWizard extends HTML
                 $macros[11]['value'] = $this->privacyMethodV3;
 
                 // PrivKey.
-                $macros[11]['value'] = $this->privacyPassV3;
+                $macros[12]['value'] = $this->privacyPassV3;
 
                 // Hash identifier.
-                $macros[12]['value'] = uniqid();
+                $macros[13]['value'] = uniqid();
 
                 $moduleName = $name.'Bandwidth';
                 $definition['Bandwidth'] = [

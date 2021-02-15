@@ -409,7 +409,7 @@ function print_excerpt(id_div, response) {
             category_names(elem.categories) +
             "</span></p>" +
             updated +
-            elem.content.rendered +
+            format_download_link(elem.content.rendered) +
             '<div class="view_web"><a href="' +
             elem.link +
             '" target="_blank"><button class="sub next">' +
@@ -515,4 +515,15 @@ function show_error_msg(selector, message_error) {
   } else {
     $(selector).append("<div id='empty_result'>" + message_error + "</div>");
   }
+}
+
+function format_download_link(html) {
+  const regex = /href="(?!\bhttps?:\/\/\b)(?!pandorafms.com)(.*)"/gm;
+  var str = html;
+  const subst = `href="https://pandorafms.com$1"`;
+
+  // The substituted value will be contained in the result variable
+  const result = str.replace(regex, subst);
+
+  return result;
 }

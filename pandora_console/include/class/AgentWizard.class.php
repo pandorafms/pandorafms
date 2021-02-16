@@ -4458,9 +4458,14 @@ class AgentWizard extends HTML
 
         // IfOperStatus.
         $adminStatusValue = 1;
+        $speed = 0;
         if (empty($data) === false) {
             $adminStatusValue = $this->snmpGetValue(
                 '1.3.6.1.2.1.2.2.1.7.'.$value
+            );
+
+            $speed = $this->snmpGetValue(
+                '.1.3.6.1.2.1.2.2.1.5.'.$value
             );
 
             preg_match('/\((\d+?)\)/', $adminStatusValue, $match);
@@ -4702,9 +4707,10 @@ class AgentWizard extends HTML
                     'module_name'        => $moduleName,
                     'module_type'        => MODULE_TYPE_NUMERIC,
                     'module_description' => sprintf(
-                        '(%s%s)',
+                        '(%s%s - Speed:%d)',
                         $moduleDescription,
-                        $moduleName
+                        $moduleName,
+                        $speed
                     ),
                     'module_info'        => 'Amount of digital information sent and received from this interface over a particular time (see interval).',
                     'execution_type'     => EXECUTION_TYPE_PLUGIN,
@@ -4738,9 +4744,10 @@ class AgentWizard extends HTML
                     'module_name'        => $moduleName,
                     'module_type'        => MODULE_TYPE_NUMERIC,
                     'module_description' => sprintf(
-                        '(%s%s)',
+                        '(%s%s - Speed:%d)',
                         $moduleDescription,
-                        $moduleName
+                        $moduleName,
+                        $speed
                     ),
                     'module_info'        => 'Bandwidth usage received into this interface over a particular time (see interval).',
                     'execution_type'     => EXECUTION_TYPE_PLUGIN,
@@ -4774,9 +4781,10 @@ class AgentWizard extends HTML
                     'module_name'        => $moduleName,
                     'module_type'        => MODULE_TYPE_NUMERIC,
                     'module_description' => sprintf(
-                        '(%s%s)',
+                        '(%s%s - Speed:%d)',
                         $moduleDescription,
-                        $moduleName
+                        $moduleName,
+                        $speed
                     ),
                     'module_info'        => 'Bandwidth usage sent from this interface over a particular time (see interval).',
                     'execution_type'     => EXECUTION_TYPE_PLUGIN,

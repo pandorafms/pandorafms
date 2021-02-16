@@ -834,6 +834,33 @@ function html_print_select(
 		";
     }
 
+    if ($multiple === false) {
+        if (is_ajax()) {
+            $output .= '<script src="';
+            $output .= ui_get_full_url(
+                'include/javascript/select2.min.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" type="text/javascript"></script>';
+
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                'include/styles/select2.min.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        } else {
+            ui_require_css_file('select2.min');
+            ui_require_javascript_file('select2.min');
+        }
+
+        $output .= '<script>$("#'.$id.'").select2();</script>';
+    }
+
     if ($return) {
         return $output;
     }

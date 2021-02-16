@@ -1439,6 +1439,9 @@ class AgentWizard extends HTML
                             } else if (empty(preg_match('/module-id_modulo/', $k)) === false) {
                                 $result[$value]['id_modulo'] = $data['module-id_modulo-'.$key];
                                 continue;
+                            } else if (empty(preg_match('/module-unit/', $k)) === false) {
+                                $result[$value]['unit'] = $data['module-unit-'.$key];
+                                continue;
                             }
 
                             preg_match('/^(.*)-.*?_(\d+-\d+)$/', $k, $matches);
@@ -1899,6 +1902,7 @@ class AgentWizard extends HTML
     {
         $modules = [];
         $errorflag = false;
+
         foreach ($modulesCandidates as $candidate) {
             $tmp = Module::search(
                 [
@@ -2632,6 +2636,7 @@ class AgentWizard extends HTML
                     'id_plugin'      => $moduleData['id_plugin'],
                     'macros'         => $moduleData['macros'],
                     'id_modulo'      => $moduleData['id_modulo'],
+                    'unit'           => ($moduleData['unit'] ?? $moduleData['module_unit']),
                 ];
             }
 
@@ -4221,7 +4226,7 @@ class AgentWizard extends HTML
                 // Unit module.
                 $data[6] .= html_print_input_hidden(
                     'module-unit-'.$uniqueId,
-                    $module['unit'],
+                    ($module['unit'] ?? $module['module_unit']),
                     true,
                     $md5IdBlock,
                     'form="form-create-modules"'
@@ -4686,6 +4691,12 @@ class AgentWizard extends HTML
                 // Hash identifier.
                 $macros[13]['value'] = uniqid();
 
+                // Get input usage.
+                $macros[14]['value'] = 0;
+
+                // Get output usage.
+                $macros[15]['value'] = 0;
+
                 $moduleName = $name.'Bandwidth';
                 $definition['Bandwidth'] = [
                     'module_name'        => $moduleName,
@@ -4695,7 +4706,7 @@ class AgentWizard extends HTML
                         $moduleDescription,
                         $moduleName
                     ),
-                    'module_info'        => 'Amount of digital information sent and received from this inteerface over a particular time (see interval).',
+                    'module_info'        => 'Amount of digital information sent and received from this interface over a particular time (see interval).',
                     'execution_type'     => EXECUTION_TYPE_PLUGIN,
                     'id_plugin'          => $plugin_id,
                     'id_modulo'          => MODULE_PLUGIN,
@@ -4708,6 +4719,78 @@ class AgentWizard extends HTML
                         'max_warning'  => '0',
                         'inv_warning'  => false,
                         'min_critical' => '85',
+                        'max_critical' => '0',
+                        'inv_critical' => false,
+                    ],
+                ];
+
+                // Hash identifier.
+                $macros[13]['value'] = uniqid();
+
+                // Get input usage.
+                $macros[14]['value'] = 1;
+
+                // Get output usage.
+                $macros[15]['value'] = 0;
+
+                $moduleName = $name.'inUsage';
+                $definition['inUsage'] = [
+                    'module_name'        => $moduleName,
+                    'module_type'        => MODULE_TYPE_NUMERIC,
+                    'module_description' => sprintf(
+                        '(%s%s)',
+                        $moduleDescription,
+                        $moduleName
+                    ),
+                    'module_info'        => 'Bandwidth usage received into this interface over a particular time (see interval).',
+                    'execution_type'     => EXECUTION_TYPE_PLUGIN,
+                    'id_plugin'          => $plugin_id,
+                    'id_modulo'          => MODULE_PLUGIN,
+                    'macros'             => json_encode($macros),
+                    'default_enabled'    => true,
+                    'module_enabled'     => false,
+                    'module_unit'        => '%',
+                    'module_thresholds'  => [
+                        'min_warning'  => '0',
+                        'max_warning'  => '0',
+                        'inv_warning'  => false,
+                        'min_critical' => '0',
+                        'max_critical' => '0',
+                        'inv_critical' => false,
+                    ],
+                ];
+
+                // Hash identifier.
+                $macros[13]['value'] = uniqid();
+
+                // Get input usage.
+                $macros[14]['value'] = 0;
+
+                // Get output usage.
+                $macros[15]['value'] = 1;
+
+                $moduleName = $name.'outUsage';
+                $definition['outUsage'] = [
+                    'module_name'        => $moduleName,
+                    'module_type'        => MODULE_TYPE_NUMERIC,
+                    'module_description' => sprintf(
+                        '(%s%s)',
+                        $moduleDescription,
+                        $moduleName
+                    ),
+                    'module_info'        => 'Bandwidth usage sent from this interface over a particular time (see interval).',
+                    'execution_type'     => EXECUTION_TYPE_PLUGIN,
+                    'id_plugin'          => $plugin_id,
+                    'id_modulo'          => MODULE_PLUGIN,
+                    'macros'             => json_encode($macros),
+                    'default_enabled'    => true,
+                    'module_enabled'     => false,
+                    'module_unit'        => '%',
+                    'module_thresholds'  => [
+                        'min_warning'  => '0',
+                        'max_warning'  => '0',
+                        'inv_warning'  => false,
+                        'min_critical' => '0',
                         'max_critical' => '0',
                         'inv_critical' => false,
                     ],

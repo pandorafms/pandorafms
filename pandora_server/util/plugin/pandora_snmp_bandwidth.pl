@@ -2,12 +2,12 @@
 #
 ################################################################################
 #
-# Bandwith plugin
-# 
+# Bandwith usage plugin
+#
 # Requirements:
 #   snmpget
 #   snmpwalk
-# 
+#
 # (c) Fco de Borja Sanchez <fborja.sanchez@artica.es>
 #
 # 2018/06/27
@@ -45,18 +45,20 @@ Where OPTIONS could be:
     -port            target port (161)
 
 [SNMPv3]
-    -securityName    
-    -context         
-    -securityLevel   
-    -authProtocol    
-    -authKey         
-    -privProtocol    
+    -securityName
+    -context
+    -securityLevel
+    -authProtocol
+    -authKey
+    -privProtocol
     -privKey
 
 [EXTRA]
     -ifIndex         Target interface to retrieve, if not specified, total
                      bandwith will be reported.
     -uniqid          Use custom temporary file name.
+    -inUsage         Show only input usage (in percentage) - 1, or not 0.
+    -outUsage        Show only output usage (in percentage) - 1, or not 0.
 
 Note: You can also use snmpget/snmpwalk argument notation,
 e.g. -v is equal to -version, -c to -community, etc.
@@ -125,9 +127,15 @@ sub update_config_key ($) {
   if ($arg eq 'ifIndex') {
     return "ifIndex";
   }
-if ($arg eq 'uniqid') {
-	return "uniqid";
-}
+  if ($arg eq 'uniqid') {
+    return "uniqid";
+  }
+  if ($arg eq 'inUsage') {
+    return "inUsage";
+  }
+	if ($arg eq 'outUsage') {
+		return "outUsage";
+	}
 }
 
 ################################################################################
@@ -152,7 +160,7 @@ sub prepare_tree {
 
   my $raw = snmp_walk(\%snmp_call);
   return $raw if (ref($raw) eq "HASH");
-  
+
   my @data = split /\n/, $raw;
   foreach my $it (@data) {
     my ($key, $value) = split /=/, $it;
@@ -227,7 +235,7 @@ sub prepare_tree {
       } else {
         $duplex = int $duplex->{'data'};
       }
-      
+
     } else {
       # Ignore, cannot retrieve inOctets.
       next;
@@ -329,7 +337,7 @@ sub save_data {
     open($_f, ">$config->{'tmp_file'}") or die('Cannot open ' . $config->{'tmp_file'});
   };
   if( $@ ) {
-    logger($config, 'info', "Cannot save stats, please check writting permissions on [" . $config->{'tmp_file'} . "]");
+    logger($config, 'info', "Cannot save stats, please check writting permissions on [" . $config->{'tmp_file'} . "]") if (is_enabled($config->{'debug'}));
     return;
   }
 
@@ -343,7 +351,7 @@ sub save_data {
 
     # Iface.
     print $_f $iface . $config->{'tmp_separator'};
-    
+
     # InOctets.
     print $_f $tree->{$iface}{'now'}{'inOctets'} . $config->{'tmp_separator'};
 
@@ -359,9 +367,9 @@ sub save_data {
 }
 
 ################################################################################
-# Calculate bandwidth
+# Calculate bandwidth usage
 ################################################################################
-sub get_bandwidth {
+sub get_bandwidth_usage {
   my ($config, $tree) = @_;
 
   foreach my $iface (keys %{$tree}) {
@@ -375,6 +383,8 @@ sub get_bandwidth {
     my $output = $tree->{$iface}{'now'}{'outOctets'} - $tree->{$iface}{'old'}{'outOctets'};
     my $delta = $tree->{$iface}{'now'}{'timestamp'} - $tree->{$iface}{'old'}{'timestamp'};
     my $bandwidth = 0;
+    my $inUsage = 0;
+    my $outUsage = 0;
 
     $tree->{$iface}->{'delta'} = {
       'inOctets'  => $input,
@@ -385,7 +395,7 @@ sub get_bandwidth {
     $tree->{$iface}->{'speed'} = $speed;
 
     if (($speed > 0) && ($delta > 0)) {
-      # Information about bandwidth calculation: https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/8141-calculate-bandwidth-snmp.html
+      # Information about bandwidth usage calculation: https://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/8141-calculate-bandwidth-snmp.html
       if ($tree->{$iface}{'duplex'} == HALF_DUPLEX
         || $tree->{$iface}{'duplex'} == UNKNOWN_DUPLEX
       ) {
@@ -398,18 +408,33 @@ sub get_bandwidth {
       }
       else {
         no warnings "uninitialized";
-        logger($config, 'info', "Failed to calculate bandwidth, unknown duplex mode: [" . $tree->{$iface}{'duplex_mode'} . "]");
+        logger($config, 'info', "Failed to calculate bandwidth usage, unknown duplex mode: [" . $tree->{$iface}{'duplex_mode'} . "]") if (is_enabled($config->{'debug'}));
       }
+
+      $inUsage = ($input * 8) / ($delta * $speed);
+      $outUsage = ($output * 8) / ($delta * $speed);
+
+      if ($inUsage > 1) {
+        $inUsage = 1;
+        logger($config, 'info', "Max input usage exceeded: $inUsage") if (is_enabled($config->{'debug'}));
+      }
+      if ($outUsage > 1) {
+        $outUsage = 1;
+        logger($config, 'info', "Max output usage exceeded: $outUsage") if (is_enabled($config->{'debug'}));
+      }
+
     }
     else {
-      logger($config, 'info', "Failed to calculate bandwidth, interface [" . $iface . "] speed is 0");
+      logger($config, 'info', "Failed to calculate bandwidth usage, interface [" . $iface . "] speed is 0") if (is_enabled($config->{'debug'}));
     }
 
-    $tree->{$iface}->{'bandwidth'} = 100 * $bandwidth;   
+    $tree->{$iface}->{'bandwidth'} = 100 * $bandwidth;
+    $tree->{$iface}->{'inUsage'} = 100 * $inUsage;
+    $tree->{$iface}->{'outUsage'} = 100 * $outUsage;
+
   }
 
 }
-
 
 
 ################################################################################
@@ -417,7 +442,6 @@ sub get_bandwidth {
 # MAIN
 #
 ################################################################################
-
 if ($#ARGV < 0) {
   print $HELP;
   exit 0;
@@ -500,11 +524,11 @@ if ($#only_int >= 0) {
   $config->{'only_interfaces'} = \@only_int;
 }
 
-logger($config, 'info', "Plugin starts");
+logger($config, 'info', "Plugin starts") if (is_enabled($config->{'debug'}));
 if (is_enabled($config->{'debug'})) {
   eval {
     eval "use Data::Dumper;1;";if($@) {}
-    logger($config, Dumper($config));
+    logger($config, Dumper($config)) if (is_enabled($config->{'debug'}));
   };
   if($@) {}
 }
@@ -512,30 +536,53 @@ if (is_enabled($config->{'debug'})) {
 my $analysis_tree = prepare_tree($config);
 
 if (!empty($analysis_tree->{'error'})) {
-  logger($config, 'info', "Failed: " . $analysis_tree->{'error'});
+  logger($config, 'info', "Failed: " . $analysis_tree->{'error'}) if (is_enabled($config->{'debug'}));
   exit 0;
 }
 else {
-  get_bandwidth($config, $analysis_tree);
+  get_bandwidth_usage($config, $analysis_tree);
 }
 
 # Report data
 my @modules;
 my $bandwidth = 0;
+my $inUsage = 0;
+my $outUsage = 0;
 my $i = 0;
+my $j = 0;
+my $k = 0;
 foreach my $iface (keys %{$analysis_tree}) {
   # Calculate summary;
   if (is_enabled($analysis_tree->{$iface}{'bandwidth'})) {
     $bandwidth = $analysis_tree->{$iface}{'bandwidth'};
     $i++;
   }
+  if (is_enabled($analysis_tree->{$iface}{'inUsage'})) {
+    $inUsage = $analysis_tree->{$iface}{'inUsage'};
+    $j++;
+  }
+  if (is_enabled($analysis_tree->{$iface}{'outUsage'})) {
+    $outUsage = $analysis_tree->{$iface}{'outUsage'};
+    $k++;
+  }
 
 }
 
-if ($i > 0) {
-  $bandwidth /= $i;
-  print sprintf("%.9f\n", $bandwidth);
+if ($j > 0 && is_enabled($config->{'inUsage'})) {
+	$inUsage /= $j;
+	print sprintf("%.9f\n", $inUsage);
+} elsif ($k > 0 && is_enabled($config->{'outUsage'})) {
+	$outUsage /= $k;
+	print sprintf("%.9f\n", $outUsage);
 }
 
-logger($config, 'info', "Plugin ends");
+if ($i > 0
+  && !is_enabled($config->{'inUsage'})
+  && !is_enabled($config->{'outUsage'})
+) {
+	$bandwidth /= $i;
+	print sprintf("%.9f\n", $bandwidth);
+}
+
+logger($config, 'info', "Plugin ends") if (is_enabled($config->{'debug'}));
 

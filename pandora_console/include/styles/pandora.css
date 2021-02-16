@@ -6079,6 +6079,10 @@ li .select2 {
   max-width: 400px !important;
 }
 
+.select2-container {
+  min-width: 110px !important;
+}
+
 div.graph td.legendLabel {
   text-align: justify;
 }

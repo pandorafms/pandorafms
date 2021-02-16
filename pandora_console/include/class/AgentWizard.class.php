@@ -5343,6 +5343,7 @@ class AgentWizard extends HTML
             function processListModules() {
                 confirmDialog({
                     title: "<?php echo __('Modules about to be created'); ?>",
+                    hideOkButton: true,
                     message: function() {
                         var id = "div-" + uniqId();
                         var loading = "<?php echo __('Loading, this operation might take several minutes...'); ?>";
@@ -5381,6 +5382,8 @@ class AgentWizard extends HTML
                             },
                             datatype: "html",
                             success: function(data) {
+                                // Show hidden OK button
+                                $('.sub.ok.submit-next').removeClass('invisible_important');
                                 $('#' + id).empty().append(data);
                             },
                             error: function(e) {

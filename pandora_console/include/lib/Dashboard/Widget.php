@@ -37,6 +37,13 @@ class Widget
      */
     private $values;
 
+    /**
+     * Target node Id.
+     *
+     * @var integer
+     */
+    private $nodeId;
+
 
     /**
      * Contructor widget.
@@ -60,6 +67,9 @@ class Widget
             $cellClass = new Cell($this->cellId, $this->dashboardId);
             $this->dataCell = $cellClass->get();
             $this->values = $this->decoders($this->getOptionsWidget());
+            if (isset($this->values['node']) === true) {
+                $this->nodeId = $this->values['node'];
+            }
         }
 
         return $this;
@@ -73,8 +83,6 @@ class Widget
      */
     public function get()
     {
-        global $config;
-
         $sql = sprintf(
             'SELECT *
             FROM twidget
@@ -99,8 +107,6 @@ class Widget
      */
     public function getOptionsWidget():array
     {
-        global $config;
-
         $result = [];
         if (empty($this->dataCell['options']) === false) {
             $result = \json_decode($this->dataCell['options'], true);
@@ -419,6 +425,22 @@ class Widget
 
         $output = '';
 
+        if ((bool) \is_metaconsole() === true) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            if ($this->nodeId !== null) {
+                if (\metaconsole_connect(null, $this->nodeId) !== NOERR) {
+                    $output .= '<div class="container-center">';
+                    $output .= \ui_print_info_message(
+                        __('Failed to connect to node %d', $this->nodeId),
+                        '',
+                        true
+                    );
+                    $output .= '</div>';
+                    return $output;
+                }
+            }
+        }
+
         if ($this->configurationRequired === true) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
@@ -438,6 +460,12 @@ class Widget
             $output .= '</div>';
         } else {
             $output .= $this->load();
+        }
+
+        if ((bool) \is_metaconsole() === true) {
+            if ($this->nodeId !== null) {
+                \metaconsole_restore_db();
+            }
         }
 
         return $output;
@@ -510,6 +538,34 @@ class Widget
             ],
         ];
 
+        if ((bool) \is_metaconsole()) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $servers = \metaconsole_get_servers();
+            if (is_array($servers) === true) {
+                $servers = array_reduce(
+                    $servers,
+                    function ($carry, $item) {
+                        $carry[$item['id']] = $item['server_name'];
+                        return $carry;
+                    }
+                );
+            } else {
+                $servers = [];
+            }
+
+            $inputs[] = [
+                'label'     => __('Node'),
+                'arguments' => [
+                    'wrapper'  => 'div',
+                    'name'     => 'node',
+                    'type'     => 'select',
+                    'fields'   => $servers,
+                    'selected' => $values['node'],
+                    'return'   => true,
+                ],
+            ];
+        }
+
         return $inputs;
     }
 
@@ -524,6 +580,9 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+        if ((bool) \is_metaconsole() === true) {
+            $values['node'] = \get_parameter('node', null);
+        }
 
         return $values;
 
@@ -551,6 +610,10 @@ class Widget
 
         if (isset($decoder['background']) === true) {
             $values['background'] = $decoder['background'];
+        }
+
+        if (isset($decoder['node']) === true) {
+            $values['node'] = $decoder['node'];
         }
 
         return $values;

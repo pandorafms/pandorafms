@@ -21,7 +21,7 @@ class Widget
      *
      * @var integer
      */
-    private $cellId;
+    protected $cellId;
 
     /**
      * Widget Id.
@@ -651,6 +651,50 @@ class Widget
         ];
 
         return $result;
+    }
+
+
+    /**
+     * Get description should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getDescription()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Load should be implemented for each child.
+     *
+     * @return string
+     */
+    public function load()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Get name should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getName()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        return '';
     }
 
 

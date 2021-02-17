@@ -188,7 +188,12 @@ try {
 
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
-if (!$double_auth_enabled && $config['2FA_all_users'] != ''
+if (isset($config['2FA_all_users']) === false) {
+    $config['2FA_all_users'] = null;
+}
+
+if (!$double_auth_enabled
+    && $config['2FA_all_users'] != ''
     && $config['2Fa_auth'] != '1'
     && $config['double_auth_enabled']
 ) {

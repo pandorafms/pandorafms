@@ -118,8 +118,14 @@ class ConsoleSupervisor
 
             // Assign targets.
             $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
+            if (isset($targets['groups']) === true) {
+                $this->targetGroups = $targets['groups'];
+            }
+
+            if (isset($targets['users']) === true) {
+                $this->targetUsers = $targets['users'];
+            }
+
             $this->targetUpdated = true;
         }
 
@@ -622,8 +628,14 @@ class ConsoleSupervisor
 
         if ($this->targetUpdated === false) {
             $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
+            if (isset($targets['groups']) === true) {
+                $this->targetGroups = $targets['groups'];
+            }
+
+            if (isset($targets['users']) === true) {
+                $this->targetUsers = $targets['users'];
+            }
+
             $this->targetUpdated = false;
         }
 
@@ -631,8 +643,14 @@ class ConsoleSupervisor
             $source_id = $this->sourceId;
             // Assign targets.
             $targets = get_notification_source_targets($source_id);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
+            if (isset($targets['groups']) === true) {
+                $this->targetGroups = $targets['groups'];
+            }
+
+            if (isset($targets['users']) === true) {
+                $this->targetUsers = $targets['users'];
+            }
+
             $this->targetUpdated = false;
         }
 

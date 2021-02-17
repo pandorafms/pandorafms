@@ -1002,3 +1002,11 @@ function check_massive_response_event(
     counter++;
   });
 }
+
+function event_widget_options() {
+  if ($("#customFilter").val() != "-1") {
+    $(".event-widget-input").disable();
+  } else {
+    $(".event-widget-input").enable();
+  }
+}

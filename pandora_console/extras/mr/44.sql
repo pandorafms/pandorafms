@@ -85,17 +85,7 @@ SET @insert_name = 'IPAM Recon';
 SET @insert_description = 'This script is used to automatically detect network hosts availability and name, used as Recon Custom Script in the recon task. Parameters used are:\n\n* custom_field1 = network. i.e.: 192.168.100.0/24\n* custom_field2 = associated IPAM network id. i.e.: 4. Please do not change this value, it is assigned automatically in IPAM management.\n\nSee documentation for more information.';
 SET @insert_script = '/usr/share/pandora_server/util/recon_scripts/IPAMrecon.pl';
 SET @insert_macros = '{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""}}';
-INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`)
-SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (
-	SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name
-	UNION
-	SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`,
-	@insert_type as `type`,
-	@insert_name as `name`,
-	@insert_description as `description`,
-	@insert_script as `script`,
-	@insert_macros as `macros`
-) t limit 1;
+INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`) SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name UNION SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`, @insert_type as `type`, @insert_name as `name`, @insert_description as `description`, @insert_script as `script`, @insert_macros as `macros`) t limit 1;
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 

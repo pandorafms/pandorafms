@@ -97,22 +97,6 @@ SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM 
 	@insert_macros as `macros`
 ) t limit 1;
 
-ALTER TABLE `tipam_ip` ADD COLUMN `leased` tinyint(2) DEFAULT '0';
-
-ALTER TABLE `tipam_ip` ADD COLUMN `leased_expiration` bigint(20) DEFAULT '0';
-
-ALTER TABLE `tipam_ip` ADD COLUMN `mac_address` varchar(20) DEFAULT NULL;
-
-ALTER TABLE `tipam_ip` ADD COLUMN `leased_mode` tinyint(2) DEFAULT '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `monitoring` tinyint(2) default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `id_group` mediumint(8) unsigned NULL default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `lightweight_mode` tinyint(2) default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `name_network` varchar(255) default '';
-
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';

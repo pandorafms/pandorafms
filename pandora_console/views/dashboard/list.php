@@ -32,15 +32,20 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 global $config;
 
 ui_require_css_file('dashboards');
+if ((bool) \is_metaconsole() === true) {
+    \ui_require_css_file('meta_dashboards');
+}
 
 // Header.
-\ui_print_page_header(
-    __('Dashboards'),
-    '',
-    false,
-    '',
-    false
-);
+if ((bool) is_metaconsole() === false) {
+    \ui_print_page_header(
+        __('Dashboards'),
+        '',
+        false,
+        '',
+        false
+    );
+}
 
 if (isset($resultDelete) === true) {
     \ui_print_result_message(

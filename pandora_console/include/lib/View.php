@@ -32,7 +32,6 @@ namespace PandoraFMS;
 global $config;
 
 require_once $config['homedir'].'/include/class/HTML.class.php';
-use \HTML as HTML;
 
 /**
  * View class.

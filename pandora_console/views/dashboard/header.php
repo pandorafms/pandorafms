@@ -245,14 +245,22 @@ if ($config['public_dashboard'] === true) {
 }
 
 if ($publicLink === false) {
-    ui_print_page_header(
-        $dashboardName,
-        '',
-        false,
-        '',
-        false,
-        $buttons
-    );
+    if ((bool) is_metaconsole() === true) {
+        ui_meta_print_header(
+            __('Dashboards').' » '.__('List'),
+            false,
+            $buttons
+        );
+    } else {
+        ui_print_page_header(
+            $dashboardName,
+            '',
+            false,
+            '',
+            false,
+            $buttons
+        );
+    }
 } else {
     $output = '<div id="dashboard-controls">';
     foreach ($buttons as $key => $value) {

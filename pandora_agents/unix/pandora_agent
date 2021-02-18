@@ -592,7 +592,6 @@ BEGIN {
 		my ($self) = @_;
 
 		if ($YAML == 0) {
-			$self->set_last_error('Cannot use commands without YAML dependency, please install it.');
 			return;
 		}
 
@@ -4028,6 +4027,14 @@ if ($Conf{'proxy_mode'}) {
 		log_message ('error', 'Proxy mode can not be launched as root');
 		exit 1;
 	}
+}
+
+# Advice if YAML::Tiny is allowed in this system
+eval {
+		eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');
+};
+if ($@) {
+		log_message ('error', 'Cannot use commands without YAML dependency, please install it.');
 }
 
 # Add the plugins directory to the PATH

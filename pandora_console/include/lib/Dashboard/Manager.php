@@ -178,6 +178,7 @@ class Manager
         'saveWidgetIntoCell',
         'imageIconDashboardAjax',
         'formSlides',
+        'callWidgetMethod',
     ];
 
 
@@ -1498,6 +1499,27 @@ class Manager
         } else {
             \ui_print_error_message($msg);
         }
+    }
+
+
+    /**
+     * Call widget method (ajax only).
+     *
+     * @param string $method Method to be invoked.
+     *
+     * @return boolean Executed or not.
+     */
+    public function callWidgetMethod(string $method):bool
+    {
+        $widget = $this->instanceWidget();
+
+        if (method_exists($widget, $method) === true) {
+            $widget->$method();
+            return true;
+        }
+
+        return false;
+
     }
 
 

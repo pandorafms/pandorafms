@@ -14,7 +14,7 @@ class Widget
      *
      * @var integer
      */
-    private $dashboardId;
+    protected $dashboardId;
 
     /**
      * Cell ID.
@@ -28,7 +28,7 @@ class Widget
      *
      * @var integer
      */
-    private $widgetId;
+    protected $widgetId;
 
     /**
      * Values widget.
@@ -42,7 +42,14 @@ class Widget
      *
      * @var integer
      */
-    private $nodeId;
+    protected $nodeId;
+
+    /**
+     * Should we show select node in metaconsole environments?
+     *
+     * @var boolean
+     */
+    private $showSelectNodeMeta;
 
 
     /**
@@ -63,6 +70,7 @@ class Widget
             $this->cellId = $cellId;
             $this->dashboardId = $dashboardId;
             $this->fields = $this->get();
+            $this->className = $this->fields['class_name'];
 
             $cellClass = new Cell($this->cellId, $this->dashboardId);
             $this->dataCell = $cellClass->get();
@@ -427,7 +435,7 @@ class Widget
 
         if ((bool) \is_metaconsole() === true) {
             \enterprise_include_once('include/functions_metaconsole.php');
-            if ($this->nodeId !== null) {
+            if ($this->nodeId > 0) {
                 if (\metaconsole_connect(null, $this->nodeId) !== NOERR) {
                     $output .= '<div class="container-center">';
                     $output .= \ui_print_info_message(
@@ -438,6 +446,8 @@ class Widget
                     $output .= '</div>';
                     return $output;
                 }
+
+                $config['metaconsole'] = false;
             }
         }
 
@@ -463,8 +473,9 @@ class Widget
         }
 
         if ((bool) \is_metaconsole() === true) {
-            if ($this->nodeId !== null) {
+            if ($this->nodeId > 0) {
                 \metaconsole_restore_db();
+                $config['metaconsole'] = true;
             }
         }
 
@@ -538,7 +549,9 @@ class Widget
             ],
         ];
 
-        if ((bool) \is_metaconsole()) {
+        if ((bool) \is_metaconsole() === true
+            && $this->shouldSelectNode() === true
+        ) {
             \enterprise_include_once('include/functions_metaconsole.php');
             $servers = \metaconsole_get_servers();
             if (is_array($servers) === true) {
@@ -556,12 +569,14 @@ class Widget
             $inputs[] = [
                 'label'     => __('Node'),
                 'arguments' => [
-                    'wrapper'  => 'div',
-                    'name'     => 'node',
-                    'type'     => 'select',
-                    'fields'   => $servers,
-                    'selected' => $values['node'],
-                    'return'   => true,
+                    'wrapper'       => 'div',
+                    'name'          => 'node',
+                    'type'          => 'select',
+                    'fields'        => $servers,
+                    'selected'      => $values['node'],
+                    'nothing'       => __('This metaconsole'),
+                    'nothing_value' => -1,
+                    'return'        => true,
                 ],
             ];
         }
@@ -581,7 +596,11 @@ class Widget
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
         if ((bool) \is_metaconsole() === true) {
-            $values['node'] = \get_parameter('node', null);
+            if ($this->shouldSelectNode() === true) {
+                $values['node'] = \get_parameter('node', null);
+            } else {
+                $values['node'] = \get_parameter('metaconsoleId', null);
+            }
         }
 
         return $values;
@@ -651,6 +670,32 @@ class Widget
         ];
 
         return $result;
+    }
+
+
+    /**
+     * Should select for nodes been shown while in metaconsole environment?
+     *
+     * @return boolean
+     */
+    protected function shouldSelectNode():bool
+    {
+        if ($this->showSelectNodeMeta !== null) {
+            return (bool) $this->showSelectNodeMeta;
+        }
+
+        switch ($this->className) {
+            case 'EventsListWidget':
+            case 'ReportsWidget':
+                $this->showSelectNodeMeta = true;
+            break;
+
+            default:
+                $this->showSelectNodeMeta = false;
+            break;
+        }
+
+        return (bool) $this->showSelectNodeMeta;
     }
 
 

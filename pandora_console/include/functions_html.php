@@ -4318,6 +4318,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         return '';
     }
 
+    enterprise_include_once('include/functions_metaconsole.php');
     $output = '';
 
     if ($data['label'] && $input_only === false) {

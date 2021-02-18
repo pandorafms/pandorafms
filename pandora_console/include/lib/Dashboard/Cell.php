@@ -216,8 +216,6 @@ class Cell
      */
     public static function getCells(int $dashboardId):array
     {
-        global $config;
-
         $cells = db_get_all_rows_filter(
             'twidget_dashboard',
             [

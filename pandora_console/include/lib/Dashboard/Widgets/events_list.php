@@ -603,7 +603,10 @@ class EventsListWidget extends Widget
             'ta.alias as agent_name',
             'tg.nombre as group_name',
         ];
-        if ((bool) \is_metaconsole() === false) {
+
+        if ((bool) \is_metaconsole() === false
+            || $this->nodeId > 0
+        ) {
             $fields[] = 'am.nombre as module_name';
             $fields[] = 'am.id_agente_modulo as id_agentmodule';
             $fields[] = 'am.custom_id as module_custom_id';
@@ -636,7 +639,9 @@ class EventsListWidget extends Widget
             // ValidatedEvents.
             false,
             // Recursive Groups.
-            (bool) $this->values['groupRecursion']
+            (bool) $this->values['groupRecursion'],
+            // Already connected.
+            ($this->nodeId > 0)
         );
 
         if ($events === false) {

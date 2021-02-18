@@ -65,7 +65,9 @@ if (is_ajax() === true) {
             $cs->error('Unavailable method.');
         }
     } else {
-        $cs->error('Method not found. ['.$method.']');
+        if ($cs->callWidgetMethod($method) === false) {
+            $cs->error('Method not found. ['.$method.']');
+        }
     }
 } else {
     // Run.

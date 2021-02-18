@@ -214,6 +214,81 @@ class MapsMadeByUser extends Widget
 
 
     /**
+     * Dumps consoles list in json to fullfill select for consoles.
+     *
+     * @return void
+     */
+    public function getVisualConsolesList(): void
+    {
+        $node_id = \get_parameter('nodeId', $this->nodeId);
+        if (\is_metaconsole() === true && $node_id > 0) {
+            if (\metaconsole_connect(null, $node_id) !== NOERR) {
+                echo json_encode(
+                    ['error' => __('Failed to connect to node %d', $node_id) ]
+                );
+            }
+        }
+
+        echo json_encode(
+            $this->getVisualConsoles(),
+            1
+        );
+
+        if (\is_metaconsole() === true && $node_id > 0) {
+            \metaconsole_restore_db();
+        }
+    }
+
+
+    /**
+     * Retrieve visual consoles.
+     *
+     * @return array
+     */
+    private function getVisualConsoles()
+    {
+        global $config;
+
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $fields = \visual_map_get_user_layouts(
+            $config['id_user'],
+            true,
+            ['can_manage_group_all' => $return_all_group],
+            $return_all_group
+        );
+
+        foreach ($fields as $k => $v) {
+            $fields[$k] = \io_safe_output($v);
+        }
+
+        // If currently selected graph is not included in fields array
+        // (it belongs to a group over which user has no permissions), then add
+        // it to fields array.
+        // This is aimed to avoid overriding this value when a user with
+        // narrower permissions edits widget configuration.
+        if ($this->values['vcId'] !== null
+            && array_key_exists($this->values['vcId'], $fields) === false
+        ) {
+            $selected_vc = db_get_value(
+                'name',
+                'tlayout',
+                'id',
+                $this->values['vcId']
+            );
+
+            $fields[$this->values['vcId']] = $selected_vc;
+        }
+
+        return $fields;
+    }
+
+
+    /**
      * Generates inputs for form (specific).
      *
      * @return array Of inputs.
@@ -229,31 +304,13 @@ class MapsMadeByUser extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
-        $return_all_group = false;
-
-        if (users_can_manage_group_all('RM')) {
-            $return_all_group = true;
-        }
-
-        $fields = \visual_map_get_user_layouts(
-            $config['id_user'],
-            true,
-            ['can_manage_group_all' => $return_all_group],
-            $return_all_group
-        );
-
-        // If currently selected graph is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
-        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
-        if ($values['vcId'] !== null && !array_key_exists($values['vcId'], $fields)) {
-            $selected_vc = db_get_value('name', 'tlayout', 'id', $values['vcId']);
-
-            $fields[$values['vcId']] = $selected_vc;
-        }
+        $fields = $this->getVisualConsoles();
 
         // Visual console.
         $inputs[] = [
             'label'     => __('Visual console'),
             'arguments' => [
+                'id'       => 'vcId',
                 'type'     => 'select',
                 'fields'   => $fields,
                 'name'     => 'vcId',
@@ -451,6 +508,53 @@ class MapsMadeByUser extends Widget
     public static function getName()
     {
         return 'maps_made_by_user';
+    }
+
+
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        ob_start();
+        ?>
+            $('#node').on('change', function() { 
+                $.ajax({
+                    method: "POST",
+                    url: '<?php echo \ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'operation/dashboard/dashboard',
+                        dashboardId: '<?php echo $this->dashboardId; ?>',
+                        widgetId: '<?php echo $this->widgetId; ?>',
+                        cellId: '<?php echo $this->cellId; ?>',
+                        class: '<?php echo __CLASS__; ?>',
+                        method: 'getVisualConsolesList',
+                        nodeId: $('#node').val()
+                    },
+                    dataType: 'JSON',
+                    success: function(data) {
+                        console.log(data);
+                        $('#vcId').empty();
+                        Object.entries(data).forEach(e => {
+                            key = e[0];
+                            value = e[1];
+                            $('#vcId').append($('<option>').val(key).text(value))
+                        });
+                        if (Object.entries(data).length == 0) {
+                            $('#vcId').append(
+                                $('<option>')
+                                    .val(-1)
+                                    .text("<?php echo __('None'); ?>")
+                            );
+                        }
+                    }
+                })
+            });
+        <?php
+        $js = ob_get_clean();
+        return $js;
     }
 
 

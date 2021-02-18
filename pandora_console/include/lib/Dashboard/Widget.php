@@ -687,6 +687,8 @@ class Widget
         switch ($this->className) {
             case 'EventsListWidget':
             case 'ReportsWidget':
+            case 'MapsMadeByUser':
+            case 'AlertsFiredWidget':
                 $this->showSelectNodeMeta = true;
             break;
 

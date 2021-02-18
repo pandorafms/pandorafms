@@ -3279,7 +3279,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         <tr id="sla_form" style="" class="datos">
                             <td class="sla_list_agent_col">
                                 <input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
-                                <input id="hidden-server_name" name="server_name" value="" type="hidden">
+                                <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
                                 $params = [];
                                 $params['show_helptip'] = true;

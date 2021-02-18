@@ -40,6 +40,7 @@ if (!is_dir($config['homedir'])) {
 }
 
 
+
 // Help to debug problems. Override global PHP configuration
 global $develop_bypass;
 if ((int) $develop_bypass === 1) {
@@ -163,6 +164,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 config_process_config();
 config_prepare_session();
+
+if ((bool) $config['console_log_enabled'] === true) {
+    error_reporting(E_ALL ^ E_NOTICE);
+}
 
 // Set a the system timezone default
 if ((!isset($config['timezone'])) or ($config['timezone'] == '')) {

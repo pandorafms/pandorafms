@@ -161,10 +161,8 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.ALLOWOVERRIDE.MESSAGE',
             'NOTIF.HAMASTER.MESSAGE',
             'NOTIF.SERVER.STATUS',
-            'NOTIF.SERVER.STATUS.ID_SERVER',
-            'NOTIF.SERVER.QUEUE.ID_SERVER',
+            'NOTIF.SERVER.QUEUE',
             'NOTIF.SERVER.MASTER',
-            'NOTIF.SERVER.STATUS.ID_SERVER',
         ],
     ];
 
@@ -233,9 +231,15 @@ function get_notification_source_targets(int $id_source, ?string $subtype=null)
 {
     $ret = [];
 
+    $filter = '';
     if ($subtype !== null) {
+        $matches = [];
+        if (preg_match('/(.*)\.\d+$/', $subtype, $matches) > 0) {
+            $subtype = $matches[1];
+        }
+
         $filter = sprintf(
-            ' AND ns.`subtype_blacklist` NOT LIKE "%s"',
+            ' AND ns.`subtype_blacklist` NOT LIKE "%%%s%%"',
             $subtype
         );
     }
@@ -248,13 +252,12 @@ function get_notification_source_targets(int $id_source, ?string $subtype=null)
             FROM tnotification_source_user nsu
             INNER JOIN tnotification_source ns
                 ON ns.id=nsu.id_source
+                %s
             WHERE ns.id = %d 
             AND ((ns.enabled is NULL OR ns.enabled != 0)
-                OR (nsu.enabled is NULL OR nsu.enabled != 0))
-            %s
-            ',
-            $id_source,
-            $filter
+                OR (nsu.enabled is NULL OR nsu.enabled != 0))',
+            $filter,
+            $id_source
         )
     );
 
@@ -272,11 +275,11 @@ function get_notification_source_targets(int $id_source, ?string $subtype=null)
             FROM tnotification_source_group nsg
             INNER JOIN tnotification_source ns
                 ON ns.id=nsg.id_source
+                %s
             WHERE ns.id = %d 
-            AND (ns.enabled is NULL OR ns.enabled != 0)
-            %s',
-            $id_source,
-            $filter
+            AND (ns.enabled is NULL OR ns.enabled != 0)',
+            $filter,
+            $id_source
         )
     );
 

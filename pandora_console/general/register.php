@@ -234,8 +234,8 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     }
   });
 
-  $("div#doble_auth_window").dialog({
     <?php config_update_value('2Fa_auth', ''); ?>
+  $("div#doble_auth_window").dialog({
     resizable: true,
     draggable: true,
     modal: true,
@@ -247,12 +247,6 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     width: 500,
     height: 400,
     close: function (event, ui) {
-        
-    <?php
-    if (!$double_auth_enabled) {
-        config_update_value('2Fa_auth', '1');
-    }
-    ?>
       // Abort the ajax request
       if (typeof request != 'undefined'){
         request.abort();

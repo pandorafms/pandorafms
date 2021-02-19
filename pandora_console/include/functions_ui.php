@@ -4333,7 +4333,7 @@ function ui_print_page_header(
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important;'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 

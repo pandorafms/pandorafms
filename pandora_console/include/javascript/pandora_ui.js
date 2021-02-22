@@ -87,7 +87,12 @@ function load_modal(settings) {
     div.id = "div-modal-" + uniq;
     div.style.display = "none";
 
-    document.getElementById("main").append(div);
+    if (document.getElementById("main") == null) {
+      // MC env.
+      document.getElementById("page").append(div);
+    } else {
+      document.getElementById("main").append(div);
+    }
 
     var id_modal_target = "#div-modal-" + uniq;
 
@@ -281,8 +286,6 @@ function load_modal(settings) {
             data: formdata,
             dataType: settings.onsubmit.dataType,
             success: function(data) {
-              console.log("successsssssssssssss");
-              console.log(data);
               if (settings.ajax_callback != undefined) {
                 if (settings.idMsgCallback != undefined) {
                   settings.ajax_callback(data, settings.idMsgCallback);
@@ -379,6 +382,8 @@ function load_modal(settings) {
           //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
+          $(this).dialog("destroy");
+
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
@@ -386,14 +391,12 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-
-          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
-      // console.log(data);
+      console.error(data);
     }
   });
 }
@@ -403,6 +406,7 @@ function load_modal(settings) {
 // eslint-disable-next-line no-unused-vars
 function confirmDialog(settings) {
   var randomStr = uniqId();
+  var hideOkButton = "";
 
   if (settings.size == undefined) {
     settings.size = 350;
@@ -410,6 +414,10 @@ function confirmDialog(settings) {
 
   if (settings.maxHeight == undefined) {
     settings.maxHeight = 1000;
+  }
+  // You can hide the OK button.
+  if (settings.hideOkButton != undefined) {
+    hideOkButton = "invisible_important ";
   }
 
   if (typeof settings.message == "function") {
@@ -444,6 +452,7 @@ function confirmDialog(settings) {
         {
           text: "Ok",
           class:
+            hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
           click: function() {
             $(this).dialog("close");

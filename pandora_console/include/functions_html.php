@@ -536,6 +536,8 @@ function html_print_select_groups(
         $include_groups[$nothing_value] = $nothing;
     }
 
+    $json_exclusions = '';
+    $json_inclusions = '';
     if (is_array($delete_groups) === true) {
         $json_exclusions = json_encode($delete_groups);
     }
@@ -3586,7 +3588,7 @@ function html_print_checkbox_switch_extended(
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id="'.$id.'"';
     }
 
     if ($script != '') {
@@ -4247,7 +4249,7 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
-    $disabled_class .= (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
 
     return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">

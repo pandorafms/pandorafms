@@ -2001,6 +2001,10 @@ function get_snmpwalk(
 ) {
     global $config;
 
+    if (empty($ip_target) === true) {
+        return [];
+    }
+
     // Note: quick_print is ignored
     // Fix for snmp port
     if (!empty($snmp_port)) {
@@ -2012,22 +2016,22 @@ function get_snmpwalk(
         $base_oid = escapeshellarg($base_oid);
     }
 
-    if (empty($config['snmpwalk'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpwalk_bin = '/usr/local/bin/snmpwalk';
-            break;
+    switch (PHP_OS) {
+        case 'FreeBSD':
+            $snmpwalk_bin = '/usr/local/bin/snmpwalk';
+        break;
 
-            case 'NetBSD':
-                $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-            break;
+        case 'NetBSD':
+            $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
+        break;
 
-            default:
+        default:
+            if ($snmp_version == '1') {
                 $snmpwalk_bin = 'snmpwalk';
-            break;
-        }
-    } else {
-        $snmpwalk_bin = $config['snmpwalk'];
+            } else {
+                $snmpwalk_bin = 'snmpbulkwalk';
+            }
+        break;
     }
 
     switch (PHP_OS) {
@@ -2035,11 +2039,20 @@ function get_snmpwalk(
         case 'WINNT':
         case 'Windows':
             $error_redir_dir = 'NUL';
+            $snmpwalk_bin = 'snmpwalk';
         break;
 
         default:
             $error_redir_dir = '/dev/null';
         break;
+    }
+
+    if (empty($config['snmpwalk']) === false) {
+        if ($snmp_version == '1') {
+            $snmpwalk_bin = $config['snmpwalk_fallback'];
+        } else {
+            $snmpwalk_bin = $config['snmpwalk'];
+        }
     }
 
     $output = [];
@@ -4450,7 +4463,7 @@ function get_help_info($section_name)
 {
     global $config;
 
-    $user_language = get_user_language($id_user);
+    $user_language = get_user_language($config['id_user']);
 
     $es = false;
     $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:';

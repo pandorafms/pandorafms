@@ -1469,7 +1469,11 @@ function config_update_config()
                     ) {
                         // Same definition for active and historical database!
                         // This is a critical error.
-                        $errors[] = __('Active and historical database cannot be the same.');
+                        $config['error_config_update_config']['correct'] = false;
+                        $config['error_config_update_config']['message'] = __(
+                            'Active and historical database cannot be the same.'
+                        );
+                        return;
                     } else {
                         if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
                             $error_update[] = __('Host');

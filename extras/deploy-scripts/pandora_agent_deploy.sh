@@ -12,6 +12,7 @@ red="\e[0;91m"
 green="\e[0;92m"
 bold="\e[1m"
 cyan="\e[0;36m"
+yellow="\e[0;33m"
 reset="\e[0m"
 
 # Functions
@@ -65,6 +66,14 @@ check_root_permissions () {
     fi
 }
 
+install_autodiscover () {
+    local arch=$1
+    wget https://pandorafms.com/library/wp-content/uploads/2020/04/autodiscover-linux.zip
+    unzip autodiscover-linux.zip
+    chmod +x $arch/autodiscover 
+    mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover
+}
+
 ## Main
 echo "Starting PandoraFMS Agent deployment ver. $S_VERSION"
 
@@ -96,7 +105,7 @@ execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
 
 # Creating working directory
-rm -rf $HOME/pandora_deploy_tmp/*.rpm* &>> $LOGFILE
+rm -rf $HOME/pandora_deploy_tmp/ &>> $LOGFILE
 mkdir $HOME/pandora_deploy_tmp &>> $LOGFILE
 execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_deploy_tmp"
 
@@ -115,7 +124,6 @@ if [[ $OS_RELEASE == 'debian' ]]; then
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Instaling agent dependencies' 
     execute_cmd 'wget http://firefly.artica.es/pandorafms/latest/Debian_Ubuntu/pandorafms.agent_unix_7.0NG.deb' 'Downloading Pandora FMS agent dependencies'
     execute_cmd 'apt install -y ./pandorafms.agent_unix_7.0NG.deb' 'Installing Pandora FMS agent'
-    pip3 install psutil &>> $LOGFILE 
 fi
 
 # Configuring Agente
@@ -130,8 +138,31 @@ fi
 [[ $TIMEZONE ]] && ln -sfn /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 
 
+#installing autodiscover
+
+arch=$(uname -m)
+case $arch in
+
+  x86_64)
+    execute_cmd 'install_autodiscover x86_64' "installing service autodiscover on $arch" 'Error unable to install autodiscovery'
+    ;;
+
+  x86)
+    execute_cmd 'install_autodiscover x84' "installing service autodiscover on $arch" 'Error unable to install autodiscovery'
+    ;;
+
+  armv7l)
+    echo -e "${cyan}Skiping autodiscover installation arch $arch not suported${reset}"
+    ;;
+
+  *)
+    echo -e "${yellow}Skiping autodiscover installation arch $arch not suported${reset}"
+    ;;
+esac
 
 #Starting pandora agent daemon.
 execute_cmd '/etc/init.d/pandora_agent_daemon restart' 'Starting Pandora Agent'
+cd
+execute_cmd 'rm -rf $HOME/pandora_deploy_tmp' 'Cleaning up temporay files'
 
 echo -e "${green}PandoraFMS Agent installed and running, sending data to: $PANDORA_SERVER_IP${reset}"

@@ -2001,6 +2001,10 @@ function get_snmpwalk(
 ) {
     global $config;
 
+    if (empty($ip_target) === true) {
+        return [];
+    }
+
     // Note: quick_print is ignored
     // Fix for snmp port
     if (!empty($snmp_port)) {
@@ -2012,22 +2016,22 @@ function get_snmpwalk(
         $base_oid = escapeshellarg($base_oid);
     }
 
-    if (empty($config['snmpwalk'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpwalk_bin = '/usr/local/bin/snmpwalk';
-            break;
+    switch (PHP_OS) {
+        case 'FreeBSD':
+            $snmpwalk_bin = '/usr/local/bin/snmpwalk';
+        break;
 
-            case 'NetBSD':
-                $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-            break;
+        case 'NetBSD':
+            $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
+        break;
 
-            default:
+        default:
+            if ($snmp_version == '1') {
                 $snmpwalk_bin = 'snmpwalk';
-            break;
-        }
-    } else {
-        $snmpwalk_bin = $config['snmpwalk'];
+            } else {
+                $snmpwalk_bin = 'snmpbulkwalk';
+            }
+        break;
     }
 
     switch (PHP_OS) {
@@ -2035,11 +2039,20 @@ function get_snmpwalk(
         case 'WINNT':
         case 'Windows':
             $error_redir_dir = 'NUL';
+            $snmpwalk_bin = 'snmpwalk';
         break;
 
         default:
             $error_redir_dir = '/dev/null';
         break;
+    }
+
+    if (empty($config['snmpwalk']) === false) {
+        if ($snmp_version == '1') {
+            $snmpwalk_bin = $config['snmpwalk_fallback'];
+        } else {
+            $snmpwalk_bin = $config['snmpwalk'];
+        }
     }
 
     $output = [];
@@ -2360,6 +2373,71 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
     }
 
     return false;
+}
+
+
+/**
+ * Check access privileges to resources (write or management is not allowed for 'all' group )
+ *
+ * Access can be:
+ * IR - Incident/report Read
+ * IW - Incident/report Write
+ * IM - Incident/report Management
+ * AR - Agent Read
+ * AW - Agent Write
+ * LW - Alert Write
+ * UM - User Management
+ * DM - DB Management
+ * LM - Alert Management
+ * PM - Pandora Management
+ *
+ * @param integer $id_user      User id
+ * @param integer $id_group     Agents group id to check from
+ * @param string  $access       Access privilege
+ * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ *
+ * @return boolean 1 if the user has privileges, 0 if not.
+ */
+function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=false)
+{
+    if (empty($id_user)) {
+        // User ID needs to be specified
+        trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
+        return 0;
+    } else if (is_user_admin($id_user)) {
+        return 1;
+    } else {
+        $id_group = (int) $id_group;
+    }
+
+    $access_string = get_acl_column($access);
+
+    if ($id_group != 0 || $onlyOneGroup === true) {
+        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+    } else {
+        $groups_list_acl = get_users_acl($id_user);
+
+        // Only allow view ACL tokens in case user cannot manage group all.
+        if (users_can_manage_group_all($access) === false) {
+            if (preg_match('/_view/i', $access_string) == 0) {
+                return 0;
+            }
+        }
+    }
+
+    if (is_array($groups_list_acl)) {
+        if (isset($groups_list_acl[$id_group])) {
+            if (isset($groups_list_acl[$id_group][$access_string])
+                && $groups_list_acl[$id_group][$access_string] > 0
+            ) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
 }
 
 
@@ -4385,7 +4463,7 @@ function get_help_info($section_name)
 {
     global $config;
 
-    $user_language = get_user_language($id_user);
+    $user_language = get_user_language($config['id_user']);
 
     $es = false;
     $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:';

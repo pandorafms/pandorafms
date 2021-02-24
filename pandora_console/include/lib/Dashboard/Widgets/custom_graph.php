@@ -243,8 +243,23 @@ class CustomGraphWidget extends Widget
             $values['showLegend'] = 1;
         }
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Custom graph.
-        $fields = \custom_graphs_get_user();
+        $fields = \custom_graphs_get_user(0, false, $return_all_group);
+
+        // If currently selected graph is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['id_graph'] !== null && !array_key_exists($values['id_graph'], $fields)) {
+            $selected_graph = db_get_row('tgraph', 'id_graph', $values['id_graph']);
+
+            $fields[$values['id_graph']] = $selected_graph;
+        }
+
         $inputs[] = [
             'label'     => __('Graph'),
             'arguments' => [

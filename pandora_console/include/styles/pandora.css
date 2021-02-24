@@ -704,6 +704,9 @@ select:-internal-list-box {
 .invisible {
   display: none;
 }
+.invisible_important {
+  display: none !important;
+}
 
 .visible {
   display: block;
@@ -770,6 +773,9 @@ p.center {
 
 .center {
   text-align: center;
+}
+.centered {
+  margin: 0 auto;
 }
 
 .margin-top-10 {

@@ -229,7 +229,26 @@ class MapsMadeByUser extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
-        $fields = \visual_map_get_user_layouts($config['id_user'], true);
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $fields = \visual_map_get_user_layouts(
+            $config['id_user'],
+            true,
+            ['can_manage_group_all' => $return_all_group],
+            $return_all_group
+        );
+
+        // If currently selected graph is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['vcId'] !== null && !array_key_exists($values['vcId'], $fields)) {
+            $selected_vc = db_get_value('name', 'tlayout', 'id', $values['vcId']);
+
+            $fields[$values['vcId']] = $selected_vc;
+        }
 
         // Visual console.
         $inputs[] = [
@@ -307,20 +326,6 @@ class MapsMadeByUser extends Widget
 
         $groupId = $visualConsoleData['groupId'];
         $visualConsoleName = $visualConsoleData['name'];
-
-        // ACL.
-        $aclRead = check_acl($config['id_user'], $groupId, 'VR');
-        $aclWrite = check_acl($config['id_user'], $groupId, 'VW');
-        $aclManage = check_acl($config['id_user'], $groupId, 'VM');
-
-        if ($aclRead === 0 && $aclWrite === 0 && $aclManage === 0) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access visual console without group access'
-            );
-            include 'general/noaccess.php';
-            exit;
-        }
 
         $uniq = uniqid();
 

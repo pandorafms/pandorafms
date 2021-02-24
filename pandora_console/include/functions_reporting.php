@@ -9962,7 +9962,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR')
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
 {
     global $config;
 
@@ -9998,7 +9998,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $cur_time = get_system_time();
 
     // Check for access credentials using check_acl. More overhead, much safer.
-    if (!check_acl($config['id_user'], $id_group, $access)) {
+    if ($ignore_permissions === false && !check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
 
@@ -12864,7 +12864,7 @@ function reporting_get_stats_servers()
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
-    if ($system_events > 50000 && !enterprise_installed()) {
+    if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
         $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     } else {
         $tdata[3] = '&nbsp;';

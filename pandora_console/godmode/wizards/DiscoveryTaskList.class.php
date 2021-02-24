@@ -409,7 +409,7 @@ class DiscoveryTaskList extends HTML
             // Status.
             $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[6] .= 'min-width: 200px; width: 200px;';
             // Progress.
             $table->headstyle[7] .= 'min-width: 50px; width: 150px;';
             // Updated at.
@@ -552,16 +552,26 @@ class DiscoveryTaskList extends HTML
                         true
                     );
                 } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
-                    if ($task['status'] <= 0
-                        && empty($task['summary']) === false
-                    ) {
-                        $data[5] = __('Done');
-                    } else if ($task['utimestamp'] == 0
-                        && empty($task['summary'])
-                    ) {
-                        $data[5] = __('Not started');
+                    if ($task['type'] == DISCOVERY_APP_VMWARE) {
+                        if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
+                            $data[5] = __('Done');
+                        } else if ($task['status'] > 0) {
+                            $data[5] = __('Pending');
+                        } else {
+                            $data[5] = __('Not started');
+                        }
                     } else {
-                        $data[5] = __('Pending');
+                        if ($task['status'] <= 0
+                            && empty($task['summary']) === false
+                        ) {
+                            $data[5] = __('Done');
+                        } else if ($task['utimestamp'] == 0
+                            && empty($task['summary'])
+                        ) {
+                            $data[5] = __('Not started');
+                        } else {
+                            $data[5] = __('Pending');
+                        }
                     }
                 } else {
                     if ($task['status'] <= 0
@@ -1207,12 +1217,15 @@ class DiscoveryTaskList extends HTML
         $output = '';
 
         // Header information.
-        if ((int) $task['status'] <= 0
-            && empty($summary)
-            && $task['id_recon_script'] == 0
-        ) {
+        if ((int) $task['status'] <= 0 && empty($summary)) {
+            if ($task['type'] == DISCOVERY_APP_VMWARE && $task['utimestamp'] != 0) {
+                $outputMessage = __('Task completed.');
+            } else {
+                $outputMessage = __('This task has never executed');
+            }
+
             $output .= ui_print_info_message(
-                __('This task has never executed'),
+                $outputMessage,
                 '',
                 true
             );

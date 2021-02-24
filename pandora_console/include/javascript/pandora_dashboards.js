@@ -782,7 +782,8 @@ function dashboardLoadNetworkMap(settings) {
       zoom_dash: settings.zoom_dash,
       auth_class: settings.auth_class,
       auth_hash: settings.auth_hash,
-      id_user: settings.id_user
+      id_user: settings.id_user,
+      ignore_acl: 1
     },
     dataType: "html",
     success: function(data) {

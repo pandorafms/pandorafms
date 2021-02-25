@@ -123,6 +123,11 @@ final class Clock extends Item
      */
     protected function decode(array $data): array
     {
+        // Default values.
+        if (empty($data['height']) === true) {
+            $data['height'] = ($data['width'] / 2);
+        }
+
         $clockData = parent::decode($data);
         $clockData['type'] = CLOCK;
         $clockData['clockType'] = static::extractClockType($data);

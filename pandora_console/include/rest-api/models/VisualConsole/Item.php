@@ -922,7 +922,8 @@ class Item extends CachedModel
         // Can't fetch an agent with an invalid Id.
         $agentId = static::extractAgentId($itemData);
         if ($agentId === null) {
-            throw new \InvalidArgumentException('invalid agent Id');
+            $agentId = 0;
+            // throw new \InvalidArgumentException('invalid agent Id');
         }
 
         // Staticgraph don't need to have an agent.
@@ -956,7 +957,8 @@ class Item extends CachedModel
         $agent = \db_get_row_sql($sql);
 
         if ($agent === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $agentData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         // The agent name should be a valid string or a null value.
@@ -996,7 +998,8 @@ class Item extends CachedModel
         // Can't fetch an module with a invalid Id.
         $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
-            throw new \InvalidArgumentException('invalid module Id');
+            $moduleId = 0;
+            // throw new \InvalidArgumentException('invalid module Id');
         }
 
         // Staticgraph don't need to have a module.
@@ -1037,7 +1040,8 @@ class Item extends CachedModel
         }
 
         if ($moduleName === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $moduleData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         $moduleData['moduleName'] = $moduleName['nombre'];

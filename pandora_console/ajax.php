@@ -64,6 +64,15 @@ if (isset($config['console_log_enabled']) === true
     ini_set('error_log', 0);
 }
 
+// Sometimes input is badly retrieved from caller...
+if (empty($_REQUEST) === true) {
+    $data = explode('&', urldecode(file_get_contents('php://input')));
+    foreach ($data as $d) {
+        $r = explode('=', $d, 2);
+        $_REQUEST[$r[0]] = $r[1];
+    }
+}
+
 // Hash login process.
 if (isset($_GET['loginhash']) === true) {
     $loginhash_data = get_parameter('loginhash_data', '');

@@ -69,7 +69,8 @@ if (empty($_REQUEST) === true) {
     $data = explode('&', urldecode(file_get_contents('php://input')));
     foreach ($data as $d) {
         $r = explode('=', $d, 2);
-        $_REQUEST[$r[0]] = $r[1];
+        $_POST[$r[0]] = $r[1];
+        $_GET[$r[0]] = $r[1];
     }
 }
 

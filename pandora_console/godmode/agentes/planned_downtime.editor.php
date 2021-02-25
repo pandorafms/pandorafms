@@ -166,7 +166,12 @@ if ($insert_downtime_agent === 1) {
     $agents = (array) get_parameter('id_agents');
     $module_names = (array) get_parameter('module');
 
-    $all_modules = (empty($module_names) || ($module_names[0] === '0'));
+    $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (int) $modules[0] === 0));
+    $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (int) $modules[0] === 0));
+
+    if ($all_common_modules === true) {
+        $module_names = explode(',', get_parameter('all_common_modules'));
+    }
 
     // 'Is running' check.
     $is_running = (bool) db_get_value(
@@ -928,6 +933,7 @@ if ($id_downtime > 0) {
         echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
     }
 
+    html_print_input_hidden('all_common_modules', '');
     echo html_print_select(
         [
             'common' => __('Show common modules'),

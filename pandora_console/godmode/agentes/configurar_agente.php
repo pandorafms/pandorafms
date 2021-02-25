@@ -486,20 +486,6 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
-
-    $total_incidents = agents_get_count_incidents($id_agente);
-
-    // Incident tab.
-    if ($total_incidents > 0) {
-        $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
-
-        if ($tab == 'incident') {
-            $incidenttab['active'] = true;
-        } else {
-            $incidenttab['active'] = false;
-        }
-    }
-
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         if ($has_remote_conf) {
             $agent_name = agents_get_name($id_agente);
@@ -549,11 +535,6 @@ if ($id_agente) {
                 'agent_wizard' => $agent_wizard,
 
             ];
-        }
-
-        // Only if the agent has incidents associated show incidents tab.
-        if ($total_incidents) {
-            $onheader['incident'] = $incidenttab;
         }
     } else {
         $onheader = [

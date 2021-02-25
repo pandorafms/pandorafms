@@ -1378,6 +1378,8 @@ ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,
 	MODIFY COLUMN `field14` text NOT NULL,
 	MODIFY COLUMN `field15` text NOT NULL;
 
+ALTER TABLE `talert_actions` ADD COLUMN `create_wu_integria` TINYINT(1) default NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`
 -- ---------------------------------------------------------------------

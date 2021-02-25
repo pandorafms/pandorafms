@@ -2747,6 +2747,7 @@ function alerts_ui_update_or_create_actions($update=true)
     $id_alert_command = (int) get_parameter('id_command');
     $group = get_parameter('group');
     $action_threshold = (int) get_parameter('action_threshold');
+    $create_wu_integria = (int) get_parameter('create_wu_integria');
 
     // Validate some values
     if (!$id_alert_command) {
@@ -2769,14 +2770,36 @@ function alerts_ui_update_or_create_actions($update=true)
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-        $values['field'.$i] = (string) get_parameter('field'.$i.'_value');
+        $field_value = get_parameter('field'.$i.'_value');
+
+        if (is_array($field_value)) {
+            $field_value = reset(array_filter($field_value));
+
+            if ($field_value === false) {
+                $field_value = '';
+            }
+        }
+
+        $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
-        $values['field'.$i.'_recovery'] = (string) get_parameter('field'.$i.'_recovery_value');
+
+        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+
+        if (is_array($field_recovery_value)) {
+            $field_recovery_value = reset(array_filter($field_recovery_value));
+
+            if ($field_recovery_value === false) {
+                $field_recovery_value = '';
+            }
+        }
+
+        $values['field'.$i.'_recovery'] = (string) $field_recovery_value;
         $info_fields .= ' Field'.$i.'Recovery: '.$values['field'.$i.'_recovery'];
     }
 
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
+    $values['create_wu_integria'] = $create_wu_integria;
     if ($update) {
         $values['name'] = $name;
         $values['id_alert_command'] = $id_alert_command;

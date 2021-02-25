@@ -1239,8 +1239,7 @@ if ($config['activate_gis']) {
 
 
 // Incident tab.
-$total_incidents = agents_get_count_incidents($id_agente);
-if ($total_incidents > 0) {
+if ($config['integria_enabled']) {
     $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
 
     if ($tab == 'incident') {
@@ -1369,11 +1368,9 @@ $onheader = [
 
 ];
 
-// Added after it exists
-// If the agent has incidents associated.
-if ($total_incidents) {
-    $onheader['incident'] = $incidenttab;
-}
+
+$onheader['incident'] = $incidenttab;
+
 
 if ($agent['url_address'] != '') {
     $onheader['url_address'] = $urladdresstab;

@@ -1,6 +1,6 @@
 START TRANSACTION;
 
-ALTER TABLE `tnotification_sources` ADD COLUMN `subtype_blacklist` TEXT;
+ALTER TABLE `tnotification_source` ADD COLUMN `subtype_blacklist` TEXT;
 
 COMMIT;
 

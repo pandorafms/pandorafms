@@ -31,6 +31,25 @@ final class Label extends Item
      */
     protected function decode(array $data): array
     {
+        $data['label'] = \preg_replace(
+            '/overflow: hidden;/',
+            '',
+            $data['label']
+        );
+        // Default values.
+        if ((empty($data['width']) === true)
+            && (empty($data['height']) === true)
+        ) {
+            preg_match(
+                '/visual_font_size_(.*)pt/',
+                $data['label'],
+                $matches
+            );
+
+            $data['width'] = (($matches[1] * 10) + 5);
+            $data['height'] = ($matches[1] * 2.5);
+        }
+
         $return = parent::decode($data);
         $return['type'] = LABEL;
         return $return;

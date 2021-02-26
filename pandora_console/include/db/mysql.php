@@ -1499,3 +1499,70 @@ function db_run_sql_file($location)
         return false;
     }
 }
+
+
+/**
+ * Inserts multiples strings into database.
+ *
+ * @param string $table  Table to insert into.
+ * @param mixed  $values A single value or array of values to insert
+ *  (can be a multiple amount of rows).
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function mysql_db_process_sql_insert_multiple($table, $values)
+{
+    // Empty rows or values not processed.
+    if (empty($values) === true || is_array($values) === false) {
+        return false;
+    }
+
+    $query = sprintf('INSERT INTO `%s`', $table);
+
+    $j = 1;
+    $max_total = count($values);
+    foreach ($values as $key => $value) {
+        $fields = [];
+        $values_str = '';
+        $i = 1;
+        $max = count($value);
+        foreach ($value as $k => $v) {
+            if ($j === 1) {
+                // Add the correct escaping to values.
+                $field = sprintf('`%s`', $k);
+                array_push($fields, $field);
+            }
+
+            if (isset($v) === false) {
+                $values_str .= 'NULL';
+            } else if (is_int($v) || is_bool($v)) {
+                $values_str .= sprintf('%d', $v);
+            } else if (is_float($v) || is_double($v)) {
+                $values_str .= sprintf('%f', $v);
+            } else {
+                $values_str .= sprintf("'%s'", $v);
+            }
+
+            if ($i < $max) {
+                $values_str .= ',';
+            }
+
+            $i++;
+        }
+
+        if ($j === 1) {
+            $query .= sprintf(' (%s) VALUES', implode(', ', $fields));
+        }
+
+        $query .= ' ('.$values_str.')';
+
+        if ($j < $max_total) {
+            $query .= ',';
+        }
+
+        $j++;
+    }
+
+    return db_process_sql($query, 'insert_id');
+}

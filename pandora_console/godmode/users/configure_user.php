@@ -1102,7 +1102,8 @@ if (enterprise_installed() && defined('METACONSOLE')) {
         $user_info_metaconsole_access = $user_info['metaconsole_access'];
     }
 
-    $meta_access = '<div class="label_select"><p class="edit_user_labels">'.__('Metaconsole access').' '.ui_print_help_icon('meta_access', true).'</p>';
+    // TODO review help tips on meta.
+    $meta_access = '<div class="label_select"><p class="edit_user_labels">'.__('Metaconsole access').' './* ui_print_help_icon('meta_access', true). */'</p>';
     $metaconsole_accesses = [
         'basic'    => __('Basic'),
         'advanced' => __('Advanced'),

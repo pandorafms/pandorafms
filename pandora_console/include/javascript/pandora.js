@@ -275,7 +275,10 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
           );
         }
       }
-      jQuery.each(data, function(i, val) {
+
+      var all_common_modules = [];
+
+      $.each(data, function(i, val) {
         var s = js_html_entity_decode(val);
 
         $("#module").append(
@@ -285,8 +288,12 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             .attr("title", s)
         );
 
+        all_common_modules.push(i);
         $("#module").fadeIn("normal");
       });
+
+      $("#hidden-all_common_modules").val(all_common_modules.toString());
+
       if (typeof selected !== "undefined") $("#module").attr("value", selected);
 
       $("#module")

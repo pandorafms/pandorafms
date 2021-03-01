@@ -844,7 +844,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
     if (
       prevProps &&
-      (this.props.isLinkEnabled && prevProps.link !== this.props.link)
+      this.props.isLinkEnabled && prevProps.link !== this.props.link
     ) {
       if (this.props.link !== null) {
         this.elementRef.setAttribute("href", this.props.link);

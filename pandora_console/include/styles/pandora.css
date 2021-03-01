@@ -6113,3 +6113,17 @@ div.graph div.legend table {
   writing-mode: lr-tb;
   white-space: nowrap;
 }
+
+div.stat-win-spinner {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+div.stat-win-spinner img {
+  width: 100px;
+  height: 100px;
+}

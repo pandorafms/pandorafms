@@ -5403,11 +5403,9 @@ function chooseType() {
         case 'sql':
             $("#row_description").show();
             $("#row_query").show();
-            $("#row_max_items").show();
             $("#row_header").show();
             $("#row_custom").show();
             $("#row_custom_example").show();
-            $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
             break;

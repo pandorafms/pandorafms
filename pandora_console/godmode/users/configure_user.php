@@ -803,7 +803,7 @@ if (defined('METACONSOLE')) {
 }
 
 if (!$new_user) {
-    $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').'</p>';
+    $user_id = '<div class="label_select_simple"><p class="edit_user_labels">'.__('User ID').': </p>';
     $user_id .= '<span>'.$id.'</span>';
     $user_id .= html_print_input_hidden('id_user', $id, true);
     $user_id .= '</div>';

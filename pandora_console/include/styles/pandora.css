@@ -478,6 +478,10 @@ select:-internal-list-box {
   width: 290px;
   max-width: 290px;
 }
+.w500px {
+  width: 500px;
+  max-width: 500px;
+}
 .mw120px {
   min-width: 120px;
 }
@@ -626,6 +630,13 @@ select:-internal-list-box {
   align-items: flex-start;
 }
 
+.flex-row-reverse {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
 .flex-space-around {
   justify-content: space-around;
 }
@@ -651,6 +662,9 @@ select:-internal-list-box {
 }
 .padding-right-2-imp {
   padding-right: 2em !important;
+}
+.margin-soft {
+  margin: 0.3em 1em;
 }
 .margin-right-1 {
   margin-right: 1em;

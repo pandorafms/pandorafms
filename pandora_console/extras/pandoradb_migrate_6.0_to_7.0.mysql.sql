@@ -2392,6 +2392,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1504,14 +1504,15 @@ function db_run_sql_file($location)
 /**
  * Inserts multiples strings into database.
  *
- * @param string $table  Table to insert into.
- * @param mixed  $values A single value or array of values to insert
- *  (can be a multiple amount of rows).
+ * @param string  $table      Table to insert into.
+ * @param mixed   $values     A single value or array of values to insert
+ *      (can be a multiple amount of rows).
+ * @param boolean $only_query Sql string.
  *
  * @return mixed False in case of error or invalid values passed.
  * Affected rows otherwise.
  */
-function mysql_db_process_sql_insert_multiple($table, $values)
+function mysql_db_process_sql_insert_multiple($table, $values, $only_query)
 {
     // Empty rows or values not processed.
     if (empty($values) === true || is_array($values) === false) {
@@ -1564,21 +1565,28 @@ function mysql_db_process_sql_insert_multiple($table, $values)
         $j++;
     }
 
-    return db_process_sql($query);
+    if ($only_query === true) {
+        $result = $query;
+    } else {
+        $result = db_process_sql($query);
+    }
+
+    return $result;
 }
 
 
 /**
  * Updates multiples strings into database.
  *
- * @param string $table  Table to update into.
- * @param mixed  $values A single value or array of values to update
- *  (can be a multiple amount of rows).
+ * @param string  $table      Table to update into.
+ * @param mixed   $values     A single value or array of values to update
+ *       (can be a multiple amount of rows).
+ * @param boolean $only_query Sql string.
  *
  * @return mixed False in case of error or invalid values passed.
  * Affected rows otherwise.
  */
-function mysql_db_process_sql_update_multiple($table, $values)
+function mysql_db_process_sql_update_multiple($table, $values, $only_query)
 {
     // Empty rows or values not processed.
     if (empty($values) === true || is_array($values) === false) {
@@ -1597,7 +1605,11 @@ function mysql_db_process_sql_update_multiple($table, $values)
         $query .= sprintf(' WHERE `%s` IN (%s)', $field, implode(',', $update));
 
         $res['table'] = $table;
-        $res['fields'][$field] = db_process_sql($query);
+        if ($only_query === true) {
+            $res['fields'][$field] = $query;
+        } else {
+            $res['fields'][$field] = db_process_sql($query);
+        }
     }
 
     return $res;

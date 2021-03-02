@@ -2174,10 +2174,10 @@ function db_release_lock($lockname)
  * @return mixed False in case of error or invalid values passed.
  * Affected rows otherwise.
  */
-function db_process_sql_insert_multiple($table, $values)
+function db_process_sql_insert_multiple($table, $values, $only_query=false)
 {
     global $config;
-    return mysql_db_process_sql_insert_multiple($table, $values);
+    return mysql_db_process_sql_insert_multiple($table, $values, $only_query);
 }
 
 
@@ -2191,8 +2191,8 @@ function db_process_sql_insert_multiple($table, $values)
  * @return mixed False in case of error or invalid values passed.
  * Affected rows otherwise.
  */
-function db_process_sql_update_multiple($table, $values)
+function db_process_sql_update_multiple($table, $values, $only_query=false)
 {
     global $config;
-    return mysql_db_process_sql_update_multiple($table, $values);
+    return mysql_db_process_sql_update_multiple($table, $values, $only_query);
 }

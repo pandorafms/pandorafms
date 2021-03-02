@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -132,12 +132,20 @@ $output .= '>';
 
 $own_info = get_user_info($config['id_user']);
 
+$return_all_group = true;
+
+if (users_can_manage_group_all('RW') === false
+    && users_can_manage_group_all('RM') === false
+) {
+    $return_all_group = false;
+}
+
 $output .= '<td><b>'.__('Group').'</b></td><td>';
 if (check_acl($config['id_user'], 0, 'RW')) {
     $output .= html_print_select_groups(
         $config['id_user'],
         'RW',
-        true,
+        $return_all_group,
         'graph_id_group',
         $id_group,
         '',
@@ -149,7 +157,7 @@ if (check_acl($config['id_user'], 0, 'RW')) {
     $output .= html_print_select_groups(
         $config['id_user'],
         'RM',
-        true,
+        $return_all_group,
         'graph_id_group',
         $id_group,
         '',

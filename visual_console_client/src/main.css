@@ -21,15 +21,24 @@
   z-index: 2;
 }
 
+.visual-console-item * {
+  overflow: visible;
+}
+
 .visual-console-item.is-editing {
   border: 2px dashed #b2b2b2;
   transform: translateX(-2px) translateY(-2px);
   user-select: none;
 }
 
+.visual-console-item.is-editing:hover {
+  border-color: #82b92e;
+}
+
 .visual-console-item.is-editing.is-selected {
   border: 2px dashed #2b2b2b;
   cursor: move;
+  z-index: 10;
 }
 .visual-console-item.is-editing > .resize-draggable {
   float: right;
@@ -525,9 +534,15 @@ li#li-timeZone-item > select:not(:first-child) {
 
 div.label,
 div.simple-value {
-  display: inline-table;
   min-width: fit-content;
   min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+div.simple-value > div {
+  max-height: -webkit-fill-available;
 }
 
 div.module-graph .parent_graph p table tr {
@@ -553,4 +568,12 @@ div.module-graph .gauge_d3_class {
 
 .textDecorationNone:hover {
   text-decoration: none;
+}
+
+.vc-item-nl-label {
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 5px;
+  padding-left: 1em;
+  font-size: 14px;
 }

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -252,9 +252,11 @@ switch ($config['dbtype']) {
                 $id_agents[] = $row['id_agente'];
             }
 
-            $address_by_user_groups = agents_get_addresses($id_agents);
-            foreach ($address_by_user_groups as $i => $a) {
-                $address_by_user_groups[$i] = '"'.$a.'"';
+            if (!empty($id_agents)) {
+                $address_by_user_groups = agents_get_addresses($id_agents);
+                foreach ($address_by_user_groups as $i => $a) {
+                    $address_by_user_groups[$i] = '"'.$a.'"';
+                }
             }
         } else {
             $rows = db_get_all_rows_filter(
@@ -288,6 +290,7 @@ if (empty($all_address_agents)) {
     $all_address_agents = [];
     array_unshift($all_address_agents, '""');
 }
+
 
 // Make query to extract traps of DB.
 switch ($config['dbtype']) {
@@ -616,7 +619,7 @@ $table->data[4][1] = html_print_input(
 );
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other).
-$table->data[6][1] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
+$table->data[4][3] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = [
     -1 => __('None'),
     0  => __('Cold start (0)'),
@@ -626,7 +629,7 @@ $trap_types = [
     4  => __('Authentication failure (4)'),
     5  => __('Other'),
 ];
-$table->data[6][2] = html_print_select(
+$table->data[4][4] = html_print_select(
     $trap_types,
     'trap_type',
     $trap_type,

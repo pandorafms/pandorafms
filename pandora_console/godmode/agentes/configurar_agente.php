@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1404,6 +1404,10 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
+    if ($unit === '0') {
+        $unit = '';
+    }
+
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');
@@ -1570,24 +1574,43 @@ if ($update_module) {
         'module_macros'         => $module_macros,
     ];
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
-        $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
+    if (preg_match('/http_auth_user/m', $values['plugin_parameter'])) {
+        $http_user_conf = true;
+    }
 
-        $values['plugin_parameter'] = '';
+    if (preg_match('/http_auth_pass/m', $values['plugin_parameter'])) {
+        $http_pass_conf = true;
+    }
 
-        foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
-                if ($http_user) {
-                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+
+    if (!$http_user_conf || !$http_pass_conf) {
+        if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+            $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
+
+            $values['plugin_parameter'] = '';
+
+            foreach ($plugin_parameter_split as $key => $value) {
+                if ($key == 1) {
+                    if ($http_user) {
+                        if ($http_user_conf) {
+                            continue;
+                        }
+
+                        $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                    }
+
+                    if ($http_pass) {
+                        if ($http_user_pass) {
+                            continue;
+                        }
+
+                        $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                    }
+
+                    $values['plugin_parameter'] .= $value.'&#x0a;';
+                } else {
+                    $values['plugin_parameter'] .= $value.'&#x0a;';
                 }
-
-                if ($http_pass) {
-                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
-                }
-
-                $values['plugin_parameter'] .= $value.'&#x0a;';
-            } else {
-                $values['plugin_parameter'] .= $value.'&#x0a;';
             }
         }
     }

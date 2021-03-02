@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -675,6 +675,8 @@ function modules_create_agent_module(
     $time = 0;
     if (empty($values['interval']) === false) {
         $time = (time() - (int) $values['interval']);
+    } else {
+        $values['interval'] = null;
     }
 
     $result = db_process_sql_insert(
@@ -2359,7 +2361,7 @@ function modules_get_agentmodule_data_for_humans($module)
         } else {
             $salida = ui_print_module_string_value(
                 $module['datos'],
-                $module['id'],
+                empty($module['id']) ? $module['id_agente_modulo'] : $module['id'],
                 $module['current_interval'],
                 $module['module_name'],
                 $module['serverID'] ? $module['serverID'] : 0

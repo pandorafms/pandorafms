@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -115,12 +115,6 @@ class ConsoleSupervisor
         } else {
             $this->enabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
-
-            // Assign targets.
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = true;
         }
 
         return $this;
@@ -620,20 +614,28 @@ class ConsoleSupervisor
             return;
         }
 
-        if ($this->targetUpdated === false) {
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
-        }
-
         if ($source_id === 0) {
             $source_id = $this->sourceId;
-            // Assign targets.
-            $targets = get_notification_source_targets($source_id);
+        }
+
+        static $_cache_targets;
+        $key = $source_id.'|'.$data['type'];
+
+        if ($_cache_targets === null) {
+            $_cache_targets = [];
+        }
+
+        if ($_cache_targets[$key] !== null) {
+            $targets = $_cache_targets[$key];
+        } else {
+            $targets = get_notification_source_targets(
+                $source_id,
+                $data['type']
+            );
             $this->targetGroups = $targets['groups'];
             $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
+
+            $_cache_targets[$key] = $targets;
         }
 
         switch ($data['type']) {

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,6 +54,16 @@ if (check_login()) {
     $update_filter_cf = (bool) get_parameter('update_filter_cf', 0);
     $delete_filter_cf = (bool) get_parameter('delete_filter_cf', 0);
     $change_name_filter = (bool) get_parameter('change_name_filter', 0);
+    $check_csv_button = (bool) get_parameter('check_csv_button', 0);
+
+    if ($check_csv_button) {
+        if (check_acl($config['id_user'], 0, 'PM')) {
+            echo json_encode($permission);
+            return;
+        } else {
+            exit;
+        }
+    }
 
     if ($get_custom_fields_data) {
         $name_custom_fields = get_parameter('name_custom_fields', 0);

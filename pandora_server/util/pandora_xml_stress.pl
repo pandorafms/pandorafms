@@ -3,7 +3,7 @@
 # Pandora XML Stress tool.
 ################################################################################
 # Copyright (c) 2009 Ramon Novoa, rnovoa@artica.es
-# Copyright (c) 2012 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2012-2021 Artica Soluciones Tecnologicas S.L.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

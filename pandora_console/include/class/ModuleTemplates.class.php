@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -309,14 +309,19 @@ class ModuleTemplates extends HTML
 
             switch ($this->action) {
                 case 'update':
-                    $dbResult_tnp = db_process_sql_update(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ],
-                        ['id_np' => $this->id_np]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_update(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ],
+                            ['id_np' => $this->id_np]
+                        );
+                    }
+
                     if ($dbResult_tnp === false) {
                         $success = false;
                     } else {
@@ -352,13 +357,18 @@ class ModuleTemplates extends HTML
                 break;
 
                 case 'create':
-                    $dbResult_tnp = db_process_sql_insert(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ]
-                    );
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_insert(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ]
+                        );
+                    }
+
                     // The insert gone fine!
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.
@@ -610,17 +620,67 @@ class ModuleTemplates extends HTML
             }
         } else if ($modulesToAdd != '') {
             $modulesToAddList = explode(',', $modulesToAdd);
+
+            $modulesAddedList = db_get_all_rows_in_table('tnetwork_profile_component');
+
+            $modulesToAdd = [];
+
             foreach ($modulesToAddList as $module) {
-                db_process_sql_insert(
-                    'tnetwork_profile_component',
-                    [
-                        'id_nc' => $module,
-                        'id_np' => $this->id_np,
-                    ]
-                );
+                $is_added = false;
+                foreach ($modulesAddedList as $item) {
+                    if ($item['id_nc'] === $module
+                        && $item['id_np'] === $this->id_np
+                    ) {
+                            $is_added = true;
+                    }
+                }
+
+                if ($is_added === false) {
+                    $name = io_safe_output(
+                        db_get_row_filter(
+                            'tnetwork_component',
+                            ['id_nc' => $module],
+                            'name'
+                        )
+                    );
+                    $modulesToAdd[] = $name;
+                    db_process_sql_insert(
+                        'tnetwork_profile_component',
+                        [
+                            'id_nc' => $module,
+                            'id_np' => $this->id_np,
+                        ]
+                    );
+                } else {
+                    $message = 'Some modules already exists<br>';
+                }
             }
 
-            $this->ajaxMsg('result', __('Components added sucessfully'));
+            if (empty($modulesToAdd)) {
+                $this->ajaxMsg(
+                    'error',
+                    __('The modules is already added')
+                );
+                return false;
+            }
+
+            if ($message === '') {
+                $message = 'Following modules will be added:';
+            } else {
+                $message .= 'Following modules will be added:';
+            }
+
+            $message .= '<ul>';
+            foreach ($modulesToAdd as $key => $value) {
+                $message .= '<li>'.$value['name'].'</li>';
+            }
+
+            $message .= '</ul>';
+
+            $this->ajaxMsg(
+                'result',
+                __($message)
+            );
         }
     }
 

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -251,7 +251,16 @@ if (is_ajax()) {
 
 $tab = (string) get_parameter('tab', 'groups');
 
-if ($tab != 'credbox' && ! check_acl($config['id_user'], 0, 'PM')) {
+if ($tab != 'credbox' && ! check_acl(
+    $config['id_user'],
+    0,
+    'PM'
+) && ! check_acl(
+    $config['id_user'],
+    0,
+    'AW'
+)
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'

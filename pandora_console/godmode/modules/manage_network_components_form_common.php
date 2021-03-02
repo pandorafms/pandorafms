@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,7 +48,9 @@ if (enterprise_installed()) {
             'basic'    => __('Basic'),
             'advanced' => __('Advanced'),
         ];
-        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' '.ui_print_help_icon('meta_access', true);
+        // TODO review help tips on meta.
+        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' ';
+        // .ui_print_help_icon('meta_access', true)
     } else {
         $table->data[0][2] = '';
         $table->data[0][3] = html_print_input_hidden('wizard_level', $wizard_level, true);

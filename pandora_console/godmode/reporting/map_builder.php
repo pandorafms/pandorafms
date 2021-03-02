@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,7 +42,6 @@ if (!$is_metaconsole) {
     $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
     $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
     $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
-    $url_visual_console_manager         = 'index.php?sec=screen&sec2=enterprise/extensions/visual_console_manager';
 }
 
 $pure = (int) get_parameter('pure', 0);
@@ -123,8 +122,8 @@ if ($delete_layout || $copy_layout) {
 
     // ACL for the visual console
     // $vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
-    $vconsole_write = check_acl($config['id_user'], $group_id, 'VW');
-    $vconsole_manage = check_acl($config['id_user'], $group_id, 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $group_id, 'VW');
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $group_id, 'VM');
 
     if (!$vconsole_write && !$vconsole_manage) {
         db_pandora_audit(
@@ -441,8 +440,10 @@ if (!$maps && !is_metaconsole()) {
         $data[1] = ui_print_group_icon($map['id_group'], true);
         $data[2] = db_get_sql('SELECT COUNT(*) FROM tlayout_data WHERE id_layout = '.$map['id']);
 
-        // Fix: IW was the old ACL for report editing, now is RW
-        if ($vconsoles_write || $vconsoles_manage) {
+        $vconsoles_write_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VW');
+        $vconsoles_manage_action_btn = check_acl_restricted_all($config['id_user'], $map['id_group'], 'VM');
+
+        if ($vconsoles_write_action_btn || $vconsoles_manage_action_btn) {
             if (!is_metaconsole()) {
                 $table->cellclass[] = [
                     3 => 'action_buttons',

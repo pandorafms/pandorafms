@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -380,9 +380,8 @@ if (! isset($config['id_user'])) {
                     'Invalid double auth login: '.$_SERVER['REMOTE_ADDR'],
                     $_SERVER['REMOTE_ADDR']
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -401,9 +400,8 @@ if (! isset($config['id_user'])) {
             if (!$saml_user_id) {
                 $login_failed = true;
                 include_once 'general/login_page.php';
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -446,9 +444,8 @@ if (! isset($config['id_user'])) {
                 if ($blocked) {
                     include_once 'general/login_page.php';
                     db_pandora_audit('Password expired', 'Password expired: '.$nick, $nick);
-                    while (@ob_end_flush()) {
-                        // Dumping...
-                        continue;
+                    while (ob_get_length() > 0) {
+                        ob_end_flush();
                     }
 
                     exit('</html>');
@@ -481,9 +478,8 @@ if (! isset($config['id_user'])) {
                 'Password expired: '.$nick,
                 $nick
             );
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -505,9 +501,8 @@ if (! isset($config['id_user'])) {
                 // Load the page to introduce the double auth code.
                 $login_screen = 'double_auth';
                 include_once 'general/login_page.php';
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -603,7 +598,7 @@ if (! isset($config['id_user'])) {
             }
 
             if ($prepare_session) {
-                 config_prepare_session();
+                config_prepare_session();
             }
 
             if (is_user_admin($config['id_user'])) {
@@ -677,9 +672,8 @@ if (! isset($config['id_user'])) {
                     'Invalid login: '.$nick,
                     $nick
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -690,9 +684,8 @@ if (! isset($config['id_user'])) {
                     'Invalid login: '.$nick,
                     $nick
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -741,9 +734,8 @@ if (! isset($config['id_user'])) {
         } else {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
-            while (@ob_end_flush()) {
-                // Dumping...
-                    continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -891,9 +883,8 @@ if (! isset($config['id_user'])) {
             }
         }
 
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -917,9 +908,8 @@ if (! isset($config['id_user'])) {
         } else {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -941,9 +931,8 @@ if (! isset($config['id_user'])) {
         unset($_SESSION['id_usuario']);
         unset($iduser);
         include_once 'general/login_page.php';
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -960,9 +949,8 @@ if (! isset($config['id_user'])) {
             unset($_SESSION['id_usuario']);
             unset($iduser);
             include_once 'general/login_page.php';
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -995,9 +983,8 @@ if (isset($_GET['bye'])) {
     // Process logout.
     include 'general/logoff.php';
 
-    while (@ob_end_flush()) {
-        // Dumping...
-        continue;
+    while (ob_get_length() > 0) {
+        ob_end_flush();
     }
 
     exit('</html>');
@@ -1007,11 +994,11 @@ clear_pandora_error_for_header();
 
 /*
  * ----------------------------------------------------------------------
- *  EXTENSIONS
- * ----------------------------------------------------------------------
- *
- * Load the basic configurations of extension and add extensions into menu.
- * Load here, because if not, some extensions not load well, I don't why.
+    *  EXTENSIONS
+    * ----------------------------------------------------------------------
+    *
+    * Load the basic configurations of extension and add extensions into menu.
+    * Load here, because if not, some extensions not load well, I don't why.
  */
 
 $config['logged'] = false;
@@ -1081,7 +1068,7 @@ if ($config['pure'] == 0) {
 
 /*
  * Session locking concurrency speedup!
- * http://es2.php.net/manual/en/ref.session.php#64525
+    * http://es2.php.net/manual/en/ref.session.php#64525
  */
 
 session_write_close();
@@ -1216,6 +1203,11 @@ if ($searchPage) {
                         $_GET[$key] = $param;
                     }
                 break;
+
+                case 'External link':
+                    $home_url = io_safe_output($home_url);
+                    echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
+                break;
             }
 
             if (isset($_GET['sec2'])) {
@@ -1293,9 +1285,8 @@ if ($config['pure'] == 0) {
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }
 
 db_print_database_debug();
@@ -1312,8 +1303,8 @@ require 'include/php_to_js_values.php';
 
 <script type="text/javascript" language="javascript">
 
-       // When there are less than 5 rows, all rows must be white
-       var theme = "<?php echo $config['style']; ?>";
+    // When there are less than 5 rows, all rows must be white
+    var theme = "<?php echo $config['style']; ?>";
         if(theme === 'pandora'){
         if($('table.info_table tr').length < 5){
             $('table.info_table tbody > tr').css('background-color', '#fff');
@@ -1340,11 +1331,11 @@ require 'include/php_to_js_values.php';
     function topFunction() {
 
         /*
-         * Safari.
-         * document.body.scrollTop = 0;
-         * For Chrome, Firefox, IE and Opera.
-         * document.documentElement.scrollTop = 0; 
-         */
+        * Safari.
+        * document.body.scrollTop = 0;
+        * For Chrome, Firefox, IE and Opera.
+        * document.documentElement.scrollTop = 0; 
+        */
 
         $("HTML, BODY").animate({ scrollTop: 0 }, 500);
     }

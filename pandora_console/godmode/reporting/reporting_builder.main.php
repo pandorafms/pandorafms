@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2019 Artica Soluciones Tecnologicas, http://www.artica.es
+ * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannnot redistribute it without written permission of copyright holder.
  * ============================================================================
@@ -114,11 +114,17 @@ if (isset($write_groups[$idGroupReport]) === false && $idGroupReport) {
     $write_groups[$idGroupReport] = groups_get_name($idGroupReport);
 }
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
+
 $table->data['group'][1] = '<div class="w290px inline">';
 $table->data['group'][1] .= html_print_select_groups(
     $config['id_user'],
     'AR',
-    true,
+    $return_all_group,
     'id_group',
     $idGroupReport,
     '',

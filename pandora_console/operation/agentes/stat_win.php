@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,6 @@ require_once $config['homedir'].'/include/auth/mysql.php';
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
-require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
@@ -41,7 +40,7 @@ enterprise_include_once('include/functions_agents.php');
 check_login();
 
 // Metaconsole connection to the node.
-$server_id = (int) get_parameter('server');
+$server_id = (int) get_parameter('server', 0);
 if (is_metaconsole() === true && empty($server_id) === false) {
     $server = metaconsole_get_connection_by_id($server_id);
     // Error connecting.
@@ -445,59 +444,39 @@ ui_print_message_dialog(
             ]
         );
 
+        $params = [
+            'agent_module_id' => $id,
+            'period'          => $period,
+            'show_events'     => $draw_events,
+            'title'           => $label,
+            'unit_name'       => $unit,
+            'show_alerts'     => $draw_alerts,
+            'date'            => $date,
+            'unit'            => $unit,
+            'baseline'        => $baseline,
+            'homeurl'         => $urlImage,
+            'adapt_key'       => 'adapter_'.$graph_type,
+            'compare'         => $time_compare,
+            'show_unknown'    => $unknown_graph,
+            'percentil'       => (($show_percentil) ? $config['percentil'] : null),
+            'type_graph'      => $config['type_module_charts'],
+            'fullscale'       => $fullscale,
+            'zoom'            => $zoom,
+            'height'          => 300,
+            'type_mode_graph' => $type_mode_graph,
+        ];
+
         // Graph.
         $output = '<div id="stat-win-module-graph">';
-        switch ($graph_type) {
-            case 'boolean':
-            case 'sparse':
-            case 'string':
-                $params = [
-                    'agent_module_id' => $id,
-                    'period'          => $period,
-                    'show_events'     => $draw_events,
-                    'title'           => $label,
-                    'unit_name'       => $unit,
-                    'show_alerts'     => $draw_alerts,
-                    'date'            => $date,
-                    'unit'            => $unit,
-                    'baseline'        => $baseline,
-                    'homeurl'         => $urlImage,
-                    'adapt_key'       => 'adapter_'.$graph_type,
-                    'compare'         => $time_compare,
-                    'show_unknown'    => $unknown_graph,
-                    'percentil'       => (($show_percentil) ? $config['percentil'] : null),
-                    'type_graph'      => $config['type_module_charts'],
-                    'fullscale'       => $fullscale,
-                    'zoom'            => $zoom,
-                    'height'          => 300,
-                    'type_mode_graph' => $type_mode_graph,
-                ];
-                $output .= grafico_modulo_sparse($params);
-                $output .= '<br>';
-                if ($show_events_graph) {
-                    $width = '500';
-                    $height = '450';
-                    $output .= graphic_module_events(
-                        $id,
-                        $width,
-                        $height,
-                        $period,
-                        $config['homeurl'],
-                        $zoom,
-                        'adapted_'.$graph_type,
-                        $date,
-                        true
-                    );
-                }
-            break;
-
-            default:
-                $output .= fs_error_image('../images');
-            break;
-        }
-
+        $output .= '<div id="stat-win-spinner" class="stat-win-spinner">';
+        $output .= html_print_image('images/spinner_charts.gif', true);
+        $output .= '</div>';
         $output .= '</div>';
         echo $output;
+
+        if (is_metaconsole() === true && empty($server_id) === false) {
+            metaconsole_restore_db();
+        }
         ?>
 
     </body>
@@ -580,5 +559,32 @@ ui_include_time_picker(true);
                 arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
             }
         });
+
+        var graph_data = "<?php echo base64_encode(json_encode($params)); ?>";
+        var url = "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>";
+        var serverId = "<?php echo $server_id; ?>";
+        get_ajax_module(url, graph_data, serverId);
     });
+
+
+    function get_ajax_module(url, graph_data, serverId) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: "html",
+            data: {
+                page: "include/ajax/module",
+                get_graph_module: true,
+                graph_data: graph_data,
+                server_id: serverId
+            },
+            success: function (data) {
+                $("#stat-win-spinner").hide();
+                $("#stat-win-module-graph").append(data);
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
 </script>

@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS Database Synchronization Tool
 ###############################################################################
-# Copyright (c) 2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2010-2021 Artica Soluciones Tecnologicas S.L
 #
 # This code is not free or OpenSource. Please don't redistribute.
 ###############################################################################
@@ -77,7 +77,7 @@ sub pandora_load_credentials ($) {
 	$conf->{"quiet"}=0;	# Daemon 0 by default
 
 
-	print "\nPandora FMS Recode tool $version Copyright (c) 2010-2015 Artica ST\n";
+	print "\nPandora FMS Recode tool $version Copyright (c) 2010-2021 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 

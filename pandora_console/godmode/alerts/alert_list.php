@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@ $searchType = get_parameter('search_type', '');
 $priority = get_parameter('priority', '');
 $searchFlag = get_parameter('search', 0);
 $enabledisable = get_parameter('enabledisable', '');
+$status_alert = get_parameter('status_alert', '');
 $standby = get_parameter('standby', '');
 $pure = get_parameter('pure', 0);
 $ag_group = get_parameter('ag_group', 0);
@@ -284,9 +285,9 @@ if ($update_action) {
     }
 
     $values['module_action_threshold'] = (int) get_parameter('module_action_threshold_ajax');
-    $values['id_alert_action'] = $id_module_action;
+    $values['id_alert_action'] = $id_action;
 
-    $result = alerts_update_alert_agent_module_action($id_action, $values);
+    $result = alerts_update_alert_agent_module_action($id_module_action, $values);
     if ($result) {
         db_pandora_audit('Alert management', 'Update action '.$id_action.' in  alert '.$id_alert_module);
     } else {

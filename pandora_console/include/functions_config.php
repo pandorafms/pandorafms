@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -727,6 +727,14 @@ function config_update_config()
 
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
+                    } else {
+                        if ((int) get_parameter('session_timeout') === 0) {
+                            $error_update[] = __('Session timeout forced to 90 minutes');
+
+                            if (!config_update_value('session_timeout', 90)) {
+                                $error_update[] = __('Session timeout');
+                            }
+                        }
                     }
 
                     if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
@@ -855,6 +863,14 @@ function config_update_config()
 
                     if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
                         $error_update[] = __('Row limit in csv log');
+                    }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
                     }
                 break;
 
@@ -1175,6 +1191,10 @@ function config_update_config()
 
                     if (!config_update_value('type_module_charts', (string) get_parameter('type_module_charts', 'area'))) {
                         $error_update[] = __('Default type of module charts.');
+                    }
+
+                    if (!config_update_value('items_combined_charts', (string) get_parameter('items_combined_charts', 10))) {
+                        $error_update[] = __('Default Number of elements in Custom Graph.');
                     }
 
                     if (!config_update_value('type_interface_charts', (string) get_parameter('type_interface_charts', 'line'))) {
@@ -1858,6 +1878,32 @@ function config_process_config()
 
     if (!isset($config['row_limit_csv'])) {
         config_update_value('row_limit_csv', 10000);
+    }
+
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
     }
 
     if (!isset($config['event_purge'])) {
@@ -2766,7 +2812,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {
@@ -2867,6 +2913,10 @@ function config_process_config()
 
     if (!isset($config['type_module_charts'])) {
         config_update_value('type_module_charts', 'area');
+    }
+
+    if (!isset($config['items_combined_charts'])) {
+        config_update_value('items_combined_charts', 10);
     }
 
     if (!isset($config['type_interface_charts'])) {

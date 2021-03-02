@@ -16,7 +16,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -497,11 +497,7 @@ function messages_get_overview(
     if ($incl_source_info) {
         $source_fields = ', tns.*';
         $source_join = 'INNER JOIN tnotification_source tns
-            ON tns.id=tm.id_source
-            INNER JOIN tnotification_source_user nsu
-                ON nsu.id_source=tns.id
-                AND nsu.enabled = 1
-                OR tns.enabled = 1';
+            ON tns.id=tm.id_source';
     }
 
     // Using distinct because could be double assignment due group/user.

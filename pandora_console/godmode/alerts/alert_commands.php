@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -556,7 +556,9 @@ foreach ($commands as $command) {
     $data = [];
 
     $data['name'] = '<span style="font-size: 7.5pt">';
-    if (! $command['internal']) {
+
+    // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
+    if (!$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
         $data['name'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'&pure='.$pure.'">'.$command['name'].'</a>';
     } else {
         $data['name'] .= $command['name'];
@@ -580,7 +582,9 @@ foreach ($commands as $command) {
     );
     $data['action'] = '';
     $table->cellclass[]['action'] = 'action_buttons';
-    if ($is_central_policies_on_node === false && !$command['internal']) {
+
+    // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
+    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
         $data['action'] = '<span style="display: inline-flex">';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';

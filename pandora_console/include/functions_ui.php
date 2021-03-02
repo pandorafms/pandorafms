@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2821,7 +2821,8 @@ function ui_print_status_sets(
     $title='',
     $return=false,
     $options=false,
-    $extra_info=''
+    $extra_info='',
+    $get_status_color=true
 ) {
     global $config;
 
@@ -2830,9 +2831,13 @@ function ui_print_status_sets(
     }
 
     if (isset($options['style'])) {
-        $options['style'] .= ' background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] .= ' display: inline-block;';
     } else {
-        $options['style'] = 'background: '.modules_get_color_status($status).'; display: inline-block;';
+        $options['style'] = 'display: inline-block;';
+    }
+
+    if ($get_status_color === true) {
+        $options['style'] .= ' background: '.modules_get_color_status($status).';';
     }
 
     if (isset($options['class'])) {
@@ -2918,7 +2923,7 @@ function ui_progress(
     $id = uniqid();
 
     ui_require_css_file('progress');
-    $output .= '<span id="'.$id.'" class="progress_main" data-label="'.$text;
+    $output = '<span id="'.$id.'" class="progress_main" data-label="'.$text;
     $output .= '" style="width: '.$width.'; height: '.$height.'em; border: 1px solid '.$color.'">';
     $output .= '<span id="'.$id.'_progress" class="progress" style="width: '.$progress.'%; background: '.$color.'"></span>';
     $output .= '</span>';
@@ -3071,7 +3076,7 @@ function ui_progress_extend(
     ui_require_css_file('progress');
 
     // Main container.
-    $output .= '<div class="progress_main_noborder" ';
+    $output = '<div class="progress_main_noborder" ';
     $output .= '" style="width:'.$data['width'].'%;';
     $output .= ' height:'.$data['height'].'em;">';
 
@@ -3414,6 +3419,7 @@ function ui_print_datatable(array $parameters)
         $js .= $parameters['drawCallback'];
     }
 
+    $columns = '';
     for ($i = 1; $i <= (count($parameters['columns']) - 3); $i++) {
         if ($i != (count($parameters['columns']) - 3)) {
             $columns .= $i.',';
@@ -3742,18 +3748,23 @@ function ui_print_event_priority(
 /**
  * Print a code into a DIV and enable a toggle to show and hide it.
  *
- * @param string  $code            Html code.
- * @param string  $name            Name of the link.
- * @param string  $title           Title of the link.
- * @param string  $id              Block id.
- * @param boolean $hidden_default  If the div will be hidden by default (default: true).
- * @param boolean $return          Whether to return an output string or echo now (default: true).
- * @param string  $toggle_class    Toggle class.
- * @param string  $container_class Container class.
- * @param string  $main_class      Main object class.
- * @param string  $img_a           Image (closed).
- * @param string  $img_b           Image (opened).
- * @param string  $clean           Do not encapsulate with class boxes, clean print.
+ * @param string       $code              Html code.
+ * @param string       $name              Name of the link.
+ * @param string       $title             Title of the link.
+ * @param string       $id                Block id.
+ * @param boolean      $hidden_default    If the div will be hidden by default (default: true).
+ * @param boolean      $return            Whether to return an output string or echo now (default: true).
+ * @param string       $toggle_class      Toggle class.
+ * @param string       $container_class   Container class.
+ * @param string       $main_class        Main object class.
+ * @param string       $img_a             Image (closed).
+ * @param string       $img_b             Image (opened).
+ * @param string       $clean             Do not encapsulate with class boxes, clean print.
+ * @param boolean      $reverseImg        Reverse img.
+ * @param boolean      $switch            Use switch.
+ * @param string       $attributes_switch Switch attributes.
+ * @param string       $toggl_attr        Main box extra attributes.
+ * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
  *
  * @return string HTML.
  */
@@ -3772,7 +3783,9 @@ function ui_toggle(
     $clean=false,
     $reverseImg=false,
     $switch=false,
-    $attributes_switch=''
+    $attributes_switch='',
+    $toggl_attr='',
+    $switch_on=null
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3803,12 +3816,18 @@ function ui_toggle(
     if ($clean === false) {
         $header_class = 'white_table_graph_header';
     } else {
-        $main_class = '';
-        $container_class = 'white-box-content-clean';
+        if ($main_class == 'box-shadow white_table_graph') {
+            // Default value, clean class.
+            $main_class = '';
+        }
+
+        if (empty($container_class) === true) {
+            $container_class = 'white-box-content-clean';
+        }
     }
 
     // Link to toggle.
-    $output = '<div class="'.$main_class.'" id="'.$id.'">';
+    $output = '<div class="'.$main_class.'" id="'.$id.'" '.$toggl_attr.'>';
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
@@ -3818,7 +3837,7 @@ function ui_toggle(
                     'content' => html_print_checkbox_switch_extended(
                         'box_enable_toggle'.$uniqid,
                         1,
-                        ($hidden_default === true) ? 0 : 1,
+                        ($switch_on === null) ? (($hidden_default === true) ? 0 : 1) : $switch_on,
                         false,
                         '',
                         $attributes_switch,
@@ -3832,14 +3851,14 @@ function ui_toggle(
                 $original,
                 true,
                 [
-                    'style' => 'object-fit: contain; float:right; margin-right:10px;',
+                    'class' => 'float-left',
+                    'style' => 'object-fit: contain; margin-right:10px;',
                     'title' => $title,
                     'id'    => 'image_'.$uniqid,
                 ]
             );
         }
 
-        $output .= '&nbsp;&nbsp';
         $output .= '<b>'.$name.'</b>';
     } else {
         $output .= $name;
@@ -3926,7 +3945,24 @@ function ui_toggle(
 /**
  * Simplified way of ui_toggle ussage.
  *
- * @param array $data Arguments.
+ * @param array $data Arguments:
+ * 'content'
+ * 'name'
+ * 'title'
+ * 'id'
+ * 'hidden_default'
+ * 'return'
+ * 'toggle_class'
+ * 'container_class'
+ * 'main_class'
+ * 'img_a'
+ * 'img_b'
+ * 'clean'
+ * 'reverseImg'
+ * 'switch'
+ * 'attributes_switch'
+ * 'toggl_attr'
+ * 'switch_on'.
  *
  * @return string HTML code with toggle content.
  */
@@ -3944,7 +3980,12 @@ function ui_print_toggle($data)
         (isset($data['main_class']) === true) ? $data['main_class'] : 'box-shadow white_table_graph',
         (isset($data['img_a']) === true) ? $data['img_a'] : 'images/arrow_down_green.png',
         (isset($data['img_b']) === true) ? $data['img_b'] : 'images/arrow_right_green.png',
-        (isset($data['clean']) === true) ? $data['clean'] : false
+        (isset($data['clean']) === true) ? $data['clean'] : false,
+        (isset($data['reverseImg']) === true) ? $data['reverseImg'] : false,
+        (isset($data['switch']) === true) ? $data['switch'] : false,
+        (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
+        (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : '',
+        (isset($data['switch_on']) === true) ? $data['switch_on'] : null
     );
 }
 
@@ -4087,13 +4128,17 @@ function ui_get_url_refresh($params=false, $relative=true, $add_post=true)
 function ui_forced_public_url()
 {
     global $config;
-    $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+
+    $exclusions = [];
+    if (empty($config['public_url_exclusions']) === false) {
+        $exclusions = preg_split("/[\n\s,]+/", io_safe_output($config['public_url_exclusions']));
+    }
 
     if (in_array($_SERVER['REMOTE_ADDR'], $exclusions)) {
         return false;
     }
 
-    return (bool) $config['force_public_url'];
+    return isset($config['force_public_url']) && (bool) $config['force_public_url'];
 }
 
 
@@ -5648,12 +5693,6 @@ function ui_print_module_string_value(
         $value = io_safe_input($value);
     }
 
-    $is_snapshot = is_snapshot_data($module['datos']);
-    $is_large_image = is_text_to_black_string($module['datos']);
-    if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
-        $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
-    }
-
     $is_snapshot = is_snapshot_data($value);
     $is_large_image = is_text_to_black_string($value);
     if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
@@ -5701,7 +5740,7 @@ function ui_print_module_string_value(
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
 					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true).'</a></span>';
+					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;']).'</a></span>';
             }
         }
     }
@@ -5720,6 +5759,7 @@ function ui_print_module_string_value(
  */
 function ui_print_tags_view($title='', $tags=[])
 {
+    $tv = '';
     if (!empty($title)) {
         $tv .= '<div class="tag-wrapper">';
         $tv .= '<h3>'.$title.'</h3>';
@@ -5822,6 +5862,7 @@ function ui_get_snapshot_image($link, $is_image)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Snapshot view'),
+            'style'  => 'max-height: 20px; vertical-align: middle;',
         ]
     ).'</a>';
 
@@ -6057,6 +6098,7 @@ function ui_print_comments($comments)
         }
     }
 
+    $last_comment = [];
     foreach ($comments_array as $comm) {
         // Show the comments more recent first.
         if (is_array($comm)) {

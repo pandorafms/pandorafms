@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -153,6 +153,7 @@ define('COL_MINOR', '#F099A2');
 define('COL_MAJOR', '#C97A4A');
 define('COL_INFORMATIONAL', '#4a83f3');
 define('COL_MAINTENANCE', '#E4E4E4');
+define('COL_QUIET', '#5AB7E5');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');
@@ -231,6 +232,7 @@ define('DONUT_GRAPH', 17);
 define('BARS_GRAPH', 18);
 define('CLOCK', 19);
 define('COLOR_CLOUD', 20);
+define('NETWORK_LINK', 21);
 // Some styles.
 define('MIN_WIDTH', 300);
 define('MIN_HEIGHT', 120);

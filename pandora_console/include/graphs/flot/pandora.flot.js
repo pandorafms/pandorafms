@@ -493,7 +493,12 @@ $.fn.HUseTooltip = function() {
         // var y = item.datapoint[1];
 
         var color = item.series.color;
-        showTooltip(pos.pageX, pos.pageY, color, "<strong>" + x + "</strong>");
+        showTooltip(
+          item.pageX,
+          item.pageY,
+          color,
+          "<strong>" + x + "</strong>"
+        );
       }
     } else {
       $("#tooltip").remove();
@@ -955,7 +960,6 @@ function pandoraFlotArea(
   legend,
   series_type,
   color,
-  water_mark,
   date_array,
   data_module_graph,
   params,
@@ -972,7 +976,6 @@ function pandoraFlotArea(
     .shift();
   var width = params.width;
   var vconsole = params.vconsole;
-  var dashboard = params.dashboard;
   var menu = params.menu;
   var min_x = date_array["start_date"] * 1000;
   var max_x = date_array["final_date"] * 1000;
@@ -2793,17 +2796,6 @@ function pandoraFlotArea(
         .split("px")[0]
     );
     adjust_menu(graph_id, plot, parent_height, width, show_legend);
-  }
-
-  if (!dashboard) {
-    if (water_mark) {
-      set_watermark(
-        graph_id,
-        plot,
-        $("#watermark_image_" + graph_id).attr("src")
-      );
-    }
-    //adjust_menu(graph_id, plot, parent_height, width, show_legend);
   }
 }
 

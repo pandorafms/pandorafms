@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -380,7 +380,7 @@ class OrderInterpreter extends Wizard
 
         // Take value from input search.
         $text = get_parameter('text', '');
-        $array_found = [];
+        $enterprise = (bool) get_parameter('enterprise', false);
         $iterator = 0;
         $more_results = 0;
 
@@ -394,7 +394,7 @@ class OrderInterpreter extends Wizard
                     __('GO TO '.$value['name'])
                 ) && $value['acl']
                 ) {
-                    if ($iterator <= 9) {
+                    if ($iterator <= 9 && $this->canShowItem($enterprise, $this->pages_menu[$key]['url'])) {
                         echo '<li class="list_found" name="'.$iterator.'" id="'.$iterator.'">';
                         echo '
                         Go to &nbsp;
@@ -429,6 +429,28 @@ class OrderInterpreter extends Wizard
 
             echo '</div>';
         }
+    }
+
+
+    /**
+     * Determines if the element must be shown or not.
+     *
+     * @param boolean $isEnterprise Define if the console is Enterprise.
+     * @param string  $url          Url of the element for select.
+     *
+     * @return boolean
+     */
+    private function canShowItem(bool $isEnterprise, string $url)
+    {
+        $canShow = false;
+
+        $hasEnterpriseLocation = strpos($url, '&sec2=enterprise') !== false;
+
+        if (($isEnterprise === false && $hasEnterpriseLocation === false) || $isEnterprise === true) {
+            $canShow = true;
+        }
+
+        return $canShow;
     }
 
 

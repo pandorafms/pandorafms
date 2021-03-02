@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -2878,20 +2878,21 @@ function events_get_group_events_steps(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param integer $id_agent                   Agent id to get events.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $history                    History.
- * @param boolean $show_summary_group         Show_summary_group.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $id_group                   Id_group.
- * @param boolean $events_group               Events_group.
- * @param boolean $id_agent_module            Id_agent_module.
- * @param boolean $events_module              Events_module.
- * @param boolean $id_server                  Id_server.
+ * @param integer $id_agent                    Agent id to get events.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $history                     History.
+ * @param boolean $show_summary_group          Show_summary_group.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $id_group                    Id_group.
+ * @param boolean $events_group                Events_group.
+ * @param boolean $id_agent_module             Id_agent_module.
+ * @param boolean $events_module               Events_module.
+ * @param boolean $id_server                   Id_server.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -2909,7 +2910,8 @@ function events_get_agent(
     $events_group=false,
     $id_agent_module=false,
     $events_module=false,
-    $id_server=false
+    $id_server=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -3015,6 +3017,10 @@ function events_get_agent(
 
     if (!empty($filter_event_filter_search)) {
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
+    }
+
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
     }
 
     if ($events_group) {
@@ -3284,7 +3290,7 @@ function events_get_status($status_id)
  *
  * @return boolean True if the user has permissions or false otherwise.
  */
-function events_check_event_filter_group($id_filter)
+function events_check_event_filter_group($id_filter, $restrict_all_group=false)
 {
     global $config;
 
@@ -3295,7 +3301,11 @@ function events_check_event_filter_group($id_filter)
 
     // Permissions in any group allow to edit "All group" filters.
     if ($id_group == 0 && !empty($groups_user)) {
-        return true;
+        if ($restrict_all_group === true) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     $groups_id = [];
@@ -3714,6 +3724,14 @@ function events_get_response_target(
 ) {
     global $config;
 
+    include_once $config['homedir'].'/vendor/autoload.php';
+
+    try {
+        $eventObjt = new PandoraFMS\Event($event_id);
+    } catch (Exception $e) {
+        $eventObjt = new PandoraFMS\Event();
+    }
+
     // If server_id > 0, it's a metaconsole query.
     $meta = $server_id > 0 || is_metaconsole();
     $event_table = events_get_events_table($meta, $history);
@@ -3911,9 +3929,69 @@ function events_get_response_target(
     }
 
     if (strpos($target, '_event_instruction_') !== false) {
+        // Fallback to module instructions if not defined in event.
+        $instructions = [];
+
+        foreach ([
+            'warning_instructions',
+            'critical_instructions',
+            'unknown_instructions',
+        ] as $i) {
+            $instructions[$i] = $event[$i];
+            if (empty($instructions[$i]) === true
+                && $eventObjt->module() !== null
+            ) {
+                try {
+                    $instructions[$i] = $eventObjt->module()->{$i}();
+                } catch (Exception $e) {
+                    // Method not found.
+                    $instructions[$i] = null;
+                }
+            }
+        }
+
         $target = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $instructions,
+                false,
+                $eventObjt->toArray()
+            ),
+            $target
+        );
+    }
+
+    if (strpos($target, '_data_') !== false
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
+    ) {
+        $target = str_replace(
+            '_data_',
+            $eventObjt->module()->lastValue(),
+            $target
+        );
+    } else {
+        $target = str_replace(
+            '_data_',
+            __('N/A'),
+            $target
+        );
+    }
+
+    if (strpos($target, '_moduledescription_') !== false
+        && $eventObjt !== null
+        && $eventObjt->module() !== null
+    ) {
+        $target = str_replace(
+            '_moduledescription_',
+            io_safe_output($eventObjt->module()->descripcion()),
+            $target
+        );
+    } else {
+        $target = str_replace(
+            '_moduledescription_',
+            __('N/A'),
             $target
         );
     }
@@ -4400,7 +4478,14 @@ function events_page_details($event, $server='')
 
     $data = [];
     $data[0] = __('Instructions');
-    $data[1] = html_entity_decode(events_display_instructions($event['event_type'], $event, true));
+    $data[1] = html_entity_decode(
+        events_display_instructions(
+            $event['event_type'],
+            $event,
+            true,
+            $event
+        )
+    );
     $table_details->data[] = $data;
 
     $data = [];
@@ -4531,13 +4616,50 @@ function events_display_status($status)
  *                            instructions.
  * @param boolean $italic     Display N/A between italic html marks if
  *                            instruction is not found.
+ * @param array   $eventObj   Event object.
  *
  * @return string Safe output.
  */
-function events_display_instructions($event_type='', $inst=[], $italic=true)
+function events_display_instructions($event_type='', $inst=[], $italic=true, $event=null)
 {
+    if ($event_type === 'alert_fired') {
+        if ($event !== null) {
+            // Retrieve alert template type.
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                 enterprise_include_once('include/functions_metaconsole.php');
+                $r = enterprise_hook(
+                    'metaconsole_connect',
+                    [
+                        null,
+                        $event['server_id'],
+                    ]
+                );
+            }
+
+            $event_type = db_get_value_sql(
+                sprintf(
+                    'SELECT ta.type
+                    FROM talert_templates ta
+                    INNER JOIN talert_template_modules tam
+                        ON ta.id=tam.id_alert_template
+                    WHERE tam.id = %d',
+                    $event['id_alert_am']
+                )
+            );
+
+            if ((bool) is_metaconsole() === true
+                && $event['server_id'] > 0
+            ) {
+                enterprise_hook('metaconsole_restore_db');
+            }
+        }
+    }
+
     switch ($event_type) {
         case 'going_unknown':
+        case 'unknown':
             if ($inst['unknown_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['unknown_instructions']));
             }
@@ -4545,6 +4667,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_warning':
         case 'going_down_warning':
+        case 'warning':
             if ($inst['warning_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['warning_instructions']));
             }
@@ -4552,6 +4675,7 @@ function events_display_instructions($event_type='', $inst=[], $italic=true)
 
         case 'going_up_critical':
         case 'going_down_critical':
+        case 'critical':
             if ($inst['critical_instructions'] != '') {
                 return str_replace("\n", '<br>', io_safe_output($inst['critical_instructions']));
             }
@@ -4996,14 +5120,15 @@ function events_clean_tags($tags)
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $id_group                   Group id to get events for.
- * @param integer $period                     Period  in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $id_group                    Group id to get events for.
+ * @param integer $period                      Period  in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5015,7 +5140,8 @@ function events_get_count_events_by_agent(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -5115,6 +5241,10 @@ function events_get_count_events_by_agent(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $tagente = 'tagente';
     $tevento = 'tevento';
 
@@ -5167,14 +5297,15 @@ function events_get_count_events_by_agent(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param array   $filter                     Use target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param array   $filter                      Use target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5186,7 +5317,8 @@ function events_get_count_events_validated_by_user(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
     $tevento = 'tevento';
@@ -5308,6 +5440,10 @@ function events_get_count_events_validated_by_user(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $sql = sprintf(
         'SELECT 
           te.id_usuario,
@@ -5356,14 +5492,15 @@ function events_get_count_events_validated_by_user(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $filter                     Target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $filter                      Target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5375,7 +5512,8 @@ function events_get_count_events_by_criticity(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -5499,6 +5637,10 @@ function events_get_count_events_by_criticity(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $sql = sprintf(
         'SELECT 
           te.criticity,
@@ -5538,14 +5680,15 @@ function events_get_count_events_by_criticity(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $filter                     Target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $filter                      Target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5557,7 +5700,8 @@ function events_get_count_events_validated(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
     $tevento = 'tevento';
@@ -5708,6 +5852,10 @@ function events_get_count_events_validated(
 
     if (!empty($filter_event_filter_search)) {
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
+    }
+
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
     }
 
     $sql = sprintf(
@@ -7142,7 +7290,12 @@ function events_get_field_value_by_event_id(
     if (strpos($value, '_event_instruction_') !== false) {
         $value = str_replace(
             '_event_instruction_',
-            events_display_instructions($event['event_type'], $event, false),
+            events_display_instructions(
+                $event['event_type'],
+                $event,
+                false,
+                $event
+            ),
             $value
         );
     }

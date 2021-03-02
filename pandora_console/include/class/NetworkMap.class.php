@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -3499,39 +3499,41 @@ class NetworkMap
      *
      * @return string HTML code.
      */
-    public function printMap($return=false)
+    public function printMap($return=false, $ignore_acl=false)
     {
         global $config;
 
         $networkmap = $this->map;
 
-        // ACL.
-        $networkmap_read = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MR'
-        );
-        $networkmap_write = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MW'
-        );
-        $networkmap_manage = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MM'
-        );
-
-        if (!$networkmap_read
-            && !$networkmap_write
-            && !$networkmap_manage
-        ) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
+        if ($ignore_acl === false) {
+            // ACL.
+            $networkmap_read = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MR'
             );
-            include 'general/noaccess.php';
-            return '';
+            $networkmap_write = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MW'
+            );
+            $networkmap_manage = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MM'
+            );
+
+            if (!$networkmap_read
+                && !$networkmap_write
+                && !$networkmap_manage
+            ) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access networkmap'
+                );
+                include 'general/noaccess.php';
+                return '';
+            }
         }
 
         $user_readonly = !$networkmap_write && !$networkmap_manage;

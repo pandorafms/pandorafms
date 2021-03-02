@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -140,6 +140,8 @@ $visual_format = 0;
 
 // Others.
 $filter_search = '';
+$filter_exclude = '';
+
 
 // Added for select fields.
 $total_time = true;
@@ -556,6 +558,8 @@ switch ($action) {
                     $include_extended_events = $item['show_extended_events'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
+
                 break;
 
                 case 'event_report_group':
@@ -570,6 +574,7 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
 
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
                     $filter_event_status   = json_decode($style['filter_event_status'], true);
@@ -607,6 +612,8 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
+
 
                     $include_extended_events = $item['show_extended_events'];
                 break;
@@ -2744,10 +2751,20 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_filter_search" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Free search'); ?></td>
+            <td style="font-weight:bold;"><?php echo __('Include filter'); ?></td>
             <td>
                 <?php
                 html_print_input_text('filter_search', $filter_search);
+                ui_print_help_tip(__('Free text string search on event description'));
+                ?>
+            </td>
+        </tr>
+        <tr id="row_filter_exclude" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Exclude filter'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('filter_exclude', $filter_exclude);
+                ui_print_help_tip(__('Free text string search on event description'));
                 ?>
             </td>
         </tr>
@@ -3279,7 +3296,7 @@ function print_SLA_list($width, $action, $idItem=null)
                         <tr id="sla_form" style="" class="datos">
                             <td class="sla_list_agent_col">
                                 <input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
-                                <input id="hidden-server_name" name="server_name" value="" type="hidden">
+                                <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
                                 $params = [];
                                 $params['show_helptip'] = true;
@@ -5141,6 +5158,7 @@ function chooseType() {
     $("#row_resolution").hide();
     $("#row_last_value").hide();
     $("#row_filter_search").hide();
+    $("#row_filter_exclude").hide();
     $("#row_percentil").hide();
     $("#log_help_tip").css("visibility", "hidden");
     $("#agents_row").hide();
@@ -5191,6 +5209,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
 
             $("#row_event_severity").show();
             $("#row_event_status").show();
@@ -5403,11 +5423,9 @@ function chooseType() {
         case 'sql':
             $("#row_description").show();
             $("#row_query").show();
-            $("#row_max_items").show();
             $("#row_header").show();
             $("#row_custom").show();
             $("#row_custom_example").show();
-            $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
             break;
@@ -5486,6 +5504,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5509,6 +5529,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5531,6 +5553,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 

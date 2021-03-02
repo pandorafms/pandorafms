@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -219,7 +219,9 @@ function enable_session_handlers()
 {
     global $config;
 
-    if ($config['_using_pandora_sessionhandlers'] !== true) {
+    if (isset($config['_using_pandora_sessionhandlers']) !== true
+        || $config['_using_pandora_sessionhandlers'] !== true
+    ) {
         if (session_status() !== PHP_SESSION_NONE) {
             // Close previous version.
             session_write_close();

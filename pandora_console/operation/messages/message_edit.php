@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -206,23 +206,6 @@ if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
         $return,
         __('Message successfully sent to user %s', $user_name),
         __('Error sending message to user %s', $user_name)
-    );
-}
-
-// Create message (destination group).
-if (($new_msg) && ($dst_group != '') && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [],
-        [$dst_group],
-        $subject,
-        $message
-    );
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent'),
-        __('Error sending message to group %s', groups_get_name($dst_group))
     );
 }
 

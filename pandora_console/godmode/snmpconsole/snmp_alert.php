@@ -2,7 +2,7 @@
 /**
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,6 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
@@ -493,6 +494,15 @@ if ($update_alert || $duplicate_alert) {
     $position = $alert['position'];
     $disable_event = $alert['disable_event'];
     $group = $alert['id_group'];
+
+    if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access SNMP Alert Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else if ($create_alert) {
     // Variable init
     $id_as = -1;
@@ -813,13 +823,19 @@ if ($create_alert || $update_alert) {
     html_print_input_text('source_ip', $source_ip, '', 20);
     echo '</td></tr>';
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LW') === true) {
+        $return_all_group = true;
+    }
+
     // Group
     echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
     echo '<div class="w250px">';
     html_print_select_groups(
         $config['id_user'],
         'AR',
-        true,
+        $return_all_group,
         'group',
         $group,
         '',
@@ -1345,9 +1361,16 @@ if ($create_alert || $update_alert) {
         $url = 'index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'id_alert_snmp='.$row['id_as'].'&'.'update_alert=1';
         $data[1] = '<table>';
         $data[1] .= '<tr>';
-        $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+            $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+        } else {
+            $data[1] .= alerts_get_alert_action_name($row['id_alert']);
+        }
+
         $other_actions = db_get_all_rows_filter('talert_snmp_action', ['id_alert_snmp' => $row['id_as']]);
         $data[1] .= '</tr>';
+
 
         if ($other_actions != false) {
             foreach ($other_actions as $action) {
@@ -1359,6 +1382,7 @@ if ($create_alert || $update_alert) {
         }
 
         $data[1] .= '</table>';
+
 
         $data[2] = $row['agent'];
         $data[3] = $row['oid'];
@@ -1372,18 +1396,23 @@ if ($create_alert || $update_alert) {
             $data[7] = __('Never');
         }
 
-        $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
 
 
-        $data[9] = html_print_checkbox_extended(
-            'delete_ids[]',
-            $row['id_as'],
-            false,
-            false,
-            false,
-            'class="chk_delete"',
-            true
-        );
+                $data[9] = html_print_checkbox_extended(
+                    'delete_ids[]',
+                    $row['id_as'],
+                    false,
+                    false,
+                    false,
+                    'class="chk_delete"',
+                    true
+                );
+        } else {
+            $data[8] = '';
+            $data[9] = '';
+        }
 
         $idx = count($table->data);
         // The current index of the table is 1 less than the count of table data so we count before adding to table->data

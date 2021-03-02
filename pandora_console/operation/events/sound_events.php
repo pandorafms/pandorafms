@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -287,9 +287,8 @@ $(document).ready (function () {
 <?php
 echo '</body>';
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }
 
 echo '</html>';

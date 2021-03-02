@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -227,7 +227,7 @@ function io_safe_output_array(&$item, $key=false, $utf8=true)
  * @param string|array $value String or array of strings to be cleaned.
  * @param boolean      $utf8  Flag, set the output encoding in utf8, by default true.
  *
- * @return unknown_type
+ * @return string
  */
 function io_safe_output($value, $utf8=true)
 {

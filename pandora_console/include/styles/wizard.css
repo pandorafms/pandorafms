@@ -11,8 +11,24 @@ ul.wizard {
 ul.wizard li {
   padding-bottom: 10px;
   padding-top: 10px;
+}
+
+ul.wizard.inline li {
+  display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
+}
+
+.list .edit_discovery_input {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.list .label_select {
+  margin-bottom: 0;
 }
 
 ul.wizard li > label:not(.p-switch) {
@@ -30,6 +46,10 @@ ul.wizard li > textarea {
 
 .wizard .hidden {
   display: none;
+}
+
+.indented {
+  margin-left: 1em;
 }
 
 .wizard .indented {
@@ -127,4 +147,21 @@ ul.wizard li > textarea {
 
 .action_button_list li {
   display: inline;
+}
+
+.searchbox ul {
+  justify-content: space-between;
+}
+
+.searchbox ul li:not(.textbox) {
+  flex-direction: row-reverse !important;
+  justify-content: flex-end !important;
+}
+
+.searchbox ul li.textbox label {
+  width: auto;
+}
+.searchbox ul li.textbox {
+  justify-content: space-evenly !important;
+  flex: 1 1 auto;
 }

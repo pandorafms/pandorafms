@@ -2,7 +2,7 @@
 ################################################################################
 # Pandora XML count tool.
 ################################################################################
-# Copyright (c) 2017 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2017-2021 Artica Soluciones Tecnologicas S.L.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,7 +92,7 @@ $alive_animation = agents_get_status_animation(
 $agent_name = ui_print_agent_name(
     $agent['id_agente'],
     true,
-    500,
+    'agent_medium',
     'font-size: medium;font-weight:bold',
     true
 );

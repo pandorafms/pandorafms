@@ -1606,7 +1606,7 @@ ace.define(
       if (e.type == "dblclick") return 0;
       if (
         e.type == "contextmenu" ||
-        (useragent.isMac && (e.ctrlKey && !e.altKey && !e.shiftKey))
+        (useragent.isMac && e.ctrlKey && !e.altKey && !e.shiftKey)
       )
         return 2;
       return e.button;

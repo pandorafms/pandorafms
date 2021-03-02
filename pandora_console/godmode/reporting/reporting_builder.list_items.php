@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -515,17 +515,67 @@ foreach ($items as $item) {
 
     $style = json_decode(io_safe_output($item['style']), true);
 
+
+    // Macros
+    $items_macro = [];
+
+    if (!empty($item['id_agent'])) {
+        $id_agent = $item['id_agent'];
+        // Add macros name.
+        $agent_description = agents_get_description($id_agent);
+        $agent_group = agents_get_agent_group($id_agent);
+        $agent_address = agents_get_address($id_agent);
+        $agent_alias = agents_get_alias($id_agent);
+
+        $items_macro_agent = [
+            'id_agent'          => $id_agent,
+            'agent_description' => $agent_description,
+            'agent_group'       => $agent_group,
+            'agent_address'     => $agent_address,
+            'agent_alias'       => $agent_alias,
+        ];
+
+        $items_macro = array_merge($items_macro, $items_macro_agent);
+    }
+
+    if (!empty($item['id_agent_module'])) {
+        $id_agent_module = $item['id_agent_module'];
+        $module_name = modules_get_agentmodule_name(
+            $id_agent_module
+        );
+        $module_description = modules_get_agentmodule_descripcion(
+            $id_agent_module
+        );
+
+        $items_macro_module = [
+            'id_agent_module'    => $id_agent_module,
+            'module_name'        => $module_name,
+            'module_description' => $module_description,
+        ];
+
+        $items_macro = array_merge($items_macro, $items_macro_module);
+    }
+
+
+
     if ($style['name_label'] != '') {
         $text = empty($style['name_label']) ? $item['description'] : $style['name_label'];
-        $row[5] = ui_print_truncate_text($text, 'description', true, true);
     } else {
         if ($item['name'] == '' && $item['description'] == '') {
-            $row[5] = '-';
+            $text = '-';
         } else {
             $text = empty($item['name']) ? $item['description'] : $item['name'];
-            $row[5] = ui_print_truncate_text($text, 'description', true, true);
         }
     }
+
+        // Apply macros
+        $items_macro['type'] = $item['type'];
+        $text = reporting_label_macro(
+            $items_macro,
+            $text
+        );
+    $row[5] = ui_print_truncate_text($text, 'description', true, true);
+
 
     $row[6] = '';
 

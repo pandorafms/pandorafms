@@ -1,9 +1,9 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.751
+# Version 7.0NG.752
 # Licensed under GPL license v2,
-# (c) 2003-2017 Artica Soluciones Tecnologicas
+# (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -350,7 +350,7 @@ max_log_generation 1
 
 max_queue_files 5000
 
-# Use the XML file last modification time as timestamp.
+# If set to 0, the timestamp attribute in XML data files will be ignored and the system time will be used instead.
 
 # use_xml_timestamp 1
 

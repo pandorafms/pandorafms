@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -20,6 +20,8 @@
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+
+use PandoraFMS\Enterprise\RCMDFile as RCMDFile;
 
 
 /**
@@ -2410,10 +2412,31 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        // Delete agent in networkmap enterprise
         if (enterprise_installed()) {
+            // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
+
+            // Delete command targets with agent.
+            enterprise_include_once('include/lib/RCMDFile.class.php');
+
+            $target_filter = ['id_agent' => $id_agent];
+
+            // Retrieve all commands that have targets with specific agent id.
+            $commands = RCMDFile::getAll(
+                ['rct.rcmd_id'],
+                $target_filter
+            );
+
+            foreach ($commands as $command) {
+                $rcmd_id = $command['rcmd_id'];
+                $rcmd = new RCMDFile($rcmd_id);
+
+                $command_targets = [];
+
+                $command_targets = $rcmd->getTargets(false, $target_filter);
+                $rcmd->deleteTargets(array_keys($command_targets));
+            }
         }
 
         // tagente_datos_inc
@@ -3799,4 +3822,52 @@ function agents_get_last_status_change($id_agent)
     $row = db_get_row_sql($sql);
 
     return $row['last_status_change'];
+}
+
+
+/**
+ * Return the list of agents for a planned downtime
+ *
+ * @param integer $id_downtime   Id of planned downtime.
+ * @param string  $filter_cond   String-based filters.
+ * @param string  $id_groups_str String-based list of id group, separated with commas.
+ *
+ * @return array
+ */
+function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str)
+{
+    $agents = [];
+
+    $sql = sprintf(
+        'SELECT tagente.id_agente, tagente.alias
+                    FROM tagente
+                    WHERE tagente.id_agente NOT IN (
+                            SELECT tagente.id_agente
+                            FROM tagente, tplanned_downtime_agents
+                            WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+                                AND tplanned_downtime_agents.id_downtime = %d
+                        ) AND disabled = 0 %s
+                        AND tagente.id_grupo IN (%s)
+                    ORDER BY tagente.nombre',
+        $id_downtime,
+        $filter_cond,
+        $id_groups_str
+    );
+
+    $agents = db_get_all_rows_sql($sql);
+
+    if (empty($agents)) {
+        $agents = [];
+    }
+
+    $agent_ids = extract_column($agents, 'id_agente');
+    $agent_names = extract_column($agents, 'alias');
+
+    $agents = array_combine($agent_ids, $agent_names);
+
+    if ($agents === false) {
+        $agents = [];
+    }
+
+    return $agents;
 }

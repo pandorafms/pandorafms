@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -595,178 +595,187 @@ function filemanager_file_explorer(
 
     $files = filemanager_list_dir($real_directory);
 
-    $table = new stdClass();
-    $table->width = '100%';
-    $table->id = 'table_filemanager';
-    if (!defined('METACONSOLE')) {
-        $table->class = 'info_table';
-        $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
-    }
-
-    if (defined('METACONSOLE')) {
-        $table->class = 'databox_tactical';
-        $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
-    }
-
-    $table->colspan = [];
-    $table->data = [];
-    $table->head = [];
-    $table->size = [];
-
-    $table->align[1] = 'left';
-    $table->align[2] = 'left';
-    $table->align[3] = 'left';
-    $table->align[4] = 'left';
-
-    $table->size[0] = '24px';
-
-    $table->head[0] = '';
-    $table->head[1] = __('Name');
-    $table->head[2] = __('Last modification');
-    $table->head[3] = __('Size');
-    $table->head[4] = __('Actions');
-
-    $prev_dir = explode('/', $relative_directory);
-    $prev_dir_str = '';
-    for ($i = 0; $i < (count($prev_dir) - 1); $i++) {
-        $prev_dir_str .= $prev_dir[$i];
-        if ($i < (count($prev_dir) - 2)) {
-            $prev_dir_str .= '/';
+    if (!empty($files)) {
+        $table = new stdClass();
+        $table->width = '100%';
+        $table->id = 'table_filemanager';
+        if (!defined('METACONSOLE')) {
+            $table->class = 'info_table';
+            $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
         }
-    }
 
-    if (($prev_dir_str != '') && ($father != $relative_directory)) {
-        $table->data[0][0] = html_print_image('images/go_previous.png', true);
-        $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['dbpass']).'">';
-        $table->data[0][1] .= __('Parent directory');
-        $table->data[0][1] .= '</a>';
+        if (defined('METACONSOLE')) {
+            $table->class = 'databox_tactical';
+            $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
+        }
 
-        $table->colspan[0][1] = 5;
-    }
+        $table->colspan = [];
+        $table->data = [];
+        $table->head = [];
+        $table->size = [];
 
-    foreach ($files as $fileinfo) {
-        $fileinfo['realpath'] = str_replace('\\', '/', $fileinfo['realpath']);
-        $relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
+        $table->align[1] = 'left';
+        $table->align[2] = 'left';
+        $table->align[3] = 'left';
+        $table->align[4] = 'left';
 
-        $data = [];
+        $table->size[0] = '24px';
 
-        switch ($fileinfo['mime']) {
-            case MIME_DIR:
-                $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory')]);
-            break;
+        $table->head[0] = '';
+        $table->head[1] = __('Name');
+        $table->head[2] = __('Last modification');
+        $table->head[3] = __('Size');
+        $table->head[4] = __('Actions');
 
-            case MIME_IMAGE:
-                $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image')]);
-            break;
+        $prev_dir = explode('/', $relative_directory);
+        $prev_dir_str = '';
+        for ($i = 0; $i < (count($prev_dir) - 1); $i++) {
+            $prev_dir_str .= $prev_dir[$i];
+            if ($i < (count($prev_dir) - 2)) {
+                $prev_dir_str .= '/';
+            }
+        }
 
-            case MIME_ZIP:
-                $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file')]);
-            break;
+        if (($prev_dir_str != '') && ($father != $relative_directory)) {
+            $table->data[0][0] = html_print_image('images/go_previous.png', true);
+            $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['dbpass']).'">';
+            $table->data[0][1] .= __('Parent directory');
+            $table->data[0][1] .= '</a>';
 
-            case MIME_TEXT:
-                $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
-            break;
+            $table->colspan[0][1] = 5;
+        }
 
-            case MIME_UNKNOWN:
-                if ($fileinfo['size'] == 0) {
-                    if ((strstr($fileinfo['name'], '.txt') !== false) || (strstr($fileinfo['name'], '.conf') !== false) || (strstr($fileinfo['name'], '.sql') !== false) || (strstr($fileinfo['name'], '.pl') !== false)) {
-                        $fileinfo['mime'] = MIME_TEXT;
-                        $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+        foreach ($files as $fileinfo) {
+            $fileinfo['realpath'] = str_replace('\\', '/', $fileinfo['realpath']);
+            $relative_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', $fileinfo['realpath']);
+
+            $data = [];
+
+            switch ($fileinfo['mime']) {
+                case MIME_DIR:
+                    $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory')]);
+                break;
+
+                case MIME_IMAGE:
+                    $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image')]);
+                break;
+
+                case MIME_ZIP:
+                    $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file')]);
+                break;
+
+                case MIME_TEXT:
+                    $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                break;
+
+                case MIME_UNKNOWN:
+                    if ($fileinfo['size'] == 0) {
+                        if ((strstr($fileinfo['name'], '.txt') !== false) || (strstr($fileinfo['name'], '.conf') !== false) || (strstr($fileinfo['name'], '.sql') !== false) || (strstr($fileinfo['name'], '.pl') !== false)) {
+                            $fileinfo['mime'] = MIME_TEXT;
+                            $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                        } else {
+                            // unknow
+                            $data[0] = '';
+                        }
                     } else {
-                        // unknow
+                        // pdf
                         $data[0] = '';
                     }
-                } else {
-                    // pdf
-                    $data[0] = '';
+                break;
+
+                default:
+                    $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown')]);
+                break;
+            }
+
+            if ($fileinfo['is_dir']) {
+                $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']).'">'.$fileinfo['name'].'</a>';
+            } else if (!empty($url_file)) {
+                // Set the custom url file
+                $url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
+
+                $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
+            } else {
+                $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
+                $hash = md5($filename.$config['dbpass']);
+                $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
+            }
+
+            // Notice that uploaded php files could be dangerous
+            if (pathinfo($fileinfo['realpath'], PATHINFO_EXTENSION) == 'php'
+                && (is_readable($fileinfo['realpath']) || is_executable($fileinfo['realpath']))
+            ) {
+                        $error_message = __('This file could be executed by any user');
+                        $error_message .= '. '.__('Make sure it can\'t perform dangerous tasks');
+                        $data[1] = '<span class="error forced_title" data-title="'.$error_message.'" data-use_title_for_force_title="1">'.$data[1].'</span>';
+            }
+
+            $data[2] = ui_print_timestamp(
+                $fileinfo['last_modified'],
+                true,
+                ['prominent' => true]
+            );
+            if ($fileinfo['is_dir']) {
+                $data[3] = '';
+            } else {
+                $data[3] = ui_format_filesize($fileinfo['size']);
+            }
+
+                    // Actions buttons
+                    // Delete button
+                    $data[4] = '';
+                    $data[4] .= '<span style="display: flex">';
+                    $typefile = array_pop(explode('.', $fileinfo['name']));
+            if (is_writable($fileinfo['realpath'])
+                && (! is_dir($fileinfo['realpath']) || count(scandir($fileinfo['realpath'])) < 3) && (!$readOnly)
+            ) {
+                $data[4] .= '<form method="post" action="'.$url.'" style="">';
+                $data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
+                $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['dbpass']), true);
+                $data[4] .= html_print_input_hidden('delete_file', 1, true);
+
+                $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
+
+                if ($relative_dir[0] == '/') {
+                    $relative_dir = substr($relative_dir, 1);
                 }
-            break;
 
-            default:
-                $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown')]);
-            break;
+                $hash2 = md5($relative_dir.$config['dbpass']);
+
+                $data[4] .= html_print_input_hidden('directory', $relative_dir, true);
+                $data[4] .= html_print_input_hidden('hash2', $hash2, true);
+                $data[4] .= '</form>';
+
+                if (($editor) && (!$readOnly)) {
+                    if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
+                        && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
+                    ) {
+                        $hash = md5($fileinfo['realpath'].$config['dbpass']);
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';
+                    }
+                }
+            }
+
+            if ((!$fileinfo['is_dir']) && ($download_button)) {
+                $filename = base64_encode($fileinfo['name']);
+                $hash = md5($filename.$config['dbpass']);
+                $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
+                $data[4] .= html_print_image('images/file.png', true);
+                $data[4] .= '</a>';
+            }
+
+                    $data[4] .= '</span>';
+
+                    array_push($table->data, $data);
         }
-
-        if ($fileinfo['is_dir']) {
-            $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']).'">'.$fileinfo['name'].'</a>';
-        } else if (!empty($url_file)) {
-            // Set the custom url file
-            $url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
-
-            $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
-        } else {
-            $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
-            $hash = md5($filename.$config['dbpass']);
-            $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
-        }
-
-        // Notice that uploaded php files could be dangerous
-        if (pathinfo($fileinfo['realpath'], PATHINFO_EXTENSION) == 'php'
-            && (is_readable($fileinfo['realpath']) || is_executable($fileinfo['realpath']))
-        ) {
-            $error_message = __('This file could be executed by any user');
-            $error_message .= '. '.__('Make sure it can\'t perform dangerous tasks');
-            $data[1] = '<span class="error forced_title" data-title="'.$error_message.'" data-use_title_for_force_title="1">'.$data[1].'</span>';
-        }
-
-        $data[2] = ui_print_timestamp(
-            $fileinfo['last_modified'],
-            true,
-            ['prominent' => true]
+    } else {
+        ui_print_info_message(
+            [
+                'no_close' => true,
+                'message'  => __('No files or directories to show.'),
+            ]
         );
-        if ($fileinfo['is_dir']) {
-            $data[3] = '';
-        } else {
-            $data[3] = ui_format_filesize($fileinfo['size']);
-        }
-
-        // Actions buttons
-        // Delete button
-        $data[4] = '';
-        $data[4] .= '<span style="display: flex">';
-        $typefile = array_pop(explode('.', $fileinfo['name']));
-        if (is_writable($fileinfo['realpath'])
-            && (! is_dir($fileinfo['realpath']) || count(scandir($fileinfo['realpath'])) < 3) && (!$readOnly)
-        ) {
-            $data[4] .= '<form method="post" action="'.$url.'" style="">';
-            $data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-            $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
-            $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['dbpass']), true);
-            $data[4] .= html_print_input_hidden('delete_file', 1, true);
-
-            $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
-
-            if ($relative_dir[0] == '/') {
-                $relative_dir = substr($relative_dir, 1);
-            }
-
-            $hash2 = md5($relative_dir.$config['dbpass']);
-
-            $data[4] .= html_print_input_hidden('directory', $relative_dir, true);
-            $data[4] .= html_print_input_hidden('hash2', $hash2, true);
-            $data[4] .= '</form>';
-
-            if (($editor) && (!$readOnly)) {
-                if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
-                    && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
-                ) {
-                    $hash = md5($fileinfo['realpath'].$config['dbpass']);
-                    $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';
-                }
-            }
-        }
-
-        if ((!$fileinfo['is_dir']) && ($download_button)) {
-            $filename = base64_encode($fileinfo['name']);
-            $hash = md5($filename.$config['dbpass']);
-            $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
-            $data[4] .= html_print_image('images/file.png', true);
-            $data[4] .= '</a>';
-        }
-
-        $data[4] .= '</span>';
-
-        array_push($table->data, $data);
     }
 
     if (!$readOnly) {

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -80,9 +80,8 @@ if (isset($_GET['loginhash']) === true) {
     } else {
         include_once 'general/login_page.php';
         db_pandora_audit('Logon Failed (loginhash', '', 'system');
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -149,7 +148,9 @@ if (__PAN_XHPROF__ === 1) {
 }
 
 
-if ($config['force_instant_logout'] === true) {
+if (isset($config['force_instant_logout']) === true
+    && $config['force_instant_logout'] === true
+) {
     // Force user logout.
     if (session_status() !== PHP_SESSION_ACTIVE) {
         session_start();
@@ -169,7 +170,6 @@ if ($config['force_instant_logout'] === true) {
 }
 
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }

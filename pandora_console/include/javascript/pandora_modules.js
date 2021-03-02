@@ -1225,7 +1225,7 @@ function get_explanation_recon_script(id, id_rt, url) {
 
   var xhr = jQuery.ajax({
     data: {
-      page: "enterprise/include/ajax/hostDevices.ajax",
+      page: "include/ajax/hostDevices.ajax",
       get_explanation: 1,
       id: id,
       id_rt: id_rt
@@ -1253,7 +1253,7 @@ function get_explanation_recon_script(id, id_rt, url) {
 
   var xhr = jQuery.ajax({
     data: {
-      page: "enterprise/include/ajax/hostDevices.ajax",
+      page: "include/ajax/hostDevices.ajax",
       get_recon_script_macros: 1,
       id: id,
       id_rt: id_rt

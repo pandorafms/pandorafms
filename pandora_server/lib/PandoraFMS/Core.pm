@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -1023,26 +1023,26 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($action->{'field20'}) && $action->{'field20'} ne ""  ? $action->{'field20'} : $alert->{'field20'};
 	}
 	else {
-		$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne "" ? $action->{'field1'}  : $alert->{'field1'};
-		$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne "" ? $action->{'field2'}  : $alert->{'field2'};
-		$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne "" ? $action->{'field3'}  : $alert->{'field3'};
-		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
-		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
-		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};
-		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne "" ? $action->{'field7'}  : $alert->{'field7'};
-		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne "" ? $action->{'field8'}  : $alert->{'field8'};
-		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne "" ? $action->{'field9'}  : $alert->{'field9'};
-		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne "" ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne "" ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne "" ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne "" ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne "" ? $action->{'field15'} : $alert->{'field15'};
-		$field16 = defined($action->{'field16'}) && $action->{'field16'} ne "" ? $action->{'field16'} : $alert->{'field16'};
-		$field17 = defined($action->{'field17'}) && $action->{'field17'} ne "" ? $action->{'field17'} : $alert->{'field17'};
-		$field18 = defined($action->{'field18'}) && $action->{'field18'} ne "" ? $action->{'field18'} : $alert->{'field18'};
-		$field19 = defined($action->{'field19'}) && $action->{'field19'} ne "" ? $action->{'field19'} : $alert->{'field19'};
-		$field20 = defined($action->{'field20'}) && $action->{'field20'} ne "" ? $action->{'field20'} : $alert->{'field20'};
+		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}  ne "" ? $alert->{'field1'}  : $action->{'field1'};
+		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}  ne "" ? $alert->{'field2'}  : $action->{'field2'};
+		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}  ne "" ? $alert->{'field3'}  : $action->{'field3'};
+		$field4  = defined($alert->{'field4'})   && $alert->{'field4'}  ne "" ? $alert->{'field4'}  : $action->{'field4'};
+		$field5  = defined($alert->{'field5'})   && $alert->{'field5'}  ne "" ? $alert->{'field5'}  : $action->{'field5'};
+		$field6  = defined($alert->{'field6'})   && $alert->{'field6'}  ne "" ? $alert->{'field6'}  : $action->{'field6'};
+		$field7  = defined($alert->{'field7'})   && $alert->{'field7'}  ne "" ? $alert->{'field7'}  : $action->{'field7'};
+		$field8  = defined($alert->{'field8'})   && $alert->{'field8'}  ne "" ? $alert->{'field8'}  : $action->{'field8'};
+		$field9  = defined($alert->{'field9'})   && $alert->{'field9'}  ne "" ? $alert->{'field9'}  : $action->{'field9'};
+		$field10 = defined($alert->{'field10'})  && $alert->{'field10'} ne "" ? $alert->{'field10'} : $action->{'field10'};
+		$field11 = defined($alert->{'field11'})  && $alert->{'field11'} ne "" ? $alert->{'field11'} : $action->{'field11'};
+		$field12 = defined($alert->{'field12'})  && $alert->{'field12'} ne "" ? $alert->{'field12'} : $action->{'field12'};
+		$field13 = defined($alert->{'field13'})  && $alert->{'field13'} ne "" ? $alert->{'field13'} : $action->{'field13'};
+		$field14 = defined($alert->{'field14'})  && $alert->{'field14'} ne "" ? $alert->{'field14'} : $action->{'field14'};
+		$field15 = defined($alert->{'field15'})  && $alert->{'field15'} ne "" ? $alert->{'field15'} : $action->{'field15'};
+		$field16 = defined($alert->{'field16'})  && $alert->{'field16'} ne "" ? $alert->{'field16'} : $action->{'field16'};
+		$field17 = defined($alert->{'field17'})  && $alert->{'field17'} ne "" ? $alert->{'field17'} : $action->{'field17'};
+		$field18 = defined($alert->{'field18'})  && $alert->{'field18'} ne "" ? $alert->{'field18'} : $action->{'field18'};
+		$field19 = defined($alert->{'field19'})  && $alert->{'field19'} ne "" ? $alert->{'field19'} : $action->{'field19'};
+		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
@@ -4296,7 +4296,7 @@ sub on_demand_macro($$$$$$;$) {
 		if ($field_value eq ''){
 			$field_value = 'Module ' . $field_number . " not found";
 		}
-		elsif ($unit_mod ne '') {
+		elsif (defined($unit_mod) && $unit_mod ne '') {
 			$field_value .= $unit_mod;
 		}
 		
@@ -5381,7 +5381,9 @@ sub pandora_self_monitoring ($$) {
 	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
 	my $read_speed = int((time - $start_performance) * 1e6);
 
-	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -6476,7 +6478,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 
 =cut
 

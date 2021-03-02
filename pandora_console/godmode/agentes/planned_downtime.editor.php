@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,7 +69,6 @@ ui_print_page_header(
 
 // Recursion group filter.
 $recursion = get_parameter('recursion', $_POST['recursion']);
-
 
 // Initialize data.
 $id_group = (int) get_parameter('id_group');
@@ -143,16 +142,29 @@ $user_groups_ad = array_keys(
     users_get_groups($config['id_user'], $access)
 );
 
+// Check AD permission on downtime.
+$downtime_group = db_get_value(
+    'id_group',
+    'tplanned_downtime',
+    'id',
+    $id_downtime
+);
+
+if ($id_downtime > 0) {
+    if (!check_acl_restricted_all($config['id_user'], $downtime_group, 'AW')
+        && !check_acl_restricted_all($config['id_user'], $downtime_group, 'AD')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access downtime scheduler'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
+}
+
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION.
 if ($insert_downtime_agent === 1) {
-    // Check AD permission on downtime.
-    $downtime_group = db_get_value(
-        'id_group',
-        'tplanned_downtime',
-        'id',
-        $id_downtime
-    );
-
     if ($downtime_group === false
         || !in_array($downtime_group, $user_groups_ad)
     ) {
@@ -167,7 +179,12 @@ if ($insert_downtime_agent === 1) {
     $agents = (array) get_parameter('id_agents');
     $module_names = (array) get_parameter('module');
 
-    $all_modules = (empty($module_names) || ($module_names[0] === '0'));
+    $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (int) $modules[0] === 0));
+    $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (int) $modules[0] === 0));
+
+    if ($all_common_modules === true) {
+        $module_names = explode(',', get_parameter('all_common_modules'));
+    }
 
     // 'Is running' check.
     $is_running = (bool) db_get_value(
@@ -181,9 +198,15 @@ if ($insert_downtime_agent === 1) {
             __('This elements cannot be modified while the downtime is being executed')
         );
     } else {
+        // If is selected 'Any', get all the agents.
+        if (count($agents) === 1 && (int) $agents[0] === -2) {
+            $all_agents = get_parameter('all_agents');
+            $agents = explode(',', $all_agents);
+        }
+
         foreach ($agents as $agent_id) {
             // Check module belongs to the agent.
-            if ($modules_selection_mode == 'all') {
+            if ($modules_selection_mode == 'all' && $all_modules === false) {
                 $check = false;
                 foreach ($module_names as $module_name) {
                     $check_module = modules_get_agentmodule_id(
@@ -644,11 +667,20 @@ $table->data[0][1] = html_print_input_text(
     true,
     $disabled_in_execution
 );
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('AW') === true
+    || users_can_manage_group_all('AD') === true
+) {
+    $return_all_group = true;
+}
+
 $table->data[1][0] = __('Group');
 $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     false,
     $access,
-    true,
+    $return_all_group,
     'id_group',
     $id_group,
     '',
@@ -896,33 +928,7 @@ if ($id_downtime > 0) {
         }
     }
 
-    $sql = sprintf(
-        'SELECT tagente.id_agente, tagente.alias
-					FROM tagente
-					WHERE tagente.id_agente NOT IN (
-							SELECT tagente.id_agente
-							FROM tagente, tplanned_downtime_agents
-							WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
-								AND tplanned_downtime_agents.id_downtime = %d
-						) AND disabled = 0 %s
-						AND tagente.id_grupo IN (%s)
-					ORDER BY tagente.nombre',
-        $id_downtime,
-        $filter_cond,
-        $id_groups_str
-    );
-    $agents = db_get_all_rows_sql($sql);
-    if (empty($agents)) {
-        $agents = [];
-    }
-
-    $agent_ids = extract_column($agents, 'id_agente');
-    $agent_names = extract_column($agents, 'alias');
-
-    $agents = array_combine($agent_ids, $agent_names);
-    if ($agents === false) {
-        $agents = [];
-    }
+    $agents = get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str);
 
     $disabled_add_button = false;
     if (empty($agents) || $disabled_in_execution) {
@@ -940,7 +946,7 @@ if ($id_downtime > 0) {
     // Show available agents to include into downtime
     echo '<h4>'.__('Available agents').':</h4>';
     echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
-
+    html_print_input_hidden('all_agents', implode(',', array_keys($agents)));
     echo html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, false, true, true, '', false, 'width: 180px;');
 
     if ($type_downtime != 'quiet') {
@@ -949,6 +955,7 @@ if ($id_downtime > 0) {
         echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
     }
 
+    html_print_input_hidden('all_common_modules', '');
     echo html_print_select(
         [
             'common' => __('Show common modules'),

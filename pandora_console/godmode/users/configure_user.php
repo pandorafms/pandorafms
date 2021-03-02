@@ -1175,7 +1175,11 @@ if ($config['double_auth_enabled'] && check_acl($config['id_user'], 0, 'PM')) {
         || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
         || check_acl($config['id_user'], 0, 'PM')
     ) {
-        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+        if ($new_user === false) {
+            $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+        } else {
+            $double_authentication .= ui_print_help_tip(__('User must be created before activating double authentication.'), true);
+        }
     }
 
     // Dialog.
@@ -1581,6 +1585,7 @@ console.log(userID);
         data: {
             page: 'include/ajax/double_auth.ajax',
             id_user: userID,
+            id_user_auth: userID,
             get_double_auth_data_page: 1,
             FA_forced: 1,
             containerID: $dialogContainer.prop('id')
@@ -1637,6 +1642,8 @@ function show_double_auth_activation () {
 
     var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
     var $dialogContainer = $("div#dialog-double_auth-container");
+    // Uncheck until completed successfully.
+    $("input#checkbox-double_auth").prop( "checked", false );
 
     $dialogContainer.html($loadingSpinner);
 
@@ -1648,6 +1655,7 @@ function show_double_auth_activation () {
         data: {
             page: 'include/ajax/double_auth.ajax',
             id_user: userID,
+            id_user_auth: userID,
             FA_forced: 1,
             get_double_auth_info_page: 1,
             containerID: $dialogContainer.prop('id')
@@ -1690,8 +1698,6 @@ function show_double_auth_activation () {
                     request.abort();
                 // Remove the contained html
                 $dialogContainer.empty();
-
-                document.location.reload();
             }
         })
         .show();
@@ -1705,6 +1711,9 @@ function show_double_auth_deactivation () {
 
     var message = "<p><?php echo __('Are you sure?').'<br>'.__('The double authentication will be deactivated'); ?></p>";
     var $button = $("<input type=\"button\" value=\"<?php echo __('Deactivate'); ?>\" />");
+    // Prevent switch deactivaction until proceess is done
+    $("input#checkbox-double_auth").prop( "checked", true );
+
 
     $dialogContainer
         .empty()
@@ -1739,6 +1748,7 @@ function show_double_auth_deactivation () {
                 }
                 else if (data) {
                     $dialogContainer.html("<?php echo '<b><div class=\"green\">'.__('The double autentication was deactivated successfully').'</div></b>'; ?>");
+                    $("input#checkbox-double_auth").prop( "checked", false );
                 }
                 else {
                     $dialogContainer.html("<?php echo '<b><div class=\"red\">'.__('There was an error deactivating the double autentication').'</div></b>'; ?>");
@@ -1769,7 +1779,6 @@ function show_double_auth_deactivation () {
                 // Remove the contained html
                 $dialogContainer.empty();
 
-                document.location.reload();
             }
         })
         .show();

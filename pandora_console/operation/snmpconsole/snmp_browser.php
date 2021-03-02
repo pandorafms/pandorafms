@@ -321,20 +321,47 @@ function add_module_massive_controller(target = 'agent')
     });
 
     // Select all Items.
-    $("input[name='select_all_left']").click(function () {
-        $('#id_item option').map(function() {
-            $(this).prop('selected', true);
-        });
-        
+    $("#checkbox-select_all_left").change(function () {
+        if ($("#checkbox-select_all_left").prop('checked') == true) {
+            $('#id_item option').map(function() {
+                $(this).prop('selected', true);
+            });
+        } else {
+            $('#id_item option').map(function() {
+                $(this).prop('selected', false);
+            });
+        }
+
         return false;
     });
-    $("input[name='select_all_right']").click(function () {
-        $('#id_item2 option').map(function() {
-            $(this).prop('selected', true);
-        });
-        
+
+    $("#checkbox-select_all_right").change(function () {
+        if ($("#checkbox-select_all_right").prop('checked') == true) {
+            $('#id_item2 option').map(function() {
+                $(this).prop('selected', true);
+            });
+        } else {
+            $('#id_item2 option').map(function() {
+                $(this).prop('selected', false);
+            });
+        }
+
         return false;
     });
+
+    $("#id_item").click(function(e) {
+        if ($("#checkbox-select_all_left").prop('checked') == true) {
+            $("#checkbox-select_all_left").prop('checked', false);
+        }
+    });
+
+    $("#id_item2").click(function(e) {
+        if ($("#checkbox-select_all_right").prop('checked') == true) {
+            $("#checkbox-select_all_right").prop('checked', false);
+        }
+    });
+
+    $(".p-switch").css('display', 'table');
 
     // Select items.
     $("#right").click (function () {

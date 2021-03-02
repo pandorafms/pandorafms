@@ -784,7 +784,7 @@ foreach ($agents as $agent) {
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true).'</span></b></a>';
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';

@@ -1,5 +1,10 @@
 START TRANSACTION;
 
+ALTER TABLE `tinventory_alert` ADD COLUMN `alert_groups` TEXT NOT NULL;
+UPDATE `tinventory_alert` t1 INNER JOIN `tinventory_alert` t2 ON t1.id = t2.id SET t1.alert_groups = t2.id_group;
+
+ALTER TABLE `tnotification_source` ADD COLUMN `subtype_blacklist` TEXT;
+
 SET @plugin_name = 'Network&#x20;bandwidth&#x20;SNMP';
 SET @plugin_description = 'Retrieves&#x20;amount&#x20;of&#x20;digital&#x20;information&#x20;sent&#x20;and&#x20;received&#x20;from&#x20;device&#x20;or&#x20;filtered&#x20;&#x20;interface&#x20;index&#x20;over&#x20;a&#x20;particular&#x20;time&#x20;&#40;agent/module&#x20;interval&#41;.';
 SET @plugin_id = '';

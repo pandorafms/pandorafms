@@ -1492,9 +1492,9 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         true
     );
 
-    $table->data[2][0] = __($target_item.' available').html_print_input_image('select_all_left', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+    $table->data[2][0] = '<b>'.__($target_item.' available').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_left', 1, false, true);
     $table->data[2][1] = '';
-    $table->data[2][2] = __($target_item.' to apply').html_print_input_image('select_all_right', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+    $table->data[2][2] = '<b>'.__($target_item.' to apply').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_right', 1, false, true);
 
     $table->data[3][0] = html_print_select(
         [],

@@ -3821,7 +3821,9 @@ function ui_toggle(
             $main_class = '';
         }
 
-        $container_class = 'white-box-content-clean';
+        if (empty($container_class) === true) {
+            $container_class = 'white-box-content-clean';
+        }
     }
 
     // Link to toggle.
@@ -3943,7 +3945,24 @@ function ui_toggle(
 /**
  * Simplified way of ui_toggle ussage.
  *
- * @param array $data Arguments.
+ * @param array $data Arguments:
+ * 'content'
+ * 'name'
+ * 'title'
+ * 'id'
+ * 'hidden_default'
+ * 'return'
+ * 'toggle_class'
+ * 'container_class'
+ * 'main_class'
+ * 'img_a'
+ * 'img_b'
+ * 'clean'
+ * 'reverseImg'
+ * 'switch'
+ * 'attributes_switch'
+ * 'toggl_attr'
+ * 'switch_on'.
  *
  * @return string HTML code with toggle content.
  */

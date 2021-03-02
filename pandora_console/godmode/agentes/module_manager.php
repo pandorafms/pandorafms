@@ -222,9 +222,9 @@ if (! isset($id_agente)) {
 }
 
 
-$multiple_delete = (bool) get_parameter('multiple_delete');
+$module_action = (string) get_parameter('module_action');
 
-if ($multiple_delete) {
+if ($module_action === 'delete') {
     $id_agent_modules_delete = (array) get_parameter('id_delete');
 
     $count_correct_delete_modules = 0;
@@ -400,19 +400,59 @@ if ($multiple_delete) {
     if ($count_correct_delete_modules == 0) {
         ui_print_error_message(
             sprintf(
-                __('There was a problem deleting %s modules, none deleted.'),
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
                 $count_modules_to_delete
             )
         );
     } else {
         if ($count_correct_delete_modules == $count_modules_to_delete) {
-            ui_print_success_message(__('All Modules deleted succesfully'));
+            ui_print_success_message(__('Operation finished successfully.'));
         } else {
             ui_print_error_message(
                 sprintf(
-                    __('There was a problem only deleted %s modules of %s total.'),
-                    count_correct_delete_modules,
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $count_correct_delete_modules,
                     $count_modules_to_delete
+                )
+            );
+        }
+    }
+} else if ($module_action === 'disable') {
+    $id_agent_modules_disable = (array) get_parameter('id_delete');
+
+    $count_correct_delete_modules = 0;
+    $updated_count = 0;
+
+    foreach ($id_agent_modules_disable as $id_agent_module_disable) {
+        $sql = sprintf(
+            'UPDATE tagente_modulo
+                SET disabled = 1
+                WHERE id_agente_modulo = %d',
+            $id_agent_module_disable
+        );
+
+        if (db_process_sql($sql)) {
+            $updated_count++;
+        }
+    }
+
+    $count_modules_to_disable = count($id_agent_modules_disable);
+    if ($updated_count === 0) {
+        ui_print_error_message(
+            sprintf(
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
+                $count_modules_to_disable
+            )
+        );
+    } else {
+        if ($updated_count == $count_modules_to_disable) {
+            ui_print_success_message(__('Operation finished successfully.'));
+        } else {
+            ui_print_error_message(
+                sprintf(
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $updated_count,
+                    $count_modules_to_disable
                 )
             );
         }
@@ -845,6 +885,9 @@ foreach ($modules as $module) {
             'id_delete[]',
             $module['id_agente_modulo'],
             false,
+            true,
+            false,
+            '',
             true
         );
     }
@@ -1123,12 +1166,29 @@ html_print_table($table);
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_input_hidden('multiple_delete', 1);
-    html_print_submit_button(
-        __('Delete'),
-        'multiple_delete',
+
+    html_print_input_hidden('submit_modules_action', 1);
+
+    html_print_select(
+        [
+            'disable' => 'Disable selected modules',
+            'delete'  => 'Delete selected modules',
+        ],
+        'module_action',
+        '',
+        '',
+        '',
+        0,
         false,
-        'class="sub delete"'
+        false,
+        false
+    );
+
+    html_print_submit_button(
+        __('Execute action'),
+        'submit_modules_action',
+        false,
+        'class="sub next"'
     );
     echo '</div>';
     echo '</form>';

@@ -2179,3 +2179,20 @@ function db_process_sql_insert_multiple($table, $values)
     global $config;
     return mysql_db_process_sql_insert_multiple($table, $values);
 }
+
+
+/**
+ * Update multiples strings into database
+ *
+ * @param string $table  Table to update into
+ * @param mixed  $values A single value or array of values to update
+ *  (can be a multiple amount of rows).
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function db_process_sql_update_multiple($table, $values)
+{
+    global $config;
+    return mysql_db_process_sql_update_multiple($table, $values);
+}

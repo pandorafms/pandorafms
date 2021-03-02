@@ -1564,5 +1564,41 @@ function mysql_db_process_sql_insert_multiple($table, $values)
         $j++;
     }
 
-    return db_process_sql($query, 'insert_id');
+    return db_process_sql($query);
+}
+
+
+/**
+ * Updates multiples strings into database.
+ *
+ * @param string $table  Table to update into.
+ * @param mixed  $values A single value or array of values to update
+ *  (can be a multiple amount of rows).
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function mysql_db_process_sql_update_multiple($table, $values)
+{
+    // Empty rows or values not processed.
+    if (empty($values) === true || is_array($values) === false) {
+        return false;
+    }
+
+    $res = [];
+    foreach ($values as $field => $update) {
+        $query = sprintf('UPDATE `%s` SET', $table);
+        $query .= sprintf(' `%s` = CASE `%s`', $field, $field);
+        foreach ($update as $set => $where) {
+            $query .= sprintf(' WHEN "%s" THEN  "%s"', $where, $set);
+        }
+
+        $query .= sprintf(' ELSE `%s` END', $field);
+        $query .= sprintf(' WHERE `%s` IN (%s)', $field, implode(',', $update));
+
+        $res['table'] = $table;
+        $res['fields'][$field] = db_process_sql($query);
+    }
+
+    return $res;
 }

@@ -394,6 +394,12 @@ if (check_login()) {
         $index = 0;
         foreach ($columns as $col => $attr) {
             $table->head[$index] = $col;
+            if ($col === 'Data') {
+                $table->head[$index] .= ui_print_help_tip(
+                    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+                    true
+                );
+            }
 
             if (isset($attr['align'])) {
                 $table->align[$index] = $attr['align'];

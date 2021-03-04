@@ -2390,7 +2390,7 @@ function pandoraFlotArea(
 
         if (series.data[j]) {
           var y = series.data[j][1];
-          var x = Math.round(series.data[j][0]) - 1;
+          var x = Math.round(series.data[j][0]);
         }
       }
 

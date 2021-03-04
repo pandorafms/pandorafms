@@ -284,14 +284,34 @@ if (empty($server_id) === false) {
     $menu_form .= html_print_input_hidden('server', $server_id, true);
 }
 
+$menu_form .= '<div class="module_graph_menu_dropdown">';
+$menu_form .= '<div id="module_graph_menu_header" class="module_graph_menu_header">';
+$menu_form .= html_print_image(
+    'images/arrow_down_green.png',
+    true,
+    [
+        'class' => 'module_graph_menu_arrow',
+        'float' => 'left',
+    ],
+    false,
+    false,
+    true
+);
+$menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
+$menu_form .= '<b>'.__('Graph configuration menu').'</b>';
+$menu_form .= ui_print_help_tip(
+    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+    true
+);
+$menu_form .= '</span>';
+$menu_form .= '</div>';
+$menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">';
+$menu_form .= $form_table;
+$menu_form .= '</div>';
+$menu_form .= '</div>';
+$menu_form .= '</form>';
+
 echo $menu_form;
-echo '<div class="module_graph_menu_dropdown">
-        <div id="module_graph_menu_header" class="module_graph_menu_header">
-            '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-            <span style="flex: 2;">'.__('Graph configuration menu').'</span></div>
-        <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>
-    </div>';
-echo '</form>';
 
 // Hidden div to forced title.
 html_print_div(

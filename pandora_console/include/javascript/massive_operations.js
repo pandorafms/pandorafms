@@ -4,37 +4,7 @@ function massiveOperationValidation(contents, totalCount, limit, thisForm) {
 
   // If the amount of changes exceed the limit, the operation stops.
   if (totalCount > limit) {
-    // Set the content.
-    $("#massive_modal")
-      .empty()
-      .html(contents.html);
-    // Set the title.
-    $("#massive_modal").prop("title", contents.title);
-    // Build the dialog for show the mesage.
-    $("#massive_modal").dialog({
-      resizable: true,
-      draggable: true,
-      modal: true,
-      width: 800,
-      buttons: [
-        {
-          text: "OK",
-          click: function() {
-            hideSpinner();
-            $(this).dialog("close");
-            return false;
-          }
-        }
-      ],
-      overlay: {
-        opacity: 0.5,
-        background: "black"
-      },
-      closeOnEscape: false,
-      open: function(event, ui) {
-        $(".ui-dialog-titlebar-close").hide();
-      }
-    });
+    showMassiveModal(contents);
 
     return false;
   } else {
@@ -56,6 +26,39 @@ function massiveOperationValidation(contents, totalCount, limit, thisForm) {
   }
 
   return output;
+}
+
+function showMassiveModal(contents) {
+  $("#massive_modal")
+    .empty()
+    .html(contents.html);
+  // Set the title.
+  $("#massive_modal").prop("title", contents.title);
+  // Build the dialog for show the mesage.
+  $("#massive_modal").dialog({
+    resizable: true,
+    draggable: true,
+    modal: true,
+    width: 800,
+    buttons: [
+      {
+        text: "OK",
+        click: function() {
+          hideSpinner();
+          $(this).dialog("close");
+          return false;
+        }
+      }
+    ],
+    overlay: {
+      opacity: 0.5,
+      background: "black"
+    },
+    closeOnEscape: false,
+    open: function(event, ui) {
+      $(".ui-dialog-titlebar-close").hide();
+    }
+  });
 }
 
 /*

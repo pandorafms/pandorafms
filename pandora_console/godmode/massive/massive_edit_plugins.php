@@ -417,35 +417,6 @@ echo '</form>';
         canSubmit = val;
         $submitButton.prop('disabled', !val);
     }
-
-    var showSpinner = function () {
-        var $loadingSpinner = $pluginsSelect.siblings('img#loading_spinner');
-        
-        if ($loadingSpinner.length > 0) {
-            // Display inline instead using the show function
-            // cause its absolute positioning.
-            $loadingSpinner.css('display', 'inline');
-            return;
-        }
-        
-        $loadingSpinner = $('<img />');
-            
-        $loadingSpinner
-            .prop('id', 'loading_spinner')
-            .css('padding-left', '5px')
-            .css('position', 'absolute')
-            .css('top', $pluginsSelect.position().top + 'px')
-            .prop('src', "<?php echo $config['homeurl'].'/'; ?>images/spinner.gif");
-        
-        $pluginsSelect.parent().append($loadingSpinner);
-    }
-    
-    var hideSpinner = function () {
-        var $loadingSpinner = $pluginsSelect.siblings('img#loading_spinner');
-        
-        if ($loadingSpinner.length > 0)
-            $loadingSpinner.hide();
-    }
     
     var clearModulePluginMacrosValues = function () {
         $('input.plugin-macro')
@@ -876,6 +847,7 @@ echo '</form>';
     }
     
     var errorHandler = function (error) {
+        hideSpinner();
         console.log("<?php echo __('Error'); ?>: " + error.message);
         // alert("<?php echo __('Error'); ?>: " + err.message);
         
@@ -939,7 +911,10 @@ echo '</form>';
                         $agentModulesRow.show();
                     }
                     else {
-                        alert("<?php echo __('There are no modules using this plugin'); ?>");
+                        var contents = {};
+                        contents.html = '<?php echo __('There are no modules using this plugin'); ?>';
+                        contents.title = '<?php echo __('Massive operations'); ?>';
+                        showMassiveModal(contents);
                         
                         // Abort the another call
                         if (typeof pluginXHR !== 'undefined') {

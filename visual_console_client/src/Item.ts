@@ -844,7 +844,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
     if (
       prevProps &&
-      this.props.isLinkEnabled && prevProps.link !== this.props.link
+      this.props.isLinkEnabled &&
+      prevProps.link !== this.props.link
     ) {
       if (this.props.link !== null) {
         this.elementRef.setAttribute("href", this.props.link);
@@ -1024,8 +1025,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       this.props.type != ItemType.LINE_ITEM &&
       this.props.type != ItemType.NETWORK_LINK
     ) {
-      this.childElementRef.style.width = width > 0 ? `${width}px` : "0";
-      this.childElementRef.style.height = height > 0 ? `${height}px` : "0";
+      this.childElementRef.style.width = width > 0 ? `${width}px` : null;
+      this.childElementRef.style.height = height > 0 ? `${height}px` : null;
     }
 
     if (this.props.label && this.props.label.length > 0) {
@@ -1037,11 +1038,11 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         switch (this.props.labelPosition) {
           case "up":
           case "down":
-            table.style.width = width > 0 ? `${width}px` : "0";
+            table.style.width = width > 0 ? `${width}px` : null;
             break;
           case "left":
           case "right":
-            table.style.height = height > 0 ? `${height}px` : "0";
+            table.style.height = height > 0 ? `${height}px` : null;
             break;
         }
       }

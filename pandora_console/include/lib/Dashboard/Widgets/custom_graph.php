@@ -395,6 +395,11 @@ class CustomGraphWidget extends Widget
             break;
         }
 
+        // Not posible height < 0.
+        if ($height <= 0) {
+            $height = 10;
+        }
+
         $params = [
             'period'          => $this->values['period'],
             'width'           => ($size['width'] - 10),

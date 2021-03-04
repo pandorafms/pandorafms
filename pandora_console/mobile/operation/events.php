@@ -121,7 +121,7 @@ class Events
                         $status_icon = html_print_image($img_st, true, false, false, false, false, true);
 
                         $row = [];
-                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="javascript: openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
+                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
 
                         if ($event['id_agente'] == 0) {
                             $agent_name = __('System');

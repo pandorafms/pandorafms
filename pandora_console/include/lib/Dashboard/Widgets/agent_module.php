@@ -27,6 +27,8 @@
  */
 
 namespace PandoraFMS\Dashboard;
+use PandoraFMS\Agent;
+use PandoraFMS\Module;
 
 /**
  * Agent module Widgets.
@@ -244,18 +246,26 @@ class AgentModuleWidget extends Widget
             'label' => __('Filter modules'),
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM') || $this->values['mGroup'] == 0) {
+            $return_all_group = true;
+        }
+
         $inputs[] = [
             'class'     => 'flex flex-row',
             'id'        => 'select_multiple_modules_filtered',
             'arguments' => [
-                'type'               => 'select_multiple_modules_filtered',
-                'uniqId'             => $this->cellId,
-                'mGroup'             => $this->values['mGroup'],
-                'mRecursion'         => $this->values['mRecursion'],
-                'mModuleGroup'       => $this->values['mModuleGroup'],
-                'mAgents'            => $this->values['mAgents'],
-                'mShowCommonModules' => $this->values['mShowCommonModules'],
-                'mModules'           => $this->values['mModules'],
+                'type'                     => 'select_multiple_modules_filtered',
+                'uniqId'                   => $this->cellId,
+                'mGroup'                   => $this->values['mGroup'],
+                'mRecursion'               => $this->values['mRecursion'],
+                'mModuleGroup'             => $this->values['mModuleGroup'],
+                'mAgents'                  => $this->values['mAgents'],
+                'mShowCommonModules'       => $this->values['mShowCommonModules'],
+                'mModules'                 => $this->values['mModules'],
+                'mShowSelectedOtherGroups' => true,
+                'mReturnAllGroup'          => $return_all_group,
             ],
         ];
 
@@ -324,10 +334,6 @@ class AgentModuleWidget extends Widget
         }
 
         foreach ($agents as $agent) {
-            if (!users_access_to_agent($agent['id_agente'])) {
-                continue;
-            }
-
             $row = [];
             $row['agent_status'] = agents_get_status(
                 $agent['id_agente'],
@@ -335,16 +341,26 @@ class AgentModuleWidget extends Widget
             );
             $row['agent_name'] = $agent['nombre'];
             $row['agent_alias'] = $agent['alias'];
-            $agent_modules = agents_get_modules(
+
+            $sql = sprintf(
+                'SELECT id_agente_modulo, nombre
+                FROM tagente_modulo
+                WHERE id_agente = %d',
                 $agent['id_agente']
             );
+
+            $agent_modules = db_get_all_rows_sql($sql);
+
+            $agent_modules = array_combine(array_column($agent_modules, 'id_agente_modulo'), array_column($agent_modules, 'nombre'));
 
             $row['modules'] = [];
             foreach ($modules_by_name as $module) {
                 $row['modules'][$module['name']] = null;
                 foreach ($module['id'] as $module_id) {
-                    if (array_key_exists($module_id, $agent_modules)) {
-                        $row['modules'][$module['name']] = modules_get_agentmodule_status($module_id);
+                    if (array_key_exists($module_id, $agent_modules) === true) {
+                        $row['modules'][$module['name']] = modules_get_agentmodule_status(
+                            $module_id
+                        );
                         break;
                     }
                 }
@@ -361,12 +377,16 @@ class AgentModuleWidget extends Widget
      * Draw table Agent/Module.
      *
      * @param array $visualData Data for draw.
+     * @param array $allModules Data for th draw.
      *
      * @return string Html output.
      */
-    private function generateViewAgentModule(array $visualData):string
-    {
-        $table_data = '<div style="display:flex; width:100%; height:100%; margin: 10px;">';
+    private function generateViewAgentModule(
+        array $visualData,
+        array $allModules
+    ):string {
+        $style = 'display:flex; width:100%; height:100%; margin: 10px;';
+        $table_data = '<div style="'.$style.'">';
         $table_data .= '<table class="widget_agent_module" cellpadding="1" cellspacing="0" border="0" style="background-color: transparent; margin: 0 auto;">';
 
         if (empty($visualData) === false) {
@@ -374,20 +394,7 @@ class AgentModuleWidget extends Widget
 
             $array_names = [];
 
-            foreach ($visualData as $data) {
-                foreach ($data['modules'] as $module_name => $module) {
-                    if ($module === null
-                        || in_array($module_name, $array_names)
-                    ) {
-                        continue;
-                    } else {
-                        $array_names[] = $module_name;
-                    }
-                }
-            }
-
-            natcasesort($array_names);
-            foreach ($array_names as $module_name) {
+            foreach ($allModules as $module_name) {
                 $file_name = ui_print_truncate_text(
                     $module_name,
                     'module_small',
@@ -444,14 +451,17 @@ class AgentModuleWidget extends Widget
 
                 foreach ($row['modules'] as $module_name => $module) {
                     if ($module === null) {
-                        if (in_array($module_name, $array_names)) {
-                            $table_data .= "<td style='background-color: transparent;'>";
+                        if (in_array($module_name, $allModules) === true) {
+                            $style = 'background-color: transparent;';
+                            $table_data .= "<td style='".$style."'>";
                             $table_data .= '</td>';
                         } else {
                             continue;
                         }
                     } else {
-                        $table_data .= "<td style='text-align: center; background-color: transparent;'>";
+                        $style = 'text-align: center;';
+                        $style .= ' background-color: transparent;';
+                        $table_data .= "<td style='".$style."'>";
                         switch ($module) {
                             case AGENT_STATUS_NORMAL:
                                 $table_data .= \ui_print_status_image(
@@ -592,70 +602,49 @@ class AgentModuleWidget extends Widget
             return $output;
         }
 
-        if (isset($this->values['mAgents']) === true
-            && empty($this->values['mAgents']) === false
-        ) {
-            $sql = sprintf(
-                'SELECT id_agente,nombre,alias
-				FROM tagente
-				WHERE id_agente IN (%s)
-                ORDER BY id_agente',
-                $this->values['mAgents']
-            );
-            $agents = db_get_all_rows_sql($sql);
-            if ($agents === false) {
-                $agents = [];
+        // Estract info all modules selected.
+        $target_modules = explode(',', $this->values['mModules']);
+        $all_modules = Module::search(
+            ['id_agente_modulo' => $target_modules]
+        );
+        $reduceAllModules = array_reduce(
+            $all_modules,
+            function ($carry, $item) {
+                $carry[$item->name()] = null;
+                return $carry;
             }
+        );
 
-            $modules = false;
-            if (isset($this->values['mModules']) === true
-                && empty($this->values['mModules']) === false
-            ) {
-                $sql = sprintf(
-                    'SELECT nombre
-                    FROM tagente_modulo
-                    WHERE id_agente_modulo IN (%s)',
-                    $this->values['mModules']
+        \ksort($reduceAllModules);
+
+        $visualData = [];
+        // Estract info agents selected.
+        $target_agents = explode(',', $this->values['mAgents']);
+        foreach ($target_agents as $agent_id) {
+            try {
+                $agent = new Agent($agent_id);
+                $visualData[$agent_id]['agent_status'] = $agent->lastStatus();
+                $visualData[$agent_id]['agent_name'] = $agent->name();
+                $visualData[$agent_id]['agent_alias'] = $agent->alias();
+
+                $modules = $agent->searchModules(
+                    ['id_agente_modulo' => $target_modules]
                 );
 
-                $arrayNames = db_get_all_rows_sql($sql);
-                $names = array_reduce(
-                    $arrayNames,
-                    function ($carry, $item) {
-                        $carry[] = $item['nombre'];
-                        return $carry;
-                    }
-                );
-
-                $sql = sprintf(
-                    'SELECT id_agente_modulo,nombre
-                    FROM tagente_modulo
-                    WHERE id_agente IN (%s)
-                    AND nombre IN ("%s")
-                    AND delete_pending = 0
-                    ORDER BY nombre',
-                    $this->values['mAgents'],
-                    implode('","', $names)
-                );
-
-                $modules = index_array(
-                    db_get_all_rows_sql($sql),
-                    'id_agente_modulo',
-                    'nombre'
-                );
+                $visualData[$agent_id]['modules'] = $reduceAllModules;
+                foreach ($modules as $module) {
+                    $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
+                }
+            } catch (Exception $e) {
+                echo 'Error: '.$e->getMessage();
             }
-
-            if ($modules === false) {
-                $modules = [];
-            }
-        } else {
-            $agents = [];
-            $modules = [];
         }
 
-        $visualData = $this->generateDataAgentModule($agents, $modules);
-
-        $output = $this->generateViewAgentModule($visualData);
+        $allModules = array_keys($reduceAllModules);
+        $output = $this->generateViewAgentModule(
+            $visualData,
+            $allModules
+        );
 
         return $output;
     }

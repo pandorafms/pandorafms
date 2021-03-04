@@ -141,7 +141,7 @@ if ($searchMaps) {
         'text'   => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
             'images/visual_console.png',
             true,
-            ['title' => __('Maps')]
+            ['title' => __('Visual consoles')]
         ).'</a>',
         'active' => $searchTab == 'maps',
     ];

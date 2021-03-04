@@ -114,8 +114,8 @@ $controls = [
 $layers = gis_get_layers($idMap);
 
 // Render map
-$has_management_acl = check_acl($config['id_user'], $map['group_id'], 'MW')
-    || check_acl($config['id_user'], $map['group_id'], 'MM');
+$has_management_acl = check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+    || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM');
 
 $buttons = [];
 

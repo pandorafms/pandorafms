@@ -19,7 +19,7 @@ $maps = false;
 $totalMaps = 0;
 
 if ($searchMaps) {
-    $user_groups = users_get_groups($config['id_user'], 'AR', false);
+    $user_groups = users_get_groups($config['id_user'], 'AR', true);
     $id_user_groups = array_keys($user_groups);
     $id_user_groups_str = implode(',', $id_user_groups);
 

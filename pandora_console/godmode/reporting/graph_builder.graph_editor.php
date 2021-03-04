@@ -235,7 +235,7 @@ if ($count_module_array > 0) {
         echo '<table><tr>';
 
         echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_label=1&id=".$id_graph.'&graph='.$idgs_array[$a]."'>";
-        html_print_input_text('label', $label_array[$a], '', 20, 30, false, false);
+        html_print_input_text('label', $label_array[$a], '', 30, 80, false, false);
         html_print_submit_button('Ok', 'btn', false, '', false);
         echo '</form>';
 

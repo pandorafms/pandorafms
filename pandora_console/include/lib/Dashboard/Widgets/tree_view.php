@@ -344,6 +344,12 @@ class TreeViewWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -354,6 +360,7 @@ class TreeViewWidget extends Widget
                 'privilege'      => 'AR',
                 'selected'       => $values['groupId'],
                 'return'         => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 

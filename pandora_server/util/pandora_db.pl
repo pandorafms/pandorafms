@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.751 PS210107";
+my $version = "7.0NG.752 PS210304";
 
 # Pandora server configuration
 my %conf;
@@ -428,8 +428,8 @@ sub pandora_purgedb ($$) {
 ###############################################################################
 # Compact agent data.
 ###############################################################################
-sub pandora_compactdb ($$) {
-	my ($conf, $dbh) = @_;
+sub pandora_compactdb ($$$) {
+	my ($conf, $dbh, $dbh_conf) = @_;
 
 	my %count_hash;
 	my %id_agent_hash;
@@ -534,9 +534,9 @@ sub pandora_compactdb ($$) {
 
 	# Mark the last compact date
 	if (defined ($conf->{'_last_compact'})) {
-		db_do ($dbh, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
 	} else {
-		db_do ($dbh, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
 	}
 }
 
@@ -581,6 +581,28 @@ sub pandora_init_pdb ($) {
 	help_screen () if ($conf->{'_pandora_path'} eq '');
 }
 
+########################################################################
+# Prepares conf read from historical database settings.
+########################################################################
+sub pandoradb_load_history_conf($) {
+	my $dbh = shift;
+
+	my @options = get_db_rows($dbh, 'SELECT * FROM `tconfig`');
+
+	my %options = map 
+	{
+		'_' . $_->{'token'} => $_->{'value'}
+	} @options;
+
+	$options{'_days_autodisable_deletion'} = 0 unless defined ($options{'_days_autodisable_deletion'});
+	$options{'_num_past_special_days'} = 0 unless defined($options{'_num_past_special_days'});
+	$options{'_delete_old_network_matrix'} = 0 unless defined($options{'_delete_old_network_matrix'});
+	$options{'_delete_old_messages'} = 0 unless defined($options{'_delete_old_messages'});
+	$options{'_netflow_max_lifetime'} = 0 unless defined($options{'_netflow_max_lifetime'});
+	$options{'claim_back_snmp_modules'} = 0 unless defined($options{'claim_back_snmp_modules'});
+
+	return \%options;
+}
 
 ########################################################################
 # Read external configuration file.
@@ -651,7 +673,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
-   	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
+ 	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_session_timeout'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'session_timeout'");
 
@@ -726,7 +748,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} ne "" && $conf->{'_delete_notinit'} == 1) {
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} ne "" && $conf->{'_delete_notinit'} eq "1") {
 		log_message ('CHECKDB', "Deleting not-init data.");
 		my @modules = get_db_rows ($dbh,
 			'SELECT id_agente_modulo, id_agente
@@ -956,7 +978,7 @@ sub pandora_delete_old_module_data {
 sub pandora_delete_old_export_data {
 	my ($dbh, $ulimit_timestamp) = @_;
 
-	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
+	log_message ('PURGE', "Deleting old export data from tserver_export_data");
 	while((my $rc = db_delete_limit ($dbh, 'tserver_export_data', 'UNIX_TIMESTAMP(timestamp) < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp)) ne '0E0') {
 		print "RC:$rc\n";
 		usleep (10000);
@@ -1023,7 +1045,7 @@ sub pandoradb_main ($$$) {
 
 	# Compact on if enable and DaysCompact are below DaysPurge 
 	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
-		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);
+		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
 	}
 
 	# Update tconfig with last time of database maintance time (now)
@@ -1081,8 +1103,9 @@ if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) {
 	exit 1;
 }
 
-# Get a lock
-my $lock = db_get_lock ($dbh, 'pandora_db');
+# Get a lock on dbname.
+my $lock_name = $conf{'dbname'};
+my $lock = db_get_lock ($dbh, $lock_name);
 if ($lock == 0 && $conf{'_force'} == 0) { 
 	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
@@ -1091,9 +1114,26 @@ if ($lock == 0 && $conf{'_force'} == 0) {
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
 
+# history_dbh is unset in pandoradb_main if not in use.
+if (defined($history_dbh)) {
+	log_message('', " [>] DB Tool running on historical database.\n");
+	my $h_conf = pandoradb_load_history_conf($history_dbh);
+
+	# Keep base settings.
+	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
+
+	# Re-launch maintenance process for historical database.
+	pandoradb_main(
+		$h_conf,
+		$history_dbh,
+		undef
+	);
+
+}
+
 # Release the lock
 if ($lock == 1) {
-	db_release_lock ($dbh, 'pandora_db');
+	db_release_lock ($dbh, $lock_name);
 }
 
 # Cleanup and exit

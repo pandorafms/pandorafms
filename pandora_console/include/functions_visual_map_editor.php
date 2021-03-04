@@ -1308,6 +1308,13 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
         visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
         visual_map_print_button_editor('color_cloud', __('Color cloud'), 'left', false, 'color_cloud_min', true);
+    if (isset($config['legacy_vc']) === false
+        || (bool) $config['legacy_vc'] === false
+    ) {
+        // Applies only on modern VC.
+        visual_map_print_button_editor('network_link', __('Network link'), 'left', false, 'network_link_min', true);
+    }
+
     if (defined('METACONSOLE')) {
         echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl_static'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
 			class="forced_title" alt="The data displayed in editor mode is not real"></a>';

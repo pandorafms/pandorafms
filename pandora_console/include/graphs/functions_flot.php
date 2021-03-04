@@ -262,15 +262,17 @@ function flot_area_graph(
         $params['height'] = 1;
     }
 
-    if (!$vconsole) {
-        $return .= "<div id='overview_$graph_id' class='overview_graph'
-						style='margin:0px; margin-top:30px; margin-bottom:50px; width: ".$params['width']."px; height: 200px;'></div>";
+    if ((bool) $params['vconsole'] === false) {
+        $return .= '<div id="overview_'.$graph_id.'" class="overview_graph" style="margin:0px; margin-top:30px; margin-bottom:50px; width:'.$params['width'].'px; height: 200px;"></div>';
+        $legend_top = 10;
+        if (empty($params['show_legend']) === false) {
+            $legend_top = (20 + (count($legend) * 18));
+        }
 
-        if ($water_mark != '') {
-            $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark['url']."'></div>";
-            $watermark = 'true';
-        } else {
-            $watermark = 'false';
+        if ($water_mark != '' && (bool) $params['dashboard'] === false) {
+            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; top: '.$legend_top.'px; left: calc(100% - 100px);">';
+            $return .= '<img id="watermark_image_'.$graph_id.'" src="'.$water_mark['url'].'">';
+            $return .= '</div>';
         }
     }
 
@@ -314,7 +316,6 @@ function flot_area_graph(
     $return .= $legend.", \n";
     $return .= $series_type.", \n";
     $return .= $color.", \n";
-    $return .= $watermark.", \n";
     $return .= $date_array.", \n";
     $return .= $data_module_graph.", \n";
     $return .= $params.", \n";

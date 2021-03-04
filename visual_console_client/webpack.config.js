@@ -59,10 +59,11 @@ module.exports = {
             loader: "postcss-loader",
             options: {
               plugins: () => [
-                // To improve the support for old browsers.
-                require("autoprefixer")({
-                  browsers: ["> 1%", "last 2 versions"]
-                })
+                // Moved to package.json (?)
+                // // To improve the support for old browsers.
+                // require("autoprefixer")({
+                //   browsers: ["> 1%", "last 2 versions"]
+                // })
               ]
             }
           }

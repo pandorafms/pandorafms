@@ -133,13 +133,18 @@ if ($action == 'new') {
 	src="">';
 }
 
-$table->data[1][0] = __('Group:');
+$table->data[1][0] = __('Group');
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
 
 $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'RW',
-    true,
+    $return_all_group,
     'id_group',
     $idGroup,
     '',

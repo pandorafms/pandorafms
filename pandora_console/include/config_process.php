@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210105';
-$pandora_version = 'v7.0NG.751';
+$build_version = 'PC210304';
+$pandora_version = 'v7.0NG.752';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -40,18 +40,10 @@ if (!is_dir($config['homedir'])) {
 }
 
 
+
 // Help to debug problems. Override global PHP configuration
 global $develop_bypass;
-if ($develop_bypass != 1) {
-    // error_reporting(E_ALL);
-    if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-        error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-    } else {
-        error_reporting(E_ALL & ~E_NOTICE);
-    }
-
-    ini_set('display_errors', 0);
-} else {
+if ((int) $develop_bypass === 1) {
     // Develop mode, show all notices and errors on Console (and log it)
     if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
         error_reporting(E_ALL & ~E_DEPRECATED);
@@ -172,6 +164,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 config_process_config();
 config_prepare_session();
+
+if ((bool) $config['console_log_enabled'] === true) {
+    error_reporting(E_ALL ^ E_NOTICE);
+}
 
 // Set a the system timezone default
 if ((!isset($config['timezone'])) or ($config['timezone'] == '')) {
@@ -304,7 +300,7 @@ switch ($config['dbtype']) {
 
 // ======================================================================
 // Menu display mode.
-if ($_SESSION['menu_type']) {
+if (isset($_SESSION['meny_type']) === true && $_SESSION['menu_type']) {
     $config['menu_type'] = $_SESSION['menu_type'];
 } else {
     $config['menu_type'] = 'classic';

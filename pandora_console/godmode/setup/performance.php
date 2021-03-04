@@ -64,7 +64,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
         $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -390,8 +390,8 @@ if ($config['history_db_enabled'] == 1) {
 
     $config_history = false;
     if ($config['history_db_connection']) {
-        $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+        $history_connect = mysql_db_process_sql(
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -408,6 +408,7 @@ if ($config['history_db_enabled'] == 1) {
             if (isset($config_history_array) && is_array($config_history_array)) {
                 foreach ($config_history_array as $key => $value) {
                     $config_history[$value['token']] = $value['value'];
+                    $config_history = true;
                 }
             }
         } else {
@@ -648,6 +649,30 @@ $table_other->data[14][1] = html_print_input_text(
     $config['row_limit_csv'],
     '',
     5,
+    10,
+    true
+);
+
+$table_other->data[15][0] = __('SNMP walk binary');
+$table_other->data[15][1] = html_print_input_text(
+    'snmpwalk',
+    $config['snmpwalk'],
+    '',
+    50,
+    10,
+    true
+);
+
+$tip = ui_print_help_tip(
+    __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
+    true
+);
+$table_other->data[16][0] = __('SNMP walk binary (fallback)').$tip;
+$table_other->data[16][1] = html_print_input_text(
+    'snmpwalk_fallback',
+    $config['snmpwalk_fallback'],
+    '',
+    50,
     10,
     true
 );

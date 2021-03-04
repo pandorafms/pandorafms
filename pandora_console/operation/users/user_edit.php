@@ -426,7 +426,7 @@ if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $
     $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
 }
 
-if ($double_auth_enabled && $config['double_auth_enabled'] && $config['2FA_all_users'] != '') {
+if ($double_auth_enabled && $config['double_auth_enabled']) {
     $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
@@ -981,6 +981,7 @@ function show_double_auth_info () {
         data: {
             page: 'include/ajax/double_auth.ajax',
             id_user: userID,
+            id_user_auth: userID,
             get_double_auth_data_page: 1,
             containerID: $dialogContainer.prop('id')
         },

@@ -675,6 +675,8 @@ function modules_create_agent_module(
     $time = 0;
     if (empty($values['interval']) === false) {
         $time = (time() - (int) $values['interval']);
+    } else {
+        $values['interval'] = null;
     }
 
     $result = db_process_sql_insert(
@@ -2359,7 +2361,7 @@ function modules_get_agentmodule_data_for_humans($module)
         } else {
             $salida = ui_print_module_string_value(
                 $module['datos'],
-                $module['id'],
+                empty($module['id']) ? $module['id_agente_modulo'] : $module['id'],
                 $module['current_interval'],
                 $module['module_name'],
                 $module['serverID'] ? $module['serverID'] : 0

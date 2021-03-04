@@ -92,7 +92,7 @@ $alive_animation = agents_get_status_animation(
 $agent_name = ui_print_agent_name(
     $agent['id_agente'],
     true,
-    500,
+    'agent_medium',
     'font-size: medium;font-weight:bold',
     true
 );

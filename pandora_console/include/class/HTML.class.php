@@ -254,7 +254,7 @@ class HTML
      *
      * @return boolean Alowed or not.
      */
-    public function aclMulticheck($access=null)
+    public function aclMulticheck($access=null, $id_group=0)
     {
         global $config;
 
@@ -268,7 +268,7 @@ class HTML
         foreach ($perms as $perm) {
             $allowed = $allowed || (bool) check_acl(
                 $config['id_user'],
-                0,
+                $id_group,
                 $perm
             );
         }
@@ -610,9 +610,15 @@ class HTML
         }
 
         if (is_array($input['block_content']) === true) {
+            if (empty($input['label']) === false) {
+                $output .= '<div class="label_select">';
+                $output .= $input['label'];
+                $output .= '</div>';
+            }
+
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsGrid($input, $return);
             }
@@ -717,7 +723,7 @@ class HTML
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
-            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<ul class="wizard list '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsList($input, $return);
             }
@@ -908,10 +914,34 @@ class HTML
                     $output .= ' style="'.$width.$padding_left.$padding_right;
                     $output .= $extra_styles.'">';
 
+                    // Toggle option.
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
                             if ($input['arguments']['type'] != 'submit') {
-                                $output .= self::printBlockAsGrid($input, true);
+                                if ($input['toggle'] === true) {
+                                    $output .= ui_print_toggle(
+                                        [
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'title'           => $input['toggle_title'],
+                                            'id'              => $input['toggle_id'],
+                                            'hidden_default'  => $input['toggle_hidden_default'],
+                                            'content'         => self::printBlockAsGrid(
+                                                $input,
+                                                true
+                                            ),
+                                            'return'          => true,
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'toggle_class'    => $input['toggle_toggle_class'],
+                                            'main_class'      => $input['toggle_main_class'],
+                                            'container_class' => $input['toggle_container_class'],
+                                            'img_a'           => $input['toggle_img_a'],
+                                            'img_b'           => $input['toggle_img_b'],
+                                            'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                                        ]
+                                    );
+                                } else {
+                                    $output .= self::printBlockAsGrid($input, true);
+                                }
                             } else {
                                 $output_submit .= self::printBlockAsGrid($input, true);
                             }

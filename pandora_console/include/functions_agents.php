@@ -3772,7 +3772,7 @@ function agents_get_sap_agents($id_agent)
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
         $sql = sprintf(
-            'SELECT ta.id_agente,ta.alias
+            'SELECT ta.id_agente,ta.alias, ta.id_grupo
             FROM tagente ta
             INNER JOIN tagente_modulo tam 
             ON tam.id_agente = ta.id_agente 

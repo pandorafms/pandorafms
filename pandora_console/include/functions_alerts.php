@@ -2125,8 +2125,6 @@ function get_group_alerts(
         $disabled = $filter;
     }
 
-    $filter .= ' AND talert_template_modules.disabled = 0 ';
-
     switch ($disabled) {
         case 'notfired':
             $filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -2144,8 +2142,12 @@ function get_group_alerts(
             $filter .= ' AND talert_template_modules.disabled = 0';
         break;
 
-        default:
+        case 'all':
             $filter .= '';
+        break;
+
+        default:
+            $filter .= ' AND talert_template_modules.disabled = 0 ';
         break;
     }
 
@@ -2186,8 +2188,8 @@ function get_group_alerts(
                         WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
-						FROM tagente_modulo
-						WHERE delete_pending = 0
+						FROM tagente_modulo tam
+						WHERE delete_pending = 0 AND tam.disabled = 0
 							AND id_agente IN (SELECT id_agente
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg

@@ -1604,10 +1604,10 @@ function mysql_db_process_sql_update_multiple($table, $values, $only_query)
         $query .= sprintf(' ELSE `%s` END', $field);
         $query .= sprintf(' WHERE `%s` IN (%s)', $field, implode(',', $update));
 
-        $res['table'] = $table;
         if ($only_query === true) {
-            $res['fields'][$field] = $query;
+            $res[] = $query;
         } else {
+            $res['table'] = $table;
             $res['fields'][$field] = db_process_sql($query);
         }
     }

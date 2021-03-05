@@ -13908,18 +13908,30 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
+    $user_defined = false;
     if (is_array($other['data']) === true) {
+        $user_defined = true;
+        // Parameters received by user call.
         $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+
+        // Base64.
+        $base64 = $other['data'][1];
+
         // 1 hour by default.
         $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
 
         // Graph height when send email by alert
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+
+        // Graph width (optional).
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
     } else {
+        // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
         $graph_threshold = 0;
-        $other['data'][1] = 0;
+        $base64 = 0;
         $height = 225;
+        $width = '90%';
     }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
@@ -13954,7 +13966,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
     // Format MIME RFC 2045 (line break 76 chars).
     $graph_html = chunk_split(grafico_modulo_sparse($params));
 
-    if ($other['data'][1]) {
+    if ((bool) $base64 === false) {
         header('Content-type: text/html');
         returnData('string', ['type' => 'string', 'data' => '<img src="data:image/jpeg;base64,'.$graph_html.'">']);
     } else {

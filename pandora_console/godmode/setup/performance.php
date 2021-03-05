@@ -653,6 +653,30 @@ $table_other->data[14][1] = html_print_input_text(
     true
 );
 
+$table_other->data[15][0] = __('SNMP walk binary');
+$table_other->data[15][1] = html_print_input_text(
+    'snmpwalk',
+    $config['snmpwalk'],
+    '',
+    50,
+    10,
+    true
+);
+
+$tip = ui_print_help_tip(
+    __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
+    true
+);
+$table_other->data[16][0] = __('SNMP walk binary (fallback)').$tip;
+$table_other->data[16][1] = html_print_input_text(
+    'snmpwalk_fallback',
+    $config['snmpwalk_fallback'],
+    '',
+    50,
+    10,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';

@@ -469,7 +469,29 @@ if (users_can_manage_group_all('MM') === true) {
 }
 
 $table->data[2][0] = __('Group');
-$table->data[2][1] = html_print_select_groups(false, 'IW', $return_all_group, 'map_group_id', $map_group_id, '', '', '', true);
+$table->data[2][1] = html_print_select_groups(
+    false,
+    'IW',
+    $return_all_group,
+    'map_group_id',
+    $map_group_id,
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    'id_grupo',
+    false,
+    false,
+    false,
+    '250px'
+);
 
 $table->data[3][0] = __('Default zoom');
 $table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);

@@ -107,7 +107,14 @@ final class EventsHistory extends Item
         if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
             $data['width'] = 420;
             $data['height'] = 80;
+
+            if ($ratio != 0) {
+                $data['width'] = ($data['width'] * $ratio);
+                $data['height'] = ($data['height'] * $ratio);
+            }
         }
+
+        $data['height'] = ($data['height'] - 20);
 
         if ((int) $data['width'] < 11) {
             $data['width'] = 11;
@@ -122,7 +129,7 @@ final class EventsHistory extends Item
             $agentId,
             $moduleId,
             100,
-            ((int) $data['height'] - 20),
+            (int) $data['height'],
             static::extractMaxTime($data),
             '',
             true,

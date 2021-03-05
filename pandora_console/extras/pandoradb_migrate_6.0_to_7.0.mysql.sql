@@ -363,6 +363,7 @@ CREATE TABLE IF NOT EXISTS `tinventory_alert`(
     `last_fired` text NOT NULL default '',
     `disable_event` tinyint(1) UNSIGNED default 0,
     `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
 	PRIMARY KEY (`id`),
     FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -1410,13 +1411,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 42);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 44);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 750);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 752);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -2392,6 +2393,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

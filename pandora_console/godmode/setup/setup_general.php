@@ -759,7 +759,7 @@ echo '<legend>'.__('Mail configuration').'</legend>';
             '',
             'class="sub next"',
             true
-        ).'&nbsp&nbsp<span id="email_test_sent_message" style="display:none;">Email sent</span><span id="email_test_failure_message" style="display:none;">Email could not been sent</span>';
+        ).'&nbsp&nbsp<span id="email_test_sent_message" style="display:none;">Email sent</span><span id="email_test_failure_message" style="display:none;">Email could not be sent</span>';
 
         echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" style="display:none">'.html_print_table($table_mail_test, true).'</div>';
     }

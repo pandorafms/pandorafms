@@ -2878,20 +2878,21 @@ function events_get_group_events_steps(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param integer $id_agent                   Agent id to get events.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $history                    History.
- * @param boolean $show_summary_group         Show_summary_group.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $id_group                   Id_group.
- * @param boolean $events_group               Events_group.
- * @param boolean $id_agent_module            Id_agent_module.
- * @param boolean $events_module              Events_module.
- * @param boolean $id_server                  Id_server.
+ * @param integer $id_agent                    Agent id to get events.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $history                     History.
+ * @param boolean $show_summary_group          Show_summary_group.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $id_group                    Id_group.
+ * @param boolean $events_group                Events_group.
+ * @param boolean $id_agent_module             Id_agent_module.
+ * @param boolean $events_module               Events_module.
+ * @param boolean $id_server                   Id_server.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -2909,7 +2910,8 @@ function events_get_agent(
     $events_group=false,
     $id_agent_module=false,
     $events_module=false,
-    $id_server=false
+    $id_server=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -3015,6 +3017,10 @@ function events_get_agent(
 
     if (!empty($filter_event_filter_search)) {
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
+    }
+
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
     }
 
     if ($events_group) {
@@ -5114,14 +5120,15 @@ function events_clean_tags($tags)
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $id_group                   Group id to get events for.
- * @param integer $period                     Period  in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $id_group                    Group id to get events for.
+ * @param integer $period                      Period  in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5133,7 +5140,8 @@ function events_get_count_events_by_agent(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -5233,6 +5241,10 @@ function events_get_count_events_by_agent(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $tagente = 'tagente';
     $tevento = 'tevento';
 
@@ -5285,14 +5297,15 @@ function events_get_count_events_by_agent(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param array   $filter                     Use target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param array   $filter                      Use target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5304,7 +5317,8 @@ function events_get_count_events_validated_by_user(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
     $tevento = 'tevento';
@@ -5426,6 +5440,10 @@ function events_get_count_events_validated_by_user(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $sql = sprintf(
         'SELECT 
           te.id_usuario,
@@ -5474,14 +5492,15 @@ function events_get_count_events_validated_by_user(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $filter                     Target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $filter                      Target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5493,7 +5512,8 @@ function events_get_count_events_by_criticity(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -5617,6 +5637,10 @@ function events_get_count_events_by_criticity(
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
     }
 
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
+    }
+
     $sql = sprintf(
         'SELECT 
           te.criticity,
@@ -5656,14 +5680,15 @@ function events_get_count_events_by_criticity(
  *
  * The returned events will be in the time interval ($date - $period, $date]
  *
- * @param mixed   $filter                     Target filter.
- * @param integer $period                     Period in seconds to get events.
- * @param integer $date                       Beginning date to get events.
- * @param boolean $filter_event_severity      Filter_event_severity.
- * @param boolean $filter_event_type          Filter_event_type.
- * @param boolean $filter_event_status        Filter_event_status.
- * @param boolean $filter_event_filter_search Filter_event_filter_search.
- * @param boolean $dbmeta                     Dbmeta.
+ * @param mixed   $filter                      Target filter.
+ * @param integer $period                      Period in seconds to get events.
+ * @param integer $date                        Beginning date to get events.
+ * @param boolean $filter_event_severity       Filter_event_severity.
+ * @param boolean $filter_event_type           Filter_event_type.
+ * @param boolean $filter_event_status         Filter_event_status.
+ * @param boolean $filter_event_filter_search  Filter_event_filter_search.
+ * @param boolean $dbmeta                      Dbmeta.
+ * @param boolean $filter_event_filter_exclude Filter_event_filter_exclude.
  *
  * @return array An array with all the events happened.
  */
@@ -5675,7 +5700,8 @@ function events_get_count_events_validated(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $dbmeta=false
+    $dbmeta=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
     $tevento = 'tevento';
@@ -5826,6 +5852,10 @@ function events_get_count_events_validated(
 
     if (!empty($filter_event_filter_search)) {
         $sql_where .= ' AND (evento LIKE "%'.io_safe_input($filter_event_filter_search).'%" OR id_evento LIKE "%'.io_safe_input($filter_event_filter_search).'%")';
+    }
+
+    if (!empty($filter_event_filter_exclude)) {
+        $sql_where .= ' AND (evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%" AND id_evento NOT LIKE "%'.io_safe_input($filter_event_filter_exclude).'%")';
     }
 
     $sql = sprintf(

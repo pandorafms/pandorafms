@@ -60,7 +60,6 @@ if ($config['force_instant_logout'] === true) {
     }
 }
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }

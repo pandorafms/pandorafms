@@ -13823,7 +13823,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
     $graph_html = grafico_modulo_sparse($params);
 
-    if ($base64) {
+    if ((bool) $base64 === false) {
         header('Content-type: text/html');
         returnData('string', ['type' => 'string', 'data' => '<img src="data:image/jpeg;base64,'.$graph_html.'">']);
     } else {

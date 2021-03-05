@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for edit plugins in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 check_login();
@@ -371,10 +386,7 @@ echo '<form method="POST" id="form-massive_plugin_edition"
 
 html_print_table($table);
 
-echo "<div style='text-align: right; width: ".$table->width."'>";
-html_print_input_hidden('update', 1);
-html_print_submit_button(__('Update'), 'upd-btn', false, 'class="sub upd"');
-echo '</div>';
+attachActionButton('update', 'update', $table->width);
 
 echo '</form>';
 
@@ -404,35 +416,6 @@ echo '</form>';
         
         canSubmit = val;
         $submitButton.prop('disabled', !val);
-    }
-
-    var showSpinner = function () {
-        var $loadingSpinner = $pluginsSelect.siblings('img#loading_spinner');
-        
-        if ($loadingSpinner.length > 0) {
-            // Display inline instead using the show function
-            // cause its absolute positioning.
-            $loadingSpinner.css('display', 'inline');
-            return;
-        }
-        
-        $loadingSpinner = $('<img />');
-            
-        $loadingSpinner
-            .prop('id', 'loading_spinner')
-            .css('padding-left', '5px')
-            .css('position', 'absolute')
-            .css('top', $pluginsSelect.position().top + 'px')
-            .prop('src', "<?php echo $config['homeurl'].'/'; ?>images/spinner.gif");
-        
-        $pluginsSelect.parent().append($loadingSpinner);
-    }
-    
-    var hideSpinner = function () {
-        var $loadingSpinner = $pluginsSelect.siblings('img#loading_spinner');
-        
-        if ($loadingSpinner.length > 0)
-            $loadingSpinner.hide();
     }
     
     var clearModulePluginMacrosValues = function () {
@@ -864,6 +847,7 @@ echo '</form>';
     }
     
     var errorHandler = function (error) {
+        hideSpinner();
         console.log("<?php echo __('Error'); ?>: " + error.message);
         // alert("<?php echo __('Error'); ?>: " + err.message);
         
@@ -927,7 +911,10 @@ echo '</form>';
                         $agentModulesRow.show();
                     }
                     else {
-                        alert("<?php echo __('There are no modules using this plugin'); ?>");
+                        var contents = {};
+                        contents.html = '<?php echo __('There are no modules using this plugin'); ?>';
+                        contents.title = '<?php echo __('Massive operations'); ?>';
+                        showMassiveModal(contents);
                         
                         // Abort the another call
                         if (typeof pluginXHR !== 'undefined') {

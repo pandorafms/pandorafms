@@ -13773,7 +13773,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
 
         // Base64.
-        $graph_threshold = (!empty($other) && isset($other['data'][1]) && $other['data'][1]) ? $other['data'][1] : 0;
+        $base64 = $other['data'][1];
 
         // 1 hour by default.
         $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
@@ -13787,7 +13787,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
         $graph_threshold = 0;
-        $other['data'][1] = 0;
+        $base64 = 0;
         $height = 225;
         $width = '90%';
     }
@@ -13823,7 +13823,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
     $graph_html = grafico_modulo_sparse($params);
 
-    if ($other['data'][1]) {
+    if ($base64) {
         header('Content-type: text/html');
         returnData('string', ['type' => 'string', 'data' => '<img src="data:image/jpeg;base64,'.$graph_html.'">']);
     } else {

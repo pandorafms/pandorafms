@@ -1058,7 +1058,6 @@ var TreeController = {
                       $node.addClass("children-loaded");
                     },
                     success: function(data, textStatus, xhr) {
-                      console.log(data);
                       if (data.success) {
                         var $group = $node.children("ul.tree-group");
                         if (
@@ -1078,8 +1077,8 @@ var TreeController = {
                           var rawTree = Object.values(data.tree);
                           // Sorting tree by description (services.treeview_services.php).
                           rawTree.sort(function(a, b) {
-                            var x = a.description.toLowerCase();
-                            var y = b.description.toLowerCase();
+                            var x = a.elementDescription.toLowerCase();
+                            var y = b.elementDescription.toLowerCase();
                             if (x < y) {
                               return -1;
                             }
@@ -1128,7 +1127,7 @@ var TreeController = {
               });
             }
           }
-          //console.log($node);
+
           return $node;
         }
 

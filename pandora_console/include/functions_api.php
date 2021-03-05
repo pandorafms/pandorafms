@@ -13767,16 +13767,18 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
     }
 
     if (is_array($other['data']) === true) {
+        // Parameters received by user call.
         $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
         // 1 hour by default.
-        $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
+        $graph_threshold = (!empty($other) && isset($other['data'][1]) && $other['data'][1]) ? $other['data'][1] : 0;
 
         // Graph height when send email by alert
-        $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+        $height = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 225;
 
         // Graph width (optional).
-        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : 225;
+        $width = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : '';
     } else {
+        // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
         $graph_threshold = 0;
         $other['data'][1] = 0;

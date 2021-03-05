@@ -423,8 +423,12 @@ ui_print_message_dialog(
             false,
             true
         );
-        $menu_form .= '<span style="flex: 2;">';
-        $menu_form .= __('Graph configuration menu');
+        $menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
+        $menu_form .= '<b>'.__('Graph configuration menu').'</b>';
+        $menu_form .= ui_print_help_tip(
+            __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+            true
+        );
         $menu_form .= '</span>';
         $menu_form .= '</div>';
         $menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">';

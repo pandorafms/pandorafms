@@ -16427,3 +16427,95 @@ function api_set_event_in_progress($event_id, $trash2, $returnType)
         returnError('id_not_found', 'string');
     }
 }
+
+
+/**
+ * Enable/Disable discovery task.
+ *
+ * @param string           $id_task Integer discovery task ID
+ * @param $thrash2 not used.
+ * @param array            $other   it's array, $other as param is <enable/disable value> in this order and separator char
+ *                           (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *                           example:
+ *
+ *                              example 1 (Enable)
+ *
+ *                           api.php?op=set&op2=enable_disable_discovery_task&id=1&other=0&other_mode=url_encode_separator_|
+ *
+ *                              example 2 (Disable)
+ *
+ *                           api.php?op=set&op2=enable_disable_discovery_task&id=1&other=1&other_mode=url_encode_separator_|
+ *
+ *              http://localhost/pandora_console/include/api.php?op=set&op2=enable_disable_discovery_task&id=1&other=1&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id_task == '') {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error enable/disable discovery task. Id_user cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] != '0' and $other['data'][0] != '1') {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error enable/disable discovery task. Enable/disable value cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] == '0') {
+        $result = db_process_sql_update(
+            'trecon_task',
+            [
+                'disabled' => $other['data'][0],
+                'status'   => 0,
+            ],
+            ['id_rt' => $id_task]
+        );
+    } else {
+        $result = db_process_sql_update(
+            'trecon_task',
+            ['disabled' => $other['data'][0]],
+            ['id_rt' => $id_task]
+        );
+    }
+
+    if (is_error($result)) {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error in discovery task enabling/disabling.')
+        );
+    } else {
+        if ($other['data'][0] == '0') {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __('Enabled discovery task.'),
+                ]
+            );
+        } else {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __('Disabled discovery task.'),
+                ]
+            );
+        }
+    }
+}

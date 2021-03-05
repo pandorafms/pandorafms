@@ -476,7 +476,22 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_servers.php';
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
-            $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            if (users_is_admin()) {
+                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            } else {
+                $user_groups = implode(
+                    ',',
+                    array_keys(users_get_groups())
+                );
+                $recon_tasks = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT * FROM trecon_task
+                        WHERE id_group IN (%s)',
+                        $user_groups
+                    )
+                );
+            }
+
             // Show network tasks for Recon Server.
             if ($recon_tasks === false) {
                 $recon_tasks = [];

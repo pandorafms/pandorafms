@@ -1077,13 +1077,16 @@ var TreeController = {
                           var rawTree = Object.values(data.tree);
                           // Sorting tree by description (services.treeview_services.php).
                           rawTree.sort(function(a, b) {
-                            var x = a.elementDescription.toLowerCase();
-                            var y = b.elementDescription.toLowerCase();
-                            if (x < y) {
-                              return -1;
-                            }
-                            if (x > y) {
-                              return 1;
+                            // Only the services are ordered since only they have the elementDescription property.
+                            if (a.elementDescription && b.elementDescription) {
+                              var x = a.elementDescription.toLowerCase();
+                              var y = b.elementDescription.toLowerCase();
+                              if (x < y) {
+                                return -1;
+                              }
+                              if (x > y) {
+                                return 1;
+                              }
                             }
                             return 0;
                           });

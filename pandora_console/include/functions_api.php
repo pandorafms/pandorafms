@@ -1599,7 +1599,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
             $exists_ip = db_get_row_sql('SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"');
         }
 
-        if (!$exists_alias && !$exists_ip) {
+        if (!$exists_alias) {
             $id_agente = db_process_sql_insert(
                 'tagente',
                 [
@@ -2002,9 +2002,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
+            $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
         }
 
-        $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
     }
 
     if (isset($other['data'][3])) {

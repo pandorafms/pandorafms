@@ -55,9 +55,15 @@ if ($save_custom_graph) {
 if ($print_custom_graph) {
     ob_clean();
 
+    $width_value = (int) get_parameter('width', CHART_DEFAULT_WIDTH);
+
+    if ($width_value === -1) {
+        $width_value = '';
+    }
+
     $params = [
         'period'          => (int) get_parameter('period', SECONDS_5MINUTES),
-        'width'           => (int) get_parameter('width', CHART_DEFAULT_WIDTH),
+        'width'           => $width_value,
         'height'          => (int) get_parameter('height', CHART_DEFAULT_HEIGHT),
         'unit_name'       => get_parameter('unit_list', []),
         'date'            => (int) get_parameter('date', time()),

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 ##########################################################################
 # nagios_plugin_wrapper
 #
@@ -25,46 +25,54 @@
 
 use strict;
 use warnings;
+use Switch;
 
 my $command = "";
 my @opts = @ARGV;
 my $module_name = shift(@opts);
+my $module_type = "generic_data_string";
+my $metric = shift(@opts);
+my $module_status = "";
 $command = join(' ', @opts);
 
 if ($command ne ""){
-    my $module_data = `$command`;
-    my $module_description = $module_data;
+    my $data = `$command`;
     my $ReturnCode = ($? >> 8) & 0xff;
 
+    chomp $data;
+    my @values = split/\|/, $data;
 
+    my $module_description = shift(@values);
+    chomp $module_description;
+    $module_description = "Check ".$module_description;
+
+    my $module_data = join(' ',@values);
+    chomp $module_data;
+    if ($module_data =~ m/$metric=([^;]+);/) {
+       $module_type = "generic_data";
+       $module_data = $1; 
+       if ($metric == "time") { $module_data =~ s/s$//; }
+    }
+    
     # Get the errorlevel if is a Nagios plugin type (parsing the errorlevel)
     # Nagios errorlevels: 	
     #('OK'=>0,'WARNING'=>1,'CRITICAL'=>2,'UNKNOWN'=>3,'DEPENDENT'=>4);
-
     # By default is unknown
-    $module_data = "";
-
-    if ($ReturnCode == 2){
-	    $module_data = 0;
-    } 
-    elsif ($ReturnCode == 3){
-	    $module_data = ''; # not defined = Uknown 
-    } 
-    elsif ($ReturnCode == 0){
-	    $module_data = 1; 
-    } 
-    elsif ($ReturnCode == 1){
-	    $module_data = 2;  # need to be managed on module thresholds
-    } 
-    elsif ($ReturnCode == 4){
-	    $module_data = 3; # need to be managed on module thresholds
+    $module_status = "";
+    switch ($ReturnCode) {
+	case 0 {$module_status = 'NORMAL';}
+	case 1 {$module_status = 'WARNING';}
+	case 2 {$module_status = 'CRITICAL';}
+        else {$module_status = '';}
     }
 
     print "<module>";
     print "<name><![CDATA[".$module_name."]]></name>\n";
-    print "<type><![CDATA[generic_proc]]></type>\n";
+    print "<type><![CDATA[".$module_type."]]></type>\n";
     print "<data><![CDATA[".$module_data."]]></data>\n";
+    print "<status><![CDATA[".$module_status."]]></status>\n";
     print "<description><![CDATA[" . $module_description . "]]></description>\n";
     print "</module>\n";
 
 }
+

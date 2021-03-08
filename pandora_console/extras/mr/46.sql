@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `info_merge` MEDIUMTEXT NOT NULL DEFAULT '';
+
+COMMIT;

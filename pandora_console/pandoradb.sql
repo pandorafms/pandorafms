@@ -2727,9 +2727,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`disabled` tinyint(1) unsigned NOT NULL default '0',
 	`last_event_replication` bigint(20) default '0',
 	`server_uid` text NOT NULL default '',
+	`info_merge` MEDIUMTEXT NOT NULL DEFAULT '',
 	PRIMARY KEY  (`id`)
-) ENGINE=InnoDB 
-COMMENT = 'Table to store metaconsole sources' 
+) ENGINE=InnoDB
+COMMENT = 'Table to store metaconsole sources'
 DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------

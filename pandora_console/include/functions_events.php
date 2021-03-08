@@ -4833,15 +4833,19 @@ function events_page_general($event)
     $data[0] = __('Acknowledged by');
 
     if ($event['estado'] == 1) {
-        $user_ack = db_get_value(
-            'fullname',
-            'tusuario',
-            'id_user',
-            $event['id_usuario']
-        );
+        if (empty($event['id_usuario']) === true) {
+            $user_ack = __('Autovalidated');
+        } else {
+            $user_ack = db_get_value(
+                'fullname',
+                'tusuario',
+                'id_user',
+                $event['id_usuario']
+            );
 
-        if (empty($user_ack) === true) {
-            $user_ack = $event['id_usuario'];
+            if (empty($user_ack) === true) {
+                $user_ack = $event['id_usuario'];
+            }
         }
 
         $data[1] = $user_ack.'&nbsp;(&nbsp;'.date($config['date_format'], $event['ack_utimestamp_raw']).'&nbsp;)&nbsp;';

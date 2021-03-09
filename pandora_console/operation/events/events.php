@@ -772,10 +772,6 @@ if ($pure) {
     $rss['active'] = false;
     $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
 
-    // Marquee.
-    $marquee['active'] = false;
-    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php?">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
-
     // CSV.
     $csv['active'] = false;
     $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';

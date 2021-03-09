@@ -1788,7 +1788,7 @@ function is_ajax()
  */
 function is_error($code)
 {
-    if ($code !== true and ($code <= ERR_GENERIC || $code === false)) {
+    if ($code !== true && ($code <= ERR_GENERIC || $code === false)) {
         return true;
     } else {
         return false;

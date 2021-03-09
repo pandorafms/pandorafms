@@ -1518,12 +1518,16 @@ switch ($action) {
                                 $values['text'] = $intervals;
                             break;
 
+                            case 'availability_graph':
+                                $values['summary'] = get_parameter(
+                                    'summary',
+                                    0
+                                );
                             case 'SLA_monthly':
                             case 'SLA_weekly':
                             case 'SLA_hourly':
                             case 'SLA_services':
                             case 'SLA':
-                            case 'availability_graph':
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
                                     'combo_sla_sort_options',
@@ -2568,6 +2572,11 @@ switch ($action) {
                         $values['failover_type'] = get_parameter(
                             'failover_type',
                             REPORT_FAILOVER_TYPE_NORMAL
+                        );
+
+                        $values['summary'] = get_parameter(
+                            'summary',
+                            0
                         );
 
                         $style = [];

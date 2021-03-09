@@ -178,14 +178,19 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
 
     $params_combined = json_decode($data_combined, true);
     $module_list = json_decode($data_module_list, true);
-    $type_graph_pdf = $type_graph_pdf;
 
     if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
-        $params['width'] = (int) $viewport_width;
+        if ((int) $viewport_width > 0) {
+            $params['width'] = (int) $viewport_width;
+        }
+
         if ((isset($params['width']) === false
             || ($params['width'] <= 0))
         ) {
-            $params['width'] = 650;
+            if ((int) $params['width'] <= 0) {
+                $params['width'] = 650;
+            }
+
             if ((int) $params['landscape'] === 1) {
                 $params['width'] = 850;
             }

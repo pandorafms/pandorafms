@@ -251,7 +251,16 @@ if (is_ajax()) {
 
 $tab = (string) get_parameter('tab', 'groups');
 
-if ($tab != 'credbox' && ! check_acl($config['id_user'], 0, 'PM')) {
+if ($tab != 'credbox' && ! check_acl(
+    $config['id_user'],
+    0,
+    'PM'
+) && ! check_acl(
+    $config['id_user'],
+    0,
+    'AW'
+)
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'

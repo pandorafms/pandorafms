@@ -150,6 +150,10 @@ function reports_get_reports(
             ) {
                 continue;
             }
+        } else {
+            if ($returnAllGroup === false) {
+                continue;
+            }
         }
 
         array_push($reports, $report);
@@ -876,7 +880,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if ($config['enterprise_installed'] && $template === false) {
+    if ($config['enterprise_installed'] && $template === false && !is_metaconsole()) {
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),

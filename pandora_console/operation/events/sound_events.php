@@ -287,9 +287,8 @@ $(document).ready (function () {
 <?php
 echo '</body>';
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }
 
 echo '</html>';

@@ -128,8 +128,8 @@
         </div>
         <div style='height: 10px'>
             <?php
-            $version = '7.0NG.751';
-            $build = '210112';
+            $version = '7.0NG.752';
+            $build = '210309';
             $banner = "v$version Build $build";
 
             error_reporting(0);
@@ -346,14 +346,42 @@ function parse_mysqli_dump($connection, $url)
 }
 
 
-function random_name($size)
+/**
+ * Generate a random password
+ *
+ * Admits a huge mount of ASCII chars.
+ *
+ * @param integer $size Size of the password returned.
+ *
+ * @return string $output
+ */
+function random_name(int $size)
 {
-    $temp = '';
-    for ($a = 0; $a < $size; $a++) {
-        $temp = $temp.chr(rand(122, 97));
+    $output = '';
+
+    // Range pair of ASCII position for allow A-Z, a-z, 0-9 and special chars.
+    $rangeSeed = [
+        '48:57',
+        '65:90',
+        '97:122',
+        '40:47',
+    ];
+
+    // Size of the password must be over range seed count.
+    $size = ($size >= count($rangeSeed)) ? $size : count($rangeSeed);
+
+    $auxIndex = 0;
+    for ($i = 0; $i < $size; $i++) {
+        $tmpSeedValues = explode(':', $rangeSeed[$auxIndex]);
+        $output = $output.chr(rand($tmpSeedValues[1], $tmpSeedValues[0]));
+        $auxIndex++;
+        if ($auxIndex >= 4) {
+            $auxIndex = 0;
+        }
     }
 
-    return $temp;
+    // Remix the string for strong the password.
+    return str_shuffle($output);
 }
 
 

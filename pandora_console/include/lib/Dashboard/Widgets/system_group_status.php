@@ -267,10 +267,21 @@ class SystemGroupStatusWidget extends Widget
             );
         }
 
+        $return_all_group = false;
+
         // Restrict access to group.
         $selected_groups = [];
         if ($values['groupId']) {
             $selected_groups = explode(',', $values['groupId'][0]);
+
+            if (users_can_manage_group_all('RM') || ($selected_groups[0] !== '' && in_array(0, $selected_groups) === true)) {
+                // Return all group if user has permissions or it is a currently selected group.
+                $return_all_group = true;
+            }
+        } else {
+            if (users_can_manage_group_all('RM')) {
+                $return_all_group = true;
+            }
         }
 
         $inputs[] = [
@@ -283,6 +294,7 @@ class SystemGroupStatusWidget extends Widget
                 'selected'       => $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -351,33 +363,84 @@ class SystemGroupStatusWidget extends Widget
             exit;
         }
 
-        // Groups and tags.
-        $result_groups_info = \groupview_get_groups_list(
-            $config['id_user'],
-            ($agent_a === 1) ? 'AR' : (($agent_w === 1) ? 'AW' : 'AR')
-        );
+        $return_all_group = false;
 
-        $result_groups = $result_groups_info['groups'];
-        $result_groups = array_reduce(
-            $result_groups,
-            function ($carry, $item) {
-                $carry[$item['_id_']] = $item;
-                return $carry;
-            },
-            []
-        );
-
-        $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
-
-        if (count($this->values['groupId']) === 1
-            && in_array(0, $this->values['groupId']) === true
-        ) {
-            $this->values['groupId'] = [];
-            foreach ($result_groups as $key => $value) {
-                $this->values['groupId'][] = $key;
-            }
+        if (users_can_manage_group_all('AR')) {
+            $return_all_group = true;
         }
 
+        $user_groups = users_get_groups(false, 'AR', $return_all_group);
+
+        $selected_groups = explode(',', $this->values['groupId'][0]);
+
+        if ($selected_groups[0] === '') {
+            return;
+        }
+
+        $all_counters = [];
+
+        if (in_array(0, $selected_groups)) {
+            $all_groups = db_get_all_rows_sql('select id_grupo from tgrupo');
+            $all_groups_id = array_column($all_groups, 'id_grupo');
+
+            $all_groups_counters = groupview_get_modules_counters($all_groups_id);
+
+            $all_counters['g'] = 0;
+            $all_counters['name'] = __('All');
+
+            $all_counters['total_module_normal'] = array_reduce(
+                $all_groups_counters,
+                function ($sum, $item) {
+                    return $sum += $item['total_module_normal'];
+                },
+                0
+            );
+
+            $all_counters['total_module_warning'] = array_reduce(
+                $all_groups_counters,
+                function ($sum, $item) {
+                    return $sum += $item['total_module_warning'];
+                },
+                0
+            );
+
+            $all_counters['total_module_critical'] = array_reduce(
+                $all_groups_counters,
+                function ($sum, $item) {
+                    return $sum += $item['total_module_critical'];
+                },
+                0
+            );
+
+            $all_counters['total_module_alerts'] = array_reduce(
+                $all_groups_counters,
+                function ($sum, $item) {
+                    return $sum += $item['total_module_alerts'];
+                },
+                0
+            );
+
+            $all_group_key = array_search(0, $selected_groups);
+
+            unset($selected_groups[$all_group_key]);
+        }
+
+        $module_counters = groupview_get_modules_counters($selected_groups);
+
+        foreach ($module_counters as $key => $item) {
+            $module_counters[$key]['name'] = groups_get_name($item['g']);
+        }
+
+        $keys = array_column($module_counters, 'g');
+        $values = array_values($module_counters);
+
+        $result_groups = array_combine($keys, $values);
+
+        if (empty($all_counters) === false) {
+            $result_groups[0] = $all_counters;
+        }
+
+        $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
         $this->values['status'] = explode(',', $this->values['status'][0]);
 
         $style = 'font-size: 12px; text-align: center;';
@@ -423,38 +486,25 @@ class SystemGroupStatusWidget extends Widget
                 $group = $result_groups[$groupId];
             } else {
                 $group = [
-                    '_monitors_critical_'     => 0,
-                    '_monitors_warning_'      => 0,
-                    '_monitors_unknown_'      => 0,
-                    '_monitors_not_init_'     => 0,
-                    '_monitors_ok_'           => 0,
-                    '_monitor_checks_'        => 0,
-                    '_monitors_alerts_fired_' => 0,
-                    '_agents_critical_'       => 0,
-                    '_agents_warning_'        => 0,
-                    '_agents_unknown_'        => 0,
-                    '_agents_not_init_'       => 0,
-                    '_agents_ok_'             => 0,
-                    '_total_agents_'          => 0,
-                    '_name_'                  => groups_get_name($groupId),
-                    '_id_'                    => $groupId,
-                    '_icon_'                  => groups_get_icon($groupId),
-                    '_monitor_not_normal_'    => 0,
+                    'total_module_critical' => 0,
+                    '_monitors_warning_'    => 0,
+                    'total_module_normal'   => 0,
+                    'total_module_alerts'   => 0,
+                    'total_module_warning'  => 0,
+                    'name'                  => groups_get_name($groupId),
+                    'g'                     => $groupId,
                 ];
             }
 
-            if ($group['_id_'] === 0) {
-                continue;
-            }
-
             $flag_groups = true;
+            $show_link = array_key_exists($group['g'], $user_groups);
 
-            if ((in_array($group['_id_'], $this->values['groupId'])) === true) {
-                $table->data[$i][] = '<span>'.$group['_name_'].'</span>';
+            if ((in_array($group['g'], $this->values['groupId'])) === true) {
+                $table->data[$i][] = '<span>'.$group['name'].'</span>';
 
                 $url = $config['homeurl'].'index.php';
                 $url .= '?sec=estado&sec2=operation/agentes/status_monitor';
-                $url .= '&ag_group='.$group['_id_'];
+                $url .= '&ag_group='.$group['g'];
 
                 if ($show_normal === true) {
                     $outputLine = '<div style="background-color:#82b92e">';
@@ -462,9 +512,9 @@ class SystemGroupStatusWidget extends Widget
                     $outputLine .= '<a title="'.__('Modules in normal status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= '" href="'.$url;
+                    $outputLine .= $show_link === true ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_NORMAL.'">';
-                    $outputLine .= $group['_monitors_ok_'];
+                    $outputLine .= $group['total_module_normal'];
                     $outputLine .= '</a>';
                     $outputLine .= '</span>';
                     $outputLine .= '</div>';
@@ -478,9 +528,9 @@ class SystemGroupStatusWidget extends Widget
                     $outputLine .= '<a title="'.__('Modules in warning status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= '" href="'.$url;
+                    $outputLine .= $show_link === true ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_WARNING.'">';
-                    $outputLine .= $group['_monitors_warning_'];
+                    $outputLine .= $group['total_module_warning'];
                     $outputLine .= '</a>';
                     $outputLine .= '</span>';
                     $outputLine .= '</div>';
@@ -495,9 +545,9 @@ class SystemGroupStatusWidget extends Widget
                     $outputLine .= __('Modules in critical status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= '" href="'.$url;
+                    $outputLine .= $show_link === true ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_CRITICAL.'">';
-                    $outputLine .= $group['_monitors_critical_'];
+                    $outputLine .= $group['total_module_critical'];
                     $outputLine .= '</a>';
                     $outputLine .= '</span>';
                     $outputLine .= '</div>';
@@ -511,9 +561,9 @@ class SystemGroupStatusWidget extends Widget
                     $outputLine .= '<a title="'.__('Alerts fired');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= '" href="'.$url;
+                    $outputLine .= $show_link === true ? '" href="'.$url : '';
                     $outputLine .= '&filter=fired">';
-                    $outputLine .= $group['_monitors_alerts_fired_'];
+                    $outputLine .= $group['total_module_alerts'];
                     $outputLine .= '</a>';
                     $outputLine .= '</span>';
                     $outputLine .= '</div>';
@@ -533,7 +583,7 @@ class SystemGroupStatusWidget extends Widget
         } else {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
-                __('Not modules in this groups'),
+                __('No modules in selected groups'),
                 '',
                 true
             );

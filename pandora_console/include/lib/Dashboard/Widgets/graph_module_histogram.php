@@ -312,6 +312,7 @@ class GraphModuleHistogramWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
+                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
             ],
         ];
 
@@ -383,28 +384,6 @@ class GraphModuleHistogramWidget extends Widget
         $size_label = $this->values['sizeLabel'];
 
         $id_group = \agents_get_agent_group($id_agent);
-
-        if (check_acl($config['id_user'], $id_group, 'AR') === 0) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
-
-        if (modules_get_agentmodule_agent($id_module) !== (int) $id_agent) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
 
         $content = [
             'id_agent_module' => $id_module,

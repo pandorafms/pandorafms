@@ -385,6 +385,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');
         $sub['tools/diagnostics']['id'] = 'Diagnostic info';
         enterprise_hook('omnishell');
+        enterprise_hook('ipam_submenu');
 
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';

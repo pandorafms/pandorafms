@@ -194,7 +194,7 @@ if ($config['public_dashboard'] === true) {
         'combo_refresh_countdown'     => $comboRefreshCountdown,
     ];
 } else if ($config['pure']) {
-    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list'      => $back_to_dashboard_list,
             'normalscreen'                => $normalscreen,
@@ -221,7 +221,7 @@ if ($config['public_dashboard'] === true) {
         }
     }
 } else {
-    if (check_acl($config['id_user'], 0, 'RW') === 0) {
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
         $buttons = [
             'back_to_dashboard_list' => $back_to_dashboard_list,
             'fullscreen'             => $fullscreen,

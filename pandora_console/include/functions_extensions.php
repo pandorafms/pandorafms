@@ -165,6 +165,10 @@ function extensions_get_extensions($enterprise=false, $rel_path='')
         return array_merge($extensions, extensions_get_extensions(true, $rel_path));
     }
 
+    if (isset($extensions['ipam.php'])) {
+        unset($extensions['ipam.php']);
+    }
+
     return $extensions;
 }
 

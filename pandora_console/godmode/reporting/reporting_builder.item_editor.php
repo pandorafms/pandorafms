@@ -185,6 +185,7 @@ switch ($action) {
         $dyn_height = 230;
         $landscape = false;
         $pagebreak = false;
+        $summary = 0;
     break;
 
     case 'save':
@@ -314,11 +315,12 @@ switch ($action) {
                     $idCustomGraph = $item['id_gs'];
                 break;
 
+                case 'availability_graph':
+                    $summary = $item['summary'];
                 case 'SLA':
                 case 'SLA_weekly':
                 case 'SLA_monthly':
                 case 'SLA_hourly':
-                case 'availability_graph':
                     $description = $item['description'];
                     $only_display_wrong = $item['only_display_wrong'];
                     $monday = $item['monday'];
@@ -2750,6 +2752,27 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_summary" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Summary');
+            ?>
+            </td>
+            <td style="">
+            <?php
+            html_print_checkbox_switch(
+                'summary',
+                1,
+                $summary,
+                false,
+                false,
+                '',
+                false
+            );
+            ?>
+            </td>
+        </tr>
+
         <tr id="row_filter_search" style="" class="datos">
             <td style="font-weight:bold;"><?php echo __('Include filter'); ?></td>
             <td>
@@ -5116,6 +5139,7 @@ function chooseType() {
     $("#row_current_month").hide();
     $("#row_failover_mode").hide();
     $("#row_failover_type").hide();
+    $("#row_summary").hide();
     $("#row_working_time").hide();
     $("#row_working_time_compare").hide();
     $("#row_only_display_wrong").hide();
@@ -5310,6 +5334,7 @@ function chooseType() {
             if(failover_checked){
                 $("#row_failover_type").show();
             }
+            $("#row_summary").show();
             break;
 
         case 'module_histogram_graph':

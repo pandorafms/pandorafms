@@ -3499,39 +3499,41 @@ class NetworkMap
      *
      * @return string HTML code.
      */
-    public function printMap($return=false)
+    public function printMap($return=false, $ignore_acl=false)
     {
         global $config;
 
         $networkmap = $this->map;
 
-        // ACL.
-        $networkmap_read = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MR'
-        );
-        $networkmap_write = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MW'
-        );
-        $networkmap_manage = check_acl(
-            $config['id_user'],
-            $networkmap['id_group'],
-            'MM'
-        );
-
-        if (!$networkmap_read
-            && !$networkmap_write
-            && !$networkmap_manage
-        ) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
+        if ($ignore_acl === false) {
+            // ACL.
+            $networkmap_read = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MR'
             );
-            include 'general/noaccess.php';
-            return '';
+            $networkmap_write = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MW'
+            );
+            $networkmap_manage = check_acl(
+                $config['id_user'],
+                $networkmap['id_group'],
+                'MM'
+            );
+
+            if (!$networkmap_read
+                && !$networkmap_write
+                && !$networkmap_manage
+            ) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access networkmap'
+                );
+                include 'general/noaccess.php';
+                return '';
+            }
         }
 
         $user_readonly = !$networkmap_write && !$networkmap_manage;

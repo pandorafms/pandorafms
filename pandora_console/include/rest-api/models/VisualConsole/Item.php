@@ -196,6 +196,7 @@ class Item extends CachedModel
     {
         $decodedData = [
             'id'              => (int) $data['id'],
+            'colorStatus'     => (string) COL_UNKNOWN,
             'type'            => (int) $data['type'],
             'label'           => static::extractLabel($data),
             'labelPosition'   => static::extractLabelPosition($data),
@@ -921,7 +922,8 @@ class Item extends CachedModel
         // Can't fetch an agent with an invalid Id.
         $agentId = static::extractAgentId($itemData);
         if ($agentId === null) {
-            throw new \InvalidArgumentException('invalid agent Id');
+            $agentId = 0;
+            // throw new \InvalidArgumentException('invalid agent Id');
         }
 
         // Staticgraph don't need to have an agent.
@@ -955,7 +957,8 @@ class Item extends CachedModel
         $agent = \db_get_row_sql($sql);
 
         if ($agent === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $agentData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         // The agent name should be a valid string or a null value.
@@ -995,7 +998,8 @@ class Item extends CachedModel
         // Can't fetch an module with a invalid Id.
         $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
-            throw new \InvalidArgumentException('invalid module Id');
+            $moduleId = 0;
+            // throw new \InvalidArgumentException('invalid module Id');
         }
 
         // Staticgraph don't need to have a module.
@@ -1036,7 +1040,8 @@ class Item extends CachedModel
         }
 
         if ($moduleName === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $moduleData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         $moduleData['moduleName'] = $moduleName['nombre'];
@@ -1459,6 +1464,11 @@ class Item extends CachedModel
         );
         if ($linked_layout_node_id !== null) {
             $result['linked_layout_node_id'] = $linked_layout_node_id;
+        }
+
+        if ($id_layout_linked > 0) {
+            // If VC linked, force link status to enabled.
+            $result['enable_link'] = 1;
         }
 
         $linked_layout_status_type = static::notEmptyStringOr(
@@ -2030,8 +2040,8 @@ class Item extends CachedModel
                         break;
 
                         default:
-                            // Line not parent.
-                        break;
+                            // Lines could not be parents.
+                        continue 2;
                     }
 
                     if (isset($data['agentAlias']) === true
@@ -2204,7 +2214,7 @@ class Item extends CachedModel
      *
      * @return array Array all VCs.
      */
-    public function getAllVisualConsole(int $id):array
+    public static function getAllVisualConsole(int $id):array
     {
         // Extract all VC except own.
         $result = db_get_all_rows_filter(
@@ -2219,7 +2229,7 @@ class Item extends CachedModel
         // Extract all VC for each node.
         if (is_metaconsole() === true) {
             enterprise_include_once('include/functions_metaconsole.php');
-            $meta_servers = metaconsole_get_servers();
+            $meta_servers = (array) metaconsole_get_servers();
             foreach ($meta_servers as $server) {
                 if (metaconsole_load_external_db($server) !== NOERR) {
                     metaconsole_restore_db();
@@ -2257,7 +2267,7 @@ class Item extends CachedModel
             }
         }
 
-        if ($result === false && $result === '') {
+        if ($result === false || $result === '') {
             $result = [];
         }
 
@@ -2280,14 +2290,18 @@ class Item extends CachedModel
         if ($fields === false) {
             $fields = [];
         } else {
-            $fields = \array_reduce(
-                $fields,
-                function ($carry, $item) {
-                    $carry[$item['id']] = $item['name'];
-                    return $carry;
-                },
-                []
-            );
+            $rs = [];
+            foreach ($fields as $k => $v) {
+                if (isset($v['id']) === true && isset($v['name']) === true) {
+                    // Modern environments use id-name format.
+                    $rs[$v['id']] = $v;
+                } else {
+                    // In MC environments is key-value.
+                    $rs[$k] = $v;
+                }
+            }
+
+            $fields = $rs;
         }
 
         $getAllVisualConsoleValue = $values['linkedLayoutId'];

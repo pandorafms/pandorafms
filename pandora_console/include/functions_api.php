@@ -1340,6 +1340,28 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $disabled = $other['data'][11];
     $description = $other['data'][12];
 
+    // Check parameters.
+    if ($idGroup == 0) {
+        $agent_update_error = __('The agent could not be modified. For security reasons, use a group other than 0.');
+        returnError('generic error', $agent_update_error);
+        return;
+    }
+
+    $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$nameServer.'"');
+    if ($alias == '' && $alias_as_name === 0) {
+        returnError('alias_not_specified', 'No agent alias specified');
+        return;
+    } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$idGroup) === false) {
+        returnError('id_grupo_not_exist', 'The group doesn`t exist.');
+        return;
+    } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$idOS) === false) {
+        returnError('id_os_not_exist', 'The OS doesn`t exist.');
+        return;
+    } else if ($server_name === false) {
+        returnError('server_not_exist', 'The '.get_product_name().' Server doesn`t exist.');
+        return;
+    }
+
     if ($cascadeProtection == 1) {
         if (($idParent != 0) && (db_get_value_sql(
             'SELECT id_agente_modulo
@@ -3188,7 +3210,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
 
     $agent_by_alias = false;
 
-    if ($other['data'][30] === '1') {
+    if ($other['data'][31] === '1') {
         $agent_by_alias = true;
     }
 
@@ -5236,6 +5258,8 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2)
  */
 function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if (defined('METACONSOLE')) {
         return;
     }
@@ -5250,64 +5274,93 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
     $template_name = $name;
 
     $type = $other['data'][0];
+    $id_group = $other['data'][26];
+
+    if ($id_group == '') {
+        returnError(
+            'error_create_alert_template',
+            __('Error creating alert template. Id_group cannot be left blank.')
+        );
+        return;
+    }
+
+    if (users_can_manage_group_all('LM')) {
+        $groups = users_get_groups($config['id_user'], 'LM');
+    } else {
+        $groups = users_get_groups($config['id_user'], 'LM', false);
+    }
+
+    if ($groups[$id_group] === null) {
+        returnError(
+            'error_create_alert_template',
+            __('Error creating alert template. Invalid id_group or the user has not enough permission to make this action.')
+        );
+        return;
+    }
+
+    for ($i = 29; $i < 54; $i++) {
+        if ($other['data'][$i] === null) {
+            $other['data'][$i] = '';
+        }
+    }
+
+    $values = [
+        'description'              => $other['data'][1],
+        'field1'                   => $other['data'][3],
+        'field2'                   => $other['data'][4],
+        'field3'                   => $other['data'][5],
+        'value'                    => $other['data'][6],
+        'matches_value'            => $other['data'][7],
+        'max_value'                => $other['data'][8],
+        'min_value'                => $other['data'][9],
+        'time_threshold'           => $other['data'][10],
+        'max_alerts'               => $other['data'][11],
+        'min_alerts'               => $other['data'][12],
+        'time_from'                => $other['data'][13],
+        'time_to'                  => $other['data'][14],
+        'monday'                   => $other['data'][15],
+        'tuesday'                  => $other['data'][16],
+        'wednesday'                => $other['data'][17],
+        'thursday'                 => $other['data'][18],
+        'friday'                   => $other['data'][19],
+        'saturday'                 => $other['data'][20],
+        'sunday'                   => $other['data'][21],
+        'recovery_notify'          => $other['data'][22],
+        'field2_recovery'          => $other['data'][23],
+        'field3_recovery'          => $other['data'][24],
+        'priority'                 => $other['data'][25],
+        'id_group'                 => $other['data'][26],
+        'special_day'              => $other['data'][27],
+        'min_alerts_reset_counter' => $other['data'][28],
+        'field1_recovery'          => $other['data'][29],
+        'field4'                   => $other['data'][30],
+        'field5'                   => $other['data'][31],
+        'field6'                   => $other['data'][32],
+        'field7'                   => $other['data'][33],
+        'field8'                   => $other['data'][34],
+        'field9'                   => $other['data'][35],
+        'field10'                  => $other['data'][36],
+        'field11'                  => $other['data'][37],
+        'field12'                  => $other['data'][38],
+        'field13'                  => $other['data'][39],
+        'field14'                  => $other['data'][40],
+        'field15'                  => $other['data'][41],
+        'field4_recovery'          => $other['data'][42],
+        'field5_recovery'          => $other['data'][43],
+        'field6_recovery'          => $other['data'][44],
+        'field7_recovery'          => $other['data'][45],
+        'field8_recovery'          => $other['data'][46],
+        'field9_recovery'          => $other['data'][47],
+        'field10_recovery'         => $other['data'][48],
+        'field11_recovery'         => $other['data'][49],
+        'field12_recovery'         => $other['data'][50],
+        'field13_recovery'         => $other['data'][51],
+        'field14_recovery'         => $other['data'][52],
+        'field15_recovery'         => $other['data'][53],
+    ];
 
     if ($other['data'][2] != '') {
-        $values = [
-            'description'     => $other['data'][1],
-            'id_alert_action' => $other['data'][2],
-            'field1'          => $other['data'][3],
-            'field2'          => $other['data'][4],
-            'field3'          => $other['data'][5],
-            'value'           => $other['data'][6],
-            'matches_value'   => $other['data'][7],
-            'max_value'       => $other['data'][8],
-            'min_value'       => $other['data'][9],
-            'time_threshold'  => $other['data'][10],
-            'max_alerts'      => $other['data'][11],
-            'min_alerts'      => $other['data'][12],
-            'time_from'       => $other['data'][13],
-            'time_to'         => $other['data'][14],
-            'monday'          => $other['data'][15],
-            'tuesday'         => $other['data'][16],
-            'wednesday'       => $other['data'][17],
-            'thursday'        => $other['data'][18],
-            'friday'          => $other['data'][19],
-            'saturday'        => $other['data'][20],
-            'sunday'          => $other['data'][21],
-            'recovery_notify' => $other['data'][22],
-            'field2_recovery' => $other['data'][23],
-            'field3_recovery' => $other['data'][24],
-            'priority'        => $other['data'][25],
-            'id_group'        => $other['data'][26],
-        ];
-    } else {
-        $values = [
-            'description'     => $other['data'][1],
-            'field1'          => $other['data'][3],
-            'field2'          => $other['data'][4],
-            'field3'          => $other['data'][5],
-            'value'           => $other['data'][6],
-            'matches_value'   => $other['data'][7],
-            'max_value'       => $other['data'][8],
-            'min_value'       => $other['data'][9],
-            'time_threshold'  => $other['data'][10],
-            'max_alerts'      => $other['data'][11],
-            'min_alerts'      => $other['data'][12],
-            'time_from'       => $other['data'][13],
-            'time_to'         => $other['data'][14],
-            'monday'          => $other['data'][15],
-            'tuesday'         => $other['data'][16],
-            'wednesday'       => $other['data'][17],
-            'thursday'        => $other['data'][18],
-            'friday'          => $other['data'][19],
-            'saturday'        => $other['data'][20],
-            'sunday'          => $other['data'][21],
-            'recovery_notify' => $other['data'][22],
-            'field2_recovery' => $other['data'][23],
-            'field3_recovery' => $other['data'][24],
-            'priority'        => $other['data'][25],
-            'id_group'        => $other['data'][26],
-        ];
+        $values['id_alert_action'] = $other['data'][2];
     }
 
     $id_template = alerts_create_alert_template($template_name, $type, $values);
@@ -5346,11 +5399,6 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     if ($id_template == '') {
         returnError(
             'The alert template could not be updated. Id_template cannot be left blank.'
@@ -5358,11 +5406,32 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
         return;
     }
 
-    $result_template = alerts_get_alert_template_name($id_template);
+    $result_template = alerts_get_alert_template($id_template);
 
     if (!$result_template) {
         returnError(
             'The alert template could not be updated. Id_template does not exist.'
+        );
+        return;
+    }
+
+    if (users_can_manage_group_all('LM')) {
+        $groups = users_get_groups($config['id_user'], 'LM');
+    } else {
+        $groups = users_get_groups($config['id_user'], 'LM', false);
+    }
+
+    $id_group_org = $result_template['id_group'];
+    if ($other['data'][27] === null) {
+        $id_group_new = $id_group_org;
+    } else {
+        $id_group_new = $other['data'][27];
+    }
+
+    if ($groups[$id_group_org] === null || $groups[$id_group_new] === null) {
+        returnError(
+            'error_create_alert_template',
+            __('Error updating alert template. Invalid id_group or the user has not enough permission to make this action.')
         );
         return;
     }
@@ -5396,6 +5465,33 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
         'field3_recovery',
         'priority',
         'id_group',
+        'special_day',
+        'min_alerts_reset_counter',
+        'field1_recovery',
+        'field4',
+        'field5',
+        'field6',
+        'field7',
+        'field8',
+        'field9',
+        'field10',
+        'field11',
+        'field12',
+        'field13',
+        'field14',
+        'field15',
+        'field4_recovery',
+        'field5_recovery',
+        'field6_recovery',
+        'field7_recovery',
+        'field8_recovery',
+        'field9_recovery',
+        'field10_recovery',
+        'field11_recovery',
+        'field12_recovery',
+        'field13_recovery',
+        'field14_recovery',
+        'field15_recovery',
     ];
 
     $cont = 0;
@@ -5441,6 +5537,8 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
  */
 function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if (defined('METACONSOLE')) {
         return;
     }
@@ -5449,6 +5547,28 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
         returnError(
             'The alert template could not be deleted. Id_template cannot be left blank.'
         );
+        return;
+    }
+
+    $result_template = alerts_get_alert_template($id_template);
+
+    if (!$result_template) {
+        returnError(
+            'error_update_alert_template',
+            __('Error deleting alert template. Id_template doesn\'t exist.')
+        );
+        return;
+    }
+
+    if (users_can_manage_group_all('LM')) {
+        $groups = users_get_groups($config['id_user'], 'LM');
+    } else {
+        $groups = users_get_groups($config['id_user'], 'LM', false);
+    }
+
+    $id_group = $result_template['id_group'];
+    if ($groups[$id_group] === null) {
+        returnError('forbidden', 'string');
         return;
     }
 
@@ -6344,6 +6464,14 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3)
     }
 
     $date_time_stop = get_system_time();
+
+    $sql = sprintf('SELECT  date_to, type_execution, executed FROM tplanned_downtime WHERE id=%d', $id);
+    $data = db_get_row_sql($sql);
+
+    if ($data['type_execution'] == 'periodically' && $data['executed'] == 1) {
+        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running planned downtime cannot be stopped.'));
+        return;
+    }
 
     $values = [];
     $values['date_to'] = $date_time_stop;
@@ -13040,7 +13168,8 @@ function api_get_special_days($thrash1, $thrash2, $other, $thrash3)
         $separator = $other['data'][0];
     }
 
-    $filter = false;
+    $user_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM')));
+    $filter = "id_group IN ($user_groups)";
 
     $special_days = @db_get_all_rows_filter('talert_special_days', $filter);
 
@@ -13077,17 +13206,17 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
 
-    $check_id_special_day = db_get_value('id', 'talert_special_days', 'date', $special_day);
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $check_id_special_day = db_get_value_filter('id', 'talert_special_days', ['date' => $special_day, 'id_group' => $idGroup]);
 
     if ($check_id_special_day) {
         returnError('Special Day could not be created. Specified day already exist.');
@@ -13105,8 +13234,9 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
     } else {
         $group = groups_get_group_by_id($idGroup);
 
-        if ($group == false) {
+        if ($idGroup != 0 && $group == false) {
             returnError('Special Day could not be created. Id_group does not exist.');
+
             return;
         }
 
@@ -13591,15 +13721,15 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (!check_acl($config['id_user'], 0, 'LM')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
     $special_day = $other['data'][0];
     $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
+
+    if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
 
     if ($id_special_day == '') {
         returnError('The Special Day could not be updated. ID cannot be left blank.');
@@ -13610,6 +13740,13 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 
     if (!$check_id_special_day) {
         returnError('The Special Day could not be updated. ID does not exist.');
+        return;
+    }
+
+    $id_group_org = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+
+    if (!check_acl($config['id_user'], $id_group_org, 'LM', true)) {
+        returnError('forbidden', 'string');
         return;
     }
 
@@ -13675,6 +13812,12 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
         return;
     }
 
+    $id_group = db_get_value('id_group', 'talert_special_days', 'id', $id_special_day);
+    if (!check_acl($config['id_user'], $id_group, 'LM', true)) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
     $return = alerts_delete_alert_special_day($id_special_day);
 
     if (is_error($return)) {
@@ -13716,19 +13859,31 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         return;
     }
 
+    $user_defined = false;
     if (is_array($other['data']) === true) {
+        $user_defined = true;
+        // Parameters received by user call.
         $graph_seconds = (!empty($other) && isset($other['data'][0])) ? $other['data'][0] : SECONDS_1HOUR;
+
+        // Base64.
+        $base64 = $other['data'][1];
+
         // 1 hour by default.
         $graph_threshold = (!empty($other) && isset($other['data'][2]) && $other['data'][2]) ? $other['data'][2] : 0;
         // TODO. For complete
         $width = '';
         // Graph height when send email by alert
         $height = (!empty($other) && isset($other['data'][3]) && $other['data'][3]) ? $other['data'][3] : 225;
+
+        // Graph width (optional).
+        $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
     } else {
+        // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
         $graph_threshold = 0;
-        $other['data'][1] = 0;
+        $base64 = 0;
         $height = 225;
+        $width = '90%';
     }
 
     if (is_nan($graph_seconds) || $graph_seconds <= 0) {
@@ -13760,9 +13915,10 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'image_treshold'     => $graph_threshold,
     ];
 
-    $graph_html = grafico_modulo_sparse($params);
+    // Format MIME RFC 2045 (line break 76 chars).
+    $graph_html = chunk_split(grafico_modulo_sparse($params));
 
-    if ($other['data'][1]) {
+    if ((bool) $base64 === false) {
         header('Content-type: text/html');
         returnData('string', ['type' => 'string', 'data' => '<img src="data:image/jpeg;base64,'.$graph_html.'">']);
     } else {
@@ -16336,5 +16492,97 @@ function api_set_event_in_progress($event_id, $trash2, $returnType)
             returnData('string', ['data' => $event]);
     } else {
         returnError('id_not_found', 'string');
+    }
+}
+
+
+/**
+ * Enable/Disable discovery task.
+ *
+ * @param string           $id_task Integer discovery task ID
+ * @param $thrash2 not used.
+ * @param array            $other   it's array, $other as param is <enable/disable value> in this order and separator char
+ *                           (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *                           example:
+ *
+ *                              example 1 (Enable)
+ *
+ *                           api.php?op=set&op2=enable_disable_discovery_task&id=1&other=0&other_mode=url_encode_separator_|
+ *
+ *                              example 2 (Disable)
+ *
+ *                           api.php?op=set&op2=enable_disable_discovery_task&id=1&other=1&other_mode=url_encode_separator_|
+ *
+ *              http://localhost/pandora_console/include/api.php?op=set&op2=enable_disable_discovery_task&id=1&other=1&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_enable_disable_discovery_task($id_task, $thrash2, $other)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id_task == '') {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error enable/disable discovery task. Id_user cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] != '0' and $other['data'][0] != '1') {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error enable/disable discovery task. Enable/disable value cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] == '0') {
+        $result = db_process_sql_update(
+            'trecon_task',
+            [
+                'disabled' => $other['data'][0],
+                'status'   => 0,
+            ],
+            ['id_rt' => $id_task]
+        );
+    } else {
+        $result = db_process_sql_update(
+            'trecon_task',
+            ['disabled' => $other['data'][0]],
+            ['id_rt' => $id_task]
+        );
+    }
+
+    if (is_error($result)) {
+        returnError(
+            'error_enable_disable_discovery_task',
+            __('Error in discovery task enabling/disabling.')
+        );
+    } else {
+        if ($other['data'][0] == '0') {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __('Enabled discovery task.'),
+                ]
+            );
+        } else {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __('Disabled discovery task.'),
+                ]
+            );
+        }
     }
 }

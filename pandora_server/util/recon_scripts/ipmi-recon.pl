@@ -38,13 +38,12 @@ if ($OSNAME eq "freebsd") {
 
 my $task_id = $ARGV[0]; # Passed automatically by the server
 my $target_group = $ARGV[1]; # Defined by user
-my $create_incident = $ARGV[2]; # Defined by user
 
 # Used Custom Fields in this script
-my $target_network = $ARGV[3]; # Filed1 defined by user
-my $username = $ARGV[4]; # Field2 defined by user
-my $password = $ARGV[5]; # Field3 defined by user
-my $extraopts = $ARGV[6]; # Field4 defined by user
+my $target_network = $ARGV[2]; # Filed1 defined by user
+my $username = $ARGV[3]; # Field2 defined by user
+my $password = $ARGV[4]; # Field3 defined by user
+my $extraopts = $ARGV[5]; # Field4 defined by user
 
 # Map Sensor type to module type and thresholds
 # 0 = numeric, record has thresholds
@@ -115,7 +114,7 @@ sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
 	print "(c) Artica ST 2011 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
-	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3> <custom_field4>\n\n";
+	print "   $0 <task_id> <group_id> <custom_field1> <custom_field2> <custom_field3> <custom_field4>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
 	print " * custom_field2 = username \n";
 	print " * custom_field3 = password \n";
@@ -264,7 +263,7 @@ if (! defined ($net_addr)) {
 # Scan the network for host
 my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
 
-for (my $i = 1; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
+for (my $i = 1; $i<= $total_hosts && $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 	if ($net_addr =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3})\b/) {
 		if($1 eq '0' || $1 eq '255') {
 			next;

@@ -95,9 +95,9 @@ $groupId = $visualConsoleData['groupId'];
 $visualConsoleName = $visualConsoleData['name'];
 
 // ACL.
-$aclRead = check_acl($config['id_user'], $groupId, 'VR');
-$aclWrite = check_acl($config['id_user'], $groupId, 'VW');
-$aclManage = check_acl($config['id_user'], $groupId, 'VM');
+$aclRead = check_acl_restricted_all($config['id_user'], $groupId, 'VR');
+$aclWrite = check_acl_restricted_all($config['id_user'], $groupId, 'VW');
+$aclManage = check_acl_restricted_all($config['id_user'], $groupId, 'VM');
 
 if (!$aclRead && !$aclWrite && !$aclManage) {
     db_pandora_audit(
@@ -280,6 +280,11 @@ if ($pure === false) {
             __('Color cloud'),
             'color_cloud_min link-create-item'
         );
+        visual_map_print_button_editor_refactor(
+            'NETWORK_LINK',
+            __('Network link'),
+            'network_link_min link-create-item'
+        );
         enterprise_include_once('include/functions_visual_map_editor.php');
         enterprise_hook(
             'enterprise_visual_map_editor_print_toolbox_refactor'
@@ -300,7 +305,11 @@ if ($pure === false) {
             );
         echo '</div>';
         echo '</div>';
-        echo html_print_checkbox_switch('edit-mode', 1, false, true);
+
+        if ($aclWrite || $aclManage) {
+            echo html_print_checkbox_switch('edit-mode', 1, false, true);
+        }
+
         echo '</div>';
     }
 }

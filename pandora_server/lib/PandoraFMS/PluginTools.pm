@@ -33,8 +33,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.751";
-my $pandora_build = "210115";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210309";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -959,7 +959,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 1;
+		exit 0;
 	}
 
 	print_module($conf, {
@@ -968,7 +968,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 1;
+	exit 0;
 }
 
 ################################################################################

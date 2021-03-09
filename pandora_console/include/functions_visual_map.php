@@ -3670,6 +3670,7 @@ function visual_map_print_visual_map(
         $layout_data['label'] = visual_map_macro($layout_data['label'], $layout_data['id_agente_modulo']);
 
         switch ($layout_data['type']) {
+            case NETWORK_LINK:
             case LINE_ITEM:
                 visual_map_print_user_lines($layout_data, $proportion);
             break;
@@ -3716,7 +3717,8 @@ function visual_map_get_user_layouts(
     $only_names=false,
     $filter=false,
     $returnAllGroup=true,
-    $favourite=false
+    $favourite=false,
+    $check_user_groups=true
 ) {
     if (! is_array($filter)) {
         $filter = [];
@@ -3763,7 +3765,21 @@ function visual_map_get_user_layouts(
         unset($filter['group']);
     }
 
-    if (!empty($groups)) {
+    $return_all_group = false;
+
+    if (users_can_manage_group_all()) {
+        $return_all_group = true;
+    }
+
+    if (isset($filter['can_manage_group_all'])) {
+        if ($filter['can_manage_group_all'] === false) {
+            unset($groups[0]);
+        }
+
+        unset($filter['can_manage_group_all']);
+    }
+
+    if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';
         }
@@ -4381,6 +4397,9 @@ function visual_map_type_in_js($type)
             break;
         case LINE_ITEM:
         return 'line_item';
+
+        case NETWORK_LINK:
+        return 'network_link';
 
         case COLOR_CLOUD:
         return 'color_cloud';

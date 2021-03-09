@@ -675,6 +675,8 @@ function modules_create_agent_module(
     $time = 0;
     if (empty($values['interval']) === false) {
         $time = (time() - (int) $values['interval']);
+    } else {
+        $values['interval'] = null;
     }
 
     $result = db_process_sql_insert(

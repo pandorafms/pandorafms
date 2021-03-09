@@ -158,6 +158,26 @@ $pure = get_parameter('pure', 0);
 $schedule_report = get_parameter('schbutton', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
 
+if ($action == 'edit' && $idReport > 0) {
+    $report_group = db_get_value(
+        'id_group',
+        'treport',
+        'id_report',
+        $idReport
+    );
+
+    if (! check_acl_restricted_all($config['id_user'], $report_group, 'RW')
+        && ! check_acl_restricted_all($config['id_user'], $report_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access report builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
+
 if ($schedule_report != '') {
     $id_user_task = 1;
     $scheduled = 'no';
@@ -909,8 +929,8 @@ switch ($action) {
 
                 $data = [];
 
-                if (check_acl($config['id_user'], $report['id_group'], 'RW')
-                    || check_acl($config['id_user'], $report['id_group'], 'RM')
+                if (check_acl_restricted_all($config['id_user'], $report['id_group'], 'RW')
+                    || check_acl_restricted_all($config['id_user'], $report['id_group'], 'RM')
                 ) {
                     $data[0] = '<a href="'.$config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.$report['id_report'].'&pure='.$pure.'">'.ui_print_truncate_text($report['name'], 70).'</a>';
                 } else {
@@ -994,7 +1014,7 @@ switch ($action) {
 
                 switch ($type_access_selected) {
                     case 'group_view':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group'],
                             'RW'
@@ -1005,7 +1025,7 @@ switch ($action) {
                     break;
 
                     case 'group_edit':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group_edit'],
                             'RW'
@@ -1861,6 +1881,11 @@ switch ($action) {
                             ''
                         );
 
+                        $event_filter_exclude = get_parameter(
+                            'filter_exclude',
+                            ''
+                        );
+
                         // If metaconsole is activated.
                         if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
@@ -1998,6 +2023,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
 
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2602,6 +2629,12 @@ switch ($action) {
                                     ''
                                 );
 
+                                $event_filter_exclude = get_parameter(
+                                    'filter_exclude',
+                                    ''
+                                );
+
+
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
                                 $style['filter_event_severity'] = json_encode(
@@ -2619,6 +2652,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

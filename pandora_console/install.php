@@ -909,7 +909,7 @@ function install_step4()
                             // $config["custom_title2_login_alt"] = "NEXT GENERATION";
                             // $config["rb_product_name_alt"] = "Pandora FMS";
                             // $config["custom_docs_url_alt"] = "http://wiki.pandorafms.com/";
-                            // $config["custom_support_url_alt"] = "https://support.artica.es";
+                            // $config["custom_support_url_alt"] = "https://support.pandorafms.com";
 
 
                         
@@ -1026,7 +1026,7 @@ function install_step4()
                             // $config["custom_title2_login_alt"] = "NEXT GENERATION";
                             // $config["rb_product_name_alt"] = "Pandora FMS";
                             // $config["custom_docs_url_alt"] = "http://wiki.pandorafms.com/";
-                            // $config["custom_support_url_alt"] = "https://support.artica.es";
+                            // $config["custom_support_url_alt"] = "https://support.pandorafms.com";
 
 							/*
 							----------Attention--------------------

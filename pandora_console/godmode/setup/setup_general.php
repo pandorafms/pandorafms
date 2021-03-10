@@ -27,32 +27,6 @@
  */
 
 // File begin.
-
-
-/**
- * Return sounds path.
- *
- * @return string Path.
- */
-function get_sounds()
-{
-    global $config;
-
-    $return = [];
-
-    $files = scandir($config['homedir'].'/include/sounds');
-
-    foreach ($files as $file) {
-        if (strstr($file, 'wav') !== false) {
-            $return['include/sounds/'.$file] = $file;
-        }
-    }
-
-    return $return;
-}
-
-
-// Begin.
 global $config;
 
 
@@ -344,73 +318,6 @@ $table->data[$i++][1] .= '&nbsp;&nbsp;'.html_print_select(
     '',
     true
 );
-
-$sounds = get_sounds();
-$table->data[$i][0] = __('Sound for Alert fired');
-$table->data[$i][1] = html_print_select(
-    $sounds,
-    'sound_alert',
-    $config['sound_alert'],
-    'replaySound(\'alert\');',
-    '',
-    '',
-    true
-);
-$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'alert\');">'.html_print_image(
-    'images/control_play_col.png',
-    true,
-    [
-        'id'    => 'button_sound_alert',
-        'style' => 'vertical-align: middle;',
-        'width' => '16',
-        'title' => __('Play sound'),
-    ]
-).'</a>';
-$table->data[$i++][1] .= '<div id="layer_sound_alert"></div>';
-
-$table->data[$i][0] = __('Sound for Monitor critical');
-$table->data[$i][1] = html_print_select(
-    $sounds,
-    'sound_critical',
-    $config['sound_critical'],
-    'replaySound(\'critical\');',
-    '',
-    '',
-    true
-);
-$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'critical\');">'.html_print_image(
-    'images/control_play_col.png',
-    true,
-    [
-        'id'    => 'button_sound_critical',
-        'style' => 'vertical-align: middle;',
-        'width' => '16',
-        'title' => __('Play sound'),
-    ]
-).'</a>';
-$table->data[$i++][1] .= '<div id="layer_sound_critical"></div>';
-
-$table->data[$i][0] = __('Sound for Monitor warning');
-$table->data[$i][1] = html_print_select(
-    $sounds,
-    'sound_warning',
-    $config['sound_warning'],
-    'replaySound(\'warning\');',
-    '',
-    '',
-    true
-);
-$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'warning\');">'.html_print_image(
-    'images/control_play_col.png',
-    true,
-    [
-        'id'    => 'button_sound_warning',
-        'style' => 'vertical-align: middle;',
-        'width' => '16',
-        'title' => __('Play sound'),
-    ]
-).'</a>';
-$table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[$i][0] = __('Public URL');
 $table->data[$i++][1] = html_print_input_text(
@@ -767,24 +674,6 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     ?>
 <script type="text/javascript">
-function toggleButton(type) {
-    if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
-        $("#button_sound_" + type).attr('src', 'images/control_play_col.png');
-        $('#layer_sound_' + type).html("");
-    }
-    else {
-        $("#button_sound_" + type).attr('src', 'images/control_pause_col.png');
-        $('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
-    }
-}
-
-function replaySound(type) {
-    if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
-        $('#layer_sound_' + type).html("");
-        $('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
-    }
-}
-
 function show_timezone () {
     zone = $("#zone").val();
     $.ajax({

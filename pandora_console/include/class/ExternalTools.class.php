@@ -138,6 +138,9 @@ class ExternalTools extends HTML
     {
         global $config;
 
+        $i = 0;
+        $sounds = $this->get_sounds();
+
         if ($this->updatePaths === true) {
             $external_tools_config = [];
             $external_tools_config['traceroute_path'] = $this->pathTraceroute;
@@ -181,30 +184,123 @@ class ExternalTools extends HTML
 
         $table->data = [];
 
-        $table->data[0][0] = __('Traceroute path');
-        $table->data[0][1] = html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true);
+        $table->data[$i][0] = __('Sound for Alert fired');
+        $table->data[$i][1] = html_print_select(
+            $sounds,
+            'sound_alert',
+            $config['sound_alert'],
+            'replaySound(\'alert\');',
+            '',
+            '',
+            true
+        );
+        $table->data[$i][1] .= html_print_anchor(
+            [
+                'href'    => 'javascript:toggleButton(\'alert\')',
+                'content' => html_print_image(
+                    'images/control_play_col.png',
+                    true,
+                    [
+                        'id'    => 'button_sound_warning',
+                        'style' => 'vertical-align: middle;',
+                        'width' => '16',
+                        'title' => __('Play sound'),
+                    ]
+                ),
+            ],
+            true
+        );
+        $table->data[$i++][1] .= '<div id="layer_sound_alert"></div>';
 
-        $table->data[1][0] = __('Ping path');
-        $table->data[1][1] = html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true);
+        $table->data[$i][0] = __('Sound for Monitor critical');
+        $table->data[$i][1] = html_print_select(
+            $sounds,
+            'sound_critical',
+            $config['sound_critical'],
+            'replaySound(\'critical\');',
+            '',
+            '',
+            true
+        );
+        $table->data[$i][1] .= html_print_anchor(
+            [
+                'href'    => 'javascript:toggleButton(\'critical\')',
+                'content' => html_print_image(
+                    'images/control_play_col.png',
+                    true,
+                    [
+                        'id'    => 'button_sound_warning',
+                        'style' => 'vertical-align: middle;',
+                        'width' => '16',
+                        'title' => __('Play sound'),
+                    ]
+                ),
+            ],
+            true
+        );
+        $table->data[$i++][1] .= '<div id="layer_sound_critical"></div>';
 
-        $table->data[2][0] = __('Nmap path');
-        $table->data[2][1] = html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true);
+        $table->data[$i][0] = __('Sound for Monitor warning');
+        $table->data[$i][1] = html_print_select(
+            $sounds,
+            'sound_warning',
+            $config['sound_warning'],
+            'replaySound(\'warning\');',
+            '',
+            '',
+            true
+        );
+        $table->data[$i][1] .= html_print_anchor(
+            [
+                'href'    => 'javascript:toggleButton(\'warning\')',
+                'content' => html_print_image(
+                    'images/control_play_col.png',
+                    true,
+                    [
+                        'id'    => 'button_sound_warning',
+                        'style' => 'vertical-align: middle;',
+                        'width' => '16',
+                        'title' => __('Play sound'),
+                    ]
+                ),
+            ],
+            true
+        );
+        $table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
 
-        $table->data[3][0] = __('Dig path');
-        $table->data[3][1] = html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true);
+        $table->data[$i][0] = __('Custom graphviz directory');
+        $table->data[$i++][1] = html_print_input_text(
+            'graphviz_bin_dir',
+            $config['graphviz_bin_dir'],
+            '',
+            25,
+            255,
+            true
+        );
 
-        $table->data[4][0] = __('Snmpget path');
-        $table->data[4][1] = html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true);
+        $table->data[$i][0] = __('Traceroute path');
+        $table->data[$i++][1] = html_print_input_text('traceroute_path', $this->pathTraceroute, '', 40, 255, true);
 
-        $table->data[5][0] = html_print_div(
+        $table->data[$i][0] = __('Ping path');
+        $table->data[$i++][1] = html_print_input_text('ping_path', $this->pathPing, '', 40, 255, true);
+
+        $table->data[$i][0] = __('Nmap path');
+        $table->data[$i++][1] = html_print_input_text('nmap_path', $this->pathNmap, '', 40, 255, true);
+
+        $table->data[$i][0] = __('Dig path');
+        $table->data[$i++][1] = html_print_input_text('dig_path', $this->pathDig, '', 40, 255, true);
+
+        $table->data[$i][0] = __('Snmpget path');
+        $table->data[$i++][1] = html_print_input_text('snmpget_path', $this->pathSnmpget, '', 40, 255, true);
+
+        $table->data[$i][0] = html_print_div(
             [
                 'class'   => 'title_custom_commands bolder float-left',
                 'content' => __('Custom commands'),
             ],
             true
         );
-
-        $table->data[5][0] .= html_print_div(
+        $table->data[$i++][0] .= html_print_div(
             [
                 'id'      => 'add_button_custom_command',
                 'content' => html_print_image(
@@ -220,30 +316,30 @@ class ExternalTools extends HTML
             true
         );
 
-        $table->data[6][0] = __('Command');
-        $table->data[6][1] = __('Parameters').ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true);
+        $table->data[$i][0] = __('Command');
+        $table->data[$i++][1] = __('Parameters').ui_print_help_tip(__('Adding `_address_` macro will use agent\'s IP when perform the execution'), true);
 
-        $i = 1;
-        $iRow = 7;
+        $y = 1;
+        $iRow = $i;
 
         if (empty($this->pathCustomComm) === true) {
-            $table->rowid[$iRow] = 'custom_row_'.$i;
+            $table->rowid[$iRow] = 'custom_row_'.$y;
 
-            $table->data[$iRow][0] = $this->customCommandPair('command', $i);
-            $table->data[$iRow][1] = $this->customCommandPair('params', $i);
-            $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
+            $table->data[$iRow][0] = $this->customCommandPair('command', $y);
+            $table->data[$iRow][1] = $this->customCommandPair('params', $y);
+            $table->data[$iRow][2] = $this->customCommandPair('delete', $y);
         } else {
             foreach ($this->pathCustomComm as $command) {
                 // Fill the fields.
                 $customCommand = ($command['command_custom'] ?? '');
                 $customParams  = ($command['params_custom'] ?? '');
                 // Attach the fields.
-                $table->rowid[$iRow] = 'custom_row_'.$i;
-                $table->data[$iRow][0] = $this->customCommandPair('command', $i, $customCommand);
-                $table->data[$iRow][1] = $this->customCommandPair('params', $i, $customParams);
-                $table->data[$iRow][2] = $this->customCommandPair('delete', $i);
+                $table->rowid[$iRow] = 'custom_row_'.$y;
+                $table->data[$iRow][0] = $this->customCommandPair('command', $y, $customCommand);
+                $table->data[$iRow][1] = $this->customCommandPair('params', $y, $customParams);
+                $table->data[$iRow][2] = $this->customCommandPair('delete', $y);
                 // Add another command.
-                $i++;
+                $y++;
                 $iRow++;
             }
         }
@@ -772,6 +868,29 @@ class ExternalTools extends HTML
 
 
     /**
+     * Return sounds path.
+     *
+     * @return string Path.
+     */
+    private function get_sounds()
+    {
+        global $config;
+
+        $return = [];
+
+        $files = scandir($config['homedir'].'/include/sounds');
+
+        foreach ($files as $file) {
+            if (strstr($file, 'wav') !== false) {
+                $return['include/sounds/'.$file] = $file;
+            }
+        }
+
+        return $return;
+    }
+
+
+    /**
      * Load the JS and attach
      *
      * @return string Formed script string.
@@ -857,6 +976,24 @@ class ExternalTools extends HTML
                     }
                     else {
                         $('.snmpcolumn').hide();
+                    }
+                }
+
+                function toggleButton(type) {
+                    if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
+                        $("#button_sound_" + type).attr('src', 'images/control_play_col.png');
+                        $('#layer_sound_' + type).html("");
+                    }
+                    else {
+                        $("#button_sound_" + type).attr('src', 'images/control_pause_col.png');
+                        $('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
+                    }
+                }
+
+                function replaySound(type) {
+                    if ($("#button_sound_" + type).attr('src') == 'images/control_pause_col.png') {
+                        $('#layer_sound_' + type).html("");
+                        $('#layer_sound_' + type).html("<audio src='" + $("#sound_" + type).val() + "' autoplay='true' hidden='true' loop='true'>");
                     }
                 }
             </script>

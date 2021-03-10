@@ -1586,6 +1586,16 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field11 = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field12 = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field13 = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field14 = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field15 = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field16 = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field17 = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $config_api_path . "/integria/include/api.php";
@@ -1648,8 +1658,18 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $ticket_custom_field1 = $field8;
 		my $ticket_custom_field2 = $field9;
 		my $ticket_custom_field3 = $field10;
+		my $ticket_custom_field4 = $field11;
+		my $ticket_custom_field5 = $field12;
+		my $ticket_custom_field6 = $field13;
+		my $ticket_custom_field7 = $field14;
+		my $ticket_custom_field8 = $field15;
+		my $ticket_custom_field9 = $field16;
+		my $ticket_custom_field10 = $field17;
+		my $ticket_custom_field11 = $field18;
+		my $ticket_custom_field12 = $field19;
+		my $ticket_custom_field13 = $field20;
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3);
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13);
 
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
@@ -6214,8 +6234,8 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3) = @_;
+sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13) = @_;
 
 	use URI::URL;
 	use URI::Escape;
@@ -6252,7 +6272,17 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$) {
 		"|;|" . $ticket_create_wu .
 		"|;|" . $ticket_custom_field1 .
 		"|;|" . $ticket_custom_field2 .
-		"|;|" . $ticket_custom_field3;
+		"|;|" . $ticket_custom_field3 .
+		"|;|" . $ticket_custom_field4 .
+		"|;|" . $ticket_custom_field5 .
+		"|;|" . $ticket_custom_field6 .
+		"|;|" . $ticket_custom_field7 .
+		"|;|" . $ticket_custom_field8 .
+		"|;|" . $ticket_custom_field9 .
+		"|;|" . $ticket_custom_field10 .
+		"|;|" . $ticket_custom_field11 .
+		"|;|" . $ticket_custom_field12 .
+		"|;|" . $ticket_custom_field13;
 
 	$call_api = $api_path . '?' .
 		'user=' . $integria_user . '&' .

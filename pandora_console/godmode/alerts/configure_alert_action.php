@@ -388,32 +388,23 @@ $(document).ready (function () {
     function ajax_get_integria_custom_fields(ticket_type_id, values, recovery_values) {
         var values = values || [];
         var recovery_values = recovery_values || [];
+        var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
 
         if (ticket_type_id === null || ticket_type_id === '' || (Array.isArray(values) && values.length === 0 && Array.isArray(recovery_values) && recovery_values.length === 0)) {
-            $('[name=field8_value\\[\\]').val('');
-            $('[name=field9_value\\[\\]').val('');
-            $('[name=field10_value\\[\\]').val('');
-            $('[name=field8_recovery_value\\[\\]').val('');
-            $('[name=field9_recovery_value\\[\\]').val('');
-            $('[name=field10_recovery_value\\[\\]').val('');
+            for (var i=8; i <= max_macro_fields; i++) {
+                $('[name=field'+i+'_value\\[\\]').val('');
+                $('[name=field'+i+'_recovery_value\\[\\]').val('');
+            }
         }
 
         // On ticket type change, hide all table rows and inputs corresponding to custom fields, regardless of what its type is.
-        $('[name=field8_value\\[\\]').hide();
-        $('[name=field9_value\\[\\]').hide();
-        $('[name=field10_value\\[\\]').hide();
-        $('[name=field8_recovery_value\\[\\]').hide();
-        $('[name=field9_recovery_value\\[\\]').hide();
-        $('[name=field10_recovery_value\\[\\]').hide();
-        $('#table_macros-field8').hide();
-        $('#table_macros-field9').hide();
-        $('#table_macros-field10').hide();
-        $('[name=field8_value_container').hide();
-        $('[name=field9_value_container').hide();
-        $('[name=field10_value_container').hide();
-        $('[name=field8_recovery_value_container').hide();
-        $('[name=field9_recovery_value_container').hide();
-        $('[name=field10_recovery_value_container').hide();
+        for (var i=8; i <= max_macro_fields; i++) {
+            $('[name=field'+i+'_value\\[\\]').hide();
+            $('[name=field'+i+'_recovery_value\\[\\]').hide();
+            $('#table_macros-field'+i).hide();
+            $('[name=field'+i+'_value_container').hide();
+            $('[name=field'+i+'_recovery_value_container').hide();
+        }
 
         jQuery.post(
           "ajax.php",
@@ -689,23 +680,16 @@ $(document).ready (function () {
                 // Ad-hoc solution for Integria IMS command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
                 // Check command by name since it is unvariable in any case, unlike its ID.
                 if ($("#id_command option:selected").text() === "Integria IMS Ticket") {
+                    var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
 
                     // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.
-                    $('[name=field8_value\\[\\]').hide();
-                    $('[name=field9_value\\[\\]').hide();
-                    $('[name=field10_value\\[\\]').hide();
-                    $('[name=field8_recovery_value\\[\\]').hide();
-                    $('[name=field9_recovery_value\\[\\]').hide();
-                    $('[name=field10_recovery_value\\[\\]').hide();
-                    $('#table_macros-field8').hide();
-                    $('#table_macros-field9').hide();
-                    $('#table_macros-field10').hide();
-                    $('[name=field8_value_container').hide();
-                    $('[name=field9_value_container').hide();
-                    $('[name=field10_value_container').hide();
-                    $('[name=field8_recovery_value_container').hide();
-                    $('[name=field9_recovery_value_container').hide();
-                    $('[name=field10_recovery_value_container').hide();
+                    for (var i=8; i <= max_macro_fields; i++) {
+                        $('[name=field'+i+'_value\\[\\]').hide();
+                        $('[name=field'+i+'_recovery_value\\[\\]').hide();
+                        $('#table_macros-field'+i).hide();
+                        $('[name=field'+i+'_value_container').hide();
+                        $('[name=field'+i+'_recovery_value_container').hide();
+                    }
 
                     if ($('#field5_value').val() !== '') {
                         ajax_get_integria_custom_fields($('#field5_value').val(), integria_custom_fields_values, integria_custom_fields_rvalues);

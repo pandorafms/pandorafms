@@ -105,8 +105,8 @@ if (get_parameter('update_config', 0) == 1) {
                     'command'             => io_safe_input('Internal type'),
                     'internal'            => 1,
                     'description'         => io_safe_input('Create a ticket in Integria IMS'),
-                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
-                    'fields_values'       => '["", "", "","","'.$types_string.'","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
+                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
+                    'fields_values'       => '["", "", "","","'.$types_string.'","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
                 ]
             );
 
@@ -136,7 +136,7 @@ if (get_parameter('update_config', 0) == 1) {
             $sql_update_command_values = sprintf(
                 '
                 UPDATE talert_commands
-                SET fields_values = \'["","","","","%s","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]\'
+                SET fields_values = \'["","","","","%s","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]\'
                 WHERE name="%s"',
                 $types_string,
                 io_safe_input('Integria IMS Ticket')

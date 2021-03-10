@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.751";
-my $pandora_build = "210120";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210310";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -827,7 +827,7 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
 			if ($pa_config->{"verbosity"} == 0) {
-				$pa_config->{"verbosity"} = clean_blank($1);
+				$pa_config->{"verbosity"} = clean_blank($1); 
 			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 

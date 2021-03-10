@@ -436,7 +436,7 @@ if ($not_found) {
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub next"'
+            'class="sub next" onclick="if (typeof(sent) == \'undefined\') {sent = 1; return true;} else {return false;}"'
         );
     }
 

@@ -140,8 +140,11 @@ $text_module = get_parameter(
     $filter['module_search']
 );
 $id_agent_module = get_parameter(
-    'filter[id_agent_module]',
-    $filter['id_agent_module']
+    'id_agent_module',
+    get_parameter(
+        'filter[id_agent_module]',
+        $filter['id_agent_module']
+    )
 );
 $pagination = get_parameter(
     'filter[pagination]',
@@ -374,6 +377,9 @@ if (is_ajax()) {
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
+
+                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,
                             true
@@ -765,10 +771,6 @@ if ($pure) {
     // RSS.
     $rss['active'] = false;
     $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
-
-    // Marquee.
-    $marquee['active'] = false;
-    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php?">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
 
     // CSV.
     $csv['active'] = false;

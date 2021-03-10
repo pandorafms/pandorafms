@@ -7551,6 +7551,7 @@ function reporting_availability_graph(
     $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['failover_type'] = $content['failover_type'];
+    $return['summary'] = $content['summary'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart.
@@ -7669,24 +7670,22 @@ function reporting_availability_graph(
                 }
 
                 foreach ($sla_failover as $k_sla => $v_sla) {
-                    if ($content['failover_type'] == REPORT_FAILOVER_TYPE_NORMAL) {
-                        $sla_array = data_compare_24x7(
-                            $v_sla,
-                            $content,
-                            $report['datetime'],
-                            $slice
-                        );
+                    $sla_array = data_compare_24x7(
+                        $v_sla,
+                        $content,
+                        $report['datetime'],
+                        $slice
+                    );
 
-                        $return = prepare_data_for_paint(
-                            $v_sla,
-                            $sla_array,
-                            $content,
-                            $report['datetime'],
-                            $return,
-                            $k_sla,
-                            $pdf
-                        );
-                    }
+                    $return = prepare_data_for_paint(
+                        $v_sla,
+                        $sla_array,
+                        $content,
+                        $report['datetime'],
+                        $return,
+                        $k_sla,
+                        $pdf
+                    );
 
                     if (isset($v_sla['compare']) === true
                         && empty($v_sla['compare']) === false

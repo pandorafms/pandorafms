@@ -253,7 +253,12 @@ if ($get_graphs) {
 
                 case 'dynamic_graph':
                     if ($value['agent'] != '') {
-                        $alias = " AND alias REGEXP '".$value['agent']."'";
+                        if (@preg_match($value['agent'], '') !== false) {
+                            $alias = " AND alias REGEXP '".$value['agent']."'";
+                        } else {
+                            // Not a valid REGEXP.
+                            $alias = " AND alias LIKE '".$value['agent']."'";
+                        }
                     }
 
                     if ($value['id_group'] === '0') {
@@ -277,7 +282,11 @@ if ($get_graphs) {
                     }
 
                     if ($value['module'] != '') {
-                        $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        if (@preg_match($value['module'], '') !== false) {
+                            $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        } else {
+                            $module_name = " AND nombre LIKE '".$value['module']."'";
+                        }
                     }
 
                     $id_agent_module = db_get_all_rows_sql(

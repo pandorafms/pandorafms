@@ -382,9 +382,7 @@ if ($create_downtime || $update_downtime) {
             }
 
             if ($is_running) {
-                ui_print_error_message(
-                    __('Cannot be modified while the downtime is being executed')
-                );
+                $result = false;
             } else {
                 if (!empty($values)) {
                     $result = db_process_sql_update(
@@ -1444,6 +1442,8 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
     }
     
     $(document).ready (function () {
+        populate_agents_selector();
+
         $("#id_agents").change(agent_changed_by_multiple_agents);
         $("#modules_selection_mode").change(agent_changed_by_multiple_agents);
         
@@ -1504,10 +1504,14 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
 
         // Change agent selector based on group.
         $("#filter_group").change(function() {
+            populate_agents_selector();
+        });
+
+        function populate_agents_selector() {
             jQuery.post ("ajax.php",
                 {"page": "operation/agentes/ver_agente",
                     "get_agents_group_json": 1,
-                    "id_group": this.value,
+                    "id_group": $("#filter_group").val(),
                     "privilege": "AW",
                     "keys_prefix": "_",
                     "recursion": recursion,
@@ -1533,6 +1537,6 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 },
                 "json"
             );
-        });        
+        }  
     });
 </script>

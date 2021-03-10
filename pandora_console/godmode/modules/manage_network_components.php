@@ -64,19 +64,6 @@ if (defined('METACONSOLE')) {
         $help_header = 'network_component_tab';
     }
 
-    ui_print_page_header(
-        __('Remote components'),
-        '',
-        false,
-        $help_header,
-        true,
-        '',
-        false,
-        'modulemodal',
-        GENERIC_SIZE_TEXT,
-        '',
-        __('Configuration').'&nbsp;/&nbsp;'.__('Templates').'&nbsp;/&nbsp;'.__('Remote components')
-    );
     $sec = 'gmodules';
 }
 

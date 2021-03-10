@@ -1386,6 +1386,7 @@ if (isset($ehorus_tab) && !empty($ehorus_tab)) {
     $onheader['ehorus'] = $ehorus_tab;
 }
 
+$id_extension = get_parameter('id_extension', '');
 // Tabs for extensions.
 $tab_name_extensions = '';
 foreach ($config['extensions'] as $extension) {
@@ -1428,13 +1429,11 @@ foreach ($config['extensions'] as $extension) {
             }
 
             $image = $extension['extension_ope_tab']['icon'];
-            $name = $extension['extension_ope_tab']['name'];
-            $id = $extension['extension_ope_tab']['id'];
-            $tab_name_extensions = $name;
+            $name  = $extension['extension_ope_tab']['name'];
+            $id    = $extension['extension_ope_tab']['id'];
 
-            $id_extension = get_parameter('id_extension', '');
-
-            if ($id_extension == $id) {
+            if ($id_extension === $id) {
+                $tab_name_extensions = $name;
                 $active = true;
             } else {
                 $active = false;

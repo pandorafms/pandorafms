@@ -1412,7 +1412,7 @@ if (!empty($result)) {
         }
 
         if (in_array('module_name', $show_fields) || is_metaconsole()) {
-            $data[3] = ui_print_truncate_text($row['module_name'], 'agent_small', false, true, true);
+            $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
             if ($row['extended_info'] != '') {
                 $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
             }

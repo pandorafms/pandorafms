@@ -48,7 +48,9 @@ if (enterprise_installed()) {
             'basic'    => __('Basic'),
             'advanced' => __('Advanced'),
         ];
-        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' '.ui_print_help_icon('meta_access', true);
+        // TODO review help tips on meta.
+        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' ';
+        // .ui_print_help_icon('meta_access', true)
     } else {
         $table->data[0][2] = '';
         $table->data[0][3] = html_print_input_hidden('wizard_level', $wizard_level, true);

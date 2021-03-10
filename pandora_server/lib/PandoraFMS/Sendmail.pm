@@ -217,9 +217,19 @@ sub sendmail {
                     print STDERR "> [...", length($$data), " bytes sent ...]\n";
                 }
             }
-			my @sockets = $Sel->can_write($mailcfg{'timeout'});
-			return 0 if (!@sockets);
-           	syswrite($sockets[0], $$data) || return 0;
+		    my @sockets = $Sel->can_write($mailcfg{'timeout'});
+            return 0 if (!@sockets);
+             eval {
+                local $SIG{__DIE__};
+                # Split log data in chunks if case write is
+                    my $data_sent = 0;
+                    while ($data_sent < length($$data)) {
+                        $data_sent += syswrite($sockets[0], $$data, length($$data) - $data_sent, $data_sent) || die $!;
+                    } 
+            };
+            if ($@) {
+                print STDERR "[sendmail] error: $!\n";
+            }
         }
         1;
     }

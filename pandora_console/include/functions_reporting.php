@@ -1868,6 +1868,10 @@ function reporting_event_report_group(
         $return['subtitle'] .= ' ('.$content['style']['event_filter_search'].')';
     }
 
+    if (!empty($content['style']['event_filter_exclude'])) {
+        $return['subtitle'] .= ' ('.__('Exclude ').$content['style']['event_filter_exclude'].')';
+    }
+
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -1880,6 +1884,7 @@ function reporting_event_report_group(
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
+    $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
 
     // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
@@ -1919,7 +1924,11 @@ function reporting_event_report_group(
         $filter_event_status,
         $filter_event_filter_search,
         $content['id_group'],
-        true
+        true,
+        false,
+        false,
+        false,
+        $filter_event_filter_exclude
     );
 
     if (empty($data)) {
@@ -1965,7 +1974,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_agent'] = pie_graph(
@@ -1990,7 +2000,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_user_validator'] = pie_graph(
@@ -2044,7 +2055,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -2189,6 +2201,7 @@ function reporting_event_report_module(
         true
     );
     $filter_event_filter_search = $event_filter['event_filter_search'];
+    $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
 
     // Graphs.
     $event_graph_by_user_validator = $event_filter['event_graph_by_user_validator'];
@@ -2218,7 +2231,8 @@ function reporting_event_report_module(
         $event_graph_validated_vs_unvalidated,
         $ttl,
         $id_server,
-        $metaconsole_dbtable
+        $metaconsole_dbtable,
+        $filter_event_filter_exclude
     );
 
     if (empty($data)) {
@@ -3259,6 +3273,7 @@ function reporting_event_report_agent(
     $filter_event_type = json_decode($style['filter_event_type'], true);
     $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
+    $filter_event_filter_exclude = $style['event_filter_exclude'];
 
     // Graph.
     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -3276,7 +3291,8 @@ function reporting_event_report_agent(
         $filter_event_severity,
         $filter_event_type,
         $filter_event_status,
-        $filter_event_filter_search
+        $filter_event_filter_search,
+        $filter_event_filter_exclude
     );
 
     reporting_set_conf_charts(
@@ -3316,7 +3332,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_user_validator'] = pie_graph(
@@ -3341,7 +3358,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $colors = get_criticity_pie_colors($data_graph);
@@ -3370,7 +3388,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -9406,7 +9425,8 @@ function reporting_get_module_detailed_event(
     $event_graph_validated_vs_unvalidated=false,
     $ttl=1,
     $id_server=false,
-    $metaconsole_dbtable=false
+    $metaconsole_dbtable=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -9442,7 +9462,8 @@ function reporting_get_module_detailed_event(
             false,
             $id_module,
             true,
-            $id_server
+            $id_server,
+            $filter_event_filter_exclude
         );
 
         // total_events
@@ -9470,7 +9491,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $event['chart']['by_user_validator'] = pie_graph(
@@ -9495,7 +9517,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $colors = get_criticity_pie_colors($data_graph);
@@ -9524,7 +9547,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $event['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -9573,7 +9597,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_severity=false,
     $filter_event_type=false,
     $filter_event_status=false,
-    $filter_event_filter_search=false
+    $filter_event_filter_search=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -9605,7 +9630,11 @@ function reporting_get_agents_detailed_event(
             $filter_event_status,
             $filter_event_filter_search,
             false,
-            false
+            false,
+            false,
+            false,
+            false,
+            $filter_event_filter_exclude
         );
 
         if (empty($event)) {
@@ -9962,7 +9991,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR')
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
 {
     global $config;
 
@@ -9998,7 +10027,7 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $cur_time = get_system_time();
 
     // Check for access credentials using check_acl. More overhead, much safer.
-    if (!check_acl($config['id_user'], $id_group, $access)) {
+    if ($ignore_permissions === false && !check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
 
@@ -12864,7 +12893,7 @@ function reporting_get_stats_servers()
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
-    if ($system_events > 50000 && !enterprise_installed()) {
+    if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
         $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     } else {
         $tdata[3] = '&nbsp;';

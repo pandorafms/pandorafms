@@ -40,7 +40,15 @@ $strict_user = db_get_value(
 );
 
 if ($id) {
-    $permission = events_check_event_filter_group($id);
+    $restrict_all_group = false;
+
+    if (!users_can_manage_group_all('EW') === true
+        && !users_can_manage_group_all('EM') === true
+    ) {
+        $restrict_all_group = true;
+    }
+
+    $permission = events_check_event_filter_group($id, $restrict_all_group);
     if (!$permission) {
         // User doesn't have permissions to see this filter
         include 'general/noaccess.php';
@@ -205,12 +213,16 @@ if ($update) {
 }
 
 if ($create) {
-    $id = db_process_sql_insert('tevent_filter', $values);
+    if (!empty($values['id_name'])) {
+        $id = db_process_sql_insert('tevent_filter', $values);
 
-    if ($id === false) {
-        ui_print_error_message('Error creating filter');
+        if ($id === false) {
+            ui_print_error_message('Error creating filter');
+        } else {
+            ui_print_success_message('Filter created successfully');
+        }
     } else {
-        ui_print_success_message('Filter created successfully');
+        ui_print_error_message('Filter name must not be empty');
     }
 }
 
@@ -272,12 +284,18 @@ $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $strict_user
 ).'</div>';
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('AR') === true) {
+    $return_all_group = true;
+}
+
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $display_all_group = (users_is_admin() || users_can_manage_group_all('AR'));
 $table->data[2][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
-    $display_all_group,
+    $return_all_group,
     'id_group',
     $id_group,
     '',

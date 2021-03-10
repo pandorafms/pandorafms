@@ -60,11 +60,9 @@ my %pa_config;
 sub help_screen {
 	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	print "Following options are optional : \n";
-	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
-	print "	-q        :  Quiet startup \n";
 	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
@@ -103,17 +101,11 @@ sub pandora_init {
 		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
 			help_screen();
 		}
-		elsif ($parametro =~ m/-v\z/i) {
-			$pa_config->{"verbosity"}=5;
-		}
 		elsif ($parametro =~ m/^-P\z/i) {
 			$pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}
-		elsif ($parametro =~ m/-q\z/) {
-			$pa_config->{"quiet"}=1;
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
@@ -827,7 +819,7 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
 			if ($pa_config->{"verbosity"} == 0) {
-				$pa_config->{"verbosity"} = clean_blank($1); 
+				$pa_config->{"verbosity"} = clean_blank($1);
 			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 

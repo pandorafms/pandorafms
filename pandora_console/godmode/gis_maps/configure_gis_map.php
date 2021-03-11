@@ -30,6 +30,14 @@ require_once 'include/functions_gis.php';
 $idMap = (int) get_parameter('map_id', 0);
 $action = get_parameter('action', 'new_map');
 
+$gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
+
+if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
+    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    include 'general/noaccess.php';
+    return;
+}
+
 $sec2 = get_parameter_get('sec2');
 $sec2 = safe_url_extraclean($sec2);
 
@@ -259,7 +267,10 @@ $buttons['gis_maps_list'] = [
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
         'images/list.png',
         true,
-        ['title' => __('GIS Maps list')]
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 if ($idMap) {
@@ -268,7 +279,10 @@ if ($idMap) {
         'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
             'images/op_gis.png',
             true,
-            ['title' => __('View GIS')]
+            [
+                'title' => __('View GIS'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
     ];
 }
@@ -440,27 +454,54 @@ foreach ($listConnectionTemp as $connectionTemp) {
 }
 
 $table->data[1][0] = __('Add Map connection').$iconError;
-$table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id='map_connection'>
+$table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-		<td style='padding:0px;' >
+		<td >
 			".html_print_select($listConnection, 'map_connection', '', '', '', '0', true)."
 		</td>
-		<td style='padding:0px;' >
-			<a href='javascript: addConnectionMap();'>".html_print_image('images/add.png', true)."</a>
+		<td >
+			<a href='javascript: addConnectionMap();'>".html_print_image(
+    'images/add.png',
+    true,
+    ['class' => 'invert_filter']
+)."</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
 		</td>
 	</tr> ".gis_add_conection_maps_in_form($map_connection_list).'
 </table>';
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'MM')) {
-    $display_all_group = true;
-} else {
-    $display_all_group = false;
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('MM') === true) {
+    $return_all_group = true;
 }
 
 $table->data[2][0] = __('Group');
-$table->data[2][1] = html_print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
+$table->data[2][1] = html_print_select_groups(
+    false,
+    'IW',
+    $return_all_group,
+    'map_group_id',
+    $map_group_id,
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    'id_grupo',
+    false,
+    false,
+    false,
+    '250px'
+);
 
 $table->data[3][0] = __('Default zoom');
 $table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
@@ -495,10 +536,10 @@ $table->valign[1] = 'top';
 $table->data = [];
 
 $table->data[0][0] = '<h4>'.__('List of layers').'</h4>';
-$table->data[0][1] = '<div style="text-align: right;">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true).'</div>';
+$table->data[0][1] = '<divclass="right">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true).'</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers"></table>';
-$table->data[1][1] = '<div id="form_layer" style="display: none;">
+$table->data[1][1] = '<div id="form_layer" class="invisible">
 		<table id="form_layer_table" class="" border="0" cellpadding="4" cellspacing="4">
 			<tr>
 				<td>'.__('Layer name').':</td>
@@ -622,7 +663,18 @@ echo '</form>';
         <tr class="row_0">
             <td><?php html_print_input_text('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
             <td><?php html_print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', ''); ?></td>
-            <td><a id="delete_row" href="none"><?php html_print_image('images/cross.png', false, ['alt' => '']); ?></a></td>
+            <td><a id="delete_row" href="none">
+            <?php
+            html_print_image(
+                'images/cross.png',
+                false,
+                [
+                    'alt'   => '',
+                    'class' => 'invert_filter',
+                ]
+            );
+            ?>
+                </a></td>
         </tr>
     </tbody>
 </table>
@@ -920,7 +972,15 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;">
+    <?php
+    echo html_print_image(
+        'images/cross.png',
+        true,
+        ['class' => 'invert_filter']
+    );
+    ?>
+        </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -976,7 +1036,7 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
         + "<i>" + agentAlias + "</i>"
         + ")"
         + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1054,8 +1114,8 @@ function getLayerRow (layerId, layerData) {
     var $layerName = $("<span class=\"layer_name\">" + layerData.name + "</span>");
     var $sortUpBtn = $("<a class=\"up_arrow\" href=\"javascript:;\" />");
     var $sortDownBtn = $("<a class=\"down_arrow\" href=\"javascript:;\" />");
-    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/config.png', true); ?></a>');
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/config.png', true, ['class' => 'invert_filter']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
 
     $sortUpBtn.click(moveLayerRowUpOnClick);
     $sortDownBtn.click(moveLayerRowDownOnClick);

@@ -94,14 +94,47 @@ if (isset($_GET['server'])) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons" style="width: 100%">';
+    echo '<div class="action-buttons w100p">';
     echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
     echo '</div>';
 } else if (isset($_GET['server_remote'])) {
     // Headers.
     $id_server = get_parameter_get('server_remote');
     $ext = get_parameter('ext', '');
-    ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true);
+    $tab = get_parameter('tab', 'standard_editor');
+    $advanced_editor = true;
+
+    $server_type = (int) db_get_value(
+        'server_type',
+        'tserver',
+        'id_server',
+        $id_server
+    );
+
+    $buttons = '';
+
+    if ($server_type !== 13) {
+        // Buttons.
+        $buttons = [
+            'standard_editor' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=standard_editor&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('Standard editor')]).'</a>',
+            ],
+            'advanced_editor' => [
+                'active' => false,
+                'text'   => '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$id_server.'&ext='.$ext.'&tab=advanced_editor&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Advanced editor')]).'</a>',
+            ],
+        ];
+
+        $buttons[$tab]['active'] = true;
+    }
+
+    ui_print_page_header(__('Remote Configuration'), 'images/gm_servers.png', false, 'servers', true, $buttons);
+
+    if ($server_type !== 13 && $tab == 'standard_editor') {
+        $advanced_editor = false;
+    }
+
     enterprise_include('godmode/servers/server_disk_conf_editor.php');
 } else {
     // Header.
@@ -209,10 +242,10 @@ function check_process (id_server) {
         parameters,
         function (data) {
             if (data['correct']) {
-                $("#check_exec_server img").attr("src", "images/dot_green.png");
+                $("#check_exec_server img").attr("src", <?php echo 'images/dot_green.png'; ?>);
             }
             else {
-                $("#check_exec_server img").attr("src", "images/dot_red.png");
+                $("#check_exec_server img").attr("src", <?php echo 'images/dot_red.png'; ?>);
                 $("#check_error_message").empty();
                 $("#check_error_message").append("<span>" + data['message'] + "</span>");
             }

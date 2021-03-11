@@ -71,6 +71,8 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     const imgSrc = this.props.statusImageSrc || this.props.imageSrc;
     const element = document.createElement("div");
     element.className = "static-graph";
+    element.setAttribute("ondragstart", "return false;");
+    element.setAttribute("draggable", "false");
     element.style.backgroundImage = `url(${imgSrc})`;
     element.style.backgroundRepeat = "no-repeat";
     element.style.backgroundSize = "contain";

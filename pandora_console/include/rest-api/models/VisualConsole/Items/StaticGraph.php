@@ -53,6 +53,7 @@ final class StaticGraph extends Item
             static::issetInArray($data, ['lastValue']),
             null
         );
+        $return['colorStatus'] = $data['colorStatus'];
 
         return $return;
     }
@@ -181,6 +182,35 @@ final class StaticGraph extends Item
             false
         );
 
+        $status = \visual_map_get_status_element($data);
+
+        // Magic numbers from the hell.
+        switch ($status) {
+            case 1:
+            case 4:
+                // Critical or critical alert (BAD).
+                $data['colorStatus'] = COL_CRITICAL;
+            break;
+
+            case 0:
+                // Normal (OK).
+                $data['colorStatus'] = COL_NORMAL;
+            break;
+
+            case 2:
+            case 10:
+                // Warning or warning alert.
+                $data['colorStatus'] = COL_WARNING;
+            break;
+
+            case 3:
+                // Unknown.
+            default:
+                // Default is Grey (Other).
+                $data['colorStatus'] = COL_UNKNOWN;
+            break;
+        }
+
         // If the width or the height are equal to 0 we will extract them
         // from the real image size.
         $width = (int) $data['width'];
@@ -188,8 +218,13 @@ final class StaticGraph extends Item
         if ($width === 0 || $height === 0) {
             if (isset($imagePath) && $imagePath !== false) {
                 $sizeImage = getimagesize($config['homedir'].'/'.$imagePath);
-                $data['width'] = $sizeImage[0];
-                $data['height'] = $sizeImage[1];
+                if ($ratio != 0) {
+                    $data['width'] = ($sizeImage[0] * $ratio);
+                    $data['height'] = ($sizeImage[1] * $ratio);
+                } else {
+                    $data['width'] = $sizeImage[0];
+                    $data['height'] = $sizeImage[1];
+                }
             }
         }
 

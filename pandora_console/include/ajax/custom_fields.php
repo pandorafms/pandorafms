@@ -54,6 +54,16 @@ if (check_login()) {
     $update_filter_cf = (bool) get_parameter('update_filter_cf', 0);
     $delete_filter_cf = (bool) get_parameter('delete_filter_cf', 0);
     $change_name_filter = (bool) get_parameter('change_name_filter', 0);
+    $check_csv_button = (bool) get_parameter('check_csv_button', 0);
+
+    if ($check_csv_button) {
+        if (check_acl($config['id_user'], 0, 'PM')) {
+            echo json_encode($permission);
+            return;
+        } else {
+            exit;
+        }
+    }
 
     if ($get_custom_fields_data) {
         $name_custom_fields = get_parameter('name_custom_fields', 0);
@@ -527,7 +537,7 @@ if (check_login()) {
         $type_form = get_parameter('type_form', '');
 
         if ($type_form == 'save') {
-            $tabs = '<div id="tabs" style="height:95%;">';
+            $tabs = '<div id="tabs" class="height_95p">';
             $tabs .= "<ul class='tab_save_filter'>";
                 $tabs .= '<li>';
                     $tabs .= "<a href='#extended_create_filter' id='link_create'>";

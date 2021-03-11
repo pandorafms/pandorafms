@@ -55,7 +55,7 @@ $(document).ready(function() {
           // First level list - parents.
           if (value.parent == 0 && value.count != 0) {
             first_level +=
-              '<li><a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories&id_cat=' +
+              '<li><a class="category_link" href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories&id_cat=' +
               value.id +
               '">' +
               value.name +
@@ -78,7 +78,7 @@ $(document).ready(function() {
             if (id_parent == v.parent && v.count != 0) {
               second_level += "<li>"; //'<li id="child-' + v.id + '" class="parent-' + v.parent + '">';
               second_level +=
-                '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories&id_cat=' +
+                '<a class="category_link" href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories&id_cat=' +
                 v.id +
                 '">';
               second_level += v.name + " (" + v.count + ")";

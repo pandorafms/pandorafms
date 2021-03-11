@@ -864,6 +864,14 @@ function config_update_config()
                     if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
                         $error_update[] = __('Row limit in csv log');
                     }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
+                    }
                 break;
 
                 case 'vis':
@@ -1631,12 +1639,12 @@ function config_update_config()
 
                 case 'module_library':
                     $module_library_user = get_parameter('module_library_user');
-                    if ($module_library_user == '' || !config_update_value('module_library_user', $module_library_user)) {
+                    if (!config_update_value('module_library_user', $module_library_user)) {
                         $error_update[] = __('User');
                     }
 
                     $module_library_password = get_parameter('module_library_password');
-                    if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
+                    if (!config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
                     }
                 break;
@@ -1870,6 +1878,32 @@ function config_process_config()
 
     if (!isset($config['row_limit_csv'])) {
         config_update_value('row_limit_csv', 10000);
+    }
+
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
     }
 
     if (!isset($config['event_purge'])) {
@@ -2190,7 +2224,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2206,7 +2240,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {
@@ -2778,7 +2812,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {

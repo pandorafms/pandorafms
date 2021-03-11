@@ -37,27 +37,26 @@ enterprise_include_once(
 
 // Date format for nfdump.
 global $nfdump_date_format;
-$nfdump_date_format = 'Y/m/d.H:i:s';
+$nfdump_date_format = 'Y/m/d.H:i:s';/**
+                                     * Generates a Tree with given $tree information.
+                                     *
+                                     * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+                                     * Used also in Cloud Wizard.
+                                     *
+                                     * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+                                     * @param string  $id              Level ID. Do not set, used for recursion.
+                                     * @param string  $depth           Branch depth. Do not set, used for recursion.
+                                     * @param integer $last            Last.
+                                     * @param array   $last_array      Last_array.
+                                     * @param string  $sufix           Sufix.
+                                     * @param array   $checked         Checked.
+                                     * @param boolean $descriptive_ids Descriptive_ids.
+                                     * @param string  $previous_id     Previous_id.
+                                     *
+                                     * @return string HTML code with complete tree.
+                                     */
 
 
-/**
- * Generates a Tree with given $tree information.
- *
- * Selects all netflow filters (array (id_name => id_name)) or filters filtered
- * Used also in Cloud Wizard.
- *
- * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
- * @param string  $id              Level ID. Do not set, used for recursion.
- * @param string  $depth           Branch depth. Do not set, used for recursion.
- * @param integer $last            Last.
- * @param array   $last_array      Last_array.
- * @param string  $sufix           Sufix.
- * @param array   $checked         Checked.
- * @param boolean $descriptive_ids Descriptive_ids.
- * @param string  $previous_id     Previous_id.
- *
- * @return string HTML code with complete tree.
- */
 function snmp_browser_get_html_tree(
     $tree,
     $id=0,
@@ -89,23 +88,23 @@ function snmp_browser_get_html_tree(
     $class = 'item_'.$depth;
 
     if ($depth > 0) {
-        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px invisible">';
     } else {
-        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0;">';
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px">';
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" class="'.$class.'" style="margin: 0; padding: 0;">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
-                $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/branch.png" class="vertical_middle">';
             }
         }
 
@@ -114,14 +113,14 @@ function snmp_browser_get_html_tree(
             $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    $output .= '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/one_closed.png" class="vertical_middle">';
                 } else {
-                    $output .= '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_closed.png" class="vertical_middle">';
                 }
             } else if ($count == $total) {
-                $output .= '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_closed.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/closed.png" class="vertical_middle">';
             }
 
             $output .= '</a>';
@@ -131,21 +130,21 @@ function snmp_browser_get_html_tree(
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
                 } else {
-                    $output .= '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_leaf.png" class="vertical_middle">';
                 }
             } else if ($count == $total) {
-                $output .= '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_leaf.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/leaf.png" class="vertical_middle">';
             }
         }
 
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
             $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            $output .= '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
+            $output .= '<img src="'.$url.'/../../images/eye.png" class="vertical_middle">';
             $output .= '</a>';
         }
 
@@ -160,7 +159,7 @@ function snmp_browser_get_html_tree(
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
+            $output .= '<span class="value invisible" class="invisible" >&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
         }
 
         $output .= '</li>';
@@ -264,122 +263,97 @@ function snmp_browser_get_tree(
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
     $snmp3_privacy_pass='',
-    $snmp3_context_engine_id=null
+    $snmp3_context_engine_id=null,
+    $server_to_exec=0,
+    $target_port=''
 ) {
     global $config;
 
-    switch ($version) {
-        case '1':
-            $snmp_version = SNMP::VERSION_1;
-        break;
+    $output = get_snmpwalk(
+        // Ip_target.
+        $target_ip,
+        // Snmp_version.
+        $version,
+        // Snmp_community.
+        $community,
+        // Snmp3_auth_user.
+        $snmp3_auth_user,
+        // Snmp3_security_level.
+        $snmp3_security_level,
+        // Snmp3_auth_method.
+        $snmp3_auth_method,
+        // Snmp3_auth_pass.
+        $snmp3_auth_pass,
+        // Snmp3_privacy_method.
+        $snmp3_privacy_method,
+        // Snmp3_privacy_pass.
+        $snmp3_privacy_pass,
+        // Quick_print.
+        0,
+        // Base_oid.
+        $starting_oid,
+        // Snmp_port.
+        $target_port,
+        // Server_to_exec.
+        $server_to_exec,
+        // Extra_arguments.
+        '',
+        // Format.
+        ''
+    );
 
-        case '2':
-            $snmp_version = SNMP::VERSION_2C;
-        break;
+    // Build the tree if output comes filled.
+    if (empty($output) === false) {
+        $oid_tree = ['__LEAVES__' => []];
+        foreach ($output as $oid => $value) {
+            // Parse the OID.
+            $oid_len = strlen($oid);
+            $group = 0;
+            $sub_oid = '';
+            $ptr = &$oid_tree['__LEAVES__'];
 
-        case '2c':
-            $snmp_version = SNMP::VERSION_2C;
-        break;
-
-        case '3':
-            $snmp_version = SNMP::VERSION_3;
-            $community = $snmp3_auth_user;
-        break;
-
-        default:
-            $snmp_version = SNMP::VERSION_2C;
-        break;
-    }
-
-    $snmp_session = new SNMP($snmp_version, $target_ip, $community);
-    $snmp_session->oid_output_format = SNMP_OID_OUTPUT_MODULE;
-
-      // Set security if SNMP Version is 3.
-    if ($snmp_version == SNMP::VERSION_3) {
-        $snmp_session->setSecurity(
-            $snmp3_security_level,
-            $snmp3_auth_method,
-            $snmp3_auth_pass,
-            $snmp3_privacy_method,
-            $snmp3_privacy_pass,
-            '',
-            $snmp3_context_engine_id
-        );
-    }
-
-    $mibs_dir = $config['homedir'].'/attachment/mibs';
-    $_dir = opendir($mibs_dir);
-
-    // Future. Recomemended: Use a global config limit of MIBs loaded.
-    while (($mib_file = readdir($_dir)) !== false) {
-        if ($mib_file == '..' || $mib_file == '.') {
-            continue;
-        }
-
-        $rs = snmp_read_mib($mibs_dir.'/'.$mib_file);
-        if ($rs !== true) {
-            error_log('Failed while reading MIB file: '.$mib_file);
-        }
-    }
-
-    closedir($_dir);
-
-    $output = $snmp_session->walk($starting_oid);
-    if ($output == false) {
-        $output = $snmp_session->getError();
-        $snmp_session->close();
-        return $output;
-    }
-
-    $snmp_session->close();
-
-    // Build the tree.
-    $oid_tree = ['__LEAVES__' => []];
-    foreach ($output as $oid => $value) {
-        // Parse the OID.
-        $oid_len = strlen($oid);
-        $group = 0;
-        $sub_oid = '';
-        $ptr = &$oid_tree['__LEAVES__'];
-
-        for ($i = 0; $i < $oid_len; $i++) {
-            // "X.Y.Z"
-            if ($oid[$i] == '"') {
-                $group = ($group ^ 1);
-            }
-
-            // Move to the next element of the OID.
-            if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
-                // Skip the next ":".
-                if ($oid[$i] == ':') {
-                    $i++;
+            for ($i = 0; $i < $oid_len; $i++) {
+                // "X.Y.Z"
+                if ($oid[$i] == '"') {
+                    $group = ($group ^ 1);
                 }
 
-                // Starting dot.
-                if ($sub_oid == '') {
-                    continue;
-                }
+                // Move to the next element of the OID.
+                if ($group == 0 && ($oid[$i] == '.' || ($oid[$i] == ':' && $oid[($i + 1)] == ':'))) {
+                    // Skip the next ":".
+                    if ($oid[$i] == ':') {
+                        $i++;
+                    }
 
-                if (! isset($ptr[$sub_oid]) || ! isset($ptr[$sub_oid]['__LEAVES__'])) {
-                    $ptr[$sub_oid]['__LEAVES__'] = [];
-                }
+                    // Starting dot.
+                    if ($sub_oid == '') {
+                        continue;
+                    }
 
-                $ptr = &$ptr[$sub_oid]['__LEAVES__'];
-                $sub_oid = '';
-            } else {
-                if ($oid[$i] != '"') {
-                    $sub_oid .= $oid[$i];
+                    if (! isset($ptr[$sub_oid]) || ! isset($ptr[$sub_oid]['__LEAVES__'])) {
+                        $ptr[$sub_oid]['__LEAVES__'] = [];
+                    }
+
+                    $ptr = &$ptr[$sub_oid]['__LEAVES__'];
+                    $sub_oid = '';
+                } else {
+                    if ($oid[$i] != '"') {
+                        $sub_oid .= $oid[$i];
+                    }
                 }
             }
-        }
 
-        // The last element will contain the full OID.
-        $ptr[$sub_oid] = [
-            '__OID__'   => $oid,
-            '__VALUE__' => $value,
-        ];
-        $ptr = &$ptr[$sub_oid];
-        $sub_oid = '';
+            // The last element will contain the full OID.
+            $ptr[$sub_oid] = [
+                '__OID__'   => $oid,
+                '__VALUE__' => $value,
+            ];
+            $ptr = &$ptr[$sub_oid];
+            $sub_oid = '';
+        }
+    } else {
+        $oid_tree = __('The server did not return any response.');
+        error_log($oid_tree);
     }
 
     return $oid_tree;
@@ -389,17 +363,18 @@ function snmp_browser_get_tree(
 /**
  * Retrieve data for the specified OID.
  *
- * @param string  $target_ip            IP of the SNMP agent.
- * @param string  $community            SNMP community to use.
- * @param string  $target_oid           SNMP OID to query.
- * @param string  $version              Version SNMP.
- * @param string  $snmp3_auth_user      User snmp3.
- * @param string  $snmp3_security_level Security level snmp3.
- * @param string  $snmp3_auth_method    Method snmp3.
- * @param string  $snmp3_auth_pass      Pass snmp3.
- * @param string  $snmp3_privacy_method Privicy method snmp3.
- * @param string  $snmp3_privacy_pass   Pass Method snmp3.
- * @param integer $server_to_exec       Execute with other server.
+ * @param string       $target_ip            IP of the SNMP agent.
+ * @param string       $community            SNMP community to use.
+ * @param string       $target_oid           SNMP OID to query.
+ * @param string       $version              Version SNMP.
+ * @param string       $snmp3_auth_user      User snmp3.
+ * @param string       $snmp3_security_level Security level snmp3.
+ * @param string       $snmp3_auth_method    Method snmp3.
+ * @param string       $snmp3_auth_pass      Pass snmp3.
+ * @param string       $snmp3_privacy_method Privicy method snmp3.
+ * @param string       $snmp3_privacy_pass   Pass Method snmp3.
+ * @param integer      $server_to_exec       Execute with other server.
+ * @param integer|null $target_port          Target port.
  *
  * @return mixed OID data.
  */
@@ -414,7 +389,8 @@ function snmp_browser_get_oid(
     $snmp3_auth_pass='',
     $snmp3_privacy_method='',
     $snmp3_privacy_pass='',
-    $server_to_exec=0
+    $server_to_exec=0,
+    $target_port=''
 ) {
     global $config;
 
@@ -427,24 +403,40 @@ function snmp_browser_get_oid(
     }
 
     $output = get_snmpwalk(
+        // Ip_target.
         $target_ip,
+        // Snmp_version.
         $version,
+        // Snmp_community.
         $community,
+        // Snmp3_auth_user.
         $snmp3_auth_user,
+        // Snmp3_security_level.
         $snmp3_security_level,
+        // Snmp3_auth_method.
         $snmp3_auth_method,
+        // Snmp3_auth_pass.
         $snmp3_auth_pass,
+        // Snmp3_privacy_method.
         $snmp3_privacy_method,
+        // Snmp3_privacy_pass.
         $snmp3_privacy_pass,
+        // Quick_print.
         0,
+        // Base_oid.
         $target_oid,
-        '',
+        // Snmp_port.
+        $target_port,
+        // Server_to_exec.
         $server_to_exec,
+        // Extra_arguments.
         '',
+        // Format.
         '-On'
     );
 
     $oid_data['oid'] = $target_oid;
+
     foreach ($output as $oid => $value) {
         $oid = trim($oid);
         $oid_data['numeric_oid'] = $oid;
@@ -468,7 +460,8 @@ function snmp_browser_get_oid(
             $snmptranslate_bin = $config['snmptranslate'];
         }
 
-        if ($server_to_exec != 0) {
+        if ($server_to_exec != 0 && enterprise_installed()) {
+            $server_data = db_get_row('tserver', 'id_server', $server_to_exec);
             $command_output = $snmptranslate_bin.' -m ALL -M +'.escapeshellarg($config['homedir'].'/attachment/mibs').' -Td '.escapeshellarg($oid);
 
             if (empty($server_data['port'])) {
@@ -548,7 +541,8 @@ function snmp_browser_print_oid(
 ) {
     $output = '';
 
-    // OID information table
+    // OID information table.
+    $table = new StdClass();
     $table->width = '100%';
     $table->size = [];
     $table->data = [];
@@ -617,7 +611,7 @@ function snmp_browser_print_oid(
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" target="_blank" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" class="center mrgn_10px" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);
@@ -652,7 +646,7 @@ function snmp_browser_print_oid(
         'create_module_agent_single',
         false,
         'show_add_module()',
-        'class="sub add" style="display:none"',
+        'class="sub add invisible"',
         true
     );
 
@@ -691,6 +685,8 @@ function snmp_browser_print_container(
     $display='',
     $show_massive_buttons=false
 ) {
+    global $config;
+
     $snmp_version = get_parameter('snmp_browser_version', '2c');
     // Target selection.
     $table = new stdClass();
@@ -699,15 +695,33 @@ function snmp_browser_print_container(
     $table->size = [];
     $table->data = [];
 
-    $table->data[0][0] = '<strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
-    $table->data[0][0] .= html_print_input_text(
-        'target_ip',
-        get_parameter('target_ip', ''),
-        '',
-        25,
-        0,
-        true
+    $table->size[0] = '30%';
+
+    $table->data[0][0] = '<div class="mw500px"><strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
+    $table->data[0][0] .= html_print_input(
+        [
+            'type'      => 'text',
+            'name'      => 'target_ip',
+            'value'     => get_parameter('target_ip', ''),
+            'required'  => true,
+            'size'      => 25,
+            'maxlength' => 0,
+            'return'    => true,
+        ]
     );
+    $table->data[0][0] .= '&nbsp;&nbsp<strong>'.__('Port').'</strong>&nbsp;&nbsp;';
+    $table->data[0][0] .= html_print_input(
+        [
+            'type'     => 'number',
+            'name'     => 'target_port',
+            'id'       => 'target_port',
+            'value'    => get_parameter('target_port', 161),
+            'required' => true,
+            'return'   => true,
+        ]
+    );
+    $table->data[0][0] .= '</div>';
+
     $table->data[0][1] = '<strong>'.__('Community').'</strong> &nbsp;&nbsp;';
     $table->data[0][1] .= html_print_input_text(
         'community',
@@ -720,7 +734,7 @@ function snmp_browser_print_container(
     $table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
     $table->data[0][2] .= html_print_input_text(
         'starting_oid',
-        get_parameter('starting_oid', '.1.3.6.1.2'),
+        get_parameter('starting_oid', '.1.3.6.1.2.1.2.2'),
         '',
         25,
         0,
@@ -779,12 +793,17 @@ function snmp_browser_print_container(
         true
     );
 
-    $table->data[1][2] = html_print_button(
-        __('Browse'),
-        'browse',
-        false,
-        'snmpBrowse()',
-        'class="sub search" style="margin-top:0px;"',
+    $table->data[1][2] = html_print_input(
+        [
+            'type'       => 'submit',
+            'label'      => __('Browse'),
+            'name'       => 'browse',
+            'disabled'   => false,
+            'script'     => 'snmpBrowse()',
+            'attributes' => 'class="sub search mrgn_top_0px"',
+            'return'     => true,
+        ],
+        'div',
         true
     );
 
@@ -904,6 +923,7 @@ function snmp_browser_print_container(
             'title'   => __('Search'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchText();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][0] .= '</a>';
@@ -917,6 +937,7 @@ function snmp_browser_print_container(
             'title'   => __('First match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchFirstMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -929,6 +950,7 @@ function snmp_browser_print_container(
             'title'   => __('Previous match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchPrevMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -941,6 +963,7 @@ function snmp_browser_print_container(
             'title'   => __('Next match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchNextMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -953,6 +976,7 @@ function snmp_browser_print_container(
             'title'   => __('Last match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchLastMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -966,6 +990,7 @@ function snmp_browser_print_container(
             'title'   => __('Expand the tree (can be slow)'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'expandAll();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][2] .= '</a>';
@@ -978,6 +1003,7 @@ function snmp_browser_print_container(
             'title'   => __('Collapse the tree'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'collapseAll();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][2] .= '</a>';
@@ -986,9 +1012,10 @@ function snmp_browser_print_container(
     // This extra div that can be handled by jquery's dialog.
     $output = '<div id="snmp_browser_container" style="'.$display.'">';
     $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
-    $output .= '<div style="width: 100%">';
+    $output .= '<div class="w100p">';
+    $output .= '<form onsubmit="snmpBrowse(); return false;">';
     $output .= html_print_table($table, true);
-    $output .= '</div>';
+    $output .= '</form></div>';
 
     if (isset($snmp_version) === false) {
         $snmp_version = null;
@@ -997,7 +1024,7 @@ function snmp_browser_print_container(
     if ($snmp_version == 3) {
         $output .= '<div id="snmp3_browser_options">';
     } else {
-        $output .= '<div id="snmp3_browser_options" style="display: none;">';
+        $output .= '<div id="snmp3_browser_options" class="invisible">';
     }
 
     $output .= ui_toggle(
@@ -1009,7 +1036,7 @@ function snmp_browser_print_container(
         true
     );
     $output .= '</div>';
-    $output .= '<div style="width: 100%; padding-top: 10px;">';
+    $output .= '<div class="search_options">';
     $output .= ui_toggle(
         html_print_table($table2, true),
         __('Search options'),
@@ -1021,7 +1048,7 @@ function snmp_browser_print_container(
     $output .= '</div>';
 
     // SNMP tree container.
-    $output .= '<div style="width: 100%; height: 100%; margin-top: 5px; position: relative;">';
+    $output .= '<div class="snmp_tree_container">';
     $output .= html_print_input_hidden('search_count', 0, true);
     $output .= html_print_input_hidden('search_index', -1, true);
 
@@ -1037,17 +1064,17 @@ function snmp_browser_print_container(
         true
     );
 
-    $output .= '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
-    $output .= '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">'.html_print_image('images/spinner.gif', true).'</div>';
+    $output .= '<div id="search_results" class="search_results"></div>';
+    $output .= '<div id="spinner" class="spinner_none_padding">'.html_print_image('images/spinner.gif', true).'</div>';
     $output .= '<div id="snmp_browser">';
     $output .= '</div>';
-    $output .= '<div class="databox" id="snmp_data" style="margin: 5px; display: none"></div>';
+    $output .= '<div class="databox invisible mrgn_5px" id="snmp_data"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';
 
     if ($show_massive_buttons) {
-        $output .= '<div id="snmp_create_buttons" style="display:none">';
+        $output .= '<div id="snmp_create_buttons" class="invisible">';
         $output .= html_print_submit_button(
             __('Create agent modules'),
             'create_modules_agent',
@@ -1088,25 +1115,74 @@ function snmp_browser_print_container(
 /**
  * Create selected oids as modules on selected target.
  *
- * @param  string     $module_target Target where modules will be created (network componen, agent or policy).
- * @param  array      $targets_oids  Modules oids.
- * @param  array      $values        SNMP conf values.
- * @param  array|null $id_target     (Optional) Id target where modules will be created.
- * @return array        $fail_modules
+ * @param string      $module_target  Target where modules will be created (network componen, agent or policy).
+ * @param array       $targets_oids   Modules oids.
+ * @param array       $values         SNMP conf values.
+ * @param array|null  $id_target      (Optional) Id target where modules will be created.
+ * @param string|null $server_to_exec Remote server to execute command.
+ *
+ * @return array Failed modules.
  */
-function snmp_browser_create_modules_snmp(string $module_target, array $snmp_values, ?array $id_target)
-{
+function snmp_browser_create_modules_snmp(
+    string $module_target,
+    array $snmp_values,
+    ?array $id_target,
+    ?string $server_to_exec=null
+) {
+    $target_ip = null;
+    $target_port = null;
+    $community = null;
+    $target_oid = null;
+    $snmp_version = null;
+    $snmp3_auth_user = null;
+    $snmp3_security_level = null;
+    $snmp3_auth_method = null;
+    $snmp3_auth_pass = null;
+    $snmp3_privacy_method = null;
+    $snmp3_privacy_pass = null;
+
     if (is_array($snmp_values)) {
-        $snmp_version = $snmp_values['snmp_browser_version'];
-        $community = $snmp_values['community'];
-        $target_ip = $snmp_values['target_ip'];
-        $snmp3_auth_user = $snmp_values['snmp3_browser_auth_user'];
-        $snmp3_security_level = $snmp_values['snmp3_browser_security_level'];
-        $snmp3_auth_method = $snmp_values['snmp3_browser_auth_method'];
-        $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
-        $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
-        $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
-        $targets_oids = $snmp_values['oids'];
+        if (isset($snmp_values['snmp_browser_version']) === true) {
+            $snmp_version = $snmp_values['snmp_browser_version'];
+        }
+
+        if (isset($snmp_values['community']) === true) {
+            $community = $snmp_values['community'];
+        }
+
+        if (isset($snmp_values['target_ip']) === true) {
+            $target_ip = $snmp_values['target_ip'];
+        }
+
+        if (isset($snmp_values['target_port']) === true) {
+            $target_port = $snmp_values['target_port'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_auth_user']) === true) {
+            $snmp3_auth_user = $snmp_values['snmp3_browser_auth_user'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_security_level']) === true) {
+            $snmp3_security_level = $snmp_values['snmp3_browser_security_level'];
+        };
+        if (isset($snmp_values['snmp3_browser_auth_method']) === true) {
+            $snmp3_auth_method = $snmp_values['snmp3_browser_auth_method'];
+        }
+
+        if (isset($snmp_values['snmp3_browser_auth_pass']) === true) {
+            $snmp3_auth_pass = $snmp_values['snmp3_browser_auth_pass'];
+        }
+
+        if (isset($snmp_values['snmp3_privacy_method']) === true) {
+            $snmp3_privacy_method = $snmp_values['snmp3_privacy_method'];
+        };
+        if (isset($snmp_values['snmp3_browser_privacy_pass']) === true) {
+            $snmp3_privacy_pass = $snmp_values['snmp3_browser_privacy_pass'];
+        }
+
+        if (isset($snmp_values['oids']) === true) {
+            $targets_oids = $snmp_values['oids'];
+        }
     }
 
      $fail_modules = [];
@@ -1122,8 +1198,15 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             $snmp3_auth_method,
             $snmp3_auth_pass,
             $snmp3_privacy_method,
-            $snmp3_privacy_pass
+            $snmp3_privacy_pass,
+            $server_to_exec,
+            $target_port
         );
+
+        if (isset($oid['numeric_oid']) === false) {
+            $fail_modules[] = $target_oid;
+            continue;
+        }
 
         if (empty($oid['description'])) {
             $description = '';
@@ -1215,7 +1298,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min'                   => 0,
                     'tcp_send'              => $snmp_version,
                     'tcp_rcv'               => '',
-                    'tcp_port'              => 0,
+                    'tcp_port'              => $target_port,
                     'snmp_oid'              => $oid['numeric_oid'],
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
@@ -1275,7 +1358,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min'                   => 0,
                     'tcp_send'              => $snmp_version,
                     'tcp_rcv'               => '',
-                    'tcp_port'              => 0,
+                    'tcp_port'              => $target_port,
                     'snmp_oid'              => $oid['numeric_oid'],
                     'snmp_community'        => $community,
                     'id_module_group'       => 3,
@@ -1316,7 +1399,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
                     'min_ff_event_critical' => 0,
                     'ff_type'               => 0,
                     'each_ff'               => 0,
-                    'ip_target'             => $target_ip,
+                    'ip_target'             => '',
                     'configuration_data'    => '',
                     'history_data'          => 1,
                 ];
@@ -1328,7 +1411,7 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
             }
         }
 
-        if (is_array($ids)) {
+        if (isset($ids) === true && is_array($ids) === true) {
             foreach ($ids as $id) {
                 // Id < 0 for error codes.
                 if (!$id || $id < 0) {
@@ -1356,6 +1439,8 @@ function snmp_browser_create_modules_snmp(string $module_target, array $snmp_val
  */
 function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $return=false)
 {
+    global $config;
+
     // String for labels.
     switch ($target) {
         case 'agent':
@@ -1367,7 +1452,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         break;
     }
 
-    $output .= "<form target='_blank' id='create_module_massive' action='#' method='post'>";
+    $output = "<form target='_blank' id='create_module_massive' action='#' method='post'>";
 
     $strict_user = db_get_value(
         'strict_acl',
@@ -1382,7 +1467,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
     $table->width = '100%';
     $table->data = [];
 
-    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
 
     $table->data[0][1] = html_print_select_groups(
         false,
@@ -1405,7 +1490,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         $strict_user
     );
 
-    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
     $table->data[1][1] = html_print_input_text(
         'filter',
         '',
@@ -1415,9 +1500,9 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         true
     );
 
-    $table->data[2][0] = __($target_item.' available').html_print_input_image('select_all_left', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+    $table->data[2][0] = '<b>'.__($target_item.' available').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_left', 1, false, true);
     $table->data[2][1] = '';
-    $table->data[2][2] = __($target_item.' to apply').html_print_input_image('select_all_right', 'images/tick.png', 1, '', true, ['title' => __('Select all')]);
+    $table->data[2][2] = '<b>'.__($target_item.' to apply').'</b><br> '.__('Select all').html_print_checkbox_switch('select_all_right', 1, false, true);
 
     $table->data[3][0] = html_print_select(
         [],
@@ -1442,7 +1527,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
                 'snmp_browser_create_policy',
                 false,
                 '',
-                'class="sub add" style="margin-left:0px"',
+                'class="sub add mrgn_lft_0"',
                 true
             );
         }
@@ -1463,6 +1548,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         [
             'id'    => 'right',
             'title' => __('Add'),
+            'class' => 'invert_filter',
         ]
     ).'<br /><br /><br /><br />'.html_print_image(
         'images/darrowleft.png',
@@ -1470,6 +1556,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         [
             'id'    => 'left',
             'title' => __('Undo'),
+            'class' => 'invert_filter',
         ]
     );
     $table->data[3][2] = html_print_select(
@@ -1519,7 +1606,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
  */
 function snmp_browser_print_create_modules($return=false)
 {
-    $output = "<div id='dialog_create_module' style='display: none;' title='Select agent'>";
+    $output = "<div id='dialog_create_module' class='invisible' title='Select agent'>";
 
     $table = new stdClass();
     $table->width = '100%';
@@ -1556,17 +1643,20 @@ function snmp_browser_print_create_policy()
 {
     $table = new stdClass();
 
-    $table->width = '100%';
-    $table->class = 'databox filters';
-    $table->style = [];
-    $table->style[0] = 'font-weight: bold; vertical-align: top';
-    $table->data = [];
+    $name = get_parameter('name');
+    $id_group = get_parameter('id_group');
+    $description = get_parameter('description');
 
+    $table->width = '100%';
+    $table->class = 'databox filters bold_top';
+    $table->style = [];
+    $table->data = [];
     $table->data[0][0] = __('Name');
     $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
 
     $table->data[1][0] = __('Group');
-    $table->data[1][1] = html_print_select_groups(
+    $table->data[1][1] = '<div class="flex flex-row"><div class="w90p">';
+    $table->data[1][1] .= html_print_select_groups(
         false,
         'AW',
         false,
@@ -1576,10 +1666,10 @@ function snmp_browser_print_create_policy()
         '',
         '',
         true
-    );
+    ).'</div>';
     $table->data[1][1] .= ' <span id="group_preview">';
     $table->data[1][1] .= ui_print_group_icon($id_group, true, 'groups_small', '', false);
-    $table->data[1][1] .= '</span>';
+    $table->data[1][1] .= '</span></div>';
 
     $table->data[2][0] = __('Description');
     $table->data[2][1] = html_print_textarea('description', 3, 30, $description, '', true);

@@ -401,16 +401,20 @@ foreach ($templates as $template) {
 
     $data = [];
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
+    if (check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')) {
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
+    } else {
+        $data[0] = $template['name'];
+    }
 
     $data[1] = ui_print_group_icon($template['id_group'], true);
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (is_central_policies_on_node() === false
-        && check_acl($config['id_user'], $template['id_group'], 'LM')
+        && check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'action_buttons';
-        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
+        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" class="float-left inline_line">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
         $data[4] .= html_print_input_image(
@@ -423,7 +427,7 @@ foreach ($templates as $template) {
         );
         $data[4] .= '</form> ';
 
-        $data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+        $data[4] .= '<form method="post" class="float-right inline_line" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
         $data[4] .= html_print_input_hidden('delete_template', 1, true);
         $data[4] .= html_print_input_hidden('id', $template['id'], true);
         $data[4] .= html_print_input_image(

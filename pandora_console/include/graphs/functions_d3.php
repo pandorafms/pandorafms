@@ -306,7 +306,7 @@ function d3_gauges(
     $output = include_javascript_d3(true);
 
     foreach ($chart_data as $module) {
-        $output .= "<div class='gauge_d3_class' id='".$module['gauge']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
+        $output .= "<div class='gauge_d3_class gauge_class' id='".$module['gauge']."'></div>";
     }
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">

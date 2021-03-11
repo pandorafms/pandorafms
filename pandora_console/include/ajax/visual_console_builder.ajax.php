@@ -1449,6 +1449,16 @@ switch ($action) {
         }
 
         switch ($type) {
+            case 'network_link':
+                $values['type'] = NETWORK_LINK;
+                $values['border_width'] = $line_width;
+                $values['border_color'] = $line_color;
+                $values['pos_x'] = $line_start_x;
+                $values['pos_y'] = $line_start_y;
+                $values['width'] = $line_end_x;
+                $values['height'] = $line_end_y;
+            break;
+
             case 'line_item':
                 $values['type'] = LINE_ITEM;
                 $values['border_width'] = $line_width;

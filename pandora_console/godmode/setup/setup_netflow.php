@@ -75,7 +75,7 @@ echo '<form id="netflow_setup" method="post">';
 html_print_table($table);
 
 // Update button.
-echo '<div class="action-buttons" style="width:100%;">';
+echo '<div class="action-buttons w100p">';
     html_print_input_hidden('update_config', 1);
     html_print_submit_button(__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</div></form>';

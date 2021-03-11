@@ -150,6 +150,10 @@ function reports_get_reports(
             ) {
                 continue;
             }
+        } else {
+            if ($returnAllGroup === false) {
+                continue;
+            }
         }
 
         array_push($reports, $report);
@@ -750,6 +754,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
     ];
+    $types['histogram_data'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Histogram'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),
@@ -876,7 +884,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if ($config['enterprise_installed'] && $template === false) {
+    if ($config['enterprise_installed'] && $template === false && !is_metaconsole()) {
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),
@@ -890,10 +898,12 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    $types['permissions_report'] = [
-        'optgroup' => __('Permissions report'),
-        'name'     => __('Permissions report'),
-    ];
+    if ($template === false) {
+        $types['permissions_report'] = [
+            'optgroup' => __('Permissions report'),
+            'name'     => __('Permissions report'),
+        ];
+    }
 
     return $types;
 }

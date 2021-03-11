@@ -259,33 +259,10 @@ class GroupsStatusWidget extends Widget
         include_once $config['homedir'].'/include/functions_graph.php';
 
         $output = '';
-        // Check ACL.
+
         $user_groups = \users_get_groups(false, 'AR', false);
 
-        if (empty($this->values['groupId']) === true) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
-
-        // Sanity check for user access.
-        if (isset($user_groups[$this->values['groupId']]) === false) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You don\'t have access'),
-                '',
-                true
-            );
-            $output .= '</div>';
-            return $output;
-        }
-
-        $stats = \reporting_get_group_stats_resume($this->values['groupId']);
+        $stats = \reporting_get_group_stats_resume($this->values['groupId'], 'AR', true);
 
         $data = '<div class="widget-groups-status"><span>';
         $data .= ui_print_group_icon(
@@ -301,11 +278,11 @@ class GroupsStatusWidget extends Widget
         $url .= '&refr=60&group_id='.$this->values['groupId'];
         $data .= '<h1>';
         $data .= '<a href="'.$url.'">';
-        $data .= $user_groups[$this->values['groupId']];
+        $data .= groups_get_name($this->values['groupId']);
         $data .= '</a>';
         $data .= '</h1></div>';
 
-        $data .= '<div class="div_groups_status" style="clear: both;">';
+        $data .= '<div class="div_groups_status both">';
 
         $table = new \stdClass();
         $table->class = 'widget_groups_status';
@@ -330,7 +307,10 @@ class GroupsStatusWidget extends Widget
         $table->data[0][0] .= html_print_image(
             'images/agent.png',
             true,
-            ['alt' => __('Agents')]
+            [
+                'alt'   => __('Agents'),
+                'class' => 'invert_filter',
+            ]
         );
         $table->data[0][0] .= ' <b>';
         $table->data[0][0] .= __('Agents');
@@ -401,7 +381,10 @@ class GroupsStatusWidget extends Widget
             $table->data[0][0] .= html_print_image(
                 'images/module.png',
                 true,
-                ['alt' => __('Modules')]
+                [
+                    'alt'   => __('Modules'),
+                    'class' => 'invert_filter',
+                ]
             );
 
             $table->data[0][0] .= '<b>';

@@ -42,18 +42,18 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 if (check_acl($config['id_user'], 0, 'PM') && enterprise_installed()) {
     $buttons['setup'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=general&sec2=godmode/setup/setup&amp;section=module_library">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup')]).'</a>',
+        'text'   => '<a href="index.php?sec=general&sec2=godmode/setup/setup&amp;section=module_library">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 
 $buttons['categories'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.html_print_image('images/list.png', true, ['title' => __('Categories')]).'</a>',
+    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.html_print_image('images/list.png', true, ['title' => __('Categories'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>',
+    'text'   => '<a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view">'.html_print_image('images/eye_show.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
 ];
 
 
@@ -126,7 +126,7 @@ switch ($tab) {
 
         echo '</div>';
         echo '<button name="view_all" class="sub next">
-              <a href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.__('View all categories').'</a>
+              <a class="category_link"href="index.php?sec=gmodule_library&sec2=godmode/module_library/module_library_view&tab=categories">'.__('View all categories').'</a>
               </button>';
         echo '</div>';
         echo $sidebar_library;

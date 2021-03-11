@@ -321,19 +321,19 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output = '<table cellspacing="0" cellpadding="0" id="'.$id.'" '.$attributes.'
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
-			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px; vertical-align: top;">'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>'.$text_title.'</b></td>
-			<td class="icon" style="text-align: right; padding-right: 3px;">';
+			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
+			<td class="title" class="pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
+			<td class="icon" class="right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
-        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, false, true).'</a>';
+        $output .= '<a href="javascript: close_info_box(\''.$id.'\')">'.html_print_image('images/blade.png', true, false, false, true).'</a>';
     }
 
     $output .= '</td>
 		</tr>
 		<tr>
-			<td style="color:#333;padding-top:10px">'.$text_message.'</td>
+			<td class="black pdd_t_10px">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -518,7 +518,7 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
     }
 
     if (empty($option['style'])) {
-        $style = 'style="white-space:nowrap;"';
+        $style = 'class="nowrap"';
     } else {
         $style = 'style="'.$option['style'].'"';
     }
@@ -843,18 +843,20 @@ function ui_print_type_agent_icon(
     $remote=0,
     $version=''
 ) {
+    global $config;
+
     if ($id_os == 19) {
         // Satellite.
         $options['title'] = __('Satellite');
-        $output = html_print_image('images/op_satellite.png', true, $options, false, false, false, true);
+        $output = html_print_image('images/satellite.png', true, ['class' => 'invert_filter'], false, false, false, true);
     } else if ($remote_contact == $contact && $remote == 0 && $version == '') {
         // Network.
         $options['title'] = __('Network');
-        $output = html_print_image('images/network.png', true, $options, false, false, false, true);
+        $output = html_print_image('images/network.png', true, ['class' => 'invert_filter'], false, false, false, true);
     } else {
         // Software.
         $options['title'] = __('Software');
-        $output = html_print_image('images/data.png', true, $options, false, false, false, true);
+        $output = html_print_image('images/data.png', true, ['class' => 'invert_filter'], false, false, false, true);
     }
 
     return $output;
@@ -1023,7 +1025,7 @@ function ui_format_alert_row(
     }
 
     if ($alert['disabled']) {
-        $disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">';
+        $disabledHtmlStart = '<span class="italic_a">';
         $disabledHtmlEnd = '</span>';
         $styleDisabled = 'font-style: italic; color: #aaaaaa;';
     } else {
@@ -1111,7 +1113,7 @@ function ui_format_alert_row(
         if ($policyInfo === false) {
             $data[$index['policy']] = '';
         } else {
-            $img = 'images/policies.png';
+            $img = 'images/policies_mc.png';
             if (!is_metaconsole()) {
                 $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             } else {
@@ -1134,9 +1136,9 @@ function ui_format_alert_row(
         // Force alert execution.
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
             if ($alert['force_execution'] == 0) {
-                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;force_execution=1&refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;force_execution=1&refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter']).'</a>';
             } else {
-                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60">'.html_print_image('images/refresh.png', true).'</a>';
+                $data[$index['force_execution']] = '<a href="'.$url.'&amp;id_alert='.$alert['id'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['class' => 'invert_filter']).'</a>';
             }
         }
     }
@@ -1157,9 +1159,9 @@ function ui_format_alert_row(
             $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
         } else {
             if ($agent_style !== false) {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             } else {
-                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-weight:bold" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
+                $data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span class="bolder" title ="'.$agente['nombre'].'">'.$agente['alias'].'</span></a>';
             }
         }
 
@@ -1176,7 +1178,7 @@ function ui_format_alert_row(
         $data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
     }
 
-    $data[$index['template']] .= html_print_image('images/zoom.png', true);
+    $data[$index['template']] .= html_print_image('images/zoom.png', true, ['class' => 'invert_filter']);
     $data[$index['template']] .= '</a> ';
     $actionDefault = db_get_value_sql(
         'SELECT id_alert_action
@@ -1190,7 +1192,7 @@ function ui_format_alert_row(
     if (!empty($actions)) {
         $actionText = '<div><ul class="action_list">';
         foreach ($actions as $action) {
-            $actionText .= '<div style="margin-bottom: 5px;" ><span class="action_name"><li>'.$action['name'];
+            $actionText .= '<div class="mrgn_btn_5px" ><span class="action_name"><li>'.$action['name'];
             if ($action['fires_min'] != $action['fires_max']) {
                 $actionText .= ' ('.$action['fires_min'].' / '.$action['fires_max'].')';
             }
@@ -1288,7 +1290,7 @@ function ui_print_alert_template_example($id_alert_template, $return=false, $pri
 {
     $output = '';
 
-    $output .= html_print_image('images/information.png', true);
+    $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
     $output .= '<span id="example">';
     $template = alerts_get_alert_template($id_alert_template);
 
@@ -2120,9 +2122,9 @@ function ui_pagination(
             );
 
             $output .= "<a class='pagination-arrows ".$other_class." offset_0'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class." offset_0' href='".io_safe_output($url).'&amp;'.$offset_name."=0'>".html_print_image('images/go_first_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         }
     }
 
@@ -2152,9 +2154,9 @@ function ui_pagination(
             );
 
             $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."'
-				href='javacript: ".$script_modified.";'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
+				href='javacript: ".$script_modified.";'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_previous_page."'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_previous_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_previous_page."'>".html_print_image('images/go_previous_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         }
     }
 
@@ -2220,9 +2222,9 @@ function ui_pagination(
             );
 
             $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_next_page."'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_next_page."' href='".$url.'&amp;'.$offset_name.'='.$offset_next_page."'>".html_print_image('images/go_next_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         }
     }
 
@@ -2244,9 +2246,9 @@ function ui_pagination(
             );
 
             $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."'
-				href='javascript: ".$script_modified.";'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
+				href='javascript: ".$script_modified.";'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         } else {
-            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."' href='".$url.'&amp;'.$offset_name.'='.$offset_lastpage."'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot']).'</a>';
+            $output .= "<a class='pagination-arrows ".$other_class.' offset_'.$offset_lastpage."' href='".$url.'&amp;'.$offset_name.'='.$offset_lastpage."'>".html_print_image('images/go_last_g.png', true, ['class' => 'bot invert_filter']).'</a>';
         }
     }
 
@@ -2273,6 +2275,8 @@ function ui_pagination(
  */
 function ui_print_session_action_icon($action, $return=false)
 {
+    global $config;
+
     $key_icon = [
         'acl'             => 'images/delete.png',
         'agent'           => 'images/agent.png',
@@ -2284,7 +2288,7 @@ function ui_print_session_action_icon($action, $return=false)
         'massive'         => 'images/config.png',
         'hack'            => 'images/application_edit.png',
         'event'           => 'images/lightning_go.png',
-        'policy'          => 'images/policies.png',
+        'policy'          => 'images/policies_mc.png',
         'report'          => 'images/reporting.png',
         'file collection' => 'images/collection_col.png',
         'user'            => 'images/user_green.png',
@@ -2302,7 +2306,7 @@ function ui_print_session_action_icon($action, $return=false)
     $output = '';
     foreach ($key_icon as $key => $icon) {
         if (stristr($action, $key) !== false) {
-            $output = html_print_image($icon, true, ['title' => $action], false, false, false, true).' ';
+            $output = html_print_image($icon, true, ['title' => $action, 'class' => 'invert_filter'], false, false, false, true).' ';
             break;
         }
     }
@@ -2518,6 +2522,7 @@ function ui_print_moduletype_icon(
             [
                 'border' => 0,
                 'title'  => $type['descripcion'],
+                'class'  => 'invert_filter',
             ],
             false,
             $relative
@@ -3342,7 +3347,7 @@ function ui_print_datatable(array $parameters)
 
         $filter .= '</li>';
 
-        $filter .= '</ul><div style="clear:both"></div></form>';
+        $filter .= '</ul><div id="both"></div></form>';
         $filter = ui_toggle(
             $filter,
             __('Filter'),
@@ -4328,7 +4333,7 @@ function ui_print_page_header(
         $separator_class = 'separator_view';
     }
 
-    $buffer = '<div id="'.$type2.'" style="">';
+    $buffer = '<div id="'.$type2.'"  >';
 
     if (!empty($breadcrumbs)) {
         $buffer .= '<div class="menu_tab_left_bc">';
@@ -4352,7 +4357,7 @@ function ui_print_page_header(
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4403,7 +4408,7 @@ function ui_print_page_header(
                         $class .= ($godmode) ? ' tab_godmode' : ' tab_operation';
                     }
 
-                    $buffer .= '<li class="'.$class.'">';
+                    $buffer .= '<li class="'.$class.' ">';
                     $buffer .= $option['text'];
                     if (isset($option['sub_menu'])) {
                         $buffer .= $option['sub_menu'];
@@ -4684,7 +4689,13 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     // Default value.
-    $icon_image = html_print_image('images/search_agent.png', true, false, true);
+    $icon_agent = 'images/agent.png';
+
+    if ($config['style'] === 'pandora_black') {
+        $icon_agent = 'images/agent_mc.menu.png';
+    }
+
+    $icon_image = html_print_image($icon_agent, true, false, true);
     if (isset($parameters['icon_image'])) {
         $icon_image = $parameters['icon_image'];
     }
@@ -5740,8 +5751,8 @@ function ui_print_module_string_value(
 
                 $title_dialog = modules_get_agentmodule_agent_alias($id_agente_module).' / '.$module_name;
                 $salida = '<div '."id='hidden_value_module_".$id_agente_module."'
-					style='display: none; width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
-					style='white-space: nowrap;'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;']).'</a></span>';
+					class='title_dialog' title='".$title_dialog."'>".$value.'</div><span '."id='value_module_".$id_agente_module."'
+					class='nowrap'>".'<span id="value_module_text_'.$id_agente_module.'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$id_agente_module.")'>".html_print_image('images/zoom.png', true, ['style' => 'max-height: 20px; vertical-align: middle;', 'class' => 'invert_filter']).'</a></span>';
             }
         }
     }
@@ -5765,7 +5776,7 @@ function ui_print_tags_view($title='', $tags=[])
         $tv .= '<div class="tag-wrapper">';
         $tv .= '<h3>'.$title.'</h3>';
     } else {
-        $tv .= '<div class="tag-wrapper" style="padding-top: 10px">';
+        $tv .= '<div class="tag-wrapper pdd_t_10px">';
     }
 
     foreach ($tags as $tag) {
@@ -5864,6 +5875,7 @@ function ui_get_snapshot_image($link, $is_image)
             'alt'    => '',
             'title'  => __('Snapshot view'),
             'style'  => 'max-height: 20px; vertical-align: middle;',
+            'class'  => 'invert_filter',
         ]
     ).'</a>';
 
@@ -6294,7 +6306,7 @@ function ui_print_reveal_password(string $name, bool $return=false)
         $imagePath = 'images/';
     }
 
-    $output = '&nbsp;<img class="clickable forced_title" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
+    $output = '&nbsp;<img class="clickable forced_title invert_filter" id="reveal_password_'.$name.'" src="'.$imagePath.'eye_show.png" onclick="reveal_password(\''.$name.'\')" data-use_title_for_force_title="1" data-title="'.__('Show password').'">';
 
     if ($return === true) {
         return $output;

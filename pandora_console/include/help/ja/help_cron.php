@@ -6,7 +6,7 @@
 <h1>サーバモジュールの cron</h1>
 
 設定パラメータ <b>Cron from</b> および <b>Cron to</b> を用いることにより、特定の時間にのみモジュールを実行するようにできます。
-設定のための書式は、<a style="font-size:14px;" href="https://en.wikipedia.org/wiki/Cron">cron</a> に似ています。
+設定のための書式は、<a class="font_14px" href="https://en.wikipedia.org/wiki/Cron">cron</a> に似ています。
 <?php echo get_product_name(); ?> コンソールに表示され、それぞれのパラメータには 3つのオプションがあります。
 
 <h4>Cron from: any</h4>

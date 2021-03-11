@@ -19,7 +19,7 @@ require_once $config['homedir'].'/include/graphs/functions_d3.php';
 include_javascript_d3();
 
 
-function prepend_table_simple($row, $id=false)
+global $config;function prepend_table_simple($row, $id=false)
 {
     global $table_simple;
 
@@ -119,7 +119,7 @@ function add_component_selection($id_network_component_type)
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';
-    $data[1] .= html_print_image('images/spinner.png', true);
+    $data[1] .= html_print_image('images/spinner.gif', true);
     $data[1] .= '</span>';
 
     $table_simple->colspan['module_component'][1] = 3;
@@ -210,7 +210,10 @@ if (!empty($id_agent_module) && isset($id_agente)) {
     $table_simple->data[0][1] .= html_print_image(
         'images/cross.png',
         true,
-        ['title' => __('Delete module')]
+        [
+            'title' => __('Delete module'),
+            'class' => 'invert_filter',
+        ]
     );
     $table_simple->data[0][1] .= '</a> ';
 }
@@ -635,7 +638,14 @@ $table_advanced->data[3][1] = html_print_extended_select_for_time(
     $classdisabledBecauseInPolicy,
     $disabledBecauseInPolicy
 );
-$table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
+$table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
+    'images/cog.png',
+    true,
+    [
+        'title' => __('Advanced options Dynamic Threshold'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 $table_advanced->cellclass[3][2] = 'hide_dinamic';
 $table_advanced->cellclass[3][3] = 'hide_dinamic';
@@ -717,6 +727,10 @@ $table_advanced->colspan[4][4] = 3;
 
 
 // FF stands for Flip-flop.
+$table_advanced->colspan[5][1] = 5;
+$table_advanced->cellclass[5][1] = 'font_bold';
+
+
 $table_advanced->data[5][0] = __('FF threshold').' ';
 
 $table_advanced->data[5][1] .= __('Keep counters');
@@ -933,10 +947,24 @@ if (!tags_has_user_acl_tags($config['id_user'])) {
     }
 }
 
-$table_advanced->data[7][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module')]);
-// html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
-$table_advanced->data[7][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module')]);
-// html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+$table_advanced->data[7][2] = html_print_image(
+    'images/darrowright.png',
+    true,
+    [
+        'id'    => 'right',
+        'title' => __('Add tags to module'),
+        'class' => 'invert_filter',
+    ]
+);
+$table_advanced->data[7][2] .= '<br><br><br><br>'.html_print_image(
+    'images/darrowleft.png',
+    true,
+    [
+        'id'    => 'left',
+        'title' => __('Delete tags to module'),
+        'class' => 'invert_filter',
+    ]
+);
 $table_advanced->data[7][3] = '<b>'.__('Tags selected').'</b>';
 $table_advanced->data[7][4] = html_print_select_from_sql(
     "SELECT a.id_tag, name 
@@ -1002,7 +1030,7 @@ $table_advanced->data[8][3] = __('Cascade Protection Services');
 $table_advanced->colspan[8][4] = 3;
 $table_advanced->data[8][4] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
 
-$textarea_custom_style = ' style="min-height: 0px;"';
+$textarea_custom_style = ' class="min-height-0px"';
 
 $table_advanced->data[9][0] = __('Description');
 $table_advanced->colspan[9][1] = 6;
@@ -1128,7 +1156,7 @@ $table_macros->data = [];
 $table_macros->style = [];
 $table_macros->style[0] = 'font-weight: bold;';
 $table_macros->style[2] = 'font-weight: bold;';
-$table_macros->style[5] = 'width: 10px';
+$table_macros->style[5] = 'font-weight: bold;';
 $table_macros->colspan = [];
 
 $macro_count = 0;
@@ -1140,7 +1168,7 @@ if (isset($module_macros)) {
             $table_macros->data[$macro_count][2] = __('Value');
             $table_macros->data[$macro_count][3] = html_print_input_text('module_macro_values[]', $macro_value, '', 50, 60, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
             if (!$disabledBecauseInPolicy) {
-                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/cross.png', true).'</a>';
+                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
             }
 
             $macro_count++;
@@ -1149,7 +1177,7 @@ if (isset($module_macros)) {
 }
 
 if (!$disabledBecauseInPolicy) {
-    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png', true).'</a>';
+    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png', true, ['class' => 'invert_filter']).'</a>';
 
     $table_macros->colspan[$macro_count][0] = 5;
 }
@@ -1211,7 +1239,7 @@ $table_new_relations->data[0][6] = html_print_button(
     'class="sub add"',
     true
 );
-$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' style='display: inline;'></div>";
+$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' class='inline_line'></div>";
 
 // Relationship list.
 $table_relations = new stdClass();
@@ -1237,14 +1265,23 @@ $table_relations->data[-1][0] = '';
 $table_relations->data[-1][1] = '';
 $table_relations->data[-1][2] = '';
 $table_relations->data[-1][3] = '<a id="disable_updates_button" class="alpha50" href="">';
-$table_relations->data[-1][3] .= html_print_image('images/lock.png', true).'</a>';
+$table_relations->data[-1][3] .= html_print_image(
+    'images/lock_mc.png',
+    true
+).'</a>';
 $table_relations->data[-1][4] = '<a id="delete_relation_button" href="">';
-$table_relations->data[-1][4] .= html_print_image('images/cross.png', true).'</a>';
+$table_relations->data[-1][4] .= html_print_image(
+    'images/cross.png',
+    true,
+    ['class' => 'invert_filter']
+).'</a>';
 
 
 $relations_count = 0;
 if ($id_agent_module) {
-    $module_relations = modules_get_relations(['id_module' => $id_agent_module]);
+    $module_relations = modules_get_relations(
+        ['id_module' => $id_agent_module]
+    );
 
     if (!$module_relations) {
         $module_relations = [];
@@ -1280,13 +1317,28 @@ if ($id_agent_module) {
         // Agent name.
         $table_relations->data[$relations_count][0] = $agent_name;
         // Module name.
-        $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]').'</a>';
+        $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text(
+            $module_name,
+            'module_medium',
+            true,
+            true,
+            true,
+            '[&hellip;]'
+        ).'</a>';
         // Type.
         $table_relations->data[$relations_count][2] = ($module_relation['type'] === 'direct') ? __('Direct') : __('Failover');
         // Lock relationship updates.
-        $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/lock.png', true).'</a>';
+        $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
+            'images/lock_mc.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
         // Delete relationship.
-        $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/cross.png', true).'</a>';
+        $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
+            'images/cross.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
         $relations_count++;
     }
 }
@@ -1711,14 +1763,14 @@ function add_new_relation () {
                                     '<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
                                     '<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
                                     '<td id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-3" style="width: 10%; text-align: center;">' +
+                                    '<td id="module_relations-' + relationsCount + '-3" class="w10p center">' +
                                         '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
-                                            '<?php echo html_print_image('images/lock.png', true); ?>' +
+                                            '<?php echo html_print_image('images/lock_mc.png', true, ['class' => 'invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-4" style="width: 10%; text-align: center;">' +
+                                    '<td id="module_relations-' + relationsCount + '-4" class="w10p center">' +
                                         '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
-                                            '<?php echo html_print_image('images/cross.png', true); ?>' +
+                                            '<?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
                                 '</tr>';

@@ -461,11 +461,11 @@ class AgentWizard extends HTML
         }
 
         // Lodaing div.
-        echo '<div style="margin-top: 20px;" class="loading-wizard"></div>';
+        echo '<div class="loading-wizard mrgn_top_20px"></div>';
 
         // Modal Div.
-        echo '<div style="display:none;" id="modal_agent_wizard"></div>';
-        echo '<div style="display:none;" id="msg"></div>';
+        echo '<div class="invisible" id="modal_agent_wizard"></div>';
+        echo '<div class="invisible" id="msg"></div>';
 
         // Load integrated JS.
         $this->loadJS();
@@ -1277,27 +1277,39 @@ class AgentWizard extends HTML
                 $img_server = html_print_image(
                     'images/satellite.png',
                     true,
-                    ['title' => __('Enterprise Satellite server')]
+                    [
+                        'title' => __('Enterprise Satellite server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
             } else {
                 if ($module['execution_type'] == EXECUTION_TYPE_PLUGIN) {
                     $img_server = html_print_image(
                         'images/plugin.png',
                         true,
-                        ['title' => __('Plugin server')]
+                        [
+                            'title' => __('Plugin server'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                 } else {
                     if ($this->protocol === 'wmi') {
                         $img_server = html_print_image(
                             'images/wmi.png',
                             true,
-                            ['title' => __('WMI server')]
+                            [
+                                'title' => __('WMI server'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                     } else {
                         $img_server = html_print_image(
-                            'images/network.png',
+                            'images/op_network.png',
                             true,
-                            ['title' => __('Network server')]
+                            [
+                                'title' => __('Network server'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                     }
                 }
@@ -3737,7 +3749,7 @@ class AgentWizard extends HTML
             }
 
             $table = new StdClass();
-            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
             $table->rowid = [];
             $table->data = [];
 
@@ -3746,9 +3758,9 @@ class AgentWizard extends HTML
             $table->width = '100%';
             $table->class = 'info_table';
             // Subheaders for Warning and Critical columns.
-            $subheaders = '<span style=\'font-weight:300; margin-left: 0.8em\'>Min.</span>';
-            $subheaders .= '<span style=\'font-weight:300; margin-left: 1.6em\'>Max.</span>';
-            $subheaders .= '<span style=\'font-weight:300; margin-left: 2em\'>Inv.</span>';
+            $subheaders = '<span class=\'font_w300 mrgn_lft_0.8em\'>Min.</span>';
+            $subheaders .= '<span class=\'font_w300 mrgn_lft_1.6em\'>Max.</span>';
+            $subheaders .= '<span class=\'font_w300 mrgn_lft_2em\'>Inv.</span>';
             // Warning header.
             $warning_header = html_print_div(
                 [
@@ -3905,7 +3917,7 @@ class AgentWizard extends HTML
                         1,
                         20,
                         $module['description'],
-                        'form=\'form-create-modules\' style=\'min-height: 50px;\'',
+                        'form=\'form-create-modules\' class=\'min-height-50px\'',
                         true
                     );
                 }
@@ -5153,7 +5165,7 @@ class AgentWizard extends HTML
                     $('#form-create-modules').remove();
                     $('.textodialogo').remove();
                     $('.loading-wizard')
-                        .html('<center><span style="font-size:25px;">Loading...</span><img style="width:25px;heigth:25px;" src="' + hack_meta + 'images/spinner.gif"></center>');
+                        .html('<center><span class="font_25px">Loading...</span><img class="w25px height_25px" src="' + hack_meta + 'images/spinner.gif"></center>');
                 });
 
             });

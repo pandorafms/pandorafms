@@ -192,7 +192,7 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     && $config['2Fa_auth'] != '1'
     && $config['double_auth_enabled']
 ) {
-    echo '<div id="doble_auth_window" style="display: none"; >';
+    echo '<div id="doble_auth_window" class="invisible"; >';
     ?>
     <script type="text/javascript">
   var userID = "<?php echo $config['id_user']; ?>";

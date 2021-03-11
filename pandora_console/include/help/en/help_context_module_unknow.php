@@ -10,7 +10,7 @@ You may have unknown modules for many reasons. Unknown module is a special statu
 <p>
 These are a few cases where you can get unknown modules:
 </p>
-<ul style="list-style-type: disc; margin-left: 30px;">
+<ul class="list-type-disc mrgn_lft_30px">
     <li>Your <?php echo get_product_name(); ?> server is down. Restart it, dont forget to check /var/log/pandora/pandora_server.log to see why was down.</li>
     <li>Your tentacle server is down, and cannot get data from your <?php echo get_product_name(); ?> agents installed in your remote servers.</li>
     <li>You have a network problem between your agents and your server.</li>

@@ -3675,20 +3675,20 @@ function agents_get_status_animation($up=true)
 {
     global $config;
 
-    // Gif with black background or white background
+    $red = 'images/heartbeat_green.gif';
+    $green = 'images/heartbeat_green.gif';
+
     if ($config['style'] === 'pandora_black') {
-        $heartbeat_green = 'images/heartbeat_green_black.gif';
-        $heartbeat_red = 'images/heartbeat_red_black.gif';
-    } else {
-        $heartbeat_green = 'images/heartbeat_green.gif';
-        $heartbeat_red = 'images/heartbeat_red.gif';
+        $red = 'images/heartbeat_green_black.gif';
+        $green = 'images/heartbeat_green_black.gif';
     }
 
+    // Gif with black background or white background
     switch ($up) {
         case true:
         default:
         return html_print_image(
-            $heartbeat_green,
+            $green,
             true,
             [
                 'width'  => '170',
@@ -3698,7 +3698,7 @@ function agents_get_status_animation($up=true)
 
         case false:
         return html_print_image(
-            $heartbeat_red,
+            $red,
             true,
             [
                 'width'  => '170',

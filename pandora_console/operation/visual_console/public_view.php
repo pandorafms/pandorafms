@@ -93,7 +93,7 @@ $visualConsoleName = $visualConsoleData['name'];
 echo '<div id="visual-console-container"></div>';
 
 // Floating menu - Start.
-echo '<div id="vc-controls" style="z-index:300;">';
+echo '<div id="vc-controls" class="zindex300">';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn white-box-content box-shadow flex-row">';
@@ -136,7 +136,7 @@ echo '</div>';
 echo '</div>';
 
 // QR code dialog.
-echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
+echo '<div class="invisible" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 

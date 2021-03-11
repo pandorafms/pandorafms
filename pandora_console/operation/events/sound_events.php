@@ -56,9 +56,14 @@ echo '<title>'.__('Sound Events').'</title>';
 </style>
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+if ($config['style'] === 'pandora_black') {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
+} else {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+}
+
 echo '</head>';
-echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";
+echo "<body class='sound_events'>";
 echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
 
 // Connection lost alert.
@@ -71,12 +76,11 @@ ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.
 
 $table = new StdClass;
 $table->width = '100%';
-$table->styleTable = 'padding-left:16px; padding-right:16px; padding-top:16px;';
-$table->class = ' ';
+$table->class = 'w16px sound_div_background ';
 $table->size[0] = '10%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
-$table->style[1] = 'font-weight: bold; vertical-align: top;';
-$table->style[2] = 'font-weight: bold; vertical-align: top;';
+$table->rowclass[0] = 'bold_top';
+$table->rowclass[1] = 'bold_top';
+$table->rowclass[2] = 'bold_top';
 
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'max-width:200px;').'<br />'.'<br />';
@@ -88,16 +92,13 @@ $table->data[1][0] = __('Agent');
 $table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'max-width:200px; height:100px', '', false, '', '', true);
 
 $table->data[1][2] = __('Event');
-$table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; background: #ddd; resize:none;"', true);
+$table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; resize:none;"', true);
 
 html_print_table($table);
 
 $table = new StdClass;
 $table->width = '100%';
-$table->rowstyle[0] = 'text-align:center;';
-$table->styleTable = 'padding-top:16px;padding-bottom:16px;';
-$table->class = ' ';
-$table->bgcolor = 'white';
+$table->class = 'w16px sound_div_background text_center';
 
 $table->data[0][0] = '<a href="javascript: toggleButton();">'.html_print_image('images/play.button.png', true, ['id' => 'button']).'</a>';
 
@@ -278,8 +279,6 @@ function check_event() {
 
 $(document).ready (function () {
     setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
-    $("#table1").css("background-color", "#fff");
-    $("#table2").css("background-color", "#fff");
 });
 
 </script>

@@ -96,9 +96,15 @@ if (is_ajax()) {
             if (!empty($field_description)) {
                 // If the value is 5,  this because severity in snmp alerts is not permit to show.
                 if (($i > 5) && ($command['id'] == 3)) {
-                    $fdesc = $field_description.' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), ($i - 1)).'</span>';
+                    $fdesc = $field_description.' <br><span class="normal xx-small">'.sprintf(
+                        __('Field %s'),
+                        ($i - 1)
+                    ).'</span>';
                 } else {
-                    $fdesc = $field_description.' <br><span style="font-size:xx-small; font-weight:normal;">'.sprintf(__('Field %s'), $i).'</span>';
+                    $fdesc = $field_description.' <br><span class="normal xx-small">'.sprintf(
+                        __('Field %s'),
+                        $i
+                    ).'</span>';
                 }
 
                 // If the field is the number one, print the help message.
@@ -131,7 +137,7 @@ if (is_ajax()) {
                 $field_value = io_safe_output($field_value);
                 // HTML type.
                 if (preg_match('/^_html_editor_$/i', $field_value)) {
-                    $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
+                    $editor_type_chkbx = '<div id="command_div"><b><small>';
                     $editor_type_chkbx .= __('Basic');
                     $editor_type_chkbx .= ui_print_help_tip(
                         __('For sending emails, text must be HTML format, if you want to use plain text, type it between the following labels: <pre></pre>'),
@@ -172,7 +178,7 @@ if (is_ajax()) {
                         $is_central_policies_on_node
                     );
 
-                    $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
+                    $editor_type_chkbx = '<div id="command_div"><b><small>';
                     $editor_type_chkbx .= __('Basic').'&nbsp;&nbsp;';
                     $editor_type_chkbx .= html_print_radio_button_extended(
                         'editor_type_recovery_value_'.$i,
@@ -209,7 +215,7 @@ if (is_ajax()) {
                         $is_central_policies_on_node
                     );
                 } else if (preg_match('/^_content_type_$/i', $field_value)) {
-                    $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
+                    $editor_type_chkbx = '<div id="command_div"><b><small>';
                     $editor_type_chkbx .= __('Text/plain');
                     $editor_type_chkbx .= ui_print_help_tip(
                         __('For sending emails only text plain'),
@@ -240,7 +246,7 @@ if (is_ajax()) {
                     $editor_type_chkbx .= '</small></b></div>';
                     $ffield = $editor_type_chkbx;
 
-                    $editor_type_chkbx = '<div style="padding: 4px 0px;"><b><small>';
+                    $editor_type_chkbx = '<div id="command_div"><b><small>';
                     $editor_type_chkbx .= __('Text/plain');
                     $editor_type_chkbx .= ui_print_help_tip(
                         __('For sending emails only text plain'),
@@ -324,7 +330,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px; '.$style.'" class="fields"',
+                            'style="'.$style.'" class="fields min-height-40px"',
                             true,
                             '',
                             $is_central_policies_on_node
@@ -334,7 +340,7 @@ if (is_ajax()) {
                             1,
                             1,
                             $fv[0],
-                            'style="min-height:40px; '.$style.'" class="fields_recovery',
+                            'style="'.$style.'" class="fields_recovery min-height-40px',
                             true,
                             '',
                             $is_central_policies_on_node
@@ -347,7 +353,7 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px; '.$style.'" class="fields"',
+                    'style="'.$style.'" class="fields min-height-40px"',
                     true,
                     '',
                     $is_central_policies_on_node
@@ -357,7 +363,7 @@ if (is_ajax()) {
                     1,
                     1,
                     '',
-                    'style="min-height:40px; '.$style.'" class="fields_recovery"',
+                    'style="'.$style.'" class="fields_recovery min-height-40px"',
                     true,
                     '',
                     $is_central_policies_on_node
@@ -370,7 +376,7 @@ if (is_ajax()) {
                 $fields_rows[$i] = '';
             } else {
                 $fields_rows[$i] = '<tr id="table_macros-field'.$i.'" class="datos">';
-                $fields_rows[$i] .= '<td style="font-weight:bold;width:20%" class="datos">'.$fdesc.'</td>';
+                $fields_rows[$i] .= '<td class="datos bolder w20p">'.$fdesc.'</td>';
                 $fields_rows[$i] .= '<td class="datos">'.$ffield.'</td>';
                 if ($get_recovery_fields) {
                     $fields_rows[$i] .= '<td class="datos recovery_col">'.$rfield.'</td>';
@@ -561,7 +567,7 @@ if ($commands === false) {
 foreach ($commands as $command) {
     $data = [];
 
-    $data['name'] = '<span style="font-size: 7.5pt">';
+    $data['name'] = '<span>';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if (!$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
@@ -590,12 +596,12 @@ foreach ($commands as $command) {
     $table->cellclass[]['action'] = 'action_buttons';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
-    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
-        $data['action'] = '<span style="display: inline-flex">';
+    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
+        $data['action'] = '<span class="inline_flex">';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
         $data['action'] .= '</span>';
     }
 

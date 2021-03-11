@@ -92,15 +92,43 @@ $url .= '&free_search_string='.$free_search_string.'&pagination='.$pagination;
 $url .= '&offset='.$offset.'&trap_type='.$trap_type.'&group_by='.$group_by;
 $url .= '&hours_ago='.$hours_ago.'&pure='.$pure;
 
-$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Statistics')]).'</a>';
-$list['text'] = '<a href="'.$url.'&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image('images/op_snmp.png', true, ['title' => __('List')]).'</a>';
+$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image(
+    'images/op_reporting.png',
+    true,
+    [
+        'title' => __('Statistics'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
+$list['text'] = '<a href="'.$url.'&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
+    'images/op_snmp.png',
+    true,
+    [
+        'title' => __('List'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 $list['active'] = true;
 
 if ($config['pure']) {
-    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh='.$refr.'">'.html_print_image('images/normal_screen.png', true, ['title' => __('Normal screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh='.$refr.'">'.html_print_image(
+        'images/normal_screen.png',
+        true,
+        [
+            'title' => __('Normal screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 } else {
     // Fullscreen.
-    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh='.$refr.'">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 
@@ -718,20 +746,27 @@ if (empty($traps)) {
         $urlPagination = $normal_url.'&pagination='.$pagination.'&offset='.$offset;
 
         echo '<a href="'.$urlPagination.'">';
-        echo html_print_image('images/normal_screen.png', true, ['title' => __('Exit fullscreen')]);
+        echo html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Exit fullscreen'),
+                'class' => 'invert_filter',
+            ]
+        );
         echo '</a>';
         echo '</li>';
 
         // Auto refresh control.
         echo '<li class="nomn">';
-        echo '<div class="dashboard-refr" style="margin-top: 6px;">';
-        echo '<div class="dashboard-countdown" style="display: inline;"></div>';
+        echo '<div class="dashboard-refr mrgn_top_6px">';
+        echo '<div class="dashboard-countdown display_in"></div>';
         $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0)).'&pure=1&trap_type='.$trap_type.'&group_by='.$group_by.'&free_search_string='.$free_search_string.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
 
         $urlPagination = $normal_url.'&pagination='.$pagination.'&offset='.$offset;
 
 
-        echo '<form id="refr-form" method="get" action="'.$urlPagination.'" style="display: inline;">';
+        echo '<form id="refr-form" method="get" action="'.$urlPagination.'"  >';
         echo __('Refresh every').':';
         echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
         echo '</form>';
@@ -997,17 +1032,41 @@ if ($traps !== false) {
         if ($trap['source'] == '') {
             $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
             if ($is_admin) {
-                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
+                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Delete'),
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a> ';
             }
         } else {
             $agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
 
             if ((check_acl($config['id_user'], $agent_trap_group, 'IM'))) {
-                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
+                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Delete'),
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a> ';
             }
         }
 
-        $data[8] .= '<a href="javascript: toggleVisibleExtendedInfo('.$trap['id_trap'].');">'.html_print_image('images/eye.png', true, ['alt' => __('Show more'), 'title' => __('Show more')]).'</a>';
+        $data[8] .= '<a href="javascript: toggleVisibleExtendedInfo('.$trap['id_trap'].');">'.html_print_image(
+            'images/eye.png',
+            true,
+            [
+                'alt'   => __('Show more'),
+                'title' => __('Show more'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $data[8] .= enterprise_hook('editor_link', [$trap]);
 
 
@@ -1016,7 +1075,7 @@ if ($traps !== false) {
         array_push($table->data, $data);
 
         // Hiden file for description.
-        $string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
+        $string = '<table width="90%" class="toggle border_1px_d3">
 			<tr>
 				<td align="left" valign="top" width="15%">'.'<b>'.__('Variable bindings:').'</b></td>
 				<td align="left" >';
@@ -1157,7 +1216,7 @@ if ($idx == 0) {
 
 unset($table);
 
-echo '<div style="width:98%; text-align:right;">';
+echo '<div class="w98p right">';
 if (check_acl($config['id_user'], 0, 'IW')) {
     html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
 }
@@ -1170,7 +1229,7 @@ if (check_acl($config['id_user'], 0, 'IM')) {
 echo '</div></form>';
 
 
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Status').'</h3>';
 echo html_print_image(
     'images/pixel_green.png',
@@ -1190,7 +1249,7 @@ echo html_print_image(
     ]
 ).' - '.__('Not validated');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Alert').'</h3>';
 echo html_print_image(
     'images/pixel_yellow.png',
@@ -1210,13 +1269,13 @@ echo html_print_image(
     ]
 ).' - '.__('Not fired');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Action').'</h3>';
 echo html_print_image('images/ok.png', true).' - '.__('Validate');
 echo '<br />';
-echo html_print_image('images/cross.png', true).' - '.__('Delete');
+echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']).' - '.__('Delete');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Legend').'</h3>';
 foreach (get_priorities() as $num => $name) {
     echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
@@ -1224,7 +1283,7 @@ foreach (get_priorities() as $num => $name) {
 }
 
 echo '</div>';
-echo '<div style="clear:both;">&nbsp;</div>';
+echo '<div class="both">&nbsp;</div>';
 
 ui_include_time_picker();
 ?>

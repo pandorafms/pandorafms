@@ -282,7 +282,7 @@ class GroupsStatusWidget extends Widget
         $data .= '</a>';
         $data .= '</h1></div>';
 
-        $data .= '<div class="div_groups_status" style="clear: both;">';
+        $data .= '<div class="div_groups_status both">';
 
         $table = new \stdClass();
         $table->class = 'widget_groups_status';
@@ -307,7 +307,10 @@ class GroupsStatusWidget extends Widget
         $table->data[0][0] .= html_print_image(
             'images/agent.png',
             true,
-            ['alt' => __('Agents')]
+            [
+                'alt'   => __('Agents'),
+                'class' => 'invert_filter',
+            ]
         );
         $table->data[0][0] .= ' <b>';
         $table->data[0][0] .= __('Agents');
@@ -378,7 +381,10 @@ class GroupsStatusWidget extends Widget
             $table->data[0][0] .= html_print_image(
                 'images/module.png',
                 true,
-                ['alt' => __('Modules')]
+                [
+                    'alt'   => __('Modules'),
+                    'class' => 'invert_filter',
+                ]
             );
 
             $table->data[0][0] .= '<b>';

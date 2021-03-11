@@ -156,8 +156,8 @@ if ($get_graphs) {
 
         $table = '';
         $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
-            $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
-                $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+            $single_table .= "<tr id='row_time_lapse' class='datos'>";
+                $single_table .= "<td class='bolder w12p'>";
                     $single_table .= __('Time container lapse');
                     // $single_table .= ui_print_help_tip(__('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. '),true);
                 $single_table .= '</td>';
@@ -203,7 +203,7 @@ if ($get_graphs) {
                             'SELECT alias from tagente 
 							WHERE id_agente = '.$sql_modulo[0]['id_agente']
                         );
-                        $table .= "<div style='width: 90%'><h4>AGENT ".$sql_alias[0]['alias'].' MODULE '.$sql_modulo[0]['nombre'].'</h4><hr></div>';
+                        $table .= "<div class='w90p'><h4>AGENT ".$sql_alias[0]['alias'].' MODULE '.$sql_modulo[0]['nombre'].'</h4><hr></div>';
 
                         $params = [
                             'agent_module_id' => $value['id_agent_module'],
@@ -232,7 +232,7 @@ if ($get_graphs) {
                             $height = 300;
                         }
 
-                        $table .= "<div style='width: 90%'><h4>".$graph[0]['name'].'</h4><hr></div>';
+                        $table .= "<div class='w90p'><h4>".$graph[0]['name'].'</h4><hr></div>';
 
                         $params = [
                             'period'    => $value['time_lapse'],
@@ -312,7 +312,7 @@ if ($get_graphs) {
 								WHERE id_agente = '.$sql_modulo2[0]['id_agente']
                             );
 
-                            $table .= "<div style='width: 90%'><h4>AGENT ".$sql_alias2[0]['alias'].' MODULE '.$sql_modulo2[0]['nombre'].'</h4><hr></div>';
+                            $table .= "<div class='w90p'><h4>AGENT ".$sql_alias2[0]['alias'].' MODULE '.$sql_modulo2[0]['nombre'].'</h4><hr></div>';
 
                             $params = [
                                 'agent_module_id' => $value2['id_agente_modulo'],

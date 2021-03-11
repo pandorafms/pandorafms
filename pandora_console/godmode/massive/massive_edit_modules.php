@@ -290,8 +290,8 @@ $table->width = '100%';
 $table->data = [];
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data['selection_mode'][1] = '<span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br>';
+$table->data['selection_mode'][1] .= '<span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true);
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
@@ -316,7 +316,7 @@ $table->data['form_modules_1'][3] = __('Select all modules of this type').' '.ht
     '',
     '',
     false,
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true,
     ''
 );
@@ -363,7 +363,7 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group').' '.ht
     '',
     false,
     '',
-    'style="margin-right: 40px;"'
+    'class="mrgn_right_40px"'
 );
 
 $table->rowclass['form_modules_3'] = '';
@@ -1187,7 +1187,7 @@ $table->data['edit1'][1] = '<table width="100%">';
             }
 
             $table->data['edit21'][1] = sprintf(
-                '<span style="font-weight: normal;" id="plugin_description">%s</span>',
+                '<span class="normal" id="plugin_description">%s</span>',
                 $preload
             );
 
@@ -1200,8 +1200,8 @@ $table->data['edit1'][1] = '<table width="100%">';
 
             echo '<h3 class="error invisible" id="message"> </h3>';
             // Hack to translate text "none" in PHP to javascript.
-            echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-            echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
+            echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
+            echo '<span id ="select_agent_first_text" class="invisible">'.__('Please, select an agent first').'</span>';
             // Load JS files.
             ui_require_javascript_file('pandora_modules');
             ui_require_jquery_file('pandora.controls');
@@ -1868,7 +1868,7 @@ function changePluginSelect() {
                     
                     jQuery.each (data['array'], function (i, macro) {
                         if (macro['desc'] != '') {
-                            $("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td style='font-weight:bold;'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
+                            $("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td class='bolder'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
                         }
                     });
                     //Plugin text can be larger

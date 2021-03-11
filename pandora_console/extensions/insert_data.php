@@ -137,7 +137,7 @@ function mainInsertData()
         }
     }
 
-    echo '<div class="notify" style="margin-bottom:15px;">';
+    echo '<div class="notify mrg_btt_15">';
     echo sprintf(
         __('Please check that the directory "%s" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s.'),
         $config['remote_config']
@@ -200,7 +200,7 @@ function mainInsertData()
 
     html_print_table($table);
 
-    echo "<div style='text-align: right; width: ".$table->width."'>";
+    echo "<div class='right' style='width: ".$table->width."'>";
     html_print_input_hidden('save', 1);
     html_print_submit_button(__('Save'), 'submit', ($id_agent === ''), 'class="sub next"');
     echo '</div>';

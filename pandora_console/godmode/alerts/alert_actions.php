@@ -36,6 +36,8 @@ enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
 
+
+
 enterprise_hook('open_meta_frame');
 
 if (! check_acl($config['id_user'], 0, 'LM')) {
@@ -429,9 +431,9 @@ foreach ($actions as $action) {
         $text_confirm = __('Are you sure?');
 
         $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions" 
-        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true).'</a>';
+        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
         $data[4] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions"
-        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true).'</a>';
+        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
     }
 
     array_push($table->data, $data);

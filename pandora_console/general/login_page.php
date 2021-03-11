@@ -17,6 +17,10 @@ if (isset($config['homedir'])) {
     $homedir = '';
 }
 
+global $config;
+
+
+
 ui_require_css_file('login', 'include/styles/', true);
 
 require_once __DIR__.'/../include/functions_ui.php';
@@ -197,9 +201,6 @@ if (is_metaconsole() === true) {
     } else {
         html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
-
-    // I comment this in case in the future we put a logo without text.
-    // echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";.
 }
 
         echo '</a></div>';
@@ -214,7 +215,7 @@ switch ($login_screen) {
         }
 
         if ($config['auth'] == 'saml') {
-            echo '<div id="log_nick" class="login_nick" style="display: none;">';
+            echo '<div id="log_nick" class="login_nick invisible" >';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -228,7 +229,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
 
-            echo '<div id="log_pass" class="login_pass" style="display: none;">';
+            echo '<div id="log_pass" class="login_pass invisible">';
                 html_print_input_text_extended(
                     'pass',
                     '',
@@ -244,7 +245,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
 
-            echo '<div id="log_button" class="login_button" style="display: none;">';
+            echo '<div id="log_button" class="login_button invisible">';
                 html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="next_login"');
             echo '</div>';
 

@@ -40,6 +40,8 @@ if (!check_acl($config['id_user'], 0, 'AR')) {
     exit();
 }
 
+
+
 // Header.
 $url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&pure='.$config['pure'];
 if ($config['pure']) {
@@ -50,6 +52,7 @@ if ($config['pure']) {
         true,
         [
             'title' => __('Normal screen'),
+            'class' => 'invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -61,6 +64,7 @@ if ($config['pure']) {
         true,
         [
             'title' => __('Full screen'),
+            'class' => 'invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -79,9 +83,9 @@ ui_print_page_header(
 snmp_browser_print_container(false, '100%', '60%', '', true);
 
 // Div for modal
-echo '<div id="modal" style="display:none"></div>';
+echo '<div id="modal" class="invisible"></div>';
 // Div for loading modal.
-echo '<div id="loading_modal" style="display:none"></div>';
+echo '<div id="loading_modal" class="invisible"></div>';
 
 
 ?>
@@ -196,7 +200,7 @@ function waiting_modal(stop = false) {
 
 
     var waiting_modal = 
-    '<div id="loading_in_progress_dialog" style="text-align: center;">' +
+    '<div id="loading_in_progress_dialog" class="center">' +
     '<?php echo __('Adding modules in progress'); ?> <br /><br />' +
     '<?php echo html_print_image('images/spinner.gif', true); ?> </div>';
 

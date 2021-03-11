@@ -27,6 +27,8 @@ if (! check_acl($config['id_user'], 0, 'AR')
     return;
 }
 
+
+
 $update = get_parameter('upd_button', '');
 $default = (int) get_parameter('default', 0);
 
@@ -169,6 +171,7 @@ $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
@@ -177,6 +180,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 
@@ -235,7 +239,7 @@ $(document).ready (function () {
 
         if(selected_fields_total === current_fields_size){
             display_confirm_dialog(
-                "<?php echo '<span style=text-transform:none;font-size:9.5pt;>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
+                "<?php echo '<span class="transform_none">'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
                 "<?php echo __('Confirm'); ?>",
                 "<?php echo __('Cancel'); ?>",
                 function () {

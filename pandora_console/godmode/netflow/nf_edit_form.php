@@ -232,8 +232,8 @@ if ($advanced_filter != '') {
 }
 
 $table->data[2][0] = '<b>'.__('Filter:').'</b>';
-$table->data[2][1] = __('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('Normal').' '.html_print_radio_button_extended('filter_type', 0, '', $filter_type, false, 'displayNormalFilter();', 'class="mrgn_right_40px"', true);
+$table->data[2][1] .= __('Advanced').' '.html_print_radio_button_extended('filter_type', 1, '', $filter_type, false, 'displayAdvancedFilter();', 'class="mrgn_right_40px"', true);
 
 $table->data[3][0] = __('Dst Ip').ui_print_help_tip(__('Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249'), true);
 $table->data[3][1] = html_print_input_text('ip_dst', $ip_dst, false, 40, 80, true);

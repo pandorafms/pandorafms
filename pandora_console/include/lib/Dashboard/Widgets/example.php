@@ -244,8 +244,8 @@ class WelcomeWidget extends Widget
         $output .= '<h2>';
         $output .= __('Welcome to %s', \get_product_name());
         $output .= '</h2>';
-        $output .= '<div style="display:flex; flex-direction:row; align-items:center">';
-        $output .= '<div style="width:75%;">';
+        $output .= '<div id="welcome_example">';
+        $output .= '<div class="w75p">';
         $output .= __('This is an example of a dashboard widget. A widget may contain elements');
         $output .= __('To add more elements, click on "<em>Add widgets</em>" on the top of this page.');
         $output .= __('To delete this message, click on the delete button on top right corner of this element.');
@@ -253,7 +253,7 @@ class WelcomeWidget extends Widget
         $output .= __('To delete this message, click on the delete button on top right corner of this element.');
         $output .= __('Thanks for using %s.', \get_product_name());
         $output .= '</div>';
-        $output .= "<div style='width:25%;'>";
+        $output .= "<div class='w25p'>";
         $output .= \html_print_image(
             \ui_get_logo_to_center_networkmap(),
             true,

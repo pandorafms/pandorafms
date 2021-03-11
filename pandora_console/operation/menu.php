@@ -430,11 +430,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
-
-        // Marquee.
-        $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
-        $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
-        $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
     // Sound Events.

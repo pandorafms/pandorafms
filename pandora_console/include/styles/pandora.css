@@ -818,6 +818,7 @@ p.center {
   cursor: help;
 }
 
+/* Legacy spinner */
 #loading {
   position: fixed;
   width: 200px;
@@ -826,6 +827,19 @@ p.center {
   top: 50%;
   background-color: #999999;
   padding: 20px;
+}
+
+/* New standard spinner */
+#loading_spinner {
+  position: fixed;
+  margin-left: 30%;
+  text-align: center;
+  top: 50%;
+  background-color: #fff;
+  border: 2px solid #82b92e;
+  box-shadow: 2px 2px 2px #9dbba1;
+  padding: 20px;
+  z-index: 100;
 }
 
 .tactical_set legend {
@@ -3181,6 +3195,12 @@ table.alert_time th {
 
 table.alert_escalation th img {
   width: 18px;
+}
+
+.action_details td.used_field {
+  background: #6eb432;
+  color: #8d8d8d;
+  font-weight: normal;
 }
 
 td.used_field {

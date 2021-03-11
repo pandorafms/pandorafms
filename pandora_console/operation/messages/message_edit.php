@@ -209,23 +209,6 @@ if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
     );
 }
 
-// Create message (destination group).
-if (($new_msg) && ($dst_group != '') && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [],
-        [$dst_group],
-        $subject,
-        $message
-    );
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent'),
-        __('Error sending message to group %s', groups_get_name($dst_group))
-    );
-}
-
 // Message creation form.
 // User info.
 $own_info = get_user_info($config['id_user']);

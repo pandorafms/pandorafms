@@ -123,11 +123,6 @@ final class Clock extends Item
      */
     protected function decode(array $data): array
     {
-        // Default values.
-        if (empty($data['height']) === true) {
-            $data['height'] = ($data['width'] / 2);
-        }
-
         $clockData = parent::decode($data);
         $clockData['type'] = CLOCK;
         $clockData['clockType'] = static::extractClockType($data);
@@ -405,10 +400,47 @@ final class Clock extends Item
         }
 
         if (isset($values['height']) === false) {
-            $values['height'] = 100;
+            $values['height'] = 50;
         }
 
         return $values;
+    }
+
+
+    /**
+     * Fetch a vc item data structure from the database using a filter.
+     *
+     * @param array $filter Filter of the Visual Console Item.
+     *
+     * @return array The Visual Console Item data structure stored into the DB.
+     * @throws \InvalidArgumentException When an agent Id cannot be found.
+     *
+     * @override Item::fetchDataFromDB.
+     */
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
+        // Due to this DB call, this function cannot be unit tested without
+        // a proper mock.
+        $data = parent::fetchDataFromDB($filter, $ratio);
+
+        // Default values.
+        if ((int) $data['width'] === 0) {
+            $data['width'] = 100;
+            if ($ratio != 0) {
+                $data['width'] *= $ratio;
+            }
+        }
+
+        if ((int) $data['height'] === 0) {
+            $data['height'] = 50;
+            if ($ratio != 0) {
+                $data['height'] *= $ratio;
+            }
+        }
+
+        return $data;
     }
 
 

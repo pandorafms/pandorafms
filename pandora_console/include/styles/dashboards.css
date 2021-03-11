@@ -76,7 +76,7 @@ h1 {
 
 .grid-stack-item-content {
   color: #2c3e50;
-  text-align: center;
+  /*text-align: center;*/
   background-color: #ffffff;
   border-radius: 5px;
   -webkit-box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);

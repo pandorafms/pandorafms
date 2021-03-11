@@ -4008,7 +4008,7 @@ function graph_graphic_agentevents(
     $width,
     $height,
     $period=0,
-    $homeurl,
+    $homeurl='',
     $return=false,
     $from_agent_view=false,
     $widgets=false,

@@ -46,6 +46,11 @@ class ConsoleSupervisor
 {
 
     /**
+     * Minimum modules to check performance.
+     */
+    public const MIN_PERFORMANCE_MODULES = 100;
+
+    /**
      * Show if console supervisor is enabled or not.
      *
      * @var boolean
@@ -1142,6 +1147,12 @@ class ConsoleSupervisor
                     && isset($total_modules[$queue['server_type']])
                 ) {
                     $max_grown = ($total_modules[$queue['server_type']] * 0.40);
+                }
+
+                if ($total_modules[$queue['server_type']] < self::MIN_PERFORMANCE_MODULES) {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                    // Skip.
+                    continue;
                 }
 
                 // Compare queue increments in a not over 900 seconds.

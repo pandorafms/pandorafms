@@ -6315,3 +6315,56 @@ function ui_print_reveal_password(string $name, bool $return=false)
 
     echo $output;
 }
+
+
+/**
+ * Generate a spinner box for waiting times
+ * TIP: It's made for Massive Operations, but it migth used in entire project.
+ *
+ * @param string  $text   Text for show in spinner. English term Loading for default.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_spinner(string $text='Loading', bool $return=false)
+{
+    $output = '';
+
+    $output .= '<center>';
+
+    $output .= html_print_div(
+        [
+            'id'      => 'loading_spinner',
+            'class'   => 'white_box invisible',
+            'content' => '<span style="font-size:25px;">'.$text.'...</span>'.html_print_image(
+                'images/spinner.gif',
+                true,
+                [
+                    'border' => '0',
+                    'width'  => '25px',
+                    'heigth' => '25px',
+                ]
+            ),
+        ],
+        true
+    );
+
+    $output .= '</center>';
+
+    $output .= '
+			<script type="text/javascript">
+				function hideSpinner() {
+                    document.getElementById("loading_spinner").classList.add("invisible");
+				}
+                function showSpinner() {
+                    document.getElementById("loading_spinner").classList.remove("invisible");
+                }
+			</script>
+    ';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}

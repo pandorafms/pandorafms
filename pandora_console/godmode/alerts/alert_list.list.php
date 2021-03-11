@@ -844,9 +844,11 @@ foreach ($simple_alerts as $alert) {
                     ['title' => __('Add action')]
                 );
             } else {
-                $data[4] .= '<a href="javascript:show_add_action(\''.$alert['id'].'\');">';
-                $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action')]);
-                $data[4] .= '</a>';
+                if ((int) $alert['id_policy_alerts'] === 0) {
+                    $data[4] .= '<a href="javascript:show_add_action(\''.$alert['id'].'\');">';
+                    $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action')]);
+                    $data[4] .= '</a>';
+                }
             }
         }
 

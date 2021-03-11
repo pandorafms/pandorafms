@@ -278,10 +278,8 @@ $table->data[2][3] = '';
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_alerts">';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('add', 1);
-html_print_submit_button(__('Add'), 'go', false, 'class="sub add"');
-echo '</div>';
+attachActionButton('add', 'add', $table->width);
+
 echo '</form>';
 
 // TODO: Change to iu_print_error system.
@@ -299,7 +297,7 @@ ui_require_jquery_file('pandora.controls');
 var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
 
 $(document).ready (function () {
-    $("#form_alerts").submit(function() {
+/*     $("#form_alerts").submit(function() {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#form_alerts").serializeArray().length;
@@ -311,7 +309,7 @@ $(document).ready (function () {
             alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
             return false;
         }
-    });
+    }); */
 
     $("#checkbox-recursion").click(function () {
         $("#id_group").trigger("change");
@@ -321,7 +319,7 @@ $(document).ready (function () {
 
     $("#id_group").change (function () {
         var $select = $("#id_agents").enable ();
-        $("#agent_loading").show ();
+        showSpinner();
         $("option", $select).remove ();
 
         jQuery.post ("ajax.php",
@@ -340,7 +338,7 @@ $(document).ready (function () {
                     options += "<option value=\""+id+"\">"+value+"</option>";
                 });
                 $("#id_agents").append (options);
-                $("#agent_loading").hide ();
+                hideSpinner();
                 $select.enable ();
             },
             "json"

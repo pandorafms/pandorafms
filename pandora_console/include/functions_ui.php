@@ -3821,7 +3821,9 @@ function ui_toggle(
             $main_class = '';
         }
 
-        $container_class = 'white-box-content-clean';
+        if (empty($container_class) === true) {
+            $container_class = 'white-box-content-clean';
+        }
     }
 
     // Link to toggle.
@@ -3943,7 +3945,24 @@ function ui_toggle(
 /**
  * Simplified way of ui_toggle ussage.
  *
- * @param array $data Arguments.
+ * @param array $data Arguments:
+ * 'content'
+ * 'name'
+ * 'title'
+ * 'id'
+ * 'hidden_default'
+ * 'return'
+ * 'toggle_class'
+ * 'container_class'
+ * 'main_class'
+ * 'img_a'
+ * 'img_b'
+ * 'clean'
+ * 'reverseImg'
+ * 'switch'
+ * 'attributes_switch'
+ * 'toggl_attr'
+ * 'switch_on'.
  *
  * @return string HTML code with toggle content.
  */
@@ -4850,6 +4869,7 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    $no_disabled_modules = true;
     if (isset($parameters['no_disabled_modules'])) {
         $no_disabled_modules = $parameters['no_disabled_modules'];
     }
@@ -6281,4 +6301,57 @@ function ui_print_reveal_password(string $name, bool $return=false)
     }
 
     echo $output;
+}
+
+
+/**
+ * Generate a spinner box for waiting times
+ * TIP: It's made for Massive Operations, but it migth used in entire project.
+ *
+ * @param string  $text   Text for show in spinner. English term Loading for default.
+ * @param boolean $return If true, return the string with the formed element.
+ *
+ * @return string
+ */
+function ui_print_spinner(string $text='Loading', bool $return=false)
+{
+    $output = '';
+
+    $output .= '<center>';
+
+    $output .= html_print_div(
+        [
+            'id'      => 'loading_spinner',
+            'class'   => 'white_box invisible',
+            'content' => '<span style="font-size:25px;">'.$text.'...</span>'.html_print_image(
+                'images/spinner.gif',
+                true,
+                [
+                    'border' => '0',
+                    'width'  => '25px',
+                    'heigth' => '25px',
+                ]
+            ),
+        ],
+        true
+    );
+
+    $output .= '</center>';
+
+    $output .= '
+			<script type="text/javascript">
+				function hideSpinner() {
+                    document.getElementById("loading_spinner").classList.add("invisible");
+				}
+                function showSpinner() {
+                    document.getElementById("loading_spinner").classList.remove("invisible");
+                }
+			</script>
+    ';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }

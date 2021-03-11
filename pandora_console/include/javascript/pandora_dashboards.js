@@ -70,8 +70,7 @@ function initialiceLayout(data) {
     draggable: false
   });
 
-  var positionGrid = 0; //grid[0].getBoundingClientRect();
-  // var gridHeight = positionGrid.height;
+  var positionGrid = grid.el.getBoundingClientRect();
   var gridWidth = positionGrid.width;
 
   getCellsLayout();

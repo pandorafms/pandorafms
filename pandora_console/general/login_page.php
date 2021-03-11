@@ -146,8 +146,8 @@ if (isset($config['custom_support_url'])) {
         echo '<li>'.__('Support').'</li>';
     }
 } else if (!$custom_conf_enabled) {
-    echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li><a href="https://support.artica.es" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_left"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
 }
 
         echo '</ul></div>';

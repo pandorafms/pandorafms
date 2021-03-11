@@ -516,7 +516,7 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 $container.html($errorMessage.html());
             }
             
-            requestCustomGraph(0, width, height, period, stacked, date, modules)
+            requestCustomGraph(0, -1, height, period, stacked, date, modules)
                 .done(handleSuccess)
                 .fail(handleError);
         }

@@ -149,19 +149,35 @@ class ExternalTools extends HTML
             $external_tools_config['dig_path']        = $this->pathDig;
             $external_tools_config['snmpget_path']    = $this->pathSnmpget;
 
+            $otherParameters = [];
+            $otherParameters['sound_alert']      = (string) get_parameter('sound_alert');
+            $otherParameters['sound_critical']   = (string) get_parameter('sound_critical');
+            $otherParameters['sound_warning']    = (string) get_parameter('sound_warning');
+            $otherParameters['graphviz_bin_dir'] = (string) get_parameter('graphviz_bin_dir');
+
             if (empty($this->pathCustomComm) === false) {
                 $external_tools_config['custom_commands'] = $this->pathCustomComm;
             }
 
-            $result = config_update_value(
-                'external_tools_config',
-                json_encode($external_tools_config)
-            );
+            foreach ($otherParameters as $keyParam => $valueParam) {
+                $result = config_update_value($keyParam, $valueParam);
+
+                if ($result === false) {
+                    break;
+                }
+            }
+
+            if ($result === true) {
+                $result = config_update_value(
+                    'external_tools_config',
+                    json_encode($external_tools_config)
+                );
+            }
 
             ui_print_result_message(
-                $result,
-                __('Set the paths.'),
-                __('Set the paths.')
+                ($result),
+                __('Changes successfully saved.'),
+                __('Changes not saved.')
             );
         } else {
             if (isset($config['external_tools_config']) === true) {

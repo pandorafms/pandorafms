@@ -215,13 +215,40 @@ class MapsStatusWidget extends Widget
 
         include_once $config['homedir'].'/include/functions_visual_map.php';
 
-        $dataVc = \visual_map_get_user_layouts(
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $selected = explode(',', $values['maps'][0]);
+
+        $dataAllVc = \visual_map_get_user_layouts(
             $config['id_user'],
             false,
             [],
             true,
+            false,
             false
         );
+
+        $dataVc = \visual_map_get_user_layouts(
+            $config['id_user'],
+            false,
+            ['can_manage_group_all' => $return_all_group],
+            $return_all_group,
+            false
+        );
+
+        $diff = array_diff_key($dataAllVc, $dataVc);
+
+        if (!empty($diff)) {
+            foreach ($diff as $key => $value) {
+                if (in_array($key, $selected)) {
+                    $dataVc[$key] = $value;
+                }
+            }
+        }
 
         $fields = array_reduce(
             $dataVc,
@@ -280,6 +307,7 @@ class MapsStatusWidget extends Widget
             false,
             [],
             true,
+            false,
             false
         );
 

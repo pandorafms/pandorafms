@@ -55,9 +55,15 @@ if ($save_custom_graph) {
 if ($print_custom_graph) {
     ob_clean();
 
+    $width_value = (int) get_parameter('width', CHART_DEFAULT_WIDTH);
+
+    if ($width_value === -1) {
+        $width_value = '';
+    }
+
     $params = [
         'period'          => (int) get_parameter('period', SECONDS_5MINUTES),
-        'width'           => (int) get_parameter('width', CHART_DEFAULT_WIDTH),
+        'width'           => $width_value,
         'height'          => (int) get_parameter('height', CHART_DEFAULT_HEIGHT),
         'unit_name'       => get_parameter('unit_list', []),
         'date'            => (int) get_parameter('date', time()),
@@ -253,7 +259,12 @@ if ($get_graphs) {
 
                 case 'dynamic_graph':
                     if ($value['agent'] != '') {
-                        $alias = " AND alias REGEXP '".$value['agent']."'";
+                        if (@preg_match($value['agent'], '') !== false) {
+                            $alias = " AND alias REGEXP '".$value['agent']."'";
+                        } else {
+                            // Not a valid REGEXP.
+                            $alias = " AND alias LIKE '".$value['agent']."'";
+                        }
                     }
 
                     if ($value['id_group'] === '0') {
@@ -277,7 +288,11 @@ if ($get_graphs) {
                     }
 
                     if ($value['module'] != '') {
-                        $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        if (@preg_match($value['module'], '') !== false) {
+                            $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        } else {
+                            $module_name = " AND nombre LIKE '".$value['module']."'";
+                        }
                     }
 
                     $id_agent_module = db_get_all_rows_sql(

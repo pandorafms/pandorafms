@@ -212,7 +212,17 @@ $table->data[1][1] = html_print_select_groups(
     -1,
     true,
     false,
-    false
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    'id_grupo',
+    false,
+    false,
+    false,
+    '250px'
 );
 
 if ($advanced_filter != '') {

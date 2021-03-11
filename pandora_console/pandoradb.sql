@@ -1317,6 +1317,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1559,6 +1560,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
 	`uncompressed_module` TINYINT DEFAULT '0',
+	`summary` tinyint(1) DEFAULT 0,
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
@@ -2070,7 +2072,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttag` ( 
 	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
-	`name` varchar(100) NOT NULL default '', 
+	`name` text NOT NULL default '', 
 	`description` text NOT NULL, 
 	`url` mediumtext NOT NULL,
 	`email` text NULL,
@@ -2652,6 +2654,7 @@ CREATE TABLE IF NOT EXISTS `tinventory_alert`(
     `last_fired` text NOT NULL default '',
     `disable_event` tinyint(1) UNSIGNED default 0,
     `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
 	PRIMARY KEY (`id`),
     FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -3161,6 +3164,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`summary` tinyint(1) DEFAULT 0,
 	`uncompressed_module` TINYINT DEFAULT '0',
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,

@@ -70,8 +70,7 @@ function initialiceLayout(data) {
     draggable: false
   });
 
-  var positionGrid = 0; //grid[0].getBoundingClientRect();
-  // var gridHeight = positionGrid.height;
+  var positionGrid = grid.el.getBoundingClientRect();
   var gridWidth = positionGrid.width;
 
   getCellsLayout();
@@ -782,7 +781,8 @@ function dashboardLoadNetworkMap(settings) {
       zoom_dash: settings.zoom_dash,
       auth_class: settings.auth_class,
       auth_hash: settings.auth_hash,
-      id_user: settings.id_user
+      id_user: settings.id_user,
+      ignore_acl: 1
     },
     dataType: "html",
     success: function(data) {

@@ -366,6 +366,9 @@ final class Container extends Model
             case COLOR_CLOUD:
             return Items\ColorCloud::class;
 
+            case NETWORK_LINK:
+            return Items\NetworkLink::class;
+
             default:
             return Item::class;
         }
@@ -481,6 +484,7 @@ final class Container extends Model
             $item = $class::fromDB($row);
         } catch (\Throwable $e) {
             // TODO: Log this?
+            error_log(obhd($e));
         }
 
         return $item;

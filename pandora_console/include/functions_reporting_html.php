@@ -3835,6 +3835,10 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
     $tables_chart = '';
 
+    $total_values = 0;
+
+    $count_total_charts = 0;
+
     if (isset($item['failed']) === true && empty($item['failed']) === false) {
         $tables_chart .= $item['failed'];
     } else {
@@ -3896,6 +3900,8 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                     $table1->data[$k_chart][0] .= ' (24 x 7)';
                 }
 
+                $total_values += $sla_value;
+                $count_total_charts++;
                 $table1->data[$k_chart][1] = $chart['chart'];
                 $table1->data[$k_chart][2] = "<span style = 'font-weight: bold; font-size: ".$font_size.'; color: '.$color."'>".$sla_value.'</span><br/>';
 
@@ -3922,7 +3928,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                     || $item['data'][$k_chart]['compare'] === 1)
                 ) {
                     $table1 = new stdClass();
-                    $table1->width = '99%';
+                    $table1->width = '100%';
                     $table1->data = [];
                     $table1->size = [];
                     $table1->size[0] = '10%';
@@ -3971,6 +3977,8 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
 
                     case 'result':
                     default:
+                        $total_values += $sla_value;
+                        $count_total_charts++;
                         $title = '<b>'.__('Result').'</b>';
                         $sla_value_text = "<span style = 'font-weight: bold; font-size: ".$font_size.' !important; color: '.$color."'>".$sla_value.'</span>';
                         $checks_resume_text = '<span style = "font-size: '.$font_mini.';">';
@@ -3994,6 +4002,27 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
                 }
             }
         }
+    }
+
+    if ((bool) $item['summary'] === true) {
+        $table_summary = new stdClass();
+        $table_summary->width = '20%';
+
+        $table_summary->size = [];
+        $table_summary->size[0] = '50%';
+        $table_summary->size[1] = '50%';
+
+        $table_summary->data = [];
+        $table_summary->data[0][0] = '<b>'.__('Summary').'</b>';
+        $table_summary->data[0][1] = '<span style = "font-weight: bold; font-size: '.$font_size.' !important;">';
+        $table_summary->data[0][1] .= sla_truncate($total_values / $count_total_charts);
+        $table_summary->data[0][1] .= ' %';
+        $table_summary->data[0][1] .= '</span>';
+
+        $tables_chart .= html_print_table(
+            $table_summary,
+            true
+        );
     }
 
     if ($item['type'] == 'availability_graph') {

@@ -6,7 +6,8 @@ import {
   notEmptyStringOr,
   itemMetaDecoder,
   t,
-  ellipsize
+  ellipsize,
+  debounce
 } from "./lib";
 import Item, {
   ItemType,
@@ -20,6 +21,7 @@ import Item, {
 import StaticGraph, { staticGraphPropsDecoder } from "./items/StaticGraph";
 import Icon, { iconPropsDecoder } from "./items/Icon";
 import ColorCloud, { colorCloudPropsDecoder } from "./items/ColorCloud";
+import NetworkLink, { networkLinkPropsDecoder } from "./items/NetworkLink";
 import Group, { groupPropsDecoder } from "./items/Group";
 import Clock, { clockPropsDecoder } from "./items/Clock";
 import Box, { boxPropsDecoder } from "./items/Box";
@@ -35,7 +37,6 @@ import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 import Service, { servicePropsDecoder } from "./items/Service";
-import { FormContainer } from "./Form";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -82,6 +83,8 @@ function itemInstanceFrom(data: AnyObject) {
       return new Clock(clockPropsDecoder(data), meta);
     case ItemType.COLOR_CLOUD:
       return new ColorCloud(colorCloudPropsDecoder(data), meta);
+    case ItemType.NETWORK_LINK:
+      return new NetworkLink(networkLinkPropsDecoder(data), meta);
     default:
       throw new TypeError("item not found");
   }
@@ -130,6 +133,8 @@ function decodeProps(data: AnyObject) {
       return clockPropsDecoder(data);
     case ItemType.COLOR_CLOUD:
       return colorCloudPropsDecoder(data);
+    case ItemType.NETWORK_LINK:
+      return networkLinkPropsDecoder(data);
     default:
       throw new TypeError("decoder not found");
   }
@@ -206,6 +211,16 @@ export default class VisualConsole {
   private relations: {
     [key: string]: Line;
   } = {};
+
+  // Dictionary which store the related items (by ID).
+  private lineLinks: {
+    [key: number]: { [key: number]: { [key: string]: number } };
+  } = {};
+
+  private lines: {
+    [key: number]: { [key: string]: number };
+  } = {};
+
   // Event manager for click events.
   private readonly clickEventManager = new TypedEvent<ItemClickEvent>();
   // Event manager for double click events.
@@ -266,6 +281,9 @@ export default class VisualConsole {
       }
     });
 
+    // Move lines conneted with this item.
+    this.updateLinesConnected(e.item.props, e.newPosition, false);
+
     // console.log(`Moved element #${e.item.props.id}`, e);
   };
 
@@ -275,8 +293,35 @@ export default class VisualConsole {
    */
   private handleElementMovementFinished: (e: ItemMovedEvent) => void = e => {
     this.movedEventManager.emit(e);
+    // Move lines conneted with this item.
+    this.updateLinesConnected(e.item.props, e.newPosition, true);
     // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
+
+  /**
+   * Verifies if x,y are inside item coordinates.
+   * @param x Coordinate X
+   * @param y Coordinate Y
+   * @param item ItemProps instance.
+   */
+  private coordinatesInItem(x: number, y: number, props: ItemProps) {
+    if (
+      props.type == ItemType.LINE_ITEM ||
+      props.type == ItemType.NETWORK_LINK
+    ) {
+      return false;
+    }
+
+    if (
+      x > props.x &&
+      x < props.x + props.width &&
+      y > props.y &&
+      y < props.y + props.height
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * React to a line movement.
@@ -285,7 +330,12 @@ export default class VisualConsole {
   private handleLineElementMovementFinished: (
     e: LineMovedEvent
   ) => void = e => {
+    // Update links.
+    this.refreshLink(e.item);
+
+    // Build line relationships between items and lines.
     this.lineMovedEventManager.emit(e);
+
     // console.log(`Movement finished for element #${e.item.props.id}`, e);
   };
 
@@ -373,6 +423,205 @@ export default class VisualConsole {
     this.unSelectItems();
   };
 
+  /**
+   * Refresh link for given line.
+   *
+   * @param line Line.
+   */
+  protected refreshLink(l: Line) {
+    let line: number = l.props.id;
+    let itemAtStart = 0;
+    let itemAtEnd = 0;
+
+    try {
+      for (let i in this.elementsById) {
+        if (
+          this.coordinatesInItem(
+            l.props.startPosition.x,
+            l.props.startPosition.y,
+            this.elementsById[i].props
+          )
+        ) {
+          // Start position at element i.
+          itemAtStart = parseInt(i);
+        }
+
+        if (
+          this.coordinatesInItem(
+            l.props.endPosition.x,
+            l.props.endPosition.y,
+            this.elementsById[i].props
+          )
+        ) {
+          // Start position at element i.
+          itemAtEnd = parseInt(i);
+        }
+      }
+
+      if (this.lineLinks == null) {
+        this.lineLinks = {};
+      }
+
+      if (this.lines == null) {
+        this.lines = {};
+      }
+
+      if (itemAtStart == line) {
+        itemAtStart = 0;
+      }
+
+      if (itemAtEnd == line) {
+        itemAtEnd = 0;
+      }
+
+      // Initialize line if not registered.
+      if (this.lines[line] == null) {
+        this.lines[line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+      }
+
+      // Register 'start' side of the line.
+      if (itemAtStart > 0) {
+        // Initialize.
+        if (this.lineLinks[itemAtStart] == null) {
+          this.lineLinks[itemAtStart] = {};
+        }
+
+        // Assign.
+        this.lineLinks[itemAtStart][line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+
+        // Register line if not exists prviously.
+      } else {
+        // Clean previous line relationship.
+        if (this.lines[line]["start"] > 0) {
+          this.lineLinks[this.lines[line]["start"]][line]["start"] = 0;
+          this.lines[line]["start"] = 0;
+        }
+      }
+
+      if (itemAtEnd > 0) {
+        if (this.lineLinks[itemAtEnd] == null) {
+          this.lineLinks[itemAtEnd] = {};
+        }
+
+        this.lineLinks[itemAtEnd][line] = {
+          start: itemAtStart,
+          end: itemAtEnd
+        };
+      } else {
+        // Clean previous line relationship.
+        if (this.lines[line]["end"] > 0) {
+          this.lineLinks[this.lines[line]["end"]][line]["end"] = 0;
+          this.lines[line]["end"] = 0;
+        }
+      }
+
+      this.lines[line] = {
+        start: itemAtStart,
+        end: itemAtEnd
+      };
+
+      // Cleanup.
+      for (let i in this.lineLinks) {
+        if (this.lineLinks[i][line]) {
+          if (
+            this.lineLinks[i][line].start == 0 &&
+            this.lineLinks[i][line].end == 0
+          ) {
+            // Object not connected to a line.
+            delete this.lineLinks[i][line];
+
+            if (Object.keys(this.lineLinks[i]).length === 0) {
+              delete this.lineLinks[i];
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Updates lines connected to this item.
+   *
+   * @param item Item moved.
+   * @param newPosition New location for item.
+   * @param oldPosition Old location for item.
+   * @param save Save to ajax or not.
+   */
+  protected updateLinesConnected(item: ItemProps, to: Position, save: boolean) {
+    if (this.lineLinks[item.id] == null) {
+      return;
+    }
+
+    Object.keys(this.lineLinks[item.id]).forEach(i => {
+      let lineId = parseInt(i);
+      let line = this.elementsById[lineId] as Line;
+      if (line.props) {
+        let startX = line.props.startPosition.x;
+        let startY = line.props.startPosition.y;
+        let endX = line.props.endPosition.x;
+        let endY = line.props.endPosition.y;
+
+        if (item.id == this.lineLinks[item.id][lineId]["start"]) {
+          startX = to.x + item.width / 2;
+          startY = to.y + item.height / 2;
+        }
+
+        if (item.id == this.lineLinks[item.id][lineId]["end"]) {
+          endX = to.x + item.width / 2;
+          endY = to.y + item.height / 2;
+        }
+
+        // Update line movement.
+        this.updateElement({
+          ...line.props,
+          startX: startX,
+          startY: startY,
+          endX: endX,
+          endY: endY
+        });
+
+        if (save) {
+          let debouncedLinePositionSave = debounce(
+            500,
+            (options: AnyObject) => {
+              this.lineMovedEventManager.emit({
+                item: options.line,
+                startPosition: {
+                  x: options.startX,
+                  y: options.startY
+                },
+                endPosition: {
+                  x: options.endX,
+                  y: options.endY
+                }
+              });
+            }
+          );
+
+          // Save line positon.
+          debouncedLinePositionSave({
+            line: line,
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY
+          });
+        }
+      }
+    });
+
+    // Update parents...
+    this.buildRelations(item.id, to.x + item.width / 2, to.y + item.height / 2);
+  }
+
   public constructor(
     container: HTMLElement,
     props: AnyObject,
@@ -396,6 +645,13 @@ export default class VisualConsole {
 
     // Create lines.
     this.buildRelations();
+
+    // Re-attach all connected lines if any.
+    this.elements.forEach(item => {
+      if (item instanceof Line) {
+        this.refreshLink(item);
+      }
+    });
 
     this.containerRef.addEventListener("click", this.handleContainerClick);
   }
@@ -424,17 +680,18 @@ export default class VisualConsole {
       // Item event handlers.
       itemInstance.onRemove(context.handleElementRemove);
       itemInstance.onSelectionChanged(context.handleElementSelectionChanged);
-
-      // TODO:Continue
       itemInstance.onClick(context.handleElementClick);
       itemInstance.onDblClick(context.handleElementDblClick);
-      itemInstance.onMoved(context.handleElementMovement);
-      itemInstance.onMovementFinished(context.handleElementMovementFinished);
+
+      // TODO:Continue
       if (itemInstance instanceof Line) {
         itemInstance.onLineMovementFinished(
           context.handleLineElementMovementFinished
         );
+        this.refreshLink(itemInstance);
       } else {
+        itemInstance.onMoved(context.handleElementMovement);
+        itemInstance.onMovementFinished(context.handleElementMovementFinished);
         itemInstance.onResized(context.handleElementResizement);
         itemInstance.onResizeFinished(context.handleElementResizementFinished);
       }
@@ -443,7 +700,7 @@ export default class VisualConsole {
       context.containerRef.append(itemInstance.elementRef);
       return itemInstance;
     } catch (error) {
-      console.log("Error creating a new element:", error.message);
+      console.error("Error creating a new element:", error.message);
     }
     return;
   }
@@ -480,7 +737,7 @@ export default class VisualConsole {
           try {
             this.elementsById[item.id].props = decodeProps(item);
           } catch (error) {
-            console.log("Error updating an element:", error.message);
+            console.error("Error updating an element:", error.message);
           }
         }
       }
@@ -497,9 +754,11 @@ export default class VisualConsole {
   public updateElement(item: AnyObject): void {
     // Update item.
     try {
-      this.elementsById[item.id].props = decodeProps(item);
+      this.elementsById[item.id].props = {
+        ...decodeProps(item)
+      };
     } catch (error) {
-      console.log("Error updating element:", error.message);
+      console.error("Error updating element:", error.message);
     }
 
     // Re-build relations.
@@ -538,24 +797,28 @@ export default class VisualConsole {
   public render(prevProps: VisualConsoleProps | null = null): void {
     if (prevProps) {
       if (prevProps.backgroundURL !== this.props.backgroundURL) {
-        this.containerRef.style.backgroundImage =
-          this.props.backgroundURL !== null
-            ? `url(${this.props.backgroundURL})`
-            : null;
+        if (this.props.backgroundURL)
+          this.containerRef.style.backgroundImage =
+            this.props.backgroundURL !== null
+              ? `url(${this.props.backgroundURL})`
+              : "";
       }
-      if (prevProps.backgroundColor !== this.props.backgroundColor) {
-        this.containerRef.style.backgroundColor = this.props.backgroundColor;
-      }
+      if (this.props.backgroundColor != null)
+        if (prevProps.backgroundColor !== this.props.backgroundColor) {
+          this.containerRef.style.backgroundColor = this.props.backgroundColor;
+        }
       if (this.sizeChanged(prevProps, this.props)) {
         this.resizeElement(this.props.width, this.props.height);
       }
     } else {
-      this.containerRef.style.backgroundImage =
-        this.props.backgroundURL !== null
-          ? `url(${this.props.backgroundURL})`
-          : null;
+      if (this.props.backgroundURL)
+        this.containerRef.style.backgroundImage =
+          this.props.backgroundURL !== null
+            ? `url(${this.props.backgroundURL})`
+            : "";
 
-      this.containerRef.style.backgroundColor = this.props.backgroundColor;
+      if (this.props.backgroundColor)
+        this.containerRef.style.backgroundColor = this.props.backgroundColor;
       this.resizeElement(this.props.width, this.props.height);
     }
   }
@@ -614,8 +877,11 @@ export default class VisualConsole {
 
   /**
    * Create line elements which connect the elements with their parents.
+   *
+   * When itemId is being moved, overwrite position of the 'parent' or 'child'
+   * endpoints of the line, using X and Y values.
    */
-  public buildRelations(): void {
+  public buildRelations(itemId?: number, x?: number, y?: number): void {
     // Clear relations.
     this.clearRelations();
     // Add relations.
@@ -623,7 +889,23 @@ export default class VisualConsole {
       if (item.props.parentId !== null) {
         const parent = this.elementsById[item.props.parentId];
         const child = this.elementsById[item.props.id];
-        if (parent && child) this.addRelationLine(parent, child);
+
+        if (parent && child) {
+          if (itemId != undefined) {
+            if (item.props.parentId == itemId) {
+              // Update parent line position.
+              this.addRelationLine(parent, child, x, y);
+            } else if (item.props.id == itemId) {
+              // Update child line position.
+              this.addRelationLine(parent, child, undefined, undefined, x, y);
+            } else {
+              this.addRelationLine(parent, child);
+            }
+          } else {
+            // No movements default behaviour.
+            this.addRelationLine(parent, child);
+          }
+        }
       }
     });
   }
@@ -749,7 +1031,11 @@ export default class VisualConsole {
    */
   private addRelationLine(
     parent: Item<ItemProps>,
-    child: Item<ItemProps>
+    child: Item<ItemProps>,
+    parentX?: number,
+    parentY?: number,
+    childX?: number,
+    childY?: number
   ): Line {
     const identifier = `${parent.props.id}|${child.props.id}`;
     if (this.relations[identifier] != null) {
@@ -757,9 +1043,27 @@ export default class VisualConsole {
     }
 
     // Get the items center.
-    const { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
-    const { x: endX, y: endY } = this.getVisualCenter(child.props, child);
+    let { x: startX, y: startY } = this.getVisualCenter(parent.props, parent);
+    let { x: endX, y: endY } = this.getVisualCenter(child.props, child);
 
+    // Overwrite positions if needed (while moving it!).
+    if (parentX != null) {
+      startX = parentX;
+    }
+
+    if (parentY != null) {
+      startY = parentY;
+    }
+
+    if (childX != null) {
+      endX = childX;
+    }
+
+    if (childY != null) {
+      endY = childY;
+    }
+
+    // Line inherits child element status.
     const line = new Line(
       linePropsDecoder({
         id: 0,
@@ -771,7 +1075,7 @@ export default class VisualConsole {
         width: 0,
         height: 0,
         lineWidth: this.props.relationLineWidth,
-        color: "#CCCCCC"
+        color: notEmptyStringOr(child.props.colorStatus, "#CCC")
       }),
       itemMetaDecoder({
         receivedAt: new Date()
@@ -973,7 +1277,8 @@ export default class VisualConsole {
     [ItemType.DONUT_GRAPH]: DonutGraph,
     [ItemType.BARS_GRAPH]: BarsGraph,
     [ItemType.CLOCK]: Clock,
-    [ItemType.COLOR_CLOUD]: ColorCloud
+    [ItemType.COLOR_CLOUD]: ColorCloud,
+    [ItemType.NETWORK_LINK]: NetworkLink
   };
 
   /**

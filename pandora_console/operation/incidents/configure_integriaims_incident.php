@@ -315,7 +315,7 @@ if (!$update) {
 
 echo '</form>';
 
-echo '<div style="width: 100%; text-align:right;">';
+echo '<div class="w100p right">';
 if ($update) {
     html_print_submit_button(__('Update'), 'accion', false, 'form="create_integria_incident_form" class="sub wand"');
 } else {

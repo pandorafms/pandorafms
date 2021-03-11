@@ -115,7 +115,7 @@ foreach ($servers as $server) {
     }
 
     // Type
-    $data[2] = '<span style="white-space:nowrap;">'.$server['img'];
+    $data[2] = '<span class="nowrap">'.$server['img'];
     if ($server['master'] == $master) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
@@ -124,7 +124,6 @@ foreach ($servers as $server) {
         $data[2] .= html_print_image('images/star.png', true, ['title' => __('Exec server enabled')]);
     }
 
-    // $data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
     switch ($server['type']) {
         case 'snmp':
         case 'event':
@@ -144,7 +143,7 @@ foreach ($servers as $server) {
         default:
             $data[3] = $server['version'];
             $data[4] = $server['modules'].' '.__('of').' '.$server['modules_total'];
-            $data[5] = '<span style="white-space:nowrap;">'.$server['lag_txt'].'</span>';
+            $data[5] = '<span class="nowrap">'.$server['lag_txt'].'</span>';
         break;
     }
 
@@ -182,6 +181,8 @@ foreach ($servers as $server) {
                 [
                     'title' => __('Manage Discovery tasks'),
                     'style' => 'width:21px;height:21px;',
+                    'class' => 'invert_filter',
+
                 ]
             );
             $data[8] .= '</a>';
@@ -192,7 +193,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
-                ['title' => __('Reset module status and fired alert counts')]
+                [
+                    'title' => __('Reset module status and fired alert counts'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
         } else if ($server['type'] == 'enterprise snmp') {
@@ -200,7 +204,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
-                ['title' => __('Claim back SNMP modules')]
+                [
+                    'title' => __('Claim back SNMP modules'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
         }
@@ -209,7 +216,10 @@ foreach ($servers as $server) {
         $data[8] .= html_print_image(
             'images/config.png',
             true,
-            ['title' => __('Edit')]
+            [
+                'title' => __('Edit'),
+                'class' => 'invert_filter',
+            ]
         );
         $data[8] .= '</a>';
 
@@ -218,7 +228,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/remote_configuration.png',
                 true,
-                ['title' => __('Remote configuration')]
+                [
+                    'title' => __('Remote configuration'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
             $names_servers[$safe_server_name] = false;
@@ -231,6 +244,7 @@ foreach ($servers as $server) {
             [
                 'title'   => __('Delete'),
                 'onclick' => "if (! confirm ('".__('Modules run by this server will stop working. Do you want to continue?')."')) return false",
+                'class'   => 'invert_filter',
             ]
         );
         $data[8] .= '</a>';

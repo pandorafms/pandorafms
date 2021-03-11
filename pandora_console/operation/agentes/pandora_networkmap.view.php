@@ -264,9 +264,9 @@ if (is_ajax()) {
         $return = [];
         $return['correct'] = true;
 
-        $return['content'] = '<div style="border: 1px solid black;">
-			<div style="width: 100%; text-align: right;"><a style="text-decoration: none; color: black;" href="javascript: hide_tooltip();">X</a></div>
-			<div style="margin: 5px;">
+        $return['content'] = '<div class="border_1px_black">
+			<div class="w100p right"><a class="no_decoration black" href="javascript: hide_tooltip();">X</a></div>
+			<div class="mrgn_5px">
 			';
 
         $return['content'] .= '<b>'.__('Name: ').'</b>'.ui_print_string_substr($module['nombre'], 30, true).'<br />';
@@ -306,7 +306,7 @@ if (is_ajax()) {
                     $img = 'images/policies_brick.png';
                     $title = __('(Adopt) ').$name_policy;
                 } else {
-                    $img = 'images/policies.png';
+                    $img = 'images/policies_mc.png';
                         $title = $name_policy;
                 }
             } else {
@@ -826,7 +826,10 @@ if ($networkmap === false) {
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                 'images/normal_screen.png',
                 true,
-                ['title' => __('Normal screen')]
+                [
+                    'title' => __('Normal screen'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ];
     } else {
@@ -836,7 +839,10 @@ if ($networkmap === false) {
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                     'images/full_screen.png',
                     true,
-                    ['title' => __('Full screen')]
+                    [
+                        'title' => __('Full screen'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>',
             ];
             $buttons['list'] = [
@@ -844,7 +850,10 @@ if ($networkmap === false) {
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap">'.html_print_image(
                     'images/list.png',
                     true,
-                    ['title' => __('List of networkmap')]
+                    [
+                        'title' => __('List of networkmap'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>',
             ];
         }

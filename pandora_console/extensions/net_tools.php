@@ -317,7 +317,7 @@ function main_net_tools()
     );
 
     if ($ips == '') {
-        echo "<div class='error' style='margin-top:5px'>".__('The agent hasn\'t got IP').'</div>';
+        echo "<div class='error mrgn_top_5'>".__('The agent hasn\'t got IP').'</div>';
         return;
     }
 
@@ -392,7 +392,7 @@ function main_net_tools()
     echo __('SNMP Community').'&nbsp;';
     html_print_input_text('community', $community);
     echo '</td><td>';
-    echo "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
+    echo "<input name=submit type=submit class='sub next mrgn_0px' value='".__('Execute')."'>";
     echo '</td>';
     echo '</tr></table>';
     echo '</form>';

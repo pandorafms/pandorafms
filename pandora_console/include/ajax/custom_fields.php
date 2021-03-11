@@ -537,7 +537,7 @@ if (check_login()) {
         $type_form = get_parameter('type_form', '');
 
         if ($type_form == 'save') {
-            $tabs = '<div id="tabs" style="height:95%;">';
+            $tabs = '<div id="tabs" class="height_95p">';
             $tabs .= "<ul class='tab_save_filter'>";
                 $tabs .= '<li>';
                     $tabs .= "<a href='#extended_create_filter' id='link_create'>";

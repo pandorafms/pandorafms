@@ -423,7 +423,7 @@ if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $
     }
 
     // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
+    $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
 }
 
 if ($double_auth_enabled && $config['double_auth_enabled']) {
@@ -666,7 +666,7 @@ if (is_metaconsole()) {
 if (!is_metaconsole()) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <img class="timezone-pin pdd_t_4px" src="include/javascript/timezonepicker/images/pin.png" />
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
 }
@@ -719,10 +719,10 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $row = [];
     $row['name'] = __('Test');
     $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
-    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
     echo '<div class="ehorus_user_conf">';

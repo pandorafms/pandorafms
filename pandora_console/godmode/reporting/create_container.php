@@ -173,7 +173,14 @@ if ($delete_item) {
 
 $buttons['graph_container'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graph container')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image(
+        'images/graph-container.png',
+        true,
+        [
+            'title' => __('Graph container'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 // Header.
@@ -202,11 +209,11 @@ if ($edit_container) {
 }
 
 echo '<tr>';
-echo "<td class='datos' style='width: 12%;'><b>".__('Name').'</b></td>';
+echo "<td class='datos w10p'><b>".__('Name').'</b></td>';
 if ($id_container === '1') {
-    echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' disabled='1'";
+    echo "<td class='datos w30p'><input type='text' name='name' size='30' disabled='1'";
 } else {
-    echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' ";
+    echo "<td class='datos w30p'><input type='text' name='name' size='30' ";
 }
 
 if ($edit_container) {
@@ -221,7 +228,7 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     $return_all_groups = false;
 }
 
-echo "<td style='width: 12%;'><b>".__('Group').'</b></td><td>';
+echo "<td class='w10p'><b>".__('Group').'</b></td><td>';
 echo '<div class="w250px">';
 if ($id_container === '1') {
     echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', true);
@@ -235,9 +242,9 @@ echo '</td></tr>';
 echo '<tr>';
 echo "<td class='datos2'><b>".__('Description').'</b></td>';
 if ($id_container === '1') {
-    echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=95 rows=2 disabled>";
+    echo "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=95 rows=2 disabled>";
 } else {
-    echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=95 rows=2>";
+    echo "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=95 rows=2>";
 }
 
 if ($edit_container) {
@@ -297,10 +304,10 @@ echo '</table>';
 
 if ($edit_container) {
     if ($id_container !== '1') {
-        echo "<div style='width:100%'><input style='float:right;' type=submit name='store' disbaled class='sub upd' value='".__('Update')."'></div>";
+        echo "<div class='w100p'><input  type=submit name='store' disbaled class='sub upd right' value='".__('Update')."'></div>";
     }
 } else {
-    echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'></div>";
+    echo "<div class='w100p'><input  type=submit name='store' class='sub next right' value='".__('Create')."'></div>";
 }
 
 echo '</form>';
@@ -329,8 +336,8 @@ if ($edit_container) {
     $type_graphs[1] = __('Line');
 
     $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
-        $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 13%;'>";
+        $single_table .= "<tr id='row_time_lapse' class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Time lapse');
                 $single_table .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '), true);
             $single_table .= '</td>';
@@ -352,8 +359,8 @@ if ($edit_container) {
             $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_agent' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+        $single_table .= "<tr id='row_agent'  class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Agent');
             $single_table .= '</td>';
             $single_table .= '<td>';
@@ -375,15 +382,15 @@ if ($edit_container) {
             $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_module' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+        $single_table .= "<tr id='row_module' class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Module');
             $single_table .= '</td>';
             $single_table .= '<td>';
     if ($idAgent) {
         $single_table .= html_print_select_from_sql($sql_modules, 'id_agent_module', $idAgentModule, '', '', '0', true);
     } else {
-        $single_table .= "<select style='max-width: 180px' id='id_agent_module' name='id_agent_module' disabled='disabled'>";
+        $single_table .= "<select class='maxw180px' id='id_agent_module' name='id_agent_module' disabled='disabled'>";
             $single_table .= "<option value='0'>";
                 $single_table .= __('Select an Agent first');
             $single_table .= '</option>';
@@ -393,8 +400,8 @@ if ($edit_container) {
             $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_type_graphs' style='' class='datos'>";
-                $single_table .= "<td style='font-weight:bold;'>";
+        $single_table .= "<tr id='row_type_graphs'  class='datos'>";
+                $single_table .= "<td class='bolder'>";
                         $single_table .= __('Type of graph');
                 $single_table .= '</td>';
                 $single_table .= '<td>';
@@ -402,8 +409,8 @@ if ($edit_container) {
                 $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_fullscale' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;'>";
+        $single_table .= "<tr id='row_fullscale'  class='datos'>";
+            $single_table .= "<td class='bolder'>";
                 $single_table .= __('Show full scale graph (TIP)').ui_print_help_tip('This option may cause performance issues', true);
             $single_table .= '</td>';
             $single_table .= '<td>';
@@ -414,8 +421,8 @@ if ($edit_container) {
         $single_table .= '<tr>';
             $single_table .= '<td >';
             $single_table .= '</td>';
-            $single_table .= "<td style='float:right;'>";
-                $single_table .= "<input style='float:right;' type=submit name='add_single' class='sub add' value='".__('Add item')."'>";
+            $single_table .= "<td class='right'>";
+                $single_table .= "<input type=submit name='add_single' class='sub add right' value='".__('Add item')."'>";
             $single_table .= '</td>';
         $single_table .= '</tr>';
     $single_table .= '</table>';
@@ -468,7 +475,7 @@ if ($edit_container) {
 
     $data = [];
     $data[0] = '';
-    $data[1] = "<input style='float:right;' type=submit name='add_custom' class='sub add' value='".__('Add item')."'>";
+    $data[1] = "<input type=submit name='add_custom' class='sub add right' value='".__('Add item')."'>";
     $table->data[] = $data;
     $table->rowclass[] = '';
 
@@ -563,7 +570,7 @@ if ($edit_container) {
 
     $data = [];
     $data[0] = '';
-    $data[1] = "<input style='float:right;' type=submit name='add_dynamic' class='sub add' value='".__('Add item')."'>";
+    $data[1] = "<input type=submit name='add_dynamic' class='sub add right' value='".__('Add item')."'>";
     $table->data[] = $data;
     $table->rowclass[] = '';
 
@@ -648,7 +655,7 @@ if ($edit_container) {
             }
 
             $data[7] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&delete_item=1&id_item='.$item['id_ci'].'&id='.$id_container.'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-                return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+                return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
 
             array_push($table->data, $data);
         }

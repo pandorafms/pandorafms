@@ -29,6 +29,8 @@
 
 global $config;
 
+
+
 check_login();
 
 $agent_d = check_acl($config['id_user'], 0, 'AD');
@@ -53,7 +55,10 @@ $buttons = [
     'text' => "<a href='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'>".html_print_image(
         'images/list.png',
         true,
-        ['title' => __('List')]
+        [
+            'title' => __('List'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -745,7 +750,7 @@ $days = array_combine(range(1, 31), range(1, 31));
 $table->data[5][0] = __('Configure the time').'&nbsp;';
 ;
 $table->data[5][1] = "
-	<div id='once_time' style='display: none;'>
+	<div id='once_time' class='invisible'>
 		<table>
 			<tr>
 				<td>".__('From:').'</td>
@@ -757,7 +762,7 @@ $table->data[5][1] = "
 			</tr>
 		</table>
 	</div>
-	<div id='periodically_time' style='display: none;'>
+	<div id='periodically_time' class='invisible'>
 		<table>
 			<tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
 			<tr>
@@ -780,7 +785,7 @@ $table->data[5][1] = "
 			</tr>
 			<tr>
 				<td colspan='2'>
-					<table id='weekly_item' style='display: none;'>
+					<table id='weekly_item' class='invisible'>
 						<tr>
 							<td>".__('Mon').html_print_checkbox('monday', 1, $monday, true, $disabled_in_execution).'</td>
 							<td>'.__('Tue').html_print_checkbox('tuesday', 1, $tuesday, true, $disabled_in_execution).'</td>
@@ -791,7 +796,7 @@ $table->data[5][1] = "
 							<td>'.__('Sun').html_print_checkbox('sunday', 1, $sunday, true, $disabled_in_execution)."</td>
 						</tr>
 					</table>
-					<table id='monthly_item' style='display: none;'>
+					<table id='monthly_item' class='invisible'>
 						<tr>
 							<td>".__('From day:').'</td>
 							<td>'.html_print_select(
@@ -870,7 +875,7 @@ if ($id_downtime > 0) {
 html_print_table($table);
 
 html_print_input_hidden('id_agent', $id_agent);
-echo '<div class="action-buttons" style="width: 100%">';
+echo '<div class="action-buttons w100p" >';
 if ($id_downtime > 0) {
     html_print_input_hidden('update_downtime', 1);
     html_print_input_hidden('id_downtime', $id_downtime);
@@ -894,7 +899,7 @@ echo '</div>';
 echo '</form>';
 
 if ($id_downtime > 0) {
-    echo "<td valign=top style='width:300px;padding-left:20px;'>";
+    echo "<td valign=top class='w300px pdd_l_20px'>";
 
     $filter_group = (int) get_parameter('filter_group', 0);
 
@@ -950,9 +955,9 @@ if ($id_downtime > 0) {
     echo html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, false, true, true, '', false, 'width: 180px;');
 
     if ($type_downtime != 'quiet') {
-        echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
+        echo '<div id="available_modules_selection_mode" class="invisible pdd_l_20px">';
     } else {
-        echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
+        echo '<div id="available_modules_selection_mode" class="pdd_l_20px">';
     }
 
     html_print_input_hidden('all_common_modules', '');
@@ -981,9 +986,9 @@ if ($id_downtime > 0) {
     ).'</h4>';
 
     if ($type_downtime != 'quiet') {
-        echo '<div id="available_modules" style="display: none;">';
+        echo '<div id="available_modules" class="invisible">';
     } else {
-        echo '<div id="available_modules" style="">';
+        echo '<div id="available_modules"  >';
     }
 
     echo html_print_select(
@@ -1089,10 +1094,25 @@ if ($id_downtime > 0) {
                 if ($type_downtime != 'disable_agents_alerts'
                     && $type_downtime != 'disable_agents'
                 ) {
-                    $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+                    $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image(
+                        'images/config.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'alt'    => __('Delete'),
+                        ]
+                    ).'</a>';
                 }
 
-                $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+                $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a>';
             }
 
             $table->data['agent_'.$downtime_agent['id_agente']] = $data;
@@ -1110,7 +1130,7 @@ $table->style[0] = 'text-align: center;';
 $table->data = [];
 $table->data['loading'] = [];
 $table->data['loading'][0] = html_print_image('images/spinner.gif', true);
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 html_print_table($table);
 echo '</div>';
 
@@ -1134,9 +1154,9 @@ $table->data['module'][1] = "
 			</tr>
 		</thead>
 		<tbody>
-			<tr class='datos' id='template' style='display: none;'>
-				<td class='name_module' style=''></td>
-				<td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
+			<tr class='datos' id='template' class='invisible'>
+				<td class='name_module'></td>
+				<td class='cell_delete_button right w10p' id=''>".'<a class="link_delete"
 						onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
 						href="">'.html_print_image(
     'images/cross.png',
@@ -1144,11 +1164,12 @@ $table->data['module'][1] = "
     [
         'border' => '0',
         'alt'    => __('Delete'),
+        'class'  => 'invert_filter',
     ]
 ).'</a>'."</td>
 			</tr>
 			<tr class='datos2' id='add_modules_row'>
-				<td class='datos2' style='' id=''>".__('Add Module:').'&nbsp;'.html_print_select(
+				<td class='datos2'id=''>".__('Add Module:').'&nbsp;'.html_print_select(
     [],
     'modules',
     '',
@@ -1157,36 +1178,40 @@ $table->data['module'][1] = "
     0,
     true
 )."</td>
-				<td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
+				<td class='datos2 button_cell right w10p' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
     'images/add.png',
     true,
     [
         'border' => '0',
         'alt'    => __('Add'),
+        'class'  => 'invert_filter',
     ]
-).'</a>'.'</div>'."<div id='spinner_add' style='display: none;'>".html_print_image('images/spinner.gif', true).'</div>'.'</td>
+).'</a>'.'</div>'."<div id='spinner_add' class='invisible'>".html_print_image(
+    'images/spinner.gif',
+    true
+).'</div>'.'</td>
 			</tr>
 		</tbody></table>';
 
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 html_print_table($table);
 echo '</div>';
 
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 echo "<div id='spinner_template'>";
 html_print_image('images/spinner.gif');
 echo '</div>';
 echo '</div>';
 
-echo "<div id='some_modules_text' style='display: none;'>";
+echo "<div id='some_modules_text' class='invisible'>";
 echo __('Some modules');
 echo '</div>';
 
-echo "<div id='some_modules_text' style='display: none;'>";
+echo "<div id='some_modules_text' class='invisible'>";
 echo __('Some modules');
 echo '</div>';
 
-echo "<div id='all_modules_text' style='display: none;'>";
+echo "<div id='all_modules_text' class='invisible'>";
 echo __('All modules');
 echo '</div>';
 

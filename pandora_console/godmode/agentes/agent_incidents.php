@@ -59,11 +59,9 @@ $result = integria_api_call($config['integria_hostname'], $config['integria_user
 
 $result = json_decode($result, true);
 
-$count_sql = 'SELECT count(*) FROM tincidencia WHERE 
-	id_grupo IN ('.implode(',', array_keys($groups)).')'.$filter.' 
-	ORDER BY actualizacion DESC';
+$count = count($result);
 
-$count = db_get_value_sql($count_sql);
+$result = array_slice($result, $offset, $config['block_size']);
 
 if (empty($result)) {
     $result = [];

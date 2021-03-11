@@ -374,7 +374,7 @@ if (is_ajax()) {
                             'field'.$i.'_recovery_value',
                             '',
                             '',
-                            '',
+                            __('None'),
                             0,
                             true,
                             false,

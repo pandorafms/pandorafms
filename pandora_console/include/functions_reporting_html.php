@@ -43,6 +43,21 @@ require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
 
 
+/**
+ * Header function.
+ *
+ * @param object  $table    Table.
+ * @param boolean $mini     Mini.
+ * @param string  $title    Title.
+ * @param string  $subtitle Subtitle.
+ * @param integer $period   Period.
+ * @param string  $date     Date.
+ * @param string  $from     From.
+ * @param string  $to       To.
+ * @param string  $label    Label.
+ *
+ * @return void
+ */
 function reporting_html_header(
     &$table,
     $mini,
@@ -410,6 +425,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                     $item,
                     $mini
                 );
+            break;
+
+            case 'histogram_data':
+                reporting_enterprise_html_histogram_data($table, $item, $mini);
             break;
         }
 

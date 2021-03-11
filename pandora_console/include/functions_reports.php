@@ -754,6 +754,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
     ];
+    $types['histogram_data'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Histogram'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),

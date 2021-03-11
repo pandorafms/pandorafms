@@ -1073,7 +1073,25 @@ var TreeController = {
                             $node.append($group);
                           }
 
-                          _.each(data.tree, function(element) {
+                          // Get the main values of the tree.
+                          var rawTree = Object.values(data.tree);
+                          // Sorting tree by description (services.treeview_services.php).
+                          rawTree.sort(function(a, b) {
+                            // Only the services are ordered since only they have the elementDescription property.
+                            if (a.elementDescription && b.elementDescription) {
+                              var x = a.elementDescription.toLowerCase();
+                              var y = b.elementDescription.toLowerCase();
+                              if (x < y) {
+                                return -1;
+                              }
+                              if (x > y) {
+                                return 1;
+                              }
+                            }
+                            return 0;
+                          });
+
+                          _.each(rawTree, function(element) {
                             element.jqObject = _processNode($group, element);
                           });
 

@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for edit agents in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -327,13 +342,16 @@ if ($update_agents) {
         // Update Custom Fields
         foreach ($fields as $field) {
             $info[$field['id_field']] = $field['name'];
-            if (get_parameter_post('customvalue_'.$field['id_field'], '') != '') {
+            $value = get_parameter('customvalue_'.$field['id_field']);
+            if (empty($value) === false) {
                 $key = $field['id_field'];
-                $value = get_parameter_post('customvalue_'.$field['id_field'], '');
-
-                $old_value = db_get_all_rows_filter('tagent_custom_data', ['id_agent' => $id_agent, 'id_field' => $key]);
-
-
+                $old_value = db_get_all_rows_filter(
+                    'tagent_custom_data',
+                    [
+                        'id_agent' => $id_agent,
+                        'id_field' => $key,
+                    ]
+                );
 
                 if ($old_value === false) {
                     // Create custom field if not exist
@@ -346,14 +364,16 @@ if ($update_agents) {
                         ]
                     );
                 } else {
-                    $result = db_process_sql_update(
-                        'tagent_custom_data',
-                        ['description' => $value],
-                        [
-                            'id_field' => $key,
-                            'id_agent' => $id_agent,
-                        ]
-                    );
+                    if ($old_value[0]['description'] !== $value) {
+                        $result = db_process_sql_update(
+                            'tagent_custom_data',
+                            ['description' => $value],
+                            [
+                                'id_field' => $key,
+                                'id_agent' => $id_agent,
+                            ]
+                        );
+                    }
                 }
             }
         }
@@ -373,7 +393,7 @@ if ($update_agents) {
 
     ui_print_result_message(
         $result !== false,
-        __('Agents updated successfully').'('.$n_edited.')',
+        __('Agents updated successfully (%d)', $n_edited),
         __('Agents cannot be updated (maybe there was no field to update)')
     );
 }
@@ -830,19 +850,16 @@ if (!empty($fields)) {
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-
-html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
-html_print_input_hidden('update_agents', 1);
 html_print_input_hidden('id_agente', $id_agente);
 
-echo '</div>';
+if (is_central_policies_on_node() === false) {
+    attachActionButton('update_agents', 'update', $table->width);
+}
+
 // Shown and hide div
 echo '</div></form>';
 
 ui_require_jquery_file('form');
-ui_require_jquery_file('pandora.controls');
-
 
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');

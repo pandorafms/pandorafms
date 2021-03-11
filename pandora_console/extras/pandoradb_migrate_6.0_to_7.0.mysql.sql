@@ -363,6 +363,7 @@ CREATE TABLE IF NOT EXISTS `tinventory_alert`(
     `last_fired` text NOT NULL default '',
     `disable_event` tinyint(1) UNSIGNED default 0,
     `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
 	PRIMARY KEY (`id`),
     FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -864,6 +865,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) D
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -1724,6 +1726,7 @@ ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1
 ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
+ALTER TABLE `treport_content` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -2392,6 +2395,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

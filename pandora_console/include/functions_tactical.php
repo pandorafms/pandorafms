@@ -92,6 +92,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
     $list['_monitors_unknown_'] = 0;
     $list['_monitors_not_init_'] = 0;
     $list['_monitors_ok_'] = 0;
+    $list['_monitors_alerts_fired_'] = 0;
 
     if (empty($list_groups)) {
         $list_groups = [];

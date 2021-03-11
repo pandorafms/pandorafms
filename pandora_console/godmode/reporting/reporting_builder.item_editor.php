@@ -140,6 +140,8 @@ $visual_format = 0;
 
 // Others.
 $filter_search = '';
+$filter_exclude = '';
+
 
 // Added for select fields.
 $total_time = true;
@@ -183,6 +185,7 @@ switch ($action) {
         $dyn_height = 230;
         $landscape = false;
         $pagebreak = false;
+        $summary = 0;
     break;
 
     case 'save':
@@ -312,11 +315,12 @@ switch ($action) {
                     $idCustomGraph = $item['id_gs'];
                 break;
 
+                case 'availability_graph':
+                    $summary = $item['summary'];
                 case 'SLA':
                 case 'SLA_weekly':
                 case 'SLA_monthly':
                 case 'SLA_hourly':
-                case 'availability_graph':
                     $description = $item['description'];
                     $only_display_wrong = $item['only_display_wrong'];
                     $monday = $item['monday'];
@@ -556,6 +560,8 @@ switch ($action) {
                     $include_extended_events = $item['show_extended_events'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
+
                 break;
 
                 case 'event_report_group':
@@ -570,6 +576,7 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
 
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
                     $filter_event_status   = json_decode($style['filter_event_status'], true);
@@ -607,6 +614,8 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
+
 
                     $include_extended_events = $item['show_extended_events'];
                 break;
@@ -2743,11 +2752,42 @@ $class = 'databox filters';
             </td>
         </tr>
 
+        <tr id="row_summary" style="" class="datos">
+            <td style="font-weight:bold;">
+            <?php
+            echo __('Summary');
+            ?>
+            </td>
+            <td style="">
+            <?php
+            html_print_checkbox_switch(
+                'summary',
+                1,
+                $summary,
+                false,
+                false,
+                '',
+                false
+            );
+            ?>
+            </td>
+        </tr>
+
         <tr id="row_filter_search" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Free search'); ?></td>
+            <td style="font-weight:bold;"><?php echo __('Include filter'); ?></td>
             <td>
                 <?php
                 html_print_input_text('filter_search', $filter_search);
+                ui_print_help_tip(__('Free text string search on event description'));
+                ?>
+            </td>
+        </tr>
+        <tr id="row_filter_exclude" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Exclude filter'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('filter_exclude', $filter_exclude);
+                ui_print_help_tip(__('Free text string search on event description'));
                 ?>
             </td>
         </tr>
@@ -5099,6 +5139,7 @@ function chooseType() {
     $("#row_current_month").hide();
     $("#row_failover_mode").hide();
     $("#row_failover_type").hide();
+    $("#row_summary").hide();
     $("#row_working_time").hide();
     $("#row_working_time_compare").hide();
     $("#row_only_display_wrong").hide();
@@ -5141,6 +5182,7 @@ function chooseType() {
     $("#row_resolution").hide();
     $("#row_last_value").hide();
     $("#row_filter_search").hide();
+    $("#row_filter_exclude").hide();
     $("#row_percentil").hide();
     $("#log_help_tip").css("visibility", "hidden");
     $("#agents_row").hide();
@@ -5191,6 +5233,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
 
             $("#row_event_severity").show();
             $("#row_event_status").show();
@@ -5290,6 +5334,7 @@ function chooseType() {
             if(failover_checked){
                 $("#row_failover_type").show();
             }
+            $("#row_summary").show();
             break;
 
         case 'module_histogram_graph':
@@ -5403,11 +5448,9 @@ function chooseType() {
         case 'sql':
             $("#row_description").show();
             $("#row_query").show();
-            $("#row_max_items").show();
             $("#row_header").show();
             $("#row_custom").show();
             $("#row_custom_example").show();
-            $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
             break;
@@ -5486,6 +5529,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5509,6 +5554,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5531,6 +5578,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 

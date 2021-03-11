@@ -346,8 +346,8 @@ class AgentWizard extends HTML
 
         // Capture the parameters.
         $this->protocol = get_parameter('protocol');
+        $this->targetPort = get_parameter('targetPort', '161');
         if ($this->protocol === 'snmp') {
-            $this->targetPort = get_parameter('targetPort', '161');
             $this->community = get_parameter('community', 'public');
             $this->version   = get_parameter('version', '1');
 

@@ -65,6 +65,7 @@ $searchType = get_parameter('search_type', '');
 $priority = get_parameter('priority', '');
 $searchFlag = get_parameter('search', 0);
 $enabledisable = get_parameter('enabledisable', '');
+$status_alert = get_parameter('status_alert', '');
 $standby = get_parameter('standby', '');
 $pure = get_parameter('pure', 0);
 $ag_group = get_parameter('ag_group', 0);

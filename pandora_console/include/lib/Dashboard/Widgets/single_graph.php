@@ -373,6 +373,7 @@ class SingleGraphWidget extends Widget
             'show_legend'     => $this->values['showLegend'],
             'show_title'      => $module_name,
             'menu'            => false,
+            'dashboard'       => true,
         ];
 
         $output = '<div class="container-center">';

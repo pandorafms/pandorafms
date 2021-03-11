@@ -138,6 +138,16 @@ class DiscoveryTaskList extends HTML
             return $this->deleteTask();
         }
 
+        $disable = (bool) get_parameter('disabled', false);
+        if ($disable === true) {
+            return $this->disableTask();
+        }
+
+        $enable = (bool) get_parameter('enabled', false);
+        if ($enable === true) {
+            return $this->enableTask();
+        }
+
         if (enterprise_installed()) {
             // This check only applies to enterprise users.
             enterprise_hook('tasklist_checkrunning');
@@ -352,6 +362,93 @@ class DiscoveryTaskList extends HTML
 
 
     /**
+     * Disable a recon task.
+     *
+     * @return void
+     */
+    public function disableTask()
+    {
+        global $config;
+
+        if (! check_acl($config['id_user'], 0, 'AW')) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access recon task viewer'
+            );
+            include 'general/noaccess.php';
+            return;
+        }
+
+        $task = get_parameter('task', null);
+
+        if ($task !== null) {
+            $result = db_process_sql_update(
+                'trecon_task',
+                ['disabled' => 1],
+                ['id_rt' => $task]
+            );
+
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully disabled'),
+                    'id'     => false,
+                ];
+            }
+
+            // Trick to avoid double execution.
+            header('Location: '.$this->url);
+        }
+
+    }
+
+
+    /**
+     * Enable a recon task.
+     *
+     * @return void
+     */
+    public function enableTask()
+    {
+        global $config;
+
+        if (! check_acl($config['id_user'], 0, 'AW')) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access recon task viewer'
+            );
+            include 'general/noaccess.php';
+            return;
+        }
+
+        $task = get_parameter('task', null);
+
+        if ($task !== null) {
+            $result = db_process_sql_update(
+                'trecon_task',
+                [
+                    'disabled' => 0,
+                    'status'   => 0,
+                ],
+                ['id_rt' => $task]
+            );
+
+            if ($result == 1) {
+                return [
+                    'result' => 0,
+                    'msg'    => __('Task successfully enabled'),
+                    'id'     => false,
+                ];
+            }
+
+            // Trick to avoid double execution.
+            header('Location: '.$this->url);
+        }
+
+    }
+
+
+    /**
      * Show complete list of running tasks.
      *
      * @return boolean Success or not.
@@ -379,7 +476,22 @@ class DiscoveryTaskList extends HTML
             include_once $config['homedir'].'/include/functions_servers.php';
             include_once $config['homedir'].'/include/functions_network_profiles.php';
 
-            $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            if (users_is_admin()) {
+                $recon_tasks = db_get_all_rows_sql('SELECT * FROM trecon_task');
+            } else {
+                $user_groups = implode(
+                    ',',
+                    array_keys(users_get_groups())
+                );
+                $recon_tasks = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT * FROM trecon_task
+                        WHERE id_group IN (%s)',
+                        $user_groups
+                    )
+                );
+            }
+
             // Show network tasks for Recon Server.
             if ($recon_tasks === false) {
                 $recon_tasks = [];
@@ -494,7 +606,7 @@ class DiscoveryTaskList extends HTML
                     if (check_acl($config['id_user'], 0, 'AW')) {
                         $data[0] = '<span class="link" onclick="force_task(\'';
                         $data[0] .= ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_server.'&force='.$task['id_rt']
+                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$task['id_recon_server'].'&force='.$task['id_rt']
                         );
                         $data[0] .= '\'';
                         if ($task['type'] == DISCOVERY_HOSTDEVICES) {
@@ -522,7 +634,12 @@ class DiscoveryTaskList extends HTML
                     $data[1] .= '<span class="link" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                 }
 
-                $data[1] .= '<b>'.$task['name'].'</b>';
+                if ($task['disabled'] == 1) {
+                    $data[1] .= '<b><em>'.$task['name'].'</em></b>';
+                } else {
+                    $data[1] .= '<b>'.$task['name'].'</b>';
+                }
+
                 if ($task['disabled'] != 2) {
                     $data[1] .= '</span>';
                 }
@@ -807,6 +924,24 @@ class DiscoveryTaskList extends HTML
                                 'images/cross.png',
                                 true,
                                 ['title' => __('Delete task')]
+                            ).'</a>';
+                        }
+
+                        if ($task['disabled'] == 1) {
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&enabled=1&wiz=tasklist&task='.$task['id_rt']
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/lightbulb_off.png',
+                                true,
+                                ['title' => __('enable task')]
+                            ).'</a>';
+                        } else if ($task['disabled'] == 0) {
+                            $data[9] .= '<a href="'.ui_get_full_url(
+                                'index.php?sec=gservers&sec2=godmode/servers/discovery&disabled=1&wiz=tasklist&task='.$task['id_rt']
+                            ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                                'images/lightbulb.png',
+                                true,
+                                ['title' => __('Disable task')]
                             ).'</a>';
                         }
                     } else {

@@ -28,6 +28,12 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     exit;
 }
 
+if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
+    echo "<div id='message_permissions'  title='".__('Permissions warning')."' style='display:none;'>";
+    echo "<p style='text-align: center;font-weight: bold;'>".__('Command management is limited to administrator users or user profiles with permissions over Pandora FMS management').'</p>';
+    echo '</div>';
+}
+
 if (is_metaconsole()) {
     $sec = 'advanced';
 } else {
@@ -558,7 +564,7 @@ foreach ($commands as $command) {
     $data['name'] = '<span style="font-size: 7.5pt">';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
-    if (!$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
+    if (!$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
         $data['name'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&id='.$command['id'].'&pure='.$pure.'">'.$command['name'].'</a>';
     } else {
         $data['name'] .= $command['name'];
@@ -584,7 +590,7 @@ foreach ($commands as $command) {
     $table->cellclass[]['action'] = 'action_buttons';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
-    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
+    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
         $data['action'] = '<span style="display: inline-flex">';
         $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true).'</a>';
@@ -602,7 +608,7 @@ if (count($table->data) > 0) {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert commands configured') ]);
 }
 
-if ($is_central_policies_on_node === false) {
+if ($is_central_policies_on_node === false && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
@@ -612,3 +618,26 @@ if ($is_central_policies_on_node === false) {
 }
 
 enterprise_hook('close_meta_frame');
+
+?>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        dialog_message("#message_permissions");
+    });
+
+    function dialog_message(message) {
+      $(message)
+        .css("display", "inline")
+        .dialog({
+          modal: true,
+          width: "400px",
+          buttons: {
+            Close: function() {
+              $(this).dialog("close");
+            }
+          }
+        });
+    }
+
+</script>

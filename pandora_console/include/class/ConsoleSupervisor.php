@@ -46,6 +46,11 @@ class ConsoleSupervisor
 {
 
     /**
+     * Minimum modules to check performance.
+     */
+    public const MIN_PERFORMANCE_MODULES = 100;
+
+    /**
      * Show if console supervisor is enabled or not.
      *
      * @var boolean
@@ -115,12 +120,6 @@ class ConsoleSupervisor
         } else {
             $this->enabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
-
-            // Assign targets.
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = true;
         }
 
         return $this;
@@ -620,20 +619,28 @@ class ConsoleSupervisor
             return;
         }
 
-        if ($this->targetUpdated === false) {
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
-        }
-
         if ($source_id === 0) {
             $source_id = $this->sourceId;
-            // Assign targets.
-            $targets = get_notification_source_targets($source_id);
+        }
+
+        static $_cache_targets;
+        $key = $source_id.'|'.$data['type'];
+
+        if ($_cache_targets === null) {
+            $_cache_targets = [];
+        }
+
+        if ($_cache_targets[$key] !== null) {
+            $targets = $_cache_targets[$key];
+        } else {
+            $targets = get_notification_source_targets(
+                $source_id,
+                $data['type']
+            );
             $this->targetGroups = $targets['groups'];
             $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
+
+            $_cache_targets[$key] = $targets;
         }
 
         switch ($data['type']) {
@@ -1139,6 +1146,12 @@ class ConsoleSupervisor
                     && isset($total_modules[$queue['server_type']])
                 ) {
                     $max_grown = ($total_modules[$queue['server_type']] * 0.40);
+                }
+
+                if ($total_modules[$queue['server_type']] < self::MIN_PERFORMANCE_MODULES) {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                    // Skip.
+                    continue;
                 }
 
                 // Compare queue increments in a not over 900 seconds.

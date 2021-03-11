@@ -4869,6 +4869,7 @@ function ui_print_agent_autocomplete_input($parameters)
         $get_only_string_modules = true;
     }
 
+    $no_disabled_modules = true;
     if (isset($parameters['no_disabled_modules'])) {
         $no_disabled_modules = $parameters['no_disabled_modules'];
     }

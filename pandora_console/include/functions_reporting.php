@@ -842,6 +842,7 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'histogram_data':
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_module_histogram_graph(
                     $report,
@@ -13624,7 +13625,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $urlImage = ui_get_full_url(false, true, false, false);
 
-    $return['type'] = 'module_histogram_graph';
+    $return['type'] = $content['type'];
 
     $ttl = 1;
     if ($pdf) {

@@ -190,7 +190,7 @@ if (!empty($result_groups)) {
 
         echo '<tr>';
             echo "<th class='w26px'>".__('Force').'</th>';
-            echo "<th width='30%' class='mw60px'>".__('Group').'/'.__('Tags').'</th>';
+            echo "<th width='30%' class='mw60px' style='text-align: justify'>".__('Group').'/'.__('Tags').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Total').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
             echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';

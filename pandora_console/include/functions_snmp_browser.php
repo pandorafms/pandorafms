@@ -636,7 +636,7 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add"',
+        'class="sub add float-left"',
         true
     );
 
@@ -1068,7 +1068,7 @@ function snmp_browser_print_container(
     $output .= '<div id="spinner" class="spinner_none_padding">'.html_print_image('images/spinner.gif', true).'</div>';
     $output .= '<div id="snmp_browser">';
     $output .= '</div>';
-    $output .= '<div class="databox invisible mrgn_5px" id="snmp_data"></div>';
+    $output .= '<div class="databox mrgn_5px" id="snmp_data"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';

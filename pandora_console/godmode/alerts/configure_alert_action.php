@@ -16,6 +16,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_integriaims.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
@@ -35,6 +36,19 @@ $id = (int) get_parameter('id');
 
 $al_action = alerts_get_alert_action($id);
 $pure = get_parameter('pure', 0);
+
+if (is_ajax()) {
+    $get_integria_ticket_custom_types = (bool) get_parameter('get_integria_ticket_custom_types');
+
+    if ($get_integria_ticket_custom_types) {
+        $ticket_type_id = get_parameter('ticket_type_id');
+
+        $api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_fields', $ticket_type_id, false, 'json');
+
+        echo $api_call;
+        return;
+    }
+}
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -101,6 +115,7 @@ if ($id) {
 
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
+    $create_wu_integria = $action['create_wu_integria'];
 
     if (!check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')) {
         db_pandora_audit(
@@ -200,10 +215,18 @@ $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
 ).'</div>';
 $table->colspan[1][1] = 2;
 
+$create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Integria IMS Ticket'));
+
+$sql_exclude_command_id = '';
+
+if ($config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
+    $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
+}
+
 $table->data[2][0] = __('Command');
 $commands_sql = db_get_all_rows_filter(
     'talert_commands',
-    ['id_group' => array_keys(users_get_groups(false, 'LW'))],
+    'id_group IN ('.implode(',', array_keys(users_get_groups(false, 'LW'))).')'.$sql_exclude_command_id,
     [
         'id',
         'name',
@@ -280,6 +303,12 @@ $table->data[5][2] = html_print_textarea(
     'disabled="disabled"',
     true
 );
+
+$table->data[6][0] = __('Create workunit on recovery').ui_print_help_tip(
+    __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
+    true
+);
+$table->data[6][1] = html_print_checkbox_switch_extended('create_wu_integria', 1, $create_wu_integria, false, '', '', true);
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = html_print_image(
@@ -371,6 +400,173 @@ $(document).ready (function () {
         render_command_description(command_description);
     }
 
+    function ajax_get_integria_custom_fields(ticket_type_id, values, recovery_values) {
+        var values = values || [];
+        var recovery_values = recovery_values || [];
+        var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
+
+        if (ticket_type_id === null || ticket_type_id === '' || (Array.isArray(values) && values.length === 0 && Array.isArray(recovery_values) && recovery_values.length === 0)) {
+            for (var i=8; i <= max_macro_fields; i++) {
+                $('[name=field'+i+'_value\\[\\]').val('');
+                $('[name=field'+i+'_recovery_value\\[\\]').val('');
+            }
+        }
+
+        // On ticket type change, hide all table rows and inputs corresponding to custom fields, regardless of what its type is.
+        for (var i=8; i <= max_macro_fields; i++) {
+            $('[name=field'+i+'_value\\[\\]').hide();
+            $('[name=field'+i+'_recovery_value\\[\\]').hide();
+            $('#table_macros-field'+i).hide();
+            $('[name=field'+i+'_value_container').hide();
+            $('[name=field'+i+'_recovery_value_container').hide();
+        }
+
+        jQuery.post(
+          "ajax.php",
+          {
+            page: "godmode/alerts/configure_alert_action",
+            get_integria_ticket_custom_types: 1,
+            ticket_type_id: ticket_type_id
+          },
+          function(data) {
+            var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
+
+            data.forEach(function(custom_field, key) {
+                var custom_field_key = key+8; // Custom fields start from field 8.
+
+                if (custom_field_key > max_macro_fields) {
+                    return;
+                }
+
+                // Display field row for current input.
+                var custom_field_row = $('#table_macros-field'+custom_field_key);
+                custom_field_row.show();
+
+                // Replace label text of field row for current input.
+                var label_html = $('#table_macros-field'+custom_field_key+' td').first().html();
+                var label_name = label_html.split('<br>')[0];
+                var new_html_content = custom_field_row.html().replace(label_name, custom_field.label);
+                custom_field_row.html(new_html_content);
+
+                switch (custom_field.type) {
+                    case 'checkbox':
+                        var checkbox_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]');
+                        var checkbox_recovery_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]');
+
+                        checkbox_selector.on('change', function() {
+                            if (checkbox_selector.prop('checked')) {
+                                checkbox_selector.attr('value', "1");
+                            } else {
+                                checkbox_selector.attr('value', "0");
+                            }
+                        });
+
+                        checkbox_recovery_selector.on('change', function() {
+                            if (checkbox_recovery_selector.prop('checked')) {
+                                checkbox_recovery_selector.attr('value', "1");
+                            } else {
+                                checkbox_recovery_selector.attr('value', "0");
+                            }
+                        });
+
+                        if (typeof values[key] !== "undefined") {
+                            if (values[key] == 1) {
+                                checkbox_selector.prop('checked', true);
+                                checkbox_selector.attr('value', "1");
+                            } else {
+                                checkbox_selector.prop('checked', false);
+                                checkbox_selector.attr('value', "0");
+                            }
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            if (recovery_values[key] == 1) {
+                                checkbox_recovery_selector.prop('checked', true);
+                                checkbox_recovery_selector.attr('value', "1");
+                            } else {
+                                checkbox_recovery_selector.prop('checked', false);
+                                checkbox_recovery_selector.attr('value', "0");
+                            }
+                        }
+
+                        $('[name=field'+custom_field_key+'_value_container]').show();
+                        $('[name=field'+custom_field_key+'_recovery_value_container]').show();
+                        $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                    break;
+                    case 'combo':
+                        var combo_input = $('select[name=field'+custom_field_key+'_value\\[\\]]');
+                        var combo_input_recovery = $('select[name=field'+custom_field_key+'_recovery_value\\[\\]]');
+
+                        combo_input.find('option').remove();
+                        combo_input_recovery.find('option').remove();
+
+                        var combo_values_array = custom_field.combo_value.split(',');
+                        
+                        combo_values_array.forEach(function(value) {
+                            combo_input.append($('<option>', {
+                                value: value,
+                                text: value
+                            }));
+
+                            combo_input_recovery.append($('<option>', {
+                                value: value,
+                                text: value
+                            }));
+                        });
+
+                        if (typeof values[key] !== "undefined") {
+                            combo_input.val(values[key]);
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            combo_input_recovery.val(recovery_values[key]);
+                        }
+
+                        combo_input.show();
+                        combo_input_recovery.show();
+                    break;
+                    case 'date':
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').removeClass("hasDatepicker");
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').removeClass("hasDatepicker");
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker("destroy");
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker("destroy");
+
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+                        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+
+                        if (typeof values[key] !== "undefined") {
+                            $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
+                        }
+                    break;
+                    case 'text':
+                    case 'textarea':
+                    case 'numeric':
+                        if (typeof values[key] !== "undefined") {
+                            $('textarea[name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
+                        }
+
+                        if (typeof recovery_values[key] !== "undefined") {
+                            $('textarea[name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
+                        }
+
+                        $('textarea[name=field'+custom_field_key+'_value\\[\\]]').show();
+                        $('textarea[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
+                    break;
+                }
+            });
+          },
+          "json"
+        );
+    }
+
     $("#id_command").change (function () {
         values = Array ();
         values.push({
@@ -405,6 +601,9 @@ $(document).ready (function () {
                 if (data.id_group != 0 && $("#group").val() != data.id_group) {
                     $("#group").val(0);
                 }
+
+                var integria_custom_fields_values = [];
+                var integria_custom_fields_rvalues = [];
 
                 for (i = 1; i <= max_fields; i++) {
                     var old_value = '';
@@ -474,6 +673,12 @@ $(document).ready (function () {
                                 .val());
                         }
                     }
+
+                    if ($("#id_command option:selected").text() === "Integria IMS Ticket" && i > 7) {
+                        integria_custom_fields_values.push(old_value);
+                        integria_custom_fields_rvalues.push(old_recovery_value);
+                    }
+
                     // Add help hint only in first field
                     if (i == 1) {
                         var td_content = $table_macros_field.find('td').eq(0);
@@ -486,7 +691,30 @@ $(document).ready (function () {
                     
                     $table_macros_field.show();
                 }
-                
+
+                // Ad-hoc solution for Integria IMS command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
+                // Check command by name since it is unvariable in any case, unlike its ID.
+                if ($("#id_command option:selected").text() === "Integria IMS Ticket") {
+                    var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
+
+                    // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.
+                    for (var i=8; i <= max_macro_fields; i++) {
+                        $('[name=field'+i+'_value\\[\\]').hide();
+                        $('[name=field'+i+'_recovery_value\\[\\]').hide();
+                        $('#table_macros-field'+i).hide();
+                        $('[name=field'+i+'_value_container').hide();
+                        $('[name=field'+i+'_recovery_value_container').hide();
+                    }
+
+                    if ($('#field5_value').val() !== '') {
+                        ajax_get_integria_custom_fields($('#field5_value').val(), integria_custom_fields_values, integria_custom_fields_rvalues);
+                    }
+
+                    $('#field5_value').on('change', function() {
+                        ajax_get_integria_custom_fields($(this).val());
+                    }); 
+                }
+
                 var added_config = {
                     "selector": "textarea.tiny-mce-editor",
                     "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",

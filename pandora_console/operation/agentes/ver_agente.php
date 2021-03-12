@@ -1525,11 +1525,9 @@ $onheader = [
     'external_tools'     => $external_tools,
 ];
 
-// Added after it exists
-// If the agent has incidents associated.
-if ($total_incidents) {
-    $onheader['incident'] = $incidenttab;
-}
+
+$onheader['incident'] = $incidenttab;
+
 
 if ($agent['url_address'] != '') {
     $onheader['url_address'] = $urladdresstab;

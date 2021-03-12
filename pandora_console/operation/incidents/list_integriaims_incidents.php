@@ -38,7 +38,7 @@ ui_print_page_header(
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
-    ui_print_error_message(__('Integria integration must be enabled in Pandora setup'));
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
     return;
 }
 

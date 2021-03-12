@@ -1564,7 +1564,13 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        $integria_hostname = 'http://'.$integria_hostname;
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 

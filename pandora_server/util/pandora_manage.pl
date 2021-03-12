@@ -202,8 +202,6 @@ sub help_screen{
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
   	help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
-	print "\nINCIDENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
 	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
@@ -4365,21 +4363,6 @@ sub cli_add_event_comment() {
 }
 
 ##############################################################################
-# Create incident.
-# Related option: --create_incident
-##############################################################################
-
-sub cli_create_incident() {
-	my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
-	
-	my $id_group = get_group_id($dbh,$group_name);
-	exist_check($id_group,'group',$group_name);
-	
-	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
-	print_log "[INFO] Creating incident '$title'\n\n";
-}
-
-##############################################################################
 # Delete data.
 # Related option: --delete_data
 ##############################################################################
@@ -7391,10 +7374,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--add_event_comment') {
 			param_check($ltotal, 3);
 			cli_add_event_comment();
-		}
-		elsif ($param eq '--create_incident') {
-			param_check($ltotal, 7, 1);
-			cli_create_incident();
 		}
 		elsif ($param eq '--delete_data') {
 			param_check($ltotal, 4, 2);

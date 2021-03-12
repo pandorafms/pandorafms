@@ -3675,20 +3675,20 @@ function agents_get_status_animation($up=true)
 {
     global $config;
 
-    // Gif with black background or white background
+    $red = 'images/heartbeat_green.gif';
+    $green = 'images/heartbeat_green.gif';
+
     if ($config['style'] === 'pandora_black') {
-        $heartbeat_green = 'images/heartbeat_green_black.gif';
-        $heartbeat_red = 'images/heartbeat_red_black.gif';
-    } else {
-        $heartbeat_green = 'images/heartbeat_green.gif';
-        $heartbeat_red = 'images/heartbeat_red.gif';
+        $red = 'images/heartbeat_green_black.gif';
+        $green = 'images/heartbeat_green_black.gif';
     }
 
+    // Gif with black background or white background
     switch ($up) {
         case true:
         default:
         return html_print_image(
-            $heartbeat_green,
+            $green,
             true,
             [
                 'width'  => '170',
@@ -3698,7 +3698,7 @@ function agents_get_status_animation($up=true)
 
         case false:
         return html_print_image(
-            $heartbeat_red,
+            $red,
             true,
             [
                 'width'  => '170',
@@ -3746,9 +3746,12 @@ function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
  */
 function agents_get_sap_agents($id_agent)
 {
+    global $config;
+
     // Available modules.
     // If you add more modules, please update SAP.pm.
     $sap_modules = [
+        0   => 'SAP connection',
         160 => __('SAP Login OK'),
         109 => __('SAP Dumps'),
         111 => __('SAP lock entry list'),
@@ -3758,9 +3761,9 @@ function agents_get_sap_agents($id_agent)
         105 => __('SAP IDOC OK'),
         150 => __('SAP WP without active restart'),
         151 => __('SAP WP stopped'),
-        102 => __('Average time of SAPGUI response '),
+        102 => __('Average time of SAPGUI response'),
         180 => __('Dialog response time'),
-        103 => __('Dialog Logged users '),
+        103 => __('Dialog Logged users'),
         192 => __('TRFC in error'),
         195 => __('QRFC in error SMQ2'),
         116 => __('Number of Update WPs in error'),
@@ -3768,15 +3771,28 @@ function agents_get_sap_agents($id_agent)
 
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
-        $new_ones = db_get_all_rows_sql(
-            'SELECT ta.id_agente,ta.alias
-             FROM tagente ta
-             INNER JOIN tagente_modulo tam 
-             ON tam.id_agente = ta.id_agente 
-             WHERE tam.nombre  
-             LIKE "%SAP%" 
-             GROUP BY ta.id_agente'
+        $sql = sprintf(
+            'SELECT ta.id_agente,ta.alias, ta.id_grupo
+            FROM tagente ta
+            INNER JOIN tagente_modulo tam 
+            ON tam.id_agente = ta.id_agente 
+            WHERE tam.nombre  
+            LIKE "%s" 
+            GROUP BY ta.id_agente',
+            io_safe_input($key)
         );
+
+        // ACL groups.
+        $agent_groups = array_keys(users_get_groups($config['id_user']));
+        if (!empty($agent_groups)) {
+            $sql .= sprintf(
+                ' HAVING ta.id_grupo IN (%s)',
+                implode(',', $agent_groups)
+            );
+        }
+
+        $new_ones = db_get_all_rows_sql($sql);
+
         if ($new_ones === false) {
             continue;
         }

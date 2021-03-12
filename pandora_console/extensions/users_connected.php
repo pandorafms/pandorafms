@@ -30,7 +30,7 @@ function users_extension_main_god($god=true)
     if ($god) {
         $image = 'images/gm_users.png';
     } else {
-        $image = 'images/op_workspace.png';
+        $image = 'images/user.png';
     }
 
     // Header
@@ -98,13 +98,45 @@ function users_extension_main_god($god=true)
         $table->head = [];
 
         $table->head[0] = __('User');
-        $table->head[1] = __('Date');
+        $table->head[1] = __('IP');
+        $table->head[2] = __('Last login');
+        $table->head[3] = __('Last contact');
 
         $rowPair = true;
         $iterator = 0;
 
         // Get data
         foreach ($rows as $row) {
+            // Get data of user's last login.
+            switch ($config['dbtype']) {
+                case 'mysql':
+                case 'postgresql':
+                    $last_login_data = db_get_row_sql(
+                        sprintf(
+                            "SELECT ip_origen, utimestamp 
+						FROM tsesion 
+						WHERE id_usuario = '%s'
+						AND descripcion = '".io_safe_input('Logged in')."' 
+						ORDER BY fecha DESC",
+                            $row['id_user']
+                        )
+                    );
+                break;
+
+                case 'oracle':
+                    $last_login_data = db_get_row_sql(
+                        sprintf(
+                            "SELECT ip_origen, utimestamp 
+						FROM tsesion
+						WHERE id_usuario = '%s'
+						AND to_char(descripcion) = '".io_safe_input('Logged in')."' 
+						ORDER BY fecha DESC",
+                            $row['id_user']
+                        )
+                    );
+                break;
+            }
+
             if ($rowPair) {
                 $table->rowclass[$iterator] = 'rowPair';
             } else {
@@ -116,7 +148,9 @@ function users_extension_main_god($god=true)
 
             $data = [];
             $data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$row['id_user'].'">'.$row['id_user'].'</a>';
-            $data[1] = date($config['date_format'], $row['last_connect']);
+            $data[1] = $last_login_data['ip_origin'];
+            $data[2] = date($config['date_format'], $last_login_data['utimestamp']);
+            $data[3] = date($config['date_format'], $row['last_connect']);
             array_push($table->data, $data);
         }
 
@@ -125,7 +159,6 @@ function users_extension_main_god($god=true)
 }
 
 
-extensions_add_godmode_menu_option(__('Users connected'), 'UM', 'gusuarios', 'users/icon.png', 'v1r1');
 extensions_add_operation_menu_option(__('Users connected'), 'workspace', 'users/icon.png', 'v1r1', '', 'UM');
 
 extensions_add_godmode_function('users_extension_main_god');

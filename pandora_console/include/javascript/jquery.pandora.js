@@ -45,7 +45,7 @@ $(document).ready(function() {
     jQuery.post(
       "ajax.php",
       {
-        page: "operation/messages/message_list",
+        page: "operation/messages/message_list"
       },
       function(data, status) {
         $("#dialog_messages")
@@ -58,10 +58,10 @@ $(document).ready(function() {
             modal: true,
             overlay: {
               opacity: 0.5,
-              background: "black",
+              background: "black"
             },
             width: 700,
-            height: 300,
+            height: 300
           })
           .show();
       },
@@ -80,7 +80,7 @@ $(document).ready(function() {
     jQuery.post(
       "ajax.php",
       {
-        page: "operation/system_alert",
+        page: "operation/system_alert"
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -104,7 +104,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem,
+        message: elem
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -130,7 +130,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem,
+        message: elem
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -155,7 +155,7 @@ $(document).ready(function() {
       "ajax.php",
       {
         page: "general/alert_enterprise",
-        message: elem,
+        message: elem
       },
       function(data, status) {
         $("#alert_messages").show();
@@ -190,7 +190,7 @@ $(document).ready(function() {
         width: 850,
         overlay: {
           opacity: 0.5,
-          background: "black",
+          background: "black"
         },
         open: function() {
           if (hide_counter != 1) {
@@ -212,7 +212,7 @@ $(document).ready(function() {
           } else {
             $("#ok_buttom").show();
           }
-        },
+        }
       });
 
       $("#submit-hide-license-error-msg").click(function() {
@@ -230,8 +230,8 @@ $(document).ready(function() {
       width: 620,
       overlay: {
         opacity: 0.5,
-        background: "black",
-      },
+        background: "black"
+      }
     });
   }
 
@@ -244,8 +244,8 @@ $(document).ready(function() {
       width: 520,
       overlay: {
         opacity: 0.5,
-        background: "black",
-      },
+        background: "black"
+      }
     });
   }
 
@@ -258,8 +258,8 @@ $(document).ready(function() {
       width: 520,
       overlay: {
         opacity: 0.5,
-        background: "black",
-      },
+        background: "black"
+      }
     });
   }
 
@@ -327,7 +327,7 @@ $(document).ready(function() {
     left:
       +parseInt(screen.width / 2) -
       parseInt($("#alert_messages").css("width")) / 2 +
-      "px",
+      "px"
   });
 });
 

@@ -563,19 +563,19 @@ $table_cr_settings->data['custom_response_incident_status'] = $row;
 $row = [];
 $row['name'] = __('Test');
 $row['control'] = html_print_button(__('Start'), 'test-integria', false, '', 'class="sub next"', true);
-$row['control'] .= '<span id="test-integria-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-integria-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-integria-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-$row['control'] .= '&nbsp;<span id="test-integria-message" style="display:none;"></span>';
+$row['control'] .= '<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></span>';
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div style="text-align: center; padding-bottom: 20px;">';
+echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image('images/integria_logo.png');
 echo '</a>';
 echo '<br />';
-echo '<div style="font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #515151;">';
+echo '<div clsas="integria_title">';
 echo __('Integria IMS');
 echo '</div>';
 echo '<a target="_blank" rel="noopener noreferrer" href="https://integriaims.com">';

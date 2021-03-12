@@ -135,4 +135,4 @@ echo '</div>';
 unset($table);
 echo '<br><br>';
 
-echo '<div style="clear:both">&nbsp;</div>';
+echo '<div id="both">&nbsp;</div>';

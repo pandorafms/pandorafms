@@ -31,6 +31,7 @@ if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
     exit;
 }
 
+
 if (!$is_metaconsole) {
     $url_visual_console                 = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
     $url_visual_console_favorite        = 'index.php?sec=network&sec2=godmode/reporting/visual_console_favorite';
@@ -45,23 +46,51 @@ if (!$is_metaconsole) {
 
 $buttons['visual_console'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_visual_console.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual Console List')]).'</a>',
+    'text'   => '<a href="'.$url_visual_console.'">'.html_print_image(
+        'images/visual_console.png',
+        true,
+        [
+            'title' => __('Visual Console List'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 $buttons['visual_console_favorite'] = [
     'active' => true,
-    'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image('images/list.png', true, ['title' => __('Visual Favourite Console')]).'</a>',
+    'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('Visual Favourite Console'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image('images/templates.png', true, ['title' => __('Visual Console Template')]).'</a>',
+        'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image(
+            'images/templates.png',
+            true,
+            [
+                'title' => __('Visual Console Template'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 
     $buttons['visual_console_template_wizard'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image('images/wand.png', true, ['title' => __('Visual Console Template Wizard')]).'</a>',
+        'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image(
+            'images/wand.png',
+            true,
+            [
+                'title' => __('Visual Console Template Wizard'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 }
 
@@ -152,7 +181,13 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $filters['group'] = array_flip($ag_groups);
         }
 
-        $favorite_array = visual_map_get_user_layouts($config['id_user'], false, $filters, $returnAllGroups, true);
+        $favorite_array = visual_map_get_user_layouts(
+            $config['id_user'],
+            false,
+            $filters,
+            $returnAllGroups,
+            true
+        );
 
         echo "<div id='is_favourite'>";
         if ($favorite_array == false) {

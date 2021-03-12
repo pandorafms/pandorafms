@@ -73,6 +73,7 @@ final class EventsHistory extends Item
      * Fetch a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
+     * @param float $ratio  Ratio visual console in dashboards.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \InvalidArgumentException When an agent Id cannot be found.
@@ -124,18 +125,31 @@ final class EventsHistory extends Item
             $data['height'] = 11;
         }
 
-        // Use the same HTML output as the old VC.
-        $html = \graph_graphic_moduleevents(
-            $agentId,
-            $moduleId,
-            100,
-            (int) $data['height'],
-            static::extractMaxTime($data),
-            '',
-            true,
-            1,
-            $data['width']
-        );
+        if (empty($moduleId) === true) {
+            $html = \graph_graphic_agentevents(
+                $agentId,
+                100,
+                (int) $data['height'],
+                static::extractMaxTime($data),
+                '',
+                true,
+                false,
+                500
+            );
+        } else {
+            // Use the same HTML output as the old VC.
+            $html = \graph_graphic_moduleevents(
+                $agentId,
+                $moduleId,
+                100,
+                (int) $data['height'],
+                static::extractMaxTime($data),
+                '',
+                true,
+                1,
+                $data['width']
+            );
+        }
 
         $data['html'] = $html;
 
@@ -211,7 +225,7 @@ final class EventsHistory extends Item
                     'return'             => true,
                     'module_input'       => true,
                     'module_name'        => 'moduleId',
-                    'module_none'        => false,
+                    'module_none'        => true,
                 ],
             ];
 
@@ -227,6 +241,8 @@ final class EventsHistory extends Item
                     'sort'           => false,
                     'agent_id'       => $values['agentId'],
                     'metaconsole_id' => $values['metaconsoleId'],
+                    'nothing'        => '--',
+                    'nothing_value'  => 0,
                 ],
             ];
 

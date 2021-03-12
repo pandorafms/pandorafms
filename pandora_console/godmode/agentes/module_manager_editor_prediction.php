@@ -108,7 +108,7 @@ if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
     $data[0] = '';
 }
 
-$data[1] = '<div id="module_data" style="top:1em; float:left; width:50%;">';
+$data[1] = '<div id="module_data" class="w50p float-left top-1em">';
 $data[1] .= html_print_label(__('Agent'), 'agent_name', true).'<br/>';
 
 // Get module and agent of the target prediction module

@@ -3896,7 +3896,7 @@ function graph_graphic_agentevents(
     $width,
     $height,
     $period=0,
-    $homeurl,
+    $homeurl='',
     $return=false,
     $from_agent_view=false,
     $widgets=false,
@@ -5037,7 +5037,7 @@ function graph_nodata_image(
         }
 
         $style = $width.' height:'.$height.'px;';
-        $style .= ' background-color: white; margin: 0 auto;';
+        $style .= 'margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

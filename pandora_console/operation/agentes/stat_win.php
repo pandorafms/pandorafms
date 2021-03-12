@@ -129,7 +129,7 @@ ui_print_message_dialog(
             };
         </script>
     </head>
-    <body style='background:#ffffff;'>
+    <body class='bg_white'>
         <?php
         // Module id.
         $id = (int) get_parameter('id', 0);
@@ -386,7 +386,7 @@ ui_print_message_dialog(
         );
 
         $form_table = html_print_table($table, true);
-        $form_table .= '<div style="width:100%; text-align:right; margin-top: 15px;">';
+        $form_table .= '<div class="w100p right mrgn_top_15px">';
         $form_table .= html_print_submit_button(
             __('Reload'),
             'submit',
@@ -397,7 +397,7 @@ ui_print_message_dialog(
         $form_table .= '</div>';
 
         // Menu.
-        $menu_form = "<form method='get' action='stat_win.php' style='margin-top: 10px;'>";
+        $menu_form = "<form method='get' action='stat_win.php' class='mrgn_top_10px'>";
         $menu_form .= html_print_input_hidden('id', $id, true);
         $menu_form .= html_print_input_hidden('label', $label, true);
 
@@ -423,11 +423,15 @@ ui_print_message_dialog(
             false,
             true
         );
-        $menu_form .= '<span style="flex: 2;">';
-        $menu_form .= __('Graph configuration menu');
+        $menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
+        $menu_form .= '<b>'.__('Graph configuration menu').'</b>';
+        $menu_form .= ui_print_help_tip(
+            __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+            true
+        );
         $menu_form .= '</span>';
         $menu_form .= '</div>';
-        $menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">';
+        $menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed invisible">';
         $menu_form .= $form_table;
         $menu_form .= '</div>';
         $menu_form .= '</div>';

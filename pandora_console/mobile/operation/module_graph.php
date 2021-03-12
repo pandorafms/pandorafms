@@ -471,9 +471,9 @@ class ModuleGraph
                     $ui->contentCollapsibleAddItem($html);
                     $ui->contentEndCollapsible();
                     $ui->contentAddHtml(
-                        '<div id="graph_content" style="display: none; width: 100%; height: 100%; text-align: center;"></div>
-				<div id="loading_graph" style="width: 100%; text-align: center;">'.__('Loading...').'<br /><img src="images/ajax-loader.gif" /></div>
-				<div id="error_graph" style="display: none; color: red; width: 100%; text-align: center;">'.__('Error get the graph').'</div>'
+                        '<div id="graph_content" class="invisible w100p height_100p center"></div>
+				<div id="loading_graph" class="w100p center">'.__('Loading...').'<br /><img src="images/ajax-loader.gif" /></div>
+				<div id="error_graph" class="invisible red w100p  center">'.__('Error get the graph').'</div>'
                     );
             $ui->contentAddHtml($this->javascript_code());
         $ui->endContent();

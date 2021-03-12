@@ -218,7 +218,7 @@ if (check_login()) {
             $selection_mode,
             false,
             '',
-            'style="margin-right: 15px;"',
+            'class="mrgn_right_15px"',
             true
         ).__('Choose a time from now');
         $formtable->data[0][1] = html_print_select(
@@ -244,7 +244,7 @@ if (check_login()) {
             $selection_mode,
             false,
             '',
-            'style="margin-right: 15px;"',
+            'class="mrgn_right_15px"',
             true
         ).__('Specify time range');
         $formtable->data[1][1] = __('Timestamp from:');
@@ -394,6 +394,12 @@ if (check_login()) {
         $index = 0;
         foreach ($columns as $col => $attr) {
             $table->head[$index] = $col;
+            if ($col === 'Data') {
+                $table->head[$index] .= ui_print_help_tip(
+                    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+                    true
+                );
+            }
 
             if (isset($attr['align'])) {
                 $table->align[$index] = $attr['align'];
@@ -440,10 +446,10 @@ if (check_login()) {
                     $data[] = date('d F Y h:i:s A', $row['utimestamp']);
                 } else if (is_snapshot_data($row[$attr[0]])) {
                     if ($config['command_snapshot']) {
-                        $imagetab = '<img style="width:100%" src="';
+                        $imagetab = '<img class="w100p" src="';
                         $imagetab .= io_safe_input($row[$attr[0]]);
                         $imagetab .= '">';
-                        $image = '<img style="width:300px" src="';
+                        $image = '<img class="w300px" src="';
                         $image .= io_safe_input($row[$attr[0]]);
                         $image .= '">';
                         $data[] = '<a style="cursor:pointer;" onclick="newTabjs(\''.base64_encode($imagetab).'\')">'.$image.'</a>';
@@ -1043,7 +1049,7 @@ if (check_login()) {
             if (($module['id_modulo'] != 1) && ($module['id_tipo_modulo'] != 100)) {
                 if ($agent_w) {
                     if ($module['flag'] == 0) {
-                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter' ]).'</a>';
                     } else {
                         $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh')]).'</a>';
                     }
@@ -1077,7 +1083,7 @@ if (check_login()) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
-                            $img = 'images/policies.png';
+                            $img = 'images/policies_mc.png';
                             $title = $name_policy;
                         }
                     } else {
@@ -1203,7 +1209,15 @@ if (check_login()) {
 
                 $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 800, 480)";
                 if (!is_snapshot_data($module['datos'])) {
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
+                        'images/chart.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'alt'    => '',
+                            'class'  => 'invert_filter',
+                        ]
+                    ).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
@@ -1212,7 +1226,15 @@ if (check_login()) {
                 // Escape the double quotes that may have the name of the module.
                 $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
 
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image(
+                    'images/binary.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => '',
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a>';
             }
 
             if ($module['estado'] == 3) {

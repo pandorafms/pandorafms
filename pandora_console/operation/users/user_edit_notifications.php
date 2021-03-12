@@ -91,7 +91,7 @@ foreach ($sources as $source) {
 
 if ((bool) $disabled_flag === true) {
     $s = __('Controls have been disabled by the system administrator');
-    echo '<span style="font-weight: bold; color: #ff0000;">'.$s.'</span>';
+    echo '<span class="bolder color_ff0">'.$s.'</span>';
 }
 
 echo '</div>';

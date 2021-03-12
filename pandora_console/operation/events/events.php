@@ -44,6 +44,8 @@ require_once $config['homedir'].'/include/functions_ui.php';
 // Check access.
 check_login();
 
+
+
 $event_a = check_acl($config['id_user'], 0, 'ER');
 $event_w = check_acl($config['id_user'], 0, 'EW');
 $event_m = check_acl($config['id_user'], 0, 'EM');
@@ -140,8 +142,11 @@ $text_module = get_parameter(
     $filter['module_search']
 );
 $id_agent_module = get_parameter(
-    'filter[id_agent_module]',
-    $filter['id_agent_module']
+    'id_agent_module',
+    get_parameter(
+        'filter[id_agent_module]',
+        $filter['id_agent_module']
+    )
 );
 $pagination = get_parameter(
     'filter[pagination]',
@@ -374,6 +379,9 @@ if (is_ajax()) {
                         }
 
                         $tmp->agent_name = io_safe_output($tmp->agent_name);
+
+                        $tmp->ack_utimestamp_raw = strtotime($tmp->ack_utimestamp);
+
                         $tmp->ack_utimestamp = ui_print_timestamp(
                             $tmp->ack_utimestamp,
                             true
@@ -563,6 +571,7 @@ $data[1] = html_print_image(
         'id'    => 'button-add_with',
         'style' => 'cursor: pointer;',
         'title' => __('Add'),
+        'class' => 'invert_filter',
     ]
 );
 
@@ -579,6 +588,7 @@ $data[1] .= '<br><br>'.html_print_image(
         'id'    => 'button-remove_with',
         'style' => 'cursor: pointer;',
         'title' => __('Remove'),
+        'class' => 'invert_filter',
     ]
 );
 
@@ -637,6 +647,7 @@ $data[1] = html_print_image(
         'id'    => 'button-add_without',
         'style' => 'cursor: pointer;',
         'title' => __('Add'),
+        'class' => 'invert_filter',
     ]
 );
 $data[1] .= html_print_input_hidden(
@@ -651,6 +662,7 @@ $data[1] .= '<br><br>'.html_print_image(
         'id'    => 'button-remove_without',
         'style' => 'cursor: pointer;',
         'title' => __('Remove'),
+        'class' => 'invert_filter',
     ]
 );
 $data[2] = html_print_select(
@@ -692,7 +704,7 @@ $url .= '';
 if ($pure) {
     // Fullscreen.
     // Floating menu - Start.
-    echo '<div id="vc-controls" style="z-index: 999">';
+    echo '<div id="vc-controls" class="zindex999"">';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn">';
@@ -703,7 +715,10 @@ if ($pure) {
     echo html_print_image(
         'images/normal_screen.png',
         true,
-        ['title' => __('Back to normal mode')]
+        [
+            'title' => __('Back to normal mode'),
+            'class' => 'invert_filter',
+        ]
     );
     echo '</a>';
     echo '</li>';
@@ -752,37 +767,82 @@ if ($pure) {
 
     // Fullscreen.
     $fullscreen['active'] = false;
-    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a class="events_link" href="'.$url.'&amp;pure=1&">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // Event list.
     $list['active'] = false;
-    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>';
+    $list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&">'.html_print_image(
+        'images/events_list.png',
+        true,
+        [
+            'title' => __('Event list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // History event list.
     $history_list['active'] = false;
-    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1&">'.html_print_image('images/books.png', true, ['title' => __('History event list')]).'</a>';
+    $history_list['text'] = '<a class="events_link" href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'&amp;section=history&amp;history=1&">'.html_print_image(
+        'images/books.png',
+        true,
+        [
+            'title' => __('History event list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // RSS.
     $rss['active'] = false;
-    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image('images/rss.png', true, ['title' => __('RSS Events')]).'</a>';
-
-    // Marquee.
-    $marquee['active'] = false;
-    $marquee['text'] = '<a class="events_link" href="operation/events/events_marquee.php?">'.html_print_image('images/heart.png', true, ['title' => __('Marquee display')]).'</a>';
+    $rss['text'] = '<a class="events_link" href="operation/events/events_rss.php?user='.$config['id_user'].'&hashup='.$hashup.'&">'.html_print_image(
+        'images/rss.png',
+        true,
+        [
+            'title' => __('RSS Events'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // CSV.
     $csv['active'] = false;
-    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV file')]).'</a>';
+    $csv['text'] = '<a class="events_link" href="operation/events/export_csv.php?'.$filter_b64.'">'.html_print_image(
+        'images/csv.png',
+        true,
+        [
+            'title' => __('Export to CSV file'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // Sound events.
     $sound_event['active'] = false;
-    $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image('images/sound.png', true, ['title' => __('Sound events')]).'</a>';
+    $sound_event['text'] = '<a href="javascript: openSoundEventWindow();">'.html_print_image(
+        'images/sound.png',
+        true,
+        [
+            'title' => __('Sound events'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // If the user has administrator permission display manage tab.
     if ($event_w || $event_m) {
         // Manage events.
         $manage_events['active'] = false;
-        $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image('images/setup.png', true, ['title' => __('Manage events')]).'</a>';
+        $manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
+            'images/setup.png',
+            true,
+            [
+                'title' => __('Manage events'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
 
         $manage_events['godmode'] = true;
 
@@ -792,7 +852,6 @@ if ($pure) {
             'list'          => $list,
             'history'       => $history_list,
             'rss'           => $rss,
-            'marquee'       => $marquee,
             'csv'           => $csv,
             'sound_event'   => $sound_event,
         ];
@@ -802,7 +861,6 @@ if ($pure) {
             'list'        => $list,
             'history'     => $history_list,
             'rss'         => $rss,
-            'marquee'     => $marquee,
             'csv'         => $csv,
             'sound_event' => $sound_event,
         ];
@@ -834,7 +892,7 @@ if ($pure) {
         unset($onheader['history']);
         ui_print_page_header(
             __('Events'),
-            'images/op_events.png',
+            'images/lightning_go.png',
             false,
             'eventview',
             false,
@@ -844,7 +902,6 @@ if ($pure) {
         );
     } else {
         unset($onheader['rss']);
-        unset($onheader['marquee']);
         unset($onheader['csv']);
         unset($onheader['sound_event']);
         unset($onheader['fullscreen']);
@@ -1269,8 +1326,8 @@ $adv_inputs[] = $in;
 
 // Tags.
 if (is_metaconsole()) {
-    $data = '<fieldset><legend style="padding:0px;">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
-    $data .= '<fieldset><legend style="padding:0px;">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
+    $data = '<fieldset><legend class="pdd_0px">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
+    $data .= '<fieldset><legend class="pdd_0px">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 } else {
     $data = '<fieldset><legend>'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
     $data .= '<fieldset><legend>'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
@@ -1564,21 +1621,45 @@ foreach ($event_responses as $val) {
     $array_events_actions[$val['id']] = $val['name'];
 }
 
-if (check_acl($config['id_user'], 0, 'EW')) {
+if (check_acl(
+    $config['id_user'],
+    0,
+    'EW'
+)
+) {
     echo '<div class="multi-response-buttons">';
     echo '<form method="post" id="form_event_response">';
     echo '<input type="hidden" id="max_execution_event_response" value="'.$config['max_execution_event_response'].'" />';
-    html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
+    html_print_select(
+        $array_events_actions,
+        'response_id',
+        '',
+        '',
+        '',
+        0,
+        false,
+        false,
+        false
+    );
     echo '&nbsp&nbsp';
-    html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+    html_print_button(
+        __('Execute event response'),
+        'submit_event_response',
+        false,
+        'execute_event_response(true);',
+        'class="sub next"'
+    );
+    echo "<span id='response_loading_dialog' class='invisible'>".html_print_image(
+        'images/spinner.gif',
+        true
+    ).'</span>';
     echo '</form>';
-    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo '<span id="max_custom_event_resp_msg" class="max_custom_events">';
     echo __(
         'A maximum of %s event custom responses can be selected',
         $config['max_execution_event_response']
     ).'</span>';
-    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+    echo '<span id="max_custom_selected" class="max_custom_events">';
     echo __(
         'Please, select an event'
     ).'</span>';
@@ -1611,8 +1692,8 @@ echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 
 // Load filter div for dialog.
-echo '<div id="load-modal-filter" style="display: none"></div>';
-echo '<div id="save-modal-filter" style="display: none"></div>';
+echo '<div id="load-modal-filter" class="invisible"></div>';
+echo '<div id="save-modal-filter" class="invisible"></div>';
 
 if ($_GET['refr'] || $do_refresh === true) {
     $autorefresh_draw = true;
@@ -1737,7 +1818,7 @@ function process_datatables_item(item) {
     if(typeof item.comments !== 'undefined' && item.comments.length > 80) {
         item.user_comment += '&nbsp;&nbsp;<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
         item.user_comment += item.b64+"','comments'," + $("#group_rep").val()+');">';
-        item.user_comment += '<?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+        item.user_comment += '<?php echo html_print_image('images/operation.png', true, ['title' => __('Show more'), 'class' => 'invert_filter']); ?></a>';
     }
 
     // Grouped events.
@@ -1903,7 +1984,7 @@ function process_datatables_item(item) {
     // Show more.
     item.options = '<a href="javascript:" onclick="show_event_dialog(\'';
     item.options += item.b64+'\','+$("#group_rep").val();
-    item.options += ')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show more')]); ?></a>';
+    item.options += ')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show more'), 'class' => 'invert_filter']); ?></a>';
 
     <?php
     if (!$readonly) {
@@ -1915,10 +1996,10 @@ function process_datatables_item(item) {
             item.options += '<a href="javascript:" onclick="validate_event(dt_<?php echo $table_id; ?>,';
             if (item.max_id_evento) {
                 item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="val-'+item.max_id_evento+'">';
-                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events')]); ?></a>';
+                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate events'), 'class' => 'invert_filter']); ?></a>';
             } else {
                 item.options += item.id_evento+', 0, this)" id="val-'+item.id_evento+'">';
-                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event')]); ?></a>';
+                item.options += '<?php echo html_print_image('images/tick.png', true, ['title' => __('Validate event'), 'class' => 'invert_filter']); ?></a>';
             }
         }
 
@@ -1930,7 +2011,7 @@ function process_datatables_item(item) {
             } else {
                 item.options += item.id_evento+', 0, this)" id="proc-'+item.id_evento+'">';
             }
-            item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status')]); ?></a>';
+            item.options += '<?php echo html_print_image('images/hourglass.png', true, ['title' => __('Change to in progress status'), 'class' => 'invert_filter']); ?></a>';
         }
     }
 
@@ -1939,10 +2020,10 @@ function process_datatables_item(item) {
         item.options += '<a href="javascript:" onclick="delete_event(dt_<?php echo $table_id; ?>,';
         if (item.max_id_evento) {
             item.options += item.max_id_evento+', '+ item.event_rep +', this)" id="del-'+item.max_id_evento+'">';
-            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events')]); ?></a>';
+            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete events'), 'class' => 'invert_filter']); ?></a>';
         } else {
             item.options += item.id_evento+', 0, this)" id="del-'+item.id_evento+'">';
-            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event')]); ?></a>';
+            item.options += '<?php echo html_print_image('images/cross.png', true, ['title' => __('Delete event'), 'class' => 'invert_filter']); ?></a>';
         }
     }
         <?php
@@ -1970,13 +2051,13 @@ function process_datatables_item(item) {
         case "<?php echo EVENT_STATUS_VALIDATED; ?>":
 
             state = '1';
-            img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title']); ?>';
+            img = '<?php echo html_print_image('images/tick.png', true, [ 'title' => __('Event validated'), 'class' => 'forced-title invert_filter']); ?>';
         break;
 
         case "<?php echo EVENT_STATUS_INPROCESS; ?>":
             state = '2';
 
-            img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title']); ?>';
+            img = '<?php echo html_print_image('images/hourglass.png', true, [ 'title' => __('Event in process'), 'class' => 'forced-title invert_filter']); ?>';
         break;
     }
 
@@ -2007,7 +2088,7 @@ function process_datatables_item(item) {
     }
 
     item.estado = '<div>';
-    item.estado += '<span style="display: none">';
+    item.estado += '<span class="invisible">';
     item.estado += state;
     item.estado += '</span>';
     item.estado += img;

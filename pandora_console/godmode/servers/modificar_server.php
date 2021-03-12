@@ -94,7 +94,7 @@ if (isset($_GET['server'])) {
 
     html_print_table($table);
 
-    echo '<div class="action-buttons" style="width: 100%">';
+    echo '<div class="action-buttons w100p">';
     echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
     echo '</div>';
 } else if (isset($_GET['server_remote'])) {
@@ -242,10 +242,10 @@ function check_process (id_server) {
         parameters,
         function (data) {
             if (data['correct']) {
-                $("#check_exec_server img").attr("src", "images/dot_green.png");
+                $("#check_exec_server img").attr("src", <?php echo 'images/dot_green.png'; ?>);
             }
             else {
-                $("#check_exec_server img").attr("src", "images/dot_red.png");
+                $("#check_exec_server img").attr("src", <?php echo 'images/dot_red.png'; ?>);
                 $("#check_error_message").empty();
                 $("#check_error_message").append("<span>" + data['message'] + "</span>");
             }

@@ -221,20 +221,20 @@ class TreeService extends Tree
 
             switch ($status) {
                 case SERVICE_STATUS_NORMAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_ok_ball.png'.'" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
                 break;
 
                 case SERVICE_STATUS_CRITICAL:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_critical_ball.png'.'" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
                 break;
 
                 case SERVICE_STATUS_WARNING:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_warning_ball.png'.'" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
                 break;
 
                 case SERVICE_STATUS_UNKNOWN:
                 default:
-                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                    $processed_items[$row['id']]['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_no_data_ball.png'.'" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
                 break;
             }
         }
@@ -342,6 +342,8 @@ class TreeService extends Tree
      */
     protected function getSecondLevel()
     {
+        global $config;
+
         $service = new Service($this->id, true);
 
         $output = [];
@@ -403,26 +405,32 @@ class TreeService extends Tree
 
                     switch ($item->agent()->lastStatus()) {
                         case AGENT_STATUS_NORMAL:
-                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_ok_ball.png" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
+                            $tmp['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_ok_ball.png'.'" data-title="NORMAL status." data-use_title_for_force_title="1" class="forced_title" alt="NORMAL status." />';
                         break;
 
                         case AGENT_STATUS_CRITICAL:
                         case AGENT_STATUS_ALERT_FIRED:
-                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_critical_ball.png" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
+                            $tmp['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_critical_ball.png'.'" data-title="CRITICAL status." data-use_title_for_force_title="1" class="forced_title" alt="CRITICAL status." />';
                         break;
 
                         case AGENT_STATUS_WARNING:
-                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_warning_ball.png" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
+                            $tmp['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_warning_ball.png'.'" data-title="WARNING status." data-use_title_for_force_title="1" class="forced_title" alt="WARNING status." />';
                         break;
 
                         case AGENT_STATUS_UNKNOWN:
                         default:
-                            $tmp['statusImageHTML'] = '<img src="images/status_sets/default/agent_no_data_ball.png" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
+                            $tmp['statusImageHTML'] = '<img src="'.'images/status_sets/default/agent_no_data_ball.png'.'" data-title="UNKNOWN status." data-use_title_for_force_title="1" class="forced_title" alt="UNKNOWN status." />';
                         break;
                     }
 
                     $tmp['children'] = [];
-                    $tmp['searchChildren'] = 1;
+
+                    if (check_acl($config['id_user'], $item->agent()->id_grupo(), 'AR')) {
+                        $tmp['searchChildren'] = 1;
+                    } else {
+                        $tmp['searchChildren'] = 0;
+                    }
+
                     $tmp['showEventsBtn'] = 1;
                     $tmp['eventAgent'] = $item->agent()->id_agente();
                 break;
@@ -532,7 +540,9 @@ class TreeService extends Tree
                         );
                     }
 
-                    $grandchildren = $item->service()->children();
+                    if (check_acl($config['id_user'], $item->service()->id_group(), 'AR')) {
+                        $grandchildren = $item->service()->children();
+                    }
 
                     if ($this->connectedToNode === false
                         && is_metaconsole() === true

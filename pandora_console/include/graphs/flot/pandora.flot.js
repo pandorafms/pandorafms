@@ -2390,7 +2390,7 @@ function pandoraFlotArea(
 
         if (series.data[j]) {
           var y = series.data[j][1];
-          var x = Math.round(series.data[j][0]) - 1;
+          var x = Math.round(series.data[j][0]);
         }
       }
 
@@ -2773,6 +2773,7 @@ function pandoraFlotArea(
         "src",
         homeurl + "images/zoom_cross.disabled.png"
       );
+      $("#menu_cancelzoom_" + graph_id).attr("class", "invert_filter");
       overview.clearSelection();
       thresholded = false;
       max_draw = [];

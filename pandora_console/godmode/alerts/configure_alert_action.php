@@ -257,7 +257,7 @@ if ($is_central_policies_on_node === false
     $table->data[2][1] .= '</a>';
 }
 
-$table->data[2][1] .= '<div id="command_description" style=""></div>';
+$table->data[2][1] .= '<div id="command_description"  ></div>';
 $table->colspan[2][1] = 2;
 
 $table->data[3][0] = __('Threshold');

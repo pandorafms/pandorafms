@@ -38,9 +38,9 @@ function integriaims_tabs($active_tab, $view=false)
 
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
-    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS')]).'</a>';
-    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list')]).'</a>';
-    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket')]).'</a>';
+    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS'), 'class' => 'invert_filter']).'</a>';
+    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list'), 'class' => 'invert_filter']).'</a>';
+    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket'), 'class' => 'invert_filter']).'</a>';
 
     switch ($active_tab) {
         case 'setup_tab':

@@ -51,12 +51,12 @@ Una vez hecha la selección de la conexión (o conexiones), existe la posibilida
 <h2>Configuración de capas</h2>
 <p>
 
-Cada mapa tiene una o más capas <sup><span style="font-size:75%">1</span></sup> para mostrar los agentes. Cada capa puede mostrar los agentes de un
+Cada mapa tiene una o más capas <sup><span class="font_75p">1</span></sup> para mostrar los agentes. Cada capa puede mostrar los agentes de un
  <strong>grupo</strong> y/o una <strong>lista de agentes</strong>. De este modo resulta sencillo fijar los agentes que se mostrarán en cada nivel.
 
 </p>
 <hr/>
-<sup><span style="font-size:75%;">1</span></sup> <span style="font-size:85%;">El mapa por defecto puede tener 0 capas y será el utilizado en la vista GIS del agente y sólo usa una capa con el nombre del agente.</span>
+<sup><span class="font_75p">1</span></sup> <span class="font_85p">El mapa por defecto puede tener 0 capas y será el utilizado en la vista GIS del agente y sólo usa una capa con el nombre del agente.</span>
 
 
 

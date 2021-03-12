@@ -207,7 +207,7 @@ function pandora_realtime_graphs()
         'reset',
         false,
         'javascript:realtimeGraphs.clearGraph();',
-        'class="sub delete" style="margin-top:0px;"',
+        'class="sub delete mgn_tp_0" ',
         true
     );
     $table->data[] = $data;
@@ -230,7 +230,7 @@ function pandora_realtime_graphs()
         'custom_action',
         urlencode(
             base64_encode(
-                '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" style="vertical-align: middle;"></img></a>'
+                '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" class="vertical_middle"></img></a>'
             )
         ),
         false

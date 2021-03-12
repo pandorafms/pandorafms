@@ -360,14 +360,14 @@ function mainAgentsModules()
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else if ($full_modules_selected[0] && $full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else {
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
@@ -437,15 +437,15 @@ function mainAgentsModules()
         // Header.
         ui_print_page_header(
             __('Agents/Modules'),
-            'images/module_mc.png',
+            'images/module.png',
             false,
             '',
             false,
             $updated_time
         );
-        echo '<table style="width:100%;">';
+        echo '<table class="w100p">';
         echo '<tr>';
-        echo "<td> <span style='float: right;'>".$fullscreen['text'].'</span> </td>';
+        echo "<td> <span class='float-right'>".$fullscreen['text'].'</span> </td>';
         echo '</tr>';
         echo '</table>';
     } else {
@@ -461,7 +461,7 @@ function mainAgentsModules()
         }
 
         // Floating menu - Start.
-        echo '<div id="vc-controls" style="z-index: 999">';
+        echo '<div id="vc-controls" class="zindex999">';
 
         echo '<div id="menu_tab">';
         echo '<ul class="mn">';
@@ -469,14 +469,21 @@ function mainAgentsModules()
         // Quit fullscreen.
         echo '<li class="nomn">';
         echo '<a target="_top" href="'.$url.'">';
-        echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
+        echo html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Back to normal mode'),
+                'class' => 'invert_filter',
+            ]
+        );
         echo '</a>';
         echo '</li>';
 
         // Countdown.
         echo '<li class="nomn">';
         echo '<div class="vc-refr">';
-        echo '<div class="vc-countdown style="display: inline;"></div>';
+        echo '<div class="vc-countdown inline_line"></div>';
         echo '<div id="vc-refr-form">';
         echo __('Refresh').':';
         echo html_print_select(
@@ -511,8 +518,8 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" style="width:100%;">';
-        $show_filters .= '<table class="white_table" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:none;">';
+        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
+        $show_filters .= '<table class="white_table w100p no-border" cellpadding="0" cellspacing="0" border="0">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td>'.$filter_groups_label.'</td>';
                 $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
@@ -530,7 +537,7 @@ function mainAgentsModules()
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</span></td>';
+                $show_filters .= "<td colspan=6 ><span class='right pdd_r_20px'>".$filter_update.'</span></td>';
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';
@@ -675,15 +682,15 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;" class="agents_modules_table">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table w100p">';
 
     echo '<tr>';
 
-    echo "<th width='140px' style='text-align: right !important; padding-right:13px;'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='140px' class='right pdd_r_10px'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
-        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_left_green.png',
             true,
             ['title' => __('Previous modules')]
@@ -701,15 +708,15 @@ function mainAgentsModules()
         $text = ui_print_truncate_text(io_safe_output($module['name']), 'module_small');
 
         echo '<th align="center" width="20px" id="th_module_r_'.$nmodules.'" class="th_class_module_r">
-				<div style="width: 30px;">
-					<div id="div_module_r_'.$nmodules.'" style="display: none;padding-left:10px" class="rotate_text_module">'.$text.'</div>
+				<div class="w30px">
+					<div id="div_module_r_'.$nmodules.'"  class="rotate_text_module invisible padding-lft-10">'.$text.'</div>
 				</div>
 			</th>';
     }
 
     if (($hor_offset + $block) < $nmodules) {
         $new_hor_offset = ($hor_offset + $block);
-        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_right_green.png',
             true,
             ['title' => __('More modules')]
@@ -767,7 +774,7 @@ function mainAgentsModules()
             break;
         }
 
-        echo "<tr style='height: 25px;'>";
+        echo "<tr class='height_25px'>";
 
         echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".$alias['alias'].'</a></td>';
@@ -787,7 +794,7 @@ function mainAgentsModules()
             foreach ($module['id'] as $module_id) {
                 if (!$match && array_key_exists($module_id, $agent_modules)) {
                     $status = modules_get_agentmodule_status($module_id);
-                    echo "<td style='text-align: center;'>";
+                    echo "<td class='center'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
                     $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";
@@ -844,18 +851,18 @@ function mainAgentsModules()
     echo '</table>';
 
     $show_legend = "<div class='legend_white'>";
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
             <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
             <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
         </div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
     $show_legend .= '</div>';
     ui_toggle($show_legend, __('Legend'));

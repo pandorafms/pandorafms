@@ -300,13 +300,13 @@ if ($count_total >= 1) {
     echo '</td><td valign="middle"><noscript>';
     html_print_submit_button(__('Show'), 'submit-estado', false, ['class' => 'sub']);
 
-    echo '</noscript></td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
+    echo '</noscript></td><td rowspan="7" class="f9" class="pdd_l_30px align-top"><h3>'.__('Status').'</h3>';
     foreach (incidents_get_status() as $id => $str) {
         incidents_print_status_img($id);
         echo ' - '.$str.'<br />';
     }
 
-    echo '</td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
+    echo '</td><td rowspan="7" class="f9" class="pdd_l_30px align-top"><h3>'.__('Priority').'</h3>';
     foreach (incidents_get_priorities() as $id => $str) {
         incidents_print_priority_img($id);
         echo ' - '.$str.'<br />';
@@ -476,11 +476,11 @@ if ($count_total < 1) {
         array_push($table->data, $data);
     }
 
-    echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
+    echo '<form method="post" action="'.$url.'&amp;action=mass" class="mrgn_btn_0px">';
     html_print_table($table);
-    echo '<div style="text-align:right; float:right;">';
+    echo '<div class="right float-right">';
     if (check_acl($config['id_user'], 0, 'IW')) {
-        html_print_submit_button(__('Delete incidents'), 'delete_btn', false, 'class="sub delete" style="margin-right: 5px;"');
+        html_print_submit_button(__('Delete incidents'), 'delete_btn', false, 'class="sub delete" class="mrgn_right_5px"');
     }
 
     if (check_acl($config['id_user'], 0, 'IM')) {
@@ -491,7 +491,7 @@ if ($count_total < 1) {
     echo '</form>';
     unset($table);
     if (check_acl($config['id_user'], 0, 'IW')) {
-        echo '<div style="text-align:right; float:right; padding-right: 5px;">';
+        echo '<div class="right float-right pdd_r_5px">';
         echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
         html_print_submit_button(__('Create incident'), 'crt', false, 'class="sub next"');
         echo '</form>';
@@ -500,4 +500,4 @@ if ($count_total < 1) {
 }
 
 
-echo '<div style="clear:both">&nbsp;</div>';
+echo '<div id="both">&nbsp;</div>';

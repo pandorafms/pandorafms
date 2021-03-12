@@ -199,7 +199,7 @@ if ($edit_filter > -2) {
             if ($j == 1) {
                 $table->data[$j][1] .= ui_print_help_tip(__('This field contains a substring, could be part of a IP address, a numeric OID, or a plain substring').SEPARATOR_COLUMN, true);
             } else {
-                $table->data[$j][1] .= html_print_image('images/cross.png', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'alt' => __('Click to remove the filter')]);
+                $table->data[$j][1] .= html_print_image('images/cross.png', true, ['id' => 'delete_filter_'.$f['id_snmp_filter'], 'class' => 'invert_filter', 'alt' => __('Click to remove the filter')]);
             }
 
             $j++;
@@ -225,7 +225,17 @@ if ($edit_filter > -2) {
 
     html_print_table($table);
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_image('images/add.png', false, ['id' => 'add_filter', 'alt' => __('Click to add new filter'), 'title' => __('Click to add new filter'), 'style' => 'float:left;']);
+    html_print_image(
+        'images/add.png',
+        false,
+        [
+            'id'    => 'add_filter',
+            'alt'   => __('Click to add new filter'),
+            'title' => __('Click to add new filter'),
+            'style' => 'float:left;',
+            'class' => 'invert_filter',
+        ]
+    );
     if ($edit_filter > -1) {
         html_print_submit_button(__('Update'), 'submit_button', false, 'class="sub upd"');
     } else {
@@ -267,7 +277,7 @@ if ($edit_filter > -2) {
                 $data = [];
                 $data[0] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
                 $data[1] = $r['filter'];
-                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+                $data[2] = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
                 array_push($table->data, $data);
             }
         } else {
@@ -278,7 +288,7 @@ if ($edit_filter > -2) {
             foreach ($row as $i => $r) {
                 if ($ind2 == 0) {
                     $compose_id = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.$r['description'].'</a>';
-                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+                    $compose_action = '<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'&nbsp;&nbsp;<a onclick="if (confirm(\''.__('Are you sure?').'\')) return true; else return false;" href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&delete_filter='.$r['id_snmp_filter'].'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
                     $ind2++;
                 }
 
@@ -300,7 +310,7 @@ if ($edit_filter > -2) {
 
     unset($table);
 
-    echo '<div style="text-align:right; width:100%">';
+    echo '<div class="right w100p">';
     echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
     html_print_submit_button(__('Create'), 'submit_button', false, 'class="sub next"');
     echo '</form></div>';
@@ -314,7 +324,7 @@ if ($edit_filter > -2) {
 
     $(document).ready (function () {
         $('#add_filter').click(function(e) {
-            $('#filter_table').append('<tr id="filter_table-' + id + '" style="" class="datos"><td id="filter_table-' + id + '-0" style="" class="datos "></td><td id="filter_table-' + id + '-1" style="" class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
+            $('#filter_table').append('<tr id="filter_table-' + id + '"   class="datos"><td id="filter_table-' + id + '-0"   class="datos "></td><td id="filter_table-' + id + '-1"   class="datos "><input type="text" name="filter_' + id + '" value="" id="text-filter_' + id + '" size="60" maxlength="100"><img src="' + homeurl + 'images/cross.png" onclick="delete_this_row(' + id + ');" data-title="Click to delete the filter" data-use_title_for_force_title="1" class="forced_title" alt="Click to delete the filter"></td></tr>');
             
             id++;
 

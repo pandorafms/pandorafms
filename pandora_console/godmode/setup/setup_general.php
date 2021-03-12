@@ -140,8 +140,8 @@ $table->data[$i++][1] = html_print_checkbox_switch(
     true
 );
 
-echo "<div id='dialog' title='".__('Enforce https Information')."' style='display:none;'>";
-echo "<p style='text-align: center;'>".__('If SSL is not properly configured you will lose access to ').get_product_name().__(' Console').'</p>';
+echo "<div id='dialog' title='".__('Enforce https Information')."' class='invisible'>";
+echo "<p class='center'>".__('If SSL is not properly configured you will lose access to ').get_product_name().__(' Console').'</p>';
 echo '</div>';
 
 $table->data[$i][0] = __('Enforce https');
@@ -203,7 +203,7 @@ $table->data[$i++][1] = html_print_textarea(
     2,
     25,
     $list_ACL_IPs_for_API,
-    'style="height: 50px; width: 300px"',
+    'class="height_50px w300px"',
     true
 );
 
@@ -298,7 +298,10 @@ $table->data[$i][1] = html_print_input_text_extended(
 $table->data[$i][1] .= '<a id="change_timezone">'.html_print_image(
     'images/pencil.png',
     true,
-    ['title' => __('Change timezone')]
+    [
+        'title' => __('Change timezone'),
+        'class' => 'invert_filter',
+    ]
 ).'</a>';
 $table->data[$i][1] .= '&nbsp;&nbsp;'.html_print_select(
     $zone_name,
@@ -318,6 +321,76 @@ $table->data[$i++][1] .= '&nbsp;&nbsp;'.html_print_select(
     '',
     true
 );
+
+$sounds = get_sounds();
+$table->data[$i][0] = __('Sound for Alert fired');
+$table->data[$i][1] = html_print_select(
+    $sounds,
+    'sound_alert',
+    $config['sound_alert'],
+    'replaySound(\'alert\');',
+    '',
+    '',
+    true
+);
+$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'alert\');">'.html_print_image(
+    'images/control_play_col.png',
+    true,
+    [
+        'id'    => 'button_sound_alert',
+        'style' => 'vertical-align: middle;',
+        'width' => '16',
+        'title' => __('Play sound'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
+$table->data[$i++][1] .= '<div id="layer_sound_alert"></div>';
+
+$table->data[$i][0] = __('Sound for Monitor critical');
+$table->data[$i][1] = html_print_select(
+    $sounds,
+    'sound_critical',
+    $config['sound_critical'],
+    'replaySound(\'critical\');',
+    '',
+    '',
+    true
+);
+$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'critical\');">'.html_print_image(
+    'images/control_play_col.png',
+    true,
+    [
+        'id'    => 'button_sound_critical',
+        'style' => 'vertical-align: middle;',
+        'width' => '16',
+        'title' => __('Play sound'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
+$table->data[$i++][1] .= '<div id="layer_sound_critical"></div>';
+
+$table->data[$i][0] = __('Sound for Monitor warning');
+$table->data[$i][1] = html_print_select(
+    $sounds,
+    'sound_warning',
+    $config['sound_warning'],
+    'replaySound(\'warning\');',
+    '',
+    '',
+    true
+);
+$table->data[$i][1] .= ' <a href="javascript: toggleButton(\'warning\');">'.html_print_image(
+    'images/control_play_col.png',
+    true,
+    [
+        'id'    => 'button_sound_warning',
+        'style' => 'vertical-align: middle;',
+        'width' => '16',
+        'title' => __('Play sound'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
+$table->data[$i++][1] .= '<div id="layer_sound_warning"></div>';
 
 $table->data[$i][0] = __('Public URL');
 $table->data[$i++][1] = html_print_input_text(
@@ -339,8 +412,8 @@ $table->data[$i++][1] = html_print_switch(
 
 echo "<div id='force_public_url_dialog' title='".__(
     'Enforce public URL usage information'
-)."' style='display:none;'>";
-echo "<p style='text-align: center;'>".__('If public URL is not properly configured you will lose access to ').get_product_name().__(' Console').'</p>';
+)."' class='invisible'>";
+echo "<p class='center'>".__('If public URL is not properly configured you will lose access to ').get_product_name().__(' Console').'</p>';
 echo '</div>';
 
 $table->data[$i][0] = __('Public URL host exclusions');
@@ -349,7 +422,7 @@ $table->data[$i++][1] = html_print_textarea(
     2,
     25,
     $config['public_url_exclusions'],
-    'style="height: 50px; width: 300px"',
+    'class="height_50px w300px"',
     true
 );
 
@@ -666,9 +739,9 @@ echo '<legend>'.__('Mail configuration').'</legend>';
             '',
             'class="sub next"',
             true
-        ).'&nbsp&nbsp<span id="email_test_sent_message" style="display:none;">Email sent</span><span id="email_test_failure_message" style="display:none;">Email could not be sent</span>';
+        ).'&nbsp&nbsp<span id="email_test_sent_message" class="invisible">Email sent</span><span id="email_test_failure_message" class=invisible">Email could not be sent</span>';
 
-        echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" style="display:none">'.html_print_table($table_mail_test, true).'</div>';
+        echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
     }
 
 

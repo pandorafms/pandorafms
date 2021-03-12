@@ -29,6 +29,8 @@ if (!$event_w && !$event_m) {
     return;
 }
 
+
+
 $delete = (bool) get_parameter('delete', 0);
 $multiple_delete = (bool) get_parameter('multiple_delete', 0);
 
@@ -183,7 +185,14 @@ foreach ($filters as $filter) {
         || check_acl_restricted_all($config['id_user'], $filter['id_group'], 'EM')
     ) {
         $table->cellclass[][6] = 'action_buttons';
-        $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+        $data[6] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;'href='index.php?sec=geventos&sec2=godmode/events/events&section=filter&delete=1&id=".$filter['id_filter'].'&offset=0&pure='.$config['pure']."'>".html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => __('Delete'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
 
     array_push($table->data, $data);
@@ -194,9 +203,9 @@ if (isset($data)) {
         html_print_input_hidden('multiple_delete', 1);
         html_print_table($table);
     if (!is_metaconsole()) {
-        echo "<div style='padding-bottom: 20px; text-align: right;'>";
+        echo "<div class='pdd_b_20px right'>";
     } else {
-        echo "<div style='float:right; '>";
+        echo "<div class='right'>";
     }
 
         html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
@@ -207,9 +216,9 @@ if (isset($data)) {
 }
 
 if (!defined('METACONSOLE')) {
-    echo "<div style='padding-bottom: 20px; text-align: right; width:100%;'>";
+    echo "<div class='pdd_b_20px right w100p'>";
 } else {
-    echo "<div style='float:right; '>";
+    echo "<div class='right'>";
 }
 
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';

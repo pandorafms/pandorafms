@@ -502,7 +502,7 @@ var TreeController = {
           var $content = $("<div></div>");
 
           // Leaf icon
-          $leafIcon.addClass("leaf-icon");
+          $leafIcon.addClass("leaf-icon invert_filter");
 
           // Content
           $content.addClass("node-content");
@@ -535,7 +535,7 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/config.png" style="width:18px; vertical-align: middle;"/>'
+                    'images/config.png" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
                 );
                 var $updatebtn = $('<a href = "' + url_edit + '"></a>').append(
                   $updateicon
@@ -551,7 +551,7 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/cross.png" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
+                    'images/cross.png" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {

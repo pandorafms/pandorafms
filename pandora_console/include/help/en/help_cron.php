@@ -8,7 +8,7 @@
 Using the configuration parameter sets <b>Cron from</b> and <b>Cron to</b> makes
 it possible for a module to run only for certain periods of time. 
 The way in which it is configured is similar to the syntax of 
-<a style="font-size:14px;" href="https://en.wikipedia.org/wiki/Cron">cron</a>. 
+<a class="font_14px" href="https://en.wikipedia.org/wiki/Cron">cron</a>. 
 Just as they appear in the <?php echo get_product_name(); ?> console, each one of the parameters  
 has three options.
 

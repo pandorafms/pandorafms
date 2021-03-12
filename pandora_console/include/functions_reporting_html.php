@@ -43,6 +43,21 @@ require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
 
 
+/**
+ * Header function.
+ *
+ * @param object  $table    Table.
+ * @param boolean $mini     Mini.
+ * @param string  $title    Title.
+ * @param string  $subtitle Subtitle.
+ * @param integer $period   Period.
+ * @param string  $date     Date.
+ * @param string  $from     From.
+ * @param string  $to       To.
+ * @param string  $label    Label.
+ *
+ * @return void
+ */
 function reporting_html_header(
     &$table,
     $mini,
@@ -82,7 +97,7 @@ function reporting_html_header(
         $table->colspan[0][0] = 3;
     } else if (empty($subtitle)) {
         $data[] = $sizh.$title.$sizhfin;
-        $data[] = "<div style='text-align: right;'>".$sizh.$date_text.$sizhfin.'</div>';
+        $data[] = "<div class='right'>".$sizh.$date_text.$sizhfin.'</div>';
         $table->colspan[0][1] = 2;
     } else if (empty($date_text)) {
         $data[] = $sizh.$title.$sizhfin;
@@ -96,7 +111,7 @@ function reporting_html_header(
 
         $data[] = $title.$sizhfin;
         $data[] = $sizh.$subtitle.$sizhfin;
-        $data[] = "<div style='text-align: right;'>".$sizh.$date_text.$sizhfin.'</div>';
+        $data[] = "<div class='right'>".$sizh.$date_text.$sizhfin.'</div>';
     }
 
     array_push($table->data, $data);
@@ -115,7 +130,7 @@ function html_do_report_info($report)
 
     $date_today = date($config['date_format']);
 
-    $html = '<div style="border: 1px dashed #999; padding: 10px 15px; background: '.$background_color.';margin-top:20px;margin-bottom:20px;"><table>
+    $html = '<div class="report_info" style="background: '.$background_color.'"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>
@@ -411,10 +426,14 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                     $mini
                 );
             break;
+
+            case 'histogram_data':
+                reporting_enterprise_html_histogram_data($table, $item, $mini);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
-            echo '<div style="width: 100%; overflow: auto;">';
+            echo '<div class="overflow w100p">';
         }
 
         html_print_table($table);
@@ -1050,7 +1069,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 $img_st,
                 true,
                 [
-                    'class' => 'image_status',
+                    'class' => 'image_status invert_filter',
                     'width' => 16,
                     'title' => $title_st,
                     'id'    => 'status_img_'.$event['id_evento'],
@@ -1085,9 +1104,9 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp_rep']).'</font>';
             } else {
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             }
 
             array_push($table1->data, $data);
@@ -1098,7 +1117,7 @@ function reporting_html_event_report_group($table, $item, $pdf=0)
                 foreach ($extended_events as $extended_event) {
                     $extended_data = [];
 
-                    $extended_data[] = "<td colspan='5'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    $extended_data[] = "<td colspan='5'><font class='italic'>".io_safe_output($extended_event['description'])."</font></td><td><font class='font_6pt italic'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                     array_push($table1->data, $extended_data);
                 }
             }
@@ -1273,7 +1292,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             $img_st,
                             true,
                             [
-                                'class' => 'image_status',
+                                'class' => 'image_status invert_filter',
                                 'width' => 16,
                                 'title' => $title_st,
                                 'id'    => 'status_img_'.$event['id_evento'],
@@ -1297,7 +1316,7 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
                             foreach ($extended_events as $extended_event) {
                                 $extended_data = [];
 
-                                $extended_data[] = "<td colspan='3'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                                $extended_data[] = "<td colspan='3'><font class='italic'>".io_safe_output($extended_event['description'])."</font></td><td><font class='italic'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                                 array_push($table1->data, $extended_data);
                             }
                         }
@@ -1602,7 +1621,7 @@ function reporting_html_agent_module($table, $item)
     if (!empty($item['failed'])) {
         $table->data['agent_module']['cell'] = $item['failed'];
     } else {
-        $table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
+        $table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" class="bg_eee">';
 
         $table_data .= '<th>'.__('Agents').' / '.__('Modules').'</th>';
 
@@ -1618,11 +1637,11 @@ function reporting_html_agent_module($table, $item)
                 false,
                 '...'
             );
-            $table_data .= '<th style="padding: 10px;">'.$file_name.'</th>';
+            $table_data .= '<th class="pdd_10px">'.$file_name.'</th>';
         }
 
         foreach ($item['data'] as $row) {
-            $table_data .= "<tr style='height: 35px;'>";
+            $table_data .= "<tr class='height_35px;'>";
             switch ($row['agent_status']) {
                 case AGENT_STATUS_ALERT_FIRED:
                     $rowcolor = COL_ALERTFIRED;
@@ -1664,9 +1683,9 @@ function reporting_html_agent_module($table, $item)
 
             foreach ($row['modules'] as $module_name => $module) {
                 if ($module === null) {
-                    $table_data .= "<td style='background-color: #DDD;'></td>";
+                    $table_data .= "<td class='bg_dd;'></td>";
                 } else {
-                    $table_data .= "<td style='text-align: center; background-color: #DDD;'>";
+                    $table_data .= "<td class='center bg_ddd'>";
                     switch ($module) {
                         default:
                         case AGENT_STATUS_NORMAL:
@@ -1781,10 +1800,10 @@ function reporting_html_agent_module($table, $item)
 
         $table_data .= '</table>';
 
-        $table_data .= "<div class='legend_basic' style='width: 96%'>";
+        $table_data .= "<div class='legend_basic w96p'>";
 
         $table_data .= '<table>';
-        $table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>".__('Legend').'</b></td></tr>';
+        $table_data .= "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
         $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module has fired alerts').'</td></tr>';
         $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module has a critical status').'</td></tr>';
         $table_data .= "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module has a warning status').'</td></tr>';
@@ -2051,7 +2070,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 $img_st,
                 true,
                 [
-                    'class' => 'image_status',
+                    'class' => 'image_status invert_filter',
                     'width' => 16,
                     'title' => $title_st,
                 ]
@@ -2079,9 +2098,9 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
             }
 
             if ($item['show_summary_group']) {
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], $event['timestamp']).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], $event['timestamp']).'</font>';
             } else {
-                $data[] = '<font style="font-size: 6pt;">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
+                $data[] = '<font class="font_6pt">'.date($config['date_format'], strtotime($event['timestamp'])).'</font>';
             }
 
             array_push($table1->data, $data);
@@ -2092,7 +2111,7 @@ function reporting_html_event_report_agent($table, $item, $pdf=0)
                 foreach ($extended_events as $extended_event) {
                     $extended_data = [];
 
-                    $extended_data[] = "<td colspan='4'><font style='font-style: italic;'>".io_safe_output($extended_event['description'])."</font></td><td><font style='font-size: 6pt; font-style: italic;'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
+                    $extended_data[] = "<td colspan='4'><font class='italic'>".io_safe_output($extended_event['description'])."</font></td><td><font class='font_6pt italic'>".date($config['date_format'], $extended_event['utimestamp']).'</font></td>';
                     array_push($table1->data, $extended_data);
                 }
             }
@@ -2205,7 +2224,7 @@ function reporting_html_historical_data($table, $item, $pdf=0)
                 if ($config['command_snapshot']) {
                     $row = [
                         $data[__('Date')],
-                        '<img style="width:300px" src="'.io_safe_input($data[__('Data')]).'"></a>',
+                        '<img class="w300px" src="'.io_safe_input($data[__('Data')]).'"></a>',
                     ];
                 } else {
                     $row = [
@@ -2295,7 +2314,7 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
             foreach ($data_unserialized as $key => $data_value) {
                 if (is_snapshot_data($data_unserialized[$key])) {
                     if ($config['command_snapshot']) {
-                        $data_unserialized[$key] = '<img style="width:300px" src="'.io_safe_input($data_value).'"></a>';
+                        $data_unserialized[$key] = '<img class="w300px" src="'.io_safe_input($data_value).'"></a>';
                     } else {
                         $data_unserialized[$key] = wordwrap(io_safe_input($data_value), 60, "<br>\n", true);
                     }
@@ -2681,17 +2700,17 @@ function reporting_html_alert_report($table, $item, $pdf=0)
                     continue;
                 }
 
-                $row['actions'] .= '<div style="width: 100%;">'.$action['name'].'</div>';
+                $row['actions'] .= '<div class="w100p">'.$action['name'].'</div>';
                 if (is_numeric($action['fired'])) {
-                    $row['fired'] .= '<div style="width: 100%;">'.date('Y-m-d H:i:s', $action['fired']).'</div>';
+                    $row['fired'] .= '<div class="w100p">'.date('Y-m-d H:i:s', $action['fired']).'</div>';
                 } else {
-                    $row['fired'] .= '<div style="width: 100%;">'.$action['fired'].'</div>';
+                    $row['fired'] .= '<div class="w100p">'.$action['fired'].'</div>';
                 }
             }
 
             $row['tfired'] = '';
             foreach ($alert['template_fired'] as $fired) {
-                $row['tfired'] .= '<div style="width: 100%;">'.$fired.'</div>'."\n";
+                $row['tfired'] .= '<div class="w100p">'.$fired.'</div>'."\n";
             }
 
             // Skip first td's to avoid repeat the agent and module names.
@@ -2763,10 +2782,10 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
     $table1->head = [];
     $table1->data = [];
     if ($item['data']['unknown'] == 1) {
-        $table1->data['data']['unknown'] = '<p style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_UNKNOWN.';">';
+        $table1->data['data']['unknown'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_UNKNOWN.';">';
         $table1->data['data']['unknown'] .= __('Unknown').'</p>';
     } else {
-        $table1->data['data']['ok'] = '<p style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_NORMAL.';">';
+        $table1->data['data']['ok'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_NORMAL.';">';
         $table1->data['data']['ok'] .= html_print_image(
             'images/module_ok.png',
             true
@@ -2777,7 +2796,7 @@ function reporting_html_monitor_report($table, $item, $mini, $pdf=0)
             )
         ).' %</p>';
 
-        $table1->data['data']['fail'] = '<p style="font-weight: bold; font-size: '.$font_size.' !important; color: '.COL_CRITICAL.';">';
+        $table1->data['data']['fail'] = '<p class="bolder" style="font-size: '.$font_size.' !important; color: '.COL_CRITICAL.';">';
         $table1->data['data']['fail'] .= html_print_image(
             'images/module_critical.png',
             true
@@ -3169,7 +3188,7 @@ function reporting_html_value(
         $table->colspan['data']['cell'] = 3;
         $table->cellstyle['data']['cell'] = 'text-align: left;';
 
-        $table->data['data']['cell'] = '<p style="font-weight: bold; font-size: '.$font_size.'; color: #000000;">';
+        $table->data['data']['cell'] = '<p class="bolder" style="font-size: '.$font_size.'; color: #000000;">';
 
         if ($check_empty && empty($item['data']['value'])) {
             $table->data['data']['cell'] .= __('Unknown');
@@ -3619,7 +3638,7 @@ function reporting_html_availability($table, $item, $pdf=0)
                 $table_row[] = '';
             };
 
-            $table_row[] = '<span style="font-size: '.$font_size.'; font-weight:bold;">'.sla_truncate($row['SLA'], $config['graph_precision']).'%</span>';
+            $table_row[] = '<span class="bolder" style="font-size: '.$font_size.';">'.sla_truncate($row['SLA'], $config['graph_precision']).'%</span>';
 
             $table_row2 = [];
             if (isset($row['failover']) === true) {
@@ -3760,7 +3779,7 @@ function reporting_html_availability($table, $item, $pdf=0)
                     $item['resume']['min'],
                     $config['graph_precision']
                 ).'%',
-                'avg'      => '<span style="font-size: '.$font_size.'; font-weight:bold;">'.sla_truncate($item['resume']['avg'], $config['graph_precision']).'%</span>',
+                'avg'      => '<span class="bolder" style="font-size: '.$font_size.';">'.sla_truncate($item['resume']['avg'], $config['graph_precision']).'%</span>',
             ];
             if ($item['fields']['agent_max_value'] == false) {
                 $table1->head['max_text'] = '';
@@ -4390,8 +4409,8 @@ function reporting_get_stats_summary($data, $graph_width, $graph_height)
     $table_sum->colspan[count($table_sum->data)][2] = 2;
     $table_sum->cellstyle[count($table_sum->data)][0] = 'text-align: center;';
     $table_sum->cellstyle[count($table_sum->data)][2] = 'text-align: center;';
-    $tdata[0] = '<span class="med_data" style="color: #666">'.__('Module status').'</span>';
-    $tdata[2] = '<span class="med_data" style="color: #666">'.__('Alert level').'</span>';
+    $tdata[0] = '<span class="med_data color_666">'.__('Module status').'</span>';
+    $tdata[2] = '<span class="med_data color_666">'.__('Alert level').'</span>';
     $table_sum->rowclass[] = '';
     $table_sum->data[] = $tdata;
 
@@ -4816,7 +4835,7 @@ function reporting_get_agent_detailed(
 
     // Show modules in agent.
     $output .= '<div class="agent_reporting">';
-    $output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.agents_get_alias($id_agent).'</h3>';
+    $output .= '<h3 class="underline">'.__('Agent').' - '.agents_get_alias($id_agent).'</h3>';
     $output .= '<h4>'.__('Modules').'</h3>';
     $table_modules = reporting_get_agent_modules_table($id_agent, $period, $date);
     $table_modules->width = '99%';
@@ -4999,25 +5018,25 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_critical.png', true, ['title' => __('Agents critical')]);
-    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span style='font-size: 12pt; font-weight: bold; color: #e63c52;'>".format_numeric($data['agent_critical']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span class='red_color font_12pt bolder'>".format_numeric($data['agent_critical']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_warning.png', true, ['title' => __('Agents warning')]);
-    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span style='font-size: 12pt; font-weight: bold; color: #f3b200;'>".format_numeric($data['agent_warning']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span class='yellow_color font_12pt bolder'>".format_numeric($data['agent_warning']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_ok.png', true, ['title' => __('Agents ok')]);
-    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span style='font-size: 12pt; font-weight: bold; color: #82b92e;'>".format_numeric($data['agent_ok']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder'>".format_numeric($data['agent_ok']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_unknown.png', true, ['title' => __('Agents unknown')]);
-    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['agent_unknown']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder'>".format_numeric($data['agent_unknown']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_notinit.png', true, ['title' => __('Agents not init')]);
-    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".format_numeric($data['agent_not_init']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder'>".format_numeric($data['agent_not_init']).'</span></b></a>';
 
     $agent_data[2] = '';
     $agent_data[3] = '';
@@ -5047,9 +5066,23 @@ function reporting_get_total_agents_and_monitors($data, $graph_width=250, $graph
     $table_total = html_get_predefined_table();
 
     $total_data = [];
-    $total_data[0] = html_print_image('images/agent.png', true, ['title' => __('Total agents')]);
+    $total_data[0] = html_print_image(
+        'images/agent.png',
+        true,
+        [
+            'title' => __('Total agents'),
+            'class' => 'invert_filter',
+        ]
+    );
     $total_data[1] = $total_agent <= 0 ? '-' : $total_agent;
-    $total_data[2] = html_print_image('images/module.png', true, ['title' => __('Monitor checks')]);
+    $total_data[2] = html_print_image(
+        'images/module.png',
+        true,
+        [
+            'title' => __('Monitor checks'),
+            'class' => 'invert_filter',
+        ]
+    );
     $total_data[3] = $total_module <= 0 ? '-' : $total_module;
     $table_total->data[] = $total_data;
     $total_agent_module = '<fieldset class="databox tactical_set">
@@ -5066,7 +5099,7 @@ function reporting_get_total_servers($num_servers)
     $table_node = html_get_predefined_table();
 
     $node_data = [];
-    $node_data[0] = html_print_image('images/server_export.png', true, ['title' => __('Nodes')]);
+    $node_data[0] = html_print_image('images/server_export.png', true, ['title' => __('Nodes'), 'class' => 'invert_filter']);
     $node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".format_numeric($num_servers).'</span></b>';
     $table_node->data[] = $node_data;
 
@@ -5098,25 +5131,25 @@ function reporting_get_events($data, $links=false)
     if (defined('METACONSOLE')) {
         $table_events->style[0] = 'background-color:#e63c52';
         $table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, ['title' => __('Critical events')]);
-        $table_events->data[0][0] .= '&nbsp;&nbsp;&nbsp;'."<a style='color:#FFF; font-size: 12pt; font-weight: bold;".$style."' href='".$links['critical']."'>".format_numeric($data['critical']).'</a>';
+        $table_events->data[0][0] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder color_white' style='".$style."' href='".$links['critical']."'>".format_numeric($data['critical']).'</a>';
         $table_events->style[1] = 'background-color:#f3b200';
         $table_events->data[0][1] = html_print_image('images/module_event_warning.png', true, ['title' => __('Warning events')]);
-        $table_events->data[0][1] .= '&nbsp;&nbsp;&nbsp;'."<a style='color:#FFF; font-size: 12pt; font-weight: bold;".$style."' href='".$links['warning']."'>".format_numeric($data['warning']).'</a>';
+        $table_events->data[0][1] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder color_white' style='".$style."' href='".$links['warning']."'>".format_numeric($data['warning']).'</a>';
         $table_events->style[2] = 'background-color:#82b92e';
         $table_events->data[0][2] = html_print_image('images/module_event_ok.png', true, ['title' => __('OK events')]);
-        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a style='color:#FFF; font-size: 12pt; font-weight: bold;".$style."' href='".$links['normal']."'>".format_numeric($data['normal']).'</a>';
+        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder color_white' style='".$style."' href='".$links['normal']."'>".format_numeric($data['normal']).'</a>';
         $table_events->style[3] = 'background-color:#B2B2B2';
         $table_events->data[0][3] = html_print_image('images/module_event_unknown.png', true, ['title' => __('Unknown events')]);
-        $table_events->data[0][3] .= '&nbsp;&nbsp;&nbsp;'."<a style='color:#FFF; font-size: 12pt; font-weight: bold;".$style."' href='".$links['unknown']."'>".format_numeric($data['unknown']).'</a>';
+        $table_events->data[0][3] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder color_white' style='".$style."' href='".$links['unknown']."'>".format_numeric($data['unknown']).'</a>';
     } else {
         $table_events->data[0][0] = html_print_image('images/module_critical.png', true, ['title' => __('Critical events')]);
-        $table_events->data[0][0] .= '&nbsp;&nbsp;&nbsp;'."<a style='color: #e63c52;".$style."' href='".$links['critical']."'><b><span style='font-size: 12pt; font-weight: bold; color: #e63c52;'>".format_numeric($data['critical']).'</span></b></a>';
+        $table_events->data[0][0] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder red_color' style='".$style."' href='".$links['critical']."'><b><span class='font_12pt bolder red_color'>".format_numeric($data['critical']).'</span></b></a>';
         $table_events->data[0][1] = html_print_image('images/module_warning.png', true, ['title' => __('Warning events')]);
-        $table_events->data[0][1] .= '&nbsp;&nbsp;&nbsp;'."<a style='color: #f3b200;".$style."' href='".$links['warning']."'><b><span style='font-size: 12pt; font-weight: bold; color: #f3b200;'>".format_numeric($data['warning']).'</span></b></a>';
+        $table_events->data[0][1] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder yellow_color' style='".$style."' href='".$links['warning']."'><b><span class='font_12pt bolder yellow_color;'>".format_numeric($data['warning']).'</span></b></a>';
         $table_events->data[0][2] = html_print_image('images/module_ok.png', true, ['title' => __('OK events')]);
-        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a style='color: #82b92e;".$style."' href='".$links['normal']."'><b style='font-size: 12pt; font-weight: bold; color: #82b92e;'>".format_numeric($data['normal']).'</b></a>';
+        $table_events->data[0][2] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder green_color' style='".$style."' href='".$links['normal']."'><b class='font_12pt bolder green_color'>".format_numeric($data['normal']).'</b></a>';
         $table_events->data[0][3] = html_print_image('images/module_unknown.png', true, ['title' => __('Unknown events')]);
-        $table_events->data[0][3] .= '&nbsp;&nbsp;&nbsp;'."<a style='color: #B2B2B2;".$style."' href='".$links['unknown']."'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['unknown']).'</span></b></a>';
+        $table_events->data[0][3] .= '&nbsp;&nbsp;&nbsp;'."<a class='font_12pt bolder grey_color' style='".$style."' href='".$links['unknown']."'><b><span class='font_12pt bolder grey_color'>".format_numeric($data['unknown']).'</span></b></a>';
     }
 
     if (!defined('METACONSOLE')) {

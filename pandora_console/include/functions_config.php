@@ -2224,7 +2224,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2240,7 +2240,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {

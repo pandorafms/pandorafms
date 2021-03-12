@@ -555,9 +555,12 @@ function servers_get_info($id_server=-1)
         switch ($server['server_type']) {
             case SERVER_TYPE_DATA:
                 $server['img'] = html_print_image(
-                    'images/data.png',
+                    'images/database.png',
                     true,
-                    ['title' => __('Data server')]
+                    [
+                        'title' => __('Data server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'data';
                 $id_modulo = 1;
@@ -567,7 +570,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/network.png',
                     true,
-                    ['title' => __('Network server')]
+                    [
+                        'title' => __('Network server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'network';
                 $id_modulo = 2;
@@ -577,7 +583,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/snmp.png',
                     true,
-                    ['title' => __('SNMP Trap server')]
+                    [
+                        'title' => __('SNMP Trap server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'snmp';
                 $id_modulo = 0;
@@ -587,7 +596,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/recon.png',
                     true,
-                    ['title' => __('Discovery server')]
+                    [
+                        'title' => __('Discovery server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'recon';
                 $id_modulo = 0;
@@ -597,7 +609,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/plugin.png',
                     true,
-                    ['title' => __('Plugin server')]
+                    [
+                        'title' => __('Plugin server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'plugin';
                 $id_modulo = 4;
@@ -607,7 +622,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/chart_bar.png',
                     true,
-                    ['title' => __('Prediction server')]
+                    [
+                        'title' => __('Prediction server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'prediction';
                 $id_modulo = 5;
@@ -617,7 +635,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/wmi.png',
                     true,
-                    ['title' => __('WMI server')]
+                    [
+                        'title' => __('WMI server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'wmi';
                 $id_modulo = 6;
@@ -627,7 +648,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/server_export.png',
                     true,
-                    ['title' => __('Export server')]
+                    [
+                        'title' => __('Export server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'export';
                 $id_modulo = 0;
@@ -637,7 +661,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/page_white_text.png',
                     true,
-                    ['title' => __('Inventory server')]
+                    [
+                        'title' => __('Inventory server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'inventory';
                 $id_modulo = 0;
@@ -647,7 +674,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/world.png',
                     true,
-                    ['title' => __('Web server')]
+                    [
+                        'title' => __('Web server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'web';
                 $id_modulo = 0;
@@ -657,7 +687,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/lightning_go.png',
                     true,
-                    ['title' => __('Event server')]
+                    [
+                        'title' => __('Event server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'event';
                 $id_modulo = 2;
@@ -667,7 +700,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/network.png',
                     true,
-                    ['title' => __('Enterprise ICMP server')]
+                    [
+                        'title' => __('Enterprise ICMP server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'enterprise icmp';
                 $id_modulo = 2;
@@ -677,7 +713,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/network.png',
                     true,
-                    ['title' => __('Enterprise SNMP server')]
+                    [
+                        'title' => __('Enterprise SNMP server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'enterprise snmp';
                 $id_modulo = 2;
@@ -687,7 +726,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/satellite.png',
                     true,
-                    ['title' => __('Enterprise Satellite server')]
+                    [
+                        'title' => __('Enterprise Satellite server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'enterprise satellite';
                 $id_modulo = 0;
@@ -697,7 +739,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/transactional_map.png',
                     true,
-                    ['title' => __('Enterprise Transactional server')]
+                    [
+                        'title' => __('Enterprise Transactional server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'enterprise transactional';
                 $id_modulo = 0;
@@ -707,7 +752,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/mainframe.png',
                     true,
-                    ['title' => __('Mainframe server')]
+                    [
+                        'title' => __('Mainframe server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'mainframe';
                 $id_modulo = 0;
@@ -717,7 +765,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/sync.png',
                     true,
-                    ['title' => __('Sync server')]
+                    [
+                        'title' => __('Sync server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'sync';
                 $id_modulo = 0;
@@ -727,7 +778,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/icono-wux.png',
                     true,
-                    ['title' => __('Wux server')]
+                    [
+                        'title' => __('Wux server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'wux';
                 $id_modulo = 0;
@@ -737,7 +791,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/syslog.png',
                     true,
-                    ['title' => __('Log server')]
+                    [
+                        'title' => __('Log server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'syslog';
                 $id_modulo = 0;
@@ -747,7 +804,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/autoprovision.png',
                     true,
-                    ['title' => __('Autoprovision server')]
+                    [
+                        'title' => __('Autoprovision server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'autoprovision';
                 $id_modulo = 0;
@@ -757,7 +817,10 @@ function servers_get_info($id_server=-1)
                 $server['img'] = html_print_image(
                     'images/migration.png',
                     true,
-                    ['title' => __('Migration server')]
+                    [
+                        'title' => __('Migration server'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $server['type'] = 'migration';
                 $id_modulo = 0;
@@ -1075,7 +1138,10 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/database.png',
                 true,
-                ['title' => get_product_name().' Data server']
+                [
+                    'title' => get_product_name().' Data server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -1083,7 +1149,10 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/network.png',
                 true,
-                ['title' => get_product_name().' Network server']
+                [
+                    'title' => get_product_name().' Network server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -1091,7 +1160,10 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/plugin.png',
                 true,
-                ['title' => get_product_name().' Plugin server']
+                [
+                    'title' => get_product_name().' Plugin server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -1099,7 +1171,10 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/chart_bar.png',
                 true,
-                ['title' => get_product_name().' Prediction server']
+                [
+                    'title' => get_product_name().' Prediction server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -1107,7 +1182,10 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/wmi.png',
                 true,
-                ['title' => get_product_name().' WMI server']
+                [
+                    'title' => get_product_name().' WMI server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -1115,15 +1193,21 @@ function servers_show_type($id)
             $return = html_print_image(
                 'images/server_web.png',
                 true,
-                ['title' => get_product_name().' WEB server']
+                [
+                    'title' => get_product_name().' WEB server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
         case 8:
             $return = html_print_image(
-                'images/module-wux.png',
+                'images/module_wux.png',
                 true,
-                ['title' => get_product_name().' WUX server']
+                [
+                    'title' => get_product_name().' WUX server',
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 

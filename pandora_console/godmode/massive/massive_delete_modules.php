@@ -311,8 +311,8 @@ $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data['selection_mode'][1] = '<span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br>';
+$table->data['selection_mode'][1] .= '<span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true);
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
@@ -341,7 +341,7 @@ $table->data['form_modules_1'][3] = __('Select all modules of this type').' '.ht
     '',
     '',
     false,
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true,
     ''
 );
@@ -386,7 +386,7 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group').' '.ht
     '',
     false,
     '',
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true
 );
 
@@ -586,8 +586,8 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file('form');
 // Hack to translate text "none" in PHP to javascript
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
+echo '<span id ="select_agent_first_text" class="invisible">'.__('Please, select an agent first').'</span>';
 
 // Load JS files.
 ui_require_javascript_file('pandora_modules');

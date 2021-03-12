@@ -150,7 +150,8 @@ if (empty($dashboards) === true) {
         $data['full_screen'] = '<a href="'.$urlFull.'">';
         $data['full_screen'] .= \html_print_image(
             'images/fullscreen.png',
-            true
+            true,
+            ['class' => 'invert_filter']
         );
         $data['full_screen'] .= '</a>';
 
@@ -166,7 +167,7 @@ if (empty($dashboards) === true) {
             ];
             $urlCopy = $urlDashboard.'&'.\http_build_query($dataQueryCopy);
             $data['copy'] = '<a href="'.$urlCopy.'">';
-            $data['copy'] .= html_print_image('images/copy.png', true);
+            $data['copy'] .= html_print_image('images/copy.png', true, ['class' => 'invert_filter']);
             $data['copy'] .= '</a>';
 
             $dataQueryDelete = [
@@ -179,7 +180,8 @@ if (empty($dashboards) === true) {
             $data['delete'] .= '" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">';
             $data['delete'] .= \html_print_image(
                 'images/cross.png',
-                true
+                true,
+                ['class' => 'invert_filter']
             );
             $data['delete'] .= '</a>';
         }
@@ -208,7 +210,7 @@ if (empty($dashboards) === true) {
 
 if ($writeDashboards === 1) {
     // Button for display modal options dashboard.
-    $output = '<a href="#" style="float:right;" onclick=\'';
+    $output = '<a href="#" class="float-right" onclick=\'';
     $output .= 'show_option_dialog('.json_encode(
         [
             'title'       => __('Update Dashboard'),
@@ -233,7 +235,7 @@ if ($writeDashboards === 1) {
     echo $output;
 
     // Div for modal update dashboard.
-    echo '<div id="modal-update-dashboard" style="display:none;"></div>';
+    echo '<div id="modal-update-dashboard" class="invisible"></div>';
 
     ui_require_javascript_file('pandora_dashboards');
 }

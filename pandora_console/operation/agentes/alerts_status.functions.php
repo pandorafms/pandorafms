@@ -136,14 +136,14 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
     if (defined('METACONSOLE')) {
         $table->data[0][7] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
         $table->rowspan[0][7] = 2;
-        $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
+        $data = '<form class="bg_ec" method="post" action="'.$url.'">';
     } else {
         $data = '<form method="post" action="'.$url.'">';
     }
 
     $data .= html_print_table($table, true);
     if (!defined('METACONSOLE')) {
-        $data .= "<div style='height:100%; text-align:right;'>".html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
+        $data .= "<div class='height_100p right'>".html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
     }
 
     $data .= '</form>';
@@ -179,7 +179,7 @@ function printFormFilterAlertAgent($agent_view_page, $free_search, $id_agent)
         true
     );
 
-    $table_filter->data[0][0] .= '<span style="margin-left:10px;">'.html_print_input_text(
+    $table_filter->data[0][0] .= '<span class="mrgn_lft_10px">'.html_print_input_text(
         $free_search_name,
         $free_search,
         '',

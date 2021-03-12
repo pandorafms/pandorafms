@@ -12,7 +12,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // Login check
+global $config;
+
 check_login();
+
 
 require_once 'include/functions_custom_graphs.php';
 
@@ -151,15 +154,36 @@ if ($view_graph) {
         $options = [
             'graph_list'   => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
+                    'images/list.png',
+                    true,
+                    [
+                        'title' => __('Graph list'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
             'main'         => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/chart.png', true, ['title' => __('Main data')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                    'images/chart.png',
+                    true,
+                    [
+                        'title' => __('Main data'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
             'graph_editor' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/builder.png', true, ['title' => __('Graph editor')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                    'images/builder.png',
+                    true,
+                    [
+                        'title' => __('Graph editor'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
         ];
     } else {
@@ -174,14 +198,31 @@ if ($view_graph) {
     $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
         'images/operation.png',
         true,
-        ['title' => __('View graph')]
+        [
+            'title' => __('View graph'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['view']['active'] = true;
 
     if ($config['pure'] == 0) {
-        $options['screen']['text'] = "<a href='$url&pure=1'>".html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $options['screen']['text'] = "<a href='$url&pure=1'>".html_print_image(
+            'images/full_screen.png',
+            true,
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     } else {
-        $options['screen']['text'] = "<a href='$url&pure=0'>".html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]).'</a>';
+        $options['screen']['text'] = "<a href='$url&pure=0'>".html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Back to normal mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
 
         // In full screen, the manage options are not available
         $options = [
@@ -226,7 +267,7 @@ if ($view_graph) {
         echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
         echo '<tr><td>';
         if ($stacked == CUSTOM_GRAPH_VBARS) {
-            echo '<div style="width:100%; height:600px;">';
+            echo '<div class="w100p height_600px">';
         }
 
         echo $graph_return;
@@ -245,7 +286,7 @@ if ($view_graph) {
 
     $period_label = human_time_description_raw($period);
     echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
-    echo "<table class='databox filters' cellpadding='4' cellspacing='4' style='width: 100%'>";
+    echo "<table class='databox filters w100p' cellpadding='4' cellspacing='4'>";
     echo '<tr>';
 
     echo '<td>';
@@ -284,7 +325,7 @@ if ($view_graph) {
     echo '</td>';
 
     echo "<td class='datos'>";
-    echo "<div style='float:left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maxiddmum thresholds').'</b>'.ui_print_help_tip(__('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'), true);
+    echo "<div class='float-left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maxiddmum thresholds').'</b>'.ui_print_help_tip(__('If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold'), true);
 
     html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
     echo '</div>';
@@ -371,7 +412,7 @@ if ($view_graph) {
 }
 
 // Header
-ui_print_page_header(__('Reporting').' &raquo;  '.__('Custom graph viewer'), 'images/reporting.png', false, '', false, '');
+ui_print_page_header(__('Reporting').' &raquo;  '.__('Custom graph viewer'), 'images/op_reporting.png', false, '', false, '');
 
 
 $graphs = custom_graphs_get_user();

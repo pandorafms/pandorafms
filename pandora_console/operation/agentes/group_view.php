@@ -319,7 +319,7 @@ if (!empty($result_groups)) {
             $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_UNKNOWN."'>";
         } else {
-            $link = "<a class='group_view_data $color_class bolder font_18x center' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_UNKNOWN."'>";
         }
 
@@ -336,7 +336,7 @@ if (!empty($result_groups)) {
         // Agents not init
         echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class bolder ont_18px center'
+            $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_NOT_INIT."'>";
         } else {
             $link = "<a class='group_view_data $color_class bolder font_18px center' 
@@ -359,7 +359,7 @@ if (!empty($result_groups)) {
             $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_NORMAL."'>";
         } else {
-            $link = "<a class='group_view_data $color_class bolder ont_18px center' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_NORMAL."'>";
         }
 

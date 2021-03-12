@@ -301,12 +301,6 @@ $table_remote->data['integria_req_timeout'] = $row;
 
 $row = [];
 $row['name'] = __('Inventory');
-$row['control'] = html_print_input_text('integria_req_timeout', $config['integria_req_timeout'], '', 3, 10, true);
-$table_remote->data['integria_req_timeout'] = $row;
-
-
-$row = [];
-$row['name'] = __('Inventory');
 $row['control'] = html_print_button(__('Sync inventory'), 'sync-inventory', false, '', 'class="sub next"', true);
 $row['control'] .= '<span id="test-integria-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
 $row['control'] .= '<span id="test-integria-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';

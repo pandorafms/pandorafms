@@ -1500,6 +1500,13 @@ if ($is_sap) {
     $saptab = '';
 }
 
+// External Tools tab.
+$external_tools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools')]).'</a>';
+if ($tab == 'external_tools') {
+    $external_tools['active'] = true;
+} else {
+    $external_tools['active'] = false;
+}
 
 $onheader = [
     'manage'             => $managetab,
@@ -1515,7 +1522,7 @@ $onheader = [
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
     'sap_view'           => $saptab,
-
+    'external_tools'     => $external_tools,
 ];
 
 // Added after it exists
@@ -1684,6 +1691,10 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
+    case 'external_tools':
+        $tab_name = 'External Tools';
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
@@ -1802,6 +1813,10 @@ switch ($tab) {
 
     case 'sap_view':
         include 'general/sap_view.php';
+    break;
+
+    case 'external_tools':
+        include 'external_tools.php';
     break;
 
     case 'extension':

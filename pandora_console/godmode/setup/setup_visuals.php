@@ -1289,16 +1289,6 @@ $row++;
     $table_other->size[3] = '12%';
     $table_other->data = [];
 
-    $table_other->data[$row][0] = __('Custom graphviz directory');
-    $table_other->data[$row][1] = html_print_input_text(
-        'graphviz_bin_dir',
-        $config['graphviz_bin_dir'],
-        '',
-        25,
-        255,
-        true
-    );
-
     $row++;
 
     $table_other->data[$row][0] = __('Networkmap max width');

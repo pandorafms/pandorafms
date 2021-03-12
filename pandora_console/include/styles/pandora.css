@@ -6261,6 +6261,13 @@ div.graph div.legend table {
   white-space: nowrap;
 }
 
+/* NetTools */
+#add_button_custom_command {
+  float: left;
+  cursor: pointer;
+  margin: -3px 0 0 1em;
+}
+
 .sound_events {
   background-color: #494949;
   max-width: 550px;

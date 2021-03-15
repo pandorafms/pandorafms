@@ -214,11 +214,25 @@ if ($meta) {
     $buttons = [
         'user'    => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                'images/user.png',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'profile' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                'images/profiles.png',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -826,9 +840,17 @@ if (!$new_user) {
 }
 
 if (is_user_admin($id)) {
-    $avatar = html_print_image('images/people_1.png', true, ['class' => 'user_avatar']);
+    $avatar = html_print_image(
+        'images/people_1.png',
+        true,
+        ['class' => 'user_avatar']
+    );
 } else {
-    $avatar = html_print_image('images/people_2.png', true, ['class' => 'user_avatar']);
+    $avatar = html_print_image(
+        'images/people_2.png',
+        true,
+        ['class' => 'user_avatar']
+    );
 }
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
@@ -859,7 +881,10 @@ $language .= html_print_select_from_sql(
 ).'</div>';
 
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(
+    __('The timezone must be that of the associated server.'),
+    true
+).'</p>';
 $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 if ($config['user_can_update_password']) {
@@ -917,7 +942,7 @@ if ($config['user_can_update_password']) {
 }
 
 $own_info = get_user_info($config['id_user']);
-$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" style="margin:0;">'.__('Global Profile').'</span>';
+$global_profile = '<div class="label_select_simple user_global_profile" ><span class="input_label" class"mrgn_0px">'.__('Global Profile').'</span>';
 $global_profile .= '<div class="switch_radio_button">';
 if (users_is_admin()) {
     $global_profile .= html_print_radio_button_extended(
@@ -960,7 +985,7 @@ $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input',
+        'class'       => 'input input_line email_icon_input invert_filter',
         'placeholder' => __('E-mail'),
     ],
     true
@@ -1043,7 +1068,10 @@ $values = [
     0  => __('No'),
 ];
 
-$home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
+$home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(
+    __('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'),
+    true
+).'</p>';
 ;
 $values = [
     'Default'        => __('Default'),
@@ -1060,7 +1088,17 @@ if (!is_metaconsole()) {
 }
 
 
-$home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
+$home_screen .= html_print_select(
+    $values,
+    'section',
+    io_safe_output($user_info['section']),
+    'show_data_section();',
+    '',
+    -1,
+    true,
+    false,
+    false
+).'</div>';
 
 
 $dashboards = Manager::getDashboards(-1, -1);
@@ -1086,14 +1124,41 @@ if ($layouts === false) {
     }
 }
 
-$home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
-$home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
+$home_screen .= html_print_select(
+    $layouts_aux,
+    'visual_console',
+    $user_info['data_section'],
+    '',
+    '',
+    '',
+    true
+);
+$home_screen .= html_print_input_text(
+    'data_section',
+    $user_info['data_section'],
+    '',
+    60,
+    255,
+    true,
+    false
+);
 
 $size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
-$size_pagination .= html_print_input_text('block_size', $user_info['block_size'], '', 5, 5, true).'</div>';
+$size_pagination .= html_print_input_text(
+    'block_size',
+    $user_info['block_size'],
+    '',
+    5,
+    5,
+    true
+).'</div>';
 
 if ($id == $config['id_user']) {
-    $language .= html_print_input_hidden('quick_language_change', 1, true);
+    $language .= html_print_input_hidden(
+        'quick_language_change',
+        1,
+        true
+    );
 }
 
 if (enterprise_installed() && defined('METACONSOLE')) {
@@ -1122,12 +1187,33 @@ if (enterprise_installed() && defined('METACONSOLE')) {
 }
 
 $not_login = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Not Login').'</p>';
-$not_login .= ui_print_help_tip(__('The user with not login set only can access to API.'), true);
-$not_login .= html_print_checkbox_switch('not_login', 1, $user_info['not_login'], true).'</div>';
+$not_login .= ui_print_help_tip(
+    __('The user with not login set only can access to API.'),
+    true
+);
+$not_login .= html_print_checkbox_switch(
+    'not_login',
+    1,
+    $user_info['not_login'],
+    true
+).'</div>';
 
 $session_time = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Session Time');
-$session_time .= ui_print_help_tip(__('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'), true).'</p>';
-$session_time .= html_print_input_text('session_time', $user_info['session_time'], '', 5, 5, true.false, false, '', 'class="input_line_small"').'</div>';
+$session_time .= ui_print_help_tip(
+    __('This is defined in minutes, If you wish a permanent session should putting -1 in this field.'),
+    true
+).'</p>';
+$session_time .= html_print_input_text(
+    'session_time',
+    $user_info['session_time'],
+    '',
+    5,
+    5,
+    true.false,
+    false,
+    '',
+    'class="input_line_small"'
+).'</div>';
 
 $event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
 if ($event_filter_data === false) {
@@ -1141,7 +1227,17 @@ foreach ($event_filter_data as $filter) {
 }
 
 $default_event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Default event filter').'</p>';
-$default_event_filter .= html_print_select($event_filter, 'default_event_filter', $user_info['default_event_filter'], '', '', __('None'), true, false, false).'</div>';
+$default_event_filter .= html_print_select(
+    $event_filter,
+    'default_event_filter',
+    $user_info['default_event_filter'],
+    '',
+    '',
+    __('None'),
+    true,
+    false,
+    false
+).'</div>';
 
 $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Disabled newsletter').'</p>';
 if ($user_info['middlename'] >= 0) {
@@ -1159,12 +1255,31 @@ $newsletter .= html_print_checkbox_switch(
 
 if ($config['ehorus_user_level_conf']) {
     $ehorus = '<div class="label_select_simple"><p class="edit_user_labels">'.__('eHorus user access enabled').'</p>';
-    $ehorus .= html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true).'</div>';
+    $ehorus .= html_print_checkbox_switch(
+        'ehorus_user_level_enabled',
+        1,
+        $user_info['ehorus_user_level_enabled'],
+        true
+    ).'</div>';
     $ehorus .= '<div class="user_edit_ehorus_outer">';
     $ehorus .= '<div class="label_select_simple user_edit_ehorus_inner"><p class="edit_user_labels">'.__('eHorus user').'</p>';
-    $ehorus .= html_print_input_text('ehorus_user_level_user', $user_info['ehorus_user_level_user'], '', 15, 45, true).'</div>';
+    $ehorus .= html_print_input_text(
+        'ehorus_user_level_user',
+        $user_info['ehorus_user_level_user'],
+        '',
+        15,
+        45,
+        true
+    ).'</div>';
     $ehorus .= '<div class="label_select_simple user_edit_ehorus_inner"><p class="edit_user_labels">'.__('eHorus password').'</p>';
-    $ehorus .= html_print_input_password('ehorus_user_level_pass', io_output_password($user_info['ehorus_user_level_pass']), '', 15, 45, true).'</div>';
+    $ehorus .= html_print_input_password(
+        'ehorus_user_level_pass',
+        io_output_password($user_info['ehorus_user_level_pass']),
+        '',
+        15,
+        45,
+        true
+    ).'</div>';
     $ehorus .= '</div>';
 }
 
@@ -1184,11 +1299,18 @@ if ($config['double_auth_enabled'] && check_acl($config['id_user'], 0, 'PM')) {
     }
 
     // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
+    $double_authentication .= '<div id="dialog-double_auth" class="invisible"><div id="dialog-double_auth-container"></div></div>';
 }
 
 if ($double_auth_enabled && $config['double_auth_enabled'] && $config['2FA_all_users'] != '') {
-    $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
+    $double_authentication .= html_print_button(
+        __('Show information'),
+        'show_info',
+        false,
+        'javascript:show_double_auth_info();',
+        '',
+        true
+    );
 }
 
 if (isset($double_authentication)) {
@@ -1199,7 +1321,12 @@ if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
 
     $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
-    $metaconsole_agents_manager .= html_print_checkbox_switch('metaconsole_agents_manager', 1, $user_info['metaconsole_agents_manager'], true).'</div>';
+    $metaconsole_agents_manager .= html_print_checkbox_switch(
+        'metaconsole_agents_manager',
+        1,
+        $user_info['metaconsole_agents_manager'],
+        true
+    ).'</div>';
 
     $metaconsole_assigned_server = '<div class="label_select" id="metaconsole_assigned_server_div"><p class="edit_user_labels">'.__('Assigned node').ui_print_help_tip(__('Server where the agents created of this user will be placed'), true).'</p>';
     $servers = metaconsole_get_servers();
@@ -1211,7 +1338,12 @@ if ($meta) {
     $metaconsole_assigned_server .= html_print_select($servers_for_select, 'metaconsole_assigned_server', $user_info['metaconsole_assigned_server'], '', '', -1, true, false, false).'</div>';
 
     $metaconsole_access_node = '<div class="label_select_simple" id="metaconsole_access_node_div"><p class="edit_user_labels">'.__('Enable node access').ui_print_help_tip(__('With this option enabled, the user will can access to nodes console'), true).'</p>';
-    $metaconsole_access_node .= html_print_checkbox('metaconsole_access_node', 1, $user_info['metaconsole_access_node'], true).'</div>';
+    $metaconsole_access_node .= html_print_checkbox(
+        'metaconsole_access_node',
+        1,
+        $user_info['metaconsole_access_node'],
+        true
+    ).'</div>';
 }
 
 echo '<form id="user_profile_form" name="user_profile_form" method="post" autocomplete="off" action="#">';
@@ -1242,7 +1374,7 @@ if ($id != '' && !$is_err) {
 echo '<div id="user_form">
 <div class="user_edit_first_row">
     <div class="edit_user_info white_box">'.$div_user_info.'</div>  
-    <div class="edit_user_autorefresh white_box"><p style="font-weight:bold;">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
+    <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
     <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.$double_authentication.'</div>
@@ -1251,7 +1383,7 @@ echo '<div id="user_form">
 if (!is_metaconsole()) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" class="pdd_t_4px" />
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
 } else {
@@ -1270,7 +1402,7 @@ if (!empty($ehorus)) {
 
 echo '</div>';
 
-echo '<div style="width: 100%" class="action-buttons">';
+echo '<div class="action-buttons w100p">';
 if ($config['admin_can_add_user']) {
     html_print_csrf_hidden();
     if ($new_user) {
@@ -1291,12 +1423,22 @@ profile_print_profile_table($id);
 
 echo '<br />';
 
-echo '<div style="width: 100%" class="action-buttons">';
+echo '<div class="action-buttons w100p">';
 if ($config['admin_can_add_user']) {
     if ($new_user) {
-        html_print_submit_button(__('Create'), 'crtbutton', false, 'class="sub wand" form="user_profile_form"');
+        html_print_submit_button(
+            __('Create'),
+            'crtbutton',
+            false,
+            'class="sub wand" form="user_profile_form"'
+        );
     } else {
-        html_print_submit_button(__('Update'), 'uptbutton', false, 'class="sub upd" form="user_profile_form"');
+        html_print_submit_button(
+            __('Update'),
+            'uptbutton',
+            false,
+            'class="sub upd" form="user_profile_form"'
+        );
     }
 }
 
@@ -1306,7 +1448,17 @@ echo '</div>';
 echo '</div>';
 
 enterprise_hook('close_meta_frame');
-$delete_image = html_print_input_image('del', 'images/cross.png', 1, '', true, ['onclick' => 'delete_profile(event, this)']);
+$delete_image = html_print_input_image(
+    'del',
+    'images/cross.png',
+    1,
+    '',
+    true,
+    [
+        'onclick' => 'delete_profile(event, this)',
+        'class'   => 'invert_filter',
+    ]
+);
 
 if (!is_metaconsole()) {
     ?>
@@ -1706,7 +1858,6 @@ function show_double_auth_activation () {
 
 function show_double_auth_deactivation () {
     var userID = '<?php echo io_safe_output($id); ?>';
-    console.log(userID);
     var $loadingSpinner = $("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
     var $dialogContainer = $("div#dialog-double_auth-container");
 

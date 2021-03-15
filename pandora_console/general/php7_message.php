@@ -25,19 +25,19 @@ if ($config['language'] == 'es') {
 }
 
 // Prints help dialog information
-echo '<div id="login_help_dialog" title="PHP UPDATE REQUIRED" style="display: none;">';
-    echo '<div style="width:70%; font-size: 10pt; margin: 20px; float:left">';
-        echo "<p><b style='font-size: 10pt;'>".__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'</b></p>';
-        echo "<p style='font-size: 10pt;'><b>".__('Otherwise, functionalities will be lost.').'</b></p>';
+echo '<div id="login_help_dialog" title="PHP UPDATE REQUIRED" class="invisible">';
+    echo '<div class="login_help_dialog">';
+        echo "<p><b class='font_10'>".__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'</b></p>';
+        echo "<p class='font_10'><b>".__('Otherwise, functionalities will be lost.').'</b></p>';
         echo '<ul>';
-            echo "<li style='padding:5px;'>".__('Report download in PDF format').'</li>';
-            echo "<li style='padding:5px;'>".__('Emails Sending').'</li>';
-            echo "<li style='padding:5px;'>".__('Metaconsole Collections').'</li>';
-            echo "<li style='padding:5px;'>".'...'.'</li>';
+            echo "<li class='pdd_5px'>".__('Report download in PDF format').'</li>';
+            echo "<li class='pdd_5px'>".__('Emails Sending').'</li>';
+            echo "<li class='pdd_5px'>".__('Metaconsole Collections').'</li>';
+            echo "<li class='pdd_5px'>".'...'.'</li>';
         echo '</ul>';
         echo '<p><a target="blank" href="'.$url_help.'"><b>'.__('Access Help').'</b></a></p>';
     echo '</div>';
-    echo "<div style='margin-top: 80px;'>";
+    echo "<div class='mrg_top_80'>";
         echo html_print_image('images/icono_warning_mr.png', true, ['alt' => __('Warning php version'), 'border' => 0]);
     echo '</div>';
 echo '</div>';

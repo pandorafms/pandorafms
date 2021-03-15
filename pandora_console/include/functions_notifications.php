@@ -942,6 +942,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_image(
@@ -954,6 +955,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_select(

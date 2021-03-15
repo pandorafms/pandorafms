@@ -286,7 +286,7 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 // Hack to translate text "none" in PHP to javascript.
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');

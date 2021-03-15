@@ -27,7 +27,7 @@ if (!check_acl($config['id_user'], 0, 'IR')) {
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
-    ui_print_error_message(__('Integria integration must be enabled in Pandora setup'));
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
     return;
 }
 
@@ -243,7 +243,7 @@ foreach ($files as $key => $value) {
     if (check_acl($config['id_user'], 0, 'IW')) {
         $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
                                     onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+        $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
     }
 
     $table_files->data[$i][5] .= '</a>';
@@ -263,7 +263,7 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
 
 $upload_file_form = '<div>';
 
@@ -318,7 +318,7 @@ $table_comments_section->data[0][0] .= html_print_textarea(
     true
 );
 
-$table_comments_section->data[1][1] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
+$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
@@ -352,7 +352,7 @@ $comment_table = '';
 
 if (!empty($comments)) {
     foreach ($comments as $key => $value) {
-        $comment_table .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span style="float: right;">'.$value[2].'&nbspHours</span></div>';
+        $comment_table .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span class="float-right">'.$value[2].'&nbspHours</span></div>';
         $comment_table .= '<div class="comment_body">'.$value[4].'</div>';
     }
 } else {

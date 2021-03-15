@@ -44,10 +44,10 @@ if ($servers === false) {
         include_once $config['homedir'].'/include/functions_network_profiles.php';
 
         if (check_acl($config['id_user'], 0, 'AW')) {
-            $options['manage']['text'] = "<a href='index.php?sec=estado&sec2=godmode/servers/manage_recontask'>".html_print_image('images/setup.png', true, ['title' => __('Manage')]).'</a>';
+            $options['manage']['text'] = "<a href='index.php?sec=estado&sec2=godmode/servers/manage_recontask'>".html_print_image('images/setup.png', true, ['title' => __('Manage'), 'class' => 'invert_filter']).'</a>';
         }
 
-        $options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>".html_print_image('images/refresh_mc.png', true, ['title' => __('Refresh')]).'</a>';
+        $options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>".html_print_image('images/refresh_mc.png', true, ['title' => __('Refresh'), 'class' => 'invert_filter']).'</a>';
 
         ui_print_page_header(__('Recon View'), 'images/op_recon.png', false, '', false, $options);
 
@@ -120,7 +120,7 @@ if ($servers === false) {
 
                 if ($task['disabled'] == 0) {
                     $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/servers/recon_view&amp;server_id='.$id_server.'&amp;force='.$task['id_rt'].'">';
-                    $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
+                    $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force'), 'class' => 'invert_filter']);
                     $data[0] .= '</a>';
                 } else {
                     $data[0] = '';
@@ -144,11 +144,11 @@ if ($servers === false) {
 
                 if ($task['id_recon_script'] == 0) {
                     // Network recon task
-                    $data[5] = html_print_image('images/network.png', true, ['title' => __('Network recon task')]).'&nbsp;&nbsp;';
+                    $data[5] = html_print_image('images/op_network.png', true, ['title' => __('Network recon task'), 'class' => 'invert_filter']).'&nbsp;&nbsp;';
                     $data[5] .= network_profiles_get_name($task['id_network_profile']);
                 } else {
                     // APP recon task
-                    $data[5] = html_print_image('images/plugin.png', true).'&nbsp;&nbsp;';
+                    $data[5] = html_print_image('images/plugin.png', true, ['class' => 'invert_filter']).'&nbsp;&nbsp;';
                     $data[5] .= db_get_sql(sprintf('SELECT name FROM trecon_script WHERE id_recon_script = %d', $task['id_recon_script']));
                 }
 

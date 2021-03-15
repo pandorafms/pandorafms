@@ -76,9 +76,9 @@ if ($fields === false) {
         $data[0] = '<b>'.$field['name'].'</b>';
 
         if ($field['display_on_front']) {
-            $data[1] = html_print_image('images/tick.png', true);
+            $data[1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         } else {
-            $data[1] = html_print_image('images/delete.png', true);
+            $data[1] = html_print_image('images/delete.png', true, ['class' => 'invert_filter']);
         }
 
         $custom_value = db_get_all_rows_sql(

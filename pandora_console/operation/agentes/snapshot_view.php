@@ -85,25 +85,25 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
         <title><?php echo __('%s Snapshot data view for module (%s)', get_product_name(), $label); ?></title>
         <script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
     </head>
-    <body style='background:#000; color: #ccc;'>
+    <body class='bg_000 grey'>
         <?php
-        echo "<h2 style='text-align:center;' id='title_snapshot_view'>";
+        echo "<h2 class='center' id='title_snapshot_view'>";
             echo __('Current data at %s', $last_timestamp);
         echo '</h2>';
         if (is_image_data($last_data)) {
-            echo '<center><img src="'.$last_data.'" alt="image" style="width:100%"/></center>';
+            echo '<center><img src="'.$last_data.'" alt="image" class="w100p" /></center>';
         } else {
             $last_data = preg_replace('/</', '&lt;', $last_data);
             $last_data = preg_replace('/>/', '&gt;', $last_data);
             $last_data = preg_replace('/\n/i', '<br>', $last_data);
             $last_data = preg_replace('/\s/i', '&nbsp;', $last_data);
-            echo "<div id='result_div' style='width: 100%; height: 100%; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+            echo "<div id='result_div' class='result_div'>";
             echo $last_data;
             echo '</div>';
             ?>
         <script type="text/javascript">
             function getScrollbarWidth() {
-                var div = $('<div style=""></div>');
+                var div = $('<div></div>');
                 $('body').append(div);
                 var w1 = $('div', div).innerWidth();
                 div.css('overflow-y', 'auto');

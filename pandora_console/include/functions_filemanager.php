@@ -786,7 +786,10 @@ function filemanager_file_explorer(
                 <a href="javascript: show_form_create_folder();">'.html_print_image(
                 'images/create_directory.png',
                 true,
-                ['title' => __('Create directory')]
+                [
+                    'title' => __('Create directory'),
+                    'class' => 'invert_filter',
+                ]
             ).'<span>'.__('Create a Directory').'</span>
                 </a>
             </li>
@@ -794,7 +797,10 @@ function filemanager_file_explorer(
                 <a href="javascript: show_create_text_file();">'.html_print_image(
                 'images/create_file.png',
                 true,
-                ['title' => __('Create a Text')]
+                [
+                    'title' => __('Create a Text'),
+                    'class' => 'invert_filter',
+                ]
             ).'<span>'.__('Create a Text').'</span>
                 </a>
             </li>
@@ -802,18 +808,21 @@ function filemanager_file_explorer(
                 <a href="javascript: show_upload_file();">'.html_print_image(
                 'images/upload_file.png',
                 true,
-                ['title' => __('Upload Files')]
+                [
+                    'title' => __('Upload Files'),
+                    'class' => 'invert_filter',
+                ]
             ).'<span>'.__('Upload Files').'</span>
                 </a>
             </li></ul>';
 
-            echo '<div id="create_folder" style="display: none;">'.$tabs_dialog.'
+            echo '<div id="create_folder" class="invisible">'.$tabs_dialog.'
             <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).'</form></div>';
 
-            echo '<div id="upload_file" style="display: none;"> '.$tabs_dialog.'
+            echo '<div id="upload_file" class="invisible"> '.$tabs_dialog.'
             <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
 
-            echo ' <div id="create_text_file" style="display: none;">'.$tabs_dialog.'
+            echo ' <div id="create_text_file" class="invisible">'.$tabs_dialog.'
             <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
@@ -822,7 +831,10 @@ function filemanager_file_explorer(
             echo html_print_image(
                 'images/create_directory.png',
                 true,
-                ['title' => __('Create directory')]
+                [
+                    'title' => __('Create directory'),
+                    'class' => 'invert_filter',
+                ]
             );
             echo '</a>';
 
@@ -830,7 +842,10 @@ function filemanager_file_explorer(
             echo html_print_image(
                 'images/create_file.png',
                 true,
-                ['title' => __('Create text')]
+                [
+                    'title' => __('Create text'),
+                    'class' => 'invert_filter',
+                ]
             );
             echo '</a>';
 
@@ -838,7 +853,10 @@ function filemanager_file_explorer(
             echo html_print_image(
                 'images/upload_file.png',
                 true,
-                ['title' => __('Upload file/s')]
+                [
+                    'title' => __('Upload file/s'),
+                    'class' => 'invert_filter',
+                ]
             );
             echo '</a>';
 

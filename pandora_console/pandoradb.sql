@@ -441,6 +441,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field19_recovery` text NOT NULL,
 	`field20_recovery` text NOT NULL,
 	`previous_name` text,
+	`create_wu_integria` tinyint(1) default NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE

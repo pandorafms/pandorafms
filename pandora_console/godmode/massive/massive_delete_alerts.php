@@ -341,7 +341,7 @@ attachActionButton('delete', 'delete', $table->width);
 echo '</form>';
 
 // Hack to translate text "none" in PHP to javascript
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 

@@ -44,8 +44,6 @@ Exported Functions:
 
 =item * C<pandora_create_group>
 
-=item * C<pandora_create_incident>
-
 =item * C<pandora_create_module>
 
 =item * C<pandora_disable_autodisable_agents>
@@ -161,6 +159,9 @@ use LWP::Simple;
 use IO::Socket::INET6;
 use LWP::UserAgent;
 use HTTP::Request::Common;
+use URI::URL;
+use LWP::UserAgent;
+use JSON;
 
 # For IPv6 support in Net::HTTP.
 BEGIN {
@@ -179,7 +180,6 @@ our @EXPORT = qw(
 	pandora_create_agent
 	pandora_create_alert_command
 	pandora_create_group
-	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
 	pandora_create_module_from_network_component
@@ -254,6 +254,8 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_sample_agent
 	pandora_process_policy_queue
+	pandora_sync_agents_integria
+	pandora_get_integria_ticket_types
 	subst_alert_macros
 	subst_column_macros
 	locate_agent
@@ -1564,6 +1566,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Integria IMS Ticket
 	} elsif ($clean_name eq "Integria IMS Ticket") {
+		my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
+
+		if (!$config_integria_enabled) {
+			return;
+		}
+
 		my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
 		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
 		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
@@ -1575,6 +1583,19 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field11 = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field12 = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field13 = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field14 = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field15 = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field16 = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field17 = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $config_api_path . "/integria/include/api.php";
@@ -1627,7 +1648,28 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 7 (Ticket description);
 		my $ticket_description = safe_output($field7);
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description);
+		my $create_wu_on_close_recovery = 0;
+
+		if ($alert_mode == RECOVERED_ALERT && $action->{'create_wu_integria'} == '1') {
+			$create_wu_on_close_recovery = 1;
+		}
+
+		# Ticket type custom fields
+		my $ticket_custom_field1 = $field8;
+		my $ticket_custom_field2 = $field9;
+		my $ticket_custom_field3 = $field10;
+		my $ticket_custom_field4 = $field11;
+		my $ticket_custom_field5 = $field12;
+		my $ticket_custom_field6 = $field13;
+		my $ticket_custom_field7 = $field14;
+		my $ticket_custom_field8 = $field15;
+		my $ticket_custom_field9 = $field16;
+		my $ticket_custom_field10 = $field17;
+		my $ticket_custom_field11 = $field18;
+		my $ticket_custom_field12 = $field19;
+		my $ticket_custom_field13 = $field20;
+
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13);
 
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
@@ -3039,27 +3081,6 @@ sub pandora_module_keep_alive ($$$$$) {
 		pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
 	}
 }
-
-##########################################################################
-=head2 C<< pandora_create_incident (I<$pa_config>, I<$dbh>, I<$title>, I<$text>, I<$priority>, I<$status>, I<$origin>, I<$id_group>) >> 
-
-Create an internal Pandora incident.
-
-=cut
-##########################################################################
-sub pandora_create_incident ($$$$$$$$;$) {
-	my ($pa_config, $dbh, $title, $text,
-		$priority, $status, $origin, $id_group, $owner) = @_;
-	
-	logger($pa_config, "Creating incident '$text' source '$origin'.", 8);
-	
-	# Initialize default parameters
-	$owner = '' unless defined ($owner);
-	
-	db_do($dbh, 'INSERT INTO tincidencia (inicio, titulo, descripcion, origen, estado, prioridad, id_grupo, id_usuario)
-			VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group, $owner);
-}
-
 
 ##########################################################################
 =head2 C<< pandora_audit (I<$pa_config>, I<$description>, I<$name>, I<$action>, I<$dbh>) >> 
@@ -6213,30 +6234,61 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description) = @_;
+sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13) = @_;
+
+	use URI::URL;
+	use URI::Escape;
+	use HTML::Entities;
 
 	my $data_ticket;
 	my $call_api;
 
-	$data_ticket = $ticket_name .
+	my $uri = URI->new($api_path);
+
+	if ($uri->scheme eq "") {
+		$api_path = "http://" . $api_path;
+	}
+
+	my $ticket_create_wu = 0;
+
+	if ($create_wu_on_close_recovery == 1 && $ticket_status eq '7') {
+		$ticket_create_wu = 1;
+	}
+
+	$data_ticket = $agent_name .
+		"|;|" .	uri_escape(decode_entities($agent_alias)) .
+		"|;|" .	$agent_os .
+		"|;|" .	$agent_addr .
+		"|;|" .	$agent_id .
+		"|;|" .	$agent_group .
+		"|;|" .	$ticket_name .
 		"|;|" . $ticket_group_id .
 		"|;|" . $ticket_priority .
 		"|;|" . $ticket_description .
-		"|;|" . 
 		"|;|" . $ticket_type .
-		"|;|" .
 		"|;|" . $ticket_owner .
-		"|;|" . 
 		"|;|" . $ticket_status .
-		"|;|" . 
-		"|;|";
-		
+		"|;|" . $ticket_create_wu .
+		"|;|" . $ticket_custom_field1 .
+		"|;|" . $ticket_custom_field2 .
+		"|;|" . $ticket_custom_field3 .
+		"|;|" . $ticket_custom_field4 .
+		"|;|" . $ticket_custom_field5 .
+		"|;|" . $ticket_custom_field6 .
+		"|;|" . $ticket_custom_field7 .
+		"|;|" . $ticket_custom_field8 .
+		"|;|" . $ticket_custom_field9 .
+		"|;|" . $ticket_custom_field10 .
+		"|;|" . $ticket_custom_field11 .
+		"|;|" . $ticket_custom_field12 .
+		"|;|" . $ticket_custom_field13;
+
 	$call_api = $api_path . '?' .
 		'user=' . $integria_user . '&' .
 		'user_pass=' . $user_pass . '&' .
 		'pass=' . $api_pass . '&' .
-		'op=create_incident&' .
+		'op=create_pandora_ticket&' .
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
 
@@ -6248,6 +6300,86 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$) {
 	else {
 		return 0;
 	}
+}
+
+sub pandora_sync_agents_integria ($) {
+	my ($dbh) = @_;
+
+	my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
+
+	if (!$config_integria_enabled) {
+		return;
+	}
+
+	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
+	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
+	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
+	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+
+	my $api_path = $config_api_path . "/integria/include/api.php";
+
+	my @agents_string = '';
+	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
+	
+	my @agents_array = ();
+	my $agents_string = '';
+
+	foreach my $agent (@agents) {
+		push @agents_array, $agent->{'nombre'} .
+			"|;|" .
+			$agent->{'alias'} .
+			"|;|" .
+			$agent->{'id_os'} .
+			"|;|" .
+			$agent->{'direccion'} .
+			"|;|" .
+			$agent->{'id_grupo'};
+	}
+
+	my $ua       = LWP::UserAgent->new();
+	my $response = $ua->post( $api_path, {
+			'user' 		=> $config_integria_user,
+			'user_pass' => $config_integria_user_pass,
+			'pass' 		=> $config_api_pass,
+			'op' 		=> 'sync_pandora_agents_inventory',
+			'params[]' 	=> [@agents_array],
+			'token' 	=> '|;|'
+		});
+
+	my $content = $response->decoded_content();
+
+	if (defined $content && is_numeric($content) && $content ne "-1") {
+		return $content;
+	}
+	else {
+		return 0;
+	}
+}
+
+sub pandora_get_integria_ticket_types($) {
+	my ($dbh) = @_;
+
+	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
+	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
+	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
+	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+
+	my $api_path = $config_api_path . "/integria/include/api.php";
+
+	my $call_api = $api_path . '?' .
+		'user=' . $config_integria_user . '&' .
+		'user_pass=' . $config_integria_user_pass . '&' .
+		'pass=' . $config_api_pass . '&' .
+		'op=get_types&' .
+		'return_type=json';
+
+	my $content = get($call_api);
+
+    my @decoded_json;
+    @decoded_json = @{decode_json($content)} if (defined $content && $content ne "");
+
+	return @decoded_json;
+
 }
 
 ##########################################################################

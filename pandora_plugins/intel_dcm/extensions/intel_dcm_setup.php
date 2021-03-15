@@ -44,10 +44,27 @@ function main_intel_dcm()
 {
     global $config;
 
-    ui_print_page_header(__('Intel DCM Setup'), 'images/setup.png', false, '', true, '');
+    ui_print_page_header(
+        __('Intel DCM Setup'),
+        'images/setup.png',
+        false,
+        '',
+        true,
+        ''
+    );
 
-    if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
-        db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
+    if (! check_acl(
+        $config['id_user'],
+        0,
+        'PM'
+    ) && ! is_user_admin(
+        $config['id_user']
+    )
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Setup Management'
+        );
         include 'general/noaccess.php';
 
         return;

@@ -47,10 +47,10 @@ foreach ($_GET as $key => $value) {
     $url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 }
 
-echo "<div style='margin-bottom: 30px;'></div>";
+echo "<div class='mrgn_btn_30px'></div>";
 
 // Map with the current position
-echo '<div id="'.$agent_name.'_agent_map" style="border:1px solid black; width:100%; height: 30em;"></div>';
+echo '<div id="'.$agent_name.'_agent_map" class="agent_map_position"></div>';
 
 if (!gis_get_agent_map($id_agente, '500px', '100%', true, true, $period)) {
     ui_print_error_message(__('There is no default map. Please go to the setup for to set a default map.'));
@@ -94,7 +94,7 @@ echo '<tr><td>'.__('Period to show data as path');
 echo '<td>';
 html_print_extended_select_for_time('period', $period, '', '', '0', 10);
 echo '<td>';
-html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd" style="margin-top:0px"');
+html_print_submit_button(__('Refresh path'), 'refresh', false, 'class="sub upd mrgn_top_0px"');
 echo '</table></form>';
 
 // Get the elements to present in this page

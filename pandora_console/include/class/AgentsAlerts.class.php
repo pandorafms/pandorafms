@@ -651,7 +651,7 @@ class AgentsAlerts extends HTML
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
             // Name of the agent.
-            echo '<td class="bolder right">'.$alias['alias'].'</td>';
+            echo '<td class="bolder" style="text-align: right" >'.$alias['alias'].'</td>';
             // Alerts of the agent.
             foreach ($templates as $tid => $tname) {
                 $anyfired = 0;

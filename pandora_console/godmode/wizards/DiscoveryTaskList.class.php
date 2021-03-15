@@ -1060,7 +1060,9 @@ class DiscoveryTaskList extends HTML
      */
     public function getTargetWiz($task, $script=false)
     {
-        if ($script !== false) {
+        if ($script !== false
+            || (int) $task['type'] === DISCOVERY_HOSTDEVICES_CUSTOM
+        ) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';

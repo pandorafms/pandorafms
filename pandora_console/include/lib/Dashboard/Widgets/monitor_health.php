@@ -319,7 +319,7 @@ class MonitorHealthWidget extends Widget
             20
         );
 
-        $output = '<div class="container-center" style="min-width:200px; min-height:320px;">';
+        $output = '<div class="container-center mw200px min-height-320px">';
         $output .= \html_print_table($table, true);
         $output .= '</div>';
 

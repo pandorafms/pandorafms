@@ -67,7 +67,7 @@ function extension_db_status()
     html_print_table($table);
     echo '</fieldset>';
 
-    echo "<div style='text-align: right;'>";
+    echo "<div class='right'>";
     html_print_input_hidden('db_status_execute', 1);
     html_print_submit_button(__('Execute Test'), 'submit', false, 'class="sub next"');
     echo '</div>';

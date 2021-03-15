@@ -1639,12 +1639,12 @@ function config_update_config()
 
                 case 'module_library':
                     $module_library_user = get_parameter('module_library_user');
-                    if ($module_library_user == '' || !config_update_value('module_library_user', $module_library_user)) {
+                    if (!config_update_value('module_library_user', $module_library_user)) {
                         $error_update[] = __('User');
                     }
 
                     $module_library_password = get_parameter('module_library_password');
-                    if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
+                    if (!config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
                     }
                 break;
@@ -2224,7 +2224,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2240,7 +2240,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {

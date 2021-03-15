@@ -54,7 +54,7 @@ foreach ($logs as $log) {
 ob_start();
 
 if (!empty($table->data)) {
-    echo '<div id="log_sources_status" style="width:100%;">';
+    echo '<div id="log_sources_status w100p">';
     html_print_table($table);
     echo '</div>';
 } else {
@@ -63,7 +63,7 @@ if (!empty($table->data)) {
 }
 
 // Hidden form to perform post request to Log Viewer page when clicking on the Review field icon.
-echo '<form method="POST" action="index.php?sec=estado&sec2=enterprise/operation/log/log_viewer" name="review_log_form" id="review_log_form" style="display: none;">';
+echo '<form method="POST" action="index.php?sec=estado&sec2=enterprise/operation/log/log_viewer" name="review_log_form" id="review_log_form" class="invisible">';
 
 html_print_input_hidden('agent_id', $agent_id, false);
 html_print_input_hidden('source', null, false);

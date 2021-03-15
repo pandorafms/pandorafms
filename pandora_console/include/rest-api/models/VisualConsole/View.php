@@ -690,7 +690,7 @@ class View extends \HTML
                     echo '<h3 class="center">'.__('NetworkLink from').'</h3>';
                     echo '<div class="margin-top-10 interface-status from w90p centered flex-row-vcenter">';
                     ui_print_module_status($data['status']->lastStatus());
-                    echo '<span style="margin-left: 1em;">';
+                    echo '<span class="margin-left-1">';
                     echo __('Interface %s status', $interface_name);
                     echo '</span>';
                     echo '</div>';
@@ -769,7 +769,7 @@ class View extends \HTML
                     echo '<h3 class="center">'.__('NetworkLink to').'</h3>';
                     echo '<div class="interface-status from w90p centered flex-row-vcenter">';
                     ui_print_module_status($data['status']->lastStatus());
-                    echo '<span style="margin-left: 1em;">';
+                    echo '<span class="margin-left-1">';
                     echo __('Interface %s status', $interface_name);
                     echo '</span>';
                     echo '</div>';

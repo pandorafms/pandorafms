@@ -10,8 +10,8 @@
 
 <p>The following list defines what ACL control allows in each feature at the console:</p>
 
-<table cellpadding=4 cellspacing=0 style='background-color: #f0f0f0;'>
-<tr><th style='background-color: #cacaca'>Feature<th style='background-color: #cacaca'>ACL Control 
+<table cellpadding=4 cellspacing=0 class='gb_f0'>
+<tr><th class='bg_caca'>Feature<th class='bg_caca'>ACL Control 
 
 <tr><td>View the agent's data (all tabs)<td>AR
 <tr><td>Tactical View<td>AR

@@ -390,12 +390,12 @@ echo '</tr>';
 echo '<tr><td class="datos2" colspan="4">';
 
 if ((check_acl($config['id_user'], $id_grupo, 'IM') == 1) or ($usuario == $config['id_user'])) {
-    html_print_textarea('descripcion', 15, 80, $texto, 'style="height:200px;"');
+    html_print_textarea('descripcion', 15, 80, $texto, 'class="height_200px"');
 } else {
-    html_print_textarea('descripcion', 15, 80, $texto, 'style="height:200px;" disabled');
+    html_print_textarea('descripcion', 15, 80, $texto, 'class="height:200px" disabled');
 }
 
-echo '</td></tr></table><div style="width: 100%; text-align:right;">';
+echo '</td></tr></table><div class="w100p right">';
 
 // Only if user is the used who opened incident or (s)he is admin
 if (isset($id_inc) and ((check_acl($config['id_user'], $id_grupo, 'IM') == 1) or ($usuario == $config['id_user']))) {
@@ -423,7 +423,7 @@ if (isset($id_inc)) {
     echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'"><h4>'.__('Add note').'</h4>';
 
     echo '<table cellpadding="4" cellspacing="4" class="databox" width="100%">
-		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
+		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" class="height_100px"></textarea></td>
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
 		</table></form></div><div>';
 
@@ -438,7 +438,7 @@ if (isset($id_inc)) {
 
     foreach ($result as $row) {
         $data = [];
-        $data[0] = html_print_image('images/page_white_text.png', true, ['border' => '0']);
+        $data[0] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'border' => '0']);
         $data[1] = __('Author').': '.ui_print_username($row['id_usuario'], true).' ('.ui_print_timestamp($row['timestamp'], true).')';
         array_push($table->data, $data);
 
@@ -526,7 +526,7 @@ if (isset($id_inc)) {
         echo '<table cellpadding="4" cellspacing="3" class="databox" width="98%">
 			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
 			<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>
-			<tr><td colspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
+			<tr><td colspan="2" class="right">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
 			</table></form></div>';
     }
 }

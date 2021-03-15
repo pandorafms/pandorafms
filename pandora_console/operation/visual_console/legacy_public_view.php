@@ -111,7 +111,7 @@ if ($layout) {
 }
 
 // Floating menu - Start.
-echo '<div id="vc-controls" style="z-index:300;">';
+echo '<div id="vc-controls" class="zindex300">';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn white-box-content box-shadow flex-row">';
@@ -126,7 +126,7 @@ echo '</li>';
 // Countdown.
 echo '<li class="nomn">';
 echo '<div class="vc-refr">';
-echo '<div class="vc-countdown style="display: inline;"></div>';
+echo '<div class="vc-countdown display_in"></div>';
 echo '<div id="vc-refr-form">';
 echo __('Refresh').':';
 echo html_print_select(
@@ -155,7 +155,7 @@ echo '</div>';
 echo '</div>';
 
 // QR code dialog.
-echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
+echo '<div class="invisible" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 

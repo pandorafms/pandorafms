@@ -984,14 +984,22 @@ if (is_ajax()) {
         $module = db_get_row('tagente_modulo', 'id_agente_modulo', $id_module);
 
         echo '<h3>';
-        echo html_print_image('images/brick.png', true).'&nbsp;';
+        echo html_print_image(
+            'images/agent.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'&nbsp;';
         echo ui_print_truncate_text($module['nombre'], 'module_small', false, true, false).'</h3>';
         echo '<strong>'.__('Type').':</strong> ';
         $agentmoduletype = modules_get_agentmodule_type($module['id_agente_modulo']);
         echo modules_get_moduletype_name($agentmoduletype).'&nbsp;';
         echo html_print_image('images/'.modules_get_type_icon($agentmoduletype), true).'<br />';
         echo '<strong>'.__('Module group').':</strong> ';
-        $modulegroup = modules_get_modulegroup_name(modules_get_agentmodule_modulegroup($module['id_agente_modulo']));
+        $modulegroup = modules_get_modulegroup_name(
+            modules_get_agentmodule_modulegroup(
+                $module['id_agente_modulo']
+            )
+        );
         if ($modulegroup === false) {
             echo __('None').'<br />';
         } else {
@@ -999,7 +1007,15 @@ if (is_ajax()) {
         }
 
         echo '<strong>'.__('Agent').':</strong> ';
-        echo ui_print_truncate_text(modules_get_agentmodule_agent_alias($module['id_agente_modulo']), 'agent_small', false, true, false).'<br />';
+        echo ui_print_truncate_text(
+            modules_get_agentmodule_agent_alias(
+                $module['id_agente_modulo']
+            ),
+            'agent_small',
+            false,
+            true,
+            false
+        ).'<br />';
 
         if ($module['id_tipo_modulo'] == 18) {
             echo '<strong>'.__('Address').':</strong> ';
@@ -1013,7 +1029,7 @@ if (is_ajax()) {
             if (count($ips) == 1) {
                 echo $ips[0];
             } else {
-                echo '<ul style="display:inline;">';
+                echo '<ul class="inline_line">';
                 foreach ($ips as $ip) {
                     echo '<li>'.$ip.'</li>';
                 }
@@ -1032,14 +1048,24 @@ if (is_ajax()) {
     if ($get_group_status_tooltip) {
         $id_group = (int) get_parameter('id_group');
         $group = db_get_row('tgrupo', 'id_grupo', $id_group);
-        echo '<h3>'.html_print_image('images/groups_small/'.groups_get_icon($group['id_grupo']).'.png', true);
+        echo '<h3>'.html_print_image(
+            'images/groups_small/'.groups_get_icon(
+                $group['id_grupo']
+            ).'.png',
+            true
+        );
         echo ui_print_truncate_text($group['nombre'], GENERIC_SIZE_TEXT, false, true, false).'</h3>';
         echo '<strong>'.__('Parent').':</strong> ';
         if ($group['parent'] == 0) {
             echo __('None').'<br />';
         } else {
             $group_parent = db_get_row('tgrupo', 'id_grupo', $group['parent']);
-            echo html_print_image('images/groups_small/'.groups_get_icon($group['parent']).'.png', true);
+            echo html_print_image(
+                'images/groups_small/'.groups_get_icon(
+                    $group['parent']
+                ).'.png',
+                true
+            );
             echo $group_parent['nombre'].'<br />';
         }
 
@@ -1050,7 +1076,12 @@ if (is_ajax()) {
         } else {
             echo '<br /><br />';
             foreach ($groups_sons as $group_son) {
-                echo html_print_image('images/groups_small/'.groups_get_icon($group_son['id_grupo']).'.png', true);
+                echo html_print_image(
+                    'images/groups_small/'.groups_get_icon(
+                        $group_son['id_grupo']
+                    ).'.png',
+                    true
+                );
                 echo $group_son['nombre'].'<br />';
             }
         }
@@ -1137,15 +1168,24 @@ if ($flag !== '') {
 // Check for Network FLAG change request.
 $flag_agent = get_parameter('flag_agent', '');
 if ($flag_agent !== '') {
-    if ($flag_agent == 1 && check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-        db_process_sql_update('tagente_modulo', ['flag' => 1], ['id_agente' => $id_agente]);
+    if ($flag_agent == 1 && check_acl_one_of_groups(
+        $config['id_user'],
+        $all_groups,
+        'AW'
+    )
+    ) {
+        db_process_sql_update(
+            'tagente_modulo',
+            ['flag' => 1],
+            ['id_agente' => $id_agente]
+        );
     }
 }
 
 if ($agent['icon_path']) {
     $icon = gis_get_agent_icon_map($agent['id_agente'], true);
 } else {
-    $icon = 'images/bricks.png';
+    $icon = 'images/agent.png';
 }
 
 
@@ -1156,7 +1196,14 @@ $tab = get_parameter('tab', 'main');
 $managetab = [];
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra) {
-    $managetab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.html_print_image('images/setup.png', true, ['title' => __('Manage')]).'</a>';
+    $managetab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.html_print_image(
+        'images/setup.png',
+        true,
+        [
+            'title' => __('Manage'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'manage') {
         $managetab['active'] = true;
@@ -1169,7 +1216,14 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra)
 
 
 // Main tab.
-$maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'.html_print_image('images/agent_mc.png', true, ['title' => __('Main')]).'</a>';
+$maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'.html_print_image(
+    'images/agent.png',
+    true,
+    [
+        'title' => __('Main'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 if ($tab == 'main') {
     $maintab['active'] = true;
@@ -1180,7 +1234,14 @@ if ($tab == 'main') {
 
 
 // Alert tab.
-$alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.html_print_image('images/op_alerts.png', true, ['title' => __('Alerts')]).'</a>';
+$alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.html_print_image(
+    'images/bell.png',
+    true,
+    [
+        'title' => __('Alerts'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 if ($tab == 'alert') {
     $alerttab['active'] = true;
@@ -1228,7 +1289,14 @@ if ($url_route_analyzer) {
 // GIS tab.
 $gistab = [];
 if ($config['activate_gis']) {
-    $gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image('images/op_gis.png', true, [ 'title' => __('GIS data')]).'</a>';
+    $gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image(
+        'images/op_gis.png',
+        true,
+        [
+            'title' => __('GIS data'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'gis') {
         $gistab['active'] = true;
@@ -1241,7 +1309,14 @@ if ($config['activate_gis']) {
 // Incident tab.
 $total_incidents = agents_get_count_incidents($id_agente);
 if ($total_incidents > 0) {
-    $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
+    $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.html_print_image(
+        'images/book_edit.png',
+        true,
+        [
+            'title' => __('Incidents'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'incident') {
         $incidenttab['active'] = true;
@@ -1253,7 +1328,14 @@ if ($total_incidents > 0) {
 
 // Url address tab.
 if ($agent['url_address'] != '') {
-    $urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">'.html_print_image('images/link.png', true, ['title' => __('Url address')]).'</a>';
+    $urladdresstab['text'] = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">'.html_print_image(
+        'images/link.png',
+        true,
+        [
+            'title' => __('Url address'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 if ($tab == 'url_address') {
@@ -1264,7 +1346,14 @@ if ($tab == 'url_address') {
 
 
 // Custom fields tab.
-$custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'.html_print_image('images/custom_field.png', true, ['title' => __('Custom fields')]).'</a>';
+$custom_fields['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'.html_print_image(
+    'images/custom_field.png',
+    true,
+    [
+        'title' => __('Custom fields'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 if ($tab == 'custom_fields') {
     $custom_fields['active'] = true;
 } else {
@@ -1273,7 +1362,14 @@ if ($tab == 'custom_fields') {
 
 
 // Graphs tab.
-$graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'.html_print_image('images/chart.png', true, ['title' => __('Graphs')]).'</a>';
+$graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'.html_print_image(
+    'images/chart.png',
+    true,
+    [
+        'title' => __('Graphs'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 if ($tab == 'graphs') {
     $graphs['active'] = true;
 } else {
@@ -1288,7 +1384,14 @@ if (enterprise_installed() && $config['log_collector']) {
 
     if ($agent_has_logs && !$is_windows) {
         $log_viewer_tab = [];
-        $log_viewer_tab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente.'">'.html_print_image('images/gm_log.png', true, ['title' => __('Log Viewer')]).'</a>';
+        $log_viewer_tab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente.'">'.html_print_image(
+            'images/gm_log.png',
+            true,
+            [
+                'title' => __('Log Viewer'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $log_viewer_tab['active'] = $tab == 'log_viewer';
     }
 }
@@ -1308,28 +1411,70 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
         $ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
         if (!empty($ehorus_agent_id)) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
-            $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image('images/ehorus/ehorus.png', true, [ 'title' => __('eHorus')]).'</a>';
+            $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
+                'images/ehorus/ehorus.png',
+                true,
+                [
+                    'title' => __('eHorus'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>';
 
             // Hidden subtab layer.
-            $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
+            $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu float-none">';
             $ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="'.$tab_url.'&client_tab=terminal">';
-            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/terminal.png', true, [ 'title' => __('Terminal')]);
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
+                'images/ehorus/terminal.png',
+                true,
+                [
+                    'title' => __('Terminal'),
+                    'class' => 'invert_filter',
+                ]
+            );
             $ehorus_tab['sub_menu'] .= '</li>';
             $ehorus_tab['sub_menu'] .= '</a>';
             $ehorus_tab['sub_menu'] .= '<a class="tab_display" href="'.$tab_url.'&client_tab=display">';
-            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/vnc.png', true, [ 'title' => __('Display')]);
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
+                'images/ehorus/vnc.png',
+                true,
+                [
+                    'title' => __('Display'),
+                    'class' => 'invert_filter',
+                ]
+            );
             $ehorus_tab['sub_menu'] .= '</li>';
             $ehorus_tab['sub_menu'] .= '</a>';
             $ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="'.$tab_url.'&client_tab=processes">';
-            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/processes.png', true, [ 'title' => __('Processes')]);
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
+                'images/ehorus/processes.png',
+                true,
+                [
+                    'title' => __('Processes'),
+                    'class' => 'invert_filter',
+                ]
+            );
             $ehorus_tab['sub_menu'] .= '</li>';
             $ehorus_tab['sub_menu'] .= '</a>';
             $ehorus_tab['sub_menu'] .= '<a class="tab_services" href="'.$tab_url.'&client_tab=services">';
-            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/services.png', true, [ 'title' => __('Services')]);
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
+                'images/ehorus/services.png',
+                true,
+                [
+                    'title' => __('Services'),
+                    'class' => 'invert_filter',
+                ]
+            );
             $ehorus_tab['sub_menu'] .= '</li>';
             $ehorus_tab['sub_menu'] .= '</a>';
             $ehorus_tab['sub_menu'] .= '<a class="tab_files" href="'.$tab_url.'&client_tab=files">';
-            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'.html_print_image('images/ehorus/files.png', true, [ 'title' => __('Files')]);
+            $ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode center">'.html_print_image(
+                'images/ehorus/files.png',
+                true,
+                [
+                    'title' => __('Files'),
+                    'class' => 'invert_filter',
+                ]
+            );
             $ehorus_tab['sub_menu'] .= '</li>';
             $ehorus_tab['sub_menu'] .= '</a>';
             $ehorus_tab['sub_menu'] .= '</ul>';
@@ -1341,7 +1486,11 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
 
 $is_sap = agents_get_sap_agents($id_agente);
 if ($is_sap) {
-    $saptab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image('images/sap_icon.png', true, ['title' => __('SAP view')]).'</a>';
+    $saptab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.html_print_image(
+        'images/sap_icon.png',
+        true,
+        ['title' => __('SAP view')]
+    ).'</a>';
     if ($tab == 'sap_view') {
         $saptab['active'] = true;
     } else {
@@ -1445,7 +1594,7 @@ foreach ($config['extensions'] as $extension) {
             $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=extension&id_agente='.$id_agente.'&id_extension='.$id;
 
             $extension_tab = [
-                'text'   => '<a href="'.$url.'">'.html_print_image($image, true, [ 'title' => $name]).'</a>',
+                'text'   => '<a href="'.$url.'">'.html_print_image($image, true, [ 'title' => $name, 'class' => 'invert_filter']).'</a>',
                 'active' => $active,
             ];
 

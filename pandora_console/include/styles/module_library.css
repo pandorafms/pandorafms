@@ -67,6 +67,7 @@
 /* --- Main page --- */
 #library_main {
   text-align: center;
+  position: unset;
 }
 
 #library_main h2 {
@@ -75,7 +76,7 @@
 
 #library_main_content {
   display: grid;
-  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
   grid-gap: 20px;
   gap: 20px;
   text-align: center;
@@ -122,7 +123,8 @@
 }
 
 .sidebar_library h3:first-child {
-  margin-top: 0;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .categories_sidebar_children {

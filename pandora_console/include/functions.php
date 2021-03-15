@@ -1788,7 +1788,7 @@ function is_ajax()
  */
 function is_error($code)
 {
-    if ($code !== true and ($code <= ERR_GENERIC || $code === false)) {
+    if ($code !== true && ($code <= ERR_GENERIC || $code === false)) {
         return true;
     } else {
         return false;
@@ -3910,6 +3910,18 @@ function series_type_graph_array($data, $show_elements_graph)
                             $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
                         } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
                             $name_legend = 'Avg: ';
+
+                            if (array_key_exists('agent_alias', $value)
+                                && array_key_exists('module_name', $value)
+                                && array_key_exists('unit', $value)
+                            ) {
+                                $name_legend .= $value['agent_alias'];
+                                $name_legend .= ' / ';
+                                $name_legend .= $value['module_name'];
+                                $name_legend .= ' / ';
+                                $name_legend .= __('Unit ').' ';
+                                $name_legend .= $value['unit'].': ';
+                            }
                         } else {
                             $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
                         }

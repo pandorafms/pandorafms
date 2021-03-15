@@ -1524,6 +1524,9 @@ class DiscoveryTaskList extends HTML
                 $simple_data[] = $tmp;
 
                 if (is_array($data['modules'])) {
+                    // Alphabetically sort.
+                    ksort($data['modules']);
+
                     $simple_data = array_merge(
                         $simple_data,
                         array_reduce(

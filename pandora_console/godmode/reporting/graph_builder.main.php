@@ -285,11 +285,11 @@ $output .= '</table>';
 
 if ($edit_graph) {
     $output .= "<div class='w100p'>";
-    $output .= "<input class='right' type=submit name='store' class='sub upd' value='".__('Update')."'>";
+    $output .= "<input type=submit name='store' class='sub upd right' value='".__('Update')."'>";
     $output .= '</div>';
 } else {
     $output .= "<div class='w100p'>";
-    $output .= "<input class='right' type=submit name='store' class='sub next' value='".__('Create')."'>";
+    $output .= "<input type=submit name='store' class='sub next right' value='".__('Create')."'>";
     $output .= '</div>';
 }
 

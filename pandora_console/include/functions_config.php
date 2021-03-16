@@ -1888,6 +1888,10 @@ function config_process_config()
         config_update_value('collection_max_size', 1000000);
     }
 
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
+    }
+
     if (!isset($config['event_replication'])) {
         config_update_value('event_replication', 0);
     }

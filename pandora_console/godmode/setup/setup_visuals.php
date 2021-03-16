@@ -131,6 +131,20 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
+
+$table_styles->data[$row][0] = __('Style template');
+$table_styles->data[$row][1] = html_print_select(
+    themes_get_css(),
+    'style',
+    $config['style'].'.css',
+    '',
+    '',
+    '',
+    true
+);
+$row++;
+
+
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
 $iconsets['faces'] = __('Faces');

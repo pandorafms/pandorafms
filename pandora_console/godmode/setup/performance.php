@@ -41,6 +41,9 @@ if (! check_acl($config['id_user'], 0, 'PM')
     return;
 }
 
+// Load needed resources.
+ui_require_css_file('setup.multicolumn');
+
 $update_config = get_parameter('update_config', 0);
 if ($update_config == 1 && $config['history_db_enabled'] == 1) {
     if (! isset($config['history_db_connection'])
@@ -679,7 +682,7 @@ $table_other->data[16][1] = html_print_input_text(
 
 echo '<form id="form_setup" method="post">';
 
-echo '<fieldset>';
+echo '<fieldset class="full-column">';
     echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';

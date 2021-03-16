@@ -709,7 +709,7 @@ $table->class = 'info_table';
 
 $table->head = [];
 $table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$table->size[0] = '10%';
+$table->size[0] = '12%';
 
 $table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
 $table->size[1] = '16%';

@@ -43,11 +43,12 @@ use PandoraFMS\Enterprise\Cluster;
 /**
  * Parse the "other" parameter.
  *
- * @param  string $other
- * @param  mixed  $otherType
+ * @param  string  $other
+ * @param  mixed   $otherType
+ * @param  boolean $rawDecode Decode string in which the sequences with percent (%) signs followed by two hex digits have been replaced with literal characters.
  * @return mixed
  */
-function parseOtherParameter($other, $otherType)
+function parseOtherParameter($other, $otherType, $rawDecode)
 {
     switch ($otherType) {
         case 'url_encode':
@@ -65,12 +66,12 @@ function parseOtherParameter($other, $otherType)
                     'data' => explode($separator, $other),
                 ];
                 foreach ($returnVar['data'] as $index => $element) {
-                    $returnVar['data'][$index] = urldecode($element);
+                    $returnVar['data'][$index] = $rawDecode ? rawurldecode($element) : urldecode($element);
                 }
             } else {
                 $returnVar = [
                     'type' => 'string',
-                    'data' => urldecode($other),
+                    'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
                 ];
             }
         break;

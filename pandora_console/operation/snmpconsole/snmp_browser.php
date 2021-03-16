@@ -82,10 +82,10 @@ ui_print_page_header(
 // SNMP tree container.
 snmp_browser_print_container(false, '100%', '60%', '', true);
 
-// Div for modal
-echo '<div id="modal" class="invisible"></div>';
+// Div for modal.
+echo '<div id="modal" style="display:none"></div>';
 // Div for loading modal.
-echo '<div id="loading_modal" class="invisible"></div>';
+echo '<div id="loading_modal" style="display:none"></div>';
 
 
 ?>

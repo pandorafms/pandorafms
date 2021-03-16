@@ -754,7 +754,7 @@ if ($agents !== false) {
             echo '</em>';
         }
 
-        echo '</span><div class="left actions clear_left" style="visibility: hidden">';
+        echo '</span><div class="left actions clear_left" style=" visibility: hidden">';
         if ($check_aw) {
             if ($agent['id_os'] == CLUSTER_OS_ID) {
                 if (enterprise_installed()) {

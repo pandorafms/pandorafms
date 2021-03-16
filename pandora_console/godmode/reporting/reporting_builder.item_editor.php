@@ -2763,17 +2763,13 @@ $class = 'databox filters';
             </td>
         </tr>
 
-<<<<<<< HEAD
-        <tr id="row_filter_search"   class="datos">
-            <td class="bolder"><?php echo __('Free search'); ?></td>
-=======
-        <tr id="row_summary" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_summary"class="datos">
+            <td class="bolder">
             <?php
             echo __('Summary');
             ?>
             </td>
-            <td style="">
+            <td>
             <?php
             html_print_checkbox_switch(
                 'summary',
@@ -2788,9 +2784,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_filter_search" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Include filter'); ?></td>
->>>>>>> origin/develop
+        <tr id="row_filter_search" class="datos">
+            <td class="bolder"><?php echo __('Include filter'); ?></td>
             <td>
                 <?php
                 html_print_input_text('filter_search', $filter_search);

@@ -34,7 +34,7 @@ if (!isset($config)) {
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
 	</head>
 	<body>
-		<div id="main" style="float:left; margin-left: 100px">
+		<div id="main" class="float-left mrgn_lft_100px">
 			<div align="center">
 				<div id="login_f">
 					<h1 id="log_f" class="error">You cannot access this file</h1>

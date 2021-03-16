@@ -381,6 +381,8 @@ class ManageNetScanScripts extends Wizard
      */
     private function printListNetScanScripts(array $msg)
     {
+        global $config;
+
         if (count($msg) > 0) {
             if ($msg['error'] === 1) {
                 ui_print_error_message($msg['msg']);
@@ -413,7 +415,7 @@ class ManageNetScanScripts extends Wizard
                 }
 
                 echo '<tr>';
-                echo "<td class='".$tdcolor."' style='min-width: 100px;'>";
+                echo "<td class='".$tdcolor." mw100px''>";
                 echo '<b><a href="'.$url.'&page=1&id_script='.$row['id_recon_script'].'">';
                 echo $row['name'];
                 echo '</a></b></td>';
@@ -435,7 +437,7 @@ class ManageNetScanScripts extends Wizard
                 echo '<form
                     method="post"
                     onsubmit="if (! confirm (\''.__('Are you sure delete script?').'\')) return false"
-                    style="display: inline;">';
+                    class="display_in">';
                 echo html_print_input_hidden('page', 0, true);
                 echo html_print_input_hidden(
                     'operation_scp',
@@ -455,6 +457,7 @@ class ManageNetScanScripts extends Wizard
                     true,
                     [
                         'title' => __('Delete Script'),
+                        'class' => 'invert_filter',
                     ]
                 );
                 echo '</form>';
@@ -465,7 +468,7 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                echo "<input name='crtbutton' style='float:right;' type='submit' class='sub next' value='".__('Add')."'>";
+                echo "<input name='crtbutton' type='submit' class='sub next float-right' value='".__('Add')."'>";
             echo '</form>';
         } else {
             ui_print_info_message(
@@ -602,7 +605,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Description');
-            $datam[0] .= "<span style='font-weight: normal'> ( ";
+            $datam[0] .= "<span class='normal'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span>';
             $datam[0] .= html_print_input_hidden(
@@ -631,7 +634,7 @@ class ManageNetScanScripts extends Wizard
             }
 
             $datam[2] = __('Default value');
-            $datam[2] .= "<span style='font-weight: normal'> ( ";
+            $datam[2] .= "<span class='normal'> ( ";
             $datam[2] .= $macro_name;
             $datam[2] .= ' ) </span>';
             $datam[3] = html_print_input_text_extended(
@@ -685,7 +688,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Help');
-            $datam[0] .= "<span style='font-weight: normal'> ( ";
+            $datam[0] .= "<span class='normal'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span><br><br><br>';
 
@@ -696,7 +699,7 @@ class ManageNetScanScripts extends Wizard
                 6,
                 100,
                 $macro_help_value,
-                'class="command_advanced_conf" style="width: 97%;"'.$tadisabled,
+                'class="command_advanced_conf w97p"'.$tadisabled,
                 true
             );
 
@@ -717,7 +720,7 @@ class ManageNetScanScripts extends Wizard
 
         if (!$locked) {
             $datam = [];
-            $datam[0] = '<span style="font-weight: bold">';
+            $datam[0] = '<span class="bolder">';
             $datam[0] .= __('Add macro').'</span>';
             $datam[0] .= '<a href="javascript:new_macro(\'table-form-recon_\');update_preview();">';
             $datam[0] .= html_print_image(
@@ -725,9 +728,9 @@ class ManageNetScanScripts extends Wizard
                 true
             );
             $datam[0] .= '</a>';
-            $datam[0] .= '<div id="next_macro" style="display:none">';
+            $datam[0] .= '<div id="next_macro" class="invisible">';
             $datam[0] .= $i.'</div>';
-            $datam[0] .= '<div id="next_row" style="display:none">';
+            $datam[0] .= '<div id="next_row" class="invisible">';
             $datam[0] .= $next_name_number.'</div>';
 
             $delete_macro_style = '';

@@ -129,7 +129,7 @@ function network_print_explorer_header(
     $selected,
     $hidden_data
 ) {
-    $cell = '<div style="display: flex; align-items: center;">';
+    $cell = '<div class="flex_center">';
     $cell .= $title;
     $cell .= html_print_link_with_params(
         'images/arrow-down-white.png',

@@ -161,7 +161,7 @@ echo '<tr><td class="datos2">'.'<b>'.__('Description').'</b>'.'</td>';
 echo '<td class="datos2">';
 html_print_textarea('description', 2, 60, $description);
 echo '</td></tr>';
-echo '<tr><td></td><td style="text-align:right;">';
+echo '<tr><td></td><td class="right">';
 if ($id_np > 0) {
     html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
 } else {
@@ -245,7 +245,7 @@ if ($id_np > 0) {
 
     unset($table);
 
-    echo "<h4 style='margin-top:0px !important;'>".__('Add modules').'</h4>';
+    echo "<h4 class='mrgn_top_0'>".__('Add modules').'</h4>';
 
     unset($table);
 
@@ -266,7 +266,7 @@ if ($id_np > 0) {
     $filter .= '</form>';
 
     $group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
-    $group_filter .= '<div style="width:540px"><a name="filter"></a>';
+    $group_filter .= '<div class="width:540px"><a name="filter"></a>';
     $result = db_get_all_rows_in_table('tnetwork_component_group', 'name');
     if ($result === false) {
         $result = [];
@@ -288,7 +288,7 @@ if ($id_np > 0) {
         $groups_compound[$row['id_sg']] .= $row['name'];
     }
 
-    $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" style="width:350px');
+    $group_filter .= html_print_select($groups_compound, 'ncgroup', $ncgroup, 'javascript:this.form.submit();', __('Group').' - '.__('All'), -1, true, false, true, '" class="w350px');
 
     $group_filter .= '</div></form>';
 
@@ -320,7 +320,7 @@ if ($id_np > 0) {
     }
 
     $components_select = '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-    $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" style="width:350px');
+    $components_select .= html_print_select($components, 'components[]', $id_nc, '', '', -1, true, true, false, '" clas="w350px');
 
     $table->data[0][0] = __('Filter');
     $table->data[0][1] = $filter;

@@ -193,7 +193,7 @@ foreach ($filters as $filter) {
     if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
         $table->cellclass[][3] = 'action_buttons';
         $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-            href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     }
 
     array_push($table->data, $data);
@@ -203,7 +203,7 @@ if (isset($data)) {
     echo "<form method='post' action='".$config['homeurl']."index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    echo "<div style=' float: right;'>";
+    echo "<div class='right'>";
 
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';
@@ -213,7 +213,7 @@ if (isset($data)) {
 }
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-echo "<div style='margin-right: 5px; float: right;'>";
+echo "<div class='mrgn_right_5px right'>";
 html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';

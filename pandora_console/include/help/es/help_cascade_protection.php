@@ -1,9 +1,9 @@
-<h1 style='text-align:center;'>Protección en Cascada</h1>
+<h1 class='center'>Protección en Cascada</h1>
 <br>
 
 <h2>Protección en cascada por agente</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_agent.png', false); ?>
 </div>
 <br>
@@ -18,7 +18,7 @@ Si quiere usar un sistema avanzado de protección en cascada, sólo tiene que us
 
 <h2>Protección en cascada por módulo</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_module.png', false); ?>
 </div>
 <br>

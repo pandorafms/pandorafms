@@ -449,7 +449,7 @@ $table->data['all_4'][1] = html_print_select(
     true,
     true
 );
-$table->data['all_4'][2] = ' <span style="vertical-align: top;">'.__('Modules').'</span>';
+$table->data['all_4'][2] = ' <span class="align-top">'.__('Modules').'</span>';
 $table->data['all_4'][3] = html_print_select(
     [],
     'module[]',
@@ -535,7 +535,7 @@ if (is_metaconsole()) {
 }
 
 if (defined('METACONSOLE')) {
-    echo "<div class='title_tactical' style='margin-top: 15px; '>".__('Wizard').'</div>';
+    echo "<div class='title_tactical mrgn_top_15px'>".__('Wizard').'</div>';
 }
 
 html_print_table($table);
@@ -553,9 +553,9 @@ echo '</div>';
 echo '</form>';
 
 // Trick for it have a traduct text for javascript.
-echo '<span id="any_text" style="display: none;">'.__('Any').'</span>';
-echo '<span id="none_text" style="display: none;">'.__('None').'</span>';
-echo '<span id="loading_text" style="display: none;">'.__('Loading...').'</span>';
+echo '<span id="any_text"     class="invisible">'.__('Any').'</span>';
+echo '<span id="none_text"    class="invisible">'.__('None').'</span>';
+echo '<span id="loading_text" class="invisible">'.__('Loading...').'</span>';
 ?>
 <script type="text/javascript">
 

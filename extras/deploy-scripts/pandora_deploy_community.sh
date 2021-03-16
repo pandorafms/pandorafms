@@ -71,7 +71,7 @@ check_pre_pandora () {
 check_repo_connection () {
     execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
-    execute_cmd "ping -c 2 support.artica.es" "Checking Enterprise repo"
+    execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
 
 check_root_permissions () {

@@ -50,9 +50,9 @@ if ($id_agente) {
 // Table for filter controls
 $form_filter = '<form method="post" action="index.php?sec='.$sec.'&amp;sec2='.$sec2.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure='.$config['pure'].'">';
 $form_filter .= "<input type='hidden' name='search' value='1' />";
-$form_filter .= '<table style="width: 100%;" cellpadding="0" cellspacing="0" class="databox filters">';
+$form_filter .= '<table  cellpadding="0" cellspacing="0" class="databox filters w100p">';
 $form_filter .= '<tr>';
-$form_filter .= "<td style='font-weight: bold;'>".__('Template name').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Template name').'</td><td>';
 $form_filter .= html_print_input_text('template_name', $templateName, '', 12, 255, true);
 $form_filter .= '</td>';
 $temp = agents_get_agents();
@@ -65,7 +65,7 @@ if ($temp) {
     }
 }
 
-$form_filter .= "<td style='font-weight: bold;'>".__('Agents').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Agents').'</td><td>';
 
 $params = [];
 $params['return'] = true;
@@ -80,7 +80,7 @@ $form_filter .= ui_print_agent_autocomplete_input($params);
 
 $form_filter .= '</td>';
 
-$form_filter .= "<td style='font-weight: bold;'>".__('Module name').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Module name').'</td><td>';
 $form_filter .= html_print_input_text('module_name', $moduleName, '', 12, 255, true);
 $form_filter .= '</td>';
 $form_filter .= '</tr>';
@@ -111,19 +111,19 @@ if (is_array($temp)) {
     }
 }
 
-$form_filter .= "<td style='font-weight: bold;'>".__('Actions').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Actions').'</td><td>';
 $form_filter .= html_print_select($arrayActions, 'action_id', $actionID, '', __('All'), -1, true);
 $form_filter .= '</td>';
-$form_filter .= "<td style='font-weight: bold;'>".__('Field content').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Field content').'</td><td>';
 $form_filter .= html_print_input_text('field_content', $fieldContent, '', 12, 255, true);
 $form_filter .= '</td>';
-$form_filter .= "<td style='font-weight: bold;'>".__('Priority').'</td><td>';
+$form_filter .= "<td class='bolder''>".__('Priority').'</td><td>';
 $form_filter .= html_print_select(get_priorities(), 'priority', $priority, '', __('All'), -1, true);
-$form_filter .= "</td style='font-weight: bold;'>";
+$form_filter .= "</td class='bolder''>";
 $form_filter .= '</tr>';
 
 $form_filter .= '<tr>';
-$form_filter .= "<td style='font-weight: bold;'>".__('Status').'</td><td>';
+$form_filter .= "<td class='bolder'>".__('Status').'</td><td>';
 $ed_list = [];
 $alert_status_filter = [];
 $alert_status_filter['all_enabled'] = __('All (Enabled)');
@@ -132,13 +132,13 @@ $alert_status_filter['fired'] = __('Fired');
 $alert_status_filter['notfired'] = __('Not fired');
 $alert_status_filter['disabled'] = __('Disabled');
 $form_filter .= html_print_select($alert_status_filter, 'status_alert', $status_alert, '', '', '', true);
-$form_filter .= "</td><td style='font-weight: bold;'>".__('Standby').'</td><td>';
+$form_filter .= "</td><td class='bolder'>".__('Standby').'</td><td>';
 $sb_list = [];
 $sb_list[1] = __('Standby on');
 $sb_list[0] = __('Standby off');
 $form_filter .= html_print_select($sb_list, 'standby', $standby, '', __('All'), -1, true);
 $form_filter .= '</td>';
-$form_filter .= "</td><td style='font-weight: bold;'>".__('Group').'</td><td>';
+$form_filter .= "</td><td class='bolder''>".__('Group').'</td><td>';
 $own_info = get_user_info($config['id_user']);
 if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
     $return_all_group = false;
@@ -158,7 +158,7 @@ if (defined('METACONSOLE')) {
     $form_filter .= '</table>';
 } else {
     $form_filter .= '</table>';
-    $form_filter .= "<div  style='text-align:right; height:100%;'>";
+    $form_filter .= "<div class='right height_100p'>";
     $form_filter .= html_print_submit_button(__('Update'), '', false, 'class="sub upd"', true);
     $form_filter .= '</div>';
 }
@@ -528,7 +528,7 @@ foreach ($simple_alerts as $alert) {
         $data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab='.$main_tab.'&id_agente='.$id_agent.'">';
 
         if ($alert['disabled']) {
-            $data[0] .= '<span style="font-style: italic; color: #aaaaaa;">';
+            $data[0] .= '<span class="italic_a">';
         }
 
         $alias = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
@@ -579,7 +579,14 @@ foreach ($simple_alerts as $alert) {
     );
     $data[2] .= ' <a class="template_details"
 		href="'.ui_get_full_url(false, false, false, false).'ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">';
-        $data[2] .= html_print_image('images/zoom.png', true, ['id' => 'template-details-'.$alert['id_alert_template'], 'class' => 'img_help action_button_img']);
+        $data[2] .= html_print_image(
+            'images/zoom.png',
+            true,
+            [
+                'id'    => 'template-details-'.$alert['id_alert_template'],
+                'class' => 'img_help action_button_img invert_filter',
+            ]
+        );
     $data[2] .= '</a> ';
 
     if (check_acl($config['id_user'], $template_group, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) {
@@ -588,7 +595,7 @@ foreach ($simple_alerts as $alert) {
 
     $actions = alerts_get_alert_agent_module_actions($alert['id']);
 
-    $data[3] = "<table style='width:100%;'>";
+    $data[3] = "<table class='w100p'>";
     // Get and show default actions for this alert
     $default_action = db_get_sql(
         'SELECT id_alert_action
@@ -603,12 +610,12 @@ foreach ($simple_alerts as $alert) {
     }
 
     foreach ($actions as $action_id => $action) {
-        $data[3] .= '<tr style="display: grid; grid-template-columns: 1fr 1fr; align-items: center;">';
+        $data[3] .= '<tr class="alert_action_list">';
             $data[3] .= '<td>';
-                $data[3] .= '<ul class="action_list" style="display:inline;">';
-                $data[3] .= '<li style="display:inline;">';
+                $data[3] .= '<ul class="action_list inline_line">';
+                $data[3] .= '<li class="inline_line">';
         if ($alert['disabled']) {
-            $data[3] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
+            $data[3] .= '<font class="action_name italic_a">';
         } else {
             $data[3] .= '<font class="action_name">';
         }
@@ -642,12 +649,11 @@ foreach ($simple_alerts as $alert) {
 
         $data[3] .= '</td>';
 
-        $data[3] .= '<td style=" display: flex; align-items: center;">';
+        $data[3] .= '<td class="flex_center">';
         $data[3] .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
         // Is possible manage actions if have LW permissions in the agent group of the alert module
         if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-            // ~ $data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
-            $data[3] .= '<form method="post" action="'.$url.'" class="delete_link" style="display: inline;">';
+            $data[3] .= '<form method="post" action="'.$url.'" class="delete_link display_in">';
             $data[3] .= html_print_input_image(
                 'delete',
                 'images/cross.png',
@@ -656,7 +662,7 @@ foreach ($simple_alerts as $alert) {
                 true,
                 [
                     'title' => __('Delete action'),
-                    'class' => 'action_button_img',
+                    'class' => 'action_button_img invert_filter',
                 ]
             );
             $data[3] .= html_print_input_hidden('delete_action', 1, true);
@@ -671,7 +677,7 @@ foreach ($simple_alerts as $alert) {
                 true,
                 [
                     'title'   => __('Update action'),
-                    'class'   => 'action_button_img',
+                    'class'   => 'action_button_img invert_filter',
                     'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action_id.'\',\''.$alert['id_agent_module'].'\')',
                 ]
             );
@@ -682,7 +688,7 @@ foreach ($simple_alerts as $alert) {
         $data[3] .= '</tr>';
     }
 
-    $data[3] .= '<div id="update_action-div" style="display:none;text-align:left">';
+    $data[3] .= '<div id="update_action-div" class="invisible left">';
     $data[3] .= '</div>';
     $data[3] .= '</table>';
     // Is possible manage actions if have LW permissions in the agent group of the alert module
@@ -700,15 +706,15 @@ foreach ($simple_alerts as $alert) {
             $actions = alerts_get_alert_actions_filter(true, 'id_group IN ('.$filter_groups.')');
         }
 
-        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" style="display:none;text-align:left">';
+        $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible left">';
             $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post">';
-                $data[3] .= '<table class="databox_color" style="width:100%">';
+                $data[3] .= '<table class="databox_color w100p">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 
         if (! $id_agente) {
             $data[3] .= '<tr class="datos2">';
-                $data[3] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                $data[3] .= '<td class="datos2 bolder pdd_6px">';
                 $data[3] .= __('Agent');
                 $data[3] .= '</td>';
                 $data[3] .= '<td class="datos">';
@@ -718,7 +724,7 @@ foreach ($simple_alerts as $alert) {
         }
 
                     $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos" style="font-weight:bold;padding:6px;">';
+                        $data[3] .= '<td class="datos bolder pdd_6px">';
                         $data[3] .= __('Module');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos">';
@@ -726,7 +732,7 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                        $data[3] .= '<td class="datos2 bolder pdd_6px">';
                             $data[3] .= __('Action');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos2">';
@@ -734,7 +740,7 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos">';
-                        $data[3] .= '<td class="datos" style="font-weight:bold;padding:6px;">';
+                        $data[3] .= '<td class="datos bolder pdd_6px">';
                             $data[3] .= __('Number of alerts match from');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos">';
@@ -758,7 +764,7 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                     $data[3] .= '<tr class="datos2">';
-                        $data[3] .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                        $data[3] .= '<td class="datos2 bolder pdd_6px">';
                             $data[3] .= __('Threshold');
                         $data[3] .= '</td>';
                         $data[3] .= '<td class="datos2">';
@@ -782,7 +788,13 @@ foreach ($simple_alerts as $alert) {
                         $data[3] .= '</td>';
                     $data[3] .= '</tr>';
                 $data[3] .= '</table>';
-                $data[3] .= html_print_submit_button(__('Add'), 'addbutton', false, ['class' => 'sub next', 'style' => 'float:right'], true);
+                $data[3] .= html_print_submit_button(
+                    __('Add'),
+                    'addbutton',
+                    false,
+                    ['class' => 'sub next right'],
+                    true
+                );
             $data[3] .= '</form>';
         $data[3] .= '</div>';
     }
@@ -791,12 +803,24 @@ foreach ($simple_alerts as $alert) {
         1 => 'action_buttons',
         4 => 'action_buttons',
     ];
-    $data[4] = '<form class="disable_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+    $data[4] = '<form class="disable_alert_form display_in" action="'.$url.'" method="post" >';
     if ($alert['disabled']) {
-        $data[4] .= html_print_input_image('enable', 'images/lightbulb_off.png', 1, 'padding:0px', true);
+        $data[4] .= html_print_input_image(
+            'enable',
+            'images/lightbulb_off.png',
+            1,
+            'padding:0px',
+            true
+        );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
-        $data[4] .= html_print_input_image('disable', 'images/lightbulb.png', 1, 'padding:0px;', true);
+        $data[4] .= html_print_input_image(
+            'disable',
+            'images/lightbulb.png',
+            1,
+            'padding:0px;',
+            true
+        );
         $data[4] .= html_print_input_hidden('disable_alert', 1, true);
     }
 
@@ -805,12 +829,26 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '<form class="standby_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="standby_alert_form display_in" action="'.$url.'" method="post">';
         if (!$alert['standby']) {
-            $data[4] .= html_print_input_image('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
+            $data[4] .= html_print_input_image(
+                'standby_off',
+                'images/bell.png',
+                1,
+                'padding:0px;',
+                true,
+                ['class' => 'invert_filter']
+            );
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
         } else {
-            $data[4] .= html_print_input_image('standby_on', 'images/bell_pause.png', 1, 'padding:0px;', true);
+            $data[4] .= html_print_input_image(
+                'standby_on',
+                'images/bell_pause.png',
+                1,
+                'padding:0px;',
+                true,
+                ['class' => 'invert_filter']
+            );
             $data[4] .= html_print_input_hidden('standbyoff_alert', 1, true);
         }
 
@@ -825,7 +863,7 @@ foreach ($simple_alerts as $alert) {
             if ($policyInfo === false) {
                 $data[1] .= '';
             } else {
-                $img = 'images/policies.png';
+                $img = 'images/policies_mc.png';
 
                 $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             }
@@ -834,7 +872,7 @@ foreach ($simple_alerts as $alert) {
 
     // To manage alert is necessary LW permissions in the agent group
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW')) {
-        $data[4] .= '<form class="delete_alert_form" action="'.$url.'" method="post" style="display: inline;">';
+        $data[4] .= '<form class="delete_alert_form display_in" action="'.$url.'" method="post" >';
         $is_cluster = (bool) get_parameter('id_cluster');
         if (!$is_cluster) {
             if ($alert['disabled']) {
@@ -846,21 +884,21 @@ foreach ($simple_alerts as $alert) {
             } else {
                 if ((int) $alert['id_policy_alerts'] === 0) {
                     $data[4] .= '<a href="javascript:show_add_action(\''.$alert['id'].'\');">';
-                    $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action')]);
+                    $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']);
                     $data[4] .= '</a>';
                 }
             }
         }
 
-        $data[4] .= html_print_input_image('delete', 'images/cross.png', 1, '', true, ['title' => __('Delete')]);
+        $data[4] .= html_print_input_image('delete', 'images/cross.png', 1, '', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
         $data[4] .= html_print_input_hidden('delete_alert', 1, true);
         $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
         $data[4] .= '</form>';
 
         if ($is_cluster) {
-            $data[4] .= '<form class="view_alert_form" method="post" style="display: inline;">';
+            $data[4] .= '<form class="view_alert_form display_in" method="post">';
 
-            $data[4] .= html_print_input_image('update', 'images/builder.png', 1, '', true, ['title' => __('Update')]);
+            $data[4] .= html_print_input_image('update', 'images/builder.png', 1, '', true, ['title' => __('Update'), 'class' => 'invert_filter']);
             $data[4] .= html_print_input_hidden('upd_alert', 1, true);
             $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
 
@@ -869,8 +907,8 @@ foreach ($simple_alerts as $alert) {
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
-        $data[4] .= '<form class="view_alert_form" method="post" style="display: inline;" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
-        $data[4] .= html_print_input_image('view_alert', 'images/eye.png', 1, '', true, ['title' => __('View alert advanced details')]);
+        $data[4] .= '<form class="view_alert_form display_in" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_view">';
+        $data[4] .= html_print_input_image('view_alert', 'images/operation.png', 1, '', true, ['title' => __('View alert advanced details'), 'class' => 'invert_filter']);
         $data[4] .= html_print_input_hidden('id_alert', $alert['id'], true);
         $data[4] .= '</form>';
     }
@@ -945,37 +983,109 @@ if (! $id_agente) {
     
     $("input[name=disable]").attr ("title", "<?php echo __('Disable'); ?>")
         .hover (function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/lightbulb_off.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/lightbulb_off.png',
+                    true,
+                    false,
+                    true
+                ).'"';
+                ?>
+                     );
             },
             function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/lightbulb.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/lightbulb.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             }
         );
     
     $("input[name=enable]").attr ("title", "<?php echo __('Enable'); ?>")
         .hover (function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/lightbulb.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/lightbulb.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             },
             function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/lightbulb_off.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/lightbulb_off.png',
+                    true,
+                    false,
+                    true
+                ).'"';
+                ?>
+                     );
             }
         );
     
     $("input[name=standby_on]").attr ("title", "<?php echo __('Set off standby'); ?>")
         .hover (function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/bell.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/bell.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             },
             function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/bell_pause.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/bell_pause.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             }
         );
     
     $("input[name=standby_off]").attr ("title", "<?php echo __('Set standby'); ?>")
         .hover (function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/bell_pause.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/bell_pause.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             },
             function () {
-                $(this).attr ("src", <?php echo '"'.html_print_image('images/bell.png', true, false, true).'"'; ?> );
+                $(this).attr ("src", 
+                <?php
+                echo '"'.html_print_image(
+                    'images/bell.png',
+                    true,
+                    ['class' => 'invert_filter'],
+                    true
+                ).'"';
+                ?>
+                     );
             }
         );
     

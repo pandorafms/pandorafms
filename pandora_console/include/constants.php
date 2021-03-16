@@ -476,8 +476,6 @@ define('MODULE_LINKED', 1);
 define('MODULE_PENDING_UNLINK', 10);
 define('MODULE_PENDING_LINK', 11);
 
-define('POLICY_ADD_MAX_AGENTS', 200);
-
 // EVENTS.
 define('EVENTS_GOING_UNKNOWN', 'going_unknown');
 define('EVENTS_UNKNOWN', 'unknown');

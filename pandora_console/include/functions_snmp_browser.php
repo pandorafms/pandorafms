@@ -1024,7 +1024,7 @@ function snmp_browser_print_container(
     if ($snmp_version == 3) {
         $output .= '<div id="snmp3_browser_options">';
     } else {
-        $output .= '<div id="snmp3_browser_options" class="invisible">';
+        $output .= '<div id="snmp3_browser_options" style="display: none;">';
     }
 
     $output .= ui_toggle(

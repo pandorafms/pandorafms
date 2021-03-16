@@ -4037,7 +4037,7 @@ function html_print_autocomplete_modules(
 
     ob_start();
 
-    $module_icon = 'images/module.png';
+    $module_icon = 'images/search_module.png';
     if ($config['style'] === 'pandora_black') {
         $module_icon = 'images/brick.menu.png';
     }

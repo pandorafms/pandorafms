@@ -697,6 +697,33 @@ function cron_list_table()
                     $args = unserialize($task['args']);
                 break;
 
+                case 'cron_task_generate_csv_log':
+                    if ($manage_pandora) {
+                        $data[0]  = '<a href="'.$url;
+                        $data[0] .= 'force_run=1&id_user_task='.$task['id'].'">';
+                        $data[0] .= html_print_image(
+                            'images/target.png',
+                            true,
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
+                        );
+                        $data[0] .= '</a>';
+                    } else {
+                        $data[0] = '';
+                    }
+
+                    $data[1] = $task['id_usuario'];
+                    $data[2] = db_get_value(
+                        'name',
+                        'tuser_task',
+                        'id',
+                        $task['id_user_task']
+                    );
+                    $args = unserialize($task['args']);
+                break;
+
                 default:
                     // Ignore.
                 break;

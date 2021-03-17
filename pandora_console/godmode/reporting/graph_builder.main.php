@@ -170,7 +170,7 @@ if (check_acl($config['id_user'], 0, 'RW')) {
 $output .= '</td></tr>';
 $output .= '<tr>';
 $output .= "<td class='datos2'><b>".__('Description').'</b></td>';
-$output .= "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=55 rows=2>";
+$output .= "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=55 rows=2>";
 if ($edit_graph) {
     $output .= $graphInTgraph['description'];
 }
@@ -178,7 +178,7 @@ if ($edit_graph) {
 $output .= '</textarea>';
 $output .= '</td></tr>';
 if ($stacked == CUSTOM_GRAPH_GAUGE) {
-    $hidden = ' style="display:none;" ';
+    $hidden = ' class="invisible" ';
 } else {
     $hidden = '';
 }
@@ -198,7 +198,7 @@ $output .= html_print_extended_select_for_time(
 );
 $output .= "</td><td class='datos2'>";
 $output .= '<b>'.__('Type of graph').'</b></td>';
-$output .= "<td class='datos2'> <div style='float:left;display:inline-block'>";
+$output .= "<td class='datos2'> <div class='left inline'>";
 
 require_once $config['homedir'].'/include/functions_graph.php';
 
@@ -284,12 +284,12 @@ $output .= '</tr>';
 $output .= '</table>';
 
 if ($edit_graph) {
-    $output .= "<div style='width:100%'>";
-    $output .= "<input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update')."'>";
+    $output .= "<div class='w100p'>";
+    $output .= "<input type=submit name='store' class='sub upd right' value='".__('Update')."'>";
     $output .= '</div>';
 } else {
-    $output .= "<div style='width:100%'>";
-    $output .= "<input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'>";
+    $output .= "<div class='w100p'>";
+    $output .= "<input type=submit name='store' class='sub next right' value='".__('Create')."'>";
     $output .= '</div>';
 }
 

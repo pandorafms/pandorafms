@@ -21,7 +21,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'LM')) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Alert Management'
@@ -51,7 +51,7 @@ if (is_metaconsole() === true) {
 if ($id > 0) {
     $alert = alerts_get_alert_command($id);
 
-    if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'LM')) {
+    if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'PM')) {
         db_pandora_audit('ACL Violation', 'Trying to access Alert Management');
         include 'general/noaccess.php';
         exit;

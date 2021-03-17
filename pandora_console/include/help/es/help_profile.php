@@ -13,8 +13,8 @@
 
 <br>
 
-<table cellpadding=4 cellspacing=0 style='background-color: #f0f0f0;'>
-<tr><th style='background-color: #cacaca'>Operación<th style='background-color: #cacaca'>Bit de acceso
+<table cellpadding=4 cellspacing=0 class='bg_f0'>
+<tr><th class='bg_caca'>Operación<th class='bg_caca'>Bit de acceso
 
 <tr><td>Ver datos agente (todas las vistas)    <td>AR
 <tr><td>Vista táctica    <td>AR

@@ -434,11 +434,11 @@ if ($id_agente) {
             $buttons = [
                 'list'    => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts')]).'</a>',
+                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts'), 'class' => 'invert_filter']).'</a>',
                 ],
                 'builder' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Builder alert')]).'</a>',
+                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Builder alert'), 'class' => 'invert_filter']).'</a>',
                 ],
             ];
 

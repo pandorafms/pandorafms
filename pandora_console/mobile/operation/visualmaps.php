@@ -166,7 +166,7 @@ class Visualmaps
         }
 
         if (count($maps) == 0) {
-            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
+            $ui->contentAddHtml('<p class="color_ff0">'.__('No maps defined').'</p>');
         } else {
             $table = new Table();
             $table->id = 'list_visualmaps';

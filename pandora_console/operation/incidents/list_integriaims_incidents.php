@@ -38,7 +38,7 @@ ui_print_page_header(
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
-    ui_print_error_message(__('Integria integration must be enabled in Pandora setup'));
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
     return;
 }
 
@@ -186,7 +186,7 @@ $table->data[2][3] .= html_print_input_text_extended(
     50,
     false,
     '',
-    'style="margin-left:5px;" placeholder="'.__('Created to').'"',
+    'class="mrgn_lft_5px" placeholder="'.__('Created to').'"',
     true
 );
 
@@ -213,10 +213,10 @@ $decode_csv = base64_encode(json_encode($tickets_filters));
 
 
 // ---- PRINT TABLE FILTERS ----
-$integria_incidents_form = '<form method="post" action="'.$url.'" style="padding:0px;">';
+$integria_incidents_form = '<form method="post" action="'.$url.'" class="pdd_0px">';
 $integria_incidents_form .= html_print_table($table, true);
-$integria_incidents_form .= '<div style="width:100%; text-align:right;">';
-$integria_incidents_form .= '<div style="float:right; margin-left: 5px;">'.html_print_button(
+$integria_incidents_form .= '<div class="w100p right">';
+$integria_incidents_form .= '<div class="float-right mrgn_lft_5px">'.html_print_button(
     __('Export to CSV'),
     'csv_export',
     false,
@@ -303,7 +303,7 @@ foreach ($incidents_paginated as $key => $value) {
     if (check_acl($config['id_user'], 0, 'IM')) {
         $table->data[$i][8] .= '<a id="link_delete_incident" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&delete_incident='.$array_get_incidents[$key][0]).'"        
         onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $table->data[$i][8] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+        $table->data[$i][8] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
         $table->data[$i][8] .= '</a>';
     }
 
@@ -322,7 +322,7 @@ if (empty($table->data) === true) {
 // Show button to create incident.
 if (check_acl($config['id_user'], 0, 'IR')) {
     echo '<form method="POST" action="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident').'">';
-        echo '<div style="width: 100%; text-align:right;">';
+        echo '<div class="wi100p right">';
             html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub next"');
         echo '</div>';
     echo '</form>';

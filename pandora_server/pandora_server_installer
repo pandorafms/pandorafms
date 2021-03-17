@@ -9,7 +9,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.752"
-PI_BUILD="210304"
+PI_BUILD="210317"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -313,7 +313,7 @@ install () {
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/commands 2> /dev/null
 	chmod 2770 $DESTDIR$PANDORA_SPOOL/data_in/commands
 	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
-	chown -R pandora $DESTDIR$PANDORA_LOG 2> /dev/null
+	chown -R pandora:apache $DESTDIR$PANDORA_LOG 2> /dev/null
 	chmod 2774 $DESTDIR$PANDORA_LOG 2> /dev/null
 
 	echo "Giving proper permission to /var/spool/pandora"

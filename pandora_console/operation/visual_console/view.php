@@ -53,13 +53,14 @@ function visual_map_print_button_editor_refactor(
     $class='',
     $disabled=false
 ) {
+    global $config;
+
     html_print_button(
         $label,
         $idDiv,
         $disabled,
         '',
-        // "click_button_toolbox('".$idDiv."');",
-        'class="sub visual_editor_button_toolbox '.$idDiv.' '.$class.'"',
+        'class=" sub visual_editor_button_toolbox '.$idDiv.' '.$class.'"',
         false,
         true
     );
@@ -114,7 +115,10 @@ $options = [];
 $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder">'.html_print_image(
     'images/visual_console.png',
     true,
-    ['title' => __('Visual consoles list')]
+    [
+        'title' => __('Visual consoles list'),
+        'class' => 'invert_filter',
+    ]
 ).'</a>';
 
 if ($aclWrite || $aclManage) {
@@ -139,40 +143,58 @@ if ($aclWrite || $aclManage) {
     ).'" target="_blank">'.html_print_image(
         'images/camera_mc.png',
         true,
-        ['title' => __('Show link to public Visual Console')]
+        [
+            'title' => __('Show link to public Visual Console'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['public_link']['active'] = false;
 
     $options['data']['text'] = '<a href="'.$baseUrl.'&tab=data&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/op_reporting.png',
         true,
-        ['title' => __('Main data')]
+        [
+            'title' => __('Main data'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['list_elements']['text'] = '<a href="'.$baseUrl.'&tab=list_elements&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/list.png',
         true,
-        ['title' => __('List elements')]
+        [
+            'title' => __('List elements'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     if (enterprise_installed()) {
         $options['wizard_services']['text'] = '<a href="'.$baseUrl.'&tab=wizard_services&id_visual_console='.$visualConsoleId.'">'.html_print_image(
             'images/wand_services.png',
             true,
-            ['title' => __('Services wizard')]
+            [
+                'title' => __('Services wizard'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>';
     }
 
     $options['wizard']['text'] = '<a href="'.$baseUrl.'&tab=wizard&id_visual_console='.$visualConsoleId.'">'.html_print_image(
         'images/wand.png',
         true,
-        ['title' => __('Wizard')]
+        [
+            'title' => __('Wizard'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
     'images/operation.png',
     true,
-    ['title' => __('View')]
+    [
+        'title' => __('View'),
+        'class' => 'invert_filter',
+    ]
 ).'</a>';
 $options['view']['active'] = true;
 
@@ -181,7 +203,10 @@ if (!is_metaconsole()) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
             'images/full_screen.png',
             true,
-            ['title' => __('Full screen mode')]
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>';
         ui_print_page_header(
             $visualConsoleName,
@@ -318,7 +343,7 @@ echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
     // Floating menu - Start.
-    echo '<div id="vc-controls" style="z-index: 999">';
+    echo '<div id="vc-controls" class="zindex999">';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn white-box-content box-shadow flex-row">';
@@ -332,7 +357,7 @@ if ($pure === true) {
     }
 
     echo '<a class="vc-btn-no-fullscreen" href="'.$urlNoFull.'">';
-    echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
+    echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode'), 'class' => 'invert_filter']);
     echo '</a>';
     echo '</li>';
 

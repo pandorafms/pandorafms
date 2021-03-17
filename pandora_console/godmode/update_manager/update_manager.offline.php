@@ -101,7 +101,7 @@ is not working on the metaconsole and there is no time to fix it -->
         : "http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29";
     var text4_mr_file = "<?php echo __(' to this process'); ?>";
     text4_mr_file += "<br><br>";
-    text4_mr_file += "<a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"" + docsUrl + "\">";
+    text4_mr_file += "<a class=\"font_10 itali;\" target=\"blank\" href=\"" + docsUrl + "\">";
     text4_mr_file += "<?php echo __('About minor release update'); ?>";
     text4_mr_file += "</a>";
 

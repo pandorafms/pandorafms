@@ -441,6 +441,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field19_recovery` text NOT NULL,
 	`field20_recovery` text NOT NULL,
 	`previous_name` text,
+	`create_wu_integria` tinyint(1) default NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -1560,6 +1561,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
 	`uncompressed_module` TINYINT DEFAULT '0',
+	`summary` tinyint(1) DEFAULT 0,
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
@@ -3163,6 +3165,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`summary` tinyint(1) DEFAULT 0,
 	`uncompressed_module` TINYINT DEFAULT '0',
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,

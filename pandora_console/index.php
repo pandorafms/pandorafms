@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,8 @@
 if (!defined('__PAN_XHPROF__')) {
     define('__PAN_XHPROF__', 0);
 }
+
+require 'vendor/autoload.php';
 
 if (__PAN_XHPROF__ === 1) {
     if (function_exists('tideways_xhprof_enable')) {
@@ -141,6 +143,14 @@ if ((! file_exists('include/config.php'))
 require_once 'include/config.php';
 require_once 'include/functions_config.php';
 
+if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1) {
+    ini_set('log_errors', 1);
+    ini_set('error_log', $config['homedir'].'/log/console.log');
+} else {
+    ini_set('log_errors', 0);
+    ini_set('error_log', 0);
+}
+
 if (isset($config['error'])) {
     $login_screen = $config['error'];
     include 'general/error_screen.php';
@@ -212,7 +222,7 @@ echo '<head>'."\n";
 ob_start('ui_process_page_head');
 
 // Enterprise main.
-enterprise_include('index.php');
+enterprise_include_once('index.php');
 
 echo '<script type="text/javascript">';
     echo 'var dispositivo = navigator.userAgent.toLowerCase();';
@@ -263,6 +273,7 @@ if (strlen($search) > 0) {
 }
 
 // Login process.
+enterprise_include_once('include/auth/saml.php');
 if (! isset($config['id_user'])) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
@@ -369,9 +380,8 @@ if (! isset($config['id_user'])) {
                     'Invalid double auth login: '.$_SERVER['REMOTE_ADDR'],
                     $_SERVER['REMOTE_ADDR']
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -379,30 +389,39 @@ if (! isset($config['id_user'])) {
         }
 
         $login_button_saml = get_parameter('login_button_saml', false);
+        config_update_value('2Fa_auth', '');
         if (isset($double_auth_success) && $double_auth_success) {
             // This values are true cause there are checked before complete
             // the 2nd auth step.
             $nick_in_db = $_SESSION['prepared_login_da']['id_user'];
             $expired_pass = false;
         } else if (($config['auth'] == 'saml') && ($login_button_saml)) {
-            $saml_configured = include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/include/auth/saml.php';
-
-            if (!$saml_configured) {
-                include_once 'general/noaccesssaml.php';
-            }
-
-            $saml_user_id = saml_process_user_login();
-
+            $saml_user_id = enterprise_hook('saml_process_user_login');
             if (!$saml_user_id) {
-                include_once 'general/noaccesssaml.php';
-            }
+                $login_failed = true;
+                include_once 'general/login_page.php';
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
+                }
 
+                exit('</html>');
+            }
 
             $nick_in_db = $saml_user_id;
             if (!$nick_in_db) {
-                include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-                $as = new SimpleSAML_Auth_Simple($config['saml_source']);
-                $as->logout();
+                if ($config['auth'] === 'saml') {
+                    enterprise_hook('saml_logout');
+                }
+
+                if (session_status() !== PHP_SESSION_NONE) {
+                    $_SESSION = [];
+                    session_destroy();
+                    header_remove('Set-Cookie');
+                    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+                }
+
+                // Process logout.
+                include 'general/logoff.php';
             }
         } else {
             // process_user_login is a virtual function which should be defined in each auth file.
@@ -425,9 +444,8 @@ if (! isset($config['id_user'])) {
                 if ($blocked) {
                     include_once 'general/login_page.php';
                     db_pandora_audit('Password expired', 'Password expired: '.$nick, $nick);
-                    while (@ob_end_flush()) {
-                        // Dumping...
-                        continue;
+                    while (ob_get_length() > 0) {
+                        ob_end_flush();
                     }
 
                     exit('</html>');
@@ -460,9 +478,8 @@ if (! isset($config['id_user'])) {
                 'Password expired: '.$nick,
                 $nick
             );
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -484,9 +501,8 @@ if (! isset($config['id_user'])) {
                 // Load the page to introduce the double auth code.
                 $login_screen = 'double_auth';
                 include_once 'general/login_page.php';
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -582,7 +598,7 @@ if (! isset($config['id_user'])) {
             }
 
             if ($prepare_session) {
-                 config_prepare_session();
+                config_prepare_session();
             }
 
             if (is_user_admin($config['id_user'])) {
@@ -656,9 +672,8 @@ if (! isset($config['id_user'])) {
                     'Invalid login: '.$nick,
                     $nick
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -669,9 +684,8 @@ if (! isset($config['id_user'])) {
                     'Invalid login: '.$nick,
                     $nick
                 );
-                while (@ob_end_flush()) {
-                    // Dumping...
-                    continue;
+                while (ob_get_length() > 0) {
+                    ob_end_flush();
                 }
 
                 exit('</html>');
@@ -699,6 +713,8 @@ if (! isset($config['id_user'])) {
             $redirect_url .= '&'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
         }
 
+        $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
+
         header('Location: '.ui_get_full_url('index.php'.$redirect_url));
         exit;
         // Always exit after sending location headers.
@@ -718,14 +734,13 @@ if (! isset($config['id_user'])) {
         } else {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
-            while (@ob_end_flush()) {
-                // Dumping...
-                    continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
         }
-    } else {
+    } else if (isset($_GET['bye']) === false) {
         // There is no user connected.
         if ($config['enterprise_installed']) {
             enterprise_include_once('include/functions_reset_pass.php');
@@ -740,7 +755,17 @@ if (! isset($config['id_user'])) {
         $pass2 = get_parameter_post('pass2');
         $id_user = get_parameter_post('id_user');
 
-        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user)) {
+        if ($reset_hash != '') {
+            $hash_data = explode(':::', $reset_hash);
+            $id_user = $hash_data[0];
+            $codified_hash = $hash_data[1];
+
+            $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
+        }
+
+        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user) && $db_reset_pass_entry) {
+            delete_reset_pass_entry($id_user);
+
             $correct_reset_pass_process = '';
             $process_error_message = '';
 
@@ -777,21 +802,14 @@ if (! isset($config['id_user'])) {
             include_once 'general/login_page.php';
         } else {
             if ($reset_hash != '') {
-                $hash_data = explode(':::', $reset_hash);
-                $id_user = $hash_data[0];
-                $codified_hash = $hash_data[1];
-
-                $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
                 $process_error_message = '';
 
                 if ($db_reset_pass_entry) {
                     if (($db_reset_pass_entry + SECONDS_2HOUR) < time()) {
                         register_pass_change_try($id_user, 0);
                         $process_error_message = __('Too much time since password change request');
-                        delete_reset_pass_entry($id_user);
                         include_once 'general/login_page.php';
                     } else {
-                        delete_reset_pass_entry($id_user);
                         include_once 'enterprise/include/process_reset_pass.php';
                     }
                 } else {
@@ -865,9 +883,8 @@ if (! isset($config['id_user'])) {
             }
         }
 
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -891,9 +908,8 @@ if (! isset($config['id_user'])) {
         } else {
             include_once 'general/login_page.php';
             db_pandora_audit('Logon Failed (loginhash', '', 'system');
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
@@ -915,9 +931,8 @@ if (! isset($config['id_user'])) {
         unset($_SESSION['id_usuario']);
         unset($iduser);
         include_once 'general/login_page.php';
-        while (@ob_end_flush()) {
-            // Dumping...
-            continue;
+        while (ob_get_length() > 0) {
+            ob_end_flush();
         }
 
         exit('</html>');
@@ -934,12 +949,15 @@ if (! isset($config['id_user'])) {
             unset($_SESSION['id_usuario']);
             unset($iduser);
             include_once 'general/login_page.php';
-            while (@ob_end_flush()) {
-                // Dumping...
-                continue;
+            while (ob_get_length() > 0) {
+                ob_end_flush();
             }
 
             exit('</html>');
+        } else {
+            if ($config['auth'] === 'saml') {
+                enterprise_hook('saml_login_status_verifier');
+            }
         }
     }
 }
@@ -951,23 +969,22 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
 
 // Log off.
 if (isset($_GET['bye'])) {
-    include 'general/logoff.php';
     $iduser = $_SESSION['id_usuario'];
+
+    if ($config['auth'] === 'saml') {
+        enterprise_hook('saml_logout');
+    }
 
     $_SESSION = [];
     session_destroy();
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
-    if ($config['auth'] == 'saml') {
-        include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
-        $as = new SimpleSAML_Auth_Simple('PandoraFMS');
-        $as->logout();
-    }
+    // Process logout.
+    include 'general/logoff.php';
 
-    while (@ob_end_flush()) {
-        // Dumping...
-        continue;
+    while (ob_get_length() > 0) {
+        ob_end_flush();
     }
 
     exit('</html>');
@@ -977,11 +994,11 @@ clear_pandora_error_for_header();
 
 /*
  * ----------------------------------------------------------------------
- *  EXTENSIONS
- * ----------------------------------------------------------------------
- *
- * Load the basic configurations of extension and add extensions into menu.
- * Load here, because if not, some extensions not load well, I don't why.
+    *  EXTENSIONS
+    * ----------------------------------------------------------------------
+    *
+    * Load the basic configurations of extension and add extensions into menu.
+    * Load here, because if not, some extensions not load well, I don't why.
  */
 
 $config['logged'] = false;
@@ -1051,7 +1068,7 @@ if ($config['pure'] == 0) {
 
 /*
  * Session locking concurrency speedup!
- * http://es2.php.net/manual/en/ref.session.php#64525
+    * http://es2.php.net/manual/en/ref.session.php#64525
  */
 
 session_write_close();
@@ -1078,6 +1095,9 @@ if ($searchPage) {
                 }
             } else if ($sec == 'gextensions') {
                     $main_sec = get_parameter('extension_in_menu');
+                if (empty($main_sec) === true) {
+                    $main_sec = $sec;
+                }
             } else {
                 $main_sec = $sec;
             }
@@ -1166,7 +1186,7 @@ if ($searchPage) {
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=network&sec2=operation/visual_console/index&refr=60';
                     } else {
-                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc.'&refr=60';
+                        $str = 'sec=network&sec2=operation/visual_console/render_view&id='.$id_visualc;
                     }
 
                     parse_str($str, $res);
@@ -1182,6 +1202,11 @@ if ($searchPage) {
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
                     }
+                break;
+
+                case 'External link':
+                    $home_url = io_safe_output($home_url);
+                    echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
                 break;
             }
 
@@ -1222,10 +1247,10 @@ if ($searchPage) {
 }
 
 if ($config['pure'] == 0) {
-    echo '<div style="clear:both"></div>';
+    echo '<div id="both"></div>';
     echo '</div>';
     // Main.
-    echo '<div style="clear:both">&nbsp;</div>';
+    echo '<div id="both">&nbsp;</div>';
     echo '</div>';
     // Page (id = page).
 } else {
@@ -1239,11 +1264,18 @@ echo '</div>';
 echo '<div id="um_msg_receiver">';
 echo '</div>';
 
+// Connection lost alert.
+ui_require_javascript_file('connection_check');
+set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+
 if ($config['pure'] == 0) {
     echo '</div>';
     // Container div.
     echo '</div>';
-    echo '<div style="clear:both"></div>';
+    echo '<div id="both"></div>';
 
     echo '<div id="foot">';
     include 'general/footer.php';
@@ -1253,9 +1285,8 @@ if ($config['pure'] == 0) {
 require_once 'include/functions_clippy.php';
 clippy_start($sec2);
 
-while (@ob_end_flush()) {
-    // Dumping...
-    continue;
+while (ob_get_length() > 0) {
+    ob_end_flush();
 }
 
 db_print_database_debug();
@@ -1272,8 +1303,8 @@ require 'include/php_to_js_values.php';
 
 <script type="text/javascript" language="javascript">
 
-       // When there are less than 5 rows, all rows must be white
-       var theme = "<?php echo $config['style']; ?>";
+    // When there are less than 5 rows, all rows must be white
+    var theme = "<?php echo $config['style']; ?>";
         if(theme === 'pandora'){
         if($('table.info_table tr').length < 5){
             $('table.info_table tbody > tr').css('background-color', '#fff');
@@ -1300,11 +1331,11 @@ require 'include/php_to_js_values.php';
     function topFunction() {
 
         /*
-         * Safari.
-         * document.body.scrollTop = 0;
-         * For Chrome, Firefox, IE and Opera.
-         * document.documentElement.scrollTop = 0; 
-         */
+        * Safari.
+        * document.body.scrollTop = 0;
+        * For Chrome, Firefox, IE and Opera.
+        * document.documentElement.scrollTop = 0; 
+        */
 
         $("HTML, BODY").animate({ scrollTop: 0 }, 500);
     }

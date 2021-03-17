@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2007-2012 Artica Soluciones Tecnologicas, http://www.artica.es
+ * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannnot redistribute it without written permission of copyright holder.
  * ============================================================================
@@ -53,10 +53,10 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clus
         
         <?php
         if (check_acl($config['id_user'], 0, 'PM')) {
-            echo "<div id='create_master_window'></div>";
-            echo "<div id='msg'></div>";
+            echo "<div id='create_master_window' class='invisible'></div>";
+            echo "<div id='msg' class='invisible'></div>";
             ?>
-            <input style="margin-bottom:20px;" onclick="show_create_ha_cluster();" type="submit" class="button_task" value="<?php echo __('Add new node'); ?>" />
+            <input  onclick="show_create_ha_cluster();" type="submit" class="button_task ui_toggle" value="<?php echo __('Add new node'); ?>" />
             <?php
         }
         ?>

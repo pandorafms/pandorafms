@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -47,6 +47,7 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
     if ($parse_sec2_query[0] === 'sec2') {
         switch ($parse_sec2_query[1]) {
             case $main_file_manager:
+            case 'operation/snmpconsole/snmp_mib_uploader':
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/'.$file;
             break;
 

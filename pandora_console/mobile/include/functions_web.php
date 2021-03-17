@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,6 +12,8 @@
 // GNU General Public License for more details.
 function menu()
 {
+    global $config;
+
     $enterpriseHook = enterprise_include('mobile/include/functions_web.php');
 
     ?>
@@ -29,10 +31,10 @@ function menu()
                 menuEnterprise();
             }
             ?>
-            <a href="index.php?action=logout"><img class="icon_menu" alt="<?php echo __('Logout'); ?>" title="<?php echo __('Logout'); ?>" src="../images/log-out.png" /></a>
+            <a href="index.php?action=logout"><img class="icon_menu" alt="<?php echo __('Logout'); ?>" title="<?php echo __('Logout'); ?>" src="<?php echo 'images/header_logout.png'; ?>" /></a>
         </div>
         <div id="down_button">
-            <a class="button_menu" id="button_menu_down" href="javascript: toggleMenu();"><img id="img_boton_menu" width="20" height="20" src="images/down.png" /></a>
+            <a class="button_menu" id="button_menu_down" href="javascript: toggleMenu();"><img id="img_boton_menu" width="20" height="20" src="<?php echo 'images/down.png'; ?>" /></a>
         </div>
     </div>
     <script type="text/javascript">

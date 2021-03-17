@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
 $duplicate_template = (bool) get_parameter('duplicate_template');
 $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
+$step = (int) get_parameter('step', 1);
+// We set here the number of steps.
+define('LAST_STEP', 3);
 
 // If user tries to duplicate/edit a template with group=ALL then must have "PM" access privileges
 if ($duplicate_template) {
@@ -52,11 +55,19 @@ if (defined('METACONSOLE')) {
 if ($a_template !== false) {
     // If user tries to duplicate/edit a template with group=ALL
     if ($a_template['id_group'] == 0) {
+        if (users_can_manage_group_all('LM') === false) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access Alert Management'
+                );
+            include 'general/noaccess.php';
+            exit;
+        }
+
         // Header
         if (defined('METACONSOLE')) {
             alerts_meta_print_header();
         } else {
-            $step = (int) get_parameter('step', 1);
             if ($step == 1) {
                 $help_header = '';
             } else if ($step == 2) {
@@ -113,7 +124,6 @@ if ($a_template !== false) {
     if (defined('METACONSOLE')) {
         alerts_meta_print_header();
     } else {
-        $step = (int) get_parameter('step', 1);
         if ($step == 1) {
             $help_header = '';
         } else if ($step == 2) {
@@ -252,24 +262,20 @@ function update_template($step)
         $wizard_level = (string) get_parameter('wizard_level');
         $priority = (int) get_parameter('priority');
         $id_group = get_parameter('id_group');
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $name_check = db_get_value('name', 'talert_templates', 'name', $name);
-            break;
-
-            case 'oracle':
-                $name_check = db_get_value('name', 'talert_templates', 'to_char(name)', $name);
-            break;
+        // Only for Metaconsole. Save the previous name for synchronizing.
+        if (is_metaconsole()) {
+            $previous_name = db_get_value('name', 'talert_templates', 'id', $id);
+        } else {
+            $previous_name = '';
         }
 
         $values = [
-            'name'         => $name,
-            'description'  => $description,
-            'id_group'     => $id_group,
-            'priority'     => $priority,
-            'wizard_level' => $wizard_level,
+            'name'          => $name,
+            'description'   => $description,
+            'id_group'      => $id_group,
+            'priority'      => $priority,
+            'wizard_level'  => $wizard_level,
+            'previous_name' => $previous_name,
         ];
 
         $result = alerts_update_alert_template($id, $values);
@@ -363,7 +369,15 @@ function update_template($step)
 }
 
 
-// We set here the number of steps
+$is_central_policies_on_node = is_central_policies_on_node();
+
+if ($is_central_policies_on_node === true) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+    );
+}
+
+// We set here the number of steps.
 define('LAST_STEP', 3);
 
 $step = (int) get_parameter('step', 1);
@@ -579,27 +593,74 @@ if ($step == 2) {
         $show_matches = false;
     }
 
-    // Firing conditions and events
+    // Firing conditions and events.
     $table->colspan = [];
-    // $table->colspan[4][1] = 1;
     $table->data[0][0] = __('Days of week');
     $table->data[0][1] = __('Mon');
-    $table->data[0][1] .= html_print_checkbox('monday', 1, $monday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'monday',
+        1,
+        $monday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Tue');
-    $table->data[0][1] .= html_print_checkbox('tuesday', 1, $tuesday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'tuesday',
+        1,
+        $tuesday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Wed');
-    $table->data[0][1] .= html_print_checkbox('wednesday', 1, $wednesday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'wednesday',
+        1,
+        $wednesday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Thu');
-    $table->data[0][1] .= html_print_checkbox('thursday', 1, $thursday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'thursday',
+        1,
+        $thursday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Fri');
-    $table->data[0][1] .= html_print_checkbox('friday', 1, $friday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'friday',
+        1,
+        $friday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Sat');
-    $table->data[0][1] .= html_print_checkbox('saturday', 1, $saturday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'saturday',
+        1,
+        $saturday,
+        true,
+        $is_central_policies_on_node
+    );
     $table->data[0][1] .= __('Sun');
-    $table->data[0][1] .= html_print_checkbox('sunday', 1, $sunday, true);
+    $table->data[0][1] .= html_print_checkbox(
+        'sunday',
+        1,
+        $sunday,
+        true,
+        $is_central_policies_on_node
+    );
 
     $table->data[0][2] = __('Use special days list');
-    $table->data[0][3] = html_print_checkbox('special_day', 1, $special_day, true);
+    $table->data[0][3] = html_print_checkbox(
+        'special_day',
+        1,
+        $special_day,
+        true,
+        $is_central_policies_on_node
+    );
 
     $table->data[1][0] = __('Time from');
     $table->data[1][1] = html_print_input_text(
@@ -608,7 +669,18 @@ if ($step == 2) {
         '',
         7,
         8,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        $is_central_policies_on_node
     );
     $table->data[1][2] = __('Time to');
     $table->data[1][3] = html_print_input_text(
@@ -617,7 +689,18 @@ if ($step == 2) {
         '',
         7,
         8,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        $is_central_policies_on_node
     );
 
     $table->colspan['threshold'][1] = 3;
@@ -629,7 +712,11 @@ if ($step == 2) {
         '',
         '',
         false,
-        true
+        true,
+        false,
+        true,
+        '',
+        $is_central_policies_on_node
     );
 
     $table->data[3][0] = __('Min. number of alerts');
@@ -639,11 +726,35 @@ if ($step == 2) {
         '',
         5,
         7,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        $is_central_policies_on_node
     );
 
-    $table->data[3][2] = __('Reset counter for non-sustained alerts').ui_print_help_tip(__('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'), true);
-    $table->data[3][3] = html_print_checkbox('min_alerts_reset_counter', 1, $min_alerts_reset_counter, true);
+    $table->data[3][2] = __('Reset counter for non-sustained alerts');
+    $table->data[3][2] .= ui_print_help_tip(
+        __('Enable this option if you want the counter to be reset when the alert is not being fired consecutively, even if it\'s within the time threshold'),
+        true
+    );
+    $table->data[3][3] = html_print_checkbox(
+        'min_alerts_reset_counter',
+        1,
+        $min_alerts_reset_counter,
+        true,
+        $is_central_policies_on_node,
+        '',
+        false,
+        $create_template == 1 ? 'checked=checked' : ''
+    );
 
     $table->data[4][0] = __('Max. number of alerts');
     $table->data[4][1] = html_print_input_text(
@@ -652,39 +763,43 @@ if ($step == 2) {
         '',
         5,
         7,
-        true
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        $is_central_policies_on_node
     );
 
     $table->data[4][2] = __('Disable event');
-    $table->data[4][3] = html_print_checkbox('disable_event', 1, $disable_event, true);
+    $table->data[4][3] = html_print_checkbox(
+        'disable_event',
+        1,
+        $disable_event,
+        true,
+        $is_central_policies_on_node
+    );
 
     $table->data[5][0] = __('Default action');
-    $usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            $sql_query = sprintf(
-                '
-				SELECT id, name
-				FROM talert_actions
-				WHERE id_group IN (%s)
-				ORDER BY name',
-                $usr_groups
-            );
-        break;
+    $usr_groups = implode(
+        ',',
+        array_keys(users_get_groups($config['id_user'], 'LM', true))
+    );
 
-        case 'oracle':
-            $sql_query = sprintf(
-                '
-				SELECT id,
-					dbms_lob.substr(name,4000,1) AS nombre
-				FROM talert_actions
-				WHERE id_group IN (%s)
-				ORDER BY dbms_lob.substr(name,4000,1)',
-                $usr_groups
-            );
-        break;
-    }
+    $sql_query = sprintf(
+        '
+        SELECT id, name
+        FROM talert_actions
+        WHERE id_group IN (%s)
+        ORDER BY name',
+        $usr_groups
+    );
 
     $table->data[5][1] = html_print_select_from_sql(
         $sql_query,
@@ -696,11 +811,12 @@ if ($step == 2) {
         true,
         false,
         false,
-        false,
+        $is_central_policies_on_node,
         false,
         false,
         0
-    ).ui_print_help_tip(
+    );
+    $table->data[5][1] .= ui_print_help_tip(
         __('Unless they\'re left blank, the fields from the action will override those set on the template.'),
         true
     );
@@ -715,9 +831,11 @@ if ($step == 2) {
         0,
         true,
         false,
-        false
+        false,
+        '',
+        $is_central_policies_on_node
     );
-    $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+    $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
     $table->data[6][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
     $table->data[6][1] .= html_print_label(
         __('Trigger when matches the value'),
@@ -760,7 +878,7 @@ if ($step == 2) {
     $table->data['value'][1] .= '</span>';
     $table->colspan['value'][1] = 3;
 
-    // Min first, then max, that's more logical
+    // Min first, then max, that's more logical.
     $table->data['min'][0] = __('Min.');
     $table->data['min'][1] = html_print_input_text(
         'min',
@@ -798,25 +916,12 @@ if ($step == 2) {
     $table->size[1] = '45%';
     $table->size[2] = '45%';
 
-    // Alert recover
+    // Alert recover.
     if (! $recovery_notify) {
         $table->cellstyle['label_fields'][2] = 'display:none;';
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
             $table->cellstyle['field'.$i][2] = 'display:none;';
         }
-
-        /*
-            $table->cellstyle['field1'][2] = 'display:none;';
-            $table->cellstyle['field2'][2] = 'display:none;';
-            $table->cellstyle['field3'][2] = 'display:none;';
-            $table->cellstyle['field4'][2] = 'display:none;';
-            $table->cellstyle['field5'][2] = 'display:none;';
-            $table->cellstyle['field6'][2] = 'display:none;';
-            $table->cellstyle['field7'][2] = 'display:none;';
-            $table->cellstyle['field8'][2] = 'display:none;';
-            $table->cellstyle['field9'][2] = 'display:none;';
-            $table->cellstyle['field10'][2] = 'display:none;';
-        */
     }
 
     $table->data[0][0] = __('Alert recovery');
@@ -833,7 +938,9 @@ if ($step == 2) {
         '',
         true,
         false,
-        false
+        false,
+        '',
+        $is_central_policies_on_node
     );
     $table->colspan[0][1] = 2;
 
@@ -842,45 +949,98 @@ if ($step == 2) {
     $table->data['label_fields'][2] = __('Recovery fields');
 
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-        if (isset($template[$name])) {
+        if (isset($template[$name]) === true) {
             $value = $template[$name];
         } else {
             $value = '';
         }
 
-        // $table->rowclass['field'.$i] = 'row_field';
         $table->data['field'.$i][0] = sprintf(__('Field %s'), $i);
-        // TinyMCE
-        // triggering fields
-            // basic
-            $table->data['field'.$i][1] = '<div style="padding: 4px 0px;"><b><small>';
-            $table->data['field'.$i][1] .= __('Basic').'&nbsp;&nbsp;';
-            $table->data['field'.$i][1] .= html_print_radio_button_extended('editor_type_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."')", '', true);
-            // Advanced
-            $table->data['field'.$i][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
-            $table->data['field'.$i][1] .= __('Advanced').'&nbsp;&nbsp;';
-            $table->data['field'.$i][1] .= html_print_radio_button_extended('editor_type_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."')", '', true);
-            $table->data['field'.$i][1] .= '</small></b></div>';
+        // TinyMCE.
+        // triggering fields.
+        // Basic.
+        $table->data['field'.$i][1] = '<div id="command_div"><b><small>';
+        $table->data['field'.$i][1] .= __('Basic').'&nbsp;&nbsp;';
+        $table->data['field'.$i][1] .= html_print_radio_button_extended(
+            'editor_type_value_'.$i,
+            0,
+            '',
+            false,
+            $is_central_policies_on_node,
+            "removeTinyMCE('textarea_field".$i."')",
+            '',
+            true
+        );
+        // Advanced.
+        $table->data['field'.$i][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+        $table->data['field'.$i][1] .= __('Advanced').'&nbsp;&nbsp;';
+        $table->data['field'.$i][1] .= html_print_radio_button_extended(
+            'editor_type_value_'.$i,
+            0,
+            '',
+            true,
+            $is_central_policies_on_node,
+            "addTinyMCE('textarea_field".$i."')",
+            '',
+            true
+        );
+        $table->data['field'.$i][1] .= '</small></b></div>';
 
-            // Texarea
-            $table->data['field'.$i][1] .= html_print_textarea('field'.$i, 1, 1, isset($fields[$i]) ? $fields[$i] : '', 'style="min-height:40px;" class="fields"', true);
+        // Texarea.
+        $table->data['field'.$i][1] .= html_print_textarea(
+            'field'.$i,
+            1,
+            1,
+            isset($fields[$i]) ? $fields[$i] : '',
+            'class="fields" min-height-40px',
+            true,
+            '',
+            $is_central_policies_on_node
+        );
 
-        // Recovery
-            // basic
-            $table->data['field'.$i][2] = '<div style="padding: 4px 0px;"><b><small>';
-            $table->data['field'.$i][2] .= __('Basic').'&nbsp;&nbsp;';
-            $table->data['field'.$i][2] .= html_print_radio_button_extended('editor_type_recovery_value_'.$i, 0, '', false, false, "removeTinyMCE('textarea_field".$i."_recovery')", '', true);
-            // advanced
-            $table->data['field'.$i][2] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
-            $table->data['field'.$i][2] .= __('Advanced').'&nbsp;&nbsp;';
-            $table->data['field'.$i][2] .= html_print_radio_button_extended('editor_type_recovery_value_'.$i, 0, '', true, false, "addTinyMCE('textarea_field".$i."_recovery')", '', true);
-            $table->data['field'.$i][2] .= '</small></b></div>';
+        // Recovery.
+        // Basic.
+        $table->data['field'.$i][2] = '<div id="command_div"><b><small>';
+        $table->data['field'.$i][2] .= __('Basic').'&nbsp;&nbsp;';
+        $table->data['field'.$i][2] .= html_print_radio_button_extended(
+            'editor_type_recovery_value_'.$i,
+            0,
+            '',
+            false,
+            $is_central_policies_on_node,
+            "removeTinyMCE('textarea_field".$i."_recovery')",
+            '',
+            true
+        );
+        // Advanced.
+        $table->data['field'.$i][2] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+        $table->data['field'.$i][2] .= __('Advanced').'&nbsp;&nbsp;';
+        $table->data['field'.$i][2] .= html_print_radio_button_extended(
+            'editor_type_recovery_value_'.$i,
+            0,
+            '',
+            true,
+            $is_central_policies_on_node,
+            "addTinyMCE('textarea_field".$i."_recovery')",
+            '',
+            true
+        );
+        $table->data['field'.$i][2] .= '</small></b></div>';
 
-            // Texarea
-            $table->data['field'.$i][2] .= html_print_textarea('field'.$i.'_recovery', 1, 1, isset($fields_recovery[$i]) ? $fields_recovery[$i] : '', 'style="min-height:40px" class="fields"', true);
+        // Texarea.
+        $table->data['field'.$i][2] .= html_print_textarea(
+            'field'.$i.'_recovery',
+            1,
+            1,
+            isset($fields_recovery[$i]) ? $fields_recovery[$i] : '',
+            'class="fields min-height-40px"',
+            true,
+            '',
+            $is_central_policies_on_node
+        );
     }
 } else {
-    // Step 1 by default
+    // Step 1 by default.
     $table->size = [];
     $table->size[0] = '20%';
     $table->data = [];
@@ -916,20 +1076,53 @@ if ($step == 2) {
     }
 
     $table->data[0][0] = __('Name');
-    $table->data[0][1] = html_print_input_text('name', $name, '', 35, 255, true);
+    $table->data[0][1] = html_print_input_text(
+        'name',
+        $name,
+        '',
+        35,
+        255,
+        true,
+        false,
+        false,
+        '',
+        '',
+        '',
+        '',
+        false,
+        '',
+        '',
+        '',
+        $is_central_policies_on_node
+    );
 
 
     $table->data[0][1] .= '&nbsp;&nbsp;'.__('Group');
     $groups = users_get_groups();
     $own_info = get_user_info($config['id_user']);
-    // Only display group "All" if user is administrator or has "PM" privileges
-    if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-        $display_all_group = true;
-    } else {
-        $display_all_group = false;
+
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LM') === true) {
+        $return_all_group = true;
     }
 
-    $table->data[0][1] .= '&nbsp;'.html_print_select_groups(false, 'AR', $display_all_group, 'id_group', $id_group, '', '', 0, true);
+    $table->data[0][1] .= '&nbsp;';
+    $table->data[0][1] .= '<div class="w250px inline">'.html_print_select_groups(
+        false,
+        'AR',
+        $return_all_group,
+        'id_group',
+        $id_group,
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        $is_central_policies_on_node
+    ).'</div>';
 
 
     $table->data[1][0] = __('Description');
@@ -939,7 +1132,9 @@ if ($step == 2) {
         30,
         $description,
         '',
-        true
+        true,
+        '',
+        $is_central_policies_on_node
     );
 
     $table->data[2][0] = __('Priority');
@@ -952,7 +1147,9 @@ if ($step == 2) {
         0,
         true,
         false,
-        false
+        false,
+        '',
+        $is_central_policies_on_node
     );
 
     if (defined('METACONSOLE')) {
@@ -1000,25 +1197,32 @@ if (!$create_alert && !$create_template) {
 }
 
 if (!$disabled) {
-    if ($step >= LAST_STEP) {
-        html_print_submit_button(__('Finish'), 'finish', false, 'class="sub upd"');
-    } else {
-        html_print_input_hidden('step', ($step + 1));
-        if ($step == 2) {
-            // Javascript onsubmit to avoid min = 0 and max = 0
+    if ($is_central_policies_on_node === false) {
+        if ($step >= LAST_STEP) {
             html_print_submit_button(
-                __('Next'),
-                'next',
+                __('Finish'),
+                'finish',
                 false,
-                'class="sub next" onclick="return check_fields_step2();"'
+                'class="sub upd"'
             );
         } else {
-            html_print_submit_button(
-                __('Next'),
-                'next',
-                false,
-                'class="sub next"'
-            );
+            html_print_input_hidden('step', ($step + 1));
+            if ($step == 2) {
+                // Javascript onsubmit to avoid min = 0 and max = 0
+                html_print_submit_button(
+                    __('Next'),
+                    'next',
+                    false,
+                    'class="sub next" onclick="return check_fields_step2();"'
+                );
+            } else {
+                html_print_submit_button(
+                    __('Next'),
+                    'next',
+                    false,
+                    'class="sub next"'
+                );
+            }
         }
     }
 }
@@ -1041,7 +1245,7 @@ var matches_not = <?php echo '"'.__("The alert would fire when the value doesn\'
 var is = <?php echo "'".__('The alert would fire when the value is <span id="value"></span>')."'"; ?>;
 var is_not = <?php echo "'".__('The alert would fire when the value is not <span id="value"></span>')."'"; ?>;
 var between = <?php echo "'".__('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>')."'"; ?>;
-var between_not = <?php echo '"'.__("The alert would fire when the value is not between <span id=\'min\'></span> and <span id=\'max\'></span>").'"'; ?>;
+var between_not = <?php echo '"'.__('The alert would fire when the value is not between <span id=min></span> and <span id=max></span>').'"'; ?>;
 var under = <?php echo "'".__('The alert would fire when the value is below <span id="min"></span>')."'"; ?>;
 var over = <?php echo "'".__('The alert would fire when the value is above <span id="max"></span>')."'"; ?>;
 var warning = <?php echo "'".__('The alert would fire when the module is in warning status')."'"; ?>;
@@ -1227,7 +1431,11 @@ if ($step == 2) {
         case "unknown":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
             $("#template-example").show ();
-            
+
+            if ($("#text-min_alerts").val() > 0 ) {
+                unknown = <?php echo "'".__('The alert would fire when the module is in unknown status. Warning: unknown_updates of pandora_server.conf must be equal to 1')."'"; ?>;
+            }
+
             /* Show example */
             $("span#example").empty ().append (unknown);
             break;
@@ -1315,23 +1523,19 @@ if ($step == 2) {
         }
     });
 
-    tinyMCE.init({
-        selector: 'textarea.tiny-mce-editor',
-        theme : "advanced",
-        plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
-        theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-        theme_advanced_buttons3 : "",
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_resizing : true,
-        theme_advanced_statusbar_location : "bottom",
-        force_p_newlines : false,
-        forced_root_block : '',
-        inline_styles : true,
-        valid_children : "+body[style]",
-        element_format : "html"
-    });
+    var added_config = {
+        "selector": 'textarea.tiny-mce-editor',
+        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+        "theme_advanced_buttons1": "bold,italic,underline,|,cut,copy,paste,|,justifyleft,justifycenter,justifyright,|,forecolor,backcolor,|,formatselect,fontselect,fontsizeselect",
+        "theme_advanced_buttons2": "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview",
+        "force_p_newlines" : false,
+        "forced_root_block" : '',
+        "inline_styles": true,
+        "valid_children": "+body[style]",
+    }
+
+    defineTinyMCE(added_config);
+
     <?php
 }
 ?>

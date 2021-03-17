@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,7 +119,14 @@ $table->head[5] .= '&nbsp;&nbsp;&nbsp;<span title="'.__('Action').'">'.__('A.').
 
 $table->size = [];
 $table->size['icon'] = '1%';
-$table->size[0] = '25%';
+$table->size[0] = '28%';
+$table->size[1] = '';
+$table->size[2] = '25%';
+$table->size[3] = '27%';
+$table->size[4] = '7%';
+$table->size[5] = '15%';
+
+
 $table->align = [];
 
 if (!defined('METACONSOLE')) {
@@ -141,9 +148,9 @@ $table->data = [];
 
 // Background
 $table->data[0]['icon'] = '';
-$table->data[0][0] = '<div style="display:none;">'.__('Background').'</div>';
-$table->data[0][1] = '<div style="display:none;">'.html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;').'</div>';
-$table->data[0][2] = '<div style="display:none;">'.html_print_input_text('width', $visualConsole['width'], '', 3, 5, true).' x '.html_print_input_text('height', $visualConsole['height'], '', 3, 5, true).'</div>';
+$table->data[0][0] = '<div sclass="invisible">'.__('Background').'</div>';
+$table->data[0][1] = '<div sclass="invisible">'.html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;').'</div>';
+$table->data[0][2] = '<div sclass="invisible">'.html_print_input_text('width', $visualConsole['width'], '', 3, 5, true).' x '.html_print_input_text('height', $visualConsole['height'], '', 3, 5, true).'</div>';
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
 $i = 1;
@@ -169,9 +176,12 @@ foreach ($layoutDatas as $layoutData) {
     switch ($layoutData['type']) {
         case STATIC_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
-                'images/camera.png',
+                'images/camera_mc.png',
                 true,
-                ['title' => __('Static Image')]
+                [
+                    'title' => __('Static Image'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -179,7 +189,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/chart_bar.png',
                 true,
-                ['title' => __('Percentile Bar')]
+                [
+                    'title' => __('Percentile Bar'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -195,7 +208,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/chart_curve.png',
                 true,
-                ['title' => __('Module Graph')]
+                [
+                    'title' => __('Module Graph'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -211,7 +227,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/binary.png',
                 true,
-                ['title' => __('Simple Value')]
+                [
+                    'title' => __('Simple Value'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -219,7 +238,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/binary.png',
                 true,
-                ['title' => __('Simple Value (Process Max)')]
+                [
+                    'title' => __('Simple Value (Process Max)'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -227,7 +249,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/binary.png',
                 true,
-                ['title' => __('Simple Value (Process Min)')]
+                [
+                    'title' => __('Simple Value (Process Min)'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -235,7 +260,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/binary.png',
                 true,
-                ['title' => __('Simple Value (Process Avg)')]
+                [
+                    'title' => __('Simple Value (Process Avg)'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -251,7 +279,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/photo.png',
                 true,
-                ['title' => __('Icon')]
+                [
+                    'title' => __('Icon'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -259,7 +290,10 @@ foreach ($layoutDatas as $layoutData) {
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/box_item.png',
                 true,
-                ['title' => __('Box')]
+                [
+                    'title' => __('Box'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -271,11 +305,15 @@ foreach ($layoutDatas as $layoutData) {
             );
         break;
 
+        case NETWORK_LINK:
         case LINE_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/line_item.png',
                 true,
-                ['title' => __('Line')]
+                [
+                    'title' => __('Line'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -303,13 +341,14 @@ foreach ($layoutDatas as $layoutData) {
     switch ($layoutData['type']) {
         case ICON:
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the label.
             $table->data[($i + 1)][0] = '';
         break;
 
         default:
-            $table->data[($i + 1)][0] = '<span style="width: 150px; display: block;">'.html_print_input_hidden('label_'.$idLayoutData, $layoutData['label'], true).'<a href="javascript: show_dialog_label_editor('.$idLayoutData.');">'.__('Edit label').'</a>'.'</span>';
+            $table->data[($i + 1)][0] = '<span class="w150px block">'.html_print_input_hidden('label_'.$idLayoutData, $layoutData['label'], true).'<a href="javascript: show_dialog_label_editor('.$idLayoutData.');">'.__('Edit label').'</a>'.'</span>';
         break;
     }
 
@@ -345,6 +384,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Width and height
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the width and height.
             $table->data[($i + 1)][2] = '';
@@ -361,6 +401,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Position
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             // hasn't the width and height.
             $table->data[($i + 1)][3] = '';
@@ -375,6 +416,7 @@ foreach ($layoutDatas as $layoutData) {
     // Parent
     switch ($layoutData['type']) {
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
         case COLOR_CLOUD:
             $table->data[($i + 1)][4] = '';
@@ -402,7 +444,7 @@ foreach ($layoutDatas as $layoutData) {
 
     $table->data[($i + 1)][5] = '';
     $table->data[($i + 1)][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
-    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+    $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'" '.'onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
 
     // Second row
     $table->data[($i + 2)]['icon'] = '';
@@ -434,6 +476,7 @@ foreach ($layoutDatas as $layoutData) {
         case BOX_ITEM:
         case ICON:
         case LABEL:
+        case NETWORK_LINK:
         case LINE_ITEM:
             $table->data[($i + 2)][0] = '';
         break;
@@ -494,6 +537,7 @@ foreach ($layoutDatas as $layoutData) {
         case ICON:
         case LABEL:
         case BOX_ITEM:
+        case NETWORK_LINK:
         case LINE_ITEM:
         case GROUP_ITEM:
             $table->data[($i + 2)][1] = '';
@@ -598,6 +642,7 @@ foreach ($layoutDatas as $layoutData) {
 
     // Map linked
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
         case BOX_ITEM:
         case AUTO_SLA_GRAPH:
@@ -690,7 +735,7 @@ echo '</form>';
 
 
 // Trick for it have a traduct text for javascript.
-echo '<span id="ip_text" style="display: none;">'.__('IP').'</span>';
+echo '<span id="ip_text" class="invisible">'.__('IP').'</span>';
 ?>
 <div id="dialog_label_editor">
     <input id="active_id_layout_data" type="hidden" />
@@ -710,48 +755,25 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 
 <script type="text/javascript">
     $(document).ready (function () {
-        
-        tinymce.init({
-            selector: "#tinyMCE_editor",
-            theme : "advanced",
-            <?php
-            if ($config['style'] == 'pandora_legacy') {
-                echo 'content_css: "'.ui_get_full_url('include/styles/pandora_legacy.css', false, false, false).'",'."\n";
-            } else {
-                echo 'content_css: "'.ui_get_full_url('include/styles/pandora.css', false, false, false).'",'."\n";
-            }
-            ?>
-            theme_advanced_font_sizes :
-                "4pt=.visual_font_size_4pt, " +
-                "6pt=.visual_font_size_6pt, " +
-                "8pt=.visual_font_size_8pt, " +
-                "10pt=.visual_font_size_10pt, " +
-                "12pt=.visual_font_size_12pt, " +
-                "14pt=.visual_font_size_14pt, " +
-                "18pt=.visual_font_size_18pt, " +
-                "24pt=.visual_font_size_24pt, " +
-                "28pt=.visual_font_size_28pt, " +
-                "36pt=.visual_font_size_36pt, " +
-                "48pt=.visual_font_size_48pt, " +
-                "60pt=.visual_font_size_60pt, " +
-                "72pt=.visual_font_size_72pt, " +
-                "84pt=.visual_font_size_84pt, " +
-                "96pt=.visual_font_size_96pt, " +
-                "116pt=.visual_font_size_116pt, " +
-                "128pt=.visual_font_size_128pt, " +
-                "140pt=.visual_font_size_140pt, " +
-                "154pt=.visual_font_size_154pt, " +
-                "196pt=.visual_font_size_196pt",
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",
-            theme_advanced_buttons2 : "",
-            theme_advanced_buttons3 : "",
-            theme_advanced_statusbar_location : "none",
-            width: "400",
-            height: "200",
-            nowrap: true
-        });
+       
+        var added_config = {
+            "selector": "#tinyMCE_editor",
+            "elements": "text-label",
+            "plugins": "noneditable",
+            "theme_advanced_buttons1": 
+                "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
+            "valid_children": "+body[style]",
+            "theme_advanced_font_sizes": "true",
+            "content_css": 
+                <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
+            "editor_deselector": "noselected",
+            "inline_styles": true,
+            "nowrap": true,
+            "width": "400",
+            "height": "200",
+    }
+    
+    defineTinyMCE(added_config);
         
         $("#dialog_label_editor").hide ()
             .dialog ({

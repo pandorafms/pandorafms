@@ -3,7 +3,7 @@ package PandoraFMS::PluginServer;
 # Pandora FMS Plugin Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -179,7 +179,7 @@ sub data_consumer ($$) {
 	eval {
 		if ($module->{'macros'} ne '') {
 			logger ($pa_config, "Decoding json macros from # $module_id plugin command '$command'", 10);
-			my $macros = JSON->new->allow_nonref->decode(encode_utf8($module->{'macros'}));
+			my $macros = p_decode_json($pa_config, encode_utf8($module->{'macros'}));
 			my %macros = %{$macros};
 			if(ref($macros) eq "HASH") {
 				foreach my $macro_id (keys(%macros))
@@ -206,6 +206,9 @@ sub data_consumer ($$) {
 			}
 		}
 	};
+	if( $@ ) {
+		logger($pa_config, "Error reading macros from module # $module_id. Error: $@", 10);
+	}
 	
 	# Get group info
  	my $group = undef;
@@ -227,6 +230,7 @@ sub data_consumer ($$) {
 				_moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
+				_id_module_ => (defined ($module)) ? $module->{'id_agente_modulo'} : '',
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
@@ -258,6 +262,9 @@ sub data_consumer ($$) {
 	my $module_data;
 	eval {
 		$module_data = `$command`;
+		if ($? < 0) {
+			logger($pa_config, "Error executing command from module # $module_id. Probably out of memory.", 10);
+		}
 	};
 
 	# Empty ? or handle it as 'utf8' string

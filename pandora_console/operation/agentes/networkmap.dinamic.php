@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,7 +98,10 @@ if ($pure == 1) {
         'text'   => '<a href="index.php?sec=network&amp;'.'sec2=operation/agentes/networkmap.dinamic&amp;'.'activeTab=radial_dynamic&amp;id_networkmap='.$id.'">'.html_print_image(
             'images/normal_screen.png',
             true,
-            ['title' => __('Normal screen')]
+            [
+                'title' => __('Normal screen'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
     ];
 } else {
@@ -108,7 +111,10 @@ if ($pure == 1) {
             'text'   => '<a href="index.php?sec=network&amp;'.'sec2=operation/agentes/networkmap.dinamic&amp;'.'pure=1&amp;activeTab=radial_dynamic&amp;id_networkmap='.$id.'">'.html_print_image(
                 'images/full_screen.png',
                 true,
-                ['title' => __('Full screen')]
+                [
+                    'title' => __('Full screen'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ];
         $buttons['list'] = [
@@ -116,7 +122,10 @@ if ($pure == 1) {
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;'.'sec2=operation/agentes/pandora_networkmap">'.html_print_image(
                 'images/list.png',
                 true,
-                ['title' => __('List of networkmap')]
+                [
+                    'title' => __('List of networkmap'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ];
     }
@@ -153,7 +162,7 @@ if (empty($height)) {
 if ($activeTab == 'radial_dynamic') {
     include_once 'include/functions_graph.php';
 
-    echo "<div style='width: auto; text-align: center;'>";
+    echo "<div class='wauto center'>";
 
     $filter = [];
     if ($networkmap['source'] == 0) {
@@ -237,7 +246,7 @@ networkmap_print_jsdata($graph);
 
 $zoom_default = file($config['homedir'].'/images/zoom_default.svg');
 ?>
-<div style="display: none">
+<div class="invisible">
     <?php
     echo implode("\n", $zoom_default);
     ?>

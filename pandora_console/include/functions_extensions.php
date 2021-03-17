@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -163,6 +163,10 @@ function extensions_get_extensions($enterprise=false, $rel_path='')
     // Load extensions in enterprise directory
     if (! $enterprise && file_exists($master_dir)) {
         return array_merge($extensions, extensions_get_extensions(true, $rel_path));
+    }
+
+    if (isset($extensions['ipam.php'])) {
+        unset($extensions['ipam.php']);
     }
 
     return $extensions;

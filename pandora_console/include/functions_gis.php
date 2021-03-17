@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -1584,7 +1584,7 @@ function gis_add_conection_maps_in_form($map_connection_list)
                 <tr class="row_0">
                     <td>'.html_print_input_text('map_connection_name_'.$mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true).'</td>
                     <td>'.$radioButton.'</td>
-                    <td><a id="delete_row" href="javascript: deleteConnectionMap(\''.$mapConnection['id_conection'].'\')">'.html_print_image('images/cross.png', true, ['alt' => '']).'</a></td>
+                    <td><a id="delete_row" href="javascript: deleteConnectionMap(\''.$mapConnection['id_conection'].'\')">'.html_print_image('images/cross.png', true, ['alt' => '', 'class' => 'invert_filter']).'</a></td>
                 </tr>
             </tbody>
             <script type="text/javascript">

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -254,7 +254,7 @@ class HTML
      *
      * @return boolean Alowed or not.
      */
-    public function aclMulticheck($access=null)
+    public function aclMulticheck($access=null, $id_group=0)
     {
         global $config;
 
@@ -268,7 +268,7 @@ class HTML
         foreach ($perms as $perm) {
             $allowed = $allowed || (bool) check_acl(
                 $config['id_user'],
-                0,
+                $id_group,
                 $perm
             );
         }
@@ -547,7 +547,13 @@ class HTML
         } else {
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
+                && $input['arguments']['type'] != 'datalist'
             ) {
+                // Raw content for attach at the start of the input.
+                if (isset($input['surround_start']) === true) {
+                    $output .= $input['surround_start'];
+                }
+
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
@@ -561,6 +567,11 @@ class HTML
                 $output .= $input['extra'];
                 if (!$direct) {
                     $output .= '</li>';
+                }
+
+                // Raw content for attach at the end of the input.
+                if (isset($input['surround_end']) === true) {
+                    $output .= $input['surround_end'];
                 }
             } else {
                 $output .= self::printInput($input['arguments']);
@@ -599,9 +610,15 @@ class HTML
         }
 
         if (is_array($input['block_content']) === true) {
+            if (empty($input['label']) === false) {
+                $output .= '<div class="label_select">';
+                $output .= $input['label'];
+                $output .= '</div>';
+            }
+
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsGrid($input, $return);
             }
@@ -614,18 +631,18 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    $output .= '<div class="flex mrgn_btn_25px wrap">';
                     if (!isset($input['extra'])) {
-                        $output .= '<div style="width: 50%;">';
+                        $output .= '<div class="w50p">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="display: flex; margin-right:10px;">';
+                        $output .= '<div class="flex mrgn_right_10px">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="margin-right:10px;">';
+                    $output .= '<div class="mrgn_right_10px">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -646,11 +663,11 @@ class HTML
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
                     if (isset($input['extra'])) {
-                        $output .= '<div style="">';
-                        $output .= '<div style="float: left;">';
+                        $output .= '<div  >';
+                        $output .= '<div class="float-left">';
                     } else {
-                        $output .= '<div style="width:50%;">';
-                        $output .= '<div style="float: right;">';
+                        $output .= '<div class="w50p">';
+                        $output .= '<div class="float-right">';
                     }
 
                     $output .= self::printInput($input['arguments']);
@@ -706,7 +723,7 @@ class HTML
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
-            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<ul class="wizard list '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsList($input, $return);
             }
@@ -764,8 +781,10 @@ class HTML
             $output_head .= $data['pre-content'];
         }
 
-        $output_head .= '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        if (isset($data['form']) === true) {
+            $output_head .= '<form name="'.$form['name'].'" id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
+            $output_head .= '" '.$form['extra'].'>';
+        }
 
         if ($return === false) {
             echo $output_head;
@@ -874,7 +893,7 @@ class HTML
                     if ($first_block_printed === true) {
                         // If first form block has been placed, then close it before starting a new one.
                         $output .= '</div>';
-                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                        $output .= '<div class="white_box mrgn_top_30px">';
                     } else {
                         $output .= '<div class="white_box">';
                     }
@@ -895,10 +914,34 @@ class HTML
                     $output .= ' style="'.$width.$padding_left.$padding_right;
                     $output .= $extra_styles.'">';
 
+                    // Toggle option.
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
                             if ($input['arguments']['type'] != 'submit') {
-                                $output .= self::printBlockAsGrid($input, true);
+                                if ($input['toggle'] === true) {
+                                    $output .= ui_print_toggle(
+                                        [
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'title'           => $input['toggle_title'],
+                                            'id'              => $input['toggle_id'],
+                                            'hidden_default'  => $input['toggle_hidden_default'],
+                                            'content'         => self::printBlockAsGrid(
+                                                $input,
+                                                true
+                                            ),
+                                            'return'          => true,
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'toggle_class'    => $input['toggle_toggle_class'],
+                                            'main_class'      => $input['toggle_main_class'],
+                                            'container_class' => $input['toggle_container_class'],
+                                            'img_a'           => $input['toggle_img_a'],
+                                            'img_b'           => $input['toggle_img_b'],
+                                            'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                                        ]
+                                    );
+                                } else {
+                                    $output .= self::printBlockAsGrid($input, true);
+                                }
                             } else {
                                 $output_submit .= self::printBlockAsGrid($input, true);
                             }

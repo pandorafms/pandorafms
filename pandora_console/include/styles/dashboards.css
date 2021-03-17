@@ -76,7 +76,7 @@ h1 {
 
 .grid-stack-item-content {
   color: #2c3e50;
-  text-align: center;
+  /*text-align: center;*/
   background-color: #ffffff;
   border-radius: 5px;
   -webkit-box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);
@@ -407,6 +407,10 @@ table.group_modules_status_box tr td span a {
   text-align: center;
 }
 
+table.widget_agent_module tbody tr td {
+  padding: 5px;
+}
+
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
 }
@@ -502,4 +506,31 @@ div#main_pure {
 
 .content-widget .databox.filters > tbody > tr > td {
   padding-right: 30px;
+}
+
+#select_multiple_modules_filtered {
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+}
+
+#select_multiple_modules_filtered > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 5px;
+  flex-wrap: wrap;
+  flex: 1 1 320px;
+}
+
+#select_multiple_modules_filtered > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#select_multiple_modules_filtered > div > div > * {
+  flex: auto;
 }

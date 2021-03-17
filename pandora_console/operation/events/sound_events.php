@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,9 +37,11 @@ if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 
 }
 
 $agents = agents_get_group_agents(0, false, 'none', false, true);
-
+ob_start('ui_process_page_head');
+ob_start();
 echo '<html>';
 echo '<head>';
+
 echo '<title>'.__('Sound Events').'</title>';
 ?>
 <style type='text/css'>
@@ -54,19 +56,31 @@ echo '<title>'.__('Sound Events').'</title>';
 </style>
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+if ($config['style'] === 'pandora_black') {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
+} else {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+}
+
 echo '</head>';
-echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";
+echo "<body class='sound_events'>";
 echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
+
+// Connection lost alert.
+ui_require_css_file('register', 'include/styles/', true);
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_require_javascript_file('connection_check');
+set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 $table = new StdClass;
 $table->width = '100%';
-$table->styleTable = 'padding-left:16px; padding-right:16px; padding-top:16px;';
-$table->class = ' ';
+$table->class = 'w16px sound_div_background ';
 $table->size[0] = '10%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
-$table->style[1] = 'font-weight: bold; vertical-align: top;';
-$table->style[2] = 'font-weight: bold; vertical-align: top;';
+$table->rowclass[0] = 'bold_top';
+$table->rowclass[1] = 'bold_top';
+$table->rowclass[2] = 'bold_top';
 
 $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'max-width:200px;').'<br />'.'<br />';
@@ -75,19 +89,16 @@ $table->data[0][2] = __('Type');
 $table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();').__('Alert fired').'<br />'.html_print_checkbox('critical', 'critical', true, true, false, 'changeType();').__('Monitor critical').'<br />'.html_print_checkbox('unknown', 'unknown', true, true, false, 'changeType();').__('Monitor unknown').'<br />'.html_print_checkbox('warning', 'warning', true, true, false, 'changeType();').__('Monitor warning').'<br />';
 
 $table->data[1][0] = __('Agent');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'width:120px; height:100px', '', false, '', '', true);
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'max-width:200px; height:100px', '', false, '', '', true);
 
 $table->data[1][2] = __('Event');
-$table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; background: #ddd; resize:none;"', true);
+$table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; resize:none;"', true);
 
 html_print_table($table);
 
 $table = new StdClass;
 $table->width = '100%';
-$table->rowstyle[0] = 'text-align:center;';
-$table->styleTable = 'padding-top:16px;padding-bottom:16px;';
-$table->class = ' ';
-$table->bgcolor = 'white';
+$table->class = 'w16px sound_div_background text_center';
 
 $table->data[0][0] = '<a href="javascript: toggleButton();">'.html_print_image('images/play.button.png', true, ['id' => 'button']).'</a>';
 
@@ -99,8 +110,6 @@ $table->data[0][3] .= html_print_image('images/tick_sound_events.png', true, ['i
 
 html_print_table($table);
 ?>
-
-<script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 var group = 0;
@@ -152,10 +161,26 @@ function changeGroup() {
 }
 
 function changeType() {
-    alert_fired = $("input[name=alert_fired]").attr('checked');
-    critical = $("input[name=critical]").attr('checked');
-    warning = $("input[name=warning]").attr('checked');
-    unknown = $("input[name=unknown]").attr('checked');
+    alert_fired = false;
+    critical = false;
+    warning = false;
+    unknown = false;
+
+    if($("input[name=alert_fired]").is(':checked') ) {
+        alert_fired = true;
+    }
+
+    if($("input[name=critical]").is(':checked') ) {
+        critical = true;
+    }
+
+    if($("input[name=warning]").is(':checked') ) {
+        warning = true;
+    }
+
+    if($("input[name=unknown]").is(':checked') ) {
+        unknown = true;
+    }
 }
 
 function toggleButton() {
@@ -254,16 +279,16 @@ function check_event() {
 
 $(document).ready (function () {
     setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
-    $("#table1").css("background-color", "#fff");
-    $("#table2").css("background-color", "#fff");
-
-    group_width = $("#group").width();
-    $("#id_agents").width(group_width + 9);
 });
 
 </script>
 
 <?php
 echo '</body>';
+
+while (ob_get_length() > 0) {
+    ob_end_flush();
+}
+
 echo '</html>';
 

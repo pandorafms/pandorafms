@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -423,16 +423,6 @@ function get_user_language($id_user=null)
 
     if ($quick_language) {
         $language = get_parameter('language', 0);
-
-        if (defined('METACONSOLE')) {
-            if ($id_user == null) {
-                $id_user = $config['id_user'];
-            }
-
-            if ($language !== 0) {
-                update_user($id_user, ['language' => $language]);
-            }
-        }
 
         if ($language === 'default') {
             return $config['language'];
@@ -1343,6 +1333,73 @@ function get_priority_name($priority)
 
 
 /**
+ * Translates status into string.
+ *
+ * @param integer $status Agent status.
+ *
+ * @return string Translation.
+ */
+function get_agent_status_string($status)
+{
+    switch ($status) {
+        case AGENT_STATUS_CRITICAL:
+        return __('CRITICAL');
+
+        case AGENT_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_STATUS_ALERT_FIRED:
+        return __('ALERT FIRED');
+
+        case AGENT_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_STATUS_NORMAL:
+        return __('NORMAL');
+
+        case AGENT_STATUS_UNKNOWN:
+        default:
+        return __('UNKNOWN');
+    }
+}
+
+
+/**
+ * Translates status into string.
+ *
+ * @param integer $status Module status.
+ *
+ * @return string Translation.
+ */
+function get_module_status_string($status)
+{
+    switch ($status) {
+        case AGENT_MODULE_STATUS_CRITICAL_BAD:
+        return __('CRITICAL');
+
+        case AGENT_MODULE_STATUS_WARNING_ALERT:
+        case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+        return __('ALERT FIRED');
+
+        case AGENT_MODULE_STATUS_WARNING:
+        return __('WARNING');
+
+        case AGENT_MODULE_STATUS_UNKNOWN:
+        return __('UNKNOWN');
+
+        case AGENT_MODULE_STATUS_NO_DATA:
+        case AGENT_MODULE_STATUS_NOT_INIT:
+        return __('NO DATA');
+
+        case AGENT_MODULE_STATUS_NORMAL_ALERT:
+        case AGENT_MODULE_STATUS_NORMAL:
+        default:
+        return __('NORMAL');
+    }
+}
+
+
+/**
  * Get priority class (CSS class) from priority value.
  *
  * @param int priority value (integer) as stored eg. in database.
@@ -1731,7 +1788,7 @@ function is_ajax()
  */
 function is_error($code)
 {
-    if ($code !== true and ($code <= ERR_GENERIC || $code === false)) {
+    if ($code !== true && ($code <= ERR_GENERIC || $code === false)) {
         return true;
     } else {
         return false;
@@ -1934,6 +1991,10 @@ function get_snmpwalk(
 ) {
     global $config;
 
+    if (empty($ip_target) === true) {
+        return [];
+    }
+
     // Note: quick_print is ignored
     // Fix for snmp port
     if (!empty($snmp_port)) {
@@ -1945,22 +2006,22 @@ function get_snmpwalk(
         $base_oid = escapeshellarg($base_oid);
     }
 
-    if (empty($config['snmpwalk'])) {
-        switch (PHP_OS) {
-            case 'FreeBSD':
-                $snmpwalk_bin = '/usr/local/bin/snmpwalk';
-            break;
+    switch (PHP_OS) {
+        case 'FreeBSD':
+            $snmpwalk_bin = '/usr/local/bin/snmpwalk';
+        break;
 
-            case 'NetBSD':
-                $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
-            break;
+        case 'NetBSD':
+            $snmpwalk_bin = '/usr/pkg/bin/snmpwalk';
+        break;
 
-            default:
+        default:
+            if ($snmp_version == '1') {
                 $snmpwalk_bin = 'snmpwalk';
-            break;
-        }
-    } else {
-        $snmpwalk_bin = $config['snmpwalk'];
+            } else {
+                $snmpwalk_bin = 'snmpbulkwalk';
+            }
+        break;
     }
 
     switch (PHP_OS) {
@@ -1968,11 +2029,20 @@ function get_snmpwalk(
         case 'WINNT':
         case 'Windows':
             $error_redir_dir = 'NUL';
+            $snmpwalk_bin = 'snmpwalk';
         break;
 
         default:
             $error_redir_dir = '/dev/null';
         break;
+    }
+
+    if (empty($config['snmpwalk']) === false) {
+        if ($snmp_version == '1') {
+            $snmpwalk_bin = $config['snmpwalk_fallback'];
+        } else {
+            $snmpwalk_bin = $config['snmpwalk'];
+        }
     }
 
     $output = [];
@@ -2222,13 +2292,19 @@ function check_login($output=true)
  * @param integer $id_group     Agents group id to check from
  * @param string  $access       Access privilege
  * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ * @param boolean $cache        Use cache.
  *
  * @return boolean 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
-{
+function check_acl(
+    $id_user,
+    $id_group,
+    $access,
+    $onlyOneGroup=false,
+    $cache=true
+) {
     if (empty($id_user)) {
-        // User ID needs to be specified
+        // User ID needs to be specified.
         trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
         return 0;
     } else if (is_user_admin($id_user)) {
@@ -2238,7 +2314,15 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
     }
 
     if ($id_group != 0 || $onlyOneGroup === true) {
-        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+        $groups_list_acl = users_get_groups(
+            $id_user,
+            $access,
+            false,
+            true,
+            null,
+            'id_grupo',
+            $cache
+        );
     } else {
         $groups_list_acl = get_users_acl($id_user);
     }
@@ -2263,21 +2347,87 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup=false)
 /**
  * Check the ACL of a list of groups.
  *
- * @param string $id_user to check the ACL
- * @param array  $groups. All groups to check
- * @param string $access. Profile to check
+ * @param string  $id_user to check the ACL
+ * @param array   $groups. All groups to check
+ * @param string  $access. Profile to check
+ * @param boolean $cache   Use cached group information.
  *
  * @return boolean True if at least one of this groups check the ACL
  */
-function check_acl_one_of_groups($id_user, $groups, $access)
+function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
 {
     foreach ($groups as $group) {
-        if (check_acl($id_user, $group, $access)) {
+        if (check_acl($id_user, $group, $access, false, $cache)) {
             return true;
         }
     }
 
     return false;
+}
+
+
+/**
+ * Check access privileges to resources (write or management is not allowed for 'all' group )
+ *
+ * Access can be:
+ * IR - Incident/report Read
+ * IW - Incident/report Write
+ * IM - Incident/report Management
+ * AR - Agent Read
+ * AW - Agent Write
+ * LW - Alert Write
+ * UM - User Management
+ * DM - DB Management
+ * LM - Alert Management
+ * PM - Pandora Management
+ *
+ * @param integer $id_user      User id
+ * @param integer $id_group     Agents group id to check from
+ * @param string  $access       Access privilege
+ * @param boolean $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
+ *
+ * @return boolean 1 if the user has privileges, 0 if not.
+ */
+function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=false)
+{
+    if (empty($id_user)) {
+        // User ID needs to be specified
+        trigger_error('Security error: check_acl got an empty string for user id', E_USER_WARNING);
+        return 0;
+    } else if (is_user_admin($id_user)) {
+        return 1;
+    } else {
+        $id_group = (int) $id_group;
+    }
+
+    $access_string = get_acl_column($access);
+
+    if ($id_group != 0 || $onlyOneGroup === true) {
+        $groups_list_acl = users_get_groups($id_user, $access, false, true, null);
+    } else {
+        $groups_list_acl = get_users_acl($id_user);
+
+        // Only allow view ACL tokens in case user cannot manage group all.
+        if (users_can_manage_group_all($access) === false) {
+            if (preg_match('/_view/i', $access_string) == 0) {
+                return 0;
+            }
+        }
+    }
+
+    if (is_array($groups_list_acl)) {
+        if (isset($groups_list_acl[$id_group])) {
+            if (isset($groups_list_acl[$id_group][$access_string])
+                && $groups_list_acl[$id_group][$access_string] > 0
+            ) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
 }
 
 
@@ -3209,7 +3359,7 @@ function get_refresh_time_array()
 }
 
 
-function date2strftime_format($date_format)
+function date2strftime_format($date_format, $timestamp=null)
 {
     $replaces_list = [
         'D' => '%a',
@@ -3232,11 +3382,14 @@ function date2strftime_format($date_format)
         'A' => '%p',
         'i' => '%M',
         's' => '%S',
-        'u' => '%s',
         'O' => '%z',
         'T' => '%Z',
         '%' => '%%',
         'G' => '%k',
+        'z' => '%j',
+        'U' => '%s',
+        'c' => '%FT%T%z',
+        'r' => '%d %b %Y %H:%M:%S %z',
     ];
 
     $return = '';
@@ -3249,7 +3402,30 @@ function date2strftime_format($date_format)
         if (isset($replaces_list[$c])) {
             $return .= $replaces_list[$c];
         } else {
-            $return .= $c;
+            // Check extra formats.
+            switch ($date_format) {
+                default: $return .= date($date_format, $timestamp);
+                break;
+
+                case 'n':
+                    if (stristr(PHP_OS, 'win')) {
+                        $return .= '%#m';
+                    } else {
+                        $return .= '%-m';
+                    }
+
+                case 'u':
+                    if (preg_match('/^[0-9]*\\.([0-9]+)$/', $timestamp, $reg)) {
+                        $decimal = substr(str_pad($reg[1], 6, '0'), 0, 6);
+                    } else {
+                        $decimal = '000000';
+                    }
+
+                    $return .= $decimal;
+                break;
+
+                break;
+            }
         }
     }
 
@@ -3335,6 +3511,10 @@ function get_number_of_mr($package, $ent, $offline)
                 $sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles);
 
                 foreach ($sqlfiles_num as $num) {
+                    if ($num <= $config['MR']) {
+                        continue;
+                    }
+
                     $mr_size[] = $num;
                 }
             }
@@ -3623,6 +3803,14 @@ function color_graph_array()
 }
 
 
+/**
+ * Label graph Sparse.
+ *
+ * @param array $data                Data chart.
+ * @param array $show_elements_graph Data visual styles chart.
+ *
+ * @return array Array label.
+ */
 function series_type_graph_array($data, $show_elements_graph)
 {
     global $config;
@@ -3645,7 +3833,13 @@ function series_type_graph_array($data, $show_elements_graph)
     $color_series = color_graph_array();
 
     if ($show_elements_graph['id_widget_dashboard']) {
-        $opcion = unserialize(db_get_value_filter('options', 'twidget_dashboard', ['id' => $show_elements_graph['id_widget_dashboard']]));
+        $opcion = unserialize(
+            db_get_value_filter(
+                'options',
+                'twidget_dashboard',
+                ['id' => $show_elements_graph['id_widget_dashboard']]
+            )
+        );
         if ($show_elements_graph['graph_combined']) {
             foreach ($show_elements_graph['modules_id'] as $key => $value) {
                 $color_series[$key] = [
@@ -3674,13 +3868,15 @@ function series_type_graph_array($data, $show_elements_graph)
 
             if (strpos($key, 'summatory') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Summatory series').' '.$str;
-                $data_return['color'][$key]       = $color_series['summatory'];
+                $data_return['legend'][$key] = __('Summatory series').' '.$str;
+                $data_return['color'][$key] = $color_series['summatory'];
             } else if (strpos($key, 'average') !== false) {
                 $data_return['series_type'][$key] = $type_graph;
-                $data_return['legend'][$key]      = __('Average series').' '.$str;
-                $data_return['color'][$key]       = $color_series['average'];
-            } else if (strpos($key, 'sum') !== false || strpos($key, 'baseline') !== false) {
+                $data_return['legend'][$key] = __('Average series').' '.$str;
+                $data_return['color'][$key] = $color_series['average'];
+            } else if (strpos($key, 'sum') !== false
+                || strpos($key, 'baseline') !== false
+            ) {
                 switch ($value['id_module_type']) {
                     case 21:
                     case 2:
@@ -3702,28 +3898,81 @@ function series_type_graph_array($data, $show_elements_graph)
                     && (count($show_elements_graph['labels']) > 0)
                 ) {
                     if ($show_elements_graph['unit']) {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']];
+                        $name_legend .= ' / ';
+                        $name_legend .= __('Unit ').' ';
+                        $name_legend .= $show_elements_graph['unit'].': ';
                     } else {
-                        $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
-                        $data_return['legend'][$key] = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        if (isset($show_elements_graph['from_interface']) === true
+                            && (bool) $show_elements_graph['from_interface'] === true
+                        ) {
+                            $label_interfaces = array_flip($show_elements_graph['modules_series']);
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']][$label_interfaces[$value['agent_module_id']]].': ';
+                        } else if (is_array($show_elements_graph['labels'][$value['agent_module_id']]) === true) {
+                            $name_legend = 'Avg: ';
+
+                            if (array_key_exists('agent_alias', $value)
+                                && array_key_exists('module_name', $value)
+                                && array_key_exists('unit', $value)
+                            ) {
+                                $name_legend .= $value['agent_alias'];
+                                $name_legend .= ' / ';
+                                $name_legend .= $value['module_name'];
+                                $name_legend .= ' / ';
+                                $name_legend .= __('Unit ').' ';
+                                $name_legend .= $value['unit'].': ';
+                            }
+                        } else {
+                            $name_legend = $show_elements_graph['labels'][$value['agent_module_id']].': ';
+                        }
                     }
                 } else {
                     if (strpos($key, 'baseline') !== false) {
                         if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].'Baseline ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].'Baseline ';
+                            $name_legend = $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].'Baseline ';
                         }
                     } else {
-                        if ($value['unit']) {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$value['unit'].': ';
+                        $name_legend = '';
+                        if (isset($show_elements_graph['fullscale']) === true
+                            && (int) $show_elements_graph['fullscale'] === 1
+                        ) {
+                            $name_legend .= 'Tip: ';
                         } else {
-                            $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                            $name_legend .= 'Avg: ';
+                        }
+
+                        if ($value['unit']) {
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'];
+                            $name_legend .= ' / ';
+                            $name_legend .= __('Unit ').' ';
+                            $name_legend .= $value['unit'].': ';
+                        } else {
+                            $name_legend .= $value['agent_alias'];
+                            $name_legend .= ' / ';
+                            $name_legend .= $value['module_name'].': ';
                         }
                     }
                 }
 
+                if (isset($value['weight']) === true
+                    && empty($value['weight']) === false
+                ) {
+                    $name_legend .= ' ('.__('Weight');
+                    $name_legend .= ' * '.$value['weight'].') ';
+                }
+
+                $data_return['legend'][$key] = $name_legend;
                 if ((int) $value['min'] === PHP_INT_MAX) {
                     $value['min'] = 0;
                 }
@@ -3735,58 +3984,95 @@ function series_type_graph_array($data, $show_elements_graph)
                 $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
                     number_format(
                         $value['min'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.__('Max:').remove_right_zeros(
                     number_format(
                         $value['max'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '._('Avg:').remove_right_zeros(
                     number_format(
                         $value['avg'],
-                        $config['graph_precision']
+                        $config['graph_precision'],
+                        $config['csv_decimal_separator'],
+                        $config['csv_decimal_separator'] == ',' ? '.' : ','
                     )
                 ).' '.$str;
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
                     $i++;
                 }
-            } else if (!$show_elements_graph['fullscale'] && strpos($key, 'min') !== false
-                || !$show_elements_graph['fullscale'] && strpos($key, 'max') !== false
+            } else if (!$show_elements_graph['fullscale']
+                && strpos($key, 'min') !== false
+                || !$show_elements_graph['fullscale']
+                && strpos($key, 'max') !== false
             ) {
                 $data_return['series_type'][$key] = $type_graph;
 
+                $name_legend = '';
+
+                if ((int) $show_elements_graph['type_mode_graph'] != 0) {
+                    if (strpos($key, 'min') !== false) {
+                        $name_legend .= 'Min: ';
+                    }
+
+                    if (strpos($key, 'max') !== false) {
+                        $name_legend .= 'Max: ';
+                    }
+                }
+
                 if ($show_elements_graph['unit']) {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].' / '.__('Unit ').' '.$show_elements_graph['unit'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'];
+                    $name_legend .= ' / ';
+                    $name_legend .= __('Unit ').' ';
+                    $name_legend .= $show_elements_graph['unit'].': ';
                 } else {
-                    $name_legend = $data_return['legend'][$key] = $value['agent_alias'].' / '.$value['module_name'].': ';
+                    $name_legend .= $value['agent_alias'];
+                    $name_legend .= ' / ';
+                    $name_legend .= $value['module_name'].': ';
                 }
 
                 $data_return['legend'][$key] = $name_legend;
                 if ($show_elements_graph['type_mode_graph']) {
-                    $data_return['legend'][$key] .= __('Min:').remove_right_zeros(
+                    $data_return['legend'][$key] .= __('Min:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['min'],
                             $config['graph_precision']
                         )
-                    ).' '.__('Max:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '.__('Max:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['max'],
                             $config['graph_precision']
                         )
-                    ).' '._('Avg:').remove_right_zeros(
+                    );
+                    $data_return['legend'][$key] .= ' '._('Avg:');
+                    $data_return['legend'][$key] .= remove_right_zeros(
                         number_format(
                             $value['avg'],
-                            $config['graph_precision']
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator']
                         )
                     ).' '.$str;
                 }
 
-                if ($show_elements_graph['compare'] == 'overlapped' && $key == 'sum2') {
+                if ($show_elements_graph['compare'] == 'overlapped'
+                    && $key == 'sum2'
+                ) {
                     $data_return['color'][$key] = $color_series['overlapped'];
                 } else {
                     $data_return['color'][$key] = $color_series[$i];
@@ -3865,8 +4151,22 @@ function series_type_graph_array($data, $show_elements_graph)
 }
 
 
-function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false, $module_list=false)
-{
+/**
+ * Draw chart pdf.
+ *
+ * @param string  $type_graph_pdf  Type graph.
+ * @param array   $params          Params.
+ * @param boolean $params_combined Params only charts combined.
+ * @param boolean $module_list     Array modules.
+ *
+ * @return string Img or base64.
+ */
+function generator_chart_to_pdf(
+    $type_graph_pdf,
+    $params,
+    $params_combined=false,
+    $module_list=false
+) {
     global $config;
 
     if (is_metaconsole()) {
@@ -3887,6 +4187,11 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     if ($type_graph_pdf === 'vbar') {
         $width_img  = $params['generals']['pdf']['width'];
         $height_img = $params['generals']['pdf']['height'];
+    } else if ($type_graph_pdf === 'combined'
+        && $params_combined['stacked'] == CUSTOM_GRAPH_VBARS
+    ) {
+        $width_img = 650;
+        $height_img = ($params['height'] + 50);
     } else {
         $width_img  = 550;
         $height_img = $params['height'];
@@ -3908,8 +4213,18 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
     }
 
     $session_id = session_id();
+    $cache_dir = $config['homedir'].'/attachment/cache';
 
-    $cmd = '"'.io_safe_output($config['phantomjs_bin']).DIRECTORY_SEPARATOR.'phantomjs" --ssl-protocol=any --ignore-ssl-errors=true "'.$file_js.'" '.' "'.$url.'"'.' "'.$type_graph_pdf.'"'.' "'.$params_encode_json.'"'.' "'.$params_combined.'"'.' "'.$module_list.'"'.' "'.$img_path.'"'.' "'.$width_img.'"'.' "'.$height_img.'"'.' "'.$session_id.'"'.' "'.$params['return_img_base_64'].'"';
+    $cmd = '"'.io_safe_output($config['phantomjs_bin']);
+    $cmd .= DIRECTORY_SEPARATOR.'phantomjs" ';
+    $cmd .= ' --disk-cache=true --disk-cache-path="'.$cache_dir.'"';
+    $cmd .= ' --max-disk-cache-size=10000 ';
+    $cmd .= ' --ssl-protocol=any --ignore-ssl-errors=true ';
+    $cmd .= '"'.$file_js.'" "'.$url.'" "'.$type_graph_pdf.'"';
+    $cmd .= ' "'.$params_encode_json.'" "'.$params_combined.'"';
+    $cmd .= ' "'.$module_list.'" "'.$img_path.'"';
+    $cmd .= ' "'.$width_img.'" "'.$height_img.'"';
+    $cmd .= ' "'.$session_id.'" "'.$params['return_img_base_64'].'"';
 
     $result = null;
     $retcode = null;
@@ -3921,7 +4236,7 @@ function generator_chart_to_pdf($type_graph_pdf, $params, $params_combined=false
         // To be used in alerts.
         return $img_content;
     } else {
-        // to be used in PDF files.
+        // To be used in PDF files.
         $config['temp_images'][] = $img_path;
         return '<img src="'.$img_url.'" />';
     }
@@ -4011,7 +4326,7 @@ function generate_hash_to_api()
  * @param string Key to identify the profiler run.
  * @param string Way to display the result
  *         "link" (default): Click into word "Performance" to display the profilling info.
- *         "console": Display with a message in pandora_console.log.
+ *         "console": Display with a message in console.log.
  */
 function pandora_xhprof_display_result($key='', $method='link')
 {
@@ -4150,7 +4465,7 @@ function get_help_info($section_name)
 {
     global $config;
 
-    $user_language = get_user_language($id_user);
+    $user_language = get_user_language($config['id_user']);
 
     $es = false;
     $result = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:';
@@ -5631,4 +5946,62 @@ function get_data_multiplier($unit)
     }
 
     return $multiplier;
+}
+
+
+/**
+ * Send test email to check email setups.
+ *
+ * @param string $to Target email account.
+ *
+ * @return integer Status of the email send task.
+ */
+function send_test_email(
+    string $to
+) {
+    global $config;
+
+    $result = false;
+    try {
+        $transport = new Swift_SmtpTransport(
+            $config['email_smtpServer'],
+            $config['email_smtpPort']
+        );
+
+        $transport->setUsername($config['email_username']);
+        $transport->setPassword($config['email_password']);
+
+        if ($config['email_encryption']) {
+            $transport->setEncryption($config['email_encryption']);
+        }
+
+        $mailer = new Swift_Mailer($transport);
+
+        $message = new Swift_Message(io_safe_output(__('Testing Pandora FMS email')));
+
+        $message->setFrom(
+            [
+                $config['email_from_dir'] => io_safe_output(
+                    $config['email_from_name']
+                ),
+            ]
+        );
+
+        $to = trim($to);
+        $message->setTo([$to => $to]);
+        $message->setBody(
+            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            'text/html'
+        );
+
+        ini_restore('sendmail_from');
+
+        $result = $mailer->send($message);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        db_pandora_audit('Cron jobs mail', $e->getMessage());
+    }
+
+    return $result;
+
 }

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,6 +31,8 @@ enterprise_include('operation/snmpconsole/snmp_view.php');
 enterprise_include('include/functions_snmp.php');
 require_once 'include/functions_agents.php';
 require_once 'include/functions_snmp.php';
+
+ui_require_css_file('snmp_view');
 
 check_login();
 $agent_a = check_acl($config['id_user'], 0, 'AR');
@@ -52,14 +54,23 @@ $filter_status = (int) get_parameter('filter_status', 0);
 $free_search_string = (string) get_parameter('free_search_string', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
 $offset = (int) get_parameter('offset', 0);
+$pure = (int) get_parameter('pure', 0);
 $trap_type = (int) get_parameter('trap_type', -1);
 $group_by = (int) get_parameter('group_by', 0);
 $refr = (int) get_parameter('refresh');
 $default_refr = !empty($refr) ? $refr : $config['vc_refr'];
-$date_from_trap = get_parameter('date_from_trap', '');
-$date_to_trap = get_parameter('date_to_trap', '');
-$time_from_trap = get_parameter('time_from_trap', '');
-$time_to_trap = get_parameter('time_to_trap', '');
+$hours_ago = get_parameter('hours_ago', 8);
+
+// Build ranges.
+$now = new DateTime();
+$ago = new DateTime();
+$interval = new DateInterval(sprintf('PT%dH', $hours_ago));
+$ago->sub($interval);
+
+$date_from_trap = $ago->format('Y/m/d');
+$date_to_trap = $now->format('Y/m/d');
+$time_from_trap = $ago->format('H:i:s');
+$time_to_trap = $now->format('H:i:s');
 
 $user_groups = users_get_groups($config['id_user'], $access, false);
 
@@ -75,17 +86,49 @@ foreach ($user_groups as $id => $name) {
     $i++;
 }
 
-$url = 'index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&free_search_string='.$free_search_string.'&pagination='.$pagination.'&offset='.$offset.'&trap_type='.$trap_type.'&group_by='.$group_by.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
+$url = 'index.php?sec=estado&sec2=operation/snmpconsole/snmp_view';
+$url .= '&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired;
+$url .= '&free_search_string='.$free_search_string.'&pagination='.$pagination;
+$url .= '&offset='.$offset.'&trap_type='.$trap_type.'&group_by='.$group_by;
+$url .= '&hours_ago='.$hours_ago.'&pure='.$pure;
 
-$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Statistics')]).'</a>';
-$list['text'] = '<a href="'.$url.'&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image('images/op_snmp.png', true, ['title' => __('List')]).'</a>';
+$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image(
+    'images/op_reporting.png',
+    true,
+    [
+        'title' => __('Statistics'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
+$list['text'] = '<a href="'.$url.'&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
+    'images/op_snmp.png',
+    true,
+    [
+        'title' => __('List'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 $list['active'] = true;
 
 if ($config['pure']) {
-    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh='.$refr.'">'.html_print_image('images/normal_screen.png', true, ['title' => __('Normal screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=0&refresh='.$refr.'">'.html_print_image(
+        'images/normal_screen.png',
+        true,
+        [
+            'title' => __('Normal screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 } else {
     // Fullscreen.
-    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="'.$url.'&pure=1&refresh='.$refr.'">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 
@@ -237,9 +280,11 @@ switch ($config['dbtype']) {
                 $id_agents[] = $row['id_agente'];
             }
 
-            $address_by_user_groups = agents_get_addresses($id_agents);
-            foreach ($address_by_user_groups as $i => $a) {
-                $address_by_user_groups[$i] = '"'.$a.'"';
+            if (!empty($id_agents)) {
+                $address_by_user_groups = agents_get_addresses($id_agents);
+                foreach ($address_by_user_groups as $i => $a) {
+                    $address_by_user_groups[$i] = '"'.$a.'"';
+                }
             }
         } else {
             $rows = db_get_all_rows_filter(
@@ -273,6 +318,7 @@ if (empty($all_address_agents)) {
     $all_address_agents = [];
     array_unshift($all_address_agents, '""');
 }
+
 
 // Make query to extract traps of DB.
 switch ($config['dbtype']) {
@@ -589,18 +635,19 @@ $table->data[2][4] = html_print_input_text(
     true
 );
 
-$table->data[4][0] = '<strong>'.__('From (Date)').'</strong>';
-$table->data[4][1] = html_print_input_text('date_from_trap', $date_from_trap, '', 15, 10, true);
-$table->data[4][2] = '<strong>'.__('To (Date)').'</strong>';
-$table->data[4][3] = html_print_input_text('date_to_trap', $date_to_trap, '', 15, 10, true);
-
-$table->data[5][0] = '<strong>'.__('From (Time)').'</strong>';
-$table->data[5][1] = html_print_input_text('time_from_trap', $time_from_trap, false, 15, 10, true);
-$table->data[5][2] = '<strong>'.__('To (Time)').'</strong>';
-$table->data[5][3] = html_print_input_text('time_to_trap', $time_to_trap, false, 15, 10, true);
+$table->data[4][0] = '<strong>'.__('Max. hours old').'</strong>';
+$table->data[4][1] = html_print_input(
+    [
+        'type'   => 'number',
+        'name'   => 'hours_ago',
+        'value'  => $hours_ago,
+        'step'   => 1,
+        'return' => true,
+    ]
+);
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other).
-$table->data[6][1] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
+$table->data[4][3] = '<strong>'.__('Trap type').'</strong>'.ui_print_help_tip(__('Search by trap type'), true);
 $trap_types = [
     -1 => __('None'),
     0  => __('Cold start (0)'),
@@ -610,7 +657,7 @@ $trap_types = [
     4  => __('Authentication failure (4)'),
     5  => __('Other'),
 ];
-$table->data[6][2] = html_print_select(
+$table->data[4][4] = html_print_select(
     $trap_types,
     'trap_type',
     $trap_type,
@@ -629,7 +676,7 @@ if ($config['dbtype'] != 'oracle') {
     $table->data[3][4] .= __('No').'&nbsp;'.html_print_radio_button('group_by', 0, '', $group_by, true);
 }
 
-$filter = '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refresh='.((int) get_parameter('refresh', 0)).'&pure='.$config['pure'].'">';
+$filter = '<form id="filter_form" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refresh='.((int) get_parameter('refresh', 0)).'&pure='.$config['pure'].'">';
 $filter .= html_print_table($table, true);
 $filter .= '<div style="width: '.$table->width.'; text-align: right;">';
 $filter .= html_print_submit_button(__('Update'), 'search', false, 'class="sub upd"', true);
@@ -643,10 +690,7 @@ $filter_resume['pagination'] = $paginations[$pagination];
 $filter_resume['free_search_string'] = $free_search_string;
 $filter_resume['filter_status'] = $status_array[$filter_status];
 $filter_resume['group_by'] = $group_by;
-$filter_resume['date_from_trap'] = $date_from_trap;
-$filter_resume['time_from_trap'] = $time_from_trap;
-$filter_resume['date_to_trap'] = $date_to_trap;
-$filter_resume['time_to_trap'] = $time_to_trap;
+$filter_resume['hours_ago'] = $hours_ago;
 $filter_resume['trap_type'] = $trap_types[$trap_type];
 
 $traps = db_get_all_rows_sql($sql);
@@ -702,20 +746,27 @@ if (empty($traps)) {
         $urlPagination = $normal_url.'&pagination='.$pagination.'&offset='.$offset;
 
         echo '<a href="'.$urlPagination.'">';
-        echo html_print_image('images/normal_screen.png', true, ['title' => __('Exit fullscreen')]);
+        echo html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Exit fullscreen'),
+                'class' => 'invert_filter',
+            ]
+        );
         echo '</a>';
         echo '</li>';
 
         // Auto refresh control.
         echo '<li class="nomn">';
-        echo '<div class="dashboard-refr" style="margin-top: 6px;">';
-        echo '<div class="dashboard-countdown" style="display: inline;"></div>';
+        echo '<div class="dashboard-refr mrgn_top_6px">';
+        echo '<div class="dashboard-countdown display_in"></div>';
         $normal_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0)).'&pure=1&trap_type='.$trap_type.'&group_by='.$group_by.'&free_search_string='.$free_search_string.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
 
         $urlPagination = $normal_url.'&pagination='.$pagination.'&offset='.$offset;
 
 
-        echo '<form id="refr-form" method="get" action="'.$urlPagination.'" style="display: inline;">';
+        echo '<form id="refr-form" method="get" action="'.$urlPagination.'"  >';
         echo __('Refresh every').':';
         echo html_print_select(get_refresh_time_array(), 'refresh', $refr, '', '', 0, true, false, false);
         echo '</form>';
@@ -773,7 +824,12 @@ if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
     }
 }
 
-$url_snmp = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0)).'&pure='.$config['pure'].'&trap_type='.$trap_type.'&group_by='.$group_by.'&free_search_string='.$free_search_string.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
+$url_snmp = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
+$url_snmp .= '&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired;
+$url_snmp .= '&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0));
+$url_snmp .= '&pure='.$config['pure'].'&trap_type='.$trap_type;
+$url_snmp .= '&group_by='.$group_by.'&free_search_string='.$free_search_string;
+$url_snmp .= '&hours_ago='.$hours_ago;
 
 $urlPagination = $url_snmp.'&pagination='.$pagination.'&offset='.$offset;
 
@@ -781,6 +837,7 @@ ui_pagination($trapcount, $urlPagination, $offset, $pagination);
 
 echo '<form name="eventtable" method="POST" action="'.$urlPagination.'">';
 
+$table = new StdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = '100%';
@@ -975,17 +1032,41 @@ if ($traps !== false) {
         if ($trap['source'] == '') {
             $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
             if ($is_admin) {
-                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
+                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Delete'),
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a> ';
             }
         } else {
             $agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
 
             if ((check_acl($config['id_user'], $agent_trap_group, 'IM'))) {
-                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'title' => __('Delete')]).'</a> ';
+                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'title'  => __('Delete'),
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a> ';
             }
         }
 
-        $data[8] .= '<a href="javascript: toggleVisibleExtendedInfo('.$trap['id_trap'].');">'.html_print_image('images/eye.png', true, ['alt' => __('Show more'), 'title' => __('Show more')]).'</a>';
+        $data[8] .= '<a href="javascript: toggleVisibleExtendedInfo('.$trap['id_trap'].');">'.html_print_image(
+            'images/eye.png',
+            true,
+            [
+                'alt'   => __('Show more'),
+                'title' => __('Show more'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $data[8] .= enterprise_hook('editor_link', [$trap]);
 
 
@@ -994,13 +1075,20 @@ if ($traps !== false) {
         array_push($table->data, $data);
 
         // Hiden file for description.
-        $string = '<table style="border:solid 1px #D3D3D3;" width="90%" class="toggle">
+        $string = '<table width="90%" class="toggle border_1px_d3">
 			<tr>
 				<td align="left" valign="top" width="15%">'.'<b>'.__('Variable bindings:').'</b></td>
 				<td align="left" >';
 
         if ($group_by) {
-            $new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_severity='.$filter_severity.'&filter_fired='.$filter_fired.'&filter_status='.$filter_status.'&refresh='.((int) get_parameter('refresh', 0)).'&pure='.$config['pure'].'&group_by=0&free_search_string='.$free_search_string.'&date_from_trap='.$date_from_trap.'&date_to_trap='.$date_to_trap.'&time_from_trap='.$time_from_trap.'&time_to_trap='.$time_to_trap;
+            $new_url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view';
+            $new_url .= '&filter_severity='.$filter_severity;
+            $new_url .= '&filter_fired='.$filter_fired;
+            $new_url .= '&filter_status='.$filter_status;
+            $new_url .= '&refresh='.((int) get_parameter('refresh', 0));
+            $new_url .= '&pure='.$config['pure'];
+            $new_url .= '&group_by=0&free_search_string='.$free_search_string;
+            $new_url .= '&hours_ago='.$hours_ago;
 
             $string .= '<a href='.$new_url.'>'.__('See more details').'</a>';
         } else {
@@ -1128,7 +1216,7 @@ if ($idx == 0) {
 
 unset($table);
 
-echo '<div style="width:98%; text-align:right;">';
+echo '<div class="w98p right">';
 if (check_acl($config['id_user'], 0, 'IW')) {
     html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
 }
@@ -1141,7 +1229,7 @@ if (check_acl($config['id_user'], 0, 'IM')) {
 echo '</div></form>';
 
 
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Status').'</h3>';
 echo html_print_image(
     'images/pixel_green.png',
@@ -1161,7 +1249,7 @@ echo html_print_image(
     ]
 ).' - '.__('Not validated');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Alert').'</h3>';
 echo html_print_image(
     'images/pixel_yellow.png',
@@ -1181,13 +1269,13 @@ echo html_print_image(
     ]
 ).' - '.__('Not fired');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Action').'</h3>';
 echo html_print_image('images/ok.png', true).' - '.__('Validate');
 echo '<br />';
-echo html_print_image('images/cross.png', true).' - '.__('Delete');
+echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']).' - '.__('Delete');
 echo '</div>';
-echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<div class="snmp_view_div">';
 echo '<h3>'.__('Legend').'</h3>';
 foreach (get_priorities() as $num => $name) {
     echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
@@ -1195,7 +1283,7 @@ foreach (get_priorities() as $num => $name) {
 }
 
 echo '</div>';
-echo '<div style="clear:both;">&nbsp;</div>';
+echo '<div class="both">&nbsp;</div>';
 
 ui_include_time_picker();
 ?>
@@ -1203,48 +1291,6 @@ ui_include_time_picker();
 <script language="JavaScript" type="text/javascript">
 
     $(document).ready( function() {
-        var $startDate = $("#text-date_from_trap");
-        var $startTime = $("#text-time_from_trap");
-        var $endDate = $("#text-date_to_trap");
-        var $endTime = $("#text-time_to_trap");
-
-        $startDate.datepicker({
-            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
-            onClose: function(selectedDate) {
-                $endDate.datepicker("option", "minDate", selectedDate);
-            }
-        });
-        $endDate.datepicker({
-            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
-            onClose: function(selectedDate) {
-                $startDate.datepicker("option", "maxDate", selectedDate);
-            }
-        });
-        
-        $startTime.timepicker({
-            showSecond: true,
-            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-            timeText: '<?php echo __('Time'); ?>',
-            hourText: '<?php echo __('Hour'); ?>',
-            minuteText: '<?php echo __('Minute'); ?>',
-            secondText: '<?php echo __('Second'); ?>',
-            currentText: '<?php echo __('Now'); ?>',
-            closeText: '<?php echo __('Close'); ?>'
-        });
-
-        $endTime.timepicker({
-            showSecond: true,
-            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-            timeText: '<?php echo __('Time'); ?>',
-            hourText: '<?php echo __('Hour'); ?>',
-            minuteText: '<?php echo __('Minute'); ?>',
-            secondText: '<?php echo __('Second'); ?>',
-            currentText: '<?php echo __('Now'); ?>',
-            closeText: '<?php echo __('Close'); ?>'
-        });
-
         var controls = document.getElementById('dashboard-controls');
         autoHideElement(controls, 1000);
         

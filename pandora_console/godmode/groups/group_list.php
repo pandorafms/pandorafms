@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,12 +35,15 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
-enterprise_include_once('meta/include/functions_agents_meta.php');
+
+if (is_metaconsole()) {
+    enterprise_include_once('include/functions_metaconsole.php');
+    enterprise_include_once('meta/include/functions_agents_meta.php');
+    enterprise_hook('open_meta_frame');
+}
 
 if (is_ajax()) {
     if (! check_acl($config['id_user'], 0, 'AR')) {
@@ -132,7 +135,7 @@ if (is_ajax()) {
         }
 
         if ($search != '') {
-            $filter['string'] = $search;
+            $filter['aliasRegex'] = $search;
         }
 
         if ($status_agents != AGENT_STATUS_ALL) {
@@ -166,6 +169,15 @@ if (is_ajax()) {
             $add_alert_bulk_op,
             $force_serialized
         );
+
+        $agents_aux = [];
+        foreach ($agents as $key => $value) {
+            if (preg_match('/'.$search.'/', io_safe_output($value))) {
+                $agents_aux[$key] = $value;
+            }
+        }
+
+        $agents = $agents_aux;
 
         $agents_disabled = [];
         // Add keys prefix.
@@ -236,17 +248,39 @@ if (is_ajax()) {
     return;
 }
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+
+$tab = (string) get_parameter('tab', 'groups');
+
+if ($tab != 'credbox' && ! check_acl(
+    $config['id_user'],
+    0,
+    'PM'
+) && ! check_acl(
+    $config['id_user'],
+    0,
+    'AW'
+)
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
     return;
+} else if ($tab == 'credbox'
+    && !check_acl($config['id_user'], 0, 'UM')
+    && !check_acl($config['id_user'], 0, 'PM')
+) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Credential Store'
+    );
+    include 'general/noaccess.php';
+    return;
 }
 
 $sec = defined('METACONSOLE') ? 'advanced' : 'gagente';
-$url_credbox  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=credbox';
+$url_credbox  = 'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox';
 $url_tree  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=tree';
 $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups';
 
@@ -257,6 +291,7 @@ $buttons['tree'] = [
         true,
         [
             'title' => __('Tree Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -268,6 +303,7 @@ $buttons['groups'] = [
         true,
         [
             'title' => __('Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -279,11 +315,10 @@ $buttons['credbox'] = [
         true,
         [
             'title' => __('Credential Store'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
-
-$tab = (string) get_parameter('tab', 'groups');
 
 $title = __('Groups defined in %s', get_product_name());
 // Marks correct tab.
@@ -348,7 +383,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $propagate = (bool) get_parameter('propagate');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
@@ -403,49 +438,56 @@ if ($update_group) {
     $other = (string) get_parameter('other');
 
     $aviable_name = true;
-    if (preg_match('<script>', $name)) {
+    if (preg_match('/script/i', $name)) {
         $aviable_name = false;
     }
 
+    // Check if group name is unique.
+    $check = db_get_value_filter(
+        'nombre',
+        'tgrupo',
+        [
+            'nombre'   => $name,
+            'id_grupo' => $id_group,
+        ],
+        'AND NOT'
+    );
+
     // Check if name field is empty.
-    if ($name != '' && $aviable_name === true) {
-        $sql = sprintf(
-            'UPDATE tgrupo
-             SET nombre = "%s",
-                icon = "%s",
-                disabled = %d,
-                parent = %d,
-                custom_id = "%s",
-                propagate = %d,
-                id_skin = %d,
-                description = "%s",
-                contact = "%s",
-                other = "%s",
-                password = "%s"
-            WHERE id_grupo = %d',
-            $name,
-            empty($icon) ? '' : substr($icon, 0, -4),
-            !$alerts_enabled,
-            $id_parent,
-            $custom_id,
-            $propagate,
-            $skin,
-            $description,
-            $contact,
-            $other,
-            $group_pass,
-            $id_group
-        );
+    if ($name != '') {
+        if (!$check) {
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => $id_parent,
+                    'disabled'    => !$alerts_enabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                ];
 
-        $result = db_process_sql($sql);
-    } else {
-        $result = false;
-    }
+                $result = db_process_sql_update(
+                    'tgrupo',
+                    $values,
+                    ['id_grupo' => $id_group]
+                );
+            }
 
-    if ($result !== false) {
-        ui_print_success_message(__('Group successfully updated'));
+            if ($result) {
+                ui_print_success_message(__('Group successfully updated'));
+            } else {
+                ui_print_error_message(__('There was a problem modifying group'));
+            }
+        } else {
+            ui_print_error_message(__('Each group must have a different name'));
+        }
     } else {
-        ui_print_error_message(__('There was a problem modifying group'));
+        ui_print_error_message(__('Group must have a name'));
     }
 }
 
@@ -640,7 +682,7 @@ if ($tab == 'tree') {
     }
 
     $form = "<form method='post' action=''>";
-        $form .= "<table class='databox filters' width='100%' style='font-weight: bold;'>";
+        $form .= "<table class='databox filters bolder' width='100%'>";
             $form .= '<tr><td>'.__('Search').'&nbsp;';
                 $form .= html_print_input_text('search', $search, '', 100, 100, true);
             $form .= '</td><td>';
@@ -714,7 +756,12 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            if (is_metaconsole()) {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
+            } else {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            }
+
             $table->data[$key][0] = $group['id_grupo'];
             $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
             if ($group['icon'] != '') {
@@ -724,8 +771,8 @@ if ($tab == 'tree') {
                     [
                         'style' => '',
                         'class' => 'bot',
-                        'alt'   => $group['nombre'],
-                        'title' => $group['nombre'],
+                        'alt'   => io_safe_input($group['nombre']),
+                        'title' => io_safe_input($group['nombre']),
                     ],
                     false,
                     false,
@@ -800,7 +847,7 @@ if ($tab == 'tree') {
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
-        echo '<div class="action-buttons" style="width:100%;">';
+        echo '<div class="action-buttons w100p">';
             html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');
         echo '</div>';
     echo '</form>';

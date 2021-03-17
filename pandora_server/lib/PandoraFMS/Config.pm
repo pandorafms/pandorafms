@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.746";
-my $pandora_build = "200617";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210317";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -60,11 +60,9 @@ my %pa_config;
 sub help_screen {
 	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	print "Following options are optional : \n";
-	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
-	print "	-q        :  Quiet startup \n";
 	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
@@ -103,17 +101,11 @@ sub pandora_init {
 		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
 			help_screen();
 		}
-		elsif ($parametro =~ m/-v\z/i) {
-			$pa_config->{"verbosity"}=5;
-		}
 		elsif ($parametro =~ m/^-P\z/i) {
 			$pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}
-		elsif ($parametro =~ m/-q\z/) {
-			$pa_config->{"quiet"}=1;
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
@@ -176,6 +168,8 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"provisioning_mode"} = pandora_get_tconfig_token ($dbh, 'provisioning_mode', '');
 
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
+
+	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -297,7 +291,7 @@ sub pandora_load_config {
 	$pa_config->{"inventory_threads"} = 2; # 2.1
 	$pa_config->{"export_threads"} = 1; # 3.0
 	$pa_config->{"web_threads"} = 1; # 3.0
-	$pa_config->{"web_engine"} = 'lwp'; # 5.1
+	$pa_config->{"web_engine"} = 'curl'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
 	$pa_config->{"recon_reverse_geolocation_file"} = ''; # 3.1
@@ -319,6 +313,7 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmp_storm_silence_period"} = 0; # 7.0
 	$pa_config->{"snmp_delay"} = 0; # > 6.0SP3
 	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
 	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
@@ -473,6 +468,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
@@ -673,6 +669,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^snmp_storm_silence_period\s+(\d+)/i) { 
+			$pa_config->{'snmp_storm_silence_period'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^snmp_delay\s+(\d+)/i) { 
 			$pa_config->{'snmp_delay'}= clean_blank($1); 
 		}
@@ -820,7 +819,9 @@ sub pandora_load_config {
 			$pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
-			$pa_config->{"verbosity"} = clean_blank($1); 
+			if ($pa_config->{"verbosity"} == 0) {
+				$pa_config->{"verbosity"} = clean_blank($1);
+			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"server_threshold"} = clean_blank($1); 

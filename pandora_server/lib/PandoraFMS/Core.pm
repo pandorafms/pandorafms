@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -43,8 +43,6 @@ Exported Functions:
 =item * C<pandora_create_agent>
 
 =item * C<pandora_create_group>
-
-=item * C<pandora_create_incident>
 
 =item * C<pandora_create_module>
 
@@ -161,6 +159,9 @@ use LWP::Simple;
 use IO::Socket::INET6;
 use LWP::UserAgent;
 use HTTP::Request::Common;
+use URI::URL;
+use LWP::UserAgent;
+use JSON;
 
 # For IPv6 support in Net::HTTP.
 BEGIN {
@@ -179,7 +180,6 @@ our @EXPORT = qw(
 	pandora_create_agent
 	pandora_create_alert_command
 	pandora_create_group
-	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
 	pandora_create_module_from_network_component
@@ -254,6 +254,8 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_sample_agent
 	pandora_process_policy_queue
+	pandora_sync_agents_integria
+	pandora_get_integria_ticket_types
 	subst_alert_macros
 	subst_column_macros
 	locate_agent
@@ -997,7 +999,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my $clean_name = safe_output($action->{'name'});
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
-	my ($field11, $field12, $field13, $field14, $field15);
+	my ($field11, $field12, $field13, $field14, $field15, $field16, $field17, $field18, $field19, $field20);
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
@@ -1016,23 +1018,33 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne ""  ? $action->{'field13'} : $alert->{'field13'};
 		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne ""  ? $action->{'field14'} : $alert->{'field14'};
 		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne ""  ? $action->{'field15'} : $alert->{'field15'};
+		$field16 = defined($action->{'field16'}) && $action->{'field16'} ne ""  ? $action->{'field16'} : $alert->{'field16'};
+		$field17 = defined($action->{'field17'}) && $action->{'field17'} ne ""  ? $action->{'field17'} : $alert->{'field17'};
+		$field18 = defined($action->{'field18'}) && $action->{'field18'} ne ""  ? $action->{'field18'} : $alert->{'field18'};
+		$field19 = defined($action->{'field19'}) && $action->{'field19'} ne ""  ? $action->{'field19'} : $alert->{'field19'};
+		$field20 = defined($action->{'field20'}) && $action->{'field20'} ne ""  ? $action->{'field20'} : $alert->{'field20'};
 	}
 	else {
-		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}   ne "" ? $alert->{'field1'}   : $action->{'field1'};
-		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}   ne "" ? $alert->{'field2'}   : $action->{'field2'};
-		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}   ne "" ? $alert->{'field3'}   : $action->{'field3'};
-		$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne "" ? $action->{'field4'}  : $alert->{'field4'};
-		$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne "" ? $action->{'field5'}  : $alert->{'field5'};
-		$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne "" ? $action->{'field6'}  : $alert->{'field6'};
-		$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne "" ? $action->{'field7'}  : $alert->{'field7'};
-		$field8  = defined($action->{'field8'})  && $action->{'field8'}  ne "" ? $action->{'field8'}  : $alert->{'field8'};
-		$field9  = defined($action->{'field9'})  && $action->{'field9'}  ne "" ? $action->{'field9'}  : $alert->{'field9'};
-		$field10 = defined($action->{'field10'}) && $action->{'field10'} ne "" ? $action->{'field10'} : $alert->{'field10'};
-		$field11 = defined($action->{'field11'}) && $action->{'field11'} ne "" ? $action->{'field11'} : $alert->{'field11'};
-		$field12 = defined($action->{'field12'}) && $action->{'field12'} ne "" ? $action->{'field12'} : $alert->{'field12'};
-		$field13 = defined($action->{'field13'}) && $action->{'field13'} ne "" ? $action->{'field13'} : $alert->{'field13'};
-		$field14 = defined($action->{'field14'}) && $action->{'field14'} ne "" ? $action->{'field14'} : $alert->{'field14'};
-		$field15 = defined($action->{'field15'}) && $action->{'field15'} ne "" ? $action->{'field15'} : $alert->{'field15'};
+		$field1  = defined($alert->{'field1'})   && $alert->{'field1'}  ne "" ? $alert->{'field1'}  : $action->{'field1'};
+		$field2  = defined($alert->{'field2'})   && $alert->{'field2'}  ne "" ? $alert->{'field2'}  : $action->{'field2'};
+		$field3  = defined($alert->{'field3'})   && $alert->{'field3'}  ne "" ? $alert->{'field3'}  : $action->{'field3'};
+		$field4  = defined($alert->{'field4'})   && $alert->{'field4'}  ne "" ? $alert->{'field4'}  : $action->{'field4'};
+		$field5  = defined($alert->{'field5'})   && $alert->{'field5'}  ne "" ? $alert->{'field5'}  : $action->{'field5'};
+		$field6  = defined($alert->{'field6'})   && $alert->{'field6'}  ne "" ? $alert->{'field6'}  : $action->{'field6'};
+		$field7  = defined($alert->{'field7'})   && $alert->{'field7'}  ne "" ? $alert->{'field7'}  : $action->{'field7'};
+		$field8  = defined($alert->{'field8'})   && $alert->{'field8'}  ne "" ? $alert->{'field8'}  : $action->{'field8'};
+		$field9  = defined($alert->{'field9'})   && $alert->{'field9'}  ne "" ? $alert->{'field9'}  : $action->{'field9'};
+		$field10 = defined($alert->{'field10'})  && $alert->{'field10'} ne "" ? $alert->{'field10'} : $action->{'field10'};
+		$field11 = defined($alert->{'field11'})  && $alert->{'field11'} ne "" ? $alert->{'field11'} : $action->{'field11'};
+		$field12 = defined($alert->{'field12'})  && $alert->{'field12'} ne "" ? $alert->{'field12'} : $action->{'field12'};
+		$field13 = defined($alert->{'field13'})  && $alert->{'field13'} ne "" ? $alert->{'field13'} : $action->{'field13'};
+		$field14 = defined($alert->{'field14'})  && $alert->{'field14'} ne "" ? $alert->{'field14'} : $action->{'field14'};
+		$field15 = defined($alert->{'field15'})  && $alert->{'field15'} ne "" ? $alert->{'field15'} : $action->{'field15'};
+		$field16 = defined($alert->{'field16'})  && $alert->{'field16'} ne "" ? $alert->{'field16'} : $action->{'field16'};
+		$field17 = defined($alert->{'field17'})  && $alert->{'field17'} ne "" ? $alert->{'field17'} : $action->{'field17'};
+		$field18 = defined($alert->{'field18'})  && $alert->{'field18'} ne "" ? $alert->{'field18'} : $action->{'field18'};
+		$field19 = defined($alert->{'field19'})  && $alert->{'field19'} ne "" ? $alert->{'field19'} : $action->{'field19'};
+		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
@@ -1096,6 +1108,26 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field15 = defined($field15)                      && $field15                      ne "" ? "[RECOVER]" . $field15        : "";
 		$field15 = defined($alert->{'field15_recovery'})  && $alert->{'field15_recovery'}  ne "" ? $alert->{'field15_recovery'}  : $field15;
 		$field15 = defined($action->{'field15_recovery'}) && $action->{'field15_recovery'} ne "" ? $action->{'field15_recovery'} : $field15;
+
+		$field16 = defined($field16)                      && $field16                      ne "" ? "[RECOVER]" . $field16       : "";
+		$field16 = defined($alert->{'field16_recovery'})  && $alert->{'field16_recovery'}  ne "" ? $alert->{'field16_recovery'}  : $field16;
+		$field16 = defined($action->{'field16_recovery'}) && $action->{'field16_recovery'} ne "" ? $action->{'field16_recovery'} : $field16;
+
+		$field17 = defined($field17)                      && $field17                      ne "" ? "[RECOVER]" . $field17        : "";
+		$field17 = defined($alert->{'field17_recovery'})  && $alert->{'field17_recovery'}  ne "" ? $alert->{'field17_recovery'}  : $field17;
+		$field17 = defined($action->{'field17_recovery'}) && $action->{'field17_recovery'} ne "" ? $action->{'field17_recovery'} : $field17;
+
+		$field18 = defined($field18)                      && $field18                      ne "" ? "[RECOVER]" . $field18        : "";
+		$field18 = defined($alert->{'field18_recovery'})  && $alert->{'field18_recovery'}  ne "" ? $alert->{'field18_recovery'}  : $field18;
+		$field18 = defined($action->{'field18_recovery'}) && $action->{'field18_recovery'} ne "" ? $action->{'field18_recovery'} : $field18;
+
+		$field19 = defined($field19)                      && $field19                      ne "" ? "[RECOVER]" . $field19        : "";
+		$field19 = defined($alert->{'field19_recovery'})  && $alert->{'field19_recovery'}  ne "" ? $alert->{'field19_recovery'}  : $field19;
+		$field19 = defined($action->{'field19_recovery'}) && $action->{'field19_recovery'} ne "" ? $action->{'field19_recovery'} : $field19;
+
+		$field20 = defined($field20)                      && $field20                      ne "" ? "[RECOVER]" . $field20        : "";
+		$field20 = defined($alert->{'field20_recovery'})  && $alert->{'field20_recovery'}  ne "" ? $alert->{'field20_recovery'}  : $field20;
+		$field20 = defined($action->{'field20_recovery'}) && $action->{'field20_recovery'} ne "" ? $action->{'field20_recovery'} : $field20;
 	}
 
 	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
@@ -1113,6 +1145,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	$field13 = defined($field13) && $field13 ne "" ? decode_entities($field13) : "";
 	$field14 = defined($field14) && $field14 ne "" ? decode_entities($field14) : "";
 	$field15 = defined($field15) && $field15 ne "" ? decode_entities($field15) : "";
+	$field16 = defined($field16) && $field16 ne "" ? decode_entities($field16) : "";
+	$field17 = defined($field17) && $field17 ne "" ? decode_entities($field17) : "";
+	$field18 = defined($field18) && $field18 ne "" ? decode_entities($field18) : "";
+	$field19 = defined($field19) && $field19 ne "" ? decode_entities($field19) : "";
+	$field20 = defined($field20) && $field20 ne "" ? decode_entities($field20) : "";
 
 	# Get group info
 	my $group = undef;
@@ -1147,6 +1184,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field13_ => $field13,
 				_field14_ => $field14,
 				_field15_ => $field15,
+				_field16_ => $field16,
+				_field17_ => $field17,
+				_field18_ => $field18,
+				_field19_ => $field19,
+				_field20_ => $field20,
 				_agentname_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentalias_ => (defined ($agent)) ? $agent->{'alias'} : '',
 				_agent_ => (defined ($agent)) ? ($agent->{'alias'} ? $agent->{'alias'} : $agent->{'nombre'}) : '',
@@ -1190,7 +1232,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_server_name_ => (defined ($agent)) ? $agent->{'server_name'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 
 				_target_port_ => (defined ($module)) ? $module->{'tcp_port'} : '', 
-				_policy_ => undef,
+				_policy_ => (defined ($module)) ? get_db_value ($dbh, "SELECT name FROM tpolicies WHERE id = ?", get_db_value ($dbh, "SELECT id_policy FROM tpolicy_modules WHERE id = ?", $module->{'id_policy_module'})) : '',
 				_plugin_parameters_ => (defined ($module)) ? $module->{'plugin_parameter'} : '',
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
@@ -1229,6 +1271,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field16_} = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field17_} = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field18_} = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field19_} = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$macros{_field20_} = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		
 		my @command_args = ();
 		# divide command into words based on quotes and whitespaces
@@ -1519,6 +1566,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	
 	# Integria IMS Ticket
 	} elsif ($clean_name eq "Integria IMS Ticket") {
+		my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
+
+		if (!$config_integria_enabled) {
+			return;
+		}
+
 		my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
 		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
 		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
@@ -1530,6 +1583,19 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field11 = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field12 = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field13 = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field14 = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field15 = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field16 = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field17 = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
 		my $api_path = $config_api_path . "/integria/include/api.php";
@@ -1582,7 +1648,28 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 7 (Ticket description);
 		my $ticket_description = safe_output($field7);
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description);
+		my $create_wu_on_close_recovery = 0;
+
+		if ($alert_mode == RECOVERED_ALERT && $action->{'create_wu_integria'} == '1') {
+			$create_wu_on_close_recovery = 1;
+		}
+
+		# Ticket type custom fields
+		my $ticket_custom_field1 = $field8;
+		my $ticket_custom_field2 = $field9;
+		my $ticket_custom_field3 = $field10;
+		my $ticket_custom_field4 = $field11;
+		my $ticket_custom_field5 = $field12;
+		my $ticket_custom_field6 = $field13;
+		my $ticket_custom_field7 = $field14;
+		my $ticket_custom_field8 = $field15;
+		my $ticket_custom_field9 = $field16;
+		my $ticket_custom_field10 = $field17;
+		my $ticket_custom_field11 = $field18;
+		my $ticket_custom_field12 = $field19;
+		my $ticket_custom_field13 = $field20;
+
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13);
 
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
@@ -1717,9 +1804,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_error = defined ($module->{'last_error'}) ? $module->{'last_error'} : $agent_status->{'last_error'};
 	my $ff_start_utimestamp = $agent_status->{'ff_start_utimestamp'};
 	my $mark_for_update = 0;
-
+	
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
-	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});      
+	$agent_status->{'last_try'} = '1970-01-01 00:00:00' unless defined ($agent_status->{'last_try'});
 	$agent_status->{'datos'} = "" unless defined($agent_status->{'datos'});
 	
 	# Do we have to save module data?
@@ -1732,24 +1819,13 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_try = ($1 == 0) ? 0 : strftime("%s", $6, $5, $4, $3, $2 - 1, $1 - 1900);
 
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
-
+	
 	# Received stale data. Save module data if needed and return.
 	if ($pa_config->{'dataserver_lifo'} == 1 && $utimestamp <= $agent_status->{'utimestamp'}) {
 		logger($pa_config, "Received stale data from agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-
-		# Save module data. Async and log4x modules are not compressed.
-		if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
-
-			# If previous timestamp data changes, save the last one to avoid errors on SLA or graphs.
-			if($last_data_value ne $processed_data) { 
-
-				my $last_data_timestamp =  $agent_status->{'utimestamp'};
-				my $last_data_object;
-				
-				$last_data_object->{'data'} = $last_data_value;
-
-				save_module_data ($last_data_object, $module, $module_type, $last_data_timestamp, $dbh);
-			} 
+		
+		# Save module data. Compression does not work for stale data.
+		if ($module->{'history_data'} == 1) {
 			save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 		}
 
@@ -1846,29 +1922,17 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			}
 		}
 	} else {
-		if ($status == $new_status) {
-			# If the status is equal to the previous status reset the counters.
-			$ff_normal = 0;
-			$ff_critical = 0;
-			$ff_warning = 0;
-		} else {
-			# Sequential critical and normal status are needed
-			# if don't, reset counters.
-			if ($last_known_status == 1 && $new_status != 1) {
-				$ff_critical = 0;
-			} elsif ($last_known_status == 0 && $new_status != 0) {
-				$ff_normal = 0;
-			}
+		# Increase counters.
+		$ff_critical++ if ($new_status == 1);
+		$ff_warning++  if ($new_status == 2);
+		$ff_normal++   if ($new_status == 0);
 
-			# Increase counters.
-			$ff_critical++ if ($new_status == 1);
-			$ff_warning++  if ($new_status == 2);
-			$ff_normal++   if ($new_status == 0);
-		}
-		
-		if ( ($new_status == 0 && $ff_normal >= $min_ff_event)
-		  || ($new_status == 1 && $ff_critical >= $min_ff_event)
-		  || ($new_status == 2 && $ff_warning >= $min_ff_event)) {
+		# Generate event for 'going_normal' only if status is previously different from 
+		# Normal.
+		if ( ($new_status != $status && ($new_status == 0 && $ff_normal > $min_ff_event))
+			|| ($new_status == 1 && $ff_critical > $min_ff_event)
+			|| ($new_status == 2 && $ff_warning > $min_ff_event)
+		) {
 			# Change status generate event.
 			generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 			$status = $new_status;
@@ -1884,11 +1948,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 				safe_mode($pa_config, $agent, $module, $new_status, $known_status, $dbh);
 			}
 
-			# Reset counters because change status.
+			# After launch an event, counters are reset.
 			$ff_normal = 0;
 			$ff_critical = 0;
 			$ff_warning = 0;
+
 		} else {
+			if($new_status == 0 && $ff_normal > $min_ff_event) {
+				# Reached normal FF but status have not changed, reset counters.
+				$ff_normal = 0;
+				$ff_critical = 0;
+				$ff_warning = 0;
+			}
+
 			# Active ff interval
 			if ($module->{'module_ff_interval'} != 0) {
 				$current_interval = $module->{'module_ff_interval'};
@@ -3011,27 +3083,6 @@ sub pandora_module_keep_alive ($$$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_create_incident (I<$pa_config>, I<$dbh>, I<$title>, I<$text>, I<$priority>, I<$status>, I<$origin>, I<$id_group>) >> 
-
-Create an internal Pandora incident.
-
-=cut
-##########################################################################
-sub pandora_create_incident ($$$$$$$$;$) {
-	my ($pa_config, $dbh, $title, $text,
-		$priority, $status, $origin, $id_group, $owner) = @_;
-	
-	logger($pa_config, "Creating incident '$text' source '$origin'.", 8);
-	
-	# Initialize default parameters
-	$owner = '' unless defined ($owner);
-	
-	db_do($dbh, 'INSERT INTO tincidencia (inicio, titulo, descripcion, origen, estado, prioridad, id_grupo, id_usuario)
-			VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group, $owner);
-}
-
-
-##########################################################################
 =head2 C<< pandora_audit (I<$pa_config>, I<$description>, I<$name>, I<$action>, I<$dbh>) >> 
 
 Create an internal audit entry.
@@ -3185,6 +3236,21 @@ sub pandora_create_module_from_hash ($$$) {
 	delete $parameters->{'type'};
 	delete $parameters->{'datalist'};
 	delete $parameters->{'status'};
+	delete $parameters->{'manufacturer_id'};
+	delete $parameters->{'enabled'};
+	delete $parameters->{'scan_type'};
+	delete $parameters->{'execution_type'};
+	delete $parameters->{'query_filters'};
+	delete $parameters->{'query_class'};
+	delete $parameters->{'protocol'};
+	delete $parameters->{'value_operations'};
+	delete $parameters->{'value'};
+	delete $parameters->{'module_enabled'};
+	delete $parameters->{'scan_filters'};
+	delete $parameters->{'query_key_field'};
+	delete $parameters->{'name_oid'};
+	delete $parameters->{'module_type'};
+
 	if (defined $parameters->{'id_os'}) {
 		delete $parameters->{'id_os'};
 	}
@@ -3314,6 +3380,14 @@ sub pandora_get_credential ($$$) {
 	$key->{'password'} = pandora_output_password(
 		$pa_config,
 		safe_output($key->{'password'})
+	);
+	$key->{'extra_1'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_1'})
+	);
+	$key->{'extra_2'} =  pandora_output_password(
+		$pa_config,
+		safe_output($key->{'extra_2'})
 	);
 
 	return $key;
@@ -4243,7 +4317,7 @@ sub on_demand_macro($$$$$$;$) {
 		if ($field_value eq ''){
 			$field_value = 'Module ' . $field_number . " not found";
 		}
-		elsif ($unit_mod ne '') {
+		elsif (defined($unit_mod) && $unit_mod ne '') {
 			$field_value .= $unit_mod;
 		}
 		
@@ -4346,6 +4420,12 @@ sub check_min_max ($$$$) {
 
 	# Out of bounds
 	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
+		if($module->{'max'} < $module->{'min'}) {
+			# Compare if there is only setted min or max.
+			return 1 unless (($module->{'max'} == 0 && $data < $module->{'min'}) || ($module->{'min'} == 0 && $data > $module->{'max'}));
+			
+		}  
+
 		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		return 0;
 	}
@@ -5322,7 +5402,9 @@ sub pandora_self_monitoring ($$) {
 	get_db_value($dbh, "SELECT COUNT(*) FROM tagente_datos");
 	my $read_speed = int((time - $start_performance) * 1e6);
 
-	$xml_output .= enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -6152,30 +6234,61 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description) = @_;
+sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13) = @_;
+
+	use URI::URL;
+	use URI::Escape;
+	use HTML::Entities;
 
 	my $data_ticket;
 	my $call_api;
 
-	$data_ticket = $ticket_name .
+	my $uri = URI->new($api_path);
+
+	if ($uri->scheme eq "") {
+		$api_path = "http://" . $api_path;
+	}
+
+	my $ticket_create_wu = 0;
+
+	if ($create_wu_on_close_recovery == 1 && $ticket_status eq '7') {
+		$ticket_create_wu = 1;
+	}
+
+	$data_ticket = $agent_name .
+		"|;|" .	uri_escape(decode_entities($agent_alias)) .
+		"|;|" .	$agent_os .
+		"|;|" .	$agent_addr .
+		"|;|" .	$agent_id .
+		"|;|" .	$agent_group .
+		"|;|" .	$ticket_name .
 		"|;|" . $ticket_group_id .
 		"|;|" . $ticket_priority .
 		"|;|" . $ticket_description .
-		"|;|" . 
 		"|;|" . $ticket_type .
-		"|;|" .
 		"|;|" . $ticket_owner .
-		"|;|" . 
 		"|;|" . $ticket_status .
-		"|;|" . 
-		"|;|";
-		
+		"|;|" . $ticket_create_wu .
+		"|;|" . $ticket_custom_field1 .
+		"|;|" . $ticket_custom_field2 .
+		"|;|" . $ticket_custom_field3 .
+		"|;|" . $ticket_custom_field4 .
+		"|;|" . $ticket_custom_field5 .
+		"|;|" . $ticket_custom_field6 .
+		"|;|" . $ticket_custom_field7 .
+		"|;|" . $ticket_custom_field8 .
+		"|;|" . $ticket_custom_field9 .
+		"|;|" . $ticket_custom_field10 .
+		"|;|" . $ticket_custom_field11 .
+		"|;|" . $ticket_custom_field12 .
+		"|;|" . $ticket_custom_field13;
+
 	$call_api = $api_path . '?' .
 		'user=' . $integria_user . '&' .
 		'user_pass=' . $user_pass . '&' .
 		'pass=' . $api_pass . '&' .
-		'op=create_incident&' .
+		'op=create_pandora_ticket&' .
 		'params=' . $data_ticket .'&' .
 		'token=|;|';
 
@@ -6187,6 +6300,86 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$) {
 	else {
 		return 0;
 	}
+}
+
+sub pandora_sync_agents_integria ($) {
+	my ($dbh) = @_;
+
+	my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
+
+	if (!$config_integria_enabled) {
+		return;
+	}
+
+	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
+	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
+	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
+	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+
+	my $api_path = $config_api_path . "/integria/include/api.php";
+
+	my @agents_string = '';
+	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
+	
+	my @agents_array = ();
+	my $agents_string = '';
+
+	foreach my $agent (@agents) {
+		push @agents_array, $agent->{'nombre'} .
+			"|;|" .
+			$agent->{'alias'} .
+			"|;|" .
+			$agent->{'id_os'} .
+			"|;|" .
+			$agent->{'direccion'} .
+			"|;|" .
+			$agent->{'id_grupo'};
+	}
+
+	my $ua       = LWP::UserAgent->new();
+	my $response = $ua->post( $api_path, {
+			'user' 		=> $config_integria_user,
+			'user_pass' => $config_integria_user_pass,
+			'pass' 		=> $config_api_pass,
+			'op' 		=> 'sync_pandora_agents_inventory',
+			'params[]' 	=> [@agents_array],
+			'token' 	=> '|;|'
+		});
+
+	my $content = $response->decoded_content();
+
+	if (defined $content && is_numeric($content) && $content ne "-1") {
+		return $content;
+	}
+	else {
+		return 0;
+	}
+}
+
+sub pandora_get_integria_ticket_types($) {
+	my ($dbh) = @_;
+
+	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
+	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
+	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
+	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
+
+	my $api_path = $config_api_path . "/integria/include/api.php";
+
+	my $call_api = $api_path . '?' .
+		'user=' . $config_integria_user . '&' .
+		'user_pass=' . $config_integria_user_pass . '&' .
+		'pass=' . $config_api_pass . '&' .
+		'op=get_types&' .
+		'return_type=json';
+
+	my $content = get($call_api);
+
+    my @decoded_json;
+    @decoded_json = @{decode_json($content)} if (defined $content && $content ne "");
+
+	return @decoded_json;
+
 }
 
 ##########################################################################
@@ -6417,7 +6610,7 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 
 =cut
 

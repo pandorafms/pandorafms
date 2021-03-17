@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -180,15 +180,28 @@ $data[1] = html_print_extended_select_for_post_process(
     'post_process',
     $post_process,
     '',
-    __('Empty'),
+    '',
     '0',
     false,
     true,
     false,
     true
 );
-$data[2] = '';
-$data[3] = '';
+
+$data[2] = __('Name OID').'&nbsp;'.ui_print_help_icon('xxx', true);
+$data[3] = html_print_input_text_extended(
+    'name_oid',
+    $name_oid,
+    'name_oid',
+    '',
+    30,
+    10000,
+    '',
+    '',
+    '',
+    true
+);
+
 push_table_row($data, 'field_process');
 
 // Advanced stuff.

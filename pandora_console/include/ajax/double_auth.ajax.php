@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,7 +17,11 @@ check_login();
 
 // Security check
 $id_user = (string) get_parameter('id_user');
-if ($id_user !== $config['id_user']) {
+$FA_forced = (int) get_parameter('FA_forced');
+$id_user_auth = (string) get_parameter('id_user_auth', $config['id_user']);
+
+
+if ($id_user !== $config['id_user'] && $FA_forced != 1) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Double Authentication'
@@ -68,12 +72,12 @@ if ($validate_double_auth_code) {
 
             if ($result && $save) {
                 // Delete the actual value (if exists)
-                $where = ['id_user' => $id_user];
+                $where = ['id_user' => $id_user_auth];
                 db_process_sql_delete('tuser_double_auth', $where);
 
                 // Insert the new value
                 $values = [
-                    'id_user' => $id_user,
+                    'id_user' => $id_user_auth,
                     'secret'  => $secret,
                 ];
                 $result = (bool) db_process_sql_insert('tuser_double_auth', $values);
@@ -150,12 +154,15 @@ if ($get_double_auth_data_page) {
 
     ob_clean();
     ?>
+    
+<script type="text/javascript" src="../../include/javascript/qrcode.js"></script>
 <script type="text/javascript">
+
     var secret = "<?php echo $secret; ?>";
-    var userID = "<?php echo $config['id_user']; ?>";
+    var id_user_auth = "<?php echo $id_user_auth; ?>";
 
     // QR code with the secret to add it to the app
-    paint_qrcode("otpauth://totp/"+userID+"?secret="+secret, $("div#qr-container").get(0), 200, 200);
+    paint_qrcode("otpauth://totp/"+id_user_auth+"?secret="+secret, $("div#qr-container").get(0), 200, 200);
 
     $("div#qr-container").attr("title", "").find("canvas").remove();
     // Don't delete this timeout. It's necessary to perform the style change.
@@ -217,6 +224,7 @@ if ($get_double_auth_info_page) {
         }
 
         var containerID = "<?php echo $container_id; ?>";
+        var id_user_auth = "<?php echo $id_user_auth; ?>";
 
         $("#"+containerID).html("<img src=\"<?php echo $config['homeurl']; ?>/images/spinner.gif\" />");
 
@@ -227,6 +235,7 @@ if ($get_double_auth_info_page) {
             data: {
                 page: 'include/ajax/double_auth.ajax',
                 id_user: "<?php echo $config['id_user']; ?>",
+                id_user_auth: id_user_auth,
                 get_double_auth_generation_page: 1,
                 containerID: containerID
             },
@@ -296,10 +305,10 @@ if ($get_double_auth_generation_page) {
 <script type="text/javascript" src="../../include/javascript/qrcode.js"></script>
 <script type="text/javascript">
     var secret = "<?php echo $secret; ?>";
-    var userID = "<?php echo $config['id_user']; ?>";
+    var id_user_auth = "<?php echo $id_user_auth; ?>";
 
     // QR code with the secret to add it to the app
-    paint_qrcode("otpauth://totp/"+userID+"?secret="+secret, $("div#qr-container").get(0), 200, 200);
+    paint_qrcode("otpauth://totp/"+id_user_auth+"?secret="+secret, $("div#qr-container").get(0), 200, 200);
 
     $("div#qr-container").attr("title", "").find("canvas").remove();
     // Don't delete this timeout. It's necessary to perform the style change.
@@ -323,7 +332,8 @@ if ($get_double_auth_generation_page) {
             dataType: 'html',
             data: {
                 page: 'include/ajax/double_auth.ajax',
-                id_user: userID,
+                id_user: "<?php echo $config['id_user']; ?>",
+                id_user_auth, id_user_auth,
                 get_double_auth_generation_page: 1,
                 containerID: containerID
             },
@@ -368,6 +378,7 @@ if ($get_double_auth_generation_page) {
             data: {
                 page: 'include/ajax/double_auth.ajax',
                 id_user: "<?php echo $config['id_user']; ?>",
+                id_user_auth: id_user_auth,
                 get_double_auth_validation_page: 1,
                 secret: secret,
                 containerID: containerID
@@ -462,6 +473,7 @@ if ($get_double_auth_validation_page) {
             data: {
                 page: 'include/ajax/double_auth.ajax',
                 id_user: "<?php echo $config['id_user']; ?>",
+                id_user_auth: id_user_auth,
                 validate_double_auth_code: 1,
                 save: 1,
                 secret: secret,
@@ -477,6 +489,7 @@ if ($get_double_auth_validation_page) {
                 // Valid code
                 if (data === true) {
                     $("#"+containerID).html("<b><?php echo '<b><div class=\"green\">'.__('The code is valid, you can exit now').'</div></b>'; ?></b>");
+                    $("input#checkbox-double_auth").prop( "checked", true );
                 }
                 // Invalid code
                 else if (data === false) {

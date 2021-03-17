@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@ if (!check_acl($config['id_user'], 0, 'AR')) {
     exit();
 }
 
+
+
 // Header.
 $url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&pure='.$config['pure'];
 if ($config['pure']) {
@@ -50,6 +52,7 @@ if ($config['pure']) {
         true,
         [
             'title' => __('Normal screen'),
+            'class' => 'invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -61,6 +64,7 @@ if ($config['pure']) {
         true,
         [
             'title' => __('Full screen'),
+            'class' => 'invert_filter',
         ]
     );
     $link['text'] .= '</a>';
@@ -78,7 +82,7 @@ ui_print_page_header(
 // SNMP tree container.
 snmp_browser_print_container(false, '100%', '60%', '', true);
 
-// Div for modal
+// Div for modal.
 echo '<div id="modal" style="display:none"></div>';
 // Div for loading modal.
 echo '<div id="loading_modal" style="display:none"></div>';
@@ -139,7 +143,6 @@ function snmp_browser_show_add_module_massive(module_target = 'agent') {
     var snmp_extradata = snmp_browser_create_modules(module_target);
     // Load dinamically modal form.
     load_modal({
-        target: $('#modal'),
         form: 'snmp_browser_add_module_form',
         extradata: [
             {
@@ -197,7 +200,7 @@ function waiting_modal(stop = false) {
 
 
     var waiting_modal = 
-    '<div id="loading_in_progress_dialog" style="text-align: center;">' +
+    '<div id="loading_in_progress_dialog" class="center">' +
     '<?php echo __('Adding modules in progress'); ?> <br /><br />' +
     '<?php echo html_print_image('images/spinner.gif', true); ?> </div>';
 
@@ -241,20 +244,41 @@ function snmp_show_result_message(data) {
     if (dato.length !== 0) {
       $("#error_text").text("");
 
-      dato.forEach(function (valor, indice, array) {
-        $("#error_text").append("<br/>" + valor);
-      });
-      $("#dialog_error").dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        height: 300,
-        width: 500,
-        overlay: {
-          opacity: 0.5,
-          background: "black"
-        }
-      });
+      if (dato[0] === -1) {
+          $("#dialog_no_agents_selected").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            height: 300,
+            width: 500,
+            close: function(e, ui) {
+              $("input[name=create_modules_network_component]").removeClass("sub spinn");
+              $("input[name=create_modules_network_component]").addClass("sub add");
+            },
+            overlay: {
+              opacity: 0.5,
+              background: "black"
+            }
+          });
+      } else {
+          $("#error_text").text("");
+
+          dato.forEach(function (valor, indice, array) {
+            $("#error_text").append("<br/>" + valor);
+          });
+          $("#dialog_error").dialog({
+            resizable: true,
+            draggable: true,
+            modal: true,
+            height: 300,
+            width: 500,
+            overlay: {
+              opacity: 0.5,
+              background: "black"
+            }
+          });
+      }
+
     } else {
       $("#dialog_success").dialog({
         resizable: true,
@@ -301,20 +325,47 @@ function add_module_massive_controller(target = 'agent')
     });
 
     // Select all Items.
-    $("input[name='select_all_left']").click(function () {
-        $('#id_item option').map(function() {
-            $(this).prop('selected', true);
-        });
-        
+    $("#checkbox-select_all_left").change(function () {
+        if ($("#checkbox-select_all_left").prop('checked') == true) {
+            $('#id_item option').map(function() {
+                $(this).prop('selected', true);
+            });
+        } else {
+            $('#id_item option').map(function() {
+                $(this).prop('selected', false);
+            });
+        }
+
         return false;
     });
-    $("input[name='select_all_right']").click(function () {
-        $('#id_item2 option').map(function() {
-            $(this).prop('selected', true);
-        });
-        
+
+    $("#checkbox-select_all_right").change(function () {
+        if ($("#checkbox-select_all_right").prop('checked') == true) {
+            $('#id_item2 option').map(function() {
+                $(this).prop('selected', true);
+            });
+        } else {
+            $('#id_item2 option').map(function() {
+                $(this).prop('selected', false);
+            });
+        }
+
         return false;
     });
+
+    $("#id_item").click(function(e) {
+        if ($("#checkbox-select_all_left").prop('checked') == true) {
+            $("#checkbox-select_all_left").prop('checked', false);
+        }
+    });
+
+    $("#id_item2").click(function(e) {
+        if ($("#checkbox-select_all_right").prop('checked') == true) {
+            $("#checkbox-select_all_right").prop('checked', false);
+        }
+    });
+
+    $(".p-switch").css('display', 'table');
 
     // Select items.
     $("#right").click (function () {

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -124,12 +124,12 @@ if (substr($os, 0, 3) !== 'win') {
 
         // Launch gotty - SSH.
         $cmd = $base_cmd.' --port '.$config['gotty_ssh_port'];
-        $cmd .= ' ssh >> '.__DIR__.'/pandora_console.log 2>&1 &';
+        $cmd .= ' ssh >> /var/log/pandora/web_socket.log 2>&1 &';
         shell_exec($cmd);
 
         // Launch gotty - telnet.
         $cmd = $base_cmd.' --port '.$config['gotty_telnet_port'];
-        $cmd .= ' telnet >> '.__DIR__.'/pandora_console.log 2>&1 &';
+        $cmd .= ' telnet >> /var/log/pandora/web_socket.log 2>&1 &';
         shell_exec($cmd);
     }
 }

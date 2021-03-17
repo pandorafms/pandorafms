@@ -7,7 +7,7 @@
  *
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -97,7 +97,7 @@ $table->data['0']['1'] .= html_print_select(
 
 $table->data['0']['2'] = '';
 
-$table->data['1']['0'] = '<div style="display: flex;">';
+$table->data['1']['0'] = '<div class="flex">';
 $table->data['1']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['1']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
@@ -332,11 +332,11 @@ foreach ($data as $item) {
 if (empty($data)) {
     ui_print_info_message(__('No data found'));
 } else {
-    echo '<div style="display: flex; margin-top: 10px;">';
+    echo '<div class="flex mrgn_top_10px">';
     html_print_table($table);
 
     // Print the graph.
-    echo '<div style="margin-top: 50px; width: 40%;">';
+    echo '<div class="mrgn_top_50px w40p">';
     echo pie_graph(
         $chart_data,
         320,

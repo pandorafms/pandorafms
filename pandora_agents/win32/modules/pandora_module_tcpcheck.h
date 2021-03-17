@@ -1,6 +1,6 @@
 /* Pandora tcpcheck module. This module checks whether a tcp port is open.
 
-   Copyright (C) 2008 Artica ST.
+   Copyright (c) 2008-2021 Artica ST.
    Written by Ramon Novoa.
 
    This program is free software; you can redistribute it and/or modify

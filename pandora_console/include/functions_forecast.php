@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -36,7 +36,8 @@ function forecast_projection_graph(
     $prediction_period,
     $max_value=false,
     $min_value=false,
-    $csv=false
+    $csv=false,
+    $server_name=''
 ) {
     global $config;
 
@@ -55,7 +56,17 @@ function forecast_projection_graph(
         'projection'      => true,
     ];
 
+    if (is_metaconsole()) {
+        $id_meta = metaconsole_get_id_server($server_name);
+        $server  = metaconsole_get_connection_by_id($id_meta);
+        metaconsole_connect($server);
+    }
+
     $module_data = grafico_modulo_sparse($params);
+
+    if (is_metaconsole()) {
+        metaconsole_restore_db();
+    }
 
     if (empty($module_data)) {
         return [];
@@ -252,12 +263,13 @@ function forecast_prediction_date(
     $module_id,
     $period=SECONDS_2MONTHS,
     $max_value=0,
-    $min_value=0
+    $min_value=0,
+    $server_name=''
 ) {
     // Checks interval
     if ($min_value > $max_value) {
         return false;
     }
 
-    return forecast_projection_graph($module_id, $period, false, $max_value, $min_value);
+    return forecast_projection_graph($module_id, $period, false, $max_value, $min_value, false, $server_name);
 }

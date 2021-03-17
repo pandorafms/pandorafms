@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,7 +66,7 @@ if ($id_group) {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';
@@ -145,7 +145,8 @@ if ($id_group) {
 
         $table->data[2][1] = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
     } else {
-        $table->data[2][1] = html_print_select_groups(
+        $table->data[2][1] = '<div class="w250px inline">';
+        $table->data[2][1] .= html_print_select_groups(
             false,
             'AR',
             true,
@@ -163,9 +164,20 @@ if ($id_group) {
             false,
             $id_group
         );
+        $table->data[2][1] .= '</div>';
     }
 } else {
-    $table->data[2][1] = html_print_select_groups(false, 'AR', true, 'id_parent', $id_parent, '', '', '', true);
+    $table->data[2][1] = '<div class="w250px inline">';
+    $table->data[2][1] .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'name'           => 'id_parent',
+            'selected'       => $id_parent,
+            'return'         => true,
+            'returnAllGroup' => true,
+        ]
+    );
+    $table->data[2][1] .= '</div>';
 }
 
 if ($acl_parent) {
@@ -198,11 +210,11 @@ $table->data[$i][1] = html_print_input_text('description', $description, '', 60,
 $i++;
 
 $table->data[$i][0] = __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true);
-$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true);
 $i++;
 
 $table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true);
-$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
 $i++;
 
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');

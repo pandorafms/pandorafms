@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,7 +64,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
         $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -390,8 +390,8 @@ if ($config['history_db_enabled'] == 1) {
 
     $config_history = false;
     if ($config['history_db_connection']) {
-        $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+        $history_connect = mysql_db_process_sql(
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -408,6 +408,7 @@ if ($config['history_db_enabled'] == 1) {
             if (isset($config_history_array) && is_array($config_history_array)) {
                 foreach ($config_history_array as $key => $value) {
                     $config_history[$value['token']] = $value['value'];
+                    $config_history = true;
                 }
             }
         } else {
@@ -642,6 +643,40 @@ $table_other->data[13][1] = html_print_input_text(
     true
 );
 
+$table_other->data[14][0] = __('Row limit in csv log');
+$table_other->data[14][1] = html_print_input_text(
+    'row_limit_csv',
+    $config['row_limit_csv'],
+    '',
+    5,
+    10,
+    true
+);
+
+$table_other->data[15][0] = __('SNMP walk binary');
+$table_other->data[15][1] = html_print_input_text(
+    'snmpwalk',
+    $config['snmpwalk'],
+    '',
+    50,
+    10,
+    true
+);
+
+$tip = ui_print_help_tip(
+    __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
+    true
+);
+$table_other->data[16][0] = __('SNMP walk binary (fallback)').$tip;
+$table_other->data[16][1] = html_print_input_text(
+    'snmpwalk_fallback',
+    $config['snmpwalk_fallback'],
+    '',
+    50,
+    10,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
 echo '<fieldset>';
@@ -685,8 +720,8 @@ function change_macro_fields() {
     if (value <= 0) {
         $("#text-max_macro_fields").val(1);
     }
-    else if (value > 15) {
-        $("#text-max_macro_fields").val(15);
+    else if (value > 20) {
+        $("#text-max_macro_fields").val(20);
     }
 }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright (c) 2018 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2018-2021 Artica Soluciones Tecnologicas S.L.
 use strict;
 use warnings;
 use Scalar::Util qw(looks_like_number);

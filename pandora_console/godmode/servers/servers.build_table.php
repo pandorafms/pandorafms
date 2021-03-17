@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,13 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 
 $table->data = [];
 $names_servers = [];
+$master = 1;
+// The server with the highest number in master, will be the real master.
+foreach ($servers as $server) {
+    if ($server['master'] > $master) {
+        $master = $server['master'];
+    }
+}
 
 foreach ($servers as $server) {
     $data = [];
@@ -91,13 +98,25 @@ foreach ($servers as $server) {
 
     // Status
     $data[1] = ui_print_status_image(STATUS_SERVER_OK, '', true);
-    if (($server['status'] == 0) || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)) {
-        $data[1] = ui_print_status_image(STATUS_SERVER_DOWN, '', true);
+    if ($server['status'] == -1) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_CRASH,
+            __('Server has crashed.'),
+            true
+        );
+    } else if (($server['status'] == 0)
+        || (($date - time_w_fixed_tz($server['keepalive'])) > ($server['server_keepalive']) * 2)
+    ) {
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_DOWN,
+            __('Server is stopped.'),
+            true
+        );
     }
 
     // Type
-    $data[2] = '<span style="white-space:nowrap;">'.$server['img'];
-    if ($server['master'] == 1) {
+    $data[2] = '<span class="nowrap">'.$server['img'];
+    if ($server['master'] == $master) {
         $data[2] .= ui_print_help_tip(__('This is a master server'), true);
     }
 
@@ -105,7 +124,6 @@ foreach ($servers as $server) {
         $data[2] .= html_print_image('images/star.png', true, ['title' => __('Exec server enabled')]);
     }
 
-    // $data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
     switch ($server['type']) {
         case 'snmp':
         case 'event':
@@ -125,7 +143,7 @@ foreach ($servers as $server) {
         default:
             $data[3] = $server['version'];
             $data[4] = $server['modules'].' '.__('of').' '.$server['modules_total'];
-            $data[5] = '<span style="white-space:nowrap;">'.$server['lag_txt'].'</span>';
+            $data[5] = '<span class="nowrap">'.$server['lag_txt'].'</span>';
         break;
     }
 
@@ -163,6 +181,8 @@ foreach ($servers as $server) {
                 [
                     'title' => __('Manage Discovery tasks'),
                     'style' => 'width:21px;height:21px;',
+                    'class' => 'invert_filter',
+
                 ]
             );
             $data[8] .= '</a>';
@@ -173,7 +193,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
-                ['title' => __('Reset module status and fired alert counts')]
+                [
+                    'title' => __('Reset module status and fired alert counts'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
         } else if ($server['type'] == 'enterprise snmp') {
@@ -181,7 +204,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/target.png',
                 true,
-                ['title' => __('Claim back SNMP modules')]
+                [
+                    'title' => __('Claim back SNMP modules'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
         }
@@ -190,7 +216,10 @@ foreach ($servers as $server) {
         $data[8] .= html_print_image(
             'images/config.png',
             true,
-            ['title' => __('Edit')]
+            [
+                'title' => __('Edit'),
+                'class' => 'invert_filter',
+            ]
         );
         $data[8] .= '</a>';
 
@@ -199,7 +228,10 @@ foreach ($servers as $server) {
             $data[8] .= html_print_image(
                 'images/remote_configuration.png',
                 true,
-                ['title' => __('Remote configuration')]
+                [
+                    'title' => __('Remote configuration'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a>';
             $names_servers[$safe_server_name] = false;
@@ -212,6 +244,7 @@ foreach ($servers as $server) {
             [
                 'title'   => __('Delete'),
                 'onclick' => "if (! confirm ('".__('Modules run by this server will stop working. Do you want to continue?')."')) return false",
+                'class'   => 'invert_filter',
             ]
         );
         $data[8] .= '</a>';

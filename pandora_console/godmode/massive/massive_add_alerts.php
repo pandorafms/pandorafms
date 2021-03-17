@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,15 +106,31 @@ function process_manage_add($id_alert_template, $id_agents, $module_names)
         return false;
     }
 
+    $modules_id = [];
+
     foreach ($module_names as $module) {
         foreach ($id_agents as $id_agent) {
-            $module_id = modules_get_agentmodule_id($module, $id_agent);
-            $modules_id[] = $module_id['id_agente_modulo'];
-        }
-    }
+            if ($module == '0') {
+                    // Get all modules of agent.
+                    $agent_modules = db_get_all_rows_filter(
+                        'tagente_modulo',
+                        ['id_agente' => $id_agent],
+                        'id_agente_modulo'
+                    );
 
-    if (count($module_names) == 1 && $module_names[0] == '0') {
-        $modules_id = agents_common_modules($id_agents, false, true);
+                    $agent_modules_id = array_map(
+                        function ($field) {
+                            return $field['id_agente_modulo'];
+                        },
+                        $agent_modules
+                    );
+
+                    $modules_id = array_merge($modules_id, $agent_modules_id);
+            } else {
+                $module_id = modules_get_agentmodule_id($module, $id_agent);
+                $modules_id[] = $module_id['id_agente_modulo'];
+            }
+        }
     }
 
     $conttotal = 0;
@@ -262,17 +278,15 @@ $table->data[2][3] = '';
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_alerts">';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('add', 1);
-html_print_submit_button(__('Add'), 'go', false, 'class="sub add"');
-echo '</div>';
+attachActionButton('add', 'add', $table->width);
+
 echo '</form>';
 
 // TODO: Change to iu_print_error system.
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 // Hack to translate text "none" in PHP to javascript.
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
@@ -283,7 +297,7 @@ ui_require_jquery_file('pandora.controls');
 var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
 
 $(document).ready (function () {
-    $("#form_alerts").submit(function() {
+/*     $("#form_alerts").submit(function() {
         var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#form_alerts").serializeArray().length;
@@ -295,7 +309,7 @@ $(document).ready (function () {
             alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
             return false;
         }
-    });
+    }); */
 
     $("#checkbox-recursion").click(function () {
         $("#id_group").trigger("change");
@@ -305,7 +319,7 @@ $(document).ready (function () {
 
     $("#id_group").change (function () {
         var $select = $("#id_agents").enable ();
-        $("#agent_loading").show ();
+        showSpinner();
         $("option", $select).remove ();
 
         jQuery.post ("ajax.php",
@@ -324,7 +338,7 @@ $(document).ready (function () {
                     options += "<option value=\""+id+"\">"+value+"</option>";
                 });
                 $("#id_agents").append (options);
-                $("#agent_loading").hide ();
+                hideSpinner();
                 $select.enable ();
             },
             "json"

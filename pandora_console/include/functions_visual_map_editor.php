@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -45,7 +45,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
     $backgrounds_list = list_files($config['homedir'].'/images/console/background/', 'jpg', 1, 0);
     $backgrounds_list = array_merge($backgrounds_list, list_files($config['homedir'].'/images/console/background/', 'png', 1, 0));
 
-    echo '<div id="properties_panel" style="display: none; position: absolute; border: 1px solid lightgray; padding: 5px; background: white; z-index: 90;">';
+    echo '<div id="properties_panel" class="propierties_panel_class">';
     // ----------------------------Hiden Form----------------------------
     ?>
     <table class="databox filters" border="0" cellpadding="4" cellspacing="4" width="350">
@@ -79,8 +79,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             foreach ($titles as $item => $title) {
                 echo '<span id="title_panel_span_'.$item.'"
-					class="title_panel_span"
-					style="display: none; font-weight: bolder;">'.$title.'</span>';
+					class="title_panel_span bolder invisible">'.$title.'</span>';
             }
             ?>
         </caption>
@@ -105,7 +104,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'handler_start',
                 'handler_end',
             ];
-            $form_items['line_color_row']['html'] = '<td align="left" valign="top" style="">'.__('Border color').'</td>'.'<td align="left" style="">'.html_print_input_text_extended(
+            $form_items['line_color_row']['html'] = '<td align="left" valign="top"  >'.__('Border color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
                 'line_color',
                 '#000000',
                 'text-line_color',
@@ -131,7 +130,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'datos',
                 'box_item',
             ];
-            $form_items['border_color_row']['html'] = '<td align="left" valign="top" style="">'.__('Border color').'</td>'.'<td align="left" style="">'.html_print_input_text_extended(
+            $form_items['border_color_row']['html'] = '<td align="left" valign="top"  >'.__('Border color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
                 'border_color',
                 '#000000',
                 'text-border_color',
@@ -158,7 +157,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'box_item',
                 'clock',
             ];
-            $form_items['fill_color_row']['html'] = '<td align="left" valign="top" style="">'.__('Fill color').'</td>'.'<td align="left" style="">'.html_print_input_text_extended(
+            $form_items['fill_color_row']['html'] = '<td align="left" valign="top"  >'.__('Fill color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
                 'fill_color',
                 '#000000',
                 'text-fill_color',
@@ -191,29 +190,52 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'bars_graph',
                 'clock',
             ];
-            $form_items['label_row']['html'] = '<td align="left" valign="top" style="">'.__('Label').ui_print_help_icon('macros_visual_maps', true).'
+            $form_items['label_row']['html'] = '<td align="left" valign="top"  >'.__('Label').ui_print_help_icon('macros_visual_maps', true).'
 				
-				<div id="label_box_arrow" style="text-align:center;width:120px;height:110px;margin-top:50px;">
+				<div id="label_box_arrow">
 					<span>Label position</span>
-					<div class="labelpos" id="labelposup" position="up" style="width:20px;height:20px;margin-top:10px;margin-left:45px;cursor: pointer;">
-						'.html_print_image('images/label_up.png', true, ['style' => 'height:100%;width:100%;']).'
+					<div class="labelpos" id="labelposup" position="up">
+						'.html_print_image(
+                'images/label_up.png',
+                true,
+                ['class' => 'height_100p w100p']
+            ).'
 					</div>
-					<div class="labelpos" id="labelposleft" position="left" style="position:relative;top:-5px;width:20px;height:20px;margin-top:15px;cursor: pointer;">
-						'.html_print_image('images/label_left.png', true, ['style' => 'height:100%;width:100%;']).'
+					<div class="labelpos" id="labelposleft" position="left">
+						'.html_print_image(
+                'images/label_left.png',
+                true,
+                ['class' => 'height_100p w100p']
+            ).'
 					</div>
-					<div style="font-weight:bold;width:40px;height:20px;position:relative;margin-left:35px;margin-top:-24px;cursor: default;">
-						<span style="float:left;margin-top:3px;margin-left:5px;">Object</span>
+					<div class="vsmap_div_label">
+						<span id="obj_label">Object</span>
 					</div>
-					<div class="labelpos" id="labelposright" position="right" style="top:2px;width:20px;height:20px;position:relative;margin-left:90px;margin-top:-24px;cursor: pointer;">
-						'.html_print_image('images/label_right.png', true, ['style' => 'height:100%;width:100%;']).'
+					<div class="labelpos" id="labelposright" position="right">
+						'.html_print_image(
+                'images/label_right.png',
+                true,
+                ['class' => 'height_100p w100p']
+            ).'
 					</div>
-					<div class="labelpos" sel="yes" id="labelposdown" position="down" style="width:20px;height:20px;position:relative;margin-left:45px;margin-top:10px;cursor: pointer;">
-						'.html_print_image('images/label_down_2.png', true, ['style' => 'height:100%;width:100%;']).'
+					<div class="labelpos" sel="yes" id="labelposdown" position="down">
+						'.html_print_image(
+                'images/label_down_2.png',
+                true,
+                ['class' => 'height_100p w100p']
+            ).'
 					</div>
 				</div>
 				</td>
-				<td align="left" style="">'.html_print_input_text('label', '', '', 20, 200, true).'
-				<span id="advice_label" style="font-style:italic;z-index:3;display:inline;margin-top:0px;float:right;margin-right:100px;">
+				<td align="left"  >'.html_print_input_text(
+                'label',
+                '',
+                '',
+                20,
+                200,
+                true
+            ).'
+				<span id="advice_label">
 				'.__('Scroll the mouse wheel over the label editor to change the background color').'
 				</span>
 				</td>';
@@ -304,8 +326,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'group_item',
             ];
 
-            $form_items['enable_link_row']['html'] = '<td align="left" style="">'.__('Enable link').'</td>
-				<td align="left" style="">'.html_print_checkbox('enable_link', '', !is_metaconsole(), true).'</td>';
+            $form_items['enable_link_row']['html'] = '<td align="left"  >'.__('Enable link').'</td>
+				<td align="left"  >'.html_print_checkbox('enable_link', '', !is_metaconsole(), true).'</td>';
 
             $form_items['preview_row'] = [];
             $form_items['preview_row']['items'] = [
@@ -314,7 +336,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'icon',
                 'group_item',
             ];
-            $form_items['preview_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">'.'<div id="preview" style="text-align: right;"></div></td>';
+            $form_items['preview_row']['html'] = '<td align="left" colspan="2" class="right">'.'<div id="preview" class="right"></div></td>';
 
             $form_items['background_color'] = [];
             $form_items['background_color']['items'] = [
@@ -341,7 +363,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['grid_color_row'] = [];
             $form_items['grid_color_row']['items'] = ['bars_graph'];
-            $form_items['grid_color_row']['html'] = '<td align="left" valign="top" style="">'.__('Grid color').'</td>'.'<td align="left" style="">'.html_print_input_text_extended(
+            $form_items['grid_color_row']['html'] = '<td align="left" valign="top"  >'.__('Grid color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
                 'grid_color',
                 '#000000',
                 'text-grid_color',
@@ -359,11 +381,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'module_graph',
                 'datos',
             ];
-            $form_items['radio_choice_graph']['html'] = '<td align="left" style=""></td>
-				<td align="left" style="">'.__('Module graph').'&nbsp;&nbsp;'.html_print_radio_button('radio_choice', 'module_graph', '', 'module_graph', true).'&nbsp;&nbsp;&nbsp;&nbsp;'.__('Custom graph').'&nbsp;&nbsp;'.html_print_radio_button('radio_choice', 'custom_graph', '', 'module_graph', true).'</td>';
+            $form_items['radio_choice_graph']['html'] = '<td align="left"  ></td>
+				<td align="left"  >'.__('Module graph').'&nbsp;&nbsp;'.html_print_radio_button('radio_choice', 'module_graph', '', 'module_graph', true).'&nbsp;&nbsp;&nbsp;&nbsp;'.__('Custom graph').'&nbsp;&nbsp;'.html_print_radio_button('radio_choice', 'custom_graph', '', 'module_graph', true).'</td>';
 
             $form_items['custom_graph_row'] = [];
-            $form_items['custom_graph_row']['html'] = '<td align="left" style="">'.__('Custom graph').'</td><td align="left" style="">';
+            $form_items['custom_graph_row']['html'] = '<td align="left"  >'.__('Custom graph').'</td><td align="left"  >';
             if (is_metaconsole()) {
                 $graphs = [];
                 $graphs = metaconsole_get_custom_graphs(true);
@@ -461,12 +483,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'color_cloud',
             ];
             $form_items['module_row']['html'] = '<td align="left">'.__('Module').'</td>
-				<td align="left">'.html_print_select([], 'module', '', '', __('Any'), 0, true).'<div id="data_image_container" style="display:none;"><span id="data_image_check_label" style="margin-left:20px;">'.__('Data image').': </span><span id="data_image_check">Off</span><span id="data_image_width_label"> - Width: </span><input style="margin-left:5px;width:40px;" type="number" min="0" id="data_image_width" value="100"></input></div>
+				<td align="left">'.html_print_select([], 'module', '', '', __('Any'), 0, true).'<div id="data_image_container" class="invisible"><span id="data_image_check_label" class="mrgn_lft_20px">'.__('Data image').': </span><span id="data_image_check">Off</span><span id="data_image_width_label"> - Width: </span><input class="mrgn_lft_5px w40px" type="number" min="0" id="data_image_width" value="100"></input></div>
 				</td>';
 
             $form_items['resume_color_row'] = [];
             $form_items['resume_color_row']['items'] = ['donut_graph'];
-            $form_items['resume_color_row']['html'] = '<td align="left" valign="top" style="">'.__('Resume data color').'</td>'.'<td align="left" style="">'.html_print_input_text_extended(
+            $form_items['resume_color_row']['html'] = '<td align="left" valign="top"  >'.__('Resume data color').'</td>'.'<td align="left"  >'.html_print_input_text_extended(
                 'resume_color',
                 '#000000',
                 'text-resume_color',
@@ -632,7 +654,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                     'datos',
                 ];
                 $form_items['percentile_item_row_3']['html'] = '<td align="left">'.__('Type').'</td>
-					<td align="left">'.html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true, false, false, '', false, 'style="float: left;"').'</td>';
+					<td align="left">'.html_print_select($percentile_type, 'type_percentile', 'percentile', '', '', '', true, false, false, '', false, 'class="float-left"').'</td>';
 
                 $form_items['percentile_item_row_4'] = [];
                 $form_items['percentile_item_row_4']['items'] = [
@@ -641,7 +663,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                     'datos',
                 ];
                 $form_items['percentile_item_row_4']['html'] = '<td align="left">'.__('Value to show').'</td>
-					<td align="left">'.html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true, false, false, '', false, 'style="float: left;"').'</td>';
+					<td align="left">'.html_print_select($percentile_value, 'value_show', 'percent', '', '', '', true, false, false, '', false, 'class="float-left"').'</td>';
             } else {
                 $form_items['percentile_item_row_3'] = [];
                 $form_items['percentile_item_row_3']['items'] = [
@@ -722,8 +744,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['show_statistics_row'] = [];
             $form_items['show_statistics_row']['items'] = ['group_item'];
-            $form_items['show_statistics_row']['html'] = '<td align="left" style="">'.__('Show statistics').'</td>
-				<td align="left" style="">'.html_print_checkbox('show_statistics', 1, '', true).'</td>';
+            $form_items['show_statistics_row']['html'] = '<td align="left"  >'.__('Show statistics').'</td>
+				<td align="left"  >'.html_print_checkbox('show_statistics', 1, '', true).'</td>';
 
             // Start of Color Cloud rows
             // Diameter
@@ -749,8 +771,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             // End of Color Cloud rows
             $form_items['show_on_top_row'] = [];
             $form_items['show_on_top_row']['items'] = ['group_item'];
-            $form_items['show_on_top_row']['html'] = '<td align="left" style="">'.__('Always show on top').'</td>
-				<td align="left" style="">'.html_print_checkbox('show_on_top', 1, '', true).ui_print_help_tip(__('It allows the element to be superimposed to the rest of items of the visual console'), true).'</td>';
+            $form_items['show_on_top_row']['html'] = '<td align="left"  >'.__('Always show on top').'</td>
+				<td align="left"  >'.html_print_checkbox('show_on_top', 1, '', true).ui_print_help_tip(__('It allows the element to be superimposed to the rest of items of the visual console'), true).'</td>';
 
             $show_last_value = [
                 '0' => __('Hide last value on boolean modules'),
@@ -759,7 +781,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             ];
             $form_items['show_last_value_row'] = [];
             $form_items['show_last_value_row']['items'] = ['static_graph'];
-            $form_items['show_last_value_row']['html'] = '<td align="left" style="">'.__('Show last value').'</td>
+            $form_items['show_last_value_row']['html'] = '<td align="left"  >'.__('Show last value').'</td>
 				<td align="left">'.html_print_select($show_last_value, 'last_value', 0, '', '', '', true).'</td>';
 
             $form_items['module_graph_size_row'] = [];
@@ -787,27 +809,27 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['button_update_row'] = [];
             $form_items['button_update_row']['items'] = ['datos'];
-            $form_items['button_update_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true).'</td>';
+            $form_items['button_update_row']['html'] = '<td align="left" colspan="2" class="right">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true).'</td>';
 
             $form_items['button_create_row'] = [];
             $form_items['button_create_row']['items'] = ['datos'];
-            $form_items['button_create_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true).'</td>';
+            $form_items['button_create_row']['html'] = '<td align="left" colspan="2" class="right">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true).'</td>';
 
             foreach ($form_items as $item => $item_options) {
-                echo '<tr id="'.$item.'" style="" class="'.implode(' ', (array) $item_options['items']).'">';
+                echo '<tr id="'.$item.'"   class="'.implode(' ', (array) $item_options['items']).'">';
                 echo $item_options['html'];
                 echo '</tr>';
             }
             ?>
             <tr id="advance_options_link" class="datos">
-                <td colspan="2" style="text-align: center;">
+                <td colspan="2" class="center">
                     <a href="javascript: toggle_advance_options_palette()">
                         <?php echo __('Advanced options'); ?>
                     </a>
                 </td>
             </tr>
         </tbody>
-        <tbody id="advance_options" style="display: none;">
+        <tbody id="advance_options" class="invisible">
             <?php
             $form_items_advance = [];
 
@@ -1183,7 +1205,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
     }
 
     foreach ($form_items_advance as $item => $item_options) {
-        echo '<tr id="'.$item.'" style="" class="'.implode(' ', $item_options['items']).'">';
+        echo '<tr id="'.$item.'"   class="'.implode(' ', $item_options['items']).'">';
         echo $item_options['html'];
         echo '</tr>';
     }
@@ -1193,11 +1215,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
     <?php
     echo '</div>';
 
-    echo '<div id="div_step_1" class="forced_title_layer"
-		style="display: none; position: absolute; z-index: 99;">'.__('Click start point<br />of the line').'</div>';
+    echo '<div id="div_step_1" class="forced_title_layer steps_vsmap"
+		>'.__('Click start point<br />of the line').'</div>';
 
-    echo '<div id="div_step_2" class="forced_title_layer"
-		style="display: none; position: absolute; z-index: 99;">'.__('Click end point<br />of the line').'</div>';
+    echo '<div id="div_step_2" class="forced_title_layer steps_vsmap"
+		>'.__('Click end point<br />of the line').'</div>';
 
     ui_require_css_file('color-picker', 'include/styles/js/');
 
@@ -1288,9 +1310,9 @@ function visual_map_editor_print_toolbox()
     global $config;
 
     if (defined('METACONSOLE')) {
-        echo '<div id="editor" style="">';
+        echo '<div id="editor"  >';
     } else {
-        echo '<div id="editor" style="margin-top: -10px;">';
+        echo '<div id="editor" class="mrgn_top-10px">';
     }
 
     echo '<div id="toolbox">';
@@ -1308,6 +1330,13 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('box_item', __('Box'), 'left', false, 'box_item_min', true);
         visual_map_print_button_editor('line_item', __('Line'), 'left', false, 'line_item_min', true);
         visual_map_print_button_editor('color_cloud', __('Color cloud'), 'left', false, 'color_cloud_min', true);
+    if (isset($config['legacy_vc']) === false
+        || (bool) $config['legacy_vc'] === false
+    ) {
+        // Applies only on modern VC.
+        visual_map_print_button_editor('network_link', __('Network link'), 'left', false, 'network_link_min', true);
+    }
+
     if (defined('METACONSOLE')) {
         echo '<a href="javascript:" class="tip"><img src="'.$config['homeurl_static'].'/images/tip.png" data-title="The data displayed in editor mode is not real" data-use_title_for_force_title="1" 
 			class="forced_title" alt="The data displayed in editor mode is not real"></a>';
@@ -1326,7 +1355,7 @@ function visual_map_editor_print_toolbox()
         visual_map_print_button_editor('copy_item', __('Copy item'), 'right', true, 'copy_item', true);
     echo '</div>';
     echo '</div>';
-    echo '<div style="clear: right; margin-bottom: 10px;"></div>';
+    echo '<div class="clear_right mrgn_btn_10px"></div>';
 }
 
 
@@ -1359,84 +1388,84 @@ function visual_map_print_button_editor(
 function visual_map_editor_print_hack_translate_strings()
 {
     // Trick for it have a traduct text for javascript.
-    echo '<span id="any_text" style="display: none;">'.__('Any').'</span>';
-    echo '<span id="ip_text" style="display: none;">'.__('IP').'</span>';
+    echo '<span id="any_text" class="invisible">'.__('Any').'</span>';
+    echo '<span id="ip_text"  class="invisible">'.__('IP').'</span>';
 
     // Hack to translate messages in javascript.
-    echo "<div id='message_min_allowed_size'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('Min allowed size is 1024x768.').'</p>';
+    echo "<div id='message_min_allowed_size'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('Min allowed size is 1024x768.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No custom graph defined.').'</p>';
+    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No custom graph defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_label_no_image'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No image or name defined.').'</p>';
+    echo "<div id='message_alert_no_label_no_image'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No image or name defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_label'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No label defined.').'</p>';
+    echo "<div id='message_alert_no_label'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No label defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_service'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No service defined.').'</p>';
+    echo "<div id='message_alert_no_service'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No service defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_image'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No image defined.').'</p>';
+    echo "<div id='message_alert_no_image'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No image defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_process'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No process defined.').'</p>';
+    echo "<div id='message_alert_no_process'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No process defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_max_percentile'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No Max value defined.').'</p>';
+    echo "<div id='message_alert_no_max_percentile'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No Max value defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_width'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No width defined.').'</p>';
+    echo "<div id='message_alert_no_width'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No width defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_height'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No height defined.').'</p>';
+    echo "<div id='message_alert_no_height'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No height defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_max_width'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('The width must not exceed the size of the visual console container.').'</p>';
+    echo "<div id='message_alert_max_width'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('The width must not exceed the size of the visual console container.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_max_height'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('The height must not exceed the size of the visual console container.').'</p>';
+    echo "<div id='message_alert_max_height'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('The height must not exceed the size of the visual console container.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_period'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No period defined.').'</p>';
+    echo "<div id='message_alert_no_period'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No period defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_agent'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No agent defined.').'</p>';
+    echo "<div id='message_alert_no_agent'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No agent defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_module'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No module defined.').'</p>';
+    echo "<div id='message_alert_no_module'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No module defined.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_module_string_type'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No module defined. This module must be string type.').'</p>';
+    echo "<div id='message_alert_no_module_string_type'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No module defined. This module must be string type.').'</p>';
     echo '</div>';
 
-    echo "<div id='hack_translation_correct_save'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('Successfully save the changes.').'</p>';
+    echo "<div id='hack_translation_correct_save'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('Successfully save the changes.').'</p>';
     echo '</div>';
 
-    echo "<div id='hack_translation_incorrect_save'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('Could not be save.').'</p>';
+    echo "<div id='hack_translation_incorrect_save'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('Could not be save.').'</p>';
     echo '</div>';
 
-    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('No custom graph defined.').'</p>';
+    echo "<div id='message_alert_no_custom_graph'  title='".__('Visual Console Builder Information')."' class='invisible'>";
+    echo "<p class='center bolder'>".__('No custom graph defined.').'</p>';
     echo '</div>';
 
 }

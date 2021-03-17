@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -303,7 +303,7 @@ class Ui
             $time = get_system_time();
         }
 
-        return "<div id='footer' style='text-align: center;'>\n".sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version))."<br />\n".__('Generated at').' '.ui_print_timestamp($time, true, ['prominent' => 'timestamp'])."\n".'</div>';
+        return "<div id='footer' class=' center'>\n".sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version))."<br />\n".__('Generated at').' '.ui_print_timestamp($time, true, ['prominent' => 'timestamp'])."\n".'</div>';
     }
 
 
@@ -779,6 +779,7 @@ class Ui
 
         echo "	</head>\n";
         echo "	<body>\n";
+        echo include_javascript_dependencies_flot_graph(false, false);
         echo "		<div class='ui-loader-background'> </div>";
         if (!empty($this->dialogs)) {
             if (!empty($this->dialogs['onStart'])) {

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -367,7 +367,7 @@ function agent_counters_custom_fields($filters)
     if ($filters['group']) {
         // Recursion check acl.
         if ($filters['recursion']) {
-            $recursion_groups = groups_get_id_recursive($filters['group'], true);
+            $recursion_groups = groups_get_children_ids($filters['group'], true);
             if (!users_can_manage_group_all('AR')) {
                 if (isset($user_groups) && is_array($user_groups)) {
                     $groups_intersect = array_intersect($user_groups, $recursion_groups);

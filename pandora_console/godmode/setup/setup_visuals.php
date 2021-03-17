@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,6 +131,7 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
+
 $table_styles->data[$row][0] = __('Style template');
 $table_styles->data[$row][1] = html_print_select(
     themes_get_css(),
@@ -142,6 +143,7 @@ $table_styles->data[$row][1] = html_print_select(
     true
 );
 $row++;
+
 
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
@@ -463,19 +465,15 @@ if (enterprise_installed()) {
     $row++;
 }
 
-// Title Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Title (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
-    $row++;
-}
+// Title Header.
+$table_styles->data[$row][0] = __('Title (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+$row++;
 
-// Subtitle Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Subtitle (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
-    $row++;
-}
+// Subtitle Header.
+$table_styles->data[$row][0] = __('Subtitle (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+$row++;
 
 // login title1
 if (enterprise_installed()) {
@@ -738,67 +736,166 @@ $row++;
     $table_chars->data = [];
 
     $table_chars->data[$row][0] = __('Graph color #1');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color1', $config['graph_color1'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color1',
+        $config['graph_color1'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #2');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color2', $config['graph_color2'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color2',
+        $config['graph_color2'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #3');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color3', $config['graph_color3'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color3',
+        $config['graph_color3'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #4');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color4', $config['graph_color4'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color4',
+        $config['graph_color4'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #5');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color5', $config['graph_color5'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color5',
+        $config['graph_color5'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #6');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color6', $config['graph_color6'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color6',
+        $config['graph_color6'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #7');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color7', $config['graph_color7'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color7',
+        $config['graph_color7'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #8');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color8', $config['graph_color8'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color8',
+        $config['graph_color8'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #9');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color9', $config['graph_color9'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color9',
+        $config['graph_color9'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph color #10');
-    $table_chars->data[$row][1] = html_print_input_text('graph_color10', $config['graph_color10'], '', 8, 8, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_color10',
+        $config['graph_color10'],
+        '',
+        8,
+        8,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Value to interface graphics');
-    $table_chars->data[$row][1] = html_print_input_text('interface_unit', $config['interface_unit'], '', 20, 20, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'interface_unit',
+        $config['interface_unit'],
+        '',
+        20,
+        20,
+        true
+    );
     $row++;
 
     $disabled_graph_precision = false;
-    if (!enterprise_installed()) {
+    if (enterprise_installed() === false) {
         $disabled_graph_precision = true;
     }
 
     $table_chars->data[$row][0] = __('Data precision');
-    $table_chars->data[$row][1] = html_print_input_text('graph_precision', $config['graph_precision'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'graph_precision',
+        $config['graph_precision'],
+        '',
+        5,
+        5,
+        true,
+        $disabled_graph_precision,
+        false,
+        'onChange="change_precision()"'
+    );
     $row++;
 
-    if (!isset($config['short_module_graph_data'])) {
+    if (isset($config['short_module_graph_data']) === false) {
         $config['short_module_graph_data'] = true;
     }
 
     $table_chars->data[$row][0] = __('Data precision in graphs');
-    $table_chars->data[$row][1] = html_print_input_text('short_module_graph_data', $config['short_module_graph_data'], '', 5, 5, true, $disabled_graph_precision, false, 'onChange="change_precision()"');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'short_module_graph_data',
+        $config['short_module_graph_data'],
+        '',
+        5,
+        5,
+        true,
+        $disabled_graph_precision,
+        false,
+        'onChange="change_precision()"'
+    );
     $row++;
 
-    $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
+    $table_chars->data[$row][0] = __(
+        'Default line thickness for the Custom Graph.'
+    );
     $table_chars->data[$row][1] = html_print_input_text(
         'custom_graph_width',
         $config['custom_graph_width'],
@@ -809,11 +906,34 @@ $row++;
     );
     $row++;
 
+    $table_chars->data[$row][0] = __('Number of elements in Custom Graph');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'items_combined_charts',
+        $config['items_combined_charts'],
+        '',
+        5,
+        5,
+        true,
+        false,
+        false,
+        ''
+    );
+    $row++;
+
     $table_chars->data[$row][0] = __('Use round corners');
     $table_chars->data[$row][1] = html_print_checkbox_switch(
         'round_corner',
         1,
         $config['round_corner'],
+        true
+    );
+    $row++;
+
+    $table_chars->data[$row][0] = __('Chart fit to content');
+    $table_chars->data[$row][1] = html_print_checkbox_switch(
+        'maximum_y_axis',
+        1,
+        $config['maximum_y_axis'],
         true
     );
     $row++;
@@ -853,7 +973,14 @@ $row++;
     $row++;
 
     $table_chars->data[$row][0] = __('Percentile');
-    $table_chars->data[$row][1] = html_print_input_text('percentil', $config['percentil'], '', 20, 20, true);
+    $table_chars->data[$row][1] = html_print_input_text(
+        'percentil',
+        $config['percentil'],
+        '',
+        20,
+        20,
+        true
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Graph TIP view:');
@@ -863,17 +990,37 @@ $row++;
     $options_full_escale[1] = __('All');
     $options_full_escale[2] = __('On Boolean graphs');
 
-    $table_chars->data[$row][1] = html_print_select($options_full_escale, 'full_scale_option', $config['full_scale_option'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_full_escale,
+        'full_scale_option',
+        $config['full_scale_option'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
 
 
-    $table_chars->data[$row][0] = __('Show only average');
+    $table_chars->data[$row][0] = __('Graph mode');
 
     $options_soft_graphs    = [];
-    $options_soft_graphs[0] = __('Standard mode');
-    $options_soft_graphs[1] = __('Classic mode');
+    $options_soft_graphs[0] = __('Show only average by default');
+    $options_soft_graphs[1] = __('Show MAX/AVG/MIN by default');
 
-    $table_chars->data[$row][1] = html_print_select($options_soft_graphs, 'type_mode_graph', $config['type_mode_graph'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_soft_graphs,
+        'type_mode_graph',
+        $config['type_mode_graph'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
 
     $table_chars->data[$row][0] = __('Zoom graphs:');
@@ -885,17 +1032,18 @@ $row++;
     $options_zoom_graphs[4] = 'x4';
     $options_zoom_graphs[5] = 'x5';
 
-    $table_chars->data[$row][1] = html_print_select($options_zoom_graphs, 'zoom_graph', $config['zoom_graph'], '', '', 0, true, false, false);
+    $table_chars->data[$row][1] = html_print_select(
+        $options_zoom_graphs,
+        'zoom_graph',
+        $config['zoom_graph'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        false
+    );
     $row++;
-
-    /*
-        $table_font->data[$row][0] = __('Font path');
-        $fonts = load_fonts();
-        $table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
-        io_safe_output($config["fontpath"]), '', '', 0, true);
-
-        $row++;
-    */
 
     echo '<fieldset>';
     echo '<legend>'.__('Charts configuration').' '.ui_print_help_icon('charts_conf_tab', true).'</legend>';
@@ -996,7 +1144,7 @@ $row++;
     $table_report->width = '100%';
     $table_report->class = 'databox filters';
     $table_report->style[0] = 'font-weight: bold;';
-    $table_report->size[0] = '50%';
+    $table_report->size[0] = '20%';
 
     $table_report->data = [];
 
@@ -1065,8 +1213,12 @@ $row++;
         }
     }
 
-    // Logo
-    $table_report->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo');
+    // Logo.
+    $table_report->data['custom_report_front-logo'][0] = __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
+        __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
+        true
+    );
+
     $table_report->data['custom_report_front-logo'][1] = html_print_select(
         $customLogos,
         'custom_report_front_logo',
@@ -1076,7 +1228,7 @@ $row++;
         '',
         true
     );
-    // Preview
+    // Preview.
     $table_report->data['custom_report_front-preview'][0] = __('Custom report front').' - '.'Preview';
     if (empty($config['custom_report_front_logo'])) {
         $config['custom_report_front_logo'] = 'images/pandora_logo_white.jpg';
@@ -1084,41 +1236,52 @@ $row++;
 
     $table_report->data['custom_report_front-preview'][1] = '<span id="preview_image">'.html_print_image($config['custom_report_front_logo'], true).'</span>';
 
-    // Header
+    // Header.
     $table_report->data['custom_report_front-header'][0] = __('Custom report front').' - '.__('Header');
+
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
     $table_report->data['custom_report_front-header'][1] = html_print_textarea(
         'custom_report_front_header',
         5,
         15,
-        $config['custom_report_front_header'],
-        'style="width: 38em;"',
+        io_safe_output($config['custom_report_front_header']),
+        'class="w90p height_300px"',
         true
     );
 
-    // First page
+    // First page.
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
+    if ($config['custom_report_front']) {
+        $firstpage_content = $config['custom_report_front_firstpage'];
+    } else {
+        $firstpage_content = io_safe_output($config['custom_report_front_firstpage']);
+    }
+
     $table_report->data['custom_report_front-first_page'][0] = __('Custom report front').' - '.__('First page');
     $custom_report_front_firstpage = str_replace(
         '(_URLIMAGE_)',
         ui_get_full_url(false, true, false, false),
-        $config['custom_report_front_firstpage']
+        io_safe_output($firstpage_content)
     );
     $table_report->data['custom_report_front-first_page'][1] = html_print_textarea(
         'custom_report_front_firstpage',
         15,
         15,
         $custom_report_front_firstpage,
-        'style="width: 38em; height: 20em;"',
+        'class="w90p height_300px"',
         true
     );
 
-    // Footer
+    // Footer.
     $table_report->data['custom_report_front-footer'][0] = __('Custom report front').' - '.__('Footer');
+
+    // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
     $table_report->data['custom_report_front-footer'][1] = html_print_textarea(
         'custom_report_front_footer',
         5,
         15,
-        $config['custom_report_front_footer'],
-        'style="width: 38em;"',
+        io_safe_output($config['custom_report_front_footer']),
+        'class="w90p height_300px""',
         true
     );
 
@@ -1139,16 +1302,6 @@ $row++;
     $table_other->size[2] = '12%';
     $table_other->size[3] = '12%';
     $table_other->data = [];
-
-    $table_other->data[$row][0] = __('Custom graphviz directory');
-    $table_other->data[$row][1] = html_print_input_text(
-        'graphviz_bin_dir',
-        $config['graphviz_bin_dir'],
-        '',
-        25,
-        255,
-        true
-    );
 
     $row++;
 
@@ -1318,12 +1471,52 @@ $row++;
     ];
     $table_other->data[$row][0] = __('CSV divider');
     if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['csv_divider'] != '|') {
-        $table_other->data[$row][1] = html_print_input_text('csv_divider', $config['csv_divider'], '', 20, 255, true);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/default_list.png', true, ['id' => 'select']).'</a>';
+        $table_other->data[$row][1] = html_print_input_text(
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            20,
+            255,
+            true
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'id'    => 'select',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     } else {
-        $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
+        $table_other->data[$row][1] = html_print_select(
+            $common_dividers,
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            '',
+            '',
+            true,
+            false,
+            false
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/pencil.png',
+            true,
+            [
+                'id'    => 'pencil',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
+
+    $row++;
+
+    $decimal_separator = [
+        '.' => '.',
+        ',' => ',',
+    ];
+    $table_other->data[$row][0] = __('CSV decimal separator');
+    $table_other->data[$row][1] = html_print_select($decimal_separator, 'csv_decimal_separator', $config['csv_decimal_separator'], '', '', '', true, false, false);
 
     $row++;
 
@@ -1450,32 +1643,26 @@ function change_servicetree_nodes_padding () {
     }
 }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_header, textarea_custom_report_front_footer",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    theme_advanced_statusbar_location : "none"
-});
+var added_config1 = {
+        "elements":"textarea_custom_report_front_header, textarea_custom_report_front_footer",
+    }
 
-tinyMCE.init({
-    mode : "exact",
-    elements: "textarea_custom_report_front_firstpage",
-    theme : "advanced",
-    theme_advanced_toolbar_location : "top",
-    theme_advanced_toolbar_align : "left",
-    theme_advanced_buttons1 : "bold,italic, |, image, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright",
-    theme_advanced_buttons2 : "",
-    theme_advanced_buttons3 : "",
-    convert_urls : false,
-    theme_advanced_statusbar_location : "none"
-});
+    defineTinyMCE(added_config1);
+
+    var added_config2 = {
+        "elements":"textarea_custom_report_front_firstpage",
+    }
+
+    defineTinyMCE(added_config2);
 
 $(document).ready (function () {
+
+    var enterprise = '<?php echo enterprise_installed(); ?>';
+
+    if (enterprise === '') {
+        $('#text-custom_title_header').prop( "disabled", true );
+        $('#text-custom_subtitle_header').prop( "disabled", true );
+    }
 
     // Show the cache expiration conf or not.
     $("input[name=legacy_vc]").change(function (e) {

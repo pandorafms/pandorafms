@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,6 +104,13 @@ class EventsListWidget extends Widget
      */
     protected $gridWidth;
 
+    /**
+     * Public Link.
+     *
+     * @var boolean
+     */
+    protected $publicLink;
+
 
     /**
      * Construct.
@@ -114,6 +121,7 @@ class EventsListWidget extends Widget
      * @param integer|null $width       New width.
      * @param integer|null $height      New height.
      * @param integer|null $gridWidth   Grid width.
+     * @param boolean|null $publicLink  Public Link.
      */
     public function __construct(
         int $cellId,
@@ -121,7 +129,8 @@ class EventsListWidget extends Widget
         int $widgetId=0,
         ?int $width=0,
         ?int $height=0,
-        ?int $gridWidth=0
+        ?int $gridWidth=0,
+        ?bool $publicLink=false
     ) {
         global $config;
 
@@ -145,6 +154,9 @@ class EventsListWidget extends Widget
 
         // Grid Width.
         $this->gridWidth = $gridWidth;
+
+        // Grid Width.
+        $this->publicLink = $publicLink;
 
         // Options.
         $this->values = $this->decoders($this->getOptionsWidget());
@@ -352,6 +364,14 @@ class EventsListWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+        $selected_groups_array = explode(',', $values['groupId'][0]);
+
+        if (users_can_manage_group_all('RM') || ($selected_groups_array[0] !== '' && in_array(0, $selected_groups_array) === true)) {
+            // Return all group if user has permissions or it is a currently selected group.
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -360,9 +380,10 @@ class EventsListWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groupId'][0]),
+                'selected'       => $selected_groups_array,
                 'return'         => true,
                 'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -417,7 +438,14 @@ class EventsListWidget extends Widget
         global $config;
 
         $output = '';
-        $user_groups = \users_get_groups();
+
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
+        $user_groups = \users_get_groups(false, 'AR', $return_all_group);
 
         ui_require_css_file('events', 'include/styles/', true);
         ui_require_css_file('tables', 'include/styles/', true);
@@ -428,14 +456,6 @@ class EventsListWidget extends Widget
         if (empty($this->values['groupId']) === true) {
             $output .= __('You must select some group');
             return $output;
-        }
-
-        foreach ($this->values['groupId'] as $id_group) {
-            // Sanity check for user access.
-            if (isset($user_groups[$id_group]) === false) {
-                $output .= __('You must select some group');
-                return;
-            }
         }
 
         $useTags = \tags_has_user_acl_tags($config['id_user']);
@@ -453,9 +473,20 @@ class EventsListWidget extends Widget
         $filter = [];
         // Group all.
         if (in_array(0, $this->values['groupId'])) {
-            $filter['id_grupo'] = array_keys(users_get_groups());
+            $filter['id_grupo'] = array_keys($user_groups);
         } else {
-            $filter['id_grupo'] = $this->values['groupId'];
+            $filter['id_grupo'] = array_intersect($this->values['groupId'], array_keys($user_groups));
+        }
+
+        if (empty($filter['id_grupo'])) {
+            $output .= '<div class="container-center">';
+            $output .= \ui_print_error_message(
+                __('You have no access'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            return $output;
         }
 
         $filter['utimestamp'] = '>'.$unixtime;
@@ -564,13 +595,18 @@ class EventsListWidget extends Widget
                     ]
                 );
 
-                $data[2] = '<a href="javascript:"onclick="dashboardShowEventDialog(\''.base64_encode($settings).'\');">';
+                if ($this->publicLink === false) {
+                    $data[2] = '<a href="javascript:"onclick="dashboardShowEventDialog(\''.base64_encode($settings).'\');">';
+                }
+
                 $data[2] .= substr(io_safe_output($event['evento']), 0, 150);
                 if (strlen($event['evento']) > 150) {
                     $data[2] .= '...';
                 }
 
-                $data[2] .= '<a>';
+                if ($this->publicLink === false) {
+                    $data[2] .= '<a>';
+                }
 
                 $data[3] = ui_print_timestamp($event['timestamp'], true);
 

@@ -1,0 +1,14 @@
+### DMG Agent compilation for MacOS
+
+1. Move to the dmg directory, where build_darwin_dmg.sh is located
+    # cd /<code-path>/pandorafms/pandora_agents/unix/Darwin/dmg/HOWTO.txt
+
+2. Run the script. It has three optional arguments. In this order:
+    - DMG package name. 
+        By default is "Pandora FMS MacOS agent"
+    - DMG package version. 
+        It uses the current version by default (e.g. "7.NG.748")
+    - Build path, where temporary files and final .dmg will be created. 
+        By default /root/code/pandorafms/pandora_agents/unix/Darwin/dmg (it creates "build" and "buildtmp" folders, deletes buildtmp when finished)
+
+3. The script should return "SUCCESS: DMG file created at XXXX" when finished.

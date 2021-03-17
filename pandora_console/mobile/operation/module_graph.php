@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -270,9 +270,6 @@ class ModuleGraph
 
         global $config;
 
-        echo include_javascript_dependencies_flot_graph(true);
-        ui_require_javascript_file('pandora', 'include/javascript/', true);
-
         ?>
         <script type="text/javascript">
             $(document).ready(function() {
@@ -474,9 +471,9 @@ class ModuleGraph
                     $ui->contentCollapsibleAddItem($html);
                     $ui->contentEndCollapsible();
                     $ui->contentAddHtml(
-                        '<div id="graph_content" style="display: none; width: 100%; height: 100%; text-align: center;"></div>
-				<div id="loading_graph" style="width: 100%; text-align: center;">'.__('Loading...').'<br /><img src="images/ajax-loader.gif" /></div>
-				<div id="error_graph" style="display: none; color: red; width: 100%; text-align: center;">'.__('Error get the graph').'</div>'
+                        '<div id="graph_content" class="invisible w100p height_100p center"></div>
+				<div id="loading_graph" class="w100p center">'.__('Loading...').'<br /><img src="images/ajax-loader.gif" /></div>
+				<div id="error_graph" class="invisible red w100p  center">'.__('Error get the graph').'</div>'
                     );
             $ui->contentAddHtml($this->javascript_code());
         $ui->endContent();

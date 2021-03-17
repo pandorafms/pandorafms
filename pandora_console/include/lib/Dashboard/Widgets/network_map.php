@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@
  */
 
 namespace PandoraFMS\Dashboard;
+
+use PandoraFMS\Dashboard\Manager;
 
 /**
  * Network map Widgets.
@@ -260,8 +262,21 @@ class NetworkMapWidget extends Widget
             $values['zoomLevel'] = 0.5;
         }
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Map.
-        $fields = \networkmap_get_networkmaps();
+        $fields = \networkmap_get_networkmaps(null, null, true, false, $return_all_group);
+
+        // If currently selected networkmap is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        if ($values['networkmapId'] !== null && !array_key_exists($values['networkmapId'], $fields)) {
+            $selected_networkmap = db_get_row('tmap', 'id', $values['networkmapId']);
+
+            $fields[$values['networkmapId']] = $selected_networkmap;
+        }
 
         $inputs[] = [
             'label'     => __('Map'),
@@ -378,19 +393,14 @@ class NetworkMapWidget extends Widget
             [
                 'cellId'        => $this->cellId,
                 'page'          => 'enterprise/include/ajax/map_enterprise.ajax',
-                'url'           => ui_get_full_url(
-                    'ajax.php',
-                    false,
-                    false,
-                    false
-                ),
+                'url'           => ui_get_full_url('ajax.php'),
                 'networkmap_id' => $id_networkmap,
                 'x_offset'      => $x_offset,
                 'y_offset'      => $y_offset,
                 'zoom_dash'     => $zoom_dash,
                 'id_user'       => $config['id_user'],
-                'hash'          => $hash,
-
+                'auth_class'    => 'PandoraFMS\Dashboard\Manager',
+                'auth_hash'     => Manager::generatePublicHash(),
             ]
         );
 

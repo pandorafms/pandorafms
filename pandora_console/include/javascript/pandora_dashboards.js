@@ -1,4 +1,4 @@
-/* globals $ load_modal TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
+/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
 // eslint-disable-next-line no-unused-vars
 function show_option_dialog(settings) {
   load_modal({
@@ -56,8 +56,7 @@ function showGroup() {
 
 // eslint-disable-next-line no-unused-vars
 function initialiceLayout(data) {
-  var $grid = $(".grid-stack");
-  $grid.gridstack({
+  var grid = GridStack.init({
     float: true,
     column: 12,
     alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -71,10 +70,7 @@ function initialiceLayout(data) {
     draggable: false
   });
 
-  var grid = $grid.data("gridstack");
-
-  var positionGrid = $grid[0].getBoundingClientRect();
-  // var gridHeight = positionGrid.height;
+  var positionGrid = grid.el.getBoundingClientRect();
   var gridWidth = positionGrid.width;
 
   getCellsLayout();
@@ -86,11 +82,14 @@ function initialiceLayout(data) {
       data: {
         page: data.page,
         method: "getCellsLayout",
-        dashboardId: data.dashboardId
+        dashboardId: data.dashboardId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
-      success: function(data) {
-        loadLayout(data);
+      success: function(d) {
+        loadLayout(d);
       },
       error: function(error) {
         console.error(error);
@@ -136,7 +135,8 @@ function initialiceLayout(data) {
         position.maxWidth,
         position.minHeight,
         position.maxHeight,
-        widgetId
+        widgetId,
+        false
       );
     });
     // Commit.
@@ -167,7 +167,10 @@ function initialiceLayout(data) {
         dashboardId: data.dashboardId,
         cellId: id,
         widgetId: widgetId,
-        gridWidth: gridWidth
+        gridWidth: gridWidth,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(cellData) {
@@ -191,8 +194,8 @@ function initialiceLayout(data) {
         addSpinner(element);
 
         // Width and height.
-        var newWidth = elem.attr("data-gs-width");
-        var newHeight = elem.attr("data-gs-height");
+        var newWidth = $(elem).attr("data-gs-width");
+        var newHeight = $(elem).attr("data-gs-height");
 
         $.ajax({
           method: "post",
@@ -205,7 +208,10 @@ function initialiceLayout(data) {
             widgetId: widgetId,
             newWidth: newWidth,
             newHeight: newHeight,
-            gridWidth: gridWidth
+            gridWidth: gridWidth,
+            auth_class: data.auth.class,
+            auth_hash: data.auth.hash,
+            id_user: data.auth.user
           },
           dataType: "html",
           success: function(widgetData) {
@@ -227,7 +233,7 @@ function initialiceLayout(data) {
               var parentElement = $("#widget-" + id).parent();
               grid.enableMove(parentElement, true);
               grid.enableResize(parentElement, true);
-              grid.grid.float = false;
+              grid.float(false);
             }
           },
           error: function(error) {
@@ -291,7 +297,10 @@ function initialiceLayout(data) {
         page: data.page,
         method: "saveLayout",
         dashboardId: data.dashboardId,
-        items: items
+        items: items,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(data) {
@@ -313,11 +322,14 @@ function initialiceLayout(data) {
         page: data.page,
         dashboardId: data.dashboardId,
         method: "deleteCell",
-        cellId: cellId
+        cellId: cellId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
       success: function(data) {
-        // For defect x and y = 0
+        // By default x and y = 0
         // width and height = 4
         // position auto = true.
         if (data.result !== 0) {
@@ -338,11 +350,14 @@ function initialiceLayout(data) {
       data: {
         page: data.page,
         method: "insertCellLayout",
-        dashboardId: data.dashboardId
+        dashboardId: data.dashboardId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "json",
       success: function(data) {
-        // For defect x and y = 0
+        // By default x and y = 0
         // width and height = 4
         // position auto = true.
         if (data.cellId !== 0) {
@@ -373,7 +388,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: 450,
+        width: widgetId == 14 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },
@@ -432,21 +447,21 @@ function initialiceLayout(data) {
     if ($("#checkbox-edit-mode").is(":checked")) {
       grid.movable(".grid-stack-item", true);
       grid.resizable(".grid-stack-item", true);
-      grid.grid.float = false;
+      grid.float(false);
       $(".header-options").show();
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").show();
+      $("#add-widget").removeClass("invisible");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
-      grid.grid.float = true;
+      grid.float(true);
       $(".header-options").hide();
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").hide();
+      $("#add-widget").addClass("invisible");
     }
   });
 
@@ -536,7 +551,10 @@ function initialiceLayout(data) {
         method: "drawAddWidget",
         cellId: cellId,
         offset: offset,
-        search: search
+        search: search,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(data) {
@@ -606,7 +624,10 @@ function initialiceLayout(data) {
         cellId: cellId,
         widgetId: widgetId,
         gridWidth: gridWidth,
-        redraw: true
+        redraw: true,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
       },
       dataType: "html",
       success: function(cellData) {
@@ -633,7 +654,10 @@ function initialiceLayout(data) {
             newWidth: newWidth,
             newHeight: newHeight,
             gridWidth: gridWidth,
-            widgetId: widgetId
+            widgetId: widgetId,
+            auth_class: data.auth.class,
+            auth_hash: data.auth.hash,
+            id_user: data.auth.user
           },
           dataType: "html",
           success: function(dataWidget) {
@@ -755,8 +779,10 @@ function dashboardLoadNetworkMap(settings) {
       x_offset: settings.x_offset,
       y_offset: settings.y_offset,
       zoom_dash: settings.zoom_dash,
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
       id_user: settings.id_user,
-      hash: settings.hash
+      ignore_acl: 1
     },
     dataType: "html",
     success: function(data) {
@@ -784,6 +810,8 @@ function dashboardLoadWuxStats(settings) {
       id_agent: settings.id_agent,
       transaction: settings.transaction,
       view_all_stats: settings.view_all_stats,
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
       id_user: settings.id_user
     },
     dataType: "html",
@@ -821,9 +849,10 @@ function processTreeSearch(settings) {
     data: {
       getChildren: 1,
       page: settings.page,
-      id_user: settings.user,
-      hash: settings.hash,
       type: settings.type,
+      auth_class: settings.auth_class,
+      auth_hash: settings.auth_hash,
+      id_user: settings.id_user,
       filter: filters
     },
     success: function(data) {
@@ -858,8 +887,11 @@ function processTreeSearch(settings) {
           emptyMessage: settings.translate.emptyMessage,
           foundMessage: settings.translate.foundMessage,
           tree: data.tree,
-          baseURL: settings.baseURL,
+          auth_hash: settings.auth_hash,
+          auth_class: settings.auth_class,
+          id_user: settings.id_user,
           ajaxURL: settings.ajaxUrl,
+          baseURL: settings.baseUrl,
           filter: filters,
           counterTitles: {
             total: {

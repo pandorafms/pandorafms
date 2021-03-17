@@ -230,21 +230,6 @@ function pandoraFlotPieCustom(
     );
   }
   var legends = $("#" + graph_id + " .legendLabel");
-  var j = 0;
-  legends.each(function() {
-    //$(this).css("width", $(this).width());
-    $(this).css("font-size", font_size + "pt");
-    $(this).removeClass("legendLabel");
-    $(this).addClass(font);
-    $(this).text(legend[j]);
-    j++;
-  });
-
-  if ($('input[name="custom_graph"]').val()) {
-    $(".legend>div").css("right", $(".legend>div").height() * -1);
-    $(".legend>table").css("right", $(".legend>div").height() * -1);
-  }
-  //$('.legend>table').css('border',"1px solid #E2E2E2");
 
   if (background_color == "transparent") {
     $(".legend>table").css("background-color", "");
@@ -508,7 +493,12 @@ $.fn.HUseTooltip = function() {
         // var y = item.datapoint[1];
 
         var color = item.series.color;
-        showTooltip(pos.pageX, pos.pageY, color, "<strong>" + x + "</strong>");
+        showTooltip(
+          item.pageX,
+          item.pageY,
+          color,
+          "<strong>" + x + "</strong>"
+        );
       }
     } else {
       $("#tooltip").remove();
@@ -528,7 +518,7 @@ $.fn.VUseTooltip = function() {
         previousLabel = item.series.label;
         $("#tooltip").remove();
 
-        var x = item.datapoint[0];
+        //var x = item.datapoint[0];
 
         var y = item.datapoint[1];
         if (typeof y != "string") {
@@ -536,8 +526,6 @@ $.fn.VUseTooltip = function() {
         }
 
         var color = item.series.color;
-
-        //console.log(item.series.xaxis.ticks[x].label);
 
         /*
         "<strong>" +
@@ -972,7 +960,6 @@ function pandoraFlotArea(
   legend,
   series_type,
   color,
-  water_mark,
   date_array,
   data_module_graph,
   params,
@@ -989,7 +976,6 @@ function pandoraFlotArea(
     .shift();
   var width = params.width;
   var vconsole = params.vconsole;
-  var dashboard = params.dashboard;
   var menu = params.menu;
   var min_x = date_array["start_date"] * 1000;
   var max_x = date_array["final_date"] * 1000;
@@ -1003,6 +989,7 @@ function pandoraFlotArea(
   var update_legend = {};
   var force_integer = 0;
   var divisor = params.divisor;
+  var maximum_y_axis = params.maximum_y_axis;
 
   if (typeof divisor === "undefined") {
     divisor = 1000;
@@ -1896,6 +1883,13 @@ function pandoraFlotArea(
         fill_color = "green";
       }
 
+      if (typeof maximum_y_axis !== "undefined" && maximum_y_axis != 0) {
+        maximum_y_axis =
+          parseInt(value.max) > parseInt(maximum_y_axis)
+            ? parseInt(value.max)
+            : parseInt(maximum_y_axis);
+      }
+
       switch (series_type[index]) {
         case "area":
           line_show = true;
@@ -1918,8 +1912,7 @@ function pandoraFlotArea(
         case "points":
           line_show = false;
           points_show = true;
-          filled = false;
-          steps_chart = false;
+          filled = true;
           radius = 3;
           fill_points = fill_color;
           break;
@@ -1959,7 +1952,8 @@ function pandoraFlotArea(
           points: {
             show: points_show,
             radius: radius,
-            fillColor: fill_points
+            fillColor: fill_points,
+            fill: filled
           },
           legend: legend.index
         });
@@ -2043,6 +2037,10 @@ function pandoraFlotArea(
       labelFormatter: lFormatter
     }
   };
+
+  if (typeof maximum_y_axis !== "undefined" && maximum_y_axis != 0) {
+    options.yaxis.max = maximum_y_axis;
+  }
 
   if (vconsole) {
     options.grid["hoverable"] = false;
@@ -2392,7 +2390,7 @@ function pandoraFlotArea(
 
         if (series.data[j]) {
           var y = series.data[j][1];
-          var x = Math.round(series.data[j][0]) - 1;
+          var x = Math.round(series.data[j][0]);
         }
       }
 
@@ -2418,61 +2416,27 @@ function pandoraFlotArea(
                 unit
             );
         } else {
-          var min_y_array;
-          var min_y = 0;
-          var min_bigger = "";
-          var max_y_array;
-          var max_y = 0;
-          var max_bigger = "";
-          var avg_y_array;
-          var avg_y = 0;
-          var avg_bigger = "";
-
           $.each(update_legend, function(index, value) {
-            if (!value[x]) {
-              x = x + 1;
+            if (typeof value[x] !== "undefined") {
+              data_legend[index] =
+                " Min: " +
+                number_format(value[x].min, 0, unit, short_data, divisor) +
+                " Max: " +
+                number_format(value[x].max, 0, unit, short_data, divisor) +
+                " Avg: " +
+                number_format(value[x].avg, 0, unit, short_data, divisor);
             }
-            if (value[x].min) {
-              min_y_array = format_unit_yaxes(value[x].min);
-              min_y = min_y_array["y"];
-              min_bigger = min_y_array["unit"];
-            } else {
-              min_y = 0;
-              min_bigger = "";
-            }
-
-            if (value[x].max) {
-              max_y_array = format_unit_yaxes(value[x].max);
-              max_y = max_y_array["y"];
-              max_bigger = max_y_array["unit"];
-            } else {
-              max_y = 0;
-              max_bigger = "";
-            }
-
-            if (value[x].avg) {
-              avg_y_array = format_unit_yaxes(value[x].avg);
-              avg_y = avg_y_array["y"];
-              avg_bigger = avg_y_array["unit"];
-            } else {
-              avg_y = 0;
-              avg_bigger = "";
-            }
-
-            data_legend[index] =
-              " Min: " +
-              number_format(value[x].min, 0, unit, short_data, divisor) +
-              " Max: " +
-              number_format(value[x].max, 0, unit, short_data, divisor) +
-              " Avg: " +
-              number_format(value[x].avg, 0, unit, short_data, divisor);
           });
 
-          label_aux =
-            legend[series.label].split(":")[0] + data_legend[series.label];
-          $("#legend_" + graph_id + " .legendLabel")
-            .eq(i)
-            .html(label_aux);
+          if (typeof data_legend[series.label] !== "undefined") {
+            label_aux =
+              legend[series.label].split(": Min")[0] +
+              ": " +
+              data_legend[series.label];
+            $("#legend_" + graph_id + " .legendLabel")
+              .eq(i)
+              .html(label_aux);
+          }
         }
       }
 
@@ -2521,7 +2485,7 @@ function pandoraFlotArea(
       plot.unhighlight();
 
       $("#extra_" + graph_id).css("width", "170px");
-      $("#extra_" + graph_id).css("height", "60px");
+      $("#extra_" + graph_id).css("height", "auto");
 
       var extra_info = "<i>No info to show</i>";
       var extra_show = false;
@@ -2537,7 +2501,7 @@ function pandoraFlotArea(
       var width_graph = plot.width();
       var height_legend = $("#legend_" + graph_id).height();
       var coord_x = pos.pageX - offset_relative.left + offset_graph.left;
-      var coord_y = offset_graph.top + height_legend + extra_height;
+      var coord_y = offset_graph.top + height_legend + extra_height + 50;
 
       if (coord_x + extra_width > width_graph) {
         coord_x = coord_x - extra_width;
@@ -2688,7 +2652,15 @@ function pandoraFlotArea(
   }
 
   function lFormatter(v) {
-    return '<span style="color:' + legend_color + '">' + legend[v] + "</span>";
+    var style =
+      "color:" +
+      legend_color +
+      "; font-family:" +
+      font +
+      "Font; font-size:" +
+      (parseInt(font_size) + 2) +
+      "px;";
+    return '<span style="' + style + '">' + legend[v] + "</span>";
   }
 
   $("#overview_" + graph_id).css("display", "none");
@@ -2801,6 +2773,7 @@ function pandoraFlotArea(
         "src",
         homeurl + "images/zoom_cross.disabled.png"
       );
+      $("#menu_cancelzoom_" + graph_id).attr("class", "invert_filter");
       overview.clearSelection();
       thresholded = false;
       max_draw = [];
@@ -2824,17 +2797,6 @@ function pandoraFlotArea(
         .split("px")[0]
     );
     adjust_menu(graph_id, plot, parent_height, width, show_legend);
-  }
-
-  if (!dashboard) {
-    if (water_mark) {
-      set_watermark(
-        graph_id,
-        plot,
-        $("#watermark_image_" + graph_id).attr("src")
-      );
-    }
-    //adjust_menu(graph_id, plot, parent_height, width, show_legend);
   }
 }
 
@@ -3030,7 +2992,7 @@ function number_format(number, force_integer, unit, short_data, divisor) {
   var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
   var pos = 0;
 
-  while (number >= divisor) {
+  while (Math.abs(number) >= divisor) {
     // As long as the number can be divided by 1000 or 1024.
     pos++;
     number = number / divisor;

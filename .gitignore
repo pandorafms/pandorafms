@@ -1,0 +1,11 @@
+.vstags
+MYMETA.json
+MYMETA.yml
+.vscode
+.vscode*
+.vstags
+**/blib
+**/PandoraFMS-Enterprise/Makefile
+**/PandoraFMS-Enterprise/pm_to_blib
+**/pandora_console/attachment/cache
+**/pandora_console/attachment/agents

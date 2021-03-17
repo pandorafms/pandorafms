@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for delete agents in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -186,11 +201,8 @@ $table->data[2][1] = html_print_select(
 
 echo '<form method="post" id="form_agents" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_agents">';
 html_print_table($table);
-if (!is_central_policies_on_node()) {
-    echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-    html_print_input_hidden('delete', 1);
-    html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
-    echo '</div>';
+if (is_central_policies_on_node() === false) {
+    attachActionButton('delete', 'delete', $table->width);
 }
 
 echo '</form>';
@@ -202,24 +214,8 @@ ui_require_jquery_file('pandora.controls');
 ?>
 
 <script type="text/javascript">
-    var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
-    
     $(document).ready (function () {
-        $("#form_agents").submit(function() {
-            var get_parameters_count = window.location.href.slice(
-                window.location.href.indexOf('?') + 1).split('&').length;
-            var post_parameters_count = $("#form_agents").serializeArray().length;
-            
-            var count_parameters =
-                get_parameters_count + post_parameters_count;
-            
-            if (count_parameters > limit_parameters_massive) {
-                alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
-                return false;
-            }
-        });
-        
-        
+
         var recursion;
         
         $("#checkbox-recursion").click(function () {

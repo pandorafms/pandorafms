@@ -3,7 +3,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ require_once $config['homedir'].'/include/graphs/functions_d3.php';
 include_javascript_d3();
 
 
-function prepend_table_simple($row, $id=false)
+global $config;function prepend_table_simple($row, $id=false)
 {
     global $table_simple;
 
@@ -119,7 +119,7 @@ function add_component_selection($id_network_component_type)
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';
-    $data[1] .= html_print_image('images/spinner.png', true);
+    $data[1] .= html_print_image('images/spinner.gif', true);
     $data[1] .= '</span>';
 
     $table_simple->colspan['module_component'][1] = 3;
@@ -210,7 +210,10 @@ if (!empty($id_agent_module) && isset($id_agente)) {
     $table_simple->data[0][1] .= html_print_image(
         'images/cross.png',
         true,
-        ['title' => __('Delete module')]
+        [
+            'title' => __('Delete module'),
+            'class' => 'invert_filter',
+        ]
     );
     $table_simple->data[0][1] .= '</a> ';
 }
@@ -382,7 +385,7 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
-$table_simple->data[2][0] = __('Warning status');
+$table_simple->data[2][0] = __('Warning threshold');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
     $table_simple->data[2][1] .= html_print_input_text(
@@ -435,7 +438,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[2][2] = '<svg id="svg_dinamic" width="500" height="300"> </svg>';
 }
 
-$table_simple->data[3][0] = __('Critical status');
+$table_simple->data[3][0] = __('Critical threshold');
 if (!modules_is_string_type($id_module_type) || $edit) {
     $table_simple->data[3][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
     $table_simple->data[3][1] .= html_print_input_text(
@@ -528,21 +531,31 @@ $table_advanced->data[0][1] = html_print_input_text(
     20,
     65,
     true,
+    (($config['module_custom_id_ro'] && $__code_from != 'policies') ? true : $disabledBecauseInPolicy),
+    false,
+    '',
+    (($config['module_custom_id_ro'] && $__code_from != 'policies') ? 'readonly' : $classdisabledBecauseInPolicy)
+);
+
+$table_advanced->data[0][3] = __('Unit');
+$table_advanced->data[0][4] = html_print_input_text(
+    'unit',
+    $unit,
+    '',
+    20,
+    65,
+    true,
     $disabledBecauseInPolicy,
     false,
     '',
     $classdisabledBecauseInPolicy
 );
-
-$table_advanced->data[0][3] = __('Unit');
-// $table_advanced->data[1][4] = html_print_input_text ('unit', $unit, '', 20, 65, true,
-// $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 // $table_advanced->colspan[1][4] = 3;
 $table_advanced->data[0][4] = html_print_extended_select_for_unit(
     'unit',
     $unit,
     '',
-    '',
+    'none',
     '0',
     false,
     true,
@@ -625,7 +638,14 @@ $table_advanced->data[3][1] = html_print_extended_select_for_time(
     $classdisabledBecauseInPolicy,
     $disabledBecauseInPolicy
 );
-$table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
+$table_advanced->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
+    'images/cog.png',
+    true,
+    [
+        'title' => __('Advanced options Dynamic Threshold'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 $table_advanced->cellclass[3][2] = 'hide_dinamic';
 $table_advanced->cellclass[3][3] = 'hide_dinamic';
@@ -707,6 +727,10 @@ $table_advanced->colspan[4][4] = 3;
 
 
 // FF stands for Flip-flop.
+$table_advanced->colspan[5][1] = 5;
+$table_advanced->cellclass[5][1] = 'font_bold';
+
+
 $table_advanced->data[5][0] = __('FF threshold').' ';
 
 $table_advanced->data[5][1] .= __('Keep counters');
@@ -923,10 +947,24 @@ if (!tags_has_user_acl_tags($config['id_user'])) {
     }
 }
 
-$table_advanced->data[7][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module')]);
-// html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
-$table_advanced->data[7][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module')]);
-// html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+$table_advanced->data[7][2] = html_print_image(
+    'images/darrowright.png',
+    true,
+    [
+        'id'    => 'right',
+        'title' => __('Add tags to module'),
+        'class' => 'invert_filter',
+    ]
+);
+$table_advanced->data[7][2] .= '<br><br><br><br>'.html_print_image(
+    'images/darrowleft.png',
+    true,
+    [
+        'id'    => 'left',
+        'title' => __('Delete tags to module'),
+        'class' => 'invert_filter',
+    ]
+);
 $table_advanced->data[7][3] = '<b>'.__('Tags selected').'</b>';
 $table_advanced->data[7][4] = html_print_select_from_sql(
     "SELECT a.id_tag, name 
@@ -992,7 +1030,7 @@ $table_advanced->data[8][3] = __('Cascade Protection Services');
 $table_advanced->colspan[8][4] = 3;
 $table_advanced->data[8][4] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
 
-$textarea_custom_style = ' style="min-height: 0px;"';
+$textarea_custom_style = ' class="min-height-0px"';
 
 $table_advanced->data[9][0] = __('Description');
 $table_advanced->colspan[9][1] = 6;
@@ -1118,7 +1156,7 @@ $table_macros->data = [];
 $table_macros->style = [];
 $table_macros->style[0] = 'font-weight: bold;';
 $table_macros->style[2] = 'font-weight: bold;';
-$table_macros->style[5] = 'width: 10px';
+$table_macros->style[5] = 'font-weight: bold;';
 $table_macros->colspan = [];
 
 $macro_count = 0;
@@ -1130,7 +1168,7 @@ if (isset($module_macros)) {
             $table_macros->data[$macro_count][2] = __('Value');
             $table_macros->data[$macro_count][3] = html_print_input_text('module_macro_values[]', $macro_value, '', 50, 60, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
             if (!$disabledBecauseInPolicy) {
-                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/cross.png', true).'</a>';
+                $table_macros->data[$macro_count][4] = '<a href="javascript: delete_macro('.$macro_count.');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
             }
 
             $macro_count++;
@@ -1139,7 +1177,7 @@ if (isset($module_macros)) {
 }
 
 if (!$disabledBecauseInPolicy) {
-    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png', true).'</a>';
+    $table_macros->data[$macro_count][0] = '<span>'.__('Custom macros').'</span> <a href="javascript:add_macro();">'.html_print_image('images/add.png', true, ['class' => 'invert_filter']).'</a>';
 
     $table_macros->colspan[$macro_count][0] = 5;
 }
@@ -1201,7 +1239,7 @@ $table_new_relations->data[0][6] = html_print_button(
     'class="sub add"',
     true
 );
-$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' style='display: inline;'></div>";
+$table_new_relations->data[0][6] .= "&nbsp;&nbsp;<div id='add_relation_status' class='inline_line'></div>";
 
 // Relationship list.
 $table_relations = new stdClass();
@@ -1227,14 +1265,23 @@ $table_relations->data[-1][0] = '';
 $table_relations->data[-1][1] = '';
 $table_relations->data[-1][2] = '';
 $table_relations->data[-1][3] = '<a id="disable_updates_button" class="alpha50" href="">';
-$table_relations->data[-1][3] .= html_print_image('images/lock.png', true).'</a>';
+$table_relations->data[-1][3] .= html_print_image(
+    'images/lock_mc.png',
+    true
+).'</a>';
 $table_relations->data[-1][4] = '<a id="delete_relation_button" href="">';
-$table_relations->data[-1][4] .= html_print_image('images/cross.png', true).'</a>';
+$table_relations->data[-1][4] .= html_print_image(
+    'images/cross.png',
+    true,
+    ['class' => 'invert_filter']
+).'</a>';
 
 
 $relations_count = 0;
 if ($id_agent_module) {
-    $module_relations = modules_get_relations(['id_module' => $id_agent_module]);
+    $module_relations = modules_get_relations(
+        ['id_module' => $id_agent_module]
+    );
 
     if (!$module_relations) {
         $module_relations = [];
@@ -1270,13 +1317,28 @@ if ($id_agent_module) {
         // Agent name.
         $table_relations->data[$relations_count][0] = $agent_name;
         // Module name.
-        $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text($module_name, 'module_medium', true, true, true, '[&hellip;]').'</a>';
+        $table_relations->data[$relations_count][1] = "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$agent_id.'&tab=module&edit_module=1&id_agent_module='.$module_id."'>".ui_print_truncate_text(
+            $module_name,
+            'module_medium',
+            true,
+            true,
+            true,
+            '[&hellip;]'
+        ).'</a>';
         // Type.
         $table_relations->data[$relations_count][2] = ($module_relation['type'] === 'direct') ? __('Direct') : __('Failover');
         // Lock relationship updates.
-        $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/lock.png', true).'</a>';
+        $table_relations->data[$relations_count][3] = '<a id="disable_updates_button" class="'.$disabled_update_class.'"href="javascript: change_lock_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
+            'images/lock_mc.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
         // Delete relationship.
-        $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image('images/cross.png', true).'</a>';
+        $table_relations->data[$relations_count][4] = '<a id="delete_relation_button" href="javascript: delete_relation('.$relations_count.', '.$module_relation['id'].');">'.html_print_image(
+            'images/cross.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
         $relations_count++;
     }
 }
@@ -1290,7 +1352,7 @@ ui_require_jquery_file('json');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-    var disabledBecauseInPolicy = '<?php echo $disabledBecauseInPolicy; ?>';
+    var disabledBecauseInPolicy = <?php echo '\''.(empty($disabledBecauseInPolicy) === true ? '0' : '1').'\''; ?>;
     $("#right").click (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
@@ -1340,115 +1402,117 @@ $(document).ready (function () {
         var type_name_selected = type_names[type_selected];
         var element = document.getElementById("module_type_help");
         var language =  "<?php echo $config['language']; ?>" ;
-        element.onclick = function (event) {
-            if(type_name_selected == 'async_data' ||
-             type_name_selected == 'async_proc' ||
-             type_name_selected == 'async_string' ||
-             type_name_selected == 'generic_proc'||
-             type_name_selected == 'generic_data' ||
-             type_name_selected == 'generic_data_inc' ||
-             type_name_selected == 'generic_data_inc_abs'||
-             type_name_selected == 'generic_data_string' ||
-             type_name_selected == 'keep_alive'
-               ){
-                if (language == 'es'){
-                 window.open(
-                     'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
-                     '_blank',
-                     'width=800,height=600'
-                        );
-               }
-               else{
-                window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-               }
-              
-                
-            }
-            if(type_name_selected == 'remote_icmp' ||
-             type_name_selected == 'remote_icmp_proc'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-              
-                
-            }
-            if(type_name_selected == 'remote_snmp_string' ||
-             type_name_selected == 'remote_snmp_proc' ||
-             type_name_selected == 'remote_snmp_inc' ||
-             type_name_selected == 'remote_snmp'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-               
-                
-            }
-            if(type_name_selected == 'remote_tcp_string' ||
-             type_name_selected == 'remote_tcp_proc' ||
-             type_name_selected == 'remote_tcp_inc' ||
-             type_name_selected == 'remote_tcp'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
+        if (typeof element !== 'undefined' && element !== null) {
+            element.onclick = function (event) {
+                if(type_name_selected == 'async_data' ||
+                 type_name_selected == 'async_proc' ||
+                 type_name_selected == 'async_string' ||
+                 type_name_selected == 'generic_proc'||
+                 type_name_selected == 'generic_data' ||
+                 type_name_selected == 'generic_data_inc' ||
+                 type_name_selected == 'generic_data_inc_abs'||
+                 type_name_selected == 'generic_data_string' ||
+                 type_name_selected == 'keep_alive'
+                   ){
+                    if (language == 'es'){
+                     window.open(
+                         'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                         '_blank',
+                         'width=800,height=600'
+                            );
                    }
                    else{
                     window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                         '_blank',
+                         'width=800,height=600'
+                         );
                    }
-            }
-            if(type_name_selected == 'web_data' ||
-             type_name_selected == 'web_proc' ||
-             type_name_selected == 'web_content_data' ||
-             type_name_selected == 'web_content_string'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-                   else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
+                  
+                    
+                }
+                if(type_name_selected == 'remote_icmp' ||
+                 type_name_selected == 'remote_icmp_proc'
+                 ){
+                     if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                     else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                  
+                    
+                }
+                if(type_name_selected == 'remote_snmp_string' ||
+                 type_name_selected == 'remote_snmp_proc' ||
+                 type_name_selected == 'remote_snmp_inc' ||
+                 type_name_selected == 'remote_snmp'
+                 ){
+                     if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                     else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                     }
+                   
+                    
+                }
+                if(type_name_selected == 'remote_tcp_string' ||
+                 type_name_selected == 'remote_tcp_proc' ||
+                 type_name_selected == 'remote_tcp_inc' ||
+                 type_name_selected == 'remote_tcp'
+                   ){
+                       if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                       else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                }
+                if(type_name_selected == 'web_data' ||
+                 type_name_selected == 'web_proc' ||
+                 type_name_selected == 'web_content_data' ||
+                 type_name_selected == 'web_content_string'
+                   ){
+                       if(language == 'es'){
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                       else{
+                        window.open(
+                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                         '_blank',
+                         'width=800,height=600'
+                         );
+                       }
+                }
             }
         }
 
@@ -1551,7 +1615,10 @@ $(document).ready (function () {
 
 //readonly and add class input
 function disabled_status (disabledBecauseInPolicy) {
-    if($('#dynamic_interval_select').val() != 0 && $('#dynamic_interval').val() != 0){
+    var dynamic_interval_select_value = $('#dynamic_interval_select').val();
+    var dynamic_interval_value = $('#dynamic_interval_select').val();
+    if(typeof dynamic_interval_select_value != "undefined" && typeof dynamic_interval_value != "undefined"
+        && dynamic_interval_select_value != 0 && dynamic_interval_value != 0){
         $('#text-min_warning').prop('readonly', true);
         $('#text-min_warning').addClass('readonly');
         $('#text-max_warning').prop('readonly', true);
@@ -1696,14 +1763,14 @@ function add_new_relation () {
                                     '<td id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
                                     '<td id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
                                     '<td id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-3" style="width: 10%; text-align: center;">' +
+                                    '<td id="module_relations-' + relationsCount + '-3" class="w10p center">' +
                                         '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
-                                            '<?php echo html_print_image('images/lock.png', true); ?>' +
+                                            '<?php echo html_print_image('images/lock_mc.png', true, ['class' => 'invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
-                                    '<td id="module_relations-' + relationsCount + '-4" style="width: 10%; text-align: center;">' +
+                                    '<td id="module_relations-' + relationsCount + '-4" class="w10p center">' +
                                         '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
-                                            '<?php echo html_print_image('images/cross.png', true); ?>' +
+                                            '<?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?>' +
                                         '</a>' +
                                     '</td>' +
                                 '</tr>';

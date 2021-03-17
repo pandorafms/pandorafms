@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -504,6 +504,7 @@ class CustomNetScan extends Wizard
                         'type'           => 'select_groups',
                         'selected'       => $this->task['id_group'],
                         'return'         => true,
+                        'size'           => '400px',
                     ],
                 ];
 
@@ -647,16 +648,15 @@ class CustomNetScan extends Wizard
             );
 
             $form['inputs'][] = [
-                'label'     => __('Explanation').'<span id="spinner_recon_script" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span>',
+                'label'     => __('Explanation').'<span id="spinner_recon_script" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>',
                 'arguments' => [
-                    'type'       => 'textarea',
-                    'rows'       => 4,
-                    'columns'    => 60,
-                    'name'       => 'explanation',
-                    'value'      => $explanation,
-                    'return'     => true,
-                    'attributes' => 'style="width: 388px;"',
-                    'class'      => 'discovery_textarea_input',
+                    'type'    => 'textarea',
+                    'rows'    => 4,
+                    'columns' => 60,
+                    'name'    => 'explanation',
+                    'value'   => $explanation,
+                    'return'  => true,
+                    'class'   => 'discovery_textarea_input w388px',
                 ],
             ];
 

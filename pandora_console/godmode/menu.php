@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
 if (check_acl($config['id_user'], 0, 'UM')) {
     $sub['godmode/users/user_list']['text'] = __('Users management');
     $sub['godmode/users/user_list']['id'] = 'Users management';
+}
+
+if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['godmode/users/profile_list']['text'] = __('Profile management');
     $sub['godmode/users/profile_list']['id'] = 'Profile management';
 }
@@ -181,7 +184,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $sub2['godmode/massive/massive_operations&amp;tab=massive_agents']['text'] = __('Agents operations');
     $sub2['godmode/massive/massive_operations&amp;tab=massive_modules']['text'] = __('Modules operations');
     $sub2['godmode/massive/massive_operations&amp;tab=massive_plugins']['text'] = __('Plugins operations');
-    if (check_acl($config['id_user'], 0, 'PM')) {
+    if (check_acl($config['id_user'], 0, 'UM')) {
         $sub2['godmode/massive/massive_operations&amp;tab=massive_users']['text'] = __('Users operations');
     }
 
@@ -189,8 +192,14 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     enterprise_hook('massivepolicies_submenu');
     enterprise_hook('massivesnmp_submenu');
     enterprise_hook('massivesatellite_submenu');
+    enterprise_hook('massiveservices_submenu');
 
     $sub['gmassive']['sub2'] = $sub2;
+}
+
+if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, 'UM')) {
+    $sub['godmode/groups/group_list&tab=credbox']['text'] = __('Credential store');
+    $sub['godmode/groups/group_list&tab=credbox']['id'] = 'credential store';
 }
 
 if (!empty($sub)) {
@@ -231,6 +240,7 @@ if (check_acl($config['id_user'], 0, 'LW')
         enterprise_hook('eventalerts_submenu');
         $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
         $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP alerts';
+        enterprise_hook('alert_inventory_submenu');
     }
 
     $menu_godmode['galertas']['sub'] = $sub;
@@ -341,6 +351,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
     $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=external_tools']['text'] = __('External Tools');
+    $sub2['godmode/setup/setup&amp;section=external_tools']['refr'] = 0;
+
     if ($config['activate_gis']) {
         $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
@@ -372,6 +385,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');
         $sub['tools/diagnostics']['id'] = 'Diagnostic info';
         enterprise_hook('omnishell');
+        enterprise_hook('ipam_submenu');
 
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';

@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for delete action alerts in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -66,10 +81,29 @@ if ($delete) {
             $modules = (array) get_parameter('module');
             $modules_id = [];
             if (!empty($modules)) {
+                $modules_id = [];
                 foreach ($modules as $module) {
                     foreach ($id_agents as $id_agent) {
-                        $module_id = modules_get_agentmodule_id($module, $id_agent);
-                        $modules_id[] = $module_id['id_agente_modulo'];
+                        if ($module == '0') {
+                                // Get all modules of agent.
+                                $agent_modules = db_get_all_rows_filter(
+                                    'tagente_modulo',
+                                    ['id_agente' => $id_agent],
+                                    'id_agente_modulo'
+                                );
+
+                                $agent_modules_id = array_map(
+                                    function ($field) {
+                                        return $field['id_agente_modulo'];
+                                    },
+                                    $agent_modules
+                                );
+
+                                $modules_id = array_merge($modules_id, $agent_modules_id);
+                        } else {
+                            $module_id = modules_get_agentmodule_id($module, $id_agent);
+                            $modules_id[] = $module_id['id_agente_modulo'];
+                        }
                     }
                 }
 
@@ -251,10 +285,8 @@ $agents_with_templates_json = json_encode($agents_with_templates_json);
 
 echo "<input type='hidden' id='hidden-agents_with_templates' value='".$agents_with_templates_json."'>";
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('delete', 1);
-html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
-echo '</div>';
+attachActionButton('delete', 'delete', $table->width);
+
 echo '</form>';
 
 echo '<h3 class="error invisible" id="message"></h3>';

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -34,7 +34,7 @@ if (!isset($config)) {
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
 	</head>
 	<body>
-		<div id="main" style="float:left; margin-left: 100px">
+		<div id="main" class="float-left mrgn_lft_100px">
 			<div align="center">
 				<div id="login_f">
 					<h1 id="log_f" class="error">You cannot access this file</h1>

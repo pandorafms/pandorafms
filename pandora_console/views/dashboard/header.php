@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,10 @@
  */
 
 // Button for display full screen mode.
+global $config;
+
+
+
 $queryFull = [
     'dashboardId' => $dashboardId,
     'refr'        => $refr,
@@ -37,7 +41,10 @@ $fullscreen['text'] = '<a id="full_screen_link" href="'.$urlFull.'">';
 $fullscreen['text'] .= html_print_image(
     'images/full_screen.png',
     true,
-    ['title' => __('Full screen mode')]
+    [
+        'title' => __('Full screen mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $fullscreen['text'] .= '</a>';
 
@@ -48,7 +55,10 @@ $normalscreen['text'] = '<a href="'.$urlNormal.'">';
 $normalscreen['text'] .= html_print_image(
     'images/normal_screen.png',
     true,
-    ['title' => __('Back to normal mode')]
+    [
+        'title' => __('Back to normal mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $normalscreen['text'] .= '</a>';
 
@@ -68,7 +78,10 @@ $options['text'] .= ')\'>';
 $options['text'] .= html_print_image(
     'images/setup.png',
     true,
-    ['title' => __('Options')]
+    [
+        'title' => __('Options'),
+        'class' => 'invert_filter',
+    ]
 );
 $options['text'] .= '</a>';
 
@@ -77,7 +90,10 @@ $back_to_dashboard_list['text'] = '<a href="'.$url.'">';
 $back_to_dashboard_list['text'] .= html_print_image(
     'images/list.png',
     true,
-    ['title' => __('Back to dashboards list')]
+    [
+        'title' => __('Back to dashboards list'),
+        'class' => 'invert_filter',
+    ]
 );
 $back_to_dashboard_list['text'] .= '</a>';
 
@@ -97,18 +113,47 @@ $slides['text'] .= ')\'>';
 $slides['text'] .= html_print_image(
     'images/images.png',
     true,
-    ['title' => __('Slides mode')]
+    [
+        'title' => __('Slides mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $slides['text'] .= '</a>';
 
-// Refresh selector time dashboards.
-$queryRefresh = [
+// Public Url.
+$queryPublic = [
     'dashboardId' => $dashboardId,
+    'hash'        => $hash,
+    'id_user'     => $config['id_user'],
     'pure'        => 1,
 ];
-$urlRefresh = $url.'&'.http_build_query($queryRefresh);
-$comboRefresh['text'] = '<div class="dashboard-countdown" style="display: inline;"></div>';
-$comboRefresh['text'] .= '<form id="refr-form" method="post" action="'.$urlRefresh.'">';
+$publicUrl = ui_get_full_url(
+    'operation/dashboard/public_dashboard.php?'.http_build_query($queryPublic)
+);
+$publiclink['text'] = '<a id="public_link" href="'.$publicUrl.'" target="_blank">';
+$publiclink['text'] .= html_print_image(
+    'images/camera_mc.png',
+    true,
+    [
+        'title' => __('Show link to public dashboard'),
+        'class' => 'invert_filter',
+    ]
+);
+$publiclink['text'] .= '</a>';
+
+// Refresh selector time dashboards.
+if ($config['public_dashboard'] === true) {
+    $urlRefresh = $publicUrl;
+} else {
+    $queryRefresh = [
+        'dashboardId' => $dashboardId,
+        'pure'        => 1,
+    ];
+    $urlRefresh = $url.'&'.http_build_query($queryRefresh);
+}
+
+$comboRefreshCountdown['text'] = '<div class="dashboard-countdown display_in"></div>';
+$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px" action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
 $comboRefresh['text'] .= html_print_select(
     \get_refresh_time_array(),
@@ -157,40 +202,90 @@ $enable_disable['text'] = html_print_checkbox_switch(
 );
 
 // New Widget.
-$newWidget['text'] = '<a href="#" id="add-widget" style="display:none;">';
+$newWidget['text'] = '<a href="#" id="add-widget" class="invisible">';
 $newWidget['text'] .= html_print_image(
     'images/add.png',
     true,
-    ['title' => __('Add Cell')]
+    [
+        'title' => __('Add Cell'),
+        'class' => 'invert_filter',
+    ]
 );
 $newWidget['text'] .= '</a>';
 
-if ($config['pure']) {
+if ($config['public_dashboard'] === true) {
     $buttons = [
-        'back_to_dashboard_list'      => $back_to_dashboard_list,
-        'save_layout'                 => $save_layout_dashboard,
-        'normalscreen'                => $normalscreen,
         'combo_refresh_one_dashboard' => $comboRefresh,
-        'slides'                      => $slides,
-        'options'                     => $options,
+        'combo_refresh_countdown'     => $comboRefreshCountdown,
     ];
+} else if ($config['pure']) {
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
+        $buttons = [
+            'back_to_dashboard_list'      => $back_to_dashboard_list,
+            'normalscreen'                => $normalscreen,
+            'combo_refresh_one_dashboard' => $comboRefresh,
+            'slides'                      => $slides,
+            'combo_refresh_countdown'     => $comboRefreshCountdown,
+        ];
+    } else {
+        if ($publicLink === true) {
+            $buttons = [
+                'combo_refresh_one_dashboard' => $comboRefresh,
+                'combo_refresh_countdown'     => $comboRefreshCountdown,
+            ];
+        } else {
+            $buttons = [
+                'back_to_dashboard_list'      => $back_to_dashboard_list,
+                'save_layout'                 => $save_layout_dashboard,
+                'normalscreen'                => $normalscreen,
+                'combo_refresh_one_dashboard' => $comboRefresh,
+                'slides'                      => $slides,
+                'options'                     => $options,
+                'combo_refresh_countdown'     => $comboRefreshCountdown,
+            ];
+        }
+    }
 } else {
-    $buttons = [
-        'enable_disable'         => $enable_disable,
-        'back_to_dashboard_list' => $back_to_dashboard_list,
-        'fullscreen'             => $fullscreen,
-        'slides'                 => $slides,
-        'combo_dashboard'        => $combo_dashboard,
-        'options'                => $options,
-        'newWidget'              => $newWidget,
-    ];
+    if (check_acl_restricted_all($config['id_user'], $dashboardGroup, 'RW') === 0) {
+        $buttons = [
+            'back_to_dashboard_list' => $back_to_dashboard_list,
+            'fullscreen'             => $fullscreen,
+            'slides'                 => $slides,
+            'public_link'            => $publiclink,
+            'combo_dashboard'        => $combo_dashboard,
+            'newWidget'              => $newWidget,
+        ];
+    } else {
+        $buttons = [
+            'enable_disable'         => $enable_disable,
+            'back_to_dashboard_list' => $back_to_dashboard_list,
+            'fullscreen'             => $fullscreen,
+            'slides'                 => $slides,
+            'public_link'            => $publiclink,
+            'combo_dashboard'        => $combo_dashboard,
+            'options'                => $options,
+            'newWidget'              => $newWidget,
+        ];
+    }
 }
 
-ui_print_page_header(
-    $dashboardName,
-    '',
-    false,
-    '',
-    false,
-    $buttons
-);
+if ($publicLink === false) {
+    ui_print_page_header(
+        $dashboardName,
+        '',
+        false,
+        '',
+        false,
+        $buttons
+    );
+} else {
+    $output = '<div id="dashboard-controls">';
+    foreach ($buttons as $key => $value) {
+        $output .= '<div>';
+        $output .= $value['text'];
+        $output .= '</div>';
+    }
+
+    $output .= '</div>';
+    echo $output;
+}

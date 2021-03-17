@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,37 +116,42 @@ $table->data[0][1] = html_print_input_text(
 
 $table->rowspan[0][2] = 6;
 if ($action == 'new') {
-    $table->data[0][2] = '<img id="imagen2" style="display:none;" 
+    $table->data[0][2] = '<img id="imagen2" class="invisible" 
 	src="">';
-    $table->data[0][2] .= '<img id="imagen" style="display:none;" 
+    $table->data[0][2] .= '<img id="imagen" class="invisible" 
 	src="">';
 } else {
     if (defined('METACONSOLE')) {
-        $table->data[0][2] = '<img id="imagen2" style="width:230px;" 
+        $table->data[0][2] = '<img id="imagen2"
 		src="../../images/console/background/'.$background.'">';
     } else {
-        $table->data[0][2] = '<img id="imagen2" style="width:230px;" 
+        $table->data[0][2] = '<img id="imagen2" 
 		src="images/console/background/'.$background.'">';
     }
 
-    $table->data[0][2] .= '<img id="imagen" style="display:none;" 
+    $table->data[0][2] .= '<img id="imagen" class="invisible" 
 	src="">';
 }
 
-$table->data[1][0] = __('Group:');
+$table->data[1][0] = __('Group');
 
+$return_all_group = false;
 
-$table->data[1][1] = html_print_select_groups(
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
+}
+
+$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'RW',
-    true,
+    $return_all_group,
     'id_group',
     $idGroup,
     '',
     '',
     '',
     true
-);
+).'</div>';
 $backgrounds_list = list_files(
     $config['homedir'].'/images/console/background/',
     'jpg',
@@ -207,7 +212,7 @@ $table->data[5][1] = '<button id="modsize"
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', $preimagew, '', 10, 10, true, false).' x '.html_print_input_text('height', $preimageh, '', 10, 10, true, false).'</span>';
 
 $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
-			<button id="getsize" style="margin-left:20px;" 
+			<button id="getsize" class="margin_lft_20px" 
 			value="modsize">'.__('Get default image size').'</button></span>';
 
 $table->data[6][0] = __('Favourite visual console');

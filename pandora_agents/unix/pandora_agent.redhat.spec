@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.746
-%define release     200617
+%define version     7.0NG.752
+%define release     210317
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -21,10 +21,10 @@ BuildArch:          noarch
 Requires(pre):      shadow-utils
 Requires(post):     chkconfig /bin/ln
 Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
-Requires:           fileutils textutils unzip
+Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
+Requires:           perl perl(Sys::Syslog) perl(IO::Compress::Zip)
 # Required by plugins
 #Requires:           sh-utils sed passwd net-tools rpm
 AutoReq:            0
@@ -87,7 +87,7 @@ fi
 if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
 	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
 else
-	ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
+	[[ ! -f /etc/pandora/pandora_agent.conf.rpmnew ]] && ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
 fi
 
 if [ ! -e /etc/pandora/plugins ]; then
@@ -108,8 +108,27 @@ mkdir -p /var/spool/pandora/data_out
 if [ ! -d /var/log/pandora ]; then
 	mkdir -p /var/log/pandora
 fi
-/sbin/chkconfig --add pandora_agent_daemon
-/sbin/chkconfig pandora_agent_daemon on
+
+if [ `command -v systemctl` ];
+then
+    echo "Copying new version of pandora_agent_daemon service"
+    cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+# Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service
+else
+	/sbin/chkconfig --add pandora_agent_daemon
+	/sbin/chkconfig pandora_agent_daemon on
+fi
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Pandora Agent daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 
 %preun
 

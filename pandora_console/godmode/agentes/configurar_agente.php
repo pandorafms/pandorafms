@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -366,7 +366,14 @@ $img_style = [
 
 if ($id_agente) {
     // View tab.
-    $viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
+    $viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/eye.png',
+        true,
+        [
+            'title' => __('View'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'view') {
         $viewtab['active'] = true;
@@ -377,7 +384,14 @@ if ($id_agente) {
     $viewtab['operation'] = 1;
 
     // Main tab.
-    $maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_setup.png', true, ['title' => __('Setup')]).'</a>';
+    $maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/gm_setup.png',
+        true,
+        [
+            'title' => __('Setup'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     if ($tab == 'main') {
         $maintab['active'] = true;
     } else {
@@ -385,7 +399,14 @@ if ($id_agente) {
     }
 
     // Module tab.
-    $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_modules.png', true, ['title' => __('Modules')]).'</a>';
+    $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/module.png',
+        true,
+        [
+            'title' => __('Modules'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'module') {
         $moduletab['active'] = true;
@@ -394,7 +415,14 @@ if ($id_agente) {
     }
 
     // Alert tab.
-    $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image('images/gm_alerts.png', true, ['title' => __('Alerts')]).'</a>';
+    $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/bell.png',
+        true,
+        [
+            'title' => __('Alerts'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'alert') {
         $alerttab['active'] = true;
@@ -403,7 +431,14 @@ if ($id_agente) {
     }
 
     // Template tab.
-    $templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">'.html_print_image('images/templates.png', true, ['title' => __('Module templates')]).'</a>';
+    $templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/templates.png',
+        true,
+        [
+            'title' => __('Module templates'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     if ($tab == 'template') {
         $templatetab['active'] = true;
@@ -446,7 +481,14 @@ if ($id_agente) {
     }
 
     // Group tab.
-    $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image('images/group.png', true, [ 'title' => __('Group')]).'</a>';
+    $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
+        'images/group.png',
+        true,
+        [
+            'title' => __('Group'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     $grouptab['active'] = false;
 
@@ -454,7 +496,14 @@ if ($id_agente) {
 
     // GIS tab.
     if ($config['activate_gis']) {
-        $gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image('images/gm_gis.png', true, [ 'title' => __('GIS data')]).'</a>';
+        $gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'.html_print_image(
+            'images/gm_gis.png',
+            true,
+            [
+                'title' => __('GIS data'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
 
         if ($tab == 'gis') {
             $gistab['active'] = true;
@@ -464,18 +513,46 @@ if ($id_agente) {
     }
 
     // Agent wizard tab.
-    $agent_wizard['text'] = '<a href="javascript:" class="agent_wizard_tab">'.html_print_image('images/wand_agent.png', true, [ 'title' => __('Agent wizard')]).'</a>';
+    $agent_wizard['text'] = '<a href="javascript:" class="agent_wizard_tab">'.html_print_image(
+        'images/wand_agent.png',
+        true,
+        [
+            'title' => __('Agent wizard'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     // Hidden subtab layer.
-    $agent_wizard['sub_menu'] = '<ul class="mn subsubmenu" style="display:none; float:none;">';
-    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">';
-    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'.html_print_image('images/wand_snmp.png', true, [ 'title' => __('SNMP Wizard')]).'</a>';
+    $agent_wizard['sub_menu'] = '<ul class="mn subsubmenu invisible float-none">';
+    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode center">';
+    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'.html_print_image(
+        'images/wand_snmp.png',
+        true,
+        [
+            'title' => __('SNMP Wizard'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     $agent_wizard['sub_menu'] .= '</li>';
-    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">';
-    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'.html_print_image('images/wand_interfaces.png', true, [ 'title' => __('SNMP Interfaces wizard')]).'</a>';
+    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode center">';
+    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'.html_print_image(
+        'images/wand_interfaces.png',
+        true,
+        [
+            'title' => __('SNMP Interfaces wizard'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     $agent_wizard['sub_menu'] .= '</li>';
-    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">';
-    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'.html_print_image('images/wand_wmi.png', true, [ 'title' => __('WMI Wizard')]).'</a>';
+    $agent_wizard['sub_menu'] .= '<li class="nomn tab_godmode center" >';
+    $agent_wizard['sub_menu'] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'.html_print_image(
+        'images/wand_wmi.png',
+        true,
+        [
+            'title' => __('WMI Wizard'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     $agent_wizard['sub_menu'] .= '</li>';
     $agent_wizard['sub_menu'] .= '</ul>';
 
@@ -491,7 +568,14 @@ if ($id_agente) {
 
     // Incident tab.
     if ($total_incidents > 0) {
-        $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">'.html_print_image('images/book_edit.png', true, ['title' => __('Incidents')]).'</a>';
+        $incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">'.html_print_image(
+            'images/book_edit.png',
+            true,
+            [
+                'title' => __('Incidents'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
 
         if ($tab == 'incident') {
             $incidenttab['active'] = true;
@@ -509,7 +593,10 @@ if ($id_agente) {
             $remote_configuration_tab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=remote_configuration&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">'.html_print_image(
                 'images/remote_configuration.png',
                 true,
-                ['title' => __('Remote configuration')]
+                [
+                    'title' => __('Remote configuration'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>';
             if ($tab == 'remote_configuration') {
                 $remote_configuration_tab['active'] = true;
@@ -725,7 +812,7 @@ if ($id_agente) {
     // Create agent.
     ui_print_page_header(
         __('Agent manager'),
-        'images/bricks.png',
+        'images/agent.png',
         false,
         'create_agent',
         true,
@@ -1115,7 +1202,7 @@ if ($update_agent) {
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',
-                'Updated agent '.$alias,
+                'Updated agent '.io_safe_output($alias),
                 false,
                 false,
                 $info
@@ -1378,8 +1465,8 @@ if ($update_module || $create_module) {
     $ip_target = (string) get_parameter('ip_target');
     // No autofill if the module is a webserver module.
     if ($ip_target == ''
-        && $id_module_type < MODULE_WEBSERVER_CHECK_LATENCY
-        && $id_module_type > MODULE_WEBSERVER_RETRIEVE_STRING_DATA
+        && $id_module_type < MODULE_TYPE_WEB_DATA
+        && $id_module_type > MODULE_TYPE_WEB_CONTENT_STRING
     ) {
         $ip_target = 'auto';
     }
@@ -1404,6 +1491,10 @@ if ($update_module || $create_module) {
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
+    if ($unit === '0') {
+        $unit = '';
+    }
+
     $id_tag = (array) get_parameter('id_tag_selected');
     $serialize_ops = (string) get_parameter('serialize_ops');
     $critical_instructions = (string) get_parameter('critical_instructions');
@@ -1570,24 +1661,43 @@ if ($update_module) {
         'module_macros'         => $module_macros,
     ];
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
-        $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
+    if (preg_match('/http_auth_user/m', $values['plugin_parameter'])) {
+        $http_user_conf = true;
+    }
 
-        $values['plugin_parameter'] = '';
+    if (preg_match('/http_auth_pass/m', $values['plugin_parameter'])) {
+        $http_pass_conf = true;
+    }
 
-        foreach ($plugin_parameter_split as $key => $value) {
-            if ($key == 1) {
-                if ($http_user) {
-                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+
+    if (!$http_user_conf || !$http_pass_conf) {
+        if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+            $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
+
+            $values['plugin_parameter'] = '';
+
+            foreach ($plugin_parameter_split as $key => $value) {
+                if ($key == 1) {
+                    if ($http_user) {
+                        if ($http_user_conf) {
+                            continue;
+                        }
+
+                        $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
+                    }
+
+                    if ($http_pass) {
+                        if ($http_user_pass) {
+                            continue;
+                        }
+
+                        $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                    }
+
+                    $values['plugin_parameter'] .= $value.'&#x0a;';
+                } else {
+                    $values['plugin_parameter'] .= $value.'&#x0a;';
                 }
-
-                if ($http_pass) {
-                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
-                }
-
-                $values['plugin_parameter'] .= $value.'&#x0a;';
-            } else {
-                $values['plugin_parameter'] .= $value.'&#x0a;';
             }
         }
     }
@@ -1650,7 +1760,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Fail to try update module '".$name."' for agent ".$agent['alias']
+            "Fail to try update module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
         if ($prediction_module == 3) {
@@ -1674,7 +1784,7 @@ if ($update_module) {
 
         db_pandora_audit(
             'Agent management',
-            "Updated module '".$name."' for agent ".$agent['alias'],
+            "Updated module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             false,
             io_json_mb_encode($values)
@@ -1834,7 +1944,7 @@ if ($create_module) {
         $moduletype = $id_module;
         db_pandora_audit(
             'Agent management',
-            "Fail to try added module '".$name."' for agent ".$agent['alias']
+            "Fail to try added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias'])
         );
     } else {
         if ($prediction_module == 3) {
@@ -1859,7 +1969,7 @@ if ($create_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             'Agent management',
-            "Added module '".$name."' for agent ".$agent['alias'],
+            "Added module '".io_safe_output($name)."' for agent ".io_safe_output($agent['alias']),
             false,
             true,
             io_json_mb_encode($values)
@@ -1894,12 +2004,12 @@ if ($enable_module) {
     if ($result === NOERR) {
         db_pandora_audit(
             'Module management',
-            'Enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+            'Enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
             'Module management',
-            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.$agent['alias']
+            'Fail to enable #'.$enable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
 }
@@ -1929,12 +2039,12 @@ if ($disable_module) {
     if ($result === NOERR) {
         db_pandora_audit(
             'Module management',
-            'Disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+            'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
         db_pandora_audit(
             'Module management',
-            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.$agent['alias']
+            'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     }
 }
@@ -2108,7 +2218,7 @@ if ($delete_module) {
         $agent = db_get_row('tagente', 'id_agente', $id_agente);
         db_pandora_audit(
             'Agent management',
-            "Deleted module '".$module_data['nombre']."' for agent ".$agent['alias']
+            "Deleted module '".io_safe_output($module_data['nombre'])."' for agent ".io_safe_output($agent['alias'])
         );
     }
 }
@@ -2163,7 +2273,7 @@ if (!empty($duplicate_module)) {
 if ($enable_module) {
     $result = modules_change_disabled($enable_module, 0);
     $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$enable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
+    $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_enable_module_conf', [$id_agente, $enable_module]);
@@ -2182,7 +2292,7 @@ if ($enable_module) {
 if ($disable_module) {
     $result = modules_change_disabled($disable_module, 1);
     $modulo_nombre = db_get_row_sql('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = '.$disable_module.'');
-    $modulo_nombre = $modulo_nombre['nombre'];
+    $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
         enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
@@ -2379,7 +2489,7 @@ switch ($tab) {
                     width: 600,
                     title: 'Changing the module name of a satellite agent',
                     open: function(){
-                            $('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>The names of the modules of a satellite should not be altered manually. Unless you are absolutely certain of the process, do not alter these names.</p></td></tr></table>');
+                            $('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" class="float-left mrgn_lft_25px"></td><td><p id="p_configurar_agente" ><span class="font_bold font_12pt">Warning</span> <br>The names of the modules of a satellite should not be altered manually. Unless you are absolutely certain of the process, do not alter these names.</p></td></tr></table>');
                     },
                     buttons: [{
                             text: "Ok",
@@ -2413,7 +2523,7 @@ switch ($tab) {
                         width: 650,
                         title: 'Changing snmp module name',
                         open: function(){
-                                $('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" style="float:left;margin-left:25px;margin-top:30px;"></td><td><p style="float:right;font-style:nunito;font-size:11pt;margin-right:50px;margin-left:40px;"><span style="font-weight:bold;font-size:12pt;">Warning</span> <br>                     If you change the name of this module, various features associated with this module, such as network maps, interface graphs or other network modules, may  no longer work. If you are not completely sure of the process, please do not change the name of the module.                    </p></td></tr></table>');
+                                $('#dialog').html('<br><table><tr><td><img src="images/icono-warning-triangulo.png" class="warning_triangulo"></td><td><p id="p_configurar_agente"><span class="font_bold font_12pt">Warning</span> <br>                     If you change the name of this module, various features associated with this module, such as network maps, interface graphs or other network modules, may  no longer work. If you are not completely sure of the process, please do not change the name of the module.                    </p></td></tr></table>');
                         },
                         buttons: [{
                           text: "Ok",

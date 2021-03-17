@@ -1,3 +1,4 @@
+/* globals $,jQuery */
 // Load the SNMP tree via AJAX
 function snmpBrowse() {
   // Empty the SNMP tree
@@ -15,6 +16,7 @@ function snmpBrowse() {
 
   // Read the target IP and community
   var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
   var community = $("#text-community").val();
   var starting_oid = $("#text-starting_oid").val();
   var snmp_version = $("#snmp_browser_version").val();
@@ -31,6 +33,7 @@ function snmpBrowse() {
 
   var params = {};
   params["target_ip"] = target_ip;
+  params["target_port"] = target_port;
   params["community"] = community;
   params["starting_oid"] = starting_oid;
   params["snmp_browser_version"] = snmp_version;
@@ -41,6 +44,7 @@ function snmpBrowse() {
   params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
   params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
   params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  params["server_to_exec"] = server_to_exec;
   params["action"] = "snmptree";
   params["page"] = "include/ajax/snmp_browser.ajax";
 
@@ -50,7 +54,6 @@ function snmpBrowse() {
     type: "POST",
     url: (action = ajax_url),
     async: true,
-    timeout: 120000,
     success: function(data) {
       // Hide the spinner
       $("#spinner").css("display", "none");
@@ -60,6 +63,19 @@ function snmpBrowse() {
 
       // Manage click and select events.
       snmp_browser_events_manage();
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      $("#spinner").css("display", "none");
+      $("#snmp_browser").html(
+        "<p>Status: " +
+          textStatus +
+          "</p><p>" +
+          "Error: " +
+          errorThrown +
+          "</p><p>" +
+          XMLHttpRequest.responseText +
+          "</p>"
+      );
     }
   });
 }
@@ -229,27 +245,26 @@ function snmpGet(oid) {
     custom_action = "";
   }
 
-  // Prepare the AJAX call
-  var params = [
-    "target_ip=" + target_ip,
-    "community=" + community,
-    "oid=" + oid,
-    "snmp_browser_version=" + snmp_version,
-    "snmp3_browser_auth_user=" + snmp3_auth_user,
-    "snmp3_browser_security_level=" + snmp3_security_level,
-    "snmp3_browser_auth_method=" + snmp3_auth_method,
-    "snmp3_browser_auth_pass=" + snmp3_auth_pass,
-    "snmp3_browser_privacy_method=" + snmp3_privacy_method,
-    "snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
-    "server_to_exec=" + server_to_exec,
-    "action=" + "snmpget",
-    "custom_action=" + custom_action,
-    "page=include/ajax/snmp_browser.ajax"
-  ];
+  var params = {};
+
+  params["target_ip"] = target_ip;
+  params["community"] = community;
+  params["oid"] = oid;
+  params["snmp_browser_version"] = snmp_version;
+  params["snmp3_browser_auth_user"] = snmp3_auth_user;
+  params["snmp3_browser_security_level"] = snmp3_security_level;
+  params["snmp3_browser_auth_method"] = snmp3_auth_method;
+  params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
+  params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
+  params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  params["server_to_exec"] = server_to_exec;
+  params["action"] = "snmpget";
+  params["custom_action"] = custom_action;
+  params["page"] = "include/ajax/snmp_browser.ajax";
 
   // SNMP get!
   jQuery.ajax({
-    data: params.join("&"),
+    data: params,
     type: "POST",
     url: (action = ajax_url),
     async: true,
@@ -498,6 +513,7 @@ function checkSNMPVersion() {
 function snmpBrowserWindow() {
   // Keep elements in the form and the SNMP browser synced
   $("#text-target_ip").val($("#text-ip_target").val());
+  $("#target_port").val($("#text-tcp_port").val());
   $("#text-community").val($("#text-snmp_community").val());
   $("#snmp_browser_version").val($("#snmp_version").val());
   $("#text-snmp3_browser_auth_user").val($("#text-snmp3_auth_user").val());
@@ -524,7 +540,7 @@ function snmpBrowserWindow() {
         opacity: 0.5,
         background: "black"
       },
-      width: 920,
+      width: 1000,
       height: 500
     });
 }
@@ -542,7 +558,7 @@ function setOID() {
 }
 
 /**
- * Create module on selected module_target (agent, networlk component or policy).
+ * Create module on selected module_target (agent, network component or policy).
  *
  * @param string module_target Target to create module.
  * @param return_values Return snmp values.
@@ -560,6 +576,7 @@ function snmp_browser_create_modules(module_target, return_post = true) {
     .get();
 
   var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
   var community = $("#text-community").val();
   var snmp_version = $("#snmp_browser_version").val();
   var snmp3_auth_user = $("#text-snmp3_browser_auth_user").val();
@@ -589,6 +606,7 @@ function snmp_browser_create_modules(module_target, return_post = true) {
   var snmp_conf = {};
 
   snmp_conf["target_ip"] = target_ip;
+  snmp_conf["target_port"] = target_port;
   snmp_conf["community"] = community;
   snmp_conf["oids"] = oids;
   snmp_conf["snmp_browser_version"] = snmp_version;
@@ -624,6 +642,20 @@ function snmp_browser_create_modules(module_target, return_post = true) {
       "sub add"
     );
     $("input[name=create_modules_" + module_target + "]").addClass("sub spinn");
+
+    $("#dialog_error").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
+
+    $("#dialog_success").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
 
     $.ajax({
       method: "post",

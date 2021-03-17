@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -246,9 +246,12 @@ class ConfigPEN extends HTML
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
-                            ['title' => __('Show')]
+                            [
+                                'title' => __('Show'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $tmp->options .= '</a>';
                         $tmp->options .= '<a href="javascript:" onclick="deletePEN(\'';
@@ -257,7 +260,10 @@ class ConfigPEN extends HTML
                         $tmp->options .= html_print_image(
                             'images/cross.png',
                             true,
-                            ['title' => __('Delete')]
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $tmp->options .= '</a>';
 
@@ -495,8 +501,8 @@ class ConfigPEN extends HTML
     public function add()
     {
         $pen = get_parameter('pen', 0);
-        $manufacturer = get_parameter('manufacturer', '');
-        $description = get_parameter('description', '');
+        $manufacturer = io_safe_input(strip_tags(io_safe_output((string) get_parameter('manufacturer'))));
+        $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
         $is_new = (bool) get_parameter('is_new', false);
 
         if (empty($pen)) {
@@ -633,9 +639,9 @@ class ConfigPEN extends HTML
         }
 
         // Auxiliar div.
-        $output .= '<div id="modal" style="display: none"></div>';
-        $output .= '<div id="msg" style="display: none"></div>';
-        $output .= '<div id="aux" style="display: none"></div>';
+        $output .= '<div id="modal" class="invisible"></div>';
+        $output .= '<div id="msg"   class="invisible"></div>';
+        $output .= '<div id="aux"   class="invisible"></div>';
 
         // Create button.
         $output .= parent::printInput(

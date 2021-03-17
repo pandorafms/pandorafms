@@ -198,7 +198,7 @@ class Widget
         // User admin view all dashboards.
         $sql_widget = \sprintf(
             'SELECT * FROM twidget
-            WHERE unique_name <> "agent_module"
+            WHERE 1=1
             %s
             ORDER BY `description` %s',
             $sql_search,
@@ -232,15 +232,13 @@ class Widget
             return;
         }
 
-        $file = readdir($handle);
         $ignores = [
             '.',
             '..',
         ];
 
-        while ($file !== false) {
+        while (false !== ($file = readdir($handle))) {
             if (in_array($file, $ignores) === true) {
-                $file = readdir($handle);
                 continue;
             }
 
@@ -249,7 +247,6 @@ class Widget
                 || is_dir($filepath) === true
                 || preg_match('/.*\.php$/', $filepath) === false
             ) {
-                $file = readdir($handle);
                 continue;
             }
 
@@ -258,7 +255,6 @@ class Widget
             $not_installed = false;
             switch ($name) {
                 case 'agent_module':
-                    $not_installed = true;
                     $className .= '\AgentModuleWidget';
                 break;
 
@@ -406,10 +402,9 @@ class Widget
                     $instance->install();
                 }
             }
-
-            // Check next.
-            $file = readdir($handle);
         }
+
+        closedir($handle);
     }
 
 
@@ -576,9 +571,9 @@ class Widget
         }
 
         if ($this->width === 0) {
-            $width = (((int) $this->position['width'] / 12 * $gridWidth) - 50);
+            $width = (((int) $this->position['width'] / 12 * $gridWidth) - 60);
         } else {
-            $width = (((int) $this->width / 12 * $gridWidth) - 50);
+            $width = (((int) $this->width / 12 * $gridWidth) - 60);
         }
 
         if ($this->height === 0) {

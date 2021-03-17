@@ -167,9 +167,11 @@ final class DonutGraph extends Item
             );
         } else {
             $src = 'images/console/signes/wrong_donut_graph.png';
-            if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            if (\is_metaconsole() === true) {
                 $src = '../../'.$src;
             }
+
+            $src = ui_get_full_url($src);
 
             $style = 'width:'.$width.'px; height:'.$height.'px;';
             $data['html'] = '<img src="'.$src.'" style="'.$style.'">';

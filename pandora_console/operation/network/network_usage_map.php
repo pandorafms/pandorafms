@@ -8,7 +8,7 @@
  *
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -70,7 +70,7 @@ $table = new stdClass();
 $table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 
-$table->data['0']['0'] = '<div style="display: flex;">';
+$table->data['0']['0'] = '<div class="flex">';
 $table->data['0']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['0']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);

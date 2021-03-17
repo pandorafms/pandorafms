@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     7.0NG.746
-%define release     200617
+%define version     7.0NG.752
+%define release     210317
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -20,7 +20,7 @@ BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 #PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
 Requires(pre,preun):/usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip) perl(YAML::Tiny)
+Requires:           coreutils unzip perl perl(Sys::Syslog) perl(IO::Compress::Zip)
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -62,8 +62,9 @@ cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUI
 rm -Rf $RPM_BUILD_ROOT
 
 %pre
-if [ "`id pandora | grep uid | wc -l`" = 0 ]
+if [ "`id pandora 2>/dev/null | grep uid | wc -l`" = 0 ]
 then
+		echo "User pandora does not exist. Creating it..."
         /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
 
@@ -98,11 +99,32 @@ fi
 
 cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
-# Enable the service on SystemD
-systemctl enable pandora_agent_daemon.service
-
 mkdir -p /var/spool/pandora/data_out
-chkconfig pandora_agent_daemon on
+
+if [ `command -v systemctl` ];
+then
+    echo "Copying new version of pandora_agent_daemon service"
+    cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
+	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
+    # Enable the services on SystemD
+    systemctl enable pandora_agent_daemon.service || chkconfig pandora_agent_daemon on
+else 
+    chkconfig pandora_agent_daemon on
+fi
+
+if [ "$?" -gt 0 ]
+then
+    echo "There was a problem configuring pandora_agent_daemon service to run on boot. Please enable it manually."
+fi
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Pandora Agent daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
+
 
 %preun
 

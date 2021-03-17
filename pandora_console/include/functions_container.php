@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -19,7 +19,7 @@
 require_once 'include/functions_graph.php';
 
 
-function folder_get_folders()
+global $config;function folder_get_folders()
 {
     $folders = io_safe_output(
         db_get_all_rows_filter(
@@ -106,19 +106,18 @@ function folder_togge_tree_folders($tree)
         $folderName = ui_print_truncate_text($folder['name'], GENERIC_SIZE_TEXT, false, true, false);
         $table = '';
 
-        // style='background: #f2f2f2;border: 1px solid #e2e2e2;margin-bottom: 4px'
         if (!empty($folder['branch'])) {
             $togge = $table.folder_togge_tree_folders($folder['branch']);
             if ($folder['parent'] === '0') {
                 $return[$key] .= "<div id='$folderName'>".ui_toggle_container($togge, $folderName, '', true, true, $folder['id_group'], $folder['id_container'], $folder['parent']).'</div>';
             } else {
-                $return[$key] .= "<div id='$folderName' style='margin-left:23px'>".ui_toggle_container($togge, $folderName, '', true, true, $folder['id_group'], $folder['id_container'], $folder['parent']).'</div>';
+                $return[$key] .= "<div id='$folderName' class='mrgn_lft_23px'>".ui_toggle_container($togge, $folderName, '', true, true, $folder['id_group'], $folder['id_container'], $folder['parent']).'</div>';
             }
         } else {
             if ($folder['parent'] === '0') {
                 $return[$key] = "<div id='$folderName'>";
             } else {
-                $return[$key] = "<div id='$folderName' style='margin-left:23px'>";
+                $return[$key] = "<div id='$folderName' class='mrgn_lft_23px'>";
             }
 
             $return[$key] .= ui_toggle_container($table, $folderName, '', true, true, $folder['id_group'], $folder['id_container'], $folder['parent']);
@@ -180,12 +179,16 @@ function folder_table($graphs)
         $data[3] = ui_print_group_icon($graph['id_group'], true);
 
         if (($report_w || $report_m) && users_can_manage_group_all($access)) {
-            $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image('images/config.png', true).'</a>';
+            $data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.$graph['id_graph'].'">'.html_print_image(
+                'images/config.png',
+                true,
+                ['class' => 'invert_filter']
+            ).'</a>';
 
             $data[4] .= '&nbsp;';
 
             $data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
+					return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete mrgn_lft_2px"', true);
         }
 
         array_push($table->data, $data);
@@ -253,13 +256,13 @@ function ui_toggle_container($code, $name, $title='', $hidden_default=true, $ret
     // Options
     if ($hidden_default) {
         $style = 'display:none';
-        $image_a = html_print_image('images/down.png', true, false, true);
-        $image_b = html_print_image('images/go.png', true, false, true);
+        $image_a = html_print_image('images/down.png', true, ['class' => 'invert_filter'], true);
+        $image_b = html_print_image('images/go.png', true, ['class' => 'invert_filter'], true);
         $original = 'images/go.png';
     } else {
         $style = '';
-        $image_a = html_print_image('images/down.png', true, false, true);
-        $image_b = html_print_image('images/go.png', true, false, true);
+        $image_a = html_print_image('images/down.png', true, ['class' => 'invert_filter'], true);
+        $image_b = html_print_image('images/go.png', true, ['class' => 'invert_filter'], true);
         $original = 'images/down.png';
     }
 
@@ -272,9 +275,9 @@ function ui_toggle_container($code, $name, $title='', $hidden_default=true, $ret
     $table->class = 'dat';
 
     if (!$parent) {
-        $table->styleTable = 'font-weight: bold;background: #f2f2f2;border: 1px solid #e2e2e2;margin-bottom: 4px';
+        $table->class = 'default_container ';
     } else {
-        $table->styleTable = 'font-weight: bold;margin-bottom: 4px;border-bottom: 1px solid #dcdcdc;';
+        $table->class = 'default_container_parent';
     }
 
     $table->style[0] = 'width: 30%';
@@ -310,16 +313,16 @@ function ui_toggle_container($code, $name, $title='', $hidden_default=true, $ret
     $table->data = [];
 
     $data = [];
-    $data[0] = '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid]).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
+    $data[0] = '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">'.html_print_image($original, true, ['title' => $title, 'id' => 'image_'.$uniqid, 'class' => 'invert_filter']).'&nbsp;&nbsp;<b>'.$name.'</b></a>';
     $data[1] = ui_print_group_icon($group, true);
     if ($report_r && $report_w) {
-        $data[2] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&id='.$id_container.'">'.html_print_image('images/config.png', true).'</a>';
+        $data[2] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/create_container&edit_container=1&id='.$id_container.'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a>';
     }
 
     if ($report_r && $report_w && $report_m) {
         if ($id_container !== '1') {
             $data[2] .= '&nbsp;&nbsp;&nbsp;&nbsp'.'<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container&delete_container=1&id='.$id_container.'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-              return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+              return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         }
     }
 

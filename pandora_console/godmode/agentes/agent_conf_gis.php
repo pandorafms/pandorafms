@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ require_once 'include/functions_agents.php';
 
 ui_require_javascript_file('openlayers.pandora');
 
-echo "<div style='margin-bottom: 10px;'></div>";
+echo "<div class='margin-bottom-10'></div>";
 
 $agentData = gis_get_data_last_position_agent($id_agente);
 $updateGisData = db_get_value('update_gis_data', 'tagente', 'id_agente', $id_agente);
@@ -32,7 +32,7 @@ $agent_name = agents_get_name($id_agente);
 $agent_name = md5($agent_name);
 
 // Map with the current position
-echo '<div id="'.$agent_name.'_agent_map" style="border:1px solid black; width:100%; height: 30em;"></div>';
+echo '<div id="'.$agent_name.'_agent_map" class="agent_map"></div>';
 
 if (!gis_get_agent_map($id_agente, '500px', '100%', false)) {
     ui_print_error_message(__('There is no default map. Please go to the setup for to set a default map.'));
@@ -122,15 +122,15 @@ $table->data[2][1] = html_print_input_text_extended(
 );
 
 $table->data[2][2] = __('Ignore new GIS data:');
-$table->data[2][3] = __('Yes').' '.html_print_radio_button_extended('update_gis_data', 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][3] .= __('No').' '.html_print_radio_button_extended('update_gis_data', 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][3] = __('Yes').' '.html_print_radio_button_extended('update_gis_data', 0, '', $updateGisData, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][3] .= __('No').' '.html_print_radio_button_extended('update_gis_data', 1, '', $updateGisData, false, '', 'class="mrgn_right_40px"', true);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
 echo "<form method='post' action='".$url."' onsubmit ='return validateFormFields();'>";
 html_print_input_hidden('update_gis', 1);
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'; float: left;">';
+echo '<div class="action-buttons float-left" style="width: '.$table->width.';">';
 html_print_submit_button(__('Update'), '', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';

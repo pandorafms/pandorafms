@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,7 @@ $fields_available['server_name'] = __('Server Name');
 $fields_available['data'] = __('Data');
 $fields_available['module_status'] = __('Module Status');
 $fields_available['mini_severity'] = __('Severity mini');
+$fields_available['module_custom_id'] = __('Module custom ID');
 
 
 // Remove fields already selected.
@@ -197,7 +198,7 @@ $(document).ready (function () {
 
         if(selected_fields_total === current_fields_size){
             display_confirm_dialog(
-                "<?php echo '<span style=text-transform:none;font-size:9.5pt;>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
+                "<?php echo '<span class=transform_none font_9pt>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
                 "<?php echo __('Confirm'); ?>",
                 "<?php echo __('Cancel'); ?>",
                 function () {

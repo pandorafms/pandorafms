@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,7 +48,10 @@ $buttons['message_list'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">'.html_print_image(
         'images/email_inbox.png',
         true,
-        ['title' => __('Received messages')]
+        [
+            'title' => __('Received messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -57,7 +60,10 @@ $buttons['sent_messages'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">'.html_print_image(
         'images/email_outbox.png',
         true,
-        ['title' => __('Sent messages')]
+        [
+            'title' => __('Sent messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -66,7 +72,10 @@ $buttons['create_message'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image(
         'images/new_message.png',
         true,
-        ['title' => __('Create message')]
+        [
+            'title' => __('Create message'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -158,7 +167,7 @@ if ($read_message) {
     ).' '.$user_name.' '.__('wrote').":\n\n".$message['mensaje'];
 
 
-    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
+    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent='.$show_sent.'&amp;delete_message=1&amp;id='.$message_id.'">';
     echo '</form>';
 
     echo '<form id="reply_message" method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
@@ -206,23 +215,6 @@ if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
         $return,
         __('Message successfully sent to user %s', $user_name),
         __('Error sending message to user %s', $user_name)
-    );
-}
-
-// Create message (destination group).
-if (($new_msg) && ($dst_group != '') && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [],
-        [$dst_group],
-        $subject,
-        $message
-    );
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent'),
-        __('Error sending message to group %s', groups_get_name($dst_group))
     );
 }
 
@@ -306,7 +298,7 @@ $table->data[1][1] = html_print_select(
     false
 );
 $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-$table->data[1][1] .= html_print_select_groups(
+$table->data[1][1] .= '<div class="w250px inline">'.html_print_select_groups(
     $config['id_user'],
     'AR',
     $return_all_groups,
@@ -316,7 +308,7 @@ $table->data[1][1] .= html_print_select_groups(
     __('Select group'),
     '',
     true
-);
+).'</div>';
 
 $table->data[2][0] = __('Subject');
 $table->data[2][1] = html_print_input_text(

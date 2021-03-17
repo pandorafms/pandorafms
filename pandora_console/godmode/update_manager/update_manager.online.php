@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,13 @@ if ($upload_max_filesize < $PHPupload_max_filesize_min) {
     $php_settings_fine++;
 }
 
+if (update_manager_verify_license_expired()) {
+    ui_print_error_message(
+        __('The license has expired. Please contact Artica at info@artica.es')
+    );
+    return;
+}
+
 // Verify registry.
 if (update_manager_verify_registration() === false) {
     ui_require_css_file('register');
@@ -125,29 +132,29 @@ if (update_manager_verify_registration() === false) {
     }
 
     if ($php_settings_fine >= $PHP_SETTINGS_REQUIRED) {
-        echo "<span class='loading' style='font-size:18pt;'>";
-        echo "<img src='images/wait.gif' />";
+        echo "<span class='loading font_18pt'>";
+        echo "<img src='".'images/wait.gif'."' />";
         echo '</span>';
     }
 
-    echo '<p style="font-weight: 600;">'.__('The latest version of package installed is:').'</p>';
+    echo '<p class="font_w600">'.__('The latest version of package installed is:').'</p>';
     if ($open) {
-        echo '<div id="pkg_version" style="font-size:40pt;">'.$build_version.'</div>';
+        echo '<div id="pkg_version" class="font_40pt">'.$build_version.'</div>';
     } else {
         echo '<div id="pkg_version">'.$current_package.'</div>';
     }
 
-        echo "<div class='checking_package' style='font-size:18pt;width:100%; display: none;'>";
+        echo "<div class='checking_package font_18pt invisible w100p'>";
             echo __('Checking for the newest package.');
         echo '</div>';
 
-        echo "<div class='downloading_package' style='font-size:18pt;width:100%; display: none;'>";
+        echo "<div class='downloading_packagefont_18pt invisible w100p'>";
             echo __('Downloading for the newest package.');
         echo '</div>';
 
         echo "<div class='content'></div>";
 
-        echo "<div class='progressbar' style='display: none;'><img class='progressbar_img' src='' /></div>";
+        echo "<div class='progressbar invisible'><img class='progressbar_img' src='' /></div>";
 
 
     /*
@@ -182,10 +189,10 @@ if (update_manager_verify_registration() === false) {
     if ($open) {
             echo "<div class='update_manager_open'>
             <div class='update_manager_warning'>
-                <div><img src='images/icono_info.png'></div>
+                <div><img src='".'images/icono_info.png'."'></div>
             <div><p>".__('WARNING: You are just one click away from an automated update. This may result in a damaged system, including loss of data and operativity. Check you have a recent backup. OpenSource updates are automatically created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.')."</p></div>
             </div>
-            <div style='text-align:center; margin-top:10px;'>
+            <div class='text_center mrgn_top_10px'>
                 <a class='update_manager_button_open' href='https://pandorafms.com/pandora-fms-enterprise/' target='_blank'>About Enterprise</a>
             </div>
         </div>";
@@ -205,7 +212,7 @@ if (update_manager_verify_registration() === false) {
         var isopen = "<?php echo $open; ?>";
         if(isopen){
             $(document).ready(function() {
-            $('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+            $('body').append( "<div id='opacidad'></div>" );
             jQuery.post ("ajax.php",
                 {
             "page": "general/alert_enterprise",

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -136,7 +136,7 @@ class ModuleTemplates extends HTML
         $this->baseUrl          = ui_get_full_url('index.php?sec=gmodules&sec2=godmode/modules/manage_module_templates');
         // Capture all parameters before start.
         $this->id_np            = get_parameter('id_np', -1);
-        $this->action           = get_parameter('action_button', '');
+        $this->action           = get_parameter('action', '');
         // Profile exists. Set the attributes with the info.
         if ($this->id_np > 0 || empty($this->action)) {
             $this->setNetworkProfile();
@@ -303,20 +303,25 @@ class ModuleTemplates extends HTML
         if (!empty($this->action)) {
             // Success variable.
             $success     = false;
-            $this->name             = get_parameter('name', '');
-            $this->description      = get_parameter('description', '');
+            $this->name             = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+            $this->description      = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
             $this->pen              = get_parameter('pen', '');
 
             switch ($this->action) {
-                case 'Update':
-                    $dbResult_tnp = db_process_sql_update(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ],
-                        ['id_np' => $this->id_np]
-                    );
+                case 'update':
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_update(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ],
+                            ['id_np' => $this->id_np]
+                        );
+                    }
+
                     if ($dbResult_tnp === false) {
                         $success = false;
                     } else {
@@ -351,14 +356,19 @@ class ModuleTemplates extends HTML
                     }
                 break;
 
-                case 'Create':
-                    $dbResult_tnp = db_process_sql_insert(
-                        'tnetwork_profile',
-                        [
-                            'name'        => $this->name,
-                            'description' => $this->description,
-                        ]
-                    );
+                case 'create':
+                    if (empty($this->name)) {
+                        $dbResult_tnp = false;
+                    } else {
+                        $dbResult_tnp = db_process_sql_insert(
+                            'tnetwork_profile',
+                            [
+                                'name'        => $this->name,
+                                'description' => $this->description,
+                            ]
+                        );
+                    }
+
                     // The insert gone fine!
                     if ($dbResult_tnp != false) {
                         // Set the new id_np.
@@ -393,7 +403,7 @@ class ModuleTemplates extends HTML
                     }
                 break;
 
-                case 'Delete':
+                case 'delete':
                     $success = db_process_sql_delete('tnetwork_profile', ['id_np' => $this->id_np]);
 
                     if ($success != false) {
@@ -406,8 +416,10 @@ class ModuleTemplates extends HTML
                     $this->id_np = -1;
                 break;
 
-                case 'Export':
+                case 'export':
                     global $config;
+
+                    enterprise_include_once('include/functions_reporting_csv.php');
 
                     $id_network_profile = safe_int($this->id_np);
                     if (empty($id_network_profile)) {
@@ -500,7 +512,7 @@ class ModuleTemplates extends HTML
                     }
 
                     // Then print the first line (row names)
-                    echo '"'.implode('","', $row_names).'"';
+                    echo '"'.implode('"'.$config['csv_divider'].'"', $row_names).'"';
                     echo "\n";
 
                     // Then print the rest of the data. Encapsulate in quotes in case we have comma's in any of the descriptions
@@ -509,7 +521,19 @@ class ModuleTemplates extends HTML
                             unset($row[$bad_key]);
                         }
 
-                        echo '"'.implode('","', $row).'"';
+                        if ($config['csv_decimal_separator'] !== '.') {
+                            foreach ($row as $name => $data) {
+                                if (is_numeric($data)) {
+                                    // Get the number of decimals, if > 0, format dec comma.
+                                    $decimals = strlen(substr(strrchr($data, '.'), 1));
+                                    if ($decimals !== 0) {
+                                        $row[$name] = csv_format_numeric((float) $data, $decimals, true);
+                                    }
+                                }
+                            }
+                        }
+
+                        echo '"'.implode('"'.$config['csv_divider'].'"', $row).'"';
                         echo "\n";
                     }
 
@@ -596,17 +620,67 @@ class ModuleTemplates extends HTML
             }
         } else if ($modulesToAdd != '') {
             $modulesToAddList = explode(',', $modulesToAdd);
+
+            $modulesAddedList = db_get_all_rows_in_table('tnetwork_profile_component');
+
+            $modulesToAdd = [];
+
             foreach ($modulesToAddList as $module) {
-                db_process_sql_insert(
-                    'tnetwork_profile_component',
-                    [
-                        'id_nc' => $module,
-                        'id_np' => $this->id_np,
-                    ]
-                );
+                $is_added = false;
+                foreach ($modulesAddedList as $item) {
+                    if ($item['id_nc'] === $module
+                        && $item['id_np'] === $this->id_np
+                    ) {
+                            $is_added = true;
+                    }
+                }
+
+                if ($is_added === false) {
+                    $name = io_safe_output(
+                        db_get_row_filter(
+                            'tnetwork_component',
+                            ['id_nc' => $module],
+                            'name'
+                        )
+                    );
+                    $modulesToAdd[] = $name;
+                    db_process_sql_insert(
+                        'tnetwork_profile_component',
+                        [
+                            'id_nc' => $module,
+                            'id_np' => $this->id_np,
+                        ]
+                    );
+                } else {
+                    $message = 'Some modules already exists<br>';
+                }
             }
 
-            $this->ajaxMsg('result', __('Components added sucessfully'));
+            if (empty($modulesToAdd)) {
+                $this->ajaxMsg(
+                    'error',
+                    __('The modules is already added')
+                );
+                return false;
+            }
+
+            if ($message === '') {
+                $message = 'Following modules will be added:';
+            } else {
+                $message .= 'Following modules will be added:';
+            }
+
+            $message .= '<ul>';
+            foreach ($modulesToAdd as $key => $value) {
+                $message .= '<li>'.$value['name'].'</li>';
+            }
+
+            $message .= '</ul>';
+
+            $this->ajaxMsg(
+                'result',
+                __($message)
+            );
         }
     }
 
@@ -800,7 +874,7 @@ class ModuleTemplates extends HTML
         $table = new StdClasS();
         $table->class = 'databox data';
         $table->width = '75%';
-        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
         $table->rowid = [];
         $table->data = [];
 
@@ -814,7 +888,7 @@ class ModuleTemplates extends HTML
 
         $table->head[1] = __('Name');
         $table->head[2] = __('Description');
-        $table->head[3] = '<span style="margin-right:7%;">'.__('Action').'</span>';
+        $table->head[3] = '<span class="mrgn_right_7p">'.__('Action').'</span>';
         $table->size = [];
         $table->size[0] = '20px';
         $table->size[2] = '65%';
@@ -837,7 +911,10 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
+                [
+                    'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                    'class'   => 'invert_filter',
+                ]
             );
             $data[3] .= html_print_input_image(
                 'export_profile',
@@ -845,17 +922,20 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['title' => 'Export to CSV']
+                [
+                    'title' => 'Export tdaso CSV',
+                    'class' => 'invert_filter',
+                ]
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&action_button=Delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action_button=Export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
             array_push($table->data, $data);
         }
 
         html_print_table($table);
 
-        $output = '<div style="float:right;" class="">';
+        $output = '<div class="float-right">';
 
         $form = [
             'method' => 'POST',
@@ -913,17 +993,19 @@ class ModuleTemplates extends HTML
      */
     public function moduleTemplateForm()
     {
+        global $config;
+
         $createNewTemplate = ($this->id_np == 0) ? true : false;
 
         if ($createNewTemplate) {
             // Assignation for submit button.
             $formButtonClass = 'sub wand';
-            $formButtonValue = 'create';
+            $formAction = 'create';
             $formButtonLabel = __('Create');
         } else {
             // Assignation for submit button.
             $formButtonClass = 'sub upd';
-            $formButtonValue = 'update';
+            $formAction = 'update';
             $formButtonLabel = __('Update');
         }
 
@@ -997,6 +1079,16 @@ class ModuleTemplates extends HTML
             ],
         ];
 
+        $inputs[] = [
+            'id'        => 'inp-action',
+            'arguments' => [
+                'name'   => 'action',
+                'type'   => 'hidden',
+                'value'  => $formAction,
+                'return' => true,
+            ],
+        ];
+
         $availableButtons = [];
 
         $availableButtons[] = [
@@ -1004,7 +1096,6 @@ class ModuleTemplates extends HTML
                 'name'       => 'action_button',
                 'label'      => $formButtonLabel,
                 'type'       => 'submit',
-                'value'      => $formButtonValue,
                 'attributes' => 'class="float-right '.$formButtonClass.'"',
                 'return'     => true,
             ],
@@ -1079,7 +1170,7 @@ class ModuleTemplates extends HTML
 
                         $blockComponentList = chop($blockComponentList, ',');
                         // Title of Block.
-                        $blockTitle = '<div style="padding-top: 8px;">';
+                        $blockTitle = '<div class="pdd_t_8px">';
                         $blockTitle .= $blockTable['name'];
                         $blockTitle .= '<div class="white_table_header_checkbox">';
                         $blockTitle .= html_print_input_image(
@@ -1090,6 +1181,7 @@ class ModuleTemplates extends HTML
                             true,
                             [
                                 'title'   => __('Delete this block'),
+                                'class'   => 'invert_filter',
                                 'onclick' => 'if(confirm(\''.__('Do you want delete this block?').'\')){deleteModuleTemplate(\'block\',\''.$blockComponentList.'\')};return false;',
                             ]
                         );
@@ -1099,7 +1191,7 @@ class ModuleTemplates extends HTML
                         $table = new StdClasS();
                         $table->class = 'databox data';
                         $table->width = '75%';
-                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
                         $table->rowid = [];
                         $table->data = [];
 
@@ -1110,10 +1202,10 @@ class ModuleTemplates extends HTML
 
                         $table->head = [];
                         $table->head[0] = __('Module Name');
-                        $table->head[1] = '<span style="margin-left: 0">'.__('Format').'</span>';
-                        $table->head[2] = '<span style="text-align: center">'.__('Type').'</span>';
+                        $table->head[1] = '<span class="mrgn_lft_0px">'.__('Format').'</span>';
+                        $table->head[2] = '<span class="center">'.__('Type').'</span>';
                         $table->head[3] = __('Description');
-                        $table->head[4] = '<span style="float:right;margin-right:1.2em;">'.__('Delete').'</span>';
+                        $table->head[4] = '<span class="float-right mrgn_right_1.2em">'.__('Delete').'</span>';
 
                         $table->size = [];
                         $table->size[0] = '15%';
@@ -1135,7 +1227,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/network.png',
                                         true,
-                                        ['title' => __('Network module')]
+                                        [
+                                            'title' => __('Network module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1143,7 +1238,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/wmi.png',
                                         true,
-                                        ['title' => __('WMI module')]
+                                        [
+                                            'title' => __('WMI module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1151,7 +1249,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/plugin.png',
                                         true,
-                                        ['title' => __('Plug-in module')]
+                                        [
+                                            'title' => __('Plug-in module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1177,6 +1278,7 @@ class ModuleTemplates extends HTML
                                 true,
                                 [
                                     'title'   => __('Delete this module'),
+                                    'class'   => 'invert_filter',
                                     'onclick' => 'if(confirm(\''.__('Do you want delete this module?').'\')){deleteModuleTemplate(\'module\','.$module['component_id'].')};return false;',
                                 ]
                             );
@@ -1204,8 +1306,8 @@ class ModuleTemplates extends HTML
         );
 
         if ($createNewTemplate === false) {
-            echo '<div style="display:none;" id="modal"></div>';
-            echo '<div style="display:none;" id="msg"></div>';
+            echo '<div class="invisible" id="modal"></div>';
+            echo '<div class="invisible" id="msg"></div>';
         }
 
         $this->printGoBackButton($this->baseUrl);
@@ -1229,7 +1331,7 @@ class ModuleTemplates extends HTML
         * Function for action of delete modules or blocks in template form
         */
         function deleteModuleTemplate(type, id){
-            var input_hidden = '<input type="hidden" name="action_button" value="del_'+type+'_'+id+'"/>';
+            var input_hidden = '<input type="hidden" name="action" value="del_'+type+'_'+id+'"/>';
             $('#module_template_form').append(input_hidden);
             $('#module_template_form').submit();
         }
@@ -1382,7 +1484,7 @@ class ModuleTemplates extends HTML
                 }
 
                 if (confirm(message)) {
-                    let hidden = '<input type="hidden" name="action_button" value="del_template_'+templatesList+'">';
+                    let hidden = '<input type="hidden" name="action" value="del_template_'+templatesList+'">';
                     $('#main_management_form').append(hidden);
                     $('#main_management_form').submit();
                 }

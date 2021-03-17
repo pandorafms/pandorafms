@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ if (!isset($id_agente)) {
 require_once 'include/functions_events.php';
 ui_require_css_file('events');
 ui_toggle(
-    "<div style='width: 100%;' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
+    "<div class='w100p' id='event_list'>".html_print_image('images/spinner.gif', true).'</div>',
     __('Latest events for this agent'),
     __('Latest events for this agent'),
     '',

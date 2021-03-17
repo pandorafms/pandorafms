@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +44,11 @@ enterprise_include_once('include/functions_cron.php');
  */
 class ConsoleSupervisor
 {
+
+    /**
+     * Minimum modules to check performance.
+     */
+    public const MIN_PERFORMANCE_MODULES = 100;
 
     /**
      * Show if console supervisor is enabled or not.
@@ -86,17 +91,17 @@ class ConsoleSupervisor
      *
      * @var boolean
      */
-    public $verbose;
+    public $interactive;
 
 
     /**
      * Constructor.
      *
-     * @param boolean $verbose Show output while executing or not.
+     * @param boolean $interactive Show output while executing or not.
      *
      * @return class This object
      */
-    public function __construct(bool $verbose=true)
+    public function __construct(bool $interactive=true)
     {
         $source = db_get_row(
             'tnotification_source',
@@ -104,7 +109,7 @@ class ConsoleSupervisor
             io_safe_input('System status')
         );
 
-        $this->verbose = $verbose;
+        $this->interactive = $interactive;
 
         if ($source === false) {
             $this->enabled = false;
@@ -115,12 +120,6 @@ class ConsoleSupervisor
         } else {
             $this->enabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
-
-            // Assign targets.
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = true;
         }
 
         return $this;
@@ -153,42 +152,42 @@ class ConsoleSupervisor
 
         /*
          * PHP configuration warnings:
-         *   NOTIF.PHP.SAFE_MODE
-         *   NOTIF.PHP.INPUT_TIME
-         *   NOTIF.PHP.EXECUTION_TIME
-         *   NOTIF.PHP.UPLOAD_MAX_FILESIZE
-         *   NOTIF.PHP.MEMORY_LIMIT
-         *   NOTIF.PHP.DISABLE_FUNCTIONS
-         *   NOTIF.PHP.PHANTOMJS
-         *   NOTIF.PHP.VERSION
+         *  NOTIF.PHP.SAFE_MODE
+         *  NOTIF.PHP.INPUT_TIME
+         *  NOTIF.PHP.EXECUTION_TIME
+         *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
+         *  NOTIF.PHP.MEMORY_LIMIT
+         *  NOTIF.PHP.DISABLE_FUNCTIONS
+         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.VERSION
          */
 
         $this->checkPHPSettings();
 
         /*
          * Check license.
-         *   NOTIF.LICENSE.EXPIRATION
+         *  NOTIF.LICENSE.EXPIRATION
          */
 
         $this->checkLicense();
 
         /*
          * Check component statuses (servers down - frozen).
-         *    NOTIF.SERVER.STATUS.ID_SERVER
+         *  NOTIF.SERVER.STATUS.ID_SERVER
          */
 
         $this->checkPandoraServers();
 
         /*
          * Check at least 1 server running in master mode.
-         *   NOTIF.SERVER.MASTER
+         *  NOTIF.SERVER.MASTER
          */
 
         $this->checkPandoraServerMasterAvailable();
 
         /*
          * Check if CRON is running.
-         *    NOTIF.CRON.CONFIGURED
+         *  NOTIF.CRON.CONFIGURED
          */
 
         if (enterprise_installed()) {
@@ -197,14 +196,14 @@ class ConsoleSupervisor
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if there're new messages in UM.
-         *     NOTIF.UPDATEMANAGER.MESSAGES
+         *  NOTIF.UPDATEMANAGER.MESSAGES
          */
 
         $this->getUMMessages();
@@ -212,20 +211,34 @@ class ConsoleSupervisor
         /*
          * Check if the Server and Console has
          * the same versions.
+         *  NOTIF.SERVER.MISALIGNED
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
          *  NOTIF.ALLOWOVERIDE.MESSAGE
          */
+
         $this->checkAllowOverrideEnabled();
 
         /*
-         * Check if AllowOverride is None or All.
-         *  NOTIF.HAMASTER.MESSAGE
+         * Check if the Pandora Console log
+         * file remains in old location.
+         *  NOTIF.PANDORACONSOLE.LOG.OLD
          */
-        $this->checkHaStatus();
+
+        $this->checkPandoraConsoleLogOldLocation();
+
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         *  NOTIF.AUDIT.LOG.OLD
+         */
+
+        $this->checkAuditLogOldLocation();
+
     }
 
 
@@ -238,8 +251,10 @@ class ConsoleSupervisor
     {
         global $config;
 
+        $this->maintenanceOperations();
+
         if ($this->enabled === false) {
-            // Feature not enabled.
+            // Notifications not enabled.
             return;
         }
 
@@ -265,65 +280,65 @@ class ConsoleSupervisor
 
         /*
          * Check license.
-         *   NOTIF.LICENSE.EXPIRATION
-         *   NOTIF.LICENSE.LIMITED
+         *  NOTIF.LICENSE.EXPIRATION
+         *  NOTIF.LICENSE.LIMITED
          */
 
         $this->checkLicense();
 
         /*
          * Check number of files in attachment:
-         *   NOTIF.FILES.ATTACHMENT
+         *  NOTIF.FILES.ATTACHMENT
          */
 
         $this->checkAttachment();
 
         /*
          * Files in data_in:
-         *   NOTIF.FILES.DATAIN  (>1000)
-         *   NOTIF.FILES.DATAIN.BADXML (>150)
+         *  NOTIF.FILES.DATAIN  (>1000)
+         *  NOTIF.FILES.DATAIN.BADXML (>150)
          */
 
         $this->checkDataIn();
 
         /*
          * Check module queues not growing:
-         *   NOTIF.SERVER.QUEUE.ID_SERVER
+         *  NOTIF.SERVER.QUEUE.ID_SERVER
          */
 
         $this->checkServers();
 
         /*
          * Check component statuses (servers down - frozen).
-         *    NOTIF.SERVER.STATUS.ID_SERVER
+         *  NOTIF.SERVER.STATUS.ID_SERVER
          */
 
         $this->checkPandoraServers();
 
         /*
          * Check at least 1 server running in master mode.
-         *   NOTIF.SERVER.MASTER
+         *  NOTIF.SERVER.MASTER
          */
 
         $this->checkPandoraServerMasterAvailable();
 
         /*
          * PHP configuration warnings:
-         *   NOTIF.PHP.SAFE_MODE
-         *   NOTIF.PHP.INPUT_TIME
-         *   NOTIF.PHP.EXECUTION_TIME
-         *   NOTIF.PHP.UPLOAD_MAX_FILESIZE
-         *   NOTIF.PHP.MEMORY_LIMIT
-         *   NOTIF.PHP.DISABLE_FUNCTIONS
-         *   NOTIF.PHP.PHANTOMJS
-         *   NOTIF.PHP.VERSION
+         *  NOTIF.PHP.SAFE_MODE
+         *  NOTIF.PHP.INPUT_TIME
+         *  NOTIF.PHP.EXECUTION_TIME
+         *  NOTIF.PHP.UPLOAD_MAX_FILESIZE
+         *  NOTIF.PHP.MEMORY_LIMIT
+         *  NOTIF.PHP.DISABLE_FUNCTIONS
+         *  NOTIF.PHP.PHANTOMJS
+         *  NOTIF.PHP.VERSION
          */
 
         $this->checkPHPSettings();
 
         /*
          *  Check connection with historical DB (if enabled).
-         *    NOTIF.HISTORYDB
+         *  NOTIF.HISTORYDB
          */
 
         $this->checkPandoraHistoryDB();
@@ -331,23 +346,23 @@ class ConsoleSupervisor
         /*
          * Check pandoradb running in main DB.
          * Check pandoradb running in historical DB.
-         *   NOTIF.PANDORADB
-         *   NOTIF.PANDORADB.HISTORICAL
+         *  NOTIF.PANDORADB
+         *  NOTIF.PANDORADB.HISTORICAL
          */
 
         $this->checkPandoraDBMaintenance();
 
         /*
          * Check historical DB MR version.
-         *    NOTIF.HISTORYDB.MR
+         *  NOTIF.HISTORYDB.MR
          */
 
         $this->checkPandoraHistoryDBMR();
 
         /*
          * Check external components.
-         *    NOTIF.EXT.ELASTICSEARCH
-         *    NOTIF.EXT.LOGSTASH
+         *  NOTIF.EXT.ELASTICSEARCH
+         *  NOTIF.EXT.LOGSTASH
          *
          */
 
@@ -355,76 +370,76 @@ class ConsoleSupervisor
 
         /*
          * Check Metaconsole synchronization issues.
-         *    NOTIF.METACONSOLE.DB_CONNECTION
+         *  NOTIF.METACONSOLE.DB_CONNECTION
          */
 
         $this->checkMetaconsole();
 
         /*
          * Check incoming scheduled downtimes (< 15d).
-         *    NOTIF.DOWNTIME
+         *  NOTIF.DOWNTIME
          */
 
         $this->checkDowntimes();
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if event storm protection is activated.
-         *    NOTIF.MISC.EVENTSTORMPROTECTION
+         *  NOTIF.MISC.EVENTSTORMPROTECTION
          */
 
         $this->checkEventStormProtection();
 
         /*
          * Check if develop_bypass is enabled.
-         *    NOTIF.MISC.DEVELOPBYPASS
+         *  NOTIF.MISC.DEVELOPBYPASS
          */
 
         $this->checkDevelopBypass();
 
         /*
          * Check if fontpath exists.
-         *    NOTIF.MISC.FONTPATH
+         *  NOTIF.MISC.FONTPATH
          */
 
         $this->checkFont();
 
         /*
          * Check if default user and password exists.
-         *    NOTIF.SECURITY.DEFAULT_PASSWORD
+         *  NOTIF.SECURITY.DEFAULT_PASSWORD
          */
 
         $this->checkDefaultPassword();
 
         /*
          * Check if there're new updates.
-         *    NOTIF.UPDATEMANAGER.OPENSETUP
-         *    NOTIF.UPDATEMANAGER.UPDATE
+         *  NOTIF.UPDATEMANAGER.OPENSETUP
+         *  NOTIF.UPDATEMANAGER.UPDATE
          */
 
         $this->checkUpdates();
 
         /*
          * Check if there're new minor updates available.
-         *    NOTIF.UPDATEMANAGER.MINOR
+         *  NOTIF.UPDATEMANAGER.MINOR
          */
 
         $this->checkMinorRelease();
 
-        if (enterprise_installed()) {
+        if ((bool) enterprise_installed() === true) {
             // Release the lock.
             enterprise_hook('cron_supervisor_release_lock');
         }
 
         /*
          * Check if CRON is running.
-         *    NOTIF.CRON.CONFIGURED
+         *  NOTIF.CRON.CONFIGURED
          */
 
         if (enterprise_installed()) {
@@ -433,14 +448,14 @@ class ConsoleSupervisor
 
         /*
          * Check if instance is registered.
-         *     NOTIF.UPDATEMANAGER.REGISTRATION
+         *  NOTIF.UPDATEMANAGER.REGISTRATION
          */
 
         $this->checkUpdateManagerRegistration();
 
         /*
          * Check if there're new messages in UM.
-         *     NOTIF.UPDATEMANAGER.MESSAGES
+         *  NOTIF.UPDATEMANAGER.MESSAGES
          */
 
         $this->getUMMessages();
@@ -448,21 +463,47 @@ class ConsoleSupervisor
         /*
          * Check if the Server and Console has
          * the same versions.
+         *  NOTIF.SERVER.MISALIGNED
          */
+
         $this->checkConsoleServerVersions();
 
         /*
          * Check if AllowOverride is None or All.
+         *  NOTIF.ALLOWOVERRIDE.MESSAGE
          */
+
         $this->checkAllowOverrideEnabled();
 
-          /*
-           * Check if HA status.
-           */
-        if (enterprise_installed()) {
+        /*
+         * Check if HA status.
+         */
+
+        if ((bool) enterprise_installed() === true) {
             $this->checkHaStatus();
         }
 
+        /*
+         * Check if the audit log file
+         * remains in old location.
+         */
+
+        $this->checkAuditLogOldLocation();
+    }
+
+
+    /**
+     * Executes console maintenance operations. Executed ALWAYS through CRON.
+     *
+     * @return void
+     */
+    public function maintenanceOperations()
+    {
+        /*
+         * Process cache clean if needed.
+         */
+
+        $this->checkCleanPhantomCache();
     }
 
 
@@ -470,13 +511,13 @@ class ConsoleSupervisor
      * Update targets for given notification using object targets.
      *
      * @param array   $notification Current notification.
-     * @param boolean $update       Only update db targets, no email.
+     * @param boolean $send_mails   Only update db targets, no email.
      *
      * @return void
      */
     public function updateTargets(
         array $notification,
-        bool $update=false
+        bool $send_mails=true
     ) {
         $notification_id = $notification['id_mensaje'];
         $blacklist = [];
@@ -495,7 +536,7 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                if ($update === false) {
+                if ($send_mails === true) {
                     // Send mail.
                     if (isset($user['also_mail']) && $user['also_mail'] == 1) {
                         enterprise_hook(
@@ -529,7 +570,7 @@ class ConsoleSupervisor
                 );
                 $insertion_string .= ',';
 
-                if ($update === false) {
+                if ($send_mails === true) {
                     // Send mail.
                     if (isset($group['also_mail']) && $group['also_mail'] == 1) {
                         enterprise_hook(
@@ -570,7 +611,7 @@ class ConsoleSupervisor
     public function notify(
         array $data,
         int $source_id=0,
-        int $max_age=86400
+        int $max_age=SECONDS_1DAY
     ) {
         // Uses 'check failed' logic.
         if (is_array($data) === false) {
@@ -578,20 +619,28 @@ class ConsoleSupervisor
             return;
         }
 
-        if ($this->targetUpdated === false) {
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
-        }
-
         if ($source_id === 0) {
             $source_id = $this->sourceId;
-            // Assign targets.
-            $targets = get_notification_source_targets($source_id);
+        }
+
+        static $_cache_targets;
+        $key = $source_id.'|'.$data['type'];
+
+        if ($_cache_targets === null) {
+            $_cache_targets = [];
+        }
+
+        if ($_cache_targets[$key] !== null) {
+            $targets = $_cache_targets[$key];
+        } else {
+            $targets = get_notification_source_targets(
+                $source_id,
+                $data['type']
+            );
             $this->targetGroups = $targets['groups'];
             $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
+
+            $_cache_targets[$key] = $targets;
         }
 
         switch ($data['type']) {
@@ -639,8 +688,8 @@ class ConsoleSupervisor
                 // NOTIF.SERVER.MASTER.
                 // NOTIF.SERVER.STATUS.ID_SERVER.
                 if (preg_match('/^NOTIF.SERVER/', $data['type']) === true) {
-                    // Component notifications require be inmediate.
-                    $max_age = 0;
+                    // Send notification once a day.
+                    $max_age = SECONDS_1DAY;
                 }
 
                 // Else ignored.
@@ -651,7 +700,9 @@ class ConsoleSupervisor
         $prev = db_get_row(
             'tmensajes',
             'subtype',
-            $data['type']
+            $data['type'],
+            false,
+            false
         );
 
         if ($prev !== false
@@ -670,7 +721,7 @@ class ConsoleSupervisor
                 ],
                 ['id_mensaje' => $prev['id_mensaje']]
             );
-            $this->updateTargets($prev, true);
+            $this->updateTargets($prev, false);
             return;
         }
 
@@ -919,7 +970,7 @@ class ConsoleSupervisor
     {
         global $config;
 
-        $remote_config_dir = io_safe_output($config['remote_config']);
+        $remote_config_dir = (string) io_safe_output($config['remote_config']);
 
         if (enterprise_installed()
             && isset($config['license_nms'])
@@ -1097,6 +1148,12 @@ class ConsoleSupervisor
                     $max_grown = ($total_modules[$queue['server_type']] * 0.40);
                 }
 
+                if ($total_modules[$queue['server_type']] < self::MIN_PERFORMANCE_MODULES) {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                    // Skip.
+                    continue;
+                }
+
                 // Compare queue increments in a not over 900 seconds.
                 if (empty($previous[$key]['modules'])
                     || ($time - $previous[$key]['utime']) > 900
@@ -1159,6 +1216,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServers()
     {
+        global $config;
+
         $servers = db_get_all_rows_sql(
             'SELECT
                 id_server,
@@ -1197,6 +1256,30 @@ class ConsoleSupervisor
             // At this point there's no servers with issues.
             $this->cleanNotifications('NOTIF.SERVER.STATUS%');
             return;
+        } else {
+            // Clean notifications. Only show notif for down servers
+            // ONLY FOR RECOVERED ONES.
+            $servers_working = db_get_all_rows_sql(
+                'SELECT
+                    id_server,
+                    name,
+                    server_type,
+                    server_keepalive,
+                    status,
+                    unix_timestamp() - unix_timestamp(keepalive) as downtime
+                FROM tserver
+                WHERE 
+                    unix_timestamp() - unix_timestamp(keepalive) <= server_keepalive
+                    OR status != 0'
+            );
+
+            if (is_array($servers_working) === true) {
+                foreach ($servers_working as $server) {
+                    $this->cleanNotifications(
+                        'NOTIF.SERVER.STATUS'.$server['id_server']
+                    );
+                }
+            }
         }
 
         foreach ($servers as $server) {
@@ -1253,6 +1336,8 @@ class ConsoleSupervisor
      */
     public function checkPandoraServerMasterAvailable()
     {
+        global $config;
+
         $n_masters = db_get_value_sql(
             'SELECT
                 count(*) as n
@@ -1363,7 +1448,7 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.PHP.INPUT_TIME');
         }
 
-        if ($PHPmax_execution_time !== '0') {
+        if ((int) $PHPmax_execution_time !== 0) {
             $url = 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time';
             if ($config['language'] == 'es') {
                 $url = 'http://php.net/manual/es/info.configuration.php#ini.max-execution-time';
@@ -1481,7 +1566,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li style='color: #676767'>".__('Report download in PDF format').'</li>'."<li style='color: #676767'>".__('Emails Sending').'</li><li style="color: #676767">'.__('Metaconsole Collections').'</li><li style="color: #676767">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );
@@ -2024,7 +2109,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
                     'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
+                    'message' => __('Click <a class="bolder underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
                     'url'     => 'javascript: force_run_register();',
                 ]
             );
@@ -2077,6 +2162,14 @@ class ConsoleSupervisor
         global $config;
 
         $fontpath = io_safe_output($config['fontpath']);
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            // Windows.
+            $fontpath = $config['homedir'].'\include\fonts\\'.$fontpath;
+        } else {
+            $home = str_replace('\\', '/', $config['homedir']);
+            $fontpath = $home.'/include/fonts/'.$fontpath;
+        }
 
         if (($fontpath == '')
             || (file_exists($fontpath) === false)
@@ -2182,7 +2275,7 @@ class ConsoleSupervisor
                             'New %s Console update',
                             get_product_name()
                         ),
-                        'message' => __('There is a new update available. Please<a style="font-weight:bold;" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
+                        'message' => __('There is a new update available. Please<a class="bolder" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
                         'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online'),
                     ]
                 );
@@ -2218,7 +2311,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.UPDATEMANAGER.MINOR',
                     'title'   => __('Minor release/s available'),
                     'message' => __(
-                        'There is one or more minor releases available. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
+                        'There is one or more minor releases available. <a id="aviable_updates" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
                     'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
@@ -2248,15 +2341,15 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<pre>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
+                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
                 $message_conf_cron .= str_replace(
                     ENTERPRISE_DIR.'/meta/',
                     '',
                     ui_get_full_url(false)
                 );
                 $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; ';
-                $message_conf_cron .= $config['homedir'].'/pandora_console.log</pre>';
+                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
             if (isset($config['cron_last_run']) === true) {
@@ -2462,6 +2555,10 @@ class ConsoleSupervisor
         $nodes = $cluster->getNodes();
 
         foreach ($nodes as $node) {
+            if ($node['status'] == HA_DISABLED) {
+                continue;
+            }
+
             $cluster_master = $cluster->isClusterMaster($node);
             $db_master = $cluster->isDBMaster($node);
 
@@ -2482,6 +2579,105 @@ class ConsoleSupervisor
                 $this->cleanNotifications('NOTIF.HAMASTER.MESSAGE');
             }
         }
+    }
+
+
+    /**
+     * Check if Pandora console log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkPandoraConsoleLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/pandora_console.log')) {
+            $title_pandoraconsole_old_log = __(
+                'Pandora FMS console log file changed location',
+                $config['homedir']
+            );
+            $message_pandoraconsole_old_log = __(
+                'Pandora FMS console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_EN:General_Quick_Guide#Solving_problems._Where_to_look_and_who_to_ask';
+            if ($config['language'] == 'es') {
+                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_ES:Guia_Rapida_General#Soluci.C3.B3n_de_problemas._D.C3.B3nde_mirar.2C_a_qui.C3.A9n_preguntar';
+            }
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
+                    'title'   => __($title_pandoraconsole_old_log),
+                    'message' => __($message_pandoraconsole_old_log),
+                    'url'     => $url,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PANDORACONSOLE.LOG.OLD');
+        }
+    }
+
+
+    /**
+     * Check if audit log file remains in old location.
+     *
+     * @return void
+     */
+    public function checkAuditLogOldLocation()
+    {
+        global $config;
+
+        if (file_exists($config['homedir'].'/audit.log')) {
+            $title_audit_old_log = __(
+                'Pandora FMS audit log file changed location',
+                $config['homedir']
+            );
+            $message_audit_old_log = __(
+                'Pandora FMS audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                $config['homedir'],
+                $config['homedir']
+            );
+
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.AUDIT.LOG.OLD',
+                    'title'   => __($title_audit_old_log),
+                    'message' => __($message_audit_old_log),
+                    'url'     => '#',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.AUDIT.LOG.OLD');
+        }
+    }
+
+
+    /**
+     * Clean Phantom cache if needed.
+     *
+     * @return void
+     */
+    public function checkCleanPhantomCache()
+    {
+        global $config;
+
+        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+            return;
+        }
+
+        $cache_dir = $config['homedir'].'/attachment/cache';
+        if (is_dir($cache_dir) === true) {
+            rrmdir($cache_dir);
+        }
+
+        // Clean process has ended.
+        config_update_value(
+            'clean_phantomjs_cache',
+            0
+        );
     }
 
 

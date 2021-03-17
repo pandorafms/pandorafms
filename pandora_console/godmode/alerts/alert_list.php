@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@ $searchType = get_parameter('search_type', '');
 $priority = get_parameter('priority', '');
 $searchFlag = get_parameter('search', 0);
 $enabledisable = get_parameter('enabledisable', '');
+$status_alert = get_parameter('status_alert', '');
 $standby = get_parameter('standby', '');
 $pure = get_parameter('pure', 0);
 $ag_group = get_parameter('ag_group', 0);
@@ -208,18 +209,21 @@ if ($delete_alert) {
     $agent_alias = agents_get_alias(
         db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module)
     );
+    $unsafe_alert_template_name = io_safe_output($alert_template_name);
+    $unsafe_module_name = io_safe_output($module_name);
+    $unsafe_agent_alias = io_safe_output($agent_alias);
 
     $result = alerts_delete_alert_agent_module($id_alert_agent_module);
 
     if ($result) {
         db_pandora_audit(
             'Alert management',
-            "Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'"
+            "Deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     } else {
         db_pandora_audit(
             'Alert management',
-            "Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_alias'"
+            "Fail to deleted alert '$unsafe_alert_template_name' for module '$unsafe_module_name' in agent '$unsafe_agent_alias'"
         );
     }
 
@@ -281,9 +285,9 @@ if ($update_action) {
     }
 
     $values['module_action_threshold'] = (int) get_parameter('module_action_threshold_ajax');
-    $values['id_alert_action'] = $id_module_action;
+    $values['id_alert_action'] = $id_action;
 
-    $result = alerts_update_alert_agent_module_action($id_action, $values);
+    $result = alerts_update_alert_agent_module_action($id_module_action, $values);
     if ($result) {
         db_pandora_audit('Alert management', 'Update action '.$id_action.' in  alert '.$id_alert_module);
     } else {
@@ -430,11 +434,11 @@ if ($id_agente) {
             $buttons = [
                 'list'    => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts')]).'</a>',
+                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List alerts'), 'class' => 'invert_filter']).'</a>',
                 ],
                 'builder' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Builder alert')]).'</a>',
+                    'text'   => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Builder alert'), 'class' => 'invert_filter']).'</a>',
                 ],
             ];
 

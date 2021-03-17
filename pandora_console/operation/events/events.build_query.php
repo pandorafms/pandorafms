@@ -2,7 +2,7 @@
 /**
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ if ($id_group > 0) {
     if ($propagate) {
         $childrens_ids = [$id_group];
 
-        $childrens = groups_get_childrens($id_group, null, true);
+        $childrens = groups_get_children($id_group, null, true);
 
         if (!empty($childrens)) {
             foreach ($childrens as $child) {

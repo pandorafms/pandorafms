@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -14,8 +14,6 @@
 if (! isset($config['id_user'])) {
     return;
 }
-
-require 'vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
 
@@ -395,8 +393,6 @@ if (check_acl($config['id_user'], 0, 'ER')
     $sub['operation/events/events']['text'] = __('View events');
     $sub['operation/events/events']['id'] = 'View events';
     $sub['operation/events/events']['pages'] = ['godmode/events/events'];
-    $sub['operation/events/event_statistics']['text'] = __('Statistics');
-    $sub['operation/events/event_statistics']['id'] = 'Statistics';
 
     // If ip doesn't is in list of allowed IP, isn't show this options.
     include_once 'include/functions_api.php';
@@ -434,11 +430,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
-
-        // Marquee.
-        $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
-        $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
-        $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
     // Sound Events.
@@ -502,9 +493,8 @@ if (check_acl($config['id_user'], 0, 'IR')
     ];
 
     $sub2 = [];
-    $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
-    $sub2[$sec2sub]['text'] = __('Statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Tickets');
+    $sub2[$sec2sub]['text'] = __('Integria IMS statistics');
+    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
 
     $sub[$sec2]['sub2'] = $sub2;
     $sec2 = $temp_sec2;

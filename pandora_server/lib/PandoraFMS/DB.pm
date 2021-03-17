@@ -3,7 +3,7 @@ package PandoraFMS::DB;
 # Database Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -52,8 +52,10 @@ our @EXPORT = qw(
 		db_string
 		db_text
 		db_update
+		db_update_hash
 		db_update_get_values
 		set_update_agent
+		set_update_agentmodule
 		get_action_id
 		get_addr_id
 		get_agent_addr_id
@@ -96,6 +98,9 @@ our @EXPORT = qw(
 		get_user_disabled
 		get_user_exists
 		get_user_profile_id
+		get_group_children
+		get_agentmodule_custom_id
+		set_agentmodule_custom_id
 		is_agent_address
 		is_group_disabled
 		get_agent_status
@@ -293,6 +298,47 @@ sub get_group_id ($$) {
 }
 
 ########################################################################
+# Return a array of groups, children of given parent.
+########################################################################
+sub get_group_children ($$$;$);
+sub get_group_children ($$$;$) {
+	my ($dbh, $parent, $ignorePropagate, $href_groups) = @_;
+
+	if (is_empty($href_groups)) {
+		my @groups = get_db_rows($dbh, 'SELECT * FROM tgrupo');
+
+		my %groups = map {
+			$_->{'id_grupo'} => $_
+		} @groups;
+
+		$href_groups = \%groups;
+	}
+
+	my $return = {};
+	foreach my $id_grupo (keys %{$href_groups}) {
+		if ($id_grupo eq 0) {
+			next;
+		}
+
+		my $g = $href_groups->{$id_grupo};
+
+		if ($ignorePropagate || $parent eq 0 || $href_groups->{$parent}{'propagate'}) {
+			if ($g->{'parent'} eq $parent) {
+				$return->{$g->{'id_grupo'}} = $g;
+				if ($g->{'propagate'} || $ignorePropagate) {
+					$return = add_hashes(
+						$return,
+						get_group_children($dbh, $g->{'id_grupo'}, $ignorePropagate, $href_groups)
+					);
+				}
+			}
+		}
+	}
+
+	return $return;
+}
+
+########################################################################
 ## Return OS ID given the OS name.
 ########################################################################
 sub get_os_id ($$) {
@@ -400,6 +446,35 @@ sub get_agentmodule_data ($$$$$) {
 	#	ORDER BY utimestamp ASC", 1);
 	
 	return @rows;
+}
+
+##########################################################################
+## Return module custom ID given the module id.
+##########################################################################
+sub get_agentmodule_custom_id ($$) {
+	my ($dbh, $id_agent_module) = @_;
+
+	my $rc = get_db_value(
+		$dbh,
+		"SELECT custom_id FROM tagente_modulo WHERE id_agente_modulo = ?",
+		safe_input($id_agent_module)
+	);
+	return defined($rc) ? $rc : undef;
+}
+
+##########################################################################
+## Updates module custom ID given the module id and custom Id.
+##########################################################################
+sub set_agentmodule_custom_id ($$$) {
+	my ($dbh, $id_agent_module, $custom_id) = @_;
+
+	my $rc = db_update(
+		$dbh,
+		"UPDATE tagente_modulo SET custom_id = ? WHERE id_agente_modulo = ?",
+		safe_input($custom_id),
+		safe_input($id_agent_module)
+	);
+	return defined($rc) ? ($rc eq '0E0' ? 0 : $rc) : -1;
 }
 
 ########################################################################
@@ -870,17 +945,21 @@ sub get_db_rows_limit ($$$;@) {
 }
 
 ##########################################################################
-## Updates agent fields using field => value
-##  Be careful, no filter is done.
+## Updates using hashed data.
+##   $dbh       database connector (active)
+##   $tablename table name
+##   $id        hashref as { 'primary_key_id' => "value" }
+##   $data      hashref as { 'field1' => "value", 'field2' => "value"}
 ##########################################################################
-sub set_update_agent {
-	my ($dbh, $agent_id, $data) = @_;
+sub db_update_hash {
+	my ($dbh, $tablename, $id, $data) = @_;
 
-	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (defined($tablename) && $tablename ne "");
+	
 	return undef unless (ref($data) eq "HASH");
 
 	# Build update query
-	my $query = 'UPDATE tagente SET ';
+	my $query = 'UPDATE `'.$tablename.'` SET ';
 
 	my @values;
 	foreach my $field (keys %{$data}) {
@@ -891,12 +970,50 @@ sub set_update_agent {
 
 	chop($query);
 
-	$query .= ' WHERE id_agente = ? ';
-	push @values, $agent_id;
+	my @keys = keys %{$id};
+	my $k = shift @keys;
+
+	$query .= ' WHERE '.$k.' = ? ';
+	push @values, $id->{$k};
 
 	return db_update($dbh, $query, @values);
 }
 
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agent {
+	my ($dbh, $agent_id, $data) = @_;
+
+	return undef unless (defined($agent_id) && $agent_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente',
+		{ 'id_agente' => $agent_id },
+		$data
+	);
+}
+
+##########################################################################
+## Updates agent fields using field => value
+##  Be careful, no filter is done.
+##########################################################################
+sub set_update_agentmodule {
+	my ($dbh, $agentmodule_id, $data) = @_;
+
+	return undef unless (defined($agentmodule_id) && $agentmodule_id > 0);
+	return undef unless (ref($data) eq "HASH");
+
+	return db_update_hash(
+		$dbh,
+		'tagente_modulo',
+		{ 'id_agente_modulo' => $agentmodule_id },
+		$data
+	);
+}
 
 ##########################################################################
 ## SQL delete with a LIMIT clause.
@@ -1279,6 +1396,8 @@ sub db_concat ($$) {
 ########################################################################
 sub get_priority_name ($) {
 	my ($priority_id) = @_;
+
+	return '' unless defined($priority_id);
 	
 	if ($priority_id == 0) {
 		return 'Maintenance';

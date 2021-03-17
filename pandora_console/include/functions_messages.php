@@ -16,7 +16,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -311,7 +311,7 @@ function messages_get_message_sent(int $message_id)
     $sql = sprintf(
         "SELECT id_usuario_origen, subject, mensaje, timestamp
         FROM tmensajes
-        WHERE id_usuario_origen='%s' AND id_mensaje=%d",
+        WHERE id_usuario_origen='%s' AND id_mensaje=%d AND hidden_sent = 0",
         $config['id_user'],
         $message_id
     );
@@ -431,7 +431,7 @@ function messages_get_count_sent(string $user='')
 
     $sql = sprintf(
         "SELECT COUNT(*)
-        FROM tmensajes WHERE id_usuario_origen='%s'",
+        FROM tmensajes WHERE id_usuario_origen='%s' AND hidden_sent = 0",
         $user
     );
 
@@ -497,11 +497,7 @@ function messages_get_overview(
     if ($incl_source_info) {
         $source_fields = ', tns.*';
         $source_join = 'INNER JOIN tnotification_source tns
-            ON tns.id=tm.id_source
-            INNER JOIN tnotification_source_user nsu
-                ON nsu.id_source=tns.id
-                AND nsu.enabled = 1
-                OR tns.enabled = 1';
+            ON tns.id=tm.id_source';
     }
 
     // Using distinct because could be double assignment due group/user.
@@ -578,6 +574,17 @@ function messages_get_overview_sent(
     if ($order_dir != 'ASC') {
         $order .= ' DESC';
     }
+
+    $filter = [
+        'id_usuario_origen' => $config['id_user'],
+        'hidden_sent'       => 0,
+        'order'             => $order,
+    ];
+
+    return db_get_all_rows_filter(
+        'tmensajes',
+        $filter
+    );
 
     return db_get_all_rows_field_filter(
         'tmensajes',
@@ -660,4 +667,28 @@ function messages_get_url($message_id)
 
     // Return the message direction.
     return ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_edit&read_message=1&id_message='.$message_id);
+}
+
+
+/**
+ * Deletes sent message
+ *
+ * @param integer $message_id Message id to get URL.
+ *
+ * @return boolean true when deleted, false in case of error
+ */
+function messages_delete_message_sent($id_message)
+{
+    global $config;
+
+    $ret = db_process_sql_update(
+        'tmensajes',
+        ['hidden_sent' => 1],
+        [
+            'id_mensaje'        => $id_message,
+            'id_usuario_origen' => $config['id_user'],
+        ]
+    );
+
+    return $ret;
 }

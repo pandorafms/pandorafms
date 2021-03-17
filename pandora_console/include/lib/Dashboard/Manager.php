@@ -153,6 +153,13 @@ class Manager
     private $refr;
 
     /**
+     * Public Link.
+     *
+     * @var boolean
+     */
+    private $publicLink;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -183,8 +190,32 @@ class Manager
     {
         global $config;
 
-        // Check access.
-        check_login();
+        // Check ACL.
+        $hash = get_parameter('hash', false);
+        $this->publicLink = false;
+        // Check user access.
+        if ($hash === false) {
+            check_login();
+            if (check_acl($config['id_user'], 0, 'RR') === 0) {
+                include 'general/noaccess.php';
+                return;
+            }
+        } else {
+            if (self::validatePublicHash($hash) === false) {
+                db_pandora_audit(
+                    'Invalid public hash',
+                    'Trying to access public dashboard'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
+            $this->publicLink = true;
+        }
+
+        if (empty(get_parameter('auth_hash', '')) === false) {
+            $this->publicLink = true;
+        }
 
         // User is admin.
         $this->isAdmin = (bool) \is_user_admin($config['id_user']);
@@ -202,7 +233,7 @@ class Manager
         $this->stringGroups = \io_safe_output(
             implode(
                 ', ',
-                array_keys($this->groups)
+                array_values($this->groups)
             )
         );
 
@@ -256,6 +287,86 @@ class Manager
 
         $this->refr = (int) get_parameter('refr', 0);
         $this->refr = (empty($this->refr) === false) ? $this->refr : $config['vc_refr'];
+    }
+
+
+    /**
+     * Generates a hash to authenticate in public dashboards.
+     *
+     * @param string|null $other_secret To authenticate some parts
+     * of public dashboards (like visual consoles or wux widgets)
+     * another hash is needed. Other secret avoid
+     * to reuse the main hash to view other components.
+     *
+     * @return string Returns a hash with the authenticaction.
+     */
+    public static function generatePublicHash(?string $other_secret=''):string
+    {
+        global $config;
+
+        $str = $config['dbpass'];
+        $str .= $config['id_user'];
+        $str .= $other_secret;
+        return hash('sha256', $str);
+    }
+
+
+    /**
+     * Validates a hash to authenticate in public dashboards.
+     *
+     * @param string $hash         Hash to be checked.
+     * @param string $other_secret Yo need to provide it to
+     * authenticate some parts of widgets.
+     *
+     * @return boolean Returns true if hash is valid.
+     */
+    public static function validatePublicHash(
+        string $hash,
+        string $other_secret=''
+    ):bool {
+        global $config;
+
+        if (isset($config['id_user']) === true) {
+            // Already logged in.
+            return true;
+        }
+
+        $userFromParams = false;
+        // Try to get id_user from parameters if it is missing.
+        if (isset($config['id_user']) === false) {
+            $userFromParams = true;
+            $config['id_user'] = get_parameter('id_user', false);
+            // It is impossible to authenticate without an id user.
+            if ($config['id_user'] === false) {
+                unset($config['id_user']);
+                return false;
+            }
+        } else {
+            $config['public_dashboard'] = false;
+        }
+
+        // Build a hash to check.
+        $hashCheck = self::generatePublicHash($other_secret);
+        if ($hashCheck === $hash) {
+            // "Log" user in.
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+
+            $_SESSION['id_usuario'] = $config['id_user'];
+            session_write_close();
+
+            $config['public_dashboard'] = true;
+            $config['force_instant_logout'] = true;
+            return true;
+        }
+
+        // Remove id user from config array if authentication has failed.
+        if ($userFromParams === true) {
+            unset($config['id_user']);
+        }
+
+        return false;
     }
 
 
@@ -314,7 +425,8 @@ class Manager
             $this->widgetId,
             $width,
             $height,
-            $gridWidth
+            $gridWidth,
+            $this->publicLink
         );
 
         return $instance;
@@ -590,8 +702,8 @@ class Manager
                 FROM tdashboard td
                 LEFT JOIN twidget_dashboard twd
                     ON td.id = twd.id_dashboard
-				WHERE (td.id_group IN (%s) AND td.id_user = '') OR
-					td.id_user = '%s' %s
+				WHERE ((td.id_group IN (%s) AND td.id_user = '') OR
+					td.id_user = '%s') %s
                 GROUP BY td.id
 				ORDER BY name%s",
                     $string_groups,
@@ -810,6 +922,11 @@ class Manager
     {
         global $config;
 
+        if (check_acl($config['id_user'], 0, 'RW') === 0) {
+            include 'general/noaccess.php';
+            return;
+        }
+
         $name = \get_parameter('name', '');
         $private = \get_parameter_switch('private');
         $id_group = \get_parameter('id_group');
@@ -854,7 +971,7 @@ class Manager
             'dashboardId'  => $this->dashboardId,
         ];
 
-        exit(json_encode($result));
+        echo json_encode($result);
 
     }
 
@@ -889,6 +1006,9 @@ class Manager
                     'refr'           => $this->refr,
                     'url'            => $this->url,
                     'dashboardName'  => $this->dashboardFields['name'],
+                    'hash'           => self::generatePublicHash(),
+                    'publicLink'     => $this->publicLink,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         } else {
@@ -906,6 +1026,7 @@ class Manager
                     'cells'          => $this->cells,
                     'cellModeSlides' => $this->cellModeSlides,
                     'cellId'         => ($this->cellId === 0) ? $this->cells[0]['id'] : $this->cellId,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         }
@@ -920,7 +1041,9 @@ class Manager
                     'url'             => \ui_get_full_url('ajax.php'),
                     'createDashboard' => $this->createDashboard,
                     'updateDashboard' => $this->updateDashboard,
-                    'cellIdCreate'    => get_parameter('cellIdCreate', 0),
+                    'cellIdCreate'    => \get_parameter('cellIdCreate', 0),
+                    'class'           => (($config['public_dashboard'] === true) ? quotemeta(__CLASS__) : ''),
+                    'hash'            => (($config['public_dashboard'] === true) ? self::generatePublicHash() : ''),
                 ]
             );
         } else {
@@ -938,9 +1061,6 @@ class Manager
                     'widgetId'    => $cellData['id_widget'],
                     'cellId'      => $this->cellId,
                 ];
-            } else {
-                // TODO:XXX
-                $output = 'no tiene widget';
             }
 
             View::render(
@@ -991,7 +1111,7 @@ class Manager
             );
         }
 
-        exit(json_encode($result));
+        echo json_encode($result);
     }
 
 
@@ -1016,7 +1136,7 @@ class Manager
 
         $result = ['cellId' => $dataCell['id']];
 
-        exit(json_encode($result));
+        echo json_encode($result);
     }
 
 
@@ -1083,6 +1203,7 @@ class Manager
         $cellData = $cellClass->get();
 
         $instance = '';
+
         if ((int) $cellData['id_widget'] !== 0 || $this->widgetId !== 0) {
             $instance = $this->instanceWidget(
                 $newWidth,
@@ -1149,7 +1270,7 @@ class Manager
             }
         }
 
-        exit(json_encode($result));
+        echo json_encode($result);
     }
 
 
@@ -1171,7 +1292,7 @@ class Manager
 
         $result = ['result' => $res];
 
-        exit(json_encode($result));
+        echo json_encode($result);
     }
 
 
@@ -1264,7 +1385,7 @@ class Manager
             ];
         }
 
-        exit(json_encode($result));
+        echo json_encode($result);
     }
 
 

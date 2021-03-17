@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,7 +233,7 @@ switch ($opt) {
 
         $returnJSON = [];
         $returnJSON['correct'] = 1;
-        $returnJSON['content'] = __('Agent').': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['tagente_id_agente'].'">'.agents_get_alias($row['tagente_id_agente']).'</a><br />';
+        $returnJSON['content'] = __('Agent').': <a class="bolder" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['tagente_id_agente'].'">'.agents_get_alias($row['tagente_id_agente']).'</a><br />';
         $returnJSON['content'] .= __('Position (Lat, Long, Alt)').': ('.$row['latitude'].', '.$row['longitude'].', '.$row['altitude'].') <br />';
         $returnJSON['content'] .= __('Start contact').': '.$row['start_timestamp'].'<br />';
         $returnJSON['content'] .= __('Last contact').': '.$row['end_timestamp'].'<br />';
@@ -267,7 +267,7 @@ switch ($opt) {
         // Agent name
         $row = [];
         $row[] = __('Agent');
-        $row[] = '<a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'">'.$agent['alias'].'</a>';
+        $row[] = '<a class="bolder" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'">'.$agent['alias'].'</a>';
         $table->data[] = $row;
 
         // Position
@@ -436,7 +436,7 @@ switch ($opt) {
         // Group name
         $row = [];
         $row[] = __('Group');
-        $row[] = '<a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">'.$group['nombre'].'</a>';
+        $row[] = '<a class="bolder" href="?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">'.$group['nombre'].'</a>';
         $table->data[] = $row;
 
         // Position

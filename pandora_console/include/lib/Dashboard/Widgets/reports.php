@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -217,8 +217,23 @@ class ReportsWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Reports.
-        $reports = \reports_get_reports(false, ['id_report', 'name']);
+        $reports = \reports_get_reports(false, ['id_report', 'name'], $return_all_group);
+
+        // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['reportId'] !== null && !in_array($values['reportId'], array_column($reports, 'id_report'))) {
+            $selected_report = db_get_row('treport', 'id_report', $values['reportId']);
+
+            $reports[] = $selected_report;
+        }
+
         $fields = array_reduce(
             $reports,
             function ($carry, $item) {
@@ -274,7 +289,7 @@ class ReportsWidget extends Widget
         $output = '';
         ob_start();
         if ($this->values['reportId'] !== 0) {
-            $output .= '<div style="width:90%; height:100%; display:flex; flex-direction:column;">';
+            $output .= '<div class="w90p height_100p flex flex_column">';
             $this->printReport();
             $output .= ob_get_clean();
 

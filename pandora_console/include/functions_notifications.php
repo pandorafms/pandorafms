@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -117,6 +117,68 @@ function get_notification_targets(int $id_message)
 
 
 /**
+ * Return subtypes.
+ *
+ * @param string|null $source Source filter or all.
+ *
+ * @return array
+ */
+function notifications_get_subtypes(?string $source=null)
+{
+    $subtypes = [
+        'System status' => [
+            'NOTIF.LICENSE.LIMITED',
+            'NOTIF.LICENSE.EXPIRATION',
+            'NOTIF.FILES.ATTACHMENT',
+            'NOTIF.FILES.DATAIN',
+            'NOTIF.FILES.DATAIN.BADXML',
+            'NOTIF.PHP.SAFE_MODE',
+            'NOTIF.PHP.INPUT_TIME',
+            'NOTIF.PHP.EXECUTION_TIME',
+            'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
+            'NOTIF.PHP.MEMORY_LIMIT',
+            'NOTIF.PHP.DISABLE_FUNCTIONS',
+            'NOTIF.PHP.PHANTOMJS',
+            'NOTIF.PHP.VERSION',
+            'NOTIF.HISTORYDB',
+            'NOTIF.PANDORADB',
+            'NOTIF.PANDORADB.HISTORICAL',
+            'NOTIF.HISTORYDB.MR',
+            'NOTIF.EXT.ELASTICSEARCH',
+            'NOTIF.EXT.LOGSTASH',
+            'NOTIF.METACONSOLE.DB_CONNECTION',
+            'NOTIF.DOWNTIME',
+            'NOTIF.UPDATEMANAGER.REGISTRATION',
+            'NOTIF.MISC.EVENTSTORMPROTECTION',
+            'NOTIF.MISC.DEVELOPBYPASS',
+            'NOTIF.MISC.FONTPATH',
+            'NOTIF.SECURITY.DEFAULT_PASSWORD',
+            'NOTIF.UPDATEMANAGER.OPENSETUP',
+            'NOTIF.UPDATEMANAGER.UPDATE',
+            'NOTIF.UPDATEMANAGER.MINOR',
+            'NOTIF.UPDATEMANAGER.MESSAGES',
+            'NOTIF.CRON.CONFIGURED',
+            'NOTIF.ALLOWOVERRIDE.MESSAGE',
+            'NOTIF.HAMASTER.MESSAGE',
+            'NOTIF.SERVER.STATUS',
+            'NOTIF.SERVER.QUEUE',
+            'NOTIF.SERVER.MASTER',
+        ],
+    ];
+
+    if ($source === null) {
+        return $subtypes;
+    }
+
+    if (isset($subtypes[$source]) === true) {
+        return $subtypes[$source];
+    }
+
+    return [];
+}
+
+
+/**
  * Check if current user has grants to read this notification
  *
  * @param integer $id_message Target message.
@@ -160,13 +222,27 @@ function check_notification_readable(int $id_message)
  * Returns the target users and groups assigned to be notified on
  * desired source.
  *
- * @param integer $id_source Source identificator.
+ * @param integer     $id_source Source identificator.
+ * @param string|null $subtype   Subtype identification.
  *
  * @return array [users] and [groups] with the targets.
  */
-function get_notification_source_targets(int $id_source)
+function get_notification_source_targets(int $id_source, ?string $subtype=null)
 {
     $ret = [];
+
+    $filter = '';
+    if ($subtype !== null) {
+        $matches = [];
+        if (preg_match('/(.*)\.\d+$/', $subtype, $matches) > 0) {
+            $subtype = $matches[1];
+        }
+
+        $filter = sprintf(
+            ' AND ns.`subtype_blacklist` NOT LIKE "%%%s%%"',
+            $subtype
+        );
+    }
 
     $users = db_get_all_rows_sql(
         sprintf(
@@ -176,9 +252,11 @@ function get_notification_source_targets(int $id_source)
             FROM tnotification_source_user nsu
             INNER JOIN tnotification_source ns
                 ON ns.id=nsu.id_source
+                %s
             WHERE ns.id = %d 
             AND ((ns.enabled is NULL OR ns.enabled != 0)
                 OR (nsu.enabled is NULL OR nsu.enabled != 0))',
+            $filter,
             $id_source
         )
     );
@@ -197,8 +275,10 @@ function get_notification_source_targets(int $id_source)
             FROM tnotification_source_group nsg
             INNER JOIN tnotification_source ns
                 ON ns.id=nsg.id_source
+                %s
             WHERE ns.id = %d 
             AND (ns.enabled is NULL OR ns.enabled != 0)',
+            $filter,
             $id_source
         )
     );
@@ -700,8 +780,47 @@ function notifications_print_global_source_configuration($source)
     );
     $html_selectors .= '</div>';
 
+    $html_checkboxes = '';
+
+    $blacklist = json_decode($source['subtype_blacklist'], 1);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $blacklist = [];
+    }
+
+    if ($source['description'] === io_safe_input('System status')) {
+        $system_subtypes = notifications_get_subtypes('System status');
+
+        foreach ($system_subtypes as $type) {
+            $html_checkboxes .= html_print_input(
+                [
+                    'input_class' => 'flex flex-row w290px margin-soft',
+                    'label'       => $type,
+                    'name'        => 'check-'.$type,
+                    'type'        => 'switch',
+                    'id'          => 'nt-'.$source['id'].'.'.$type.'-subtype',
+                    'class'       => 'elem-clickable',
+                    'value'       => (isset($blacklist[$type]) === false),
+                    'return'      => true,
+                ]
+            );
+        }
+
+        $html_checkboxes = ui_print_toggle(
+            [
+                'content'         => $html_checkboxes,
+                'name'            => __('Subtype customization'),
+                'hidden_default'  => false,
+                'return'          => true,
+                'toggle_class'    => '',
+                'container_class' => 'flex flex-row flex-start w100p',
+                'main_class'      => '',
+                'clean'           => true,
+            ]
+        );
+    }
+
     // Return all html.
-    return $html_title.$html_selectors.$html_checkboxes.$html_select_pospone;
+    return $html_title.$html_selectors.$html_checkboxes;
 }
 
 
@@ -728,7 +847,7 @@ function notifications_print_source_select_box(
         "
         <div class='global-config-notification-single-selector'>
             <div>
-                <h4>%s</h4>
+                <h5>%s</h5>
                 %s
             </div>
             <div class='global-notifications-icons'>
@@ -823,6 +942,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_image(
@@ -835,6 +955,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_select(

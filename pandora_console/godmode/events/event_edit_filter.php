@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,7 +40,15 @@ $strict_user = db_get_value(
 );
 
 if ($id) {
-    $permission = events_check_event_filter_group($id);
+    $restrict_all_group = false;
+
+    if (!users_can_manage_group_all('EW') === true
+        && !users_can_manage_group_all('EM') === true
+    ) {
+        $restrict_all_group = true;
+    }
+
+    $permission = events_check_event_filter_group($id, $restrict_all_group);
     if (!$permission) {
         // User doesn't have permissions to see this filter
         include 'general/noaccess.php';
@@ -130,6 +138,16 @@ if ($update || $create) {
     $id_agent = (int) get_parameter('id_agent');
     $text_module = get_parameter('text_module', '');
     $id_agent_module = (int) get_parameter('module_search_hidden');
+    if ($text_module === '') {
+        $text_module = io_safe_output(
+            db_get_value_filter(
+                'nombre',
+                'tagente_modulo',
+                ['id_agente_modulo' => $id_agent_module]
+            )
+        );
+    }
+
     $pagination = get_parameter('pagination', '');
     $event_view_hr = get_parameter('event_view_hr', '');
     $id_user_ack = get_parameter('id_user_ack', '');
@@ -195,12 +213,16 @@ if ($update) {
 }
 
 if ($create) {
-    $id = db_process_sql_insert('tevent_filter', $values);
+    if (!empty($values['id_name'])) {
+        $id = db_process_sql_insert('tevent_filter', $values);
 
-    if ($id === false) {
-        ui_print_error_message('Error creating filter');
+        if ($id === false) {
+            ui_print_error_message('Error creating filter');
+        } else {
+            ui_print_success_message('Filter created successfully');
+        }
     } else {
-        ui_print_success_message('Filter created successfully');
+        ui_print_error_message('Filter name must not be empty');
     }
 }
 
@@ -241,7 +263,7 @@ if ($returnAllGroup === false && $id_group_filter == 0) {
     $returnAllGroup = true;
 }
 
-$table->data[1][1] = html_print_select_groups(
+$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     $access,
     $returnAllGroup,
@@ -260,21 +282,27 @@ $table->data[1][1] = html_print_select_groups(
     false,
     'id_grupo',
     $strict_user
-);
+).'</div>';
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('AR') === true) {
+    $return_all_group = true;
+}
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $display_all_group = (users_is_admin() || users_can_manage_group_all('AR'));
-$table->data[2][1] = html_print_select_groups(
+$table->data[2][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
-    $display_all_group,
+    $return_all_group,
     'id_group',
-    $idGroup,
+    $id_group,
     '',
     '',
     '',
     true
-);
+).'</div>';
 
 $types = get_event_types();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)

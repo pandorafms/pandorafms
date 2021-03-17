@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,7 +55,14 @@ if (is_ajax()) {
 
             echo '<td>';
             if (tags_get_module_policy_tags($tag, $id_agente_modulo)) {
-                html_print_image('images/policies.png', false, ['style' => 'vertical-align: middle;']);
+                html_print_image(
+                    'images/policies_mc.png',
+                    false,
+                    [
+                        'style' => 'vertical-align: middle;',
+                        'class' => 'invert_filter',
+                    ]
+                );
             }
 
             echo '</td>';
@@ -150,7 +157,7 @@ $sort = get_parameter('sort', 'up');
 $modules_not_init = agents_monitor_notinit($id_agente);
 if (empty($modules_not_init) === false) {
     $help_not_init = ui_print_warning_message(
-        __('No initialized modules found.')
+        __('Non-initialized modules found.')
     );
 } else {
     $help_not_init = '';
@@ -357,7 +364,7 @@ ui_toggle(
 ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
 
-echo "<div id='module_details_dialog' style='display: none;'></div>";
+echo "<div id='module_details_dialog' class='invisible'></div>";
 
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
@@ -379,7 +386,15 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
             cluetipClass: 'default',
             sticky: true,
             mouseOutClose: 'both',
-            closeText: '<?php html_print_image('images/cancel.png'); ?>'
+            closeText: '
+            <?php
+            html_print_image(
+                'images/cancel.png',
+                false,
+                ['class' => 'invert_filter']
+            );
+            ?>
+            '
         });
         
     // Show the modal window of an module
@@ -571,7 +586,7 @@ function print_form_filter_monitors(
         0,
         true
     );
-    $table->data[0][6] = '<div style="display: flex;align-content: center;">';
+    $table->data[0][6] = '<div class="flex_center">';
     $table->data[0][6] .= __('Show in hierachy mode');
     $table->data[0][6] .= html_print_switch(
         [
@@ -596,7 +611,7 @@ function print_form_filter_monitors(
         'filter',
         false,
         'reset_filter_modules();',
-        'class="sub upd" style="margin-top:0px;"',
+        'class="sub upd mgn_tp_0"',
         true
     );
     $form_text .= html_print_table($table, true);

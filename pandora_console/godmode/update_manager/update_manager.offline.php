@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,6 +41,16 @@ if (! check_acl($config['id_user'], 0, 'PM')
 ) {
     db_pandora_audit('ACL Violation', 'Trying to access Setup Management');
     include 'general/noaccess.php';
+    return;
+}
+
+require_once $config['homedir'].'/include/functions_update_manager.php';
+
+
+if (update_manager_verify_license_expired()) {
+    ui_print_error_message(
+        __('The license has expired. Please contact Artica at info@artica.es')
+    );
     return;
 }
 
@@ -91,7 +101,7 @@ is not working on the metaconsole and there is no time to fix it -->
         : "http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29";
     var text4_mr_file = "<?php echo __(' to this process'); ?>";
     text4_mr_file += "<br><br>";
-    text4_mr_file += "<a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"" + docsUrl + "\">";
+    text4_mr_file += "<a class=\"font_10 itali;\" target=\"blank\" href=\"" + docsUrl + "\">";
     text4_mr_file += "<?php echo __('About minor release update'); ?>";
     text4_mr_file += "</a>";
 

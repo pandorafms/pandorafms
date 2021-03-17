@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,9 +47,29 @@ require_once $config['homedir'].'/include/functions_categories.php';
 enterprise_include_once('meta/include/functions_components_meta.php');
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
+// Header.
+if (defined('METACONSOLE')) {
+    $sec = 'advanced';
+
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+} else {
+    $id_modulo = (int) get_parameter('id_component_type');
+    $new_component = (bool) get_parameter('new_component');
+    if ($id_modulo == COMPONENT_TYPE_NETWORK || $id_modulo == COMPONENT_TYPE_PLUGIN || $id_modulo == COMPONENT_TYPE_WMI || $id_modulo == COMPONENT_TYPE_WIZARD) {
+        $help_header = 'local_module_tab';
+    } else if (!$new_component) {
+        $help_header = 'network_component_tab';
+    } else {
+        $help_header = 'network_component_tab';
+    }
+
+    $sec = 'gmodules';
+}
+
 $type = (int) get_parameter('type');
-$name = (string) get_parameter('name');
-$description = (string) get_parameter('description');
+$name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+$description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
 $max = (int) get_parameter('max');
 $min = (int) get_parameter('min');
 $tcp_send = (string) get_parameter('tcp_send');
@@ -180,6 +200,68 @@ if ($duplicate_network_component) {
     $id = 0;
 }
 
+// Wizard Common.
+$module_enabled   = get_parameter_switch('module_enabled');
+$module_protocol  = get_parameter('module_protocol', 'snmp');
+$scan_type        = (int) get_parameter('scan_type', SCAN_TYPE_FIXED);
+$execution_type   = (int) get_parameter('execution_type', EXECUTION_TYPE_NETWORK);
+// Wizard SNMP.
+$manufacturer_id  = get_parameter('manufacturer_id');
+$name_oid         = get_parameter('name_oid');
+$value            = get_parameter('value_oid');
+// Other Wizard WMI fields.
+$query_filter     = '';
+$wmi_class        = get_parameter('wmi_class');
+$query_key_field  = get_parameter('query_key_field');
+// Enabled Module.
+$enabled          = get_parameter_switch('enabled');
+
+if ($id_modulo === COMPONENT_TYPE_WIZARD) {
+    // Wizard Common extra fields.
+    $macros = [];
+
+    $macros['satellite_execution']  = get_parameter('satellite_execution_'.$module_protocol);
+    $macros['value_operation']      = get_parameter('value_operation_'.$module_protocol);
+    $macros['server_plugin']        = get_parameter('server_plugin_'.$module_protocol);
+
+    if ($module_protocol === 'snmp') {
+        // If not select any manufacturer_id, there is 'all'.
+        if (empty($manufacturer_id) === true) {
+            $manufacturer_id = 'all';
+        }
+    } else if ($module_protocol === 'wmi') {
+        // Wizard WMI Query filters.
+        $query_filter                   = [];
+        $query_filter['scan']           = get_parameter('query_filter_scan');
+        $query_filter['execution']      = get_parameter('query_filter_execution');
+        $query_filter['field']          = get_parameter('field_value_filter');
+        $query_filter['key_string']         = get_parameter('key_string_filter');
+        $query_filter                   = json_encode($query_filter);
+    }
+
+    // Default extra field.
+    $extra_fields = [ 'extra_field_1' => '' ];
+    // If Plugin execution is selected.
+    if ($execution_type === EXECUTION_TYPE_PLUGIN || $module_protocol === 'wmi') {
+        // Search all parameters received with extra_fields.
+        foreach ($_REQUEST as $parameter => $thisValue) {
+            // Extra fields (OIDs Macros or WMI Extra fields).
+            if (preg_match('/extra_field_'.$module_protocol.'_/', $parameter) !== 0) {
+                $tmpParameter = explode('_', $parameter);
+                $extra_fields['extra_field_'.$tmpParameter[3]] = get_parameter($parameter);
+            }
+
+            // The plugin macros.
+            if (preg_match('/'.$module_protocol.'_field/', $parameter) !== 0) {
+                $macros[$parameter] = io_safe_input($thisValue);
+            }
+        }
+
+        // All of macros saved in the same array.
+        $macros = json_encode(array_merge($extra_fields, $macros));
+    }
+}
+
 $custom_string_1 = '';
 $custom_string_2 = '';
 $custom_string_3 = '';
@@ -210,7 +292,7 @@ if (defined('METACONSOLE')) {
     $sec = 'gmodules';
 }
 
-if ($type >= 15 && $type <= 18) {
+if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
     // New support for snmp v3.
     $tcp_send = $snmp_version;
     $plugin_user = $snmp3_auth_user;
@@ -219,7 +301,7 @@ if ($type >= 15 && $type <= 18) {
     $custom_string_1 = $snmp3_privacy_method;
     $custom_string_2 = $snmp3_privacy_pass;
     $custom_string_3 = $snmp3_security_level;
-} else if ($type >= 34 && $type <= 37) {
+} else if ($type >= MODULE_TYPE_REMOTE_CMD && $type <= MODULE_TYPE_REMOTE_CMD_INC) {
     $tcp_send = $command_text;
     $custom_string_1 = $command_credential_identifier;
     $custom_string_2 = $command_os;
@@ -275,7 +357,6 @@ if ($create_component) {
                 'post_process'          => $post_process,
                 'unit'                  => $unit,
                 'wizard_level'          => $wizard_level,
-                'macros'                => $macros,
                 'critical_instructions' => $critical_instructions,
                 'warning_instructions'  => $warning_instructions,
                 'unknown_instructions'  => $unknown_instructions,
@@ -289,6 +370,17 @@ if ($create_component) {
                 'min_ff_event_critical' => $ff_event_critical,
                 'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
+                'manufacturer_id'       => $manufacturer_id,
+                'protocol'              => $module_protocol,
+                'scan_type'             => $scan_type,
+                'execution_type'        => $execution_type,
+                'value'                 => $value,
+                'query_class'           => $wmi_class,
+                'query_key_field'       => $query_key_field,
+                'query_filters'         => $query_filter,
+                'name_oid'              => $name_oid,
+                'module_enabled'        => $module_enabled,
+                'enabled'               => $enabled,
             ]
         );
     } else {
@@ -298,9 +390,17 @@ if ($create_component) {
     if ($id === false || !$id) {
         db_pandora_audit(
             'Module management',
-            'Fail try to create network component'
+            'Fail try to create remote component'
         );
-        ui_print_error_message(__('Could not be created'));
+
+        if ($name_check !== false) {
+            // If name exists, advice about it.
+            ui_print_error_message(__('Could not be created because the component exists'));
+        } else {
+            // Other cases.
+            ui_print_error_message(__('Could not be created'));
+        }
+
         include_once 'godmode/modules/manage_network_components_form.php';
         return;
     }
@@ -356,7 +456,6 @@ if ($update_component) {
                 'post_process'          => $post_process,
                 'unit'                  => $unit,
                 'wizard_level'          => $wizard_level,
-                'macros'                => $macros,
                 'critical_instructions' => $critical_instructions,
                 'warning_instructions'  => $warning_instructions,
                 'unknown_instructions'  => $unknown_instructions,
@@ -370,6 +469,17 @@ if ($update_component) {
                 'min_ff_event_critical' => $ff_event_critical,
                 'ff_type'               => $ff_type,
                 'each_ff'               => $each_ff,
+                'manufacturer_id'       => $manufacturer_id,
+                'protocol'              => $module_protocol,
+                'scan_type'             => $scan_type,
+                'execution_type'        => $execution_type,
+                'value'                 => $value,
+                'query_class'           => $wmi_class,
+                'query_key_field'       => $query_key_field,
+                'query_filters'         => $query_filter,
+                'name_oid'              => $name_oid,
+                'module_enabled'        => $module_enabled,
+                'enabled'               => $enabled,
             ]
         );
     } else {
@@ -520,6 +630,9 @@ $url = ui_get_url_refresh(
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
+if (!empty($search_string)) {
+    $search_string = trim($search_string, '&#x20;');
+}
 
 $table = new stdClass();
 $table->width = '100%';
@@ -558,11 +671,6 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 				WHERE id_network_component_group = '.$child['id_sg']
             );
         }
-    }
-
-    // Only show component groups with local components.
-    if ($num_components == 0 && $num_components_childs == 0) {
-        unset($component_groups[$component_group_key]);
     }
 }
 
@@ -665,14 +773,16 @@ $table->head['checkbox'] = html_print_checkbox(
     false
 );
 $table->head[0] = __('Module name');
-$table->head[1] = __('Type');
+$table->head[1] = __('Server');
+$table->head[2] = __('Type');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action');
 $table->size = [];
 $table->size['checkbox'] = '20px';
-$table->size[1] = '75px';
+$table->size[1] = '40px';
+$table->size[2] = '50px';
 $table->size[6] = '80px';
 $table->align[6] = 'left';
 $table->data = [];
@@ -698,13 +808,15 @@ foreach ($components as $component) {
     $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
     $data[0] .= io_safe_output($component['name']);
     $data[0] .= '</a>';
-    $data[1] = ui_print_moduletype_icon($component['type'], true);
     switch ($component['id_modulo']) {
         case MODULE_NETWORK:
             $data[1] .= html_print_image(
-                'images/network.png',
+                'images/op_network.png',
                 true,
-                ['title' => __('Network module')]
+                [
+                    'title' => __('Network module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -712,7 +824,10 @@ foreach ($components as $component) {
             $data[1] .= html_print_image(
                 'images/wmi.png',
                 true,
-                ['title' => __('WMI module')]
+                [
+                    'title' => __('WMI module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -720,7 +835,21 @@ foreach ($components as $component) {
             $data[1] .= html_print_image(
                 'images/plugin.png',
                 true,
-                ['title' => __('Plug-in module')]
+                [
+                    'title' => __('Plug-in module'),
+                    'class' => 'invert_filter',
+                ]
+            );
+        break;
+
+        case MODULE_WIZARD:
+            $data[1] .= html_print_image(
+                'images/wand.png',
+                true,
+                [
+                    'title' => __('Wizard module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -729,13 +858,30 @@ foreach ($components as $component) {
         break;
     }
 
-    $data[3] = "<span style='font-size: 8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
+    $data[2] = ui_print_moduletype_icon($component['type'], true);
+    $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
 
     $table->cellclass[][6] = 'action_buttons';
-    $data[6] = '<a style="display: inline; float: left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>';
-    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+    $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
+        'images/copy.png',
+        true,
+        [
+            'alt'   => __('Duplicate'),
+            'title' => __('Duplicate'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
+        'images/cross.png',
+        true,
+        [
+            'alt'   => __('Delete'),
+            'title' => __('Delete'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     array_push($table->data, $data);
 }
@@ -754,7 +900,7 @@ if (isset($data)) {
         true,
         'pagination-bottom'
     );
-    echo "<div style='float: right; margin-left: 5px;'>";
+    echo "<div id='btn_delete_5'>";
     html_print_submit_button(
         __('Delete'),
         'delete_btn',
@@ -772,14 +918,15 @@ if (isset($data)) {
     );
 }
 
-echo '<form method="post" action="'.$url.'">';
-echo '<div class="" style="float:right;">';
+echo '<form method="post" action="'.$url.'" class="float-right">';
+echo '<div class="right">';
 html_print_input_hidden('new_component', 1);
 html_print_select(
     [
-        2 => __('Create a new network component'),
-        4 => __('Create a new plugin component'),
-        6 => __('Create a new WMI component'),
+        COMPONENT_TYPE_NETWORK => __('Create a new network component'),
+        COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
+        COMPONENT_TYPE_WMI     => __('Create a new WMI component'),
+        COMPONENT_TYPE_WIZARD  => __('Create a new wizard component'),
     ],
     'id_component_type',
     '',
@@ -792,7 +939,7 @@ html_print_submit_button(
     __('Create'),
     'crt',
     false,
-    'class="sub next" style="margin-left: 5px;"'
+    'class="sub next mrgn_lft_5px"'
 );
 echo '</div>';
 echo '</form>';

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -54,7 +54,7 @@ function reports_get_report($id_report, $filter=false, $fields=false)
         return false;
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -72,7 +72,7 @@ function reports_get_report($id_report, $filter=false, $fields=false)
 
     $report = db_get_row_filter('treport', $filter, $fields);
 
-    if (! check_acl($config['id_user'], $report['id_group'], 'RR')) {
+    if (!check_acl($config['id_user'], $report['id_group'], 'RR')) {
         return false;
     }
 
@@ -104,16 +104,16 @@ function reports_get_reports(
 ) {
     global $config;
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
-        /*
-            if (!is_user_admin ($config["id_user"]))
+    /*
+        if (!is_user_admin ($config["id_user"]))
             $filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")',
             $config['id_user']);
-        */
-        $filter['hidden'] = 0;
+    */
+    $filter['hidden'] = 0;
     if (is_array($fields)) {
         $fields[] = 'id_group';
         $fields[] = 'id_user';
@@ -146,8 +146,12 @@ function reports_get_reports(
             }
 
             if ($config['id_user'] != $report['id_user']
-                && ! check_acl($config['id_user'], $report['id_group'], $privileges)
+                && !check_acl($config['id_user'], $report['id_group'], $privileges)
             ) {
+                continue;
+            }
+        } else {
+            if ($returnAllGroup === false) {
                 continue;
             }
         }
@@ -173,7 +177,7 @@ function reports_create_report($name, $id_group, $values=false)
 {
     global $config;
 
-    if (! is_array($values)) {
+    if (!is_array($values)) {
         $values = [];
     }
 
@@ -246,7 +250,7 @@ function reports_get_content($id_report_content, $filter=false, $fields=false)
         return false;
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -293,7 +297,7 @@ function reports_create_content($id_report, $values)
         return false;
     }
 
-    if (! is_array($values)) {
+    if (!is_array($values)) {
         return false;
     }
 
@@ -341,7 +345,7 @@ function reports_get_contents($id_report, $filter=false, $fields=false)
         return [];
     }
 
-    if (! is_array($filter)) {
+    if (!is_array($filter)) {
         $filter = [];
     }
 
@@ -546,7 +550,7 @@ function reports_delete_content($id_report_content)
 function get_report_name($type, $template=false)
 {
     $types = reports_get_report_types($template);
-    if (! isset($types[$type])) {
+    if (!isset($types[$type])) {
         return __('Unknown');
     }
 
@@ -746,6 +750,14 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Increment'),
     ];
+    $types['last_value'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Last value'),
+    ];
+    $types['histogram_data'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Histogram'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),
@@ -872,7 +884,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if ($config['enterprise_installed'] && $template === false) {
+    if ($config['enterprise_installed'] && $template === false && !is_metaconsole()) {
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),
@@ -883,6 +895,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         $types['nt_top_n'] = [
             'optgroup' => __('Network traffic'),
             'name'     => __('Network Traffic Top N'),
+        ];
+    }
+
+    if ($template === false) {
+        $types['permissions_report'] = [
+            'optgroup' => __('Permissions report'),
+            'name'     => __('Permissions report'),
         ];
     }
 

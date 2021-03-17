@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -19,17 +19,20 @@
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
-require_once $config['homedir'].'/include/functions_users.php';/**
-                                                                * Return the agent if exists in the DB.
-                                                                *
-                                                                * @param integer $id_agent      The agent id.
-                                                                * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
-                                                                * @param boolean $force_meta
-                                                                *
-                                                                * @return boolean The result to check if the agent is in the DB.
-                                                                */
+require_once $config['homedir'].'/include/functions_users.php';
+
+use PandoraFMS\Enterprise\RCMDFile as RCMDFile;
 
 
+/**
+ * Return the agent if exists in the DB.
+ *
+ * @param integer $id_agent      The agent id.
+ * @param boolean $show_disabled Show the agent found althought it is disabled. By default false.
+ * @param boolean $force_meta
+ *
+ * @return boolean The result to check if the agent is in the DB.
+ */
 function agents_get_agent($id_agent, $show_disabled=true, $force_meta=false)
 {
     $agent = db_get_row_filter(
@@ -335,6 +338,11 @@ function agents_get_alerts_simple($id_agent=false, $filter='', $options=false, $
 
         // Filter by agents id.
         $id_agents_list = implode(',', $id_agent);
+
+        if ($id_agents_list === '') {
+            $id_agents_list = '0';
+        }
+
         $subQuery .= ' AND id_agente in ('.$id_agents_list.')';
     } else if ($id_agent === false || empty($id_agent)) {
         if ($allModules) {
@@ -1108,11 +1116,14 @@ function agents_get_group_agents(
             foreach ($id_group as $parent) {
                 $id_group = array_merge(
                     $id_group,
-                    groups_get_id_recursive($parent, false)
+                    groups_get_children_ids($parent, $noACL)
                 );
             }
         } else {
-            $id_group = groups_get_id_recursive($id_group, false);
+            $id_group = array_merge(
+                [$id_group],
+                groups_get_children_ids($id_group, $noACL)
+            );
         }
 
         // Check available groups for target user only if asking for 'All' group.
@@ -1290,6 +1301,17 @@ function agents_get_group_agents(
             $key = '0'.$separator.$row['id_agente'];
         } else {
             $key = $row['id_agente'];
+        }
+
+        if ($row['id_server'] !== '') {
+            if (is_metaconsole()) {
+                $server_name = db_get_row_filter(
+                    'tmetaconsole_setup',
+                    'id = '.$row['id_server'].'',
+                    'server_name'
+                );
+                $row['alias'] .= ' ('.$server_name['server_name'].')';
+            }
         }
 
         switch ($case) {
@@ -1631,8 +1653,10 @@ function agents_get_alias($id_agent, $case='none')
     }
 
     // Check cache.
-    if (isset($cache[$case][$id_agent])) {
-        return $cache[$case][$id_agent];
+    if (!is_metaconsole()) {
+        if (isset($cache[$case][$id_agent])) {
+            return $cache[$case][$id_agent];
+        }
     }
 
     $alias = (string) db_get_value(
@@ -1656,7 +1680,61 @@ function agents_get_alias($id_agent, $case='none')
         break;
     }
 
-    $cache[$case][$id_agent] = $alias;
+    if (!is_metaconsole()) {
+        $cache[$case][$id_agent] = $alias;
+    }
+
+    return $alias;
+}
+
+
+/**
+ * Get alias of an agent in metaconsole (cached function).
+ *
+ * @param integer $id_agent  Agent id.
+ * @param string  $case      Case (upper, lower, none).
+ * @param integer $id_server server id.
+ *
+ * @return string Alias of the given agent.
+ */
+function agents_get_alias_metaconsole($id_agent, $case='none', $id_server=false)
+{
+    global $config;
+    // Prepare cache.
+    static $cache = [];
+    if (empty($case)) {
+        $case = 'none';
+    }
+
+    // Check cache.
+    if (isset($cache[$case][$id_server][$id_agent])) {
+        return $cache[$case][$id_server][$id_agent];
+    }
+
+    $alias = (string) db_get_value_filter(
+        'alias',
+        'tmetaconsole_agent',
+        [
+            'id_tagente'            => $id_agent,
+            'id_tmetaconsole_setup' => $id_server,
+        ]
+    );
+
+    switch ($case) {
+        case 'upper':
+            $alias = mb_strtoupper($alias, 'UTF-8');
+        break;
+
+        case 'lower':
+            $alias = mb_strtolower($alias, 'UTF-8');
+        break;
+
+        default:
+            // Not posible.
+        break;
+    }
+
+    $cache[$case][$id_server][$id_agent] = $alias;
     return $alias;
 }
 
@@ -2011,36 +2089,33 @@ function agents_get_addresses($id_agent)
 function agents_get_status_from_counts($agent)
 {
     // Check if in the data there are all the necessary values
-    if (!isset($agent['normal_count'])
-        && !isset($agent['warning_count'])
-        && !isset($agent['critical_count'])
-        && !isset($agent['unknown_count'])
-        && !isset($agent['notinit_count'])
-        && !isset($agent['total_count'])
+    if (isset($agent['normal_count']) === false
+        && isset($agent['warning_count']) === false
+        && isset($agent['critical_count']) === false
+        && isset($agent['unknown_count']) === false
+        && isset($agent['notinit_count']) === false
+        && isset($agent['total_count']) === false
     ) {
         return -1;
     }
 
-    // Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init
+    // Juanma (05/05/2014) Fix:  This status is not init! 0 modules or all not init.
     if ($agent['notinit_count'] == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NOT_INIT;
+        return AGENT_STATUS_NOT_INIT;
     }
 
     if ($agent['critical_count'] > 0) {
-        return AGENT_MODULE_STATUS_CRITICAL_BAD;
+        return AGENT_STATUS_CRITICAL;
     } else if ($agent['warning_count'] > 0) {
-        return AGENT_MODULE_STATUS_WARNING;
+        return AGENT_STATUS_WARNING;
     } else if ($agent['unknown_count'] > 0) {
-        return AGENT_MODULE_STATUS_UNKNOWN;
+        return AGENT_STATUS_UNKNOWN;
     } else if ($agent['normal_count'] == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NORMAL;
+        return AGENT_STATUS_NORMAL;
     } else if (($agent['normal_count'] + $agent['notinit_count']) == $agent['total_count']) {
-        return AGENT_MODULE_STATUS_NORMAL;
+        return AGENT_STATUS_NORMAL;
     }
 
-    // ~ else if($agent['notinit_count'] == $agent['total_count']) {
-        // ~ return AGENT_MODULE_STATUS_NORMAL;
-    // ~ }
     return -1;
 }
 
@@ -2337,10 +2412,31 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_policies.php');
         enterprise_hook('policies_delete_agent', [$id_agent]);
 
-        // Delete agent in networkmap enterprise
         if (enterprise_installed()) {
+            // Delete agent in networkmap.
             enterprise_include_once('include/functions_networkmap.php');
             networkmap_delete_nodes_by_agent([$id_agent]);
+
+            // Delete command targets with agent.
+            enterprise_include_once('include/lib/RCMDFile.class.php');
+
+            $target_filter = ['id_agent' => $id_agent];
+
+            // Retrieve all commands that have targets with specific agent id.
+            $commands = RCMDFile::getAll(
+                ['rct.rcmd_id'],
+                $target_filter
+            );
+
+            foreach ($commands as $command) {
+                $rcmd_id = $command['rcmd_id'];
+                $rcmd = new RCMDFile($rcmd_id);
+
+                $command_targets = [];
+
+                $command_targets = $rcmd->getTargets(false, $target_filter);
+                $rcmd->deleteTargets(array_keys($command_targets));
+            }
         }
 
         // tagente_datos_inc
@@ -2904,7 +3000,6 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
     }
 
     $ni_by_agents = [];
-
     foreach ($agents as $agent) {
         $agent_id = $agent['id_agente'];
         $agent_group_id = $agent['id_grupo'];
@@ -2912,24 +3007,54 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
         $agent_interfaces = [];
 
         $accepted_module_types = [];
-        $remote_snmp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_snmp_proc');
+        $remote_snmp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_snmp_proc'
+        );
         if ($remote_snmp_proc) {
             $accepted_module_types[] = $remote_snmp_proc;
         }
 
-        $remote_icmp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_icmp_proc');
+        $remote_icmp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_icmp_proc'
+        );
         if ($remote_icmp_proc) {
             $accepted_module_types[] = $remote_icmp_proc;
         }
 
-        $remote_tcp_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'remote_tcp_proc');
+        $remote_tcp_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_tcp_proc'
+        );
         if ($remote_tcp_proc) {
             $accepted_module_types[] = $remote_tcp_proc;
         }
 
-        $generic_proc = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'generic_proc');
+        $generic_proc = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'generic_proc'
+        );
         if ($generic_proc) {
             $accepted_module_types[] = $generic_proc;
+        }
+
+        $remote_snmp = (int) db_get_value(
+            'id_tipo',
+            'ttipo_modulo',
+            'nombre',
+            'remote_snmp'
+        );
+        if ($remote_snmp) {
+            $accepted_module_types[] = $remote_snmp;
         }
 
         if (empty($accepted_module_types)) {
@@ -2950,8 +3075,13 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
         }
 
         $filter = " tagente_modulo.id_agente = $agent_id AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo IN (".implode(',', $accepted_module_types).") AND (tagente_modulo.nombre LIKE '%_ifOperStatus' OR tagente_modulo.nombre LIKE 'ifOperStatus_%')";
-        $modules = agents_get_modules($agent_id, $columns, $filter, true, false);
-
+        $modules = agents_get_modules(
+            $agent_id,
+            $columns,
+            $filter,
+            true,
+            false
+        );
         if (!empty($modules)) {
             $interfaces = [];
 
@@ -3545,20 +3675,20 @@ function agents_get_status_animation($up=true)
 {
     global $config;
 
-    // Gif with black background or white background
+    $red = 'images/heartbeat_green.gif';
+    $green = 'images/heartbeat_green.gif';
+
     if ($config['style'] === 'pandora_black') {
-        $heartbeat_green = 'images/heartbeat_green_black.gif';
-        $heartbeat_red = 'images/heartbeat_red_black.gif';
-    } else {
-        $heartbeat_green = 'images/heartbeat_green.gif';
-        $heartbeat_red = 'images/heartbeat_red.gif';
+        $red = 'images/heartbeat_green_black.gif';
+        $green = 'images/heartbeat_green_black.gif';
     }
 
+    // Gif with black background or white background
     switch ($up) {
         case true:
         default:
         return html_print_image(
-            $heartbeat_green,
+            $green,
             true,
             [
                 'width'  => '170',
@@ -3568,7 +3698,7 @@ function agents_get_status_animation($up=true)
 
         case false:
         return html_print_image(
-            $heartbeat_red,
+            $red,
             true,
             [
                 'width'  => '170',
@@ -3616,9 +3746,12 @@ function agents_get_agent_id_by_alias_regex($alias_regex, $flag='i', $limit=0)
  */
 function agents_get_sap_agents($id_agent)
 {
+    global $config;
+
     // Available modules.
     // If you add more modules, please update SAP.pm.
     $sap_modules = [
+        0   => 'SAP connection',
         160 => __('SAP Login OK'),
         109 => __('SAP Dumps'),
         111 => __('SAP lock entry list'),
@@ -3628,9 +3761,9 @@ function agents_get_sap_agents($id_agent)
         105 => __('SAP IDOC OK'),
         150 => __('SAP WP without active restart'),
         151 => __('SAP WP stopped'),
-        102 => __('Average time of SAPGUI response '),
+        102 => __('Average time of SAPGUI response'),
         180 => __('Dialog response time'),
-        103 => __('Dialog Logged users '),
+        103 => __('Dialog Logged users'),
         192 => __('TRFC in error'),
         195 => __('QRFC in error SMQ2'),
         116 => __('Number of Update WPs in error'),
@@ -3638,15 +3771,28 @@ function agents_get_sap_agents($id_agent)
 
     $array_agents = [];
     foreach ($sap_modules as $module => $key) {
-        $new_ones = db_get_all_rows_sql(
-            'SELECT ta.id_agente,ta.alias
-             FROM tagente ta
-             INNER JOIN tagente_modulo tam 
-             ON tam.id_agente = ta.id_agente 
-             WHERE tam.nombre  
-             LIKE "%SAP%" 
-             GROUP BY ta.id_agente'
+        $sql = sprintf(
+            'SELECT ta.id_agente,ta.alias, ta.id_grupo
+            FROM tagente ta
+            INNER JOIN tagente_modulo tam 
+            ON tam.id_agente = ta.id_agente 
+            WHERE tam.nombre  
+            LIKE "%s" 
+            GROUP BY ta.id_agente',
+            io_safe_input($key)
         );
+
+        // ACL groups.
+        $agent_groups = array_keys(users_get_groups($config['id_user']));
+        if (!empty($agent_groups)) {
+            $sql .= sprintf(
+                ' HAVING ta.id_grupo IN (%s)',
+                implode(',', $agent_groups)
+            );
+        }
+
+        $new_ones = db_get_all_rows_sql($sql);
+
         if ($new_ones === false) {
             continue;
         }
@@ -3692,4 +3838,52 @@ function agents_get_last_status_change($id_agent)
     $row = db_get_row_sql($sql);
 
     return $row['last_status_change'];
+}
+
+
+/**
+ * Return the list of agents for a planned downtime
+ *
+ * @param integer $id_downtime   Id of planned downtime.
+ * @param string  $filter_cond   String-based filters.
+ * @param string  $id_groups_str String-based list of id group, separated with commas.
+ *
+ * @return array
+ */
+function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str)
+{
+    $agents = [];
+
+    $sql = sprintf(
+        'SELECT tagente.id_agente, tagente.alias
+                    FROM tagente
+                    WHERE tagente.id_agente NOT IN (
+                            SELECT tagente.id_agente
+                            FROM tagente, tplanned_downtime_agents
+                            WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+                                AND tplanned_downtime_agents.id_downtime = %d
+                        ) AND disabled = 0 %s
+                        AND tagente.id_grupo IN (%s)
+                    ORDER BY tagente.nombre',
+        $id_downtime,
+        $filter_cond,
+        $id_groups_str
+    );
+
+    $agents = db_get_all_rows_sql($sql);
+
+    if (empty($agents)) {
+        $agents = [];
+    }
+
+    $agent_ids = extract_column($agents, 'id_agente');
+    $agent_names = extract_column($agents, 'alias');
+
+    $agents = array_combine($agent_ids, $agent_names);
+
+    if ($agents === false) {
+        $agents = [];
+    }
+
+    return $agents;
 }

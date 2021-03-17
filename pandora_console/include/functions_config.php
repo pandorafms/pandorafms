@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -287,6 +287,10 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
+                    if (!config_update_value('use_custom_encoding', get_parameter('use_custom_encoding', 0))) {
+                        $error_update[] = __('Use custom encoding');
+                    }
+
                     if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
@@ -319,8 +323,16 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
-                    if (!config_update_value('auditdir', get_parameter('auditdir'))) {
-                        $error_update[] = __('Audit log directory');
+                    if (!config_update_value('console_log_enabled', get_parameter('console_log_enabled'))) {
+                        $error_update[] = __('Console log enabled');
+                    }
+
+                    if (!config_update_value('audit_log_enabled', get_parameter('audit_log_enabled'))) {
+                        $error_update[] = __('Audit log enabled');
+                    }
+
+                    if (!config_update_value('module_custom_id_ro', get_parameter('module_custom_id_ro'))) {
+                        $error_update[] = __('Module Custom ID read only');
                     }
 
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
@@ -709,8 +721,28 @@ function config_update_config()
                         $error_update[] = __('Double authentication');
                     }
 
+                    if (!config_update_value('2FA_all_users', get_parameter('2FA_all_users'))) {
+                        $error_update[] = __('2FA all users');
+                    }
+
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
+                    } else {
+                        if ((int) get_parameter('session_timeout') === 0) {
+                            $error_update[] = __('Session timeout forced to 90 minutes');
+
+                            if (!config_update_value('session_timeout', 90)) {
+                                $error_update[] = __('Session timeout');
+                            }
+                        }
+                    }
+
+                    if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
+                        if (!config_update_value('ad_save_password', get_parameter('ad_save_password'))) {
+                            $error_update[] = __('Save Password');
+                        }
+                    } else if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 1) {
+                        config_update_value('ad_save_password', 1);
                     }
                 break;
 
@@ -828,6 +860,18 @@ function config_update_config()
                     if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
                         $error_update[] = __('Max execution event response');
                     }
+
+                    if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
+                        $error_update[] = __('Row limit in csv log');
+                    }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
+                    }
                 break;
 
                 case 'vis':
@@ -903,6 +947,10 @@ function config_update_config()
 
                     if (!config_update_value('round_corner', (bool) get_parameter('round_corner'))) {
                         $error_update[] = __('Use round corners');
+                    }
+
+                    if (!config_update_value('maximum_y_axis', (bool) get_parameter('maximum_y_axis'))) {
+                        $error_update[] = __('Chart fit to content');
                     }
 
                     if (!config_update_value('show_qr_code_header', (bool) get_parameter('show_qr_code_header'))) {
@@ -1145,6 +1193,10 @@ function config_update_config()
                         $error_update[] = __('Default type of module charts.');
                     }
 
+                    if (!config_update_value('items_combined_charts', (string) get_parameter('items_combined_charts', 10))) {
+                        $error_update[] = __('Default Number of elements in Custom Graph.');
+                    }
+
                     if (!config_update_value('type_interface_charts', (string) get_parameter('type_interface_charts', 'line'))) {
                         $error_update[] = __('Default type of interface charts.');
                     }
@@ -1193,8 +1245,14 @@ function config_update_config()
                         $error_update[] = __('Default zoom graphs');
                     }
 
-                    if (!config_update_value('graph_image_height', (int) get_parameter('graph_image_height', 280))) {
-                        $error_update[] = __('Default height of the chart image');
+                    if (!config_update_value(
+                        'graph_image_height',
+                        (int) get_parameter('graph_image_height', 130)
+                    )
+                    ) {
+                        $error_update[] = __(
+                            'Default height of the chart image'
+                        );
                     }
 
                     // --------------------------------------------------
@@ -1300,7 +1358,7 @@ function config_update_config()
                         $error_update[] = __('HTML font size for SLA (em)');
                     }
 
-                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 10))) {
                         $error_update[] = __('PDF font size (px)');
                     }
 
@@ -1330,6 +1388,10 @@ function config_update_config()
 
                     if (!config_update_value('csv_divider', (string) get_parameter('csv_divider', ';'))) {
                         $error_update[] = __('CSV divider');
+                    }
+
+                    if (!config_update_value('csv_decimal_separator', (string) get_parameter('csv_decimal_separator', '.'))) {
+                        $error_update[] = __('CSV decimal separator');
                     }
 
                     if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
@@ -1502,7 +1564,13 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        $integria_hostname = 'http://'.$integria_hostname;
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 
@@ -1577,12 +1645,12 @@ function config_update_config()
 
                 case 'module_library':
                     $module_library_user = get_parameter('module_library_user');
-                    if ($module_library_user == '' || !config_update_value('module_library_user', $module_library_user)) {
+                    if (!config_update_value('module_library_user', $module_library_user)) {
                         $error_update[] = __('User');
                     }
 
                     $module_library_password = get_parameter('module_library_password');
-                    if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
+                    if (!config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
                     }
                 break;
@@ -1748,6 +1816,10 @@ function config_process_config()
         config_update_value('round_corner', false);
     }
 
+    if (isset($config['maximum_y_axis']) === false) {
+        config_update_value('maximum_y_axis', false);
+    }
+
     if (!isset($config['show_qr_code_header'])) {
         config_update_value('show_qr_code_header', false);
     }
@@ -1810,6 +1882,36 @@ function config_process_config()
         config_update_value('max_macro_fields', 10);
     }
 
+    if (!isset($config['row_limit_csv'])) {
+        config_update_value('row_limit_csv', 10000);
+    }
+
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
+    }
+
     if (!isset($config['event_purge'])) {
         config_update_value('event_purge', 15);
     }
@@ -1844,6 +1946,10 @@ function config_process_config()
 
     if (!isset($config['collection_max_size'])) {
         config_update_value('collection_max_size', 1000000);
+    }
+
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
     }
 
     if (!isset($config['event_replication'])) {
@@ -1926,14 +2032,16 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
-    if (!isset($config['auditdir'])) {
-        $auditdir = '/var/www/html/pandora_console';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $auditdir = $config['homedir'];
-        }
+    if (!isset($config['console_log_enabled'])) {
+        config_update_value('console_log_enabled', 0);
+    }
 
-        config_update_value('auditdir', $auditdir);
+    if (!isset($config['audit_log_enabled'])) {
+        config_update_value('audit_log_enabled', 0);
+    }
+
+    if (!isset($config['module_custom_id_ro'])) {
+        config_update_value('module_custom_id_ro', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -1953,7 +2061,7 @@ function config_process_config()
     }
 
     if (!isset($config['font_size'])) {
-        config_update_value('font_size', 6);
+        config_update_value('font_size', 8);
     }
 
     if (!isset($config['limit_parameters_massive'])) {
@@ -1966,6 +2074,10 @@ function config_process_config()
 
     if (!isset($config['welcome_state'])) {
         config_update_value('welcome_state', WELCOME_STARTED);
+    }
+
+    if (!isset($config['2Fa_auth'])) {
+        config_update_value('2Fa_auth', '');
     }
 
      /*
@@ -2023,17 +2135,9 @@ function config_process_config()
     }
 
     if (!isset($config['fontpath'])) {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $fontpath = $config['homedir'].'\include\fonts\smallfont.ttf';
-        } else {
-            $home = str_replace('\\', '/', $config['homedir']);
-            $fontpath = $home.'/include/fonts/smallfont.ttf';
-        }
-
         config_update_value(
             'fontpath',
-            $fontpath
+            'opensans.ttf'
         );
     }
 
@@ -2130,7 +2234,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2146,7 +2250,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {
@@ -2718,7 +2822,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {
@@ -2797,6 +2901,10 @@ function config_process_config()
         config_update_value('event_storm_protection', 0);
     }
 
+    if (!isset($config['use_custom_encoding'])) {
+        config_update_value('use_custom_encoding', 0);
+    }
+
     if (!isset($config['server_log_dir'])) {
         config_update_value('server_log_dir', '');
     }
@@ -2817,6 +2925,10 @@ function config_process_config()
         config_update_value('type_module_charts', 'area');
     }
 
+    if (!isset($config['items_combined_charts'])) {
+        config_update_value('items_combined_charts', 10);
+    }
+
     if (!isset($config['type_interface_charts'])) {
         config_update_value('type_interface_charts', 'line');
     }
@@ -2826,7 +2938,7 @@ function config_process_config()
     }
 
     if (!isset($config['graph_image_height'])) {
-        config_update_value('graph_image_height', 280);
+        config_update_value('graph_image_height', 130);
     }
 
     if (!isset($config['zoom_graph'])) {
@@ -2865,6 +2977,10 @@ function config_process_config()
         config_update_value('csv_divider', ';');
     }
 
+    if (!isset($config['csv_decimal_separator'])) {
+        config_update_value('csv_decimal_separator', '.');
+    }
+
     if (!isset($config['use_data_multiplier'])) {
         config_update_value('use_data_multiplier', '1');
     }
@@ -2877,9 +2993,12 @@ function config_process_config()
         config_update_value('custom_report_info', 1);
     }
 
-    // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 10);
     }
 
     if (!isset($config['font_size_item_report'])) {
@@ -2887,7 +3006,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'FreeSans.ttf');
+        config_update_value('custom_report_front_font', 'opensans.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {

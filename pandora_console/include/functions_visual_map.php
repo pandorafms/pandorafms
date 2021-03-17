@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -42,8 +42,8 @@ function visual_map_print_item_toolbox($idDiv, $text, $float)
         $margin = 'margin-left';
     }
 
-    echo '<div class="button_toolbox" id="'.$idDiv.'"
-        style="font-weight: bolder; text-align:; float: '.$float.';'.$margin.': 5px;">';
+    echo '<div class="button_toolbox bolder" id="'.$idDiv.'"
+        style="float: '.$float.';'.$margin.': 5px;">';
     echo $text;
     echo '</span>';
     echo '</div>';
@@ -238,9 +238,9 @@ function visual_map_print_item(
     if ($label_position == 'left') {
         $text = '<table style="float:left;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span id="text_'.$id.'" class="text">'.$label.'</span></td></tr><tr><td></td></tr></table>';
     } else if ($label_position == 'right') {
-        $text = '<table style="float:right;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_'.$id.'" class="text">'.$label.'</span></td></tr><tr><td></td></tr></table>';
+        $text = '<table style="float:right;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span   id="text_'.$id.'" class="text">'.$label.'</span></td></tr><tr><td></td></tr></table>';
     } else {
-        $text = '<table style="text-align:center ;width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_'.$id.'" class="text">'.$label.'</span></td></tr><tr><td></td></tr></table>';
+        $text = '<table style="text-align:center ;width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span   id="text_'.$id.'" class="text">'.$label.'</span></td></tr><tr><td></td></tr></table>';
     }
 
     if (!isset($layoutData['status_calculated'])) {
@@ -1135,15 +1135,15 @@ function visual_map_print_item(
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="../../images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/barras.png'.'" style="width:400px;height:400px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/barras.png" style="width:400px;height:400px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/barras.png'.'" style="width:400px;height:400px;'.$imgpos.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="../../images/console/signes/barras.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/barras.png'.'" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/barras.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/barras.png'.'" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                     }
                 }
             } else {
@@ -1498,22 +1498,22 @@ function visual_map_print_item(
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="../../images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="../../images/console/signes/clock.png" class="w200px height_240px">';
                         } else {
                             if ($layoutData['time_format'] = 'time') {
-                                $img = '<img src="../../images/console/signes/digital-clock.png" style="width:200px;height:71px;">';
+                                $img = '<img src="../../images/console/signes/digital-clock.png" class="w200px height_71px">';
                             } else {
-                                $img = '<img src="../../images/console/signes/digital-clock.png" style="width:200px;height:91px;">';
+                                $img = '<img src="../../images/console/signes/digital-clock.png" class="w200px height_91px">';
                             }
                         }
                     } else {
                         if ($layoutData['clock_animation'] == 'analogic_1') {
-                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" style="width:200px;height:240px;">';
+                            $img = '<img src="'.$image_prefix.'images/console/signes/clock.png" class="w200px height_240px">';
                         } else {
                             if ($layoutData['time_format'] == 'time') {
-                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:71px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" class="w200px height_71px">';
                             } else {
-                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" style="width:200px;height:91px">';
+                                $img = '<img src="'.$image_prefix.'images/console/signes/digital-clock.png" class="w200px height_91px">';
                             }
                         }
                     }
@@ -1550,15 +1550,15 @@ function visual_map_print_item(
             if ((get_parameter('action') == 'edit') || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0 || $height == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="../../images/console/signes/module-events.png">';
+                        $img = '<img src="../../'.'images/console/signes/module-events.png'.'">';
                     } else {
-                        $img = '<img src="images/console/signes/module-events.png">';
+                        $img = '<img src="'.'images/console/signes/module-events.png'.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="../../images/console/signes/module-events.png" style="width:'.$width.'px;height:'.$height.'px;">';
+                        $img = '<img src="../../'.'images/console/signes/module-events.png'.'" style="width:'.$width.'px;height:'.$height.'px;">';
                     } else {
-                        $img = '<img src="images/console/signes/module-events.png" style="width:'.$width.'px;height:'.$height.'px;">';
+                        $img = '<img src="'.'images/console/signes/module-events.png'.'" style="width:'.$width.'px;height:'.$height.'px;">';
                     }
                 }
             } else {
@@ -1568,7 +1568,7 @@ function visual_map_print_item(
                     } else if ($layoutData['label_position'] == 'right') {
                         $img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
                     } else {
-                        $img = '<div style="width:500px;">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
+                        $img = '<div class="w500px">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], 500, 50, $layoutData['period'], '', true).'</div>';
                     }
                 } else {
                     if ($layoutData['label_position'] == 'left') {
@@ -1576,7 +1576,7 @@ function visual_map_print_item(
                     } else if ($layoutData['label_position'] == 'right') {
                         $img = '<div style="z-index:'.$show_on_top_index.';float:right;height:'.$himg.'px;width:500px;">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
                     } else {
-                        $img = '<div style="width:500px;">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
+                        $img = '<div class="w500px">'.graph_graphic_moduleevents($layoutData['id_agent'], $layoutData['id_agente_modulo'], $width, $height, $layoutData['period'], '', true).'</div>';
                     }
                 }
             }
@@ -1712,7 +1712,7 @@ function visual_map_print_item(
                 $img_style_title = strip_tags($label);
                 if ($layoutData['type'] == STATIC_GRAPH) {
                     if ($layoutData['id_agente_modulo'] != 0) {
-                        if ($layoutData['id_metaconsole'] != 0) {
+                        if (is_metaconsole() && $layoutData['id_metaconsole'] != 0) {
                             // Metaconsole db connection
                             $connection = db_get_row_filter(
                                 'tmetaconsole_setup',
@@ -1796,9 +1796,9 @@ function visual_map_print_item(
                 if ($layoutData['show_statistics'] == 1) {
                     if (get_parameter('action') == 'edit') {
                         if ($width == 0 || $height == 0) {
-                            echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:520px;height:80px;'.$imgpos.'">';
+                            echo '<img id="image_'.$id.'" src="'.'images/console/signes/group_status.png'.'" style="width:520px;height:80px;'.$imgpos.'">';
                         } else {
-                            echo '<img id="image_'.$id.'" src="images/console/signes/group_status.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+                            echo '<img id="image_'.$id.'" src="'.'images/console/signes/group_status.png'.'" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
                         }
                     } else {
                         $is_meta = is_metaconsole();
@@ -1876,19 +1876,19 @@ function visual_map_print_item(
                         }
 
                         echo '">';
-                            echo "<tr style='height:10%;'>";
-                                echo "<th style='text-align:center;background-color:#9d9ea0;color:black;font-weight:bold;'>".groups_get_name($layoutData['id_group'], true).'</th>';
+                            echo "<tr class='height_10p'>";
+                                echo "<th class='tr_vm_colors'>".groups_get_name($layoutData['id_group'], true).'</th>';
                             echo '</tr>';
-                            echo "<tr style='background-color:whitesmoke;height:90%;'>";
+                            echo "<tr class='bg_whitesmoke height_90p'>";
                                 echo '<td>';
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#e63c52;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
-                                    echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Critical</div>";
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#f8db3f;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
-                                    echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Warning</div>";
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#84b83c;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
-                                    echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Normal</div>";
-                                    echo "<div style='margin-left:2%;color: #FFF;font-size: 12px;display:inline;background-color:#9d9ea0;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>".remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
-                                    echo "<div style='background-color:white;color: black ;font-size: 12px;display:inline;position:relative;height:80%;width:9.4%;height:80%;border-radius:2px;text-align:center;padding:5px;'>Unknown</div>";
+                                    echo "<div class='critical_zeros'>".remove_right_zeros(number_format($stat_agent_cr, 2)).'%</div>';
+                                    echo "<div class='critical_vm'>Critical</div>";
+                                    echo "<div class='warning_zeros'>".remove_right_zeros(number_format($stat_agent_wa, 2)).'%</div>';
+                                    echo "<div class='warning_vm'>Warning</div>";
+                                    echo "<div class='normal_zeros'>".remove_right_zeros(number_format($stat_agent_ok, 2)).'%</div>';
+                                    echo "<div class='normal_vm'>Normal</div>";
+                                    echo "<div class='unknown_zeros'>".remove_right_zeros(number_format($stat_agent_un, 2)).'%</div>';
+                                    echo "<div class='unknown_vm'>Unknown</div>";
                                 echo '</td>';
                             echo '</tr>';
                         echo '</table>';
@@ -1948,15 +1948,15 @@ function visual_map_print_item(
             if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/percentil.png'.'" style="width:130px;height:30px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/percentil.png'.'" style="width:130px;height:30px;'.$imgpos.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'/images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';
+                        $img = '<img "../../'.'images/console/signes/percentil.png'.'" style="width:'.$width.'px;height:30px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/percentil.png"  style="width:'.$width.'px;height:30px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/percentil.png'.'"  style="width:'.$width.'px;height:30px;'.$imgpos.'">';
                     }
                 }
             } else {
@@ -1987,15 +1987,15 @@ function visual_map_print_item(
             if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'images/console/signes/percentil_bubble.png">';
+                        $img = '<img src="../../'.'images/console/signes/percentil_bubble.png'.'">';
                     } else {
-                        $img = '<img src="images/console/signes/percentil_bubble.png">';
+                        $img = '<img src="'.'images/console/signes/percentil_bubble.png'.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'/images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/percentil_bubble.png'.'" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/percentil_bubble.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/percentil_bubble.png'.'"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     }
                 }
             } else {
@@ -2017,15 +2017,15 @@ function visual_map_print_item(
             if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'images/console/signes/circular-progress-bar.png">';
+                        $img = '<img src="../../'.'images/console/signes/circular-progress-bar.png'.'">';
                     } else {
-                        $img = '<img src="images/console/signes/circular-progress-bar.png">';
+                        $img = '<img src="'.'images/console/signes/circular-progress-bar.png'.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'/images/console/signes/circular-progress-bar.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/circular-progress-bar.png'.'" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/circular-progress-bar.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/circular-progress-bar.png'.'"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     }
                 }
             } else {
@@ -2060,15 +2060,15 @@ function visual_map_print_item(
             if (get_parameter('action') == 'edit' || (get_parameter('operation') == 'edit_visualmap')) {
                 if ($width == 0) {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'images/console/signes/circular-progress-bar-interior.png">';
+                        $img = '<img src="../../'.'images/console/signes/circular-progress-bar-interior.png'.'">';
                     } else {
-                        $img = '<img src="images/console/signes/circular-progress-bar-interior.png">';
+                        $img = '<img src="'.'images/console/signes/circular-progress-bar-interior.png'.'">';
                     }
                 } else {
                     if ($layoutData['id_metaconsole'] != 0) {
-                        $img = '<img src="'.'../../'.'/images/console/signes/circular-progress-bar-interior.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="../../'.'images/console/signes/circular-progress-bar-interior.png'.'" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     } else {
-                        $img = '<img src="images/console/signes/circular-progress-bar-interior.png"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
+                        $img = '<img src="'.'images/console/signes/circular-progress-bar-interior.png'.'"  style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';
                     }
                 }
             } else {
@@ -3220,13 +3220,9 @@ function visual_map_get_image_status_element($layoutData, $status=false)
 
         switch ($status) {
             case 1:
-                // Critical (BAD).
-                $img .= '_bad.png';
-            break;
-
             case 4:
-                // Critical (ALERT).
-                $img = '4'.$img.'_bad.png';
+                // Critical or critical alert (BAD).
+                $img .= '_bad.png';
             break;
 
             case 0:
@@ -3235,13 +3231,9 @@ function visual_map_get_image_status_element($layoutData, $status=false)
             break;
 
             case 2:
-                // Warning.
-                $img .= '_warning.png';
-            break;
-
             case 10:
-                // Warning (ALERT).
-                $img = '4'.$img.'_warning.png';
+                // Warning or warning alert.
+                $img .= '_warning.png';
             break;
 
             case 3:
@@ -3608,7 +3600,7 @@ function visual_map_print_visual_map(
     }
 
     if (is_metaconsole()) {
-        echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
+        echo "<div class='vm_meta'>";
     }
 
     echo '<div id="background_'.$id_layout.'"
@@ -3678,6 +3670,7 @@ function visual_map_print_visual_map(
         $layout_data['label'] = visual_map_macro($layout_data['label'], $layout_data['id_agente_modulo']);
 
         switch ($layout_data['type']) {
+            case NETWORK_LINK:
             case LINE_ITEM:
                 visual_map_print_user_lines($layout_data, $proportion);
             break;
@@ -3724,7 +3717,8 @@ function visual_map_get_user_layouts(
     $only_names=false,
     $filter=false,
     $returnAllGroup=true,
-    $favourite=false
+    $favourite=false,
+    $check_user_groups=true
 ) {
     if (! is_array($filter)) {
         $filter = [];
@@ -3771,7 +3765,21 @@ function visual_map_get_user_layouts(
         unset($filter['group']);
     }
 
-    if (!empty($groups)) {
+    $return_all_group = false;
+
+    if (users_can_manage_group_all()) {
+        $return_all_group = true;
+    }
+
+    if (isset($filter['can_manage_group_all'])) {
+        if ($filter['can_manage_group_all'] === false) {
+            unset($groups[0]);
+        }
+
+        unset($filter['can_manage_group_all']);
+    }
+
+    if ($check_user_groups === true && !empty($groups)) {
         if (empty($where)) {
             $where = '';
         }
@@ -4075,6 +4083,7 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         case 'default':
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
@@ -4082,6 +4091,8 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
                 return VISUAL_MAP_STATUS_CRITICAL_ALERT;
             } else if ($num_items_critical > 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
+            } else if ($num_items_warning_alert > 0) {
+                return VISUAL_MAP_STATUS_WARNING_ALERT;
             } else if ($num_items_warning > 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0) {
@@ -4095,17 +4106,18 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items = count($valid_layout_items);
             $num_items_critical_alert = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT];
             $num_items_critical = $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD];
+            $num_items_warning_alert = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT];
             $num_items_warning = $num_elements_by_status[VISUAL_MAP_STATUS_WARNING];
             $num_items_unknown = $num_elements_by_status[VISUAL_MAP_STATUS_UNKNOWN];
 
-            if ($num_items_critical > 0
+            if (($num_items_critical > 0 || $num_items_critical_alert > 0)
                 && ((($num_items_critical_alert + $num_items_critical) * 100) / $num_items) >= $weight
             ) {
                 return ($num_items_critical_alert > 0) ? VISUAL_MAP_STATUS_CRITICAL_ALERT : VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($num_items_warning > 0
-                && (($num_items_warning * 100) / $num_items) >= $weight
+            } else if (($num_items_warning > 0 || $num_items_warning_alert > 0)
+                && (($num_items_warning_alert + $num_items_warning * 100) / $num_items) >= $weight
             ) {
-                return VISUAL_MAP_STATUS_WARNING;
+                return ($num_items_warning_alert > 0) ? VISUAL_MAP_STATUS_WARNING_ALERT : VISUAL_MAP_STATUS_WARNING;
             } else if ($num_items_unknown > 0
                 && (($num_items_unknown * 100) / $num_items) >= $weight
             ) {
@@ -4119,9 +4131,12 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
             $num_items_critical = ($num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_BAD] + $num_elements_by_status[VISUAL_MAP_STATUS_CRITICAL_ALERT]);
             $critical_percentage = (($num_items_critical * 100) / count($valid_layout_items));
 
-            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical']) {
+            $num_items_warning = ($num_elements_by_status[VISUAL_MAP_STATUS_WARNING] + $num_elements_by_status[VISUAL_MAP_STATUS_WARNING_ALERT]);
+            $warning_percentage = (($num_items_warning * 100) / count($valid_layout_items));
+
+            if ($critical_percentage >= $status_data['linked_layout_status_as_service_critical'] && $critical_percentage !== 0) {
                 return VISUAL_MAP_STATUS_CRITICAL_BAD;
-            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning']) {
+            } else if ($critical_percentage >= $status_data['linked_layout_status_as_service_warning'] && $warning_percentage !== 0) {
                 return VISUAL_MAP_STATUS_WARNING;
             } else {
                 return VISUAL_MAP_STATUS_NORMAL;
@@ -4382,6 +4397,9 @@ function visual_map_type_in_js($type)
             break;
         case LINE_ITEM:
         return 'line_item';
+
+        case NETWORK_LINK:
+        return 'network_link';
 
         case COLOR_CLOUD:
         return 'color_cloud';

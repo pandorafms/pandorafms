@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -147,9 +147,11 @@ if (is_ajax()) {
     return;
 }
 
+
+
 ui_require_javascript_file('openlayers.pandora');
 
-$new_agent = (bool) get_parameter('new_agent');
+$new_agent = (empty($id_agente)) ? true : false;
 
 if (! isset($id_agente) && ! $new_agent) {
     db_pandora_audit('ACL Violation', 'Trying to access agent manager witout an agent');
@@ -207,11 +209,11 @@ $custom_id_div .= html_print_input_text(
 if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
-    $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 70%;">';
+    $table_agent_name .= '<div class="label_select_child_left w60p">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name w70p">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input class="w50p" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -219,6 +221,7 @@ if (!$new_agent && $alias != '') {
             [
                 'border' => 0,
                 'title'  => __('Agent detail'),
+                'class'  => 'invert_filter',
             ]
         );
         $table_agent_name .= '</a>';
@@ -228,7 +231,14 @@ if (!$new_agent && $alias != '') {
 
     // Delete link from here.
     if (!is_central_policies_on_node()) {
-        $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
+        $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => __('Delete agent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
 
     // Remote configuration available.
@@ -245,6 +255,7 @@ if (!$new_agent && $alias != '') {
                 [
                     'border' => 0,
                     'title'  => __('This agent can be remotely configured'),
+                    'class'  => 'invert_filter',
                 ]
             );
             $table_agent_name .= '</a>';
@@ -258,7 +269,7 @@ if (!$new_agent && $alias != '') {
     $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').'</p>';
     $table_qr_code .= '<div id="qr_container_image"></div>';
     if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+        $table_qr_code .= "<a id='qr_code_agent_view' href='".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente).");'></a>";
     }
 
     // Add Custom id div.
@@ -322,7 +333,16 @@ $table_primary_group = '<div class="label_select"><p class="input_label">'.__('P
 $table_primary_group .= '<div class="label_select_parent">';
 // Cannot change primary group if user have not permission for that group.
 if (isset($groups[$grupo]) || $new_agent) {
-    $table_primary_group .= html_print_select_groups(false, 'AR', false, 'grupo', $grupo, '', '', 0, true);
+    $table_primary_group .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'returnAllGroup' => false,
+            'name'           => 'grupo',
+            'selected'       => $grupo,
+            'return'         => true,
+            'required'       => true,
+        ]
+    );
 } else {
     $table_primary_group .= groups_get_name($grupo);
     $table_primary_group .= html_print_input_hidden('grupo', $grupo, true);
@@ -424,44 +444,66 @@ if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
     $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').'</p></div>';
     $adv_secondary_groups_left = html_print_select_groups(
-        false,
+        // Id_user.
         // Use the current user to select the groups.
-        'AR',
-        // ACL permission.
         false,
+        // Privilege.
+        // ACL permission.
+        'AR',
+        // ReturnAllGroup.
         // Not all group.
-        'secondary_groups',
+        false,
+        // Name.
         // HTML id.
-        '',
+        'secondary_groups',
+        // Selected.
         // No select any by default.
         '',
+        // Script.
         // Javascript onChange code.
         '',
+        // Nothing.
         // Do not user no selected value.
-        0,
+        false,
+        // Nothing_value.
         // Do not use no selected value.
-        true,
+        0,
+        // Return.
         // Return HTML (not echo).
         true,
+        // Multiple.
         // Multiple selection.
         true,
+        // Sort.
         // Sorting by default.
-        '',
+        true,
+        // Class.
         // CSS classnames (default).
-        false,
+        '',
+        // Disabled.
         // Not disabled (default).
-        'min-width:170px;',
-        // Inline styles (default).
         false,
+        // Style.
+        // Inline styles (default).
+        'min-width:170px;',
+        // Option_style.
         // Option style select (default).
         false,
+        // Id_group.
         // Do not truncate the users tree (default).
-        'id_grupo',
-        // Key to get as value (default).
         false,
+        // Keys_field.
+        // Key to get as value (default).
+        'id_grupo',
+        // Strict_user.
         // Not strict user (default).
-        $secondary_groups_selected['plain']
+        false,
+        // Delete_groups.
         // Do not show the primary group in this selection.
+        array_merge($secondary_groups_selected['plain'], [$agent['id_grupo']])
+        // Include_groups.
+        // Size.
+        // Simple_multiple_options.
     );
 
     $adv_secondary_groups_arrows = html_print_input_image(
@@ -489,30 +531,30 @@ if (enterprise_installed()) {
     );
 
     $adv_secondary_groups_right .= html_print_select(
-        $secondary_groups_selected['for_select'],
         // Values.
-        'secondary_groups_selected',
+        $secondary_groups_selected['for_select'],
         // HTML id.
-        '',
+        'secondary_groups_selected',
         // Selected.
         '',
         // Javascript onChange code.
         '',
         // Nothing selected.
-        0,
+        false,
         // Nothing selected.
-        true,
+        0,
         // Return HTML (not echo).
         true,
         // Multiple selection.
         true,
         // Sort.
-        '',
+        true,
         // Class.
-        false,
+        '',
         // Disabled.
-        'min-width:170px;'
+        false,
         // Style.
+        'min-width:170px;'
     );
 
     // Safe operation mode.
@@ -547,6 +589,7 @@ if (enterprise_installed()) {
             [
                 'title' => __('Delete remote configuration file'),
                 'style' => 'vertical-align: middle;',
+                'class' => 'invert_filter',
             ]
         ).'</a>';
         $table_adv_remote .= '</a>';
@@ -705,11 +748,11 @@ $table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('
 if ($icon_path == '') {
     $display_icons = 'none';
     // Hack to show no icon. Use any given image to fix not found image errors.
-    $path_without = 'images/spinner.png';
-    $path_default = 'images/spinner.png';
-    $path_ok = 'images/spinner.png';
-    $path_bad = 'images/spinner.png';
-    $path_warning = 'images/spinner.png';
+    $path_without = 'images/spinner.gif';
+    $path_default = 'images/spinner.gif';
+    $path_ok = 'images/spinner.gif';
+    $path_bad = 'images/spinner.gif';
+    $path_warning = 'images/spinner.gif';
 } else {
     $display_icons = '';
     $path_without = $path.$icon_path.'.default.png';
@@ -763,7 +806,7 @@ if ($config['activate_gis']) {
 if (enterprise_installed()) {
     $advanced_div = '<div class="secondary_groups_list">';
 } else {
-    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+    $advanced_div = '<div class="secondary_groups_list invisible" >';
 }
 
 // General display distribution.
@@ -882,7 +925,7 @@ foreach ($fields as $field) {
             2,
             65,
             $custom_value,
-            'style="min-height: 30px;"',
+            'class="min-height-30px',
             true
         );
     }
@@ -957,18 +1000,18 @@ if (enterprise_installed()) {
         );
     }
 
-    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+    echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
     echo '</div>';
 }
 
-echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help' style='padding-right:8px;'>";
+    echo "<span id='modules_not_learning_mode_context_help pdd_r_10px' '>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help' style='display: none;'>";
+    echo "<span id='modules_not_learning_mode_context_help invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');
@@ -1191,6 +1234,7 @@ ui_require_jquery_file('bgiframe');
 
     $(document).ready (function() {
 
+        var $id_agent = '<?php echo $id_agente; ?>';
         var previous_primary_group_select;
         $("#grupo").on('focus', function () {
             previous_primary_group_select = this.value;
@@ -1245,12 +1289,14 @@ ui_require_jquery_file('bgiframe');
             }
         });
 
-        paint_qrcode(
-            "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
-            "#qr_code_agent_view",
-            128,
-            128
-        );
+        if (typeof $id_agent !== 'undefined' && $id_agent !== '0') {
+            paint_qrcode(
+                "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
+                "#qr_code_agent_view",
+                128,
+                128
+            );
+        }
         $("#text-agente").prop('readonly', true);
 
     });

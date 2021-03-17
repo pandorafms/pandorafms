@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -270,6 +270,12 @@ if ($install_package) {
         db_pandora_audit(
             'Update '.$product_name,
             "Update version: $version of ".$product_name.' by '.$config['id_user']
+        );
+
+        // An update have been applied, clean phantomjs cache.
+        config_update_value(
+            'clean_phantomjs_cache',
+            1
         );
 
         $return['status'] = 'success';

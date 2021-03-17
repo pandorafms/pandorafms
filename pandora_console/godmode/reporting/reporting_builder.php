@@ -96,7 +96,7 @@ function dialog_message(message_id) {
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -141,6 +141,8 @@ require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include('operation/reporting/custom_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 
+
+
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
     $enterpriseEnable = true;
@@ -158,6 +160,26 @@ $pure = get_parameter('pure', 0);
 $schedule_report = get_parameter('schbutton', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
 
+if ($action == 'edit' && $idReport > 0) {
+    $report_group = db_get_value(
+        'id_group',
+        'treport',
+        'id_report',
+        $idReport
+    );
+
+    if (! check_acl_restricted_all($config['id_user'], $report_group, 'RW')
+        && ! check_acl_restricted_all($config['id_user'], $report_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access report builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
+
 if ($schedule_report != '') {
     $id_user_task = 1;
     $scheduled = 'no';
@@ -170,6 +192,7 @@ if ($schedule_report != '') {
     $parameters[4] = get_parameter('report_type', '');
     $parameters['first_execution'] = strtotime($date.' '.$time);
 
+
     $values = [
         'id_usuario'   => $config['id_user'],
         'id_user_task' => $id_user_task,
@@ -180,9 +203,11 @@ if ($schedule_report != '') {
 
     $result = db_process_sql_insert('tuser_task_scheduled', $values);
 
+    $report_type = $parameters[4];
+
     ui_print_result_message(
         $result,
-        __('Your report has been planned, and the system will email you a PDF with the report as soon as its finished'),
+        __('Your report has been planned, and the system will email you a '.$report_type.' file with the report as soon as its finished'),
         __('An error has ocurred')
     );
     echo '<br>';
@@ -492,7 +517,14 @@ switch ($action) {
         $buttons = [
             'list_reports' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+                    'images/report_list.png',
+                    true,
+                    [
+                        'title' => __('Reports list'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
         ];
 
@@ -906,8 +938,8 @@ switch ($action) {
 
                 $data = [];
 
-                if (check_acl($config['id_user'], $report['id_group'], 'RW')
-                    || check_acl($config['id_user'], $report['id_group'], 'RM')
+                if (check_acl_restricted_all($config['id_user'], $report['id_group'], 'RW')
+                    || check_acl_restricted_all($config['id_user'], $report['id_group'], 'RM')
                 ) {
                     $data[0] = '<a href="'.$config['homeurl'].'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.$report['id_report'].'&pure='.$pure.'">'.ui_print_truncate_text($report['name'], 70).'</a>';
                 } else {
@@ -935,14 +967,20 @@ switch ($action) {
                     $data[2] .= html_print_image(
                         'images/html.png',
                         true,
-                        ['title' => __('HTML view')]
+                        [
+                            'title' => __('HTML view'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[2] .= '</a>';
                     $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,
-                        ['title' => __('Export to XML')]
+                        [
+                            'title' => __('Export to XML'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[3] .= '</a>';
                     // I chose ajax.php because it's supposed
@@ -991,7 +1029,7 @@ switch ($action) {
 
                 switch ($type_access_selected) {
                     case 'group_view':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group'],
                             'RW'
@@ -1002,7 +1040,7 @@ switch ($action) {
                     break;
 
                     case 'group_edit':
-                        $edit = check_acl(
+                        $edit = check_acl_restricted_all(
                             $config['id_user'],
                             $report['id_group_edit'],
                             'RW'
@@ -1037,7 +1075,7 @@ switch ($action) {
                     }
 
                     if ($edit) {
-                        $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
+                        $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" class="inline_line">';
                         $data[$next] .= html_print_input_image(
                             'edit',
                             'images/config.png',
@@ -1055,14 +1093,17 @@ switch ($action) {
                     }
 
                     if ($delete) {
-                        $data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+                        $data[$next] .= '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
                         $data[$next] .= html_print_input_image(
                             'delete',
                             'images/cross.png',
                             1,
                             'margin-right: 10px;',
                             true,
-                            ['title' => __('Delete')]
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[$next] .= html_print_input_hidden(
                             'id_report',
@@ -1132,9 +1173,9 @@ switch ($action) {
         ) {
             echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
             if (defined('METACONSOLE')) {
-                echo '<div class="action-buttons" style="width: 100%; ">';
+                echo '<div class="action-buttons w100p">';
             } else {
-                echo '<div class="action-buttons" style="width: 100%;">';
+                echo '<div class="action-buttons w100p">';
             }
 
             html_print_submit_button(
@@ -1145,7 +1186,7 @@ switch ($action) {
             );
 
             echo '</form>';
-            echo '<form style="display:inline;" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+            echo '<form class="inline_line" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
 
             foreach ($reports as $report) {
                 echo '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
@@ -1156,7 +1197,7 @@ switch ($action) {
                 __('Delete'),
                 'delete_btn',
                 false,
-                'class="sub delete" style="margin-left:5px;"'
+                'class="sub delete" class="mrgn_lft_5px"'
             );
             echo '</form>';
             echo '</div>';
@@ -1177,6 +1218,8 @@ switch ($action) {
                 $report_id_user = 0;
                 $type_access_selected = reports_get_type_access(false);
                 $id_group_edit = 0;
+                $cover_page_render = true;
+                $index_render = true;
             break;
 
             case 'item_editor':
@@ -1212,6 +1255,12 @@ switch ($action) {
                 $report_id_user = get_parameter('report_id_user');
                 $non_interactive = get_parameter('non_interactive', 0);
 
+                $cover_page_render = get_parameter_switch(
+                    'cover_page_render',
+                    0
+                );
+                $index_render = get_parameter_switch('index_render', 0);
+
                 $custom_font = $config['custom_report_front_font'];
 
                 switch ($type_access_selected) {
@@ -1238,12 +1287,14 @@ switch ($action) {
                 if ($action == 'update') {
                     if ($reportName != '' && $idGroupReport != '') {
                         $new_values = [
-                            'name'            => $reportName,
-                            'id_group'        => $idGroupReport,
-                            'description'     => $description,
-                            'private'         => $private,
-                            'id_group_edit'   => $id_group_edit,
-                            'non_interactive' => $non_interactive,
+                            'name'              => $reportName,
+                            'id_group'          => $idGroupReport,
+                            'description'       => $description,
+                            'private'           => $private,
+                            'id_group_edit'     => $id_group_edit,
+                            'non_interactive'   => $non_interactive,
+                            'cover_page_render' => $cover_page_render,
+                            'index_render'      => $index_render,
                         ];
 
 
@@ -1308,19 +1359,21 @@ switch ($action) {
                         $idOrResult = db_process_sql_insert(
                             'treport',
                             [
-                                'name'            => $reportName,
-                                'id_group'        => $idGroupReport,
-                                'description'     => $description,
-                                'first_page'      => $first_page,
-                                'private'         => $private,
-                                'id_group_edit'   => $id_group_edit,
-                                'id_user'         => $config['id_user'],
-                                'metaconsole'     => $metaconsole_report,
-                                'non_interactive' => $non_interactive,
-                                'custom_font'     => $custom_font,
-                                'custom_logo'     => $logo,
-                                'header'          => $header,
-                                'footer'          => $footer,
+                                'name'              => $reportName,
+                                'id_group'          => $idGroupReport,
+                                'description'       => $description,
+                                'first_page'        => $first_page,
+                                'private'           => $private,
+                                'id_group_edit'     => $id_group_edit,
+                                'id_user'           => $config['id_user'],
+                                'metaconsole'       => $metaconsole_report,
+                                'non_interactive'   => $non_interactive,
+                                'custom_font'       => $custom_font,
+                                'custom_logo'       => $logo,
+                                'header'            => $header,
+                                'footer'            => $footer,
+                                'cover_page_render' => $cover_page_render,
+                                'index_render'      => $index_render,
                             ]
                         );
 
@@ -1365,11 +1418,12 @@ switch ($action) {
                 switch ($action) {
                     case 'update':
                         $values = [];
-                        $server_name = get_parameter('server_id');
-                        if (is_metaconsole() && $server_name != '') {
-                            $id_meta = metaconsole_get_id_server($server_name);
+                        $server_id = get_parameter('server_id', 0);
+                        if (is_metaconsole() === true
+                            && empty($server_id) === false
+                        ) {
                             $connection = metaconsole_get_connection_by_id(
-                                $id_meta
+                                $server_id
                             );
                             metaconsole_connect($connection);
                             $values['server_name'] = $connection['server_name'];
@@ -1379,7 +1433,10 @@ switch ($action) {
                         $values['description'] = get_parameter('description');
                         $values['type'] = get_parameter('type', null);
                         $values['recursion'] = get_parameter('recursion', null);
-                        $values['show_extended_events'] = get_parameter('include_extended_events', null);
+                        $values['show_extended_events'] = get_parameter(
+                            'include_extended_events',
+                            null
+                        );
 
                         $label = get_parameter('label', '');
 
@@ -1413,10 +1470,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -1482,12 +1536,16 @@ switch ($action) {
                                 $values['text'] = $intervals;
                             break;
 
+                            case 'availability_graph':
+                                $values['summary'] = get_parameter(
+                                    'summary',
+                                    0
+                                );
                             case 'SLA_monthly':
                             case 'SLA_weekly':
                             case 'SLA_hourly':
                             case 'SLA_services':
                             case 'SLA':
-                            case 'availability_graph':
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
                                     'combo_sla_sort_options',
@@ -1626,10 +1684,21 @@ switch ($action) {
                             break;
 
                             case 'simple_graph':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
+                                );
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
                                     'time_compare_overlapped'
+                                );
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'network_interfaces_report':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
                                 $good_format = true;
@@ -1707,6 +1776,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',
@@ -1778,13 +1851,10 @@ switch ($action) {
                             'combo_modulegroup'
                         );
                         $values['id_group'] = get_parameter('combo_group');
-                        $values['server_name'] = get_parameter('server_name');
 
-                        if ($values['server_name'] == '') {
-                            $values['server_name'] = get_parameter(
-                                'combo_server'
-                            );
-                        }
+                        $values['server_name'] = get_parameter(
+                            'combo_server'
+                        );
 
                         if ((($values['type'] == 'custom_graph')
                             || ($values['type'] == 'automatic_custom_graph'))
@@ -1833,10 +1903,13 @@ switch ($action) {
                             ''
                         );
 
+                        $event_filter_exclude = get_parameter(
+                            'filter_exclude',
+                            ''
+                        );
+
                         // If metaconsole is activated.
-                        if ($config['metaconsole'] == 1
-                            && defined('METACONSOLE')
-                        ) {
+                        if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
                                 || ($values['type'] == 'automatic_custom_graph')
                             ) {
@@ -1972,6 +2045,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
 
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2004,6 +2079,7 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
+                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2023,6 +2099,14 @@ switch ($action) {
                                 } else {
                                     $style['label'] = '';
                                 }
+                            break;
+
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users', 0);
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
                             break;
 
                             default:
@@ -2105,10 +2189,7 @@ switch ($action) {
                             'module_description' => $module_description,
                         ];
 
-                        $values['name'] = reporting_label_macro(
-                            $items_label,
-                            $name_it
-                        );
+                        $values['name'] = $name_it;
 
                         $values['landscape'] = get_parameter('landscape');
                         $values['pagebreak'] = get_parameter('pagebreak');
@@ -2264,10 +2345,21 @@ switch ($action) {
                             break;
 
                             case 'simple_graph':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
+                                );
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
                                     'time_compare_overlapped'
+                                );
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'network_interfaces_report':
+                                $values['graph_render'] = (int) get_parameter(
+                                    'graph_render'
                                 );
                                 $values['period'] = get_parameter('period');
                                 $good_format = true;
@@ -2336,7 +2428,6 @@ switch ($action) {
                             'checkbox_only_display_wrong',
                             0
                         );
-
                         $values['monday'] = get_parameter('monday', 0);
                         $values['tuesday'] = get_parameter('tuesday', 0);
                         $values['wednesday'] = get_parameter('wednesday', 0);
@@ -2344,6 +2435,10 @@ switch ($action) {
                         $values['friday'] = get_parameter('friday', 0);
                         $values['saturday'] = get_parameter('saturday', 0);
                         $values['sunday'] = get_parameter('sunday', 0);
+                        $values['compare_work_time'] = get_parameter(
+                            'compare_work_time',
+                            0
+                        );
                         $values['total_time'] = get_parameter('total_time', 0);
                         $values['time_failed'] = get_parameter(
                             'time_failed',
@@ -2498,6 +2593,11 @@ switch ($action) {
                             REPORT_FAILOVER_TYPE_NORMAL
                         );
 
+                        $values['summary'] = get_parameter(
+                            'summary',
+                            0
+                        );
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2557,6 +2657,12 @@ switch ($action) {
                                     ''
                                 );
 
+                                $event_filter_exclude = get_parameter(
+                                    'filter_exclude',
+                                    ''
+                                );
+
+
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
                                 $style['filter_event_severity'] = json_encode(
@@ -2574,6 +2680,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2605,6 +2713,7 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
+                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2624,6 +2733,14 @@ switch ($action) {
                                 } else {
                                     $style['label'] = '';
                                 }
+                            break;
+
+                            case 'permissions_report':
+                                $es['id_users'] = get_parameter('selected-select-id_users');
+                                $es['users_groups'] = get_parameter('users_groups', 0);
+                                $es['select_by_group'] = get_parameter('select_by_group', 0);
+                                $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
                             break;
 
                             default:
@@ -2701,6 +2818,8 @@ switch ($action) {
         $id_group_edit = $report['id_group_edit'];
         $report_id_user = $report['id_user'];
         $non_interactive = $report['non_interactive'];
+        $cover_page_render = $report['cover_page_render'];
+        $index_render = $report['index_render'];
     break;
 
     case 'delete':
@@ -3003,7 +3122,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
                 ],
             ];
 
@@ -3071,22 +3190,30 @@ if ($enterpriseEnable) {
     }
 }
 
+$urlB = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
 $buttons = [
     'list_reports' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&pure='.$pure.'">'.html_print_image(
+            'images/report_list.png',
+            true,
+            [
+                'title' => __('Reports list'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
     'main'         => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
     ],
     'list_items'   => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items'), 'class' => 'invert_filter']).'</a>',
     ],
     'item_editor'  => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Item editor')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Item editor'), 'class' => 'invert_filter']).'</a>',
     ],
 ];
 
@@ -3099,7 +3226,14 @@ if ($enterpriseEnable) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image('images/operation.png', true, ['title' => __('View report')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
+        'images/operation.png',
+        true,
+        [
+            'title' => __('View report'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 $buttons[$activeTab]['active'] = true;
@@ -3112,7 +3246,7 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');

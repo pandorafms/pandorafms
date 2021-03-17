@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -80,14 +80,8 @@ class Home
                 'menu_item' => true,
                 'icon'      => 'modules',
             ];
-            $items['visualmaps'] = [
-                'name'      => __('Visual consoles'),
-                'filename'  => 'visualmaps.php',
-                'menu_item' => true,
-                'icon'      => 'visual_console',
-            ];
 
-            // Not in home
+            // Not in home.
             $items['agent'] = [
                 'name'      => __('Agent'),
                 'filename'  => 'agent.php',
@@ -97,12 +91,6 @@ class Home
             $items['module_graph'] = [
                 'name'      => __('Module graph'),
                 'filename'  => 'module_graph.php',
-                'menu_item' => false,
-                'icon'      => '',
-            ];
-            $items['visualmap'] = [
-                'name'      => __('Visualmap'),
-                'filename'  => 'visualmap.php',
                 'menu_item' => false,
                 'icon'      => '',
             ];

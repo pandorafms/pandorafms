@@ -217,9 +217,19 @@ sub sendmail {
                     print STDERR "> [...", length($$data), " bytes sent ...]\n";
                 }
             }
-			my @sockets = $Sel->can_write($mailcfg{'timeout'});
-			return 0 if (!@sockets);
-           	syswrite($sockets[0], $$data) || return 0;
+		    my @sockets = $Sel->can_write($mailcfg{'timeout'});
+            return 0 if (!@sockets);
+             eval {
+                local $SIG{__DIE__};
+                # Split log data in chunks if case write is
+                    my $data_sent = 0;
+                    while ($data_sent < length($$data)) {
+                        $data_sent += syswrite($sockets[0], $$data, length($$data) - $data_sent, $data_sent) || die $!;
+                    } 
+            };
+            if ($@) {
+                print STDERR "[sendmail] error: $!\n";
+            }
         }
         1;
     }
@@ -434,8 +444,11 @@ sub sendmail {
         socket_write("STARTTLS$CRLF") || return fail("send STARTTLS error");
         socket_read()
             || return fail('STARTTLS error');
-        IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
-            || return fail("start_SSL failed");
+        {
+            local $SIG{__DIE__};
+            IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
+                || return fail("start_SSL failed");
+        };
 
         # The client SHOULD send an EHLO command as the
         # first command after a successful TLS negotiation.

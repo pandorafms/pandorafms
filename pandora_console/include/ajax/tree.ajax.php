@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -40,6 +40,7 @@ if (is_ajax()) {
         $id = get_parameter('id', -1);
         $rootID = get_parameter('rootID', -1);
         $serverID = get_parameter('serverID', false);
+        $metaID = (int) get_parameter('metaID', 0);
         $childrenMethod = get_parameter('childrenMethod', 'on_demand');
 
         $default_filters = [
@@ -98,7 +99,16 @@ if (is_ajax()) {
             break;
 
             case 'services':
-                $tree = new TreeService($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeService(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access,
+                    $metaID
+                );
             break;
 
             default:
@@ -131,7 +141,7 @@ if (is_ajax()) {
         include_once __DIR__.'/../styles/progress.css';
         echo '</style>';
 
-        echo '<div class="left_align">';
+        echo '<div class="left_align backgrund_primary_important">';
         if (!empty($id) && !empty($type)) {
             switch ($type) {
                 case 'agent':

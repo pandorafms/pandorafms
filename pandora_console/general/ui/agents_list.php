@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,7 +142,7 @@ unset($filter['offset']);
 
 if (! is_ajax()) {
     echo '<div id="agents_loading" class="loading invisible">';
-    echo html_print_image('images/spinner.png', true);
+    echo html_print_image('images/spinner.gif', true);
     echo __('Loading').'&hellip;';
     echo '</div>';
 }

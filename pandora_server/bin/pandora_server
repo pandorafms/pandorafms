@@ -111,9 +111,6 @@ sub pandora_startup () {
 	# Start the event replication thread. Do not start with start_server_thread, this thread may exit on its own.
 	threads->create(\&pandora_process_event_replication, \%Config) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
 
-	# Update the agent cache. Do not start with start_server_thread, this thread updates the agent cache and exits.
-	threads->create(\&enterprise_hook, 'update_agent_cache', [\%Config])->detach() if ($Config{'node_metaconsole'} == 1);
-
 	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
@@ -288,10 +285,20 @@ sub pandora_server_tasks ($) {
 	
 	# Get the console DB connection
 	my $dbh = db_connect ($pa_config->{'dbengine'}, $pa_config->{'dbname'}, $pa_config->{'dbhost'}, $pa_config->{'dbport'},
-						$pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+	                      $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
 	my $counter = 0;
+	my $first_run = 1;
 	while ($THRRUN == 1) {
 		if (pandora_is_master($pa_config) == 1) {
+
+			# TASKS EXECUTED ONCE
+			# -------------------
+			if ($first_run == 1) {
+				$first_run = 0;
+
+				# Update the agent cache.
+				enterprise_hook('update_agent_cache', [\%Config]);
+			}
 
 			# TASKS EXECUTED EVERY 5 SECONDS (Low latency tasks)
 			# --------------------------------------------------
@@ -583,7 +590,7 @@ sub main() {
 		my $include_api = 'include/api.php';
 		# If public_url is empty in database
 		if ( $console_api_url eq '' ) {
-			$Config{"console_api_url"} = 'http://localhost/pandora_console/' . $include_api;
+			$Config{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
 			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
 		} else {
 			$Config{"console_api_url"} = $console_api_url . $include_api;	
@@ -764,7 +771,7 @@ sub main() {
 			die("Server thread crashed.") unless (check_server_threads() == 1);
 
 			db_do ($DBH,
-				"UPDATE tserver SET status = 0
+				"UPDATE tserver SET status = -1
 				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
 			);
 

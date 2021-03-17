@@ -26,14 +26,15 @@ eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
 use JSON qw(decode_json encode_json);
+use PerlIO::encoding;
 
 use base 'Exporter';
 
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.746";
-my $pandora_build = "200617";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210317";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -672,6 +673,24 @@ sub print_module {
 	if (! (empty ($data->{warning_inverse}))) {
 		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{warning_inverse} . "]]></warning_inverse>\n";
 	}
+	if (! (empty($data->{min_warning_forced})) ) {
+		$xml_module .= "\t<min_warning_forced><![CDATA[" . $data->{min_warning_forced} . "]]></min_warning_forced>\n";
+	}
+	if (! (empty($data->{max_warning_forced})) ) {
+		$xml_module .= "\t<max_warning_forced><![CDATA[" . $data->{max_warning_forced} . "]]></max_warning_forced>\n";
+	}
+	if (! (empty ($data->{min_critical_forced})) ) {
+		$xml_module .= "\t<min_critical_forced><![CDATA[" . $data->{min_critical_forced} . "]]></min_critical_forced>\n";
+	}
+	if (! (empty ($data->{max_critical_forced})) ){
+		$xml_module .= "\t<max_critical_forced><![CDATA[" . $data->{max_critical_forced} . "]]></max_critical_forced>\n";
+	}
+	if (! (empty ($data->{str_warning_forced}))) {
+		$xml_module .= "\t<str_warning_forced><![CDATA[" . $data->{str_warning_forced} . "]]></str_warning_forced>\n";
+	}
+	if (! (empty ($data->{str_critical_forced}))) {
+		$xml_module .= "\t<str_critical_forced><![CDATA[" . $data->{str_critical_forced} . "]]></str_critical_forced>\n";
+	}
 	if (! (empty ($data->{max}))) {
 		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
 	}
@@ -940,7 +959,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 1;
+		exit 0;
 	}
 
 	print_module($conf, {
@@ -949,7 +968,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 1;
+	exit 0;
 }
 
 ################################################################################
@@ -1147,6 +1166,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = ".\\";
+		$system{cmdsep}  = "\&";
 	}
 	else {
 		$system{devnull} = "/dev/null";
@@ -1157,6 +1177,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = "/tmp";
+		$system{cmdsep}  = ";";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";

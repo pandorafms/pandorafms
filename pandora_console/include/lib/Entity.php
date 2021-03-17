@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,17 +50,62 @@ abstract class Entity
      */
     protected $table = '';
 
+    /**
+     * Enterprise capabilities object.
+     *
+     * @var object
+     */
+    private $enterprise;
+
+    /**
+     * MC Node id.
+     *
+     * @var integer|null
+     */
+    protected $nodeId = null;
+
+    /**
+     * Connected to external node.
+     *
+     * @var boolean
+     */
+    private $connected = false;
+
+
+    /**
+     * Instances a new object using array definition.
+     *
+     * @param array  $data      Fields data.
+     * @param string $class_str Class name.
+     *
+     * @return object With current definition.
+     */
+    public static function build(array $data=[], string $class_str=__CLASS__)
+    {
+        $obj = new $class_str();
+        // Set values.
+        foreach ($data as $k => $v) {
+            $obj->{$k}($v);
+        }
+
+        return $obj;
+    }
+
 
     /**
      * Defines a generic constructor to extract information of the object.
      *
-     * @param string $table   Table.
-     * @param array  $filters Filters, for instance ['id' => $id].
+     * @param string      $table            Table.
+     * @param array|null  $filters          Filters, for instance ['id' => $id].
+     * @param string|null $enterprise_class Enterprise class name.
      *
      * @throws \Exception On error.
      */
-    public function __construct(string $table, ?array $filters=null)
-    {
+    public function __construct(
+        string $table,
+        ?array $filters=null,
+        ?string $enterprise_class=null
+    ) {
         if (empty($table) === true) {
             throw new \Exception(
                 get_class($this).' error, table name is not defined'
@@ -96,6 +141,12 @@ abstract class Entity
                 $this->fields[$row['Field']] = null;
             }
         }
+
+        if (\enterprise_installed() === true
+            && $enterprise_class !== null
+        ) {
+            $this->enterprise = new $enterprise_class($this);
+        }
     }
 
 
@@ -113,6 +164,20 @@ abstract class Entity
         // Prioritize written methods over dynamic ones.
         if (method_exists($this, $methodName) === true) {
             return $this->{$methodName}($params);
+        }
+
+        // Enterprise capabilities.
+        if (\enterprise_installed() === true
+            && $this->enterprise !== null
+            && method_exists($this->enterprise, $methodName) === true
+        ) {
+            return call_user_func_array(
+                [
+                    $this->enterprise,
+                    $methodName,
+                ],
+                $params
+            );
         }
 
         if (array_key_exists($methodName, $this->fields) === true) {
@@ -139,6 +204,53 @@ abstract class Entity
     public function toArray()
     {
         return $this->fields;
+    }
+
+
+    /**
+     * Connects to current nodeId target.
+     * If no nodeId is defined, then returns without doing anything.
+     *
+     * @return void
+     * @throws \Exception On error.
+     */
+    public function connectNode()
+    {
+        if ($this->nodeId === null) {
+            return;
+        }
+
+        \enterprise_include_once('include/functions_metaconsole.php');
+        $r = \enterprise_hook(
+            'metaconsole_connect',
+            [
+                null,
+                $this->nodeId,
+            ]
+        );
+
+        if ($r !== NOERR) {
+            throw new \Exception(
+                __('Cannot connect to node %d', $this->nodeId)
+            );
+        }
+
+        $this->connected = true;
+    }
+
+
+    /**
+     * Restore connection after connectNode.
+     *
+     * @return void
+     */
+    public function restoreConnection()
+    {
+        if ($this->connected === true) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            \enterprise_hook('metaconsole_restore_db');
+        }
+
     }
 
 

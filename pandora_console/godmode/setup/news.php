@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,7 +55,11 @@ if (isset($_POST['create'])) {
         'expire_timestamp' => $expire_timestamp,
     ];
 
-    $id_link = db_process_sql_insert('tnews', $values);
+    if ($subject === '') {
+        $id_link = false;
+    } else {
+        $id_link = db_process_sql_insert('tnews', $values);
+    }
 
     ui_print_result_message(
         $id_link,
@@ -92,7 +96,11 @@ if (isset($_POST['update'])) {
         'expire_timestamp' => $expire_timestamp,
     ];
 
-    $result = db_process_sql_update('tnews', $values, ['id_news' => $id_news]);
+    if ($subject === '') {
+        $result = false;
+    } else {
+        $result = db_process_sql_update('tnews', $values, ['id_news' => $id_news]);
+    }
 
     ui_print_result_message(
         $result,
@@ -173,16 +181,18 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
 
     $data = [];
     $data[0] = __('Subject').'<br>';
-    $data[0] .= '<input type="text" name="subject" size="35" value="'.$subject.'">';
+    $data[0] .= '<input type="text" name="subject" size="35" value="'.$subject.'" >';
 
     $data[1] = __('Group').'<br>';
+    $data[1] .= '<div class="w250px">';
     $data[1] .= html_print_select_groups($config['id_user'], 'ER', users_can_manage_group_all(), 'id_group', $id_group, '', '', 0, true, false, false, '');
+    $data[1] .= '</div>';
 
     $data[2] = __('Modal screen').'<br>';
-    $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'style="margin-top: 5px;margin-bottom: 7px;"', true);
+    $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
 
     $data[3] = __('Expire').'<br>';
-    $data[3] .= html_print_checkbox_extended('expire', 1, $expire, false, '', 'style="margin-top: 5px;margin-bottom: 7px;"', true);
+    $data[3] .= html_print_checkbox_extended('expire', 1, $expire, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
 
     $data[4] = __('Expiration').'<br>';
     $data[4] .= html_print_input_text('expire_date', $expire_date, '', 12, 10, true).' ';
@@ -277,7 +287,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo "<td class='$tdcolor'>".__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
         }
 
         echo '</table>';
@@ -300,6 +310,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 
 // Include tiny for wysiwyg editor
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_javascript_file('pandora');
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -323,20 +334,8 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
             changeMonth: true,
             changeYear: true,
             showAnim: "slideDown"});
-            
-            
-        tinyMCE.init({
-            mode : "exact",
-            elements: "textarea_text",
-            theme : "advanced",
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_buttons1 : "bold,italic, |, image, link, |, cut, copy, paste, |, undo, redo, |, forecolor, |, fontsizeselect, |, justifyleft, justifycenter, justifyright, | ,code",
-            theme_advanced_buttons2 : "",
-            theme_advanced_buttons3 : "",
-            convert_urls : false,
-            theme_advanced_statusbar_location : "none"
-        });
+
+    defineTinyMCE({"elements": "textarea_text",});
         
         $("#checkbox-expire").click(function() {
             check_expire();

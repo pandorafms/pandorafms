@@ -535,7 +535,14 @@ function vbar_graph(
     ];
 
     if (empty($params['data']) === true) {
-        return graph_nodata_image(0, 0, 'vbar', '', true);
+        return graph_nodata_image(
+            0,
+            0,
+            'vbar',
+            '',
+            true,
+            ($ttl === 2) ? true : false
+        );
     }
 
     if ((int) $ttl === 2) {
@@ -638,7 +645,8 @@ function stacked_gauge(
     $font='',
     $font_size='',
     $unit='',
-    $homeurl=''
+    $homeurl='',
+    $transitionDuration=500
 ) {
     include_once 'functions_d3.php';
 
@@ -656,7 +664,8 @@ function stacked_gauge(
         $unit,
         $font,
         ($font_size + 2),
-        $no_data_image
+        $no_data_image,
+        $transitionDuration
     );
 }
 

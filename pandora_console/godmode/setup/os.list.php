@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,7 +72,7 @@ foreach ($osList as $os) {
         if (is_metaconsole()) {
             $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
         } else {
-            $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
+            $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
         }
     } else {
         // The original icons of pandora don't delete.
@@ -83,9 +83,9 @@ foreach ($osList as $os) {
 }
 
 if (isset($data)) {
-    ui_pagination($count_osList, false, $offset);
+    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset);
     html_print_table($table);
-    ui_pagination($count_osList, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+    ui_pagination($count_osList, ui_get_url_refresh(['message' => false]), $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
 }

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -260,7 +260,7 @@ class User
         );
 
         $ui->contentAddHtml(
-            '<div style="text-align: center;" class="login_logo">'.$logo_image.'</div>'
+            '<div class="login_logo center">'.$logo_image.'</div>'
         );
         $ui->contentAddHtml('<div id="login_container">');
         $ui->beginForm('');
@@ -322,7 +322,7 @@ class User
         $ui->showFooter(false);
         $ui->beginContent();
             $ui->contentAddHtml(
-                '<div style="text-align: center;" class="login_logo">'.html_print_image(
+                '<div class="login_logo center">'.html_print_image(
                     ui_get_mobile_login_icon(),
                     true,
                     [

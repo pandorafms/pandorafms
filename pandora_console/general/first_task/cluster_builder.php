@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
             ?>
         
         <form action='index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&op=new' method="post">
-            <input style="margin-bottom:20px;" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
+            <input type="submit" class="button_task ui_toggle" value="<?php echo __('Create Cluster'); ?>" />
         </form>
         
             <?php

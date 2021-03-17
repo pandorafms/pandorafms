@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -182,7 +182,7 @@ try {
     ui_print_error_message(__('There was an error processing the response'));
 }
 
-echo '<table id="ehorus-client-run-info" class="databox" style="width: 100%;"><tr>';
+echo '<table id="ehorus-client-run-info" class="databox w100p"><tr>';
 echo '<td>';
 echo __('Remote management of this agent with eHorus');
 echo '</td><td>';
@@ -190,7 +190,7 @@ echo '<input type="button" id="run-ehorus-client" class="sub next" value="'.__('
 echo '</td>';
 echo '</tr></table>';
 
-echo '<div id="expired_message" style="display: none;">';
+echo '<div id="expired_message" class="invisible">';
 ui_print_error_message(
     __('The connection was lost and the authorization token was expired').'. '.__('Reload the page to request a new authorization token').'. '
 );

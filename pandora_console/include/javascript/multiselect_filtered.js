@@ -1,8 +1,9 @@
-/* global $ */
+/* global $, jQuery*/
 
 /**
  * Add modules from available to selected.
  */
+// eslint-disable-next-line no-unused-vars
 function addItems(id, noneStr) {
   $("#available-select-" + id + " :selected")
     .toArray()
@@ -17,6 +18,7 @@ function addItems(id, noneStr) {
 /**
  * Mark all options for given id.
  */
+// eslint-disable-next-line no-unused-vars
 function markAll(id) {
   $("#" + id + " option").prop("selected", true);
 }
@@ -24,6 +26,7 @@ function markAll(id) {
 /**
  * Remove modules from selected back to available.
  */
+// eslint-disable-next-line no-unused-vars
 function removeItems(id, noneStr) {
   $("#selected-select-" + id + " :selected")
     .toArray()
@@ -69,16 +72,19 @@ function filterItems(id, str) {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function filterAvailableItems(txt, id, noneStr) {
   filterItems("available-select-" + id, txt);
   keepSelectClean("available-select-" + id, noneStr);
 }
 
+// eslint-disable-next-line no-unused-vars
 function filterSelectedItems(txt, id, noneStr) {
   filterItems("selected-select-" + id, txt);
   keepSelectClean("selected-select-" + id, noneStr);
 }
 
+// eslint-disable-next-line no-unused-vars
 function disableFilters(id) {
   $("#id-group-selected-select-" + id).prop("disabled", true);
   $("#checkbox-id-group-recursion-selected-select-" + id).prop(
@@ -87,6 +93,7 @@ function disableFilters(id) {
   );
 }
 
+// eslint-disable-next-line no-unused-vars
 function reloadContent(id, url, options, side, noneStr) {
   var current;
   var opposite;
@@ -106,7 +113,9 @@ function reloadContent(id, url, options, side, noneStr) {
   data.side = side;
   data.group_recursion = $("#checkbox-id-group-recursion-" + current).prop(
     "checked"
-  );
+  )
+    ? 1
+    : 0;
   data.group_id = $("#id-group-" + current).val();
 
   $.ajax({
@@ -132,8 +141,8 @@ function reloadContent(id, url, options, side, noneStr) {
 
       for (var [value, label] of items) {
         if (
-          $("#" + opposite + " option[value=" + value + "]").length == 0 &&
-          $("#tmp-" + current + " option[value=" + value + "]").length == 0
+          $("#" + opposite + " option[value='" + value + "']").length == 0 &&
+          $("#tmp-" + current + " option[value='" + value + "']").length == 0
         ) {
           // Does not exist in opposite box nor is filtered.
           $("#" + current).append(new Option(label, value));
@@ -155,3 +164,65 @@ $(document).submit(function() {
     .keyup();
   $("[id^=selected-select-] option").prop("selected", true);
 });
+
+// eslint-disable-next-line no-unused-vars
+function fmAgentChange(uniqId) {
+  var idGroup = $("#filtered-module-group-" + uniqId).val();
+  var recursion = $("#filtered-module-recursion-" + uniqId).is(":checked");
+  jQuery.post(
+    "ajax.php",
+    {
+      page: "operation/agentes/ver_agente",
+      get_agents_group_json: 1,
+      id_group: idGroup,
+      privilege: "AW",
+      keys_prefix: "_",
+      recursion: recursion
+    },
+    function(data) {
+      $("#filtered-module-agents-" + uniqId).html("");
+      $("#filtered-module-modules-" + uniqId).html("");
+      jQuery.each(data, function(id, value) {
+        // Remove keys_prefix from the index
+        id = id.substring(1);
+
+        var option = $("<option></option>")
+          .attr("value", value["id_agente"])
+          .html(value["alias"]);
+        $("#filtered-module-agents-" + uniqId).append(option);
+      });
+    },
+    "json"
+  );
+}
+
+// eslint-disable-next-line no-unused-vars
+function fmModuleChange(uniqId) {
+  var idModuleGroup = $("#filtered-module-module-group-" + uniqId).val();
+  var idAgents = $("#filtered-module-agents-" + uniqId).val();
+  var showCommonModules = $(
+    "#filtered-module-show-common-modules-" + uniqId
+  ).val();
+  jQuery.post(
+    "ajax.php",
+    {
+      page: "operation/agentes/ver_agente",
+      get_modules_group_json: 1,
+      id_module_group: idModuleGroup,
+      id_agents: idAgents,
+      selection: showCommonModules
+    },
+    function(data) {
+      $("#filtered-module-modules-" + uniqId).html("");
+      if (data) {
+        jQuery.each(data, function(id, value) {
+          var option = $("<option></option>")
+            .attr("value", value["id_agente_modulo"])
+            .html(value["nombre"]);
+          $("#filtered-module-modules-" + uniqId).append(option);
+        });
+      }
+    },
+    "json"
+  );
+}

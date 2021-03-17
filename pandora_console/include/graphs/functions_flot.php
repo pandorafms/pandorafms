@@ -2,7 +2,7 @@
 
 // Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
-// Copyright (c) 2007-2011 Artica, info@artica.es
+// Copyright (c) 2007-2021 Artica, info@artica.es
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
 // (LGPL) as published by the Free Software Foundation; version 2
@@ -14,7 +14,7 @@
 global $config;
 
 
-function include_javascript_dependencies_flot_graph($return=false)
+function include_javascript_dependencies_flot_graph($return=false, $mobile=false)
 {
     global $config;
 
@@ -28,10 +28,17 @@ function include_javascript_dependencies_flot_graph($return=false)
             $metaconsole_hack = '../../';
         }
 
+        $output = '';
+
+        if ($mobile === true) {
+            $output .= '
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.js').'"></script>
+                <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.3.1.js').'"></script>';
+        }
+
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
-        $output = '
+        $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
-			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.time.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.pie.js').'"></script>
@@ -71,7 +78,7 @@ function include_javascript_dependencies_flot_graph($return=false)
 				percent = parseFloat(obj.series.percent).toFixed(2);
 				alert(''+obj.series.label+': '+obj.series.data[0][1]+' ('+percent+'%)');
 			}
-			</script>";
+            </script>";
 
         if (!$return) {
             echo $output;
@@ -139,10 +146,16 @@ function flot_area_graph(
     }
 
     // Parent layer.
-    $return = "<div class='parent_graph' style='width: ".$params['width'].'px;'.$background_style."'>";
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    $return = "<div class='parent_graph' style='".$width.$background_style."'>";
 
     if ($params['title'] === true && empty($params['title']) === false) {
-        $return .= '<p style="text-align:center;">'.$params['title'].'</p>';
+        $return .= '<p class="center">'.$params['title'].'</p>';
     }
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
@@ -226,14 +239,13 @@ function flot_area_graph(
         $config['custom_graph_width'],
         true
     );
-    /*
-        $return .= "<div id='timestamp_$graph_id'
-                    class='timestamp_graph'
-                    style='    font-size:".$params['font_size']."pt;
-                            display:none; position:absolute;
-                            background:#fff; border: solid 1px #aaa;
-                            padding: 2px; z-index:1000;'></div>";
-    */
+    $return .= "<div id='timestamp_$graph_id'
+                     class='timestamp_graph'
+                     style='font-size:".$params['font_size']."pt;
+                        display:none; position:absolute;
+                        background:#fff; border: solid 1px #aaa;
+                        padding: 2px; z-index:1000;
+                '></div>";
     $return .= "<div id='$graph_id' class='";
 
     if ($params['type'] == 'area_simple') {
@@ -250,15 +262,17 @@ function flot_area_graph(
         $params['height'] = 1;
     }
 
-    if (!$vconsole) {
-        $return .= "<div id='overview_$graph_id' class='overview_graph'
-						style='margin:0px; margin-top:30px; margin-bottom:50px; width: ".$params['width']."px; height: 200px;'></div>";
+    if ((bool) $params['vconsole'] === false) {
+        $return .= '<div id="overview_'.$graph_id.'" class="overview_graph" style="margin:0px; margin-top:30px; margin-bottom:50px; width:'.$params['width'].'px; height: 200px;"></div>';
+        $legend_top = 10;
+        if (empty($params['show_legend']) === false) {
+            $legend_top = (20 + (count($legend) * 18));
+        }
 
-        if ($water_mark != '') {
-            $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark['url']."'></div>";
-            $watermark = 'true';
-        } else {
-            $watermark = 'false';
+        if ($water_mark != '' && (bool) $params['dashboard'] === false) {
+            $return .= '<div id="watermark_'.$graph_id.'" style="position:absolute; top: '.$legend_top.'px; left: calc(100% - 100px);">';
+            $return .= '<img id="watermark_image_'.$graph_id.'" src="'.$water_mark['url'].'">';
+            $return .= '</div>';
         }
     }
 
@@ -266,20 +280,18 @@ function flot_area_graph(
         $series_type_unique['data_'.$graph_id.'_'.$k] = $v;
     }
 
-    /*
-        // Store data series in javascript format.
-        $extra_width = (int) ($params['width'] / 3);
-        $return .= "<div id='extra_$graph_id'
-        style='font-size: ".$params['font_size'].'pt;
-        display:none; position:absolute; overflow: auto;
-        max-height: '.($params['height'] + 50).'px;
-        width: '.$extra_width."px;
-        background:#fff; padding: 2px 2px 2px 2px;
-        border: solid #000 1px;'></div>";
+    // Store data series in javascript format.
+    $extra_width = (int) ($params['width'] / 3);
+    $return .= "<div id='extra_$graph_id'
+    style='font-size: ".$params['font_size'].'pt;
+    display:none; position:absolute; overflow: auto;
+    max-height: '.($params['height'] + 50).'px;
+    width: '.$extra_width."px;
+    background:#fff; padding: 2px 2px 2px 2px;
+    border: solid #000 1px;'></div>";
 
-        // Trick to get translated string from javascript.
-        $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
-    */
+    // Trick to get translated string from javascript.
+    $return .= html_print_input_hidden('unknown_text', __('Unknown'), true);
 
     $values = json_encode($array_data);
 
@@ -304,7 +316,6 @@ function flot_area_graph(
     $return .= $legend.", \n";
     $return .= $series_type.", \n";
     $return .= $color.", \n";
-    $return .= $watermark.", \n";
     $return .= $date_array.", \n";
     $return .= $data_module_graph.", \n";
     $return .= $params.", \n";
@@ -330,33 +341,29 @@ function menu_graph(
     $graph_id,
     $params
 ) {
+    global $config;
+
     $return = '';
     $threshold = false;
     if ($yellow_threshold != $yellow_up || $red_threshold != $red_up) {
         $threshold = true;
     }
 
-    $return .= "<div id='general_menu_$graph_id' class='menu_graph' style='
-                    width: 20px;
-                    height: 150px;
-                    left:100%;
-                    position: absolute;
-                    top: 0px;
-                    background-color: tranparent;'>";
+    $return .= "<div id='general_menu_$graph_id' class='menu_graph'>";
     $return .= "<div id='menu_$graph_id' "."style='display: none; ".'text-align: center;'.'position: relative;'."border-bottom: 0px;'>
-        <a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$params['homeurl']."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+        <a href='javascript:'><img id='menu_cancelzoom_$graph_id' class='invert_filter' src='".$params['homeurl'].'images/operation.png'."' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
     if ($threshold) {
-        $return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$params['homeurl']."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
+        $return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$params['homeurl'].'images/chart_curve_threshold.png'."' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
     }
 
     if ($params['show_overview']) {
         $return .= " <a href='javascript:'>
-            <img id='menu_overview_$graph_id' class='menu_overview' src='".$params['homeurl']."images/chart_curve_overview.png' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>";
+            <img id='menu_overview_$graph_id' class='menu_overview' src='".$params['homeurl'].'images/chart_curve_overview.png'."' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>";
     }
 
     // Export buttons.
     if ($params['show_export_csv']) {
-        $return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl']."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+        $return .= "<a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl'].'images/csv_grey.png'."' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
     }
 
     $return .= '</div>';
@@ -366,10 +373,22 @@ function menu_graph(
 }
 
 
-//
-//
-//
-// Prints a FLOT pie chart
+/**
+ * Pie chart.
+ *
+ * @param array   $values          Values.
+ * @param array   $labels          Labels.
+ * @param integer $width           Width.
+ * @param integer $height          Height.
+ * @param boolean $water_mark      Water mark.
+ * @param string  $font            Font.
+ * @param integer $font_size       Font Size.
+ * @param string  $legend_position Psition Legend.
+ * @param string  $colors          Array Colors.
+ * @param boolean $hide_labels     Hide labels.
+ *
+ * @return void
+ */
 function flot_pie_chart(
     $values,
     $labels,
@@ -382,9 +401,9 @@ function flot_pie_chart(
     $colors='',
     $hide_labels=false
 ) {
-    // include_javascript_dependencies_flot_graph();
-    $series = sizeof($values);
-    if (($series != sizeof($labels)) || ($series == 0)) {
+    $series = count($values);
+
+    if (($series !== count($labels)) || ($series === 0)) {
         return;
     }
 
@@ -397,14 +416,14 @@ function flot_pie_chart(
 
         case 'right':
         default:
-            // TODO FOR TOP OR LEFT OR RIGHT
+            // TODO FOR TOP OR LEFT OR RIGHT.
         break;
     }
 
-    $return = "<div id='$graph_id' class='graph' style='width: ".$width.'px; height: '.$height."px;'></div>";
+    $return = "<div id='".$graph_id."' class='graph' style='width: ".$width.'px; height: '.$height."px;'></div>";
 
     if ($water_mark != '') {
-        $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
+        $return .= "<div id='watermark_$graph_id' class='invisible absolute'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
         $water_mark = 'true';
     } else {
         $water_mark = 'false';
@@ -414,15 +433,24 @@ function flot_pie_chart(
 
     $labels = implode($separator, $labels);
     $values = implode($separator, $values);
-    if (!empty($colors)) {
+    if (empty($colors) === false) {
         $colors = implode($separator, $colors);
     }
 
-    // include_javascript_dependencies_flot_graph();
     $return .= "<script type='text/javascript'>";
-    $return .= "pandoraFlotPie('$graph_id', '$values', '$labels',
-		'$series', '$width', $font_size, $water_mark, '$separator',
-		'$legend_position', '$height', '$colors', ".json_encode($hide_labels).')';
+    $return .= "pandoraFlotPie(
+        '$graph_id',
+        '$values',
+        '$labels',
+        '$series',
+        '$width',
+        $font_size,
+        $water_mark,
+        '$separator',
+        '$legend_position',
+        '$height',
+        '$colors',
+        ".json_encode($hide_labels).')';
     $return .= '</script>';
 
     return $return;
@@ -478,7 +506,7 @@ function flot_custom_pie_chart(
     $return = "<div id='$graph_id' class='graph noresizevc' style='width: ".$width.'px; height: '.$height."px;'></div>";
 
     if ($water_mark != '') {
-        $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark['url']."'></div>";
+        $return .= "<div id='watermark_$graph_id' class='invisible absolute'><img id='watermark_image_$graph_id' src='".$water_mark['url']."'></div>";
         $water_mark = 'true';
     } else {
         $water_mark = 'false';
@@ -524,10 +552,10 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     $return .= "<div id='$graph_id' class='graph' style='width: ".$width.'px; height: '.$height."px; padding-left: 20px;'></div>";
-    $return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
+    $return .= "<div id='value_$graph_id' class='flot_container'></div>";
 
     if ($water_mark != '') {
-        $return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
+        $return .= "<div id='watermark_$graph_id' class='invisible absolute'><img id='watermark_image_$graph_id' src='$water_mark'></div>";
         $watermark = 'true';
     } else {
         $watermark = 'false';
@@ -638,7 +666,7 @@ function flot_vcolumn_chart(array $options)
     $return .= '</div>';
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
-    $return .= '<div id="value_'.$graphId.'" style="display:none;"></div>';
+    $return .= '<div id="value_'.$graphId.'" class="invisible"></div>';
 
     // Add id to options.
     $options['graphId'] = $graphId;
@@ -714,13 +742,12 @@ function flot_slicesbar_graph(
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     $height = ((int) $height + 15);
-    if ($stat_win) {
-        $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px; display: inline-block;'></div>";
-    } else {
-        $return = "<div id='$graph_id' class='noresizevc graph $adapt_key' style='width: ".$width.'%; height: '.$height."px;'></div>";
-    }
 
-    $return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
+    $style = 'width:'.$width.'%;';
+    $style .= 'height:'.$height.'px;';
+    $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
+
+    $return .= "<div id='value_".$graph_id."' class='flot_container'></div>";
 
     // Set a weird separator to serialize and unserialize
     // passing data from php to javascript.
@@ -735,7 +762,7 @@ function flot_slicesbar_graph(
     $fontsize = $config['font_size'];
     $fontpath = $config['fontpath'];
 
-    $return .= '<div id="extra_'.$graph_id.'" class="slicebar-box-hover-styles" style="display:none; font-size:'.$fontsize.'"></div>';
+    $return .= '<div id="extra_'.$graph_id.'" class="slicebar-box-hover-styles invisible" style="font-size:'.$fontsize.'"></div>';
 
     $maxticks = (int) 20;
     if ($sizeForTicks === false) {

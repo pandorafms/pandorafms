@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@
 
 // Begin.
 global $config;
+
 
 require_once 'include/functions_events.php';
 require_once 'include/functions_agents.php';
@@ -114,7 +115,9 @@ if ($get_comments) {
             sprintf(
                 ' HAVING max_id_evento = %d',
                 $event['id_evento']
-            )
+            ),
+            // True for show comments of validated events.
+            true
         );
         if ($events !== false) {
             $event = $events[0];
@@ -331,17 +334,52 @@ if ($get_filter_values) {
 
     if ($event_filter === false) {
         $event_filter = [
-            'status'        => EVENT_NO_VALIDATED,
-            'event_view_hr' => $config['event_view_hr'],
-            'group_rep'     => 1,
-            'tag_with'      => [],
-            'tag_without'   => [],
-            'history'       => false,
+            'status'            => EVENT_NO_VALIDATED,
+            'event_view_hr'     => $config['event_view_hr'],
+            'group_rep'         => 1,
+            'tag_with'          => [],
+            'tag_without'       => [],
+            'history'           => false,
+            'module_search'     => '',
+            'filter_only_alert' => '-1',
+            'user_comment'      => '',
+            'id_extra'          => '',
+            'id_user_ack'       => '',
+            'date_from'         => '',
+            'date_to'           => '',
+            'severity'          => '',
+            'event_type'        => '',
+            'group_rep'         => 0,
+            'id_group'          => 0,
+            'id_group_filter'   => 0,
+            'group_name'        => 'All',
+            'text_agent'        => '',
+            'id_agent'          => 0,
+            'id_name'           => 'None',
+            'filter_id'         => 0,
         ];
+    } else {
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
+        $a = array_keys(users_get_groups(false));
+        $event_filter['group_name'] = '';
+        foreach ($a as $key => $value) {
+            if ($value == $event_filter['id_group']) {
+                $event_filter['group_name'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $event_filter['id_group_filter']);
+                if ($event_filter['group_name'] === false) {
+                    $event_filter['group_name'] = __('All');
+                }
+            }
+        }
+
+        $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
     }
 
     $event_filter['search'] = io_safe_output($event_filter['search']);
     $event_filter['id_name'] = io_safe_output($event_filter['id_name']);
+    $event_filter['text_agent'] = io_safe_output($event_filter['text_agent']);
+    $event_filter['source'] = io_safe_output($event_filter['source']);
+
+
     $event_filter['tag_with'] = base64_encode(
         io_safe_output($event_filter['tag_with'])
     );
@@ -353,7 +391,7 @@ if ($get_filter_values) {
 }
 
 if ($load_filter_modal) {
-    $current = get_parameter('current_filter', '');
+    $current = db_get_value_filter('default_event_filter', 'tusuario', ['id_user' => $config['id_user']]);
     $filters = events_get_event_filter_select();
     $user_groups_array = users_get_groups_for_select(
         $config['id_user'],
@@ -433,10 +471,12 @@ function load_form_filter() {
         },
         function (data) {
             jQuery.each (data, function (i, val) {
+                console.log(val);
                 if (i == 'id_name')
                     $("#hidden-id_name").val(val);
-                if (i == 'id_group')
-                    $("#id_group").val(val);
+                if (i == 'id_group'){
+                    $('#id_group').val(val);
+                }
                 if (i == 'event_type')
                     $("#event_type").val(val);
                 if (i == 'severity') {
@@ -446,9 +486,9 @@ function load_form_filter() {
                 if (i == 'status')
                     $("#status").val(val);
                 if (i == 'search')
-                    $("#text-search").val(val);
+                    $('#text-search').val(val);
                 if (i == 'text_agent')
-                    $("#text_id_agent").val(val);
+                    $('input[name=text_agent]').val(val);
                 if (i == 'id_agent')
                     $('input:hidden[name=id_agent]').val(val);
                 if (i == 'id_agent_module')
@@ -477,6 +517,15 @@ function load_form_filter() {
                     $("#text-user_comment").val(val);
                 if (i == 'id_source_event')
                     $("#text-id_source_event").val(val);
+                if(i == 'date_from')
+                    $("#text-date_from").val(val);
+                if(i == 'date_to')
+                    $("#text-date_to").val(val);
+                if(i == 'module_search')
+                    $('input[name=module_search]').val(val);
+                if(i == 'group_name')
+                $("#select2-id_group_filter-container").text(val);
+
             });
             reorder_tags_inputs();
             // Update the info with the loaded filter
@@ -622,7 +671,7 @@ if ($save_filter_modal) {
                 __('Save filter'),
                 'save_filter',
                 false,
-                'class="sub upd" style="float:right;" onclick="save_new_filter();"',
+                'class="sub upd float-right" onclick="save_new_filter();"',
                 true
             );
         echo '</div>';
@@ -871,6 +920,11 @@ if ($get_response_description) {
 }
 
 if ($get_response_params) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $params = db_get_value('params', 'tevent_response', 'id', $response_id);
@@ -885,6 +939,11 @@ if ($get_response_params) {
 }
 
 if ($get_response_target) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = (int) get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id');
@@ -901,6 +960,11 @@ if ($get_response_target) {
 }
 
 if ($get_response) {
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
     $response_id = get_parameter('response_id');
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
@@ -917,11 +981,21 @@ if ($get_response) {
 if ($perform_event_response) {
     global $config;
 
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
+
+    $target = get_parameter('target', '');
     $response_id = get_parameter('response_id');
     $event_id = (int) get_parameter('event_id');
     $server_id = (int) get_parameter('server_id', 0);
 
-    $command = events_get_response_target($event_id, $response_id, $server_id);
+    if (empty($target)) {
+        $command = events_get_response_target($event_id, $response_id, $server_id);
+    } else {
+        $command = $target;
+    }
 
     $event_response = db_get_row('tevent_response', 'id', $response_id);
 
@@ -1000,7 +1074,7 @@ if ($perform_event_response) {
     }
 
     if ($ret_val != 0) {
-        echo "<div style='text-align:left'>";
+        echo "<div class='left'>";
         echo __('Error executing response');
         echo '</div><br>';
     }
@@ -1010,6 +1084,11 @@ if ($perform_event_response) {
 
 if ($dialogue_event_response) {
     global $config;
+
+    if (! check_acl($config['id_user'], 0, 'EW')) {
+        echo 'unauthorized';
+        return;
+    }
 
     $event_id = get_parameter('event_id');
     $response_id = get_parameter('response_id');
@@ -1027,7 +1106,7 @@ if ($dialogue_event_response) {
     switch ($event_response['type']) {
         case 'command':
             if ($massive) {
-                echo "<div style='text-align:left'>";
+                echo "<div class='left'>";
                 echo $prompt.sprintf(
                     '(Event #'.$event_id.') '.__(
                         'Executing command: %s',
@@ -1036,16 +1115,16 @@ if ($dialogue_event_response) {
                 );
                 echo '</div><br>';
 
-                echo "<div id='response_loading_command_".$out_iterator."' style='display:none'>";
+                echo "<div id='response_loading_command_".$out_iterator."' class='invisible'>";
                 echo html_print_image(
                     'images/spinner.gif',
                     true
                 );
                 echo '</div>';
-                echo "<br><div id='response_out_".$out_iterator."' style='text-align:left'></div>";
+                echo "<br><div id='response_out_".$out_iterator."' class='invisible'></div>";
 
                 if ($end) {
-                    echo "<br><div id='re_exec_command_".$out_iterator."' style='display:none;'>";
+                    echo "<br><div id='re_exec_command_".$out_iterator."' class='invisible'>";
                     html_print_button(
                         __('Execute again'),
                         'btn_str',
@@ -1053,7 +1132,7 @@ if ($dialogue_event_response) {
                         'execute_event_response(false);',
                         "class='sub next'"
                     );
-                    echo "<span id='execute_again_loading' style='display:none'>";
+                    echo "<span id='execute_again_loading' class='invisible'>";
                     echo html_print_image(
                         'images/spinner.gif',
                         true
@@ -1062,14 +1141,15 @@ if ($dialogue_event_response) {
                     echo '</div>';
                 }
             } else {
-                echo "<div style='text-align:left'>";
-                echo $prompt.sprintf(__('Executing command: %s', $command));
+                echo "<div class='left'>";
+
+                echo $prompt."Executing command: $command";
                 echo '</div><br>';
 
-                echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
-                echo "<br><div id='response_out' style='text-align:left'></div>";
+                echo "<div id='response_loading_command' class='invisible'>".html_print_image('images/spinner.gif', true).'</div>';
+                echo "<br><div id='response_out' class='left'></div>";
 
-                echo "<br><div id='re_exec_command' style='display:none;'>";
+                echo "<br><div id='re_exec_command' class='invisible'>";
                 html_print_button(__('Execute again'), 'btn_str', false, "perform_response({'target':'".$command."','event_id':".$event_id.",'server_id':".$server_id.'}, '.$response_id.');', "class='sub next'");
 
                 echo '</div>';
@@ -1078,7 +1158,7 @@ if ($dialogue_event_response) {
 
         case 'url':
             $command = str_replace('localhost', $_SERVER['SERVER_NAME'], $command);
-            echo "<iframe src='".$command."' id='divframe' style='width:100%;height:90%;'></iframe>";
+            echo "<iframe src='".$command."' id='divframe' class='w100p height_90p'></iframe>";
         break;
 
         default:
@@ -1090,7 +1170,7 @@ if ($dialogue_event_response) {
 if ($add_comment) {
     $aviability_comment = true;
     $comment = get_parameter('comment');
-    if (preg_match('<script>', io_safe_output($comment))) {
+    if (preg_match('/script/i', io_safe_output($comment))) {
         $aviability_comment = false;
         $return = false;
     }
@@ -1114,12 +1194,37 @@ if ($change_status) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
 
-    $return = events_change_status(explode(',', $event_ids), $new_status, $meta, $history);
+    $return = events_change_status(
+        explode(',', $event_ids),
+        $new_status,
+        $meta,
+        $history
+    );
 
-    if ($return) {
-        echo 'status_ok';
+    if ($return !== false) {
+        echo json_encode(
+            [
+                'status' => 'status_ok',
+                'user'   => db_get_value(
+                    'fullname',
+                    'tusuario',
+                    'id_user',
+                    $config['id_user']
+                ),
+            ]
+        );
     } else {
-        echo 'status_error';
+        echo json_encode(
+            [
+                'status' => 'status_error',
+                'user'   => db_get_value(
+                    'fullname',
+                    'tusuario',
+                    'id_user',
+                    $config['id_user']
+                ),
+            ]
+        );
     }
 
     return;
@@ -1234,14 +1339,34 @@ if ($get_extended_event) {
 
     // Tabs.
     $tabs = "<ul class=''>";
-    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png', true).'<span>'.__('General').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image(
+        'images/lightning_go.png',
+        true,
+        ['class' => 'invert_filter']
+    ).'<span>'.__('General').'</span></a></li>';
     if (events_has_extended_info($event['id_evento']) === true) {
-        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image('images/zoom.png', true).'<span>'.__('Related').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_related_page' id='link_related'>".html_print_image(
+            'images/zoom.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'<span>'.__('Related').'</span></a></li>';
     }
 
-    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png', true).'<span>'.__('Details').'</span></a></li>';
-    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png', true).'<span>'.__('Agent fields').'</span></a></li>';
-    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png', true).'<span>'.__('Comments').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image(
+        'images/zoom.png',
+        true,
+        ['class' => 'invert_filter']
+    ).'<span>'.__('Details').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image(
+        'images/custom_field_col.png',
+        true,
+        ['class' => 'invert_filter']
+    ).'<span>'.__('Agent fields').'</span></a></li>';
+    $tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image(
+        'images/pencil.png',
+        true,
+        ['class' => 'invert_filter']
+    ).'<span>'.__('Comments').'</span></a></li>';
 
     if (!$readonly
         && ((tags_checks_event_acl(
@@ -1258,11 +1383,19 @@ if ($get_extended_event) {
             $childrens_ids
         )))
     ) {
-        $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png', true).'<span>'.__('Responses').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
+            'images/event_responses.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'<span>'.__('Responses').'</span></a></li>';
     }
 
     if ($event['custom_data'] != '') {
-        $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png', true).'<span>'.__('Custom data').'</span></a></li>';
+        $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image(
+            'images/custom_field_col.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'<span>'.__('Custom data').'</span></a></li>';
     }
 
     $tabs .= '</ul>';
@@ -1348,14 +1481,14 @@ if ($get_extended_event) {
 
     $comments = '<div id="extended_event_comments_page" class="extended_event_pages"></div>';
 
-    $notifications = '<div id="notification_comment_error" style="display:none">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
-    $notifications .= '<div id="notification_comment_success" style="display:none">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_error" style="display:none">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
-    $notifications .= '<div id="notification_status_success" style="display:none">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_error" style="display:none">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
-    $notifications .= '<div id="notification_owner_success" style="display:none">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
+    $notifications = '<div id="notification_comment_error" class="invisible">'.ui_print_error_message(__('Error adding comment'), '', true).'</div>';
+    $notifications .= '<div id="notification_comment_success" class="invisible">'.ui_print_success_message(__('Comment added successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_error" class="invisible">'.ui_print_error_message(__('Error changing event status'), '', true).'</div>';
+    $notifications .= '<div id="notification_status_success" class="invisible">'.ui_print_success_message(__('Event status changed successfully'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_error" class="invisible">'.ui_print_error_message(__('Error changing event owner'), '', true).'</div>';
+    $notifications .= '<div id="notification_owner_success" class="invisible">'.ui_print_success_message(__('Event owner changed successfully'), '', true).'</div>';
 
-    $loading = '<div id="response_loading" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
+    $loading = '<div id="response_loading" class="invisible">'.html_print_image('images/spinner.gif', true).'</div>';
 
     $i = 0;
     $tab['general'] = $i++;
@@ -1474,8 +1607,8 @@ if ($get_events_details) {
         true
     );
 
-    $out = '<table class="eventtable" style="width:100%;height:100%;padding:0px 0px 0px 0px; border-spacing: 0px; margin: 0px 0px 0px 0px;">';
-    $out .= '<tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td></td></tr>';
+    $out = '<table class="eventtable eventtable_class"">';
+    $out .= '<tr class="tr_eventtable"><td></td><td></td></tr>';
     foreach ($events as $event) {
         switch ($event['estado']) {
             case 0:
@@ -1498,25 +1631,25 @@ if ($get_events_details) {
             break;
         }
 
-        $out .= '<tr class="'.get_priority_class($event['criticity']).'" style="height: 25px;">';
-        $out .= '<td class="'.get_priority_class($event['criticity']).'" style="font-size:7pt" colspan=2>';
+        $out .= '<tr class="'.get_priority_class($event['criticity']).' height_25px">';
+        $out .= '<td class="'.get_priority_class($event['criticity']).' font_7pt" colspan=2>';
         $out .= io_safe_output($event['evento']);
         $out .= '</td></tr>';
 
-        $out .= '<tr class="'.get_priority_class($event['criticity']).'" style="font-size:0px; height: 25px;">';
-        $out .= '<td class="'.get_priority_class($event['criticity']).'" style="width: 18px; text-align:center;">';
-        $out .= html_print_image(ui_get_full_url('images/clock.png', false, false, false), true, ['title' => __('Timestamp')], false, true);
+        $out .= '<tr class="'.get_priority_class($event['criticity']).' font_0px height_25px">';
+        $out .= '<td class="'.get_priority_class($event['criticity']).' w18px center">';
+        $out .= html_print_image(ui_get_full_url('images/clock.png', false, false, false), true, ['title' => __('Timestamp'), 'class' => 'invert_filter'], false, true);
 
         $out .= '</td>';
-        $out .= '<td class="'.get_priority_class($event['criticity']).'" style="font-size:7pt">';
+        $out .= '<td class="'.get_priority_class($event['criticity']).' font_17pt">';
         $out .= date($config['date_format'], $event['utimestamp']);
         $out .= '</td></tr>';
 
-        $out .= '<tr class="'.get_priority_class($event['criticity']).'" style="font-size:0px; height: 25px;">';
-        $out .= '<td class="'.get_priority_class($event['criticity']).'" style="width: 18px; text-align:center;">';
+        $out .= '<tr class="'.get_priority_class($event['criticity']).' font_0px height_25px">';
+        $out .= '<td class="'.get_priority_class($event['criticity']).' w18px center">';
         $out .= html_print_image($img, true, ['title' => $title], false, true);
         $out .= '</td>';
-        $out .= '<td class="'.get_priority_class($event['criticity']).'" style="font-size:7pt">';
+        $out .= '<td class="'.get_priority_class($event['criticity']).' font_17pt">';
         $out .= $title;
         if ($event['estado'] == 1) {
             if (empty($event['id_usuario'])) {
@@ -1530,8 +1663,8 @@ if ($get_events_details) {
 
         $out .= '</td></tr>';
 
-        $out .= '<tr style="font-size:0px; heigth: 0px; background: #999;"><td></td><td>';
-        $out .= '</td></tr><tr style="font-size:0px; heigth: 0px; background: #ccc;"><td></td><td>';
+        $out .= '<tr class="tr_ackuser"><td></td><td>';
+        $out .= '</td></tr><tr class="tr_eventtable"><td></td><td>';
         $out .= '</td></tr>';
     }
 
@@ -1558,8 +1691,8 @@ if ($table_events) {
         'event_condition',
         'AND'
     );
-    echo '<div style="display: flex;" id="div_all_events_24h">';
-        echo '<label style="margin: 0 1em 0 2em;"><b>'.__('Show all Events 24h').'</b></label>';
+    echo '<div class="flex" id="div_all_events_24h">';
+        echo '<label class="mrgn_1_2em"><b>'.__('Show all Events 24h').'</b></label>';
         echo html_print_switch(
             [
                 'name'  => 'all_events_24h',
@@ -1724,7 +1857,7 @@ if ($get_table_response_command) {
         __('Execute'),
         'enter_command',
         false,
-        'class="sub next" style="float:right; margin-top:15px; margin-right:25px;"',
+        'class="sub next float-right mrgn_top_15px mrgn_right_25px"',
         true
     );
 

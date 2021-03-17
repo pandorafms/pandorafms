@@ -8,6 +8,23 @@ div#vc-controls {
   position: fixed;
   top: 30px;
   right: 20px;
+  width: 350px;
+  background-color: #ececec;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+div#vc-controls div#menu_tab {
+  margin: 0px;
+}
+
+div#vc-controls ul.white-box-content {
+  background-color: #ececec;
+  border: 0px;
 }
 
 div#vc-controls div.vc-title,
@@ -217,7 +234,12 @@ input.service_min {
 input.service_min[disabled] {
   background: url(../../images/box.disabled.png) no-repeat center;
 }
-
+input.network_link_min {
+  background: url(../../images/network_link_item.png) no-repeat center;
+}
+input.network_link_min[disabled] {
+  background: url(../../images/network_link_item.disabled.png) no-repeat center;
+}
 input.group_item_min {
   background: url(../../images/group_green.png) no-repeat center;
 }

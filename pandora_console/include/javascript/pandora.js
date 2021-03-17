@@ -275,7 +275,10 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
           );
         }
       }
-      jQuery.each(data, function(i, val) {
+
+      var all_common_modules = [];
+
+      $.each(data, function(i, val) {
         var s = js_html_entity_decode(val);
 
         $("#module").append(
@@ -285,8 +288,12 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             .attr("title", s)
         );
 
+        all_common_modules.push(i);
         $("#module").fadeIn("normal");
       });
+
+      $("#hidden-all_common_modules").val(all_common_modules.toString());
+
       if (typeof selected !== "undefined") $("#module").attr("value", selected);
 
       $("#module")
@@ -724,12 +731,14 @@ function post_process_select_init_unit(name, selected) {
       );
       $("#text-" + name + "_text").val("");
     } else {
-      $("#" + name + "_select option[value=none]").attr("selected", true);
+      $("#" + name + "_select option[value=0]").attr("selected", true);
       $("#" + name + "_default").hide();
       $("#" + name + "_manual").show();
     }
   } else {
-    $("#" + name + "_select option[value=none]").attr("selected", true);
+    $("#" + name + "_select option[value=0]").attr("selected", true);
+    $("#" + name + "_default").hide();
+    $("#" + name + "_manual").show();
   }
 
   $("#" + name + "_select").change(function() {
@@ -786,13 +795,12 @@ function post_process_select_events_unit(name, selected) {
 function post_process_select_events(name) {
   $("." + name + "_toggler").click(function() {
     var value = $("#text-" + name + "_text").val();
-
     var count = $("#" + name + "_select option").filter(function(i, item) {
       if (Number($(item).val()) == Number(value)) return true;
       else return false;
     }).length;
 
-    if (count != 1) {
+    if (count < 1) {
       $("#" + name + "_select").append(
         $("<option>")
           .val(value)
@@ -844,7 +852,7 @@ function post_process_select_events(name) {
 function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
   $("#" + name + "_manual").css("display", "none");
-  $("#" + name + "_default").css("display", "flex");
+  $("#" + name + "_default").css("display", "inline");
 
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
@@ -858,7 +866,7 @@ function period_select_init(name, allow_zero) {
     }
   } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
-    $("#" + name + "_manual").css("display", "flex");
+    $("#" + name + "_manual").css("display", "inline");
     $("#" + name + "_default").css("display", "none");
   }
 }
@@ -947,13 +955,13 @@ function selectFirst(name) {
  */
 function toggleBoth(name) {
   if ($("#" + name + "_default").css("display") == "none") {
-    $("#" + name + "_default").css("display", "flex");
+    $("#" + name + "_default").css("display", "inline");
   } else {
     $("#" + name + "_default").css("display", "none");
   }
 
   if ($("#" + name + "_manual").css("display") == "none") {
-    $("#" + name + "_manual").css("display", "flex");
+    $("#" + name + "_manual").css("display", "inline");
   } else {
     $("#" + name + "_manual").css("display", "none");
   }
@@ -1292,6 +1300,72 @@ function openURLTagWindow(url) {
     "",
     "width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no"
   );
+}
+
+/**
+ *
+ * Inicialize tinyMCE with customized parameters
+ *
+ * @param added_config  Associative Array. Config to add adding default.
+ */
+
+function defineTinyMCE(added_config) {
+  // Default values
+  var buttons1 =
+    "bold,italic,underline,|,link,image,|,cut,copy,paste,|,undo,redo,|,forecolor,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright";
+  var elements = added_config["elements"];
+  var plugins = added_config["plugins"];
+  // Initialize with fixed parameters. Some parameters must be initialized too.
+  tinyMCE.init({
+    mode: "exact",
+    theme: "advanced",
+    elements: elements,
+    plugins: plugins,
+    theme_advanced_buttons1: buttons1,
+    theme_advanced_toolbar_location: "top",
+    theme_advanced_toolbar_align: "left",
+    theme_advanced_statusbar_location: "none",
+    convert_urls: false,
+    element_format: "html"
+  });
+
+  if (!isEmptyObject(added_config)) {
+    // If use asterisk mask, you can add at end of buttons new buttons.
+    for (var key in added_config) {
+      switch (key) {
+        case "theme_advanced_buttons1*":
+          tinyMCE.settings.theme_advanced_buttons1 =
+            buttons1 + ",|," + added_config[key];
+          break;
+        case "theme_advanced_font_sizes":
+          tinyMCE.settings.theme_advanced_font_sizes =
+            "4pt=.visual_font_size_4pt, " +
+            "6pt=.visual_font_size_6pt, " +
+            "8pt=.visual_font_size_8pt, " +
+            "10pt=.visual_font_size_10pt, " +
+            "12pt=.visual_font_size_12pt, " +
+            "14pt=.visual_font_size_14pt, " +
+            "18pt=.visual_font_size_18pt, " +
+            "24pt=.visual_font_size_24pt, " +
+            "28pt=.visual_font_size_28pt, " +
+            "36pt=.visual_font_size_36pt, " +
+            "48pt=.visual_font_size_48pt, " +
+            "60pt=.visual_font_size_60pt, " +
+            "72pt=.visual_font_size_72pt, " +
+            "84pt=.visual_font_size_84pt, " +
+            "96pt=.visual_font_size_96pt, " +
+            "116pt=.visual_font_size_116pt, " +
+            "128pt=.visual_font_size_128pt, " +
+            "140pt=.visual_font_size_140pt, " +
+            "154pt=.visual_font_size_154pt, " +
+            "196pt=.visual_font_size_196pt";
+          break;
+        default:
+          tinyMCE.settings[key] = added_config[key];
+          break;
+      }
+    }
+  }
 }
 
 function removeTinyMCE(elementID) {

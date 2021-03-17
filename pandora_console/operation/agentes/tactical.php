@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -115,8 +115,8 @@ if (!empty($all_data)) {
     $data['server_sanity'] = format_numeric((100 - $data['module_sanity']), 1);
 }
 
-echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 30em; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<table border=0 class="w100p"><tr>';
+echo '<td class="tactical_left_column" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -175,7 +175,7 @@ ui_toggle(
 
 echo '</td>';
 // Left column
-echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
+echo '<td class="align-top w75p pdd_t_0px" id="rightcolumn">';
 
 // ---------------------------------------------------------------------
 // Last events information
@@ -209,7 +209,7 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
     $out .= '<fieldset class="databox tactical_set" id="total_event_graph">
 			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
     $out .= '</td><td>';

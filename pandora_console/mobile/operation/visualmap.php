@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,7 +140,7 @@ class Visualmap
         $ui->contentAddHtml(
             "<script type=\"text/javascript\">
 				function ajax_load_map() {
-					$('#rendered_visual_map').html('<div style=\"text-align: center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					$('#rendered_visual_map').html('<div class=\"center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var map_max_width = window.innerWidth * 0.90;
 					var map_max_height = (window.innerHeight - 47) * 0.90;

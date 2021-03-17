@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@
  */
 
 namespace PandoraFMS\Dashboard;
+
+use PandoraFMS\Dashboard\Manager;
 
 /**
  * Tree view Widgets.
@@ -342,6 +344,12 @@ class TreeViewWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -352,6 +360,7 @@ class TreeViewWidget extends Widget
                 'privilege'      => 'AR',
                 'selected'       => $values['groupId'],
                 'return'         => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -547,12 +556,7 @@ class TreeViewWidget extends Widget
             true
         );
 
-        $base_url = \ui_get_full_url(
-            false,
-            false,
-            false,
-            \is_metaconsole()
-        );
+        $base_url = \ui_get_full_url('/');
 
         // Spinner.
         $output .= \html_print_image(
@@ -585,8 +589,9 @@ class TreeViewWidget extends Widget
 
         $settings = [
             'page'         => 'include/ajax/tree.ajax',
-            'user'         => $config['id_user'],
-            'hash'         => $hash,
+            'id_user'      => $config['id_user'],
+            'auth_class'   => 'PandoraFMS\Dashboard\Manager',
+            'auth_hash'    => Manager::generatePublicHash(),
             'type'         => $tab,
             'cellId'       => $id_cell,
             'ajaxUrl'      => ui_get_full_url('ajax.php', false, false, false),
@@ -651,7 +656,7 @@ class TreeViewWidget extends Widget
         ];
 
         // Show the modal window of an module.
-        $output .= '<div id="module_details_window" style="display:none;">';
+        $output .= '<div id="module_details_window" class="invisible">';
         $output .= '</div>';
 
         // Script.

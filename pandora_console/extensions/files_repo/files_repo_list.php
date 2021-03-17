@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,6 +15,8 @@ global $config;
 
 $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
 require_once $full_extensions_dir.'files_repo/functions_files_repo.php';
+
+
 
 $offset = (int) get_parameter('offset');
 $filter = [];
@@ -61,19 +63,34 @@ if (!empty($files)) {
         $data = [];
 
         // Prepare the filename for the get_file.php script
-        $document_root = str_replace('\\', '/', io_safe_output($_SERVER['DOCUMENT_ROOT']));
-        $file['location'] = str_replace('\\', '/', io_safe_output($file['location']));
+        $document_root = str_replace(
+            '\\',
+            '/',
+            io_safe_output($_SERVER['DOCUMENT_ROOT'])
+        );
+        $file['location'] = str_replace(
+            '\\',
+            '/',
+            io_safe_output($file['location'])
+        );
         $relative_path = str_replace($document_root, '', $file['location']);
         $file_name = explode('/', $file['location']);
         $file_decoded = $file_name[(count($file_name) - 1)];
         $file_path = base64_encode($file_decoded);
         $hash = md5($file_path.$config['dbpass']);
-        $url = ui_get_full_url('include/get_file.php?file='.urlencode($file_path).'&hash='.$hash);
+        $url = ui_get_full_url(
+            'include/get_file.php?file='.urlencode($file_path).'&hash='.$hash
+        );
         $date_format = ($config['date_format']) ? io_safe_output($config['date_format']) : 'F j, Y - H:m';
 
         $data[0] = "<a href=\"$url\" target=\"_blank\">".$file['name'].'</a>';
         // Name
-        $data[1] = ui_print_truncate_text($file['description'], 'description', true, true);
+        $data[1] = ui_print_truncate_text(
+            $file['description'],
+            'description',
+            true,
+            true
+        );
         // Description
         $data[2] = ui_format_filesize($file['size']);
         // Size
@@ -83,30 +100,58 @@ if (!empty($files)) {
         $data[4] = '';
         $table->cellclass[][4] = 'action_buttons';
         if (!empty($file['hash'])) {
-            $public_url = ui_get_full_url(EXTENSIONS_DIR.'/files_repo/files_repo_get_file.php?file='.$file['hash']);
+            $public_url = ui_get_full_url(
+                EXTENSIONS_DIR.'/files_repo/files_repo_get_file.php?file='.$file['hash']
+            );
             $message = __('Copy to clipboard').': Ctrl+C -> Enter';
             $action = "window.prompt('$message', '$public_url');";
             $data[4] .= "<a href=\"javascript:;\" onclick=\"$action\">";
-            $data[4] .= html_print_image('images/world.png', true, ['title' => __('Public link')]);
+            $data[4] .= html_print_image(
+                'images/world.png',
+                true,
+                ['title' => __('Public link')]
+            );
             // Public link image
             $data[4] .= '</a> ';
         }
 
         $data[4] .= "<a href=\"$url\" target=\"_blank\">";
-        $data[4] .= html_print_image('images/download.png', true, ['title' => __('Download'), 'style' => 'padding:3px' ]);
+        $data[4] .= html_print_image(
+            'images/download.png',
+            true,
+            [
+                'title' => __('Download'),
+                'style' => 'padding:3px',
+            ]
+        );
         // Download image
         $data[4] .= '</a>';
 
         if ($manage) {
-            $config_url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo&file_id=$file_id");
-            $data[4] .= " <a href=\"$config_url\">";
-            $data[4] .= html_print_image('images/config.png', true, ['title' => __('Edit')]);
+            $config_url = ui_get_full_url(
+                'index.php?sec=godmode/extensions&sec2=extensions/files_repo&file_id='.$file_id
+            );
+            $data[4] .= '<a href=\"$config_url\">';
+            $data[4] .= html_print_image(
+                'images/config.png',
+                true,
+                ['title' => __('Edit')]
+            );
             // Edit image
             $data[4] .= '</a>';
 
-            $delete_url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
+            $delete_url = ui_get_full_url(
+                'index.php?sec=godmode/extensions&sec2=extensions/files_repo&delete=1&file_id='.$file_id
+            );
             $data[4] .= " <a href=\"$delete_url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
-            $data[4] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+            $data[4] .= html_print_image(
+                'images/cross.png',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter',
+                ]
+            );
             // Delete image
             $data[4] .= '</a>';
         }

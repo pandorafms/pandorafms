@@ -265,7 +265,7 @@ $table_files_section->data[1][0] .= html_print_textarea(
 
 $table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
 
-$upload_file_form = '<div>';
+$upload_file_form = '<div class="w100p">';
 
 if (check_acl($config['id_user'], 0, 'IW')) {
     $upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
@@ -359,7 +359,7 @@ if (!empty($comments)) {
     $comment_table = __('No comments found');
 }
 
-$upload_comment_form = '<div>';
+$upload_comment_form = '<div class="w100p">';
 
 if (check_acl($config['id_user'], 0, 'IW')) {
     $upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';

@@ -918,7 +918,7 @@ if (isset($data)) {
     );
 }
 
-echo '<form method="post" action="'.$url.'">';
+echo '<form method="post" action="'.$url.'" class="float-right">';
 echo '<div class="right">';
 html_print_input_hidden('new_component', 1);
 html_print_select(

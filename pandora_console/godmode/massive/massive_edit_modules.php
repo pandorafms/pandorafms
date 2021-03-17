@@ -803,11 +803,11 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
             $table->data['edit36'][2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
-            $table->data['edit36'][3] = html_print_input_text('plugin_pass_snmp', '', '', 15, 60, true);
+            $table->data['edit36'][3] = html_print_input_password('plugin_pass_snmp', '', '', 15, 60, true);
             $table->data['edit37'][0] = __('Privacy method');
-            $table->data['edit37'][1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'custom_string_1', '', '', __('No change'), '', true);
+            $table->data['edit37'][1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', '', '', __('No change'), '', true);
             $table->data['edit37'][2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
-            $table->data['edit37'][3] = html_print_input_text('custom_string_2', '', '', 15, 60, true);
+            $table->data['edit37'][3] = html_print_input_password('snmp3_privacy_pass', '', '', 15, 60, true);
             $table->data['edit38'][0] = __('Auth method');
             $table->data['edit38'][1] = html_print_select(['MD5' => __('MD5'), 'SHA' => __('SHA')], 'plugin_parameter', '', '', __('No change'), '', true);
             $table->data['edit38'][2] = __('Security level');
@@ -1670,7 +1670,7 @@ $(document).ready (function () {
         }
     });
     
-    $('#tcp_send').change(function() {
+    $('#snmp_version').change(function() {
         if($(this).val() == 3) {
             $("tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38").show();
         }
@@ -2096,7 +2096,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
     }
 
     // Specific snmp reused fields
-    if (get_parameter('tcp_send', '') == 3) {
+    if (get_parameter('snmp_version', '') == 3) {
         $plugin_user_snmp = get_parameter('plugin_user_snmp', '');
         if ($plugin_user_snmp != '') {
             $values['plugin_user'] = $plugin_user_snmp;
@@ -2107,7 +2107,12 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             $values['plugin_pass'] = io_input_password($plugin_pass_snmp);
         }
 
-        $snmp3_privacy_pass = get_parameter('custom_string_2', '');
+        $snmp3_privacy_method = get_parameter('snmp3_privacy_method', '');
+        if ($snmp3_privacy_method != '') {
+            $values['custom_string_1'] = io_input_password($snmp3_privacy_method);
+        }
+
+        $snmp3_privacy_pass = get_parameter('snmp3_privacy_pass', '');
         if ($snmp3_privacy_pass != '') {
             $values['custom_string_2'] = io_input_password($snmp3_privacy_pass);
         }
@@ -2209,7 +2214,11 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         }
 
         // Set tcp_send value according to module type since the purpose of this field in database varies in case of SNMP modules.
-        if ($module['id_tipo_modulo'] >= 15 && $module['id_tipo_modulo'] <= 18) {
+        if ($module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP_INC
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP_STRING
+            || $module['id_tipo_modulo'] <= MODULE_TYPE_REMOTE_SNMP_PROC
+        ) {
             if ($snmp_version != '') {
                 $values['tcp_send'] = $snmp_version;
             } else {

@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.752 PS210315";
+my $version = "7.0NG.752 PS210317";
 
 # Pandora server configuration
 my %conf;
@@ -404,7 +404,9 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old tgraph_source data
+	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
 
 	# Delete network traffic old data.
 	log_message ('PURGE', 'Deleting old network matrix data.');

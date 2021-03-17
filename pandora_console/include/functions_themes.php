@@ -43,7 +43,11 @@ function themes_get_css($path=false)
 
     $retval = [];
     foreach ($files as $file) {
-        // Skip '..' and '.' entries and files not ended in '.css'
+        if ($file === 'pandora_green_old.css') {
+            continue;
+        }
+
+        // Skip '..' and '.' entries and files not ended in '.css'.
         if ($path && ($file == '.' || $file == '..' || strtolower(substr($file, (strlen($file) - 4))) !== '.css')) {
             continue;
         }

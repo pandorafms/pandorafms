@@ -1344,12 +1344,10 @@ class AgentWizard extends HTML
         $generalInterface = false;
         // Lets catch all values.
         foreach ($data as $key => $value) {
-            if (empty(preg_match('/module-active/', $key)) === false
+            if (empty(preg_match('/module-active-(.*)/m', $key, $tmpModules)) === false
                 && (int) $value === 1
             ) {
-                $tmpModules = explode('-', $key);
-
-                $keyData = $tmpModules[2].'-'.$tmpModules[3];
+                $keyData = $tmpModules[1];
 
                 $modulesActivated[] = $keyData;
             } else if (empty(preg_match('/interfaz_select_/', $key)) === false) {
@@ -1423,8 +1421,8 @@ class AgentWizard extends HTML
                                 $result[$value]['value'] = $data['module-value-'.$key];
                             }
 
-                            preg_match('/^(.*)-.*?_(\d+-\d+)$/', $k, $matches);
-                            $k = $matches[1].'-0_'.$matches[2];
+                            preg_match('/^(.*).*?_(\d+)-+(\d+)$/', $k, $matches);
+                            $k = $matches[1].'_'.$matches[2].'-'.$matches[3];
                         } else {
                             if (empty(preg_match('/module-value/', $k)) === false) {
                                 $result[$value]['value'] = $data[$k];

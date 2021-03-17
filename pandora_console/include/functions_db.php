@@ -2196,3 +2196,125 @@ function db_process_sql_update_multiple($table, $values, $only_query=false)
     global $config;
     return mysql_db_process_sql_update_multiple($table, $values, $only_query);
 }
+
+
+/**
+ * Is lock table.
+ *
+ * @param string $table Name table is Lock.
+ *
+ * @return boolean
+ */
+function db_get_lock_table($table)
+{
+    global $config;
+
+    if (empty($table) === true) {
+        return false;
+    }
+
+    $sql = sprintf(
+        'SHOW OPEN TABLES
+        WHERE `Table` = %s
+            AND `Database` = %s
+            AND `In_use` > 0',
+        $table,
+        $config['dbname']
+    );
+
+    $result = db_process_sql($sql);
+
+    return (bool) $result['In_use'];
+}
+
+
+/**
+ * Lock table.
+ *
+ * @param string  $table Table Name.
+ * @param integer $mode  READ or WRITE.
+ *
+ * @return boolean
+ */
+function db_lock_table($table, $mode='WRITE')
+{
+    global $config;
+
+    if (empty($table) === true) {
+        return false;
+    }
+
+    $sql = sprintf(
+        'LOCK TABLE %s %s',
+        $table,
+        $mode
+    );
+
+    $result = db_process_sql($sql);
+
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
+}
+
+
+/**
+ * Lock tables.
+ *
+ * @param array $tables ['name_table','mode'];
+ *
+ * @return boolean
+ */
+function db_lock_tables($tables)
+{
+    global $config;
+
+    if (empty($tables) === true) {
+        return false;
+    }
+
+    $sql = 'LOCK TABLES ';
+
+    $count_tables = count($tables);
+    foreach ($tables as $v) {
+        if ($count_tables === 1) {
+            $sql .= sprintf(
+                '%s %s',
+                $v['table'],
+                $v['mode']
+            );
+        } else {
+            $sql .= sprintf(
+                '%s %s, ',
+                $v['table'],
+                $v['mode']
+            );
+        }
+
+        $count_tables--;
+    }
+
+    $result = db_process_sql($sql);
+
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
+}
+
+
+/**
+ * Unlock tables.
+ */
+function db_unlock_tables()
+{
+    $result = db_process_sql('UNLOCK TABLES');
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
+}

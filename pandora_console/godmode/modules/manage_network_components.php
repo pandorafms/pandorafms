@@ -900,7 +900,7 @@ if (isset($data)) {
         true,
         'pagination-bottom'
     );
-    echo "<div id='btn_delete_5'>";
+    echo "<div id='btn_delete_5' class='float-right'>";
     html_print_submit_button(
         __('Delete'),
         'delete_btn',
@@ -918,8 +918,8 @@ if (isset($data)) {
     );
 }
 
-echo '<form method="post" action="'.$url.'" class="float-right">';
-echo '<div class="right">';
+echo '<form method="post" action="'.$url.'">';
+echo '<div class="right_align mrgn_btn_15px">';
 html_print_input_hidden('new_component', 1);
 html_print_select(
     [

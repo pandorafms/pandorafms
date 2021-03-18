@@ -548,10 +548,7 @@ class AgentsAlerts extends HTML
             if (empty($templates_raw)) {
                 $templates_raw = [];
             }
-        }
-
-        // Is needed sort templates for show in the row.
-        sort($templates);
+        };
 
         $alerts = [];
         $ntemplates = 0;
@@ -600,20 +597,22 @@ class AgentsAlerts extends HTML
                 }
 
                 $templates[$temp['id']] = $temp['name'];
+            }
+        }
 
-                if (empty($temp['name']) === false) {
-                    $outputLine = html_print_div(
-                        [
-                            'id'      => 'line_header_'.$temp['id'],
-                            'class'   => 'rotate_text_module position_text_module',
-                            'style'   => '',
-                            'content' => '<div title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</div>',
-                        ],
-                        true
-                    );
+        foreach ($templates as $id => $name) {
+            if (empty($name) === false) {
+                $outputLine = html_print_div(
+                    [
+                        'id'      => 'line_header_'.$id,
+                        'class'   => 'rotate_text_module position_text_module',
+                        'style'   => '',
+                        'content' => '<div title="'.io_safe_output($name).'">'.ui_print_truncate_text(io_safe_output($name), 20).'</div>',
+                    ],
+                    true
+                );
 
-                    echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
-                }
+                echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
             }
         }
 

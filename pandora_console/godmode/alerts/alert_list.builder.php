@@ -97,7 +97,14 @@ $table->data[1][0] = __('Actions');
 $groups_user = users_get_groups($config['id_user']);
 if (!empty($groups_user)) {
     $groups = implode(',', array_keys($groups_user));
-    $sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
+
+    if ($config['integria_enabled'] == 0) {
+        $integria_command = 'Integria&#x20;IMS&#x20;Ticket';
+        $sql = sprintf('SELECT taa.id, taa.name FROM talert_actions taa INNER JOIN talert_commands tac ON taa.id_alert_command = tac.id WHERE tac.name <> "%s" AND taa.id_group IN (%s)', $integria_command, $groups);
+    } else {
+        $sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
+    }
+
     $actions = db_get_all_rows_sql($sql);
 }
 

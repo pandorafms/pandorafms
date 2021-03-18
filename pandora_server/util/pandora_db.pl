@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.752 PS210311";
+my $version = "7.0NG.752 PS210318";
 
 # Pandora server configuration
 my %conf;
@@ -404,7 +404,9 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old tgraph_source data
+	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
 
 	# Delete network traffic old data.
 	log_message ('PURGE', 'Deleting old network matrix data.');
@@ -1167,6 +1169,24 @@ if (defined($history_dbh)) {
 		undef
 	);
 
+}
+
+# Keep integrity between PandoraFMS agents and IntegriaIMS inventory objects.
+pandora_sync_agents_integria($dbh);
+
+# Get Integria IMS ticket types for alert commands.
+my @types = pandora_get_integria_ticket_types($dbh);
+
+if (scalar(@types) != 0) {
+	my $query_string = '';
+	foreach my $type (@types) {
+	        $query_string .= $type->{'id'} . ',' . $type->{'name'} . ';';
+	}
+
+	$query_string = substr $query_string, 0, -1;
+
+	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
+	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
 
 # Release the lock

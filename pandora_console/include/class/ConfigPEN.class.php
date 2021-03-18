@@ -246,7 +246,7 @@ class ConfigPEN extends HTML
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
                             [
                                 'title' => __('Show'),

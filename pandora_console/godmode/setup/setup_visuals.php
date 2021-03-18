@@ -131,6 +131,20 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
+
+$table_styles->data[$row][0] = __('Style template');
+$table_styles->data[$row][1] = html_print_select(
+    themes_get_css(),
+    'style',
+    $config['style'].'.css',
+    '',
+    '',
+    '',
+    true
+);
+$row++;
+
+
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
 $iconsets['faces'] = __('Faces');
@@ -1288,16 +1302,6 @@ $row++;
     $table_other->size[2] = '12%';
     $table_other->size[3] = '12%';
     $table_other->data = [];
-
-    $table_other->data[$row][0] = __('Custom graphviz directory');
-    $table_other->data[$row][1] = html_print_input_text(
-        'graphviz_bin_dir',
-        $config['graphviz_bin_dir'],
-        '',
-        25,
-        255,
-        true
-    );
 
     $row++;
 

@@ -367,7 +367,7 @@ $img_style = [
 if ($id_agente) {
     // View tab.
     $viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View'),

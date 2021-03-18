@@ -1564,7 +1564,13 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        $integria_hostname = 'http://'.$integria_hostname;
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 
@@ -1940,6 +1946,10 @@ function config_process_config()
 
     if (!isset($config['collection_max_size'])) {
         config_update_value('collection_max_size', 1000000);
+    }
+
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
     }
 
     if (!isset($config['event_replication'])) {

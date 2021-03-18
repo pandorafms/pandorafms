@@ -667,57 +667,9 @@ class DiscoveryTaskList extends HTML
                     $data[4] = '-';
                 }
 
-                $can_be_reviewed = false;
-                if (empty($task['summary']) === false
-                    && $task['summary'] == 'cancelled'
-                ) {
-                    $data[5] = __('Cancelled').ui_print_help_tip(
-                        __('Server has been restarted while executing this task, please retry.'),
-                        true
-                    );
-                } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
-                    if ($task['type'] == DISCOVERY_APP_VMWARE) {
-                        if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
-                            $data[5] = __('Done');
-                        } else if ($task['status'] > 0) {
-                            $data[5] = __('Pending');
-                        } else {
-                            $data[5] = __('Not started');
-                        }
-                    } else {
-                        if ($task['status'] <= 0
-                            && empty($task['summary']) === false
-                        ) {
-                            $data[5] = __('Done');
-                        } else if ($task['utimestamp'] == 0
-                            && empty($task['summary'])
-                        ) {
-                            $data[5] = __('Not started');
-                        } else {
-                            $data[5] = __('Pending');
-                        }
-                    }
-                } else {
-                    if ($task['status'] <= 0
-                        && empty($task['summary']) === false
-                        && (int) $task['type'] === DISCOVERY_HOSTDEVICES
-                    ) {
-                        $can_be_reviewed = true;
-                        $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
-                        $data[5] .= __('Review');
-                        $data[5] .= '</span>';
-                    } else if ($task['utimestamp'] == 0
-                        && empty($task['summary'])
-                    ) {
-                        $data[5] = __('Not started');
-                    } else {
-                        if ($task['review_mode'] == DISCOVERY_RESULTS) {
-                            $data[5] = __('Processing');
-                        } else {
-                            $data[5] = __('Searching');
-                        }
-                    }
-                }
+                $_rs = $this->getStatusMessage($task);
+                $can_be_reviewed = $_rs['can_be_reviewed'];
+                $data[5] = $_rs['message'];
 
                 switch ($task['type']) {
                     case DISCOVERY_CLOUD_AZURE_COMPUTE:
@@ -1760,6 +1712,67 @@ class DiscoveryTaskList extends HTML
         echo json_encode(
             ['result' => $out]
         );
+    }
+
+
+    /**
+     * Generates task status string for given task.
+     *
+     * @param array $task Discovery task (retrieved from DB).
+     *
+     * @return array Message to be displayed and review status.
+     */
+    public function getStatusMessage(array $task)
+    {
+        $status = '';
+        $can_be_reviewed = false;
+
+        if (empty($task['summary']) === false
+            && $task['summary'] == 'cancelled'
+        ) {
+            $status = __('Cancelled').ui_print_help_tip(
+                __('Server has been restarted while executing this task, please retry.'),
+                true
+            );
+        } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
+            if ($task['status'] <= 0
+                && empty($task['summary']) === false
+            ) {
+                $status = __('Done');
+            } else if ($task['utimestamp'] == 0
+                && empty($task['summary'])
+            ) {
+                $status = __('Not started');
+            } else if ($task['utimestamp'] > 0) {
+                $status = __('Done');
+            } else {
+                $status = __('Pending');
+            }
+        } else {
+            if ($task['status'] <= 0
+                && empty($task['summary']) === false
+            ) {
+                $can_be_reviewed = true;
+                $status = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
+                $status .= __('Review');
+                $status .= '</span>';
+            } else if ($task['utimestamp'] == 0
+                && empty($task['summary'])
+            ) {
+                $status = __('Not started');
+            } else {
+                if ($task['review_mode'] == DISCOVERY_RESULTS) {
+                    $status = __('Processing');
+                } else {
+                    $status = __('Searching');
+                }
+            }
+        }
+
+        return [
+            'message'         => $status,
+            'can_be_reviewed' => $can_be_reviewed,
+        ];
     }
 
 

@@ -62,7 +62,7 @@ if (is_ajax()) {
 
         $command = alerts_get_alert_command($id);
 
-        // If is setted a description, we change the carriage return by <br> tags
+        // If a description is set, change the carriage return by <br> tags.
         if (isset($command['description'])) {
             $command['description'] = str_replace(
                 [
@@ -277,6 +277,76 @@ if (is_ajax()) {
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
                     // Select type.
+                } else if (preg_match('/^_integria_type_custom_field_$/i', $field_value)) {
+                        $ffield = '';
+                        $rfield = '';
+
+                        $ffield .= '<div name="field'.$i.'_value_container">'.html_print_switch(
+                            [
+                                'name'  => 'field'.$i.'_value[]',
+                                'value' => '',
+                            ]
+                        ).'</div>';
+                        $rfield .= '<div name="field'.$i.'_recovery_value_container">'.html_print_switch(
+                            [
+                                'name'  => 'field'.$i.'_recovery_value[]',
+                                'value' => '',
+                            ]
+                        ).'</div>';
+
+                        $ffield .= html_print_select(
+                            '',
+                            'field'.$i.'_value[]',
+                            '',
+                            '',
+                            __('None'),
+                            '',
+                            true,
+                            false,
+                            false,
+                            'fields',
+                            $is_central_policies_on_node
+                        );
+
+                        $rfield .= html_print_select(
+                            '',
+                            'field'.$i.'_recovery_value[]',
+                            '',
+                            '',
+                            __('None'),
+                            '',
+                            true,
+                            false,
+                            false,
+                            'fields',
+                            $is_central_policies_on_node
+                        );
+
+                        $ffield .= html_print_input_text('field'.$i.'_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
+                        $rfield .= html_print_input_text('field'.$i.'_recovery_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
+
+                        $ffield .= html_print_textarea(
+                            'field'.$i.'_value[]',
+                            1,
+                            1,
+                            '',
+                            'style="min-height:40px; '.$style.'" class="fields"',
+                            true,
+                            '',
+                            $is_central_policies_on_node
+                        );
+
+
+                        $rfield .= html_print_textarea(
+                            'field'.$i.'_recovery_value[]',
+                            1,
+                            1,
+                            '',
+                            'style="min-height:40px; '.$style.'" class="fields_recovery',
+                            true,
+                            '',
+                            $is_central_policies_on_node
+                        );
                 } else {
                     $fields_value_select = [];
                     $fv = explode(';', $field_value);
@@ -316,7 +386,7 @@ if (is_ajax()) {
                             'field'.$i.'_recovery_value',
                             '',
                             '',
-                            '',
+                            __('None'),
                             0,
                             true,
                             false,

@@ -551,7 +551,7 @@ for ($month = 1; $month <= 12; $month++) {
         $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&create_special_day=1&date='.$date.'" title=';
         $cal_table->data[$cal_line][$week] .= __('Create');
         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
-            'images/add.png',
+            'images/add_mc.png',
             true,
             ['class' => 'invert_filter']
         ).'</a>';

@@ -1775,7 +1775,7 @@ table.databox {
   padding: 9px 7px;
   font-weight: normal;
   color: #fff;
-  text-align: justify;
+  text-align: center;
 }
 
 .databox > th * {
@@ -6259,6 +6259,13 @@ div.graph div.legend table {
   -o-transform: rotate(270deg);
   writing-mode: lr-tb;
   white-space: nowrap;
+}
+
+/* NetTools */
+#add_button_custom_command {
+  float: left;
+  cursor: pointer;
+  margin: -3px 0 0 1em;
 }
 
 .sound_events {

@@ -349,7 +349,6 @@ $table_aux = new stdClass();
                 ui_pagination(count($graphs), false, 0, 0, false, 'offset', true, 'pagination-bottom');
                 echo "<div class='right'>";
                 html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-                echo '</div>';
                 echo '</form>';
             }
 
@@ -360,6 +359,8 @@ $table_aux = new stdClass();
                 html_print_submit_button(__('Create graph'), 'create', false, 'class="sub next mrgn_right_5px"');
                 echo '</form>';
             }
+
+                echo '</div>';
 
             echo '</div>';
         } else {

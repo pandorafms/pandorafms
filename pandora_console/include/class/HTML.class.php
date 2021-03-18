@@ -472,6 +472,11 @@ class HTML
         bool $return=false,
         bool $direct=false
     ) {
+        global $config;
+        if ($config['style'] === 'pandora_black') {
+            $text_color = 'style="color: white"';
+        }
+
         $output = '';
         if ($input['hidden'] == 1) {
             $class = ' hidden';
@@ -488,7 +493,7 @@ class HTML
             $toggle = (bool) $input['toggle'];
 
             if (isset($input['label']) === true) {
-                $output .= '<span>'.$input['label'].'</span>';
+                $output .= '<span '.$text_color.'>'.$input['label'].'</span>';
             }
 
             // Print independent block of inputs.
@@ -559,7 +564,7 @@ class HTML
                 }
 
                 if (isset($input['label']) === true) {
-                    $output .= '<label>'.$input['label'].'</label>';
+                    $output .= '<label '.$text_color.'>'.$input['label'].'</label>';
                 }
 
                 $output .= self::printInput($input['arguments']);

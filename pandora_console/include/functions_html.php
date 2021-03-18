@@ -5074,8 +5074,16 @@ function html_print_autocomplete_users_from_integria(
 
 function html_print_tabs(array $tabs)
 {
+    global $config;
+
+    $bg_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $bg_color = 'style="background-color: #222"';
+    }
+
     $result = '<div id="html-tabs">';
-    $result .= '<ul class="">';
+    $result .= '<ul class="" '.$bg_color.'>';
     foreach ($tabs as $key => $value) {
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(

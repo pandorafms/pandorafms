@@ -339,11 +339,16 @@ if ($pure === false) {
     }
 }
 
+$bg_color = '';
+if ($config['style'] === 'pandora_black') {
+    $bg_color = 'style="background-color: #222"';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 if ($pure === true) {
     // Floating menu - Start.
-    echo '<div id="vc-controls" class="zindex999">';
+    echo '<div id="vc-controls" class="zindex999" '.$bg_color.'>';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn white-box-content box-shadow flex-row">';

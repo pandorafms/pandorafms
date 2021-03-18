@@ -761,6 +761,16 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.Agent.Deployment');
                     break;
 
+                    case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Microsoft SQL Server')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Microsoft SQL Server');
+                    break;
+
                     case DISCOVERY_HOSTDEVICES:
                     default:
                         if ($task['id_recon_script'] == 0) {
@@ -1041,6 +1051,9 @@ class DiscoveryTaskList extends HTML
         switch ($task['type']) {
             case DISCOVERY_APP_MYSQL:
             return 'wiz=app&mode=mysql&page=0';
+
+            case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+            return 'wiz=app&mode=MicrosoftSQLServer&page=0';
 
             case DISCOVERY_APP_ORACLE:
             return 'wiz=app&mode=oracle&page=0';

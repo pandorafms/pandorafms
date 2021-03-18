@@ -577,7 +577,7 @@ function html_print_select_groups(
     );
 
     if ($required !== false) {
-        $require_message = __('Please select an item from this list.');
+        $require_message = __('Please select an item from this list. Madafaka');
     }
 
     if (empty($size) === true) {
@@ -599,13 +599,6 @@ function html_print_select_groups(
         $(document).ready(function() {
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
-                    <?php
-                    if ($required !== false) {
-                        ?>
-                    this.setCustomValidity('<?php echo $require_message; ?>');
-                        <?php
-                    }
-                    ?>
                     $(this).select2({
                         multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
                         placeholder: "<?php echo __('Please select...'); ?>",
@@ -640,6 +633,25 @@ function html_print_select_groups(
                             }
                         }
                     });
+
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    $(this).on('change', function(e) {
+                        e.currentTarget.setCustomValidity('');
+                    })
+
+                    $(this).on('invalid', function(e) {
+                        if ($(e.currentTarget).val() == null) {
+                            e.currentTarget.setCustomValidity(
+                                '<?php echo $require_message; ?>'
+                            );
+                        }
+                    })
+                        <?php
+                    }
+                    ?>
+
                 }
             );
 

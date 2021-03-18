@@ -232,103 +232,83 @@ $edit_capable = (bool) (
 
 if ($pure === false) {
     if ($edit_capable === true) {
-        $disabled = false;
-        if ($config['style'] === 'pandora_black') {
-            $disabled = true;
-        }
-
         echo '<div id ="edit-vc">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
         echo '<div>';
         visual_map_print_button_editor_refactor(
             'STATIC_GRAPH',
             __('Static Image'),
-            'camera_min link-create-item',
-            $disabled
+            'camera_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'PERCENTILE_BAR',
             __('Percentile Item'),
-            'percentile_item_min link-create-item',
-            $disabled
+            'percentile_item_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'MODULE_GRAPH',
             __('Module Graph'),
-            'graph_min link-create-item',
-            $disabled
+            'graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'DONUT_GRAPH',
             __('Serialized pie graph'),
-            'donut_graph_min link-create-item',
-            $disabled
+            'donut_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'BARS_GRAPH',
             __('Bars Graph'),
-            'bars_graph_min link-create-item',
-            $disabled
+            'bars_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'AUTO_SLA_GRAPH',
             __('Event history graph'),
-            'auto_sla_graph_min link-create-item',
-            $disabled
+            'auto_sla_graph_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'SIMPLE_VALUE',
             __('Simple Value'),
-            'binary_min link-create-item',
-            $disabled
+            'binary_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'LABEL',
             __('Label'),
-            'label_min link-create-item',
-            $disabled
+            'label_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'ICON',
             __('Icon'),
-            'icon_min link-create-item',
-            $disabled
+            'icon_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'CLOCK',
             __('Clock'),
-            'clock_min link-create-item',
-            $disabled
+            'clock_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'GROUP_ITEM',
             __('Group'),
-            'group_item_min link-create-item',
-            $disabled
+            'group_item_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'BOX_ITEM',
             __('Box'),
-            'box_item link-create-item',
-            $disabled
+            'box_item link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'LINE_ITEM',
             __('Line'),
-            'line_item link-create-item',
-            $disabled
+            'line_item link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'COLOR_CLOUD',
             __('Color cloud'),
-            'color_cloud_min link-create-item',
-            $disabled
+            'color_cloud_min link-create-item'
         );
         visual_map_print_button_editor_refactor(
             'NETWORK_LINK',
             __('Network link'),
-            'network_link_min link-create-item',
-            $disabled
+            'network_link_min link-create-item'
         );
         enterprise_include_once('include/functions_visual_map_editor.php');
         enterprise_hook(

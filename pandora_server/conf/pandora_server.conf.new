@@ -424,11 +424,11 @@ update_parent 1
 
 # openstreetmaps_description 1
 
-# Enable (1) or disable (0) Pandora FMS Web Server/Goliat (PANDORA FMS ENTERPRISE ONLY).
+# Enable (1) or disable (0) Pandora FMS Web Server/Goliat.
 
 webserver 1
 
-# Number of threads for the Web Server/Goliat (PANDORA FMS ENTERPRISE ONLY).
+# Number of threads for the Web Server/Goliat.
 
 web_threads 1
 

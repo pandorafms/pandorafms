@@ -1654,12 +1654,12 @@ if (check_acl(
         true
     ).'</span>';
     echo '</form>';
-    echo '<span id="max_custom_event_resp_msg" class="max_custom_events">';
+    echo '<span id="max_custom_event_resp_msg" style="display: none; color: #e63c52; line-height: 200%;">';
     echo __(
         'A maximum of %s event custom responses can be selected',
         $config['max_execution_event_response']
     ).'</span>';
-    echo '<span id="max_custom_selected" class="max_custom_events">';
+    echo '<span id="max_custom_selected" style="display: none; color: #e63c52; line-height: 200%;">';
     echo __(
         'Please, select an event'
     ).'</span>';

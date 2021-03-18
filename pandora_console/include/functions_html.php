@@ -577,7 +577,7 @@ function html_print_select_groups(
     );
 
     if ($required !== false) {
-        $require_message = __('Please select an item from this list. Madafaka');
+        $require_message = __('Please select an item from this list.');
     }
 
     if (empty($size) === true) {

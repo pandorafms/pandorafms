@@ -576,6 +576,10 @@ function html_print_select_groups(
         $required
     );
 
+    if ($required !== false) {
+        $require_message = __('Please select an item from this list.');
+    }
+
     if (empty($size) === true) {
         $size = '100%';
     }
@@ -629,6 +633,25 @@ function html_print_select_groups(
                             }
                         }
                     });
+
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    $(this).on('change', function(e) {
+                        e.currentTarget.setCustomValidity('');
+                    })
+
+                    $(this).on('invalid', function(e) {
+                        if ($(e.currentTarget).val() == null) {
+                            e.currentTarget.setCustomValidity(
+                                '<?php echo $require_message; ?>'
+                            );
+                        }
+                    })
+                        <?php
+                    }
+                    ?>
+
                 }
             );
 

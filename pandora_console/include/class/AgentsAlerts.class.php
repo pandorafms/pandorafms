@@ -841,6 +841,7 @@ class AgentsAlerts extends HTML
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
+            'attributes'     => 'style="margin-left: 0px"',
             'arguments'      => [
                 'type'       => 'button',
                 'return'     => true,

@@ -9215,6 +9215,7 @@ function reporting_simple_graph(
                 'agent_module_id'    => $content['id_agent_module'],
                 'period'             => $content['period'],
                 'title'              => $title,
+                'label'              => $label,
                 'pure'               => false,
                 'date'               => $report['datetime'],
                 'only_image'         => $only_image,

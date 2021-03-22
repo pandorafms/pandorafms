@@ -1065,16 +1065,16 @@ function snmp_browser_print_container(
     );
 
     $output .= '<div id="search_results" class="search_results"></div>';
-    $output .= '<div id="spinner" class="spinner_none_padding">'.html_print_image('images/spinner.gif', true).'</div>';
+    $output .= '<div id="spinner" class="spinner_none_padding" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
     $output .= '<div id="snmp_browser">';
     $output .= '</div>';
-    $output .= '<div class="databox mrgn_5px" id="snmp_data"></div>';
+    $output .= '<div class="databox" id="snmp_data"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';
 
     if ($show_massive_buttons) {
-        $output .= '<div id="snmp_create_buttons" class="invisible">';
+        $output .= '<div id="snmp_create_buttons" style="display:none">';
         $output .= html_print_submit_button(
             __('Create agent modules'),
             'create_modules_agent',

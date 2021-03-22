@@ -9172,6 +9172,7 @@ function reporting_simple_graph(
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $description;
+    $return['label'] = $label;
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -9213,7 +9214,7 @@ function reporting_simple_graph(
             $params = [
                 'agent_module_id'    => $content['id_agent_module'],
                 'period'             => $content['period'],
-                'title'              => $label,
+                'title'              => $title,
                 'pure'               => false,
                 'date'               => $report['datetime'],
                 'only_image'         => $only_image,

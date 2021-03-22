@@ -504,10 +504,20 @@ sub print_agent {
 	# print header
 	$xml .= "<agent_data ";
 
+	my $group_password_specified = 0;
+
 	foreach my $kad (keys %{$agent_data}){
 		no warnings "uninitialized";
 		$xml .= $kad . "='";
 		$xml .= $agent_data->{$kad} . "' ";
+
+		if ($kad eq 'group_password') {
+			$group_password_specified = 1;
+		}
+	}
+
+	if ($group_password_specified == 0 && !empty($config->{'group_password'})) {
+		$xml .= " group_password='".$config->{'group_password'}."' ";
 	}
 
 	$xml .= ">";

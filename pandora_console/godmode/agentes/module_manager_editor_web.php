@@ -92,16 +92,16 @@ $data[0] = __('Web checks');
 
 $adopt = false;
 if (isset($id_agent_module)) {
-    $adopt = policies_is_module_adopt($id_agent_module);
+    $adopt = enterprise_hook('policies_is_module_adopt', [$id_agent_module]);
 }
 
 $id_policy_module = (int) get_parameter('id_policy_module', '');
 if ($id_policy_module) {
-    $module = policies_get_module($id_policy_module);
+    $module = enterprise_hook('policies_get_module', [$id_policy_module]);
     $plugin_parameter = $module['plugin_parameter'];
 }
 
-if (!$adopt) {
+if ((bool) $adopt === false) {
     $data[1] = html_print_textarea(
         'plugin_parameter',
         15,

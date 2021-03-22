@@ -33,7 +33,7 @@ global $id_agent_module;
 require_once $config['homedir'].'/include/class/WebServerModuleDebug.class.php';
 
 // This page.
-$ajaxPage = '/include/ajax/web_server_module_debug';
+$ajaxPage = $config['homedir'].'/include/ajax/web_server_module_debug';
 
 // Control call flow for debug window.
 try {

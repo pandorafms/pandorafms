@@ -5646,7 +5646,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         );
     }
 
-    $label = (isset($content['name'])) ? $content['name'] : '';
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
             $items_label,

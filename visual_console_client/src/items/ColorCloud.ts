@@ -410,6 +410,13 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     defs.append(radialGradient);
     svg.append(defs, circle);
 
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      svg.setAttribute("opacity", "0.2");
+    }
+
     return svg;
   }
 

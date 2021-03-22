@@ -141,7 +141,7 @@ if (is_ajax()) {
         include_once __DIR__.'/../styles/progress.css';
         echo '</style>';
 
-        echo '<div class="left_align">';
+        echo '<div class="left_align backgrund_primary_important">';
         if (!empty($id) && !empty($type)) {
             switch ($type) {
                 case 'agent':

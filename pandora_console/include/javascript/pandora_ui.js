@@ -440,6 +440,7 @@ function confirmDialog(settings) {
       modal: true,
       buttons: [
         {
+          id: "cancel_btn_dialog",
           text: "Cancel",
           class:
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",

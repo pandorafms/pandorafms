@@ -294,7 +294,6 @@ function menu_print_menu(&$menu)
                 $secExtensionBool = false;
 
                 if ($secExtensionBool) {
-                    // $imageIconDefault = 'images/extensions.png';
                     if (strlen($sub['icon']) > 0) {
                         $icon_enterprise = false;
                         if (isset($sub['enterprise'])) {
@@ -337,10 +336,6 @@ function menu_print_menu(&$menu)
                 }
 
                 $submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;'.'sec2='.$subsec2.($sub['refr'] ? '&amp;refr='.$sub['refr'] : '').$link_add.'"'.$title.'>'.'<div class="'.$sub_tree_class.'">'.$sub['text'].'</div>'.'</a>';
-
-                if (isset($sub['sub2'])) {
-                    // $submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
-                }
             }
 
             // Print second level submenu.
@@ -382,7 +377,7 @@ function menu_print_menu(&$menu)
                         $sub_title = '';
                     }
 
-                    $submenu2_list .= '<li class="'.$class.'" style="">';
+                    $submenu2_list .= '<li class="'.$class.'"  >';
                     $submenu2_list .= '<a href="'.$link.'"><div class="'.$sub_tree_class.'" title="'.$sub2['text'].'" >'.$sub2['text'].'</div></a></li>';
                     $sub_title = '';
                 }
@@ -432,7 +427,6 @@ function menu_print_menu(&$menu)
 
         $padding_top = 0;
         $length = 0;
-        // $output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
         if ($submenu_output != '') {
             // WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS.
             if ($visible || in_array('selected', $classes)) {

@@ -36,14 +36,14 @@ function view_logfile($file_name)
         } else if ($file_size > ($config['max_log_size'] * 1000)) {
             $data = file_get_contents($file_name, false, null, ($file_size - ($config['max_log_size'] * 1000)));
             echo "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
-            echo "<textarea style='width: 98%; float:right; height: 200px; margin-bottom:20px;' name='$file_name'>";
+            echo "<textarea class='pandora_logs' name='$file_name'>";
             echo '... ';
             echo $data;
             echo '</textarea><br><br>';
         } else {
             $data = file_get_contents($file_name);
             echo "<h2>$file_name (".format_numeric(filesize($file_name) / 1024).' KB) '.ui_print_help_tip(__('The folder /var/log/pandora must have pandora:apache and its content too.'), true).' </h2>';
-            echo "<textarea style='width: 98%; float:right; height: 200px; margin-bottom:20px;' name='$file_name'>";
+            echo "<textarea class='pandora_logs' name='$file_name'>";
             echo $data;
             echo '</textarea><br><br>';
         }

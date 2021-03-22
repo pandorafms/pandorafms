@@ -246,9 +246,12 @@ class ConfigPEN extends HTML
                         $tmp->options .= $tmp->pen;
                         $tmp->options .= '\')" >';
                         $tmp->options .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
-                            ['title' => __('Show')]
+                            [
+                                'title' => __('Show'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $tmp->options .= '</a>';
                         $tmp->options .= '<a href="javascript:" onclick="deletePEN(\'';
@@ -257,7 +260,10 @@ class ConfigPEN extends HTML
                         $tmp->options .= html_print_image(
                             'images/cross.png',
                             true,
-                            ['title' => __('Delete')]
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $tmp->options .= '</a>';
 
@@ -633,9 +639,9 @@ class ConfigPEN extends HTML
         }
 
         // Auxiliar div.
-        $output .= '<div id="modal" style="display: none"></div>';
-        $output .= '<div id="msg" style="display: none"></div>';
-        $output .= '<div id="aux" style="display: none"></div>';
+        $output .= '<div id="modal" class="invisible"></div>';
+        $output .= '<div id="msg"   class="invisible"></div>';
+        $output .= '<div id="aux"   class="invisible"></div>';
 
         // Create button.
         $output .= parent::printInput(

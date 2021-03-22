@@ -36,7 +36,7 @@ if (! check_acl($config['id_user'], $agent['id_grupo'], 'AR')) {
 
 ui_print_page_header(__('Agent custom fields'), 'images/custom_field.png', false, '', false);
 
-echo '<table cellspacing="4" cellpadding="4" border="0" class="databox" style="width: 450px">';
+echo '<table cellspacing="4" cellpadding="4" border="0" class="databox w450px">';
 // Custom fields
 $fields = db_get_all_rows_filter('tagent_custom_fields', ['display_on_front' => 1]);
 

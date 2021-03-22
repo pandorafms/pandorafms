@@ -114,7 +114,7 @@ class HelpFeedBack extends Wizard
         echo '<div class="help_feedback">';
         // Load feedback form.
         echo $this->loadFeedbackForm();
-        echo '</div><div id="back" style="display: none"></div>';
+        echo '</div><div id="back" class="invisible"></div>';
     }
 
 

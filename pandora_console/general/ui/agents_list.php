@@ -142,7 +142,7 @@ unset($filter['offset']);
 
 if (! is_ajax()) {
     echo '<div id="agents_loading" class="loading invisible">';
-    echo html_print_image('images/spinner.png', true);
+    echo html_print_image('images/spinner.gif', true);
     echo __('Loading').'&hellip;';
     echo '</div>';
 }

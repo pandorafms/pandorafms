@@ -17,17 +17,17 @@
 </p>
 
 <p>
-    <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <b class="lato_bolder font_12pt">
         Para realizar la grabaci&oacute;n de una navegaci&oacute;n con PWR necesitaremos:
     </b>
 </p>
 
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
+    <li class="lato_bolder font_12pt"> 
         Navegador web Firefox versi&oacute;n 47.0.1 (descargable en: 
         <a rel="nofollow" class="external free" href="https://ftp.mozilla.org/pub/firefox/releases/47.0.1/">https://ftp.mozilla.org/pub/firefox/releases/47.0.1/</a>).
     .</li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
+    <li class="lato_bolder font_12pt"> 
         Extensi&oacute;n Selenium IDE (descargable en: 
         <a rel="nofollow" class="external free" href="https://addons.mozilla.org/es/firefox/addon/selenium-ide/">https://addons.mozilla.org/es/firefox/addon/selenium-ide/</a>).
     </li>
@@ -37,7 +37,7 @@
     Para instalar correctamente la versi&oacute;n 47.0.1 de Firefox hay que descargarla desde la URL proporcionada anteriormente. En sistemas Windows habr&aacute; que a&ntilde;adir el ejecutable al PATH del sistema.
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux6.JPG', false, ['style' => 'width: 90%;']);
     ?>
@@ -47,13 +47,13 @@
     Una vez descargado mostraremos el icono del entorno de grabaci&oacute;n mediante las opciones de personalizaci&oacute;n de Firefox:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux7.JPG', false, ['style' => 'width:295px;']);
     ?>
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux9.JPG', false, ['style' => 'width: 90%;']);
     ?>
@@ -63,7 +63,7 @@
     Una vez colocado el acceso iniciamos el grabador:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux10.JPG', false, ['style' => 'width: 90%;']);
     ?>
@@ -77,7 +77,7 @@
     Para detener la grabaci&oacute;n utilizaremos el siguiente bot&oacute;n, situado en la parte superior derecha del grabador:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux11.JPG', false, ['style' => 'width:33px;']);
     ?>
@@ -87,7 +87,7 @@
     Una vez completadas las acciones, podemos realizar comprobaciones sobre la p&aacute;gina, por ejemplo verificar la existencia de un texto determinado para asegurarnos de que la p&aacute;gina cargada es la correcta. Para ello haremos click derecho sobre una secci&oacute;n de texto en la ventana del navegador mientras continuamos grabando, y seleccionamos la opci&oacute;n <i>verifyText</i>:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux13.JPG', false, ['style' => 'width:90%;']);
     ?>
@@ -97,7 +97,7 @@
     Aparecer&aacute; un nuevo paso en el grabador indicando la acci&oacute;n de comprobaci&oacute;n de texto indicada:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux14.JPG', false, ['style' => 'width:90%;']);
     ?>
@@ -107,7 +107,7 @@
     Podemos reproducir la secuencia completa mediante el bot&oacute;n <i>Play entire test suite</i> y comprobar que finaliza correctamente:
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux15.JPG', false, ['style' => 'width:90%;']);
     ?>
@@ -127,7 +127,7 @@
     Para insertar un nuevo punto de control y generar los m&oacute;dulos de fase (hasta ese punto) haga clic derecho en el punto donde desea identificar el comienzo de fase.
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/Ux16.JPG', false, ['style' => 'width:436;']);
     ?>
@@ -165,7 +165,7 @@
     Cada m&oacute;dulo de tipo an&aacute;lisis web, generar&aacute; una serie de sub-m&oacute;dulos, estos pueden visualizarse de manera m&aacute;s clara pulsando "mostar en modo jer&aacute;quico".
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/WUX_v1.png', false, ['style' => 'width:90%;']);
     ?>
@@ -175,7 +175,7 @@
     En la vista de &aacute;rbol los elementos apararecen directamente jerarquizados, simplificando la vista.
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/WUX_v2.png', false, ['style' => 'width:90%;']);
     ?>
@@ -189,7 +189,7 @@
     <b><u>Nota</u>:</b> Si hemos definido fases en nuestra sesi&oacute;n de navegaci&oacute;n, se mostrar&aacute;n en esta vista de una forma sencilla y clara (ver apartado de grabaci&oacute;n <i>sesi&oacute;n transaccional con <?php echo get_product_name(); ?> WUX PWR)</i>.
 </p>
 
-<p style="text-align: center">
+<p class="center">
     <?php
     html_print_image('images/help/WUX_v3.png', false, ['style' => 'width:90%;']);
     ?>
@@ -199,40 +199,40 @@
 <p>
     Muestra el estado general de nuestra transacci&oacute;n:
 </p>
-<ol style="font-family: 'lato-bolder'; font-size: 12pt;">
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+<ol class="lato_bolder font_12pt">
+    <li class="lato_bolder font_12pt">
         Esta puede tener tres estados:
-        <ol style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <ol class="lato_bolder font_12pt">
         
-            <li style="font-family: 'lato-bolder'; font-size: 12pt;">
-                <i style="font-family: 'lato-bolder'; font-size: 12pt;">Correcto:</i> Cuando todas las fases de la transacci&oacute;n sean correctas.
+            <li class="lato_bolder font_12pt">
+                <i class="lato_bolder font_12pt">Correcto:</i> Cuando todas las fases de la transacci&oacute;n sean correctas.
             </li>
-            <li style="font-family: 'lato-bolder'; font-size: 12pt;">
-                <i style="font-family: 'lato-bolder'; font-size: 12pt;">Incorrecto:</i> Si alguna de las fases de la transacci&oacute;n ha fallado. En ese caso, se mostrara una icono de una lupa que enlaza a la captura de pantalla del punto de la sesi&oacute;n de navegaci&oacute;n en que se ha producido el fallo.
+            <li class="lato_bolder font_12pt">
+                <i class="lato_bolder font_12pt">Incorrecto:</i> Si alguna de las fases de la transacci&oacute;n ha fallado. En ese caso, se mostrara una icono de una lupa que enlaza a la captura de pantalla del punto de la sesi&oacute;n de navegaci&oacute;n en que se ha producido el fallo.
             </li>
-            <li style="font-family: 'lato-bolder'; font-size: 12pt;">
-                <i style="font-family: 'lato-bolder'; font-size: 12pt;">Desconocido:</i> Si el servidor encuentra problemas para procesar la sesi&oacute;n o hay fallos de configuraci&oacute;n.
+            <li class="lato_bolder font_12pt">
+                <i class="lato_bolder font_12pt">Desconocido:</i> Si el servidor encuentra problemas para procesar la sesi&oacute;n o hay fallos de configuraci&oacute;n.
             </li>
         </ol>
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         Muestra el tiempo transcurrido desde la &uacute;ltima ejecuci&oacute;n de la sesi&oacute;n de navegaci&oacute;n.
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         Muestra el tiempo total que ha tardado en realizarse dicha sesi&oacute;n de navegaci&oacute;n, independientemente de su estado.    
     </li>
 </ol>    
 
 <h4>Secci&oacute;n Resultados de la ejecuci&oacute;n de la transacci&oacute;n:</h4>
 
-<ol style="font-family: 'lato-bolder'; font-size: 12pt;">
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+<ol class="lato_bolder font_12pt">
+    <li class="lato_bolder font_12pt">
         Muestra el estado y el tiempo empleado en ejecutar la sesi&oacute;n de navegaci&oacute;n.
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         En caso de fallo, se mostrar&aacute; el icono que enlaza con la captura del momento del error.
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         Si hemos definido fases en nuestra sesi&oacute;n, entonces se mostrar&aacute; el estado de cada una de las fases, asi como el tiempo que tarda en realizarse cada una de ellas y su contribuci&oacute;n al tiempo global.
     </li>
 </ol>
@@ -242,50 +242,50 @@
 </p>
 
 <p>
-    Gr&aacute;fica de estadisticas aparecera siempre y cuando hayamos especificado en la creaci&oacute;n del m&oacute;dulo, la opci&oacute;n <i style="font-family: 'lato-bolder'; font-size: 12pt;">ejecutar pruebas de rendimiento</i> <b style="font-family: 'lato-bolder'; font-size: 12pt;">y se ha definido un objetivo para las mismas</b> (campo <i style="font-family: 'lato-bolder'; font-size: 12pt;">sitio web objetivo</i>).
+    Gr&aacute;fica de estadisticas aparecera siempre y cuando hayamos especificado en la creaci&oacute;n del m&oacute;dulo, la opci&oacute;n <i class="lato_bolder font_12pt">ejecutar pruebas de rendimiento</i> <b class="lato_bolder font_12pt">y se ha definido un objetivo para las mismas</b> (campo <i class="lato_bolder font_12pt">sitio web objetivo</i>).
 </p>
 <p>
     Las estad&iacute;sticas a mostrar son:
 </p>
     <ol>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TT:
             </b> 
             Tiempo total en obtener el sitio web. 
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TDNS:
             </b> 
             Tiempo total en resolver la direcci&oacute;n IP del objetivo.
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TTCP:
             </b> 
             Tiempo empleado en conectar v&iacute;a TCP.
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TSSL:
             </b> 
             Tiempo empleado en establecer comunicaci&oacute;n SSL.
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TST :
             </b> 
             Tiempo hasta que inici&oacute; la transferencia de datos.
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TTC :
             </b> 
             Tiempo transfiriendo datos, agrupar&aacute; todos los tiempos de transferencia de recursos.
         </li>
-        <li style="font-family: 'lato-bolder'; font-size: 12pt;"> 
-            <b style="font-family: 'lato-bolder'; font-size: 12pt;">
+        <li class="lato_bolder font_12pt"> 
+            <b class="lato_bolder font_12pt">
                 Stats_TTR :
             </b> 
             Tiempo empleado en transferir el recurso X, agrupando todas las im&aacute;genes en “image”.
@@ -295,10 +295,10 @@
 
 <h4>Historial de trasacci&oacute;n:</h4>    
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         Muestra el hist&oacute;rico de las ejecuciones de la sesi&oacute;n de navegaci&oacute;n web.
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         En el caso de haber ejecuciones fallidas, se mostrar&aacute; un enlace donde consultar la imagen del error.
     </li>
 </ol>

@@ -234,7 +234,7 @@ class Tactical
 				}
 				
 				function ajax_load_status_pie() {
-					$('#status_pie').html('<div style=\"text-align: center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					$('#status_pie').html('<div class=\"center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var pie_width = $('#tactical2').width() * 0.9;
 

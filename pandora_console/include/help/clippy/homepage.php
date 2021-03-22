@@ -72,11 +72,11 @@ function clippy_start_page_homepage()
     $return_tours['tours']['homepage']['steps'] = [];
     $return_tours['tours']['homepage']['steps'][] = [
         'element' => '#clippy',
-        'intro'   => '<div class="clippy_body" style="text-align: left; padding-left: 20px; padding-right: 20px;">'.__('Hi, can I help you?').'<br/><br/>'.__('Let me introduce my self: I am Pandorin, the annoying assistant of %s. You can follow my steps to do basic tasks in %s or you can close me and never see me again.', get_product_name(), get_product_name()).'<br /> <br /> <div class="clippy_body" style="font-size: 7pt;">'.$pandorin_chkb.__('Close this wizard and don\'t open it again.').'</div></div><div style="position:relative;"><div id="pandorin" style="'.$style.'">'.$pandorin_img.'</div></div>',
+        'intro'   => '<div class="clippy_body left pdd_l_20px pdd_r_20px">'.__('Hi, can I help you?').'<br/><br/>'.__('Let me introduce my self: I am Pandorin, the annoying assistant of %s. You can follow my steps to do basic tasks in %s or you can close me and never see me again.', get_product_name(), get_product_name()).'<br /> <br /> <div class="clippy_body font_7pt">'.$pandorin_chkb.__('Close this wizard and don\'t open it again.').'</div></div><div class="relative"><div id="pandorin" style="'.$style.'">'.$pandorin_img.'</div></div>',
     ];
     $return_tours['tours']['homepage']['steps'][] = [
         'element' => '#clippy',
-        'intro'   => __('Which task would you like to do first?').'<br/><br/><ul style="text-align: left; margin-left: 10px; list-style-type: disc;"><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>".__('Ping a Linux or Windows server using a %s agent.', get_product_name()).'</a></li><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php\", \"email_alert_module_step_1\");'>".__('Create a alert by email in a critical module.').'</a></li></ul>',
+        'intro'   => __('Which task would you like to do first?').'<br/><br/><ul class="left mrgn_lft_10px list-type-disc"><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php?sec=gagente&sec2=godmode/agentes/modificar_agente\", \"monitoring_server_step_1\");'>".__('Ping a Linux or Windows server using a %s agent.', get_product_name()).'</a></li><li>'."<a href='javascript: clippy_go_link_show_help(\"index.php\", \"email_alert_module_step_1\");'>".__('Create a alert by email in a critical module.').'</a></li></ul>',
     ];
     $return_tours['tours']['homepage']['conf'] = [];
     $return_tours['tours']['homepage']['conf']['show_bullets'] = 0;

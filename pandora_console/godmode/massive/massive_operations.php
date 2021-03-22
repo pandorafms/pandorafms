@@ -213,139 +213,154 @@ if ($option == '') {
 
 $alertstab = [
     'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'.html_print_image(
-        'images/op_alerts.png',
+        'images/bell.png',
         true,
-        ['title' => __('Alerts operations')]
+        [
+            'title' => __('Alerts operations'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>', 'active' => $tab == 'massive_alerts',
 ];
 
 $userstab = [
     'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'.html_print_image(
-        'images/op_workspace.png',
+        'images/user.png',
         true,
-        ['title' => __('Users operations')]
+        [
+            'title' => __('Users operations'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>', 'active' => $tab == 'massive_users',
 ];
 
 $agentstab = [
     'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'.html_print_image(
-        'images/bricks.png',
+        'images/agent.png',
         true,
-        ['title' => __('Agents operations')]
+        [
+            'title' => __('Agents operations'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>', 'active' => $tab == 'massive_agents',
 ];
 
-$modulestab = [
-    'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'.html_print_image(
-        'images/brick.png',
-        true,
-        ['title' => __('Modules operations')]
-    ).'</a>', 'active' => $tab == 'massive_modules',
-];
+        $modulestab = [
+            'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'.html_print_image(
+                'images/module.png',
+                true,
+                [
+                    'title' => __('Modules operations'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>', 'active' => $tab == 'massive_modules',
+        ];
 
-$pluginstab = [
-    'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_plugins">'.html_print_image(
-        'images/plugin.png',
-        true,
-        ['title' => __('Plugins operations')]
-    ).'</a>', 'active' => $tab == 'massive_plugins',
-];
+        $pluginstab = [
+            'text'   => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_plugins">'.html_print_image(
+                'images/plugin.png',
+                true,
+                [
+                    'title' => __('Plugins operations'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>', 'active' => $tab == 'massive_plugins',
+        ];
 
-$policiestab = enterprise_hook('massive_policies_tab');
+        $policiestab = enterprise_hook('massive_policies_tab');
 
-if ($policiestab == ENTERPRISE_NOT_HOOK) {
-    $policiestab = '';
-}
+        if ($policiestab == ENTERPRISE_NOT_HOOK) {
+            $policiestab = '';
+        }
 
-$snmptab = enterprise_hook('massive_snmp_tab');
+        $snmptab = enterprise_hook('massive_snmp_tab');
 
-if ($snmptab == ENTERPRISE_NOT_HOOK) {
-    $snmptab = '';
-}
+        if ($snmptab == ENTERPRISE_NOT_HOOK) {
+            $snmptab = '';
+        }
 
-$satellitetab = enterprise_hook('massive_satellite_tab');
+        $satellitetab = enterprise_hook('massive_satellite_tab');
 
-if ($satellitetab == ENTERPRISE_NOT_HOOK) {
-    $satellitetab = '';
-}
+        if ($satellitetab == ENTERPRISE_NOT_HOOK) {
+            $satellitetab = '';
+        }
 
-$servicestab = enterprise_hook('massive_services_tab');
+        $servicestab = enterprise_hook('massive_services_tab');
 
-if ($servicestab == ENTERPRISE_NOT_HOOK) {
-    $servicestab = '';
-}
+        if ($servicestab == ENTERPRISE_NOT_HOOK) {
+            $servicestab = '';
+        }
 
-$onheader = [];
-$onheader['massive_agents'] = $agentstab;
-$onheader['massive_modules'] = $modulestab;
-$onheader['massive_plugins'] = $pluginstab;
-if (check_acl($config['id_user'], 0, 'UM')) {
-    $onheader['user_agents'] = $userstab;
-}
+        $onheader = [];
+        $onheader['massive_agents'] = $agentstab;
+        $onheader['massive_modules'] = $modulestab;
+        $onheader['massive_plugins'] = $pluginstab;
+        if (check_acl($config['id_user'], 0, 'UM')) {
+            $onheader['user_agents'] = $userstab;
+        }
 
-$onheader['massive_alerts'] = $alertstab;
-$onheader['policies'] = $policiestab;
-$onheader['snmp'] = $snmptab;
-$onheader['satellite'] = $satellitetab;
-$onheader['services'] = $servicestab;
+        $onheader['massive_alerts'] = $alertstab;
+        $onheader['policies'] = $policiestab;
+        $onheader['snmp'] = $snmptab;
+        $onheader['satellite'] = $satellitetab;
+        $onheader['services'] = $servicestab;
 
-/*
-    Hello there! :)
+        /*
+            Hello there! :)
 
-    We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+            We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
 
-    You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+            You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
 
-*/
+        */
 
-ui_print_page_header(
-    __('Bulk operations').' &raquo; '.$options[$option],
-    'images/gm_massive_operations.png',
-    false,
-    $help_header,
-    true,
-    $onheader,
-    false,
-    'massivemodal'
-);
+        ui_print_page_header(
+            __('Bulk operations').' &raquo; '.$options[$option],
+            'images/gm_massive_operations.png',
+            false,
+            $help_header,
+            true,
+            $onheader,
+            false,
+            'massivemodal'
+        );
 
-// Checks if the PHP configuration is correctly.
-if ((get_cfg_var('max_execution_time') != 0)
-    || (get_cfg_var('max_input_time') != -1)
-) {
-    echo '<div id="notify_conf" class="notify">';
-    echo __('In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>');
-    echo '</div>';
-}
+        // Checks if the PHP configuration is correctly.
+        if ((get_cfg_var('max_execution_time') != 0)
+            || (get_cfg_var('max_input_time') != -1)
+        ) {
+            echo '<div id="notify_conf" class="notify">';
+            echo __('In order to perform massive operations, PHP needs a correct configuration in timeout parameters. Please, open your PHP configuration file (php.ini) for example: <i>sudo vi /etc/php5/apache2/php.ini;</i><br> And set your timeout parameters to a correct value: <br><i> max_execution_time = 0</i> and <i>max_input_time = -1</i>');
+            echo '</div>';
+        }
 
-if ($tab == 'massive_policies' && is_central_policies_on_node()) {
-    ui_print_warning_message(__('This node is configured with centralized mode. All policies information is read only. Go to metaconsole to manage it.'));
-    return;
-}
+        if ($tab == 'massive_policies' && is_central_policies_on_node()) {
+            ui_print_warning_message(__('This node is configured with centralized mode. All policies information is read only. Go to metaconsole to manage it.'));
+            return;
+        }
 
-// Catch all submit operations in this view to display Wait banner.
-$submit_action = get_parameter('go');
-$submit_update = get_parameter('updbutton');
-$submit_del = get_parameter('del');
-$submit_template_disabled = get_parameter('id_alert_template_disabled');
-$submit_template_enabled = get_parameter('id_alert_template_enabled');
-$submit_template_not_standby = get_parameter('id_alert_template_not_standby');
-$submit_template_standby = get_parameter('id_alert_template_standby');
-$submit_add = get_parameter('crtbutton');
-// Waiting spinner.
-ui_print_spinner(__('Loading'));
-// Modal for show messages.
-html_print_div(
-    [
-        'id'      => 'massive_modal',
-        'content' => '',
-    ]
-);
+        // Catch all submit operations in this view to display Wait banner.
+        $submit_action = get_parameter('go');
+        $submit_update = get_parameter('updbutton');
+        $submit_del = get_parameter('del');
+        $submit_template_disabled = get_parameter('id_alert_template_disabled');
+        $submit_template_enabled = get_parameter('id_alert_template_enabled');
+        $submit_template_not_standby = get_parameter('id_alert_template_not_standby');
+        $submit_template_standby = get_parameter('id_alert_template_standby');
+        $submit_add = get_parameter('crtbutton');
+        // Waiting spinner.
+        ui_print_spinner(__('Loading'));
+        // Modal for show messages.
+        html_print_div(
+            [
+                'id'      => 'massive_modal',
+                'content' => '',
+            ]
+        );
 
-// Load common JS files.
-ui_require_javascript_file('massive_operations');
+        // Load common JS files.
+        ui_require_javascript_file('massive_operations');
 
-?>
+        ?>
 
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

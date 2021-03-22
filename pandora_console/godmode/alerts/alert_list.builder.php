@@ -90,14 +90,21 @@ $table->data[0][1] = html_print_select(
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
-$table->data[0][1] .= html_print_image('images/spinner.png', true).'</span>';
+$table->data[0][1] .= html_print_image('images/spinner.gif', true).'</span>';
 
 $table->data[1][0] = __('Actions');
 
 $groups_user = users_get_groups($config['id_user']);
 if (!empty($groups_user)) {
     $groups = implode(',', array_keys($groups_user));
-    $sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
+
+    if ($config['integria_enabled'] == 0) {
+        $integria_command = 'Integria&#x20;IMS&#x20;Ticket';
+        $sql = sprintf('SELECT taa.id, taa.name FROM talert_actions taa INNER JOIN talert_commands tac ON taa.id_alert_command = tac.id WHERE tac.name <> "%s" AND taa.id_group IN (%s)', $integria_command, $groups);
+    } else {
+        $sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
+    }
+
     $actions = db_get_all_rows_sql($sql);
 }
 
@@ -124,8 +131,8 @@ $table->data[1][1] .= html_print_input_text('fires_max', '', '', 4, 10, true);
 $table->data[1][1] .= '</span>';
 if (check_acl($config['id_user'], 0, 'LM')) {
     $table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-    $table->data[1][1] .= html_print_image('images/add.png', true);
-    $table->data[1][1] .= '<span style="margin-left:0.5em;">'.__('Create Action').'</span>';
+    $table->data[1][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
+    $table->data[1][1] .= '<span class="mrgn_lft_05em">'.__('Create Action').'</span>';
     $table->data[1][1] .= '</a>';
 }
 
@@ -157,8 +164,8 @@ if ($own_info['is_admin']) {
     $table->data[2][1] .= ' <a class="template_details invisible" href="#">'.html_print_image('images/zoom.png', true, ['class' => 'img_help']).'</a>';
     if (check_acl($config['id_user'], 0, 'LM')) {
         $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-        $table->data[2][1] .= html_print_image('images/add.png', true);
-        $table->data[2][1] .= '<span style="margin-left:0.5em;">'.__('Create Template').'</span>';
+        $table->data[2][1] .= html_print_image('images/add.png', true, ['class' => 'invert_filter']);
+        $table->data[2][1] .= '<span class=""mrgn_lft_05em>'.__('Create Template').'</span>';
         $table->data[2][1] .= '</a>';
     }
 
@@ -190,7 +197,7 @@ if ($own_info['is_admin']) {
 
     if (!isset($step)) {
         if ($id_cluster) {
-            echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button style='float:right;margin-left:20px;' name='store' class='sub upd' value='".__('Finish and view cluster')."'>";
+            echo "<input onclick='window.location.replace(\"index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id=".$id_cluster."\");' type=button name='store' class='sub upd right mrgn_lft_20px' value='".__('Finish and view cluster')."'>";
         }
 
         html_print_submit_button(__('Add alert'), 'add', false, 'class="sub wand"');

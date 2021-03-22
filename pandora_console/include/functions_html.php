@@ -467,10 +467,9 @@ function html_print_select_groups(
     $output = '';
 
     global $config;
+    $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora') {
-        $select2_css = 'select2.min';
-    } else {
+    if ($config['style'] === 'pandora_black') {
         $select2_css = 'select2_dark.min';
     }
 

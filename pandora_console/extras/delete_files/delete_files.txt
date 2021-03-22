@@ -79,3 +79,7 @@ pandora_enterprise/pandora_server/PandoraFMS-Enterprise/lib/Goliat/GoliatConfig.
 pandora_enterprise/pandora_server/PandoraFMS-Enterprise/lib/Goliat/GoliatLWP.pm
 pandora_enterprise/pandora_server/PandoraFMS-Enterprise/lib/Goliat/GoliatTools.pm
 pandora_enterprise/pandora_server/PandoraFMS-Enterprise/lib/PandoraFMS/WebServer.pm
+pandora_console/enterprise/godmode/agentes/module_manager_editor_web.php
+pandora_console/enterprise/include/ajax/web_server_module_debug.php
+pandora_console/enterprise/include/class/WebServerModuleDebug.class.php
+pandora_console/enterprise/include/styles/WebServerModuleDebug.css

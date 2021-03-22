@@ -711,6 +711,19 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.Cloud.Aws.RDS');
                     break;
 
+                    case DISCOVERY_CLOUD_AWS_S3:
+                        // Discovery Cloud S3.
+                        $data[6] = html_print_image(
+                            'images/op_network.png',
+                            true,
+                            [
+                                'title' => __('Discovery Cloud S3'),
+                                'class' => 'invert_filter',
+                            ]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Cloud.Aws.S3');
+                    break;
+
                     case DISCOVERY_APP_MYSQL:
                         // Discovery Applications MySQL.
                         $data[6] = html_print_image(
@@ -866,6 +879,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_APP_DB2
                         && $task['type'] != DISCOVERY_APP_SAP
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                        && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
                         if (check_acl($config['id_user'], 0, 'MR')) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
@@ -1067,6 +1081,9 @@ class DiscoveryTaskList extends HTML
 
             case DISCOVERY_CLOUD_AWS_RDS:
             return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=rds&page=0';
+
+            case DISCOVERY_CLOUD_AWS_S3:
+            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
 
             case DISCOVERY_APP_SAP:
             return 'wiz=app&mode=SAP&page=0';

@@ -50,7 +50,7 @@
   width: 100%;
 }
 
-li:hover ul {
+li:hover ul:not(.invisible) {
   display: block;
 }
 

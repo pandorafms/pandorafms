@@ -517,7 +517,7 @@ if ($maps) {
     if (!is_metaconsole()) {
         echo '<div class="action-buttons w100p right">';
     } else {
-        echo '<div class="w100p right">';
+        echo '<div class="w100p right_align">';
     }
 }
 

@@ -1211,7 +1211,7 @@ switch ($action) {
         switch ($activeTab) {
             case 'main':
                 $reportName = '';
-                $idGroupReport = 0;
+                $idGroupReport = null;
                 // All groups.
                 $description = '';
                 $resultOperationDB = null;

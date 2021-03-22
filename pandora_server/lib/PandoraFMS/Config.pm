@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.752";
-my $pandora_build = "210317";
+my $pandora_build = "210322";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -330,6 +330,7 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_updates"} = 5; # 7.0
 	$pa_config->{"dynamic_warning"} = 25; # 7.0
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
+	$pa_config->{"mssql_driver"} = undef; # 745 
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
@@ -1185,6 +1186,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_constant'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^mssql_driver\s+(.*)/i) {
+			$pa_config->{'mssql_driver'}= clean_blank($1);
 		}
 
 		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {

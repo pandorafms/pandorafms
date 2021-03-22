@@ -242,6 +242,13 @@ class Item extends CachedModel
             );
         }
 
+        $decodedData['agentDisabled'] = static::parseBool(
+            $data['agentDisabled']
+        );
+        $decodedData['moduleDisabled'] = static::parseBool(
+            $data['moduleDisabled']
+        );
+
         return $decodedData;
     }
 
@@ -939,7 +946,7 @@ class Item extends CachedModel
 
         if (\is_metaconsole()) {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tmetaconsole_agent
                 WHERE id_tagente = %s and id_tmetaconsole_setup = %s',
                 $agentId,
@@ -947,7 +954,7 @@ class Item extends CachedModel
             );
         } else {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tagente
                 WHERE id_agente = %s',
                 $agentId
@@ -966,6 +973,7 @@ class Item extends CachedModel
         $agentData['agentAlias'] = $agent['alias'];
         $agentData['agentDescription'] = $agent['comentarios'];
         $agentData['agentAddress'] = $agent['direccion'];
+        $agentData['agentDisabled'] = $agent['disabled'];
 
         return \io_safe_output($agentData);
     }
@@ -1026,7 +1034,7 @@ class Item extends CachedModel
         }
 
         $sql = sprintf(
-            'SELECT nombre, descripcion
+            'SELECT nombre, descripcion, `disabled`
             FROM tagente_modulo
             WHERE id_agente_modulo = %s',
             $moduleId
@@ -1046,6 +1054,7 @@ class Item extends CachedModel
 
         $moduleData['moduleName'] = $moduleName['nombre'];
         $moduleData['moduleDescription'] = $moduleName['descripcion'];
+        $moduleData['moduleDisabled'] = $moduleName['disabled'];
 
         return \io_safe_output($moduleData);
     }
@@ -1075,6 +1084,12 @@ class Item extends CachedModel
         $linkedAgent = static::extractLinkedAgent($data);
 
         $baseUrl = \ui_get_full_url('index.php');
+
+        if ((bool) $data['agentDisabled'] === true
+            || (bool) $data['moduleDisabled'] === true
+        ) {
+            return null;
+        }
 
         // TODO: There's a feature to get the link from the label.
         if (static::$useLinkedVisualConsole === true

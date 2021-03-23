@@ -5018,25 +5018,25 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_critical.png', true, ['title' => __('Agents critical')]);
-    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span class='red_color font_12pt bolder'>".format_numeric($data['agent_critical']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span class='red_color font_12pt bolder big_data'>".format_numeric($data['agent_critical']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_warning.png', true, ['title' => __('Agents warning')]);
-    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span class='yellow_color font_12pt bolder'>".format_numeric($data['agent_warning']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span class='yellow_color font_12pt bolder big_data'>".format_numeric($data['agent_warning']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_ok.png', true, ['title' => __('Agents ok')]);
-    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder'>".format_numeric($data['agent_ok']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder big_data'>".format_numeric($data['agent_ok']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_unknown.png', true, ['title' => __('Agents unknown')]);
-    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder'>".format_numeric($data['agent_unknown']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder big_data'>".format_numeric($data['agent_unknown']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_notinit.png', true, ['title' => __('Agents not init')]);
-    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder'>".format_numeric($data['agent_not_init']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder big_data'>".format_numeric($data['agent_not_init']).'</span></b></a>';
 
     $agent_data[2] = '';
     $agent_data[3] = '';

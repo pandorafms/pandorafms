@@ -5,7 +5,7 @@
 # This code is not free or OpenSource. Please don't redistribute.
 ###############################################################################
 
-package Goliat::GoliatTools;
+package PandoraFMS::Goliat::GoliatTools;
 
 use 5.008004;
 use strict;

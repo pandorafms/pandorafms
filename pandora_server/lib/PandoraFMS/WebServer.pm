@@ -36,8 +36,8 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 
-use Goliat::GoliatTools;
-use Goliat::GoliatConfig;
+use PandoraFMS::Goliat::GoliatTools;
+use PandoraFMS::Goliat::GoliatConfig;
 
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);

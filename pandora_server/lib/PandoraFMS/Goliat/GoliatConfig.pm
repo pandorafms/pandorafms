@@ -5,12 +5,12 @@
 # This code is not free or OpenSource. Please don't redistribute.
 ##########################################################################
 
-package Goliat::GoliatConfig;
+package PandoraFMS::Goliat::GoliatConfig;
 
 use strict;
 use warnings;
-use Goliat::GoliatTools;
 use PandoraFMS::Tools;
+use PandoraFMS::Goliat::GoliatTools;
 
 require Exporter;
 our @ISA = ("Exporter");

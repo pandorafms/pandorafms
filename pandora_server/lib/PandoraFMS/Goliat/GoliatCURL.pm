@@ -5,9 +5,9 @@
 # This code is not free or OpenSource. Please don't redistribute.
 ##################################################################################
 
-package Goliat::GoliatCURL;
+package PandoraFMS::Goliat::GoliatCURL;
 
-use Goliat::GoliatTools;
+use PandoraFMS::Goliat::GoliatTools;
 
 use strict;
 use warnings;

@@ -1183,6 +1183,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_constant'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^mssql_driver\s+(.*)/i) {
+			$pa_config->{'mssql_driver'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^wuxserver\s+([0-1]*)/i) {
 			$pa_config->{"wuxserver"} = clean_blank($1);
 		}

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@ if (!empty($export_btn) && !empty($module)) {
         case 'avg':
         default:
             // HTML output - don't style or use XHTML just in case somebody needs to copy/paste it. (Office doesn't handle <thead> and <tbody>)
-            $datastart = '<table style="width:100%;" class="databox data">'.'<tr>'.'<th>'.__('Agent').'</th>'.'<th>'.__('Module').'</th>'.'<th>'.__('Data').'</th>'.'<th>'.__('Timestamp').'</th>'.'</tr>';
+            $datastart = '<table class="databox data w100p">'.'<tr>'.'<th>'.__('Agent').'</th>'.'<th>'.__('Module').'</th>'.'<th>'.__('Data').'</th>'.'<th>'.__('Timestamp').'</th>'.'</tr>';
             $rowstart = '<tr><td>';
             $divider = '</td><td>';
             $rowend = '</td></tr>';
@@ -264,7 +264,7 @@ if (empty($export_btn) || $show_form) {
     }
 
     // Src code of lightning image with skins
-    $src_code = html_print_image('images/lightning.png', true, false, true);
+    $src_code = html_print_image('images/lightning_go.png', true, false, true);
 
     $params = [];
     $params['return'] = true;
@@ -324,7 +324,15 @@ if (empty($export_btn) || $show_form) {
         10,
         true
     );
-    $table->data[3][1] .= html_print_image('images/calendar_view_day.png', true, ['alt' => 'calendar', 'onclick' => "scwShow(scwID('text-start_date'),this);"]);
+    $table->data[3][1] .= html_print_image(
+        'images/calendar_view_day.png',
+        true,
+        [
+            'alt'     => 'calendar',
+            'onclick' => "scwShow(scwID('text-start_date'),this);",
+            'class'   => 'invert_filter',
+        ]
+    );
     $table->data[3][1] .= html_print_input_text(
         'start_time',
         date('H:i:s', (get_system_time() - SECONDS_1DAY)),
@@ -344,7 +352,15 @@ if (empty($export_btn) || $show_form) {
         10,
         true
     );
-    $table->data[4][1] .= html_print_image('images/calendar_view_day.png', true, ['alt' => 'calendar', 'onclick' => "scwShow(scwID('text-end_date'),this);"]);
+    $table->data[4][1] .= html_print_image(
+        'images/calendar_view_day.png',
+        true,
+        [
+            'alt'     => 'calendar',
+            'onclick' => "scwShow(scwID('text-end_date'),this);",
+            'class'   => 'invert_filter',
+        ]
+    );
     $table->data[4][1] .= html_print_input_text(
         'end_time',
         date('H:i:s', get_system_time()),
@@ -368,7 +384,7 @@ if (empty($export_btn) || $show_form) {
     html_print_table($table);
 
     // Submit button
-    echo '<div class="action-buttons" style="width:100%;">';
+    echo '<div class="action-buttons w100p">';
         html_print_button(__('Export'), 'export_btn', false, 'change_action()', 'class="sub wand"');
     echo '</div></form>';
 }

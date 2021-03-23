@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,6 +106,23 @@ class Group extends Entity
 
 
     /**
+     * Alias of 'nombre'.
+     *
+     * @param string|null $name Name of group.
+     *
+     * @return string|void Name assigned or void if set operation.
+     */
+    public function name(?string $name=null)
+    {
+        if ($name === null) {
+            return $this->nombre();
+        }
+
+        return $this->nombre($name);
+    }
+
+
+    /**
      * Retrieves a list of groups fitered.
      *
      * @param array $filter Filters to be applied.
@@ -119,7 +136,7 @@ class Group extends Entity
         if (empty($filter['id_user']) === true) {
             // By default query current user groups.
             $filter['id_user'] = false;
-        } else if (!\users_is_admin()) {
+        } else if ((bool) \users_is_admin() === false) {
             // Override user queried if user is not an admin.
             $filter['id_user'] = false;
         }
@@ -226,8 +243,9 @@ class Group extends Entity
         if (isset($config['centralized_management']) === true
             && $config['centralized_management'] > 0
         ) {
+            $msg = 'cannot be modified in a centralized management environment';
             throw new \Exception(
-                get_class($this).' error, cannot be modified while centralized management environment.'
+                get_class($this).' error, '.$msg
             );
         }
 

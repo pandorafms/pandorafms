@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -192,7 +192,7 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     && $config['2Fa_auth'] != '1'
     && $config['double_auth_enabled']
 ) {
-    echo '<div id="doble_auth_window" style="display: none"; >';
+    echo '<div id="doble_auth_window" class="invisible"; >';
     ?>
     <script type="text/javascript">
   var userID = "<?php echo $config['id_user']; ?>";
@@ -234,8 +234,8 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     }
   });
 
-  $("div#doble_auth_window").dialog({
     <?php config_update_value('2Fa_auth', ''); ?>
+  $("div#doble_auth_window").dialog({
     resizable: true,
     draggable: true,
     modal: true,
@@ -247,12 +247,6 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     width: 500,
     height: 400,
     close: function (event, ui) {
-        
-    <?php
-    if (!$double_auth_enabled) {
-        config_update_value('2Fa_auth', '1');
-    }
-    ?>
       // Abort the ajax request
       if (typeof request != 'undefined'){
         request.abort();
@@ -263,7 +257,11 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
       //document.location.reload();
     }
   })
-    .show();    </script>
+    .show();    
+    // Don't allow close the dialog with X button
+    $('.ui-dialog-titlebar-close').css('display', 'none');
+
+    </script>
     <?php
     echo '</div>';
 }

@@ -75,9 +75,14 @@ export default class BarsGraph extends Item<BarsGraphProps> {
     element.className = "bars-graph";
     element.style.backgroundImage = `url(${this.props.html})`;
     element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${
-      this.props.height
-    }px`;
+    element.style.backgroundSize = `${this.props.width}px ${this.props.height}px`;
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
 
     return element;
   }
@@ -85,8 +90,13 @@ export default class BarsGraph extends Item<BarsGraphProps> {
   protected updateDomElement(element: HTMLElement): void {
     element.style.backgroundImage = `url(${this.props.html})`;
     element.style.backgroundRepeat = "no-repeat";
-    element.style.backgroundSize = `${this.props.width}px ${
-      this.props.height
-    }px`;
+    element.style.backgroundSize = `${this.props.width}px ${this.props.height}px`;
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
   }
 }

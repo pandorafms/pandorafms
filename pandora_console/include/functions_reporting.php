@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -842,6 +842,7 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'histogram_data':
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_module_histogram_graph(
                     $report,
@@ -1868,6 +1869,10 @@ function reporting_event_report_group(
         $return['subtitle'] .= ' ('.$content['style']['event_filter_search'].')';
     }
 
+    if (!empty($content['style']['event_filter_exclude'])) {
+        $return['subtitle'] .= ' ('.__('Exclude ').$content['style']['event_filter_exclude'].')';
+    }
+
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -1880,6 +1885,7 @@ function reporting_event_report_group(
     $filter_event_type          = json_decode($event_filter['filter_event_type'], true);
     $filter_event_status        = json_decode($event_filter['filter_event_status'], true);
     $filter_event_filter_search = $event_filter['event_filter_search'];
+    $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
 
     // Graphs.
     $event_graph_by_agent                 = $event_filter['event_graph_by_agent'];
@@ -1919,7 +1925,11 @@ function reporting_event_report_group(
         $filter_event_status,
         $filter_event_filter_search,
         $content['id_group'],
-        true
+        true,
+        false,
+        false,
+        false,
+        $filter_event_filter_exclude
     );
 
     if (empty($data)) {
@@ -1965,7 +1975,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_agent'] = pie_graph(
@@ -1990,7 +2001,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_user_validator'] = pie_graph(
@@ -2044,7 +2056,8 @@ function reporting_event_report_group(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -2189,6 +2202,7 @@ function reporting_event_report_module(
         true
     );
     $filter_event_filter_search = $event_filter['event_filter_search'];
+    $filter_event_filter_exclude = $event_filter['event_filter_exclude'];
 
     // Graphs.
     $event_graph_by_user_validator = $event_filter['event_graph_by_user_validator'];
@@ -2218,7 +2232,8 @@ function reporting_event_report_module(
         $event_graph_validated_vs_unvalidated,
         $ttl,
         $id_server,
-        $metaconsole_dbtable
+        $metaconsole_dbtable,
+        $filter_event_filter_exclude
     );
 
     if (empty($data)) {
@@ -3007,25 +3022,94 @@ function reporting_group_report($report, $content)
 {
     global $config;
 
-    $metaconsole_on = ($config['metaconsole'] == 1) && is_metaconsole();
-
     $return['type'] = 'group_report';
 
     if (empty($content['name'])) {
         $content['name'] = __('Group Report');
     }
 
-    if (is_metaconsole()) {
-        $server = metaconsole_get_connection_names();
-        $connection = metaconsole_get_connection($server);
+    if (is_metaconsole() === true) {
+        if (isset($content['server_name']) === true
+            && empty($content['server_name']) === false
+        ) {
+            $id_meta = metaconsole_get_id_server($content['server_name']);
+            $server = metaconsole_get_connection_by_id($id_meta);
+            metaconsole_connect($server);
+
+            $data = reporting_groups_nodes($content);
+
+            if (is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
+        } else {
+            $servers = metaconsole_get_connection_names();
+            if (isset($servers) === true && is_array($servers) === true) {
+                $group_stats = [
+                    'monitor_checks'            => 0,
+                    'monitor_not_init'          => 0,
+                    'monitor_unknown'           => 0,
+                    'monitor_ok'                => 0,
+                    'monitor_bad'               => 0,
+                    'monitor_warning'           => 0,
+                    'monitor_critical'          => 0,
+                    'monitor_not_normal'        => 0,
+                    'monitor_alerts'            => 0,
+                    'monitor_alerts_fired'      => 0,
+                    'monitor_alerts_fire_count' => 0,
+                    'total_agents'              => 0,
+                    'total_alerts'              => 0,
+                    'total_checks'              => 0,
+                    'alerts'                    => 0,
+                    'agents_unknown'            => 0,
+                    'monitor_health'            => 0,
+                    'alert_level'               => 0,
+                    'module_sanity'             => 0,
+                    'server_sanity'             => 0,
+                    'total_not_init'            => 0,
+                    'monitor_non_init'          => 0,
+                    'agent_ok'                  => 0,
+                    'agent_warning'             => 0,
+                    'agent_critical'            => 0,
+                    'agent_unknown'             => 0,
+                    'agent_not_init'            => 0,
+                    'global_health'             => 0,
+                    'alert_fired'               => 0,
+                ];
+
+                $count_events = 0;
+
+                foreach ($servers as $k_server => $v_server) {
+                    $id_meta = metaconsole_get_id_server($v_server);
+                    $server = metaconsole_get_connection_by_id($id_meta);
+                    metaconsole_connect($server);
+
+                    $data_node = reporting_groups_nodes($content);
+                    $count_events += $data_node['count_events'];
+                    foreach ($data_node['group_stats'] as $key => $value) {
+                        $group_stats[$key] += $value;
+                    }
+
+                    if (is_metaconsole() === true) {
+                        metaconsole_restore_db();
+                    }
+                }
+
+                $data = [
+                    'count_events' => $count_events,
+                    'group_stats'  => $group_stats,
+                ];
+            }
+        }
+    } else {
+        $data = reporting_groups_nodes($content);
     }
 
     $items_label = [
         'agent_group' => groups_get_name($content['id_group'], true),
     ];
 
-     // Apply macros
-     $title = (isset($content['name'])) ? $content['name'] : '';
+    // Apply macros.
+    $title = (isset($content['name'])) ? $content['name'] : '';
     if ($title != '') {
         $title = reporting_label_macro(
             $items_label,
@@ -3033,7 +3117,7 @@ function reporting_group_report($report, $content)
         );
     }
 
-    $return['server_name'] = $server[0];
+    $return['server_name'] = $content['server_name'];
     $return['title'] = $title;
     $return['landscape'] = $content['landscape'];
     $return['pagebreak'] = $content['pagebreak'];
@@ -3043,17 +3127,42 @@ function reporting_group_report($report, $content)
 
     $return['data'] = [];
 
-    $id_group = groups_safe_acl($config['id_user'], $content['id_group'], 'ER');
+    $return['data']['count_events'] = $data['count_events'];
+
+    $return['data']['group_stats'] = $data['group_stats'];
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Return stats groups for node.
+ *
+ * @param array $content Info report.
+ *
+ * @return array Result.
+ */
+function reporting_groups_nodes($content)
+{
+    global $config;
+    $id_group = groups_safe_acl(
+        $config['id_user'],
+        $content['id_group'],
+        'ER'
+    );
 
     if (empty($id_group)) {
         $events = [];
     } else {
-        $sql_where = sprintf(' WHERE id_grupo IN (%s) AND estado<>1 ', implode(',', $id_group));
+        $sql_where = sprintf(
+            ' WHERE id_grupo IN (%s) AND estado<>1 ',
+            implode(',', $id_group)
+        );
         $events = events_get_events_grouped(
             $sql_where,
             0,
             1000,
-            is_metaconsole()
+            false
         );
     }
 
@@ -3061,19 +3170,15 @@ function reporting_group_report($report, $content)
         $events = [];
     }
 
-    $return['data']['count_events'] = count($events);
+    $return['count_events'] = count($events);
 
-    $return['data']['group_stats'] = reporting_get_group_stats(
+    $return['group_stats'] = reporting_get_group_stats(
         $content['id_group'],
         'AR',
         (bool) $content['recursion']
     );
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
-    return reporting_check_structure_content($return);
+    return $return;
 }
 
 
@@ -3169,6 +3274,7 @@ function reporting_event_report_agent(
     $filter_event_type = json_decode($style['filter_event_type'], true);
     $filter_event_status = json_decode($style['filter_event_status'], true);
     $filter_event_filter_search = $style['event_filter_search'];
+    $filter_event_filter_exclude = $style['event_filter_exclude'];
 
     // Graph.
     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -3186,7 +3292,8 @@ function reporting_event_report_agent(
         $filter_event_severity,
         $filter_event_type,
         $filter_event_status,
-        $filter_event_filter_search
+        $filter_event_filter_search,
+        $filter_event_filter_exclude
     );
 
     reporting_set_conf_charts(
@@ -3226,7 +3333,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['by_user_validator'] = pie_graph(
@@ -3251,7 +3359,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $colors = get_criticity_pie_colors($data_graph);
@@ -3280,7 +3389,8 @@ function reporting_event_report_agent(
             $filter_event_type,
             $filter_event_status,
             $filter_event_filter_search,
-            $metaconsole_dbtable
+            $metaconsole_dbtable,
+            $filter_event_filter_exclude
         );
 
         $return['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -7442,6 +7552,7 @@ function reporting_availability_graph(
     $return['pagebreak'] = $content['pagebreak'];
     $return['description'] = $content['description'];
     $return['failover_type'] = $content['failover_type'];
+    $return['summary'] = $content['summary'];
     $return['date'] = reporting_get_date_text($report, $content);
 
     // Get chart.
@@ -7560,24 +7671,22 @@ function reporting_availability_graph(
                 }
 
                 foreach ($sla_failover as $k_sla => $v_sla) {
-                    if ($content['failover_type'] == REPORT_FAILOVER_TYPE_NORMAL) {
-                        $sla_array = data_compare_24x7(
-                            $v_sla,
-                            $content,
-                            $report['datetime'],
-                            $slice
-                        );
+                    $sla_array = data_compare_24x7(
+                        $v_sla,
+                        $content,
+                        $report['datetime'],
+                        $slice
+                    );
 
-                        $return = prepare_data_for_paint(
-                            $v_sla,
-                            $sla_array,
-                            $content,
-                            $report['datetime'],
-                            $return,
-                            $k_sla,
-                            $pdf
-                        );
-                    }
+                    $return = prepare_data_for_paint(
+                        $v_sla,
+                        $sla_array,
+                        $content,
+                        $report['datetime'],
+                        $return,
+                        $k_sla,
+                        $pdf
+                    );
 
                     if (isset($v_sla['compare']) === true
                         && empty($v_sla['compare']) === false
@@ -9316,7 +9425,8 @@ function reporting_get_module_detailed_event(
     $event_graph_validated_vs_unvalidated=false,
     $ttl=1,
     $id_server=false,
-    $metaconsole_dbtable=false
+    $metaconsole_dbtable=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -9352,7 +9462,8 @@ function reporting_get_module_detailed_event(
             false,
             $id_module,
             true,
-            $id_server
+            $id_server,
+            $filter_event_filter_exclude
         );
 
         // total_events
@@ -9380,7 +9491,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $event['chart']['by_user_validator'] = pie_graph(
@@ -9405,7 +9517,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $colors = get_criticity_pie_colors($data_graph);
@@ -9434,7 +9547,8 @@ function reporting_get_module_detailed_event(
                 $filter_event_type,
                 $filter_event_status,
                 $filter_event_filter_search,
-                $metaconsole_dbtable
+                $metaconsole_dbtable,
+                $filter_event_filter_exclude
             );
 
             $event['chart']['validated_vs_unvalidated'] = pie_graph(
@@ -9483,7 +9597,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_severity=false,
     $filter_event_type=false,
     $filter_event_status=false,
-    $filter_event_filter_search=false
+    $filter_event_filter_search=false,
+    $filter_event_filter_exclude=false
 ) {
     global $config;
 
@@ -9515,7 +9630,11 @@ function reporting_get_agents_detailed_event(
             $filter_event_status,
             $filter_event_filter_search,
             false,
-            false
+            false,
+            false,
+            false,
+            false,
+            $filter_event_filter_exclude
         );
 
         if (empty($event)) {
@@ -9594,7 +9713,7 @@ function reporting_get_agents_detailed_event(
                     $img_st,
                     true,
                     [
-                        'class' => 'image_status',
+                        'class' => 'image_status invert filter',
                         'width' => 16,
                         'title' => $title_st,
                     ]
@@ -9872,7 +9991,7 @@ function reporting_get_group_stats($id_group=0, $access='AR', $recursion=true)
  *
  * @return array Group statistics
  */
-function reporting_get_group_stats_resume($id_group=0, $access='AR')
+function reporting_get_group_stats_resume($id_group=0, $access='AR', $ignore_permissions=false)
 {
     global $config;
 
@@ -9882,7 +10001,6 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
     $data['monitor_unknown'] = 0;
     $data['monitor_ok'] = 0;
     $data['monitor_bad'] = 0;
-    // Critical + Unknown + Warning
     $data['monitor_warning'] = 0;
     $data['monitor_critical'] = 0;
     $data['monitor_not_normal'] = 0;
@@ -9908,8 +10026,8 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
 
     $cur_time = get_system_time();
 
-    // Check for access credentials using check_acl. More overhead, much safer
-    if (!check_acl($config['id_user'], $id_group, $access)) {
+    // Check for access credentials using check_acl. More overhead, much safer.
+    if ($ignore_permissions === false && !check_acl($config['id_user'], $id_group, $access)) {
         return $data;
     }
 
@@ -9965,113 +10083,107 @@ function reporting_get_group_stats_resume($id_group=0, $access='AR')
         // Realtime stats, done by PHP Console
         // -------------------------------------------------------------------
     } else {
-        if (!empty($id_group)) {
-            // check tags for user
-            $tags = db_get_value('tags', 'tusuario_perfil', 'id_usuario', $config['id_user']);
-            if ($tags) {
-                $tags_sql = " AND tae.id_agente_modulo IN ( SELECT id_agente_modulo 
-                                                           FROM ttag_module 
-                                                           WHERE id_tag IN ($tags) ) ";
-            } else {
-                $tags_sql = '';
-            }
-
+        if (empty($id_group) === false) {
             if (is_array($id_group)) {
                 $id_group = implode(',', $id_group);
             }
 
-            // for stats modules
-            $sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
-                    SUM(tae.estado=0) as monitor_ok,
-                    SUM(tae.estado=1) as monitor_critical,
-                    SUM(tae.estado=2) as monitor_warning,
-                    SUM(tae.estado=3) as monitor_unknown,
-                    SUM(tae.estado=4) as monitor_not_init,
-                    COUNT(tae.estado) as monitor_total
+            $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+            $agent_secondary_table = (is_metaconsole() === true) ? 'tmetaconsole_agent_secondary_group' : 'tagent_secondary_group';
 
-                    FROM
-                        tagente_estado tae,
-                        tagente        ta,
-                        tagente_modulo tam,
-                        tgrupo         tg
-    
-                    WHERE 1=1
-                        AND tae.id_agente = ta.id_agente
-                        AND tae.id_agente_modulo = tam.id_agente_modulo
-                        AND ta.id_grupo = tg.id_grupo
-                        AND tam.disabled = 0
-                        AND ta.disabled = 0
-                        AND ta.id_grupo IN ($id_group) $tags_sql 
-                    GROUP BY tg.id_grupo;";
-            $data_array = db_get_all_rows_sql($sql);
-
-            $data = $data_array[0];
-
-            // Get alerts configured, except disabled
-            $data['monitor_alerts'] += groups_monitor_alerts($group_array);
-
-            // Get alert configured currently FIRED, except disabled
-            $data['monitor_alerts_fired'] += groups_monitor_fired_alerts($group_array);
-
-            // for stats agents
-            $sql = "SELECT tae.id_agente id_agente, tg.id_grupo id_grupo,
-                    SUM(tae.estado=0) as monitor_agent_ok,
-                    SUM(tae.estado=1) as monitor_agent_critical,
-                    SUM(tae.estado=2) as monitor_agent_warning,
-                    SUM(tae.estado=3) as monitor_agent_unknown,
-                    SUM(tae.estado=4) as monitor_agent_not_init,
-                    COUNT(tae.estado) as monitor_agent_total
-
+            $sql = sprintf(
+                'SELECT tg.id_grupo AS id_group,
+                    IF (SUM(modules_total) IS NULL,0,SUM(modules_total)) AS modules,
+                    IF (SUM(modules_ok) IS NULL,0,SUM(modules_ok)) AS normal,
+                    IF (SUM(modules_critical) IS NULL,0,SUM(modules_critical)) AS critical,
+                    IF (SUM(modules_warning) IS NULL,0,SUM(modules_warning)) AS warning,
+                    IF (SUM(modules_unknown) IS NULL,0,SUM(modules_unknown)) AS unknown,
+                    IF (SUM(modules_not_init) IS NULL,0,SUM(modules_not_init)) AS `non-init`,
+                    IF (SUM(alerts_fired) IS NULL,0,SUM(alerts_fired)) AS alerts_fired,
+                    IF (SUM(agents_total) IS NULL,0,SUM(agents_total)) AS agents,
+                    IF (SUM(agents_unknown) IS NULL,0,SUM(agents_unknown)) AS agents_unknown,
+                    IF (SUM(agents_critical) IS NULL,0,SUM(agents_critical)) AS agents_critical,
+                    IF (SUM(agents_warnings) IS NULL,0,SUM(agents_warnings)) AS agents_warnings,
+                    IF (SUM(agents_not_init) IS NULL,0,SUM(agents_not_init)) AS agents_not_init,
+                    IF (SUM(agents_normal) IS NULL,0,SUM(agents_normal)) AS agents_normal,
+                    UNIX_TIMESTAMP() AS utimestamp
                 FROM
-                    tagente_estado tae,
-                    tagente        ta,
-                    tagente_modulo tam,
-                    tgrupo         tg
-                    
-                WHERE 1=1
-                    AND tae.id_agente = ta.id_agente
-                    AND tae.id_agente_modulo = tam.id_agente_modulo
-                    AND ta.id_grupo = tg.id_grupo
-                    AND tam.disabled = 0
-                    AND ta.disabled = 0
-                    AND ta.id_grupo IN ($id_group) $tags_sql
-                GROUP BY tae.id_agente;";
-            $data_array_2 = db_get_all_rows_sql($sql);
+                (
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        ta.id_grupo AS g
+                    FROM %s ta
+                    WHERE ta.disabled = 0
+                        AND ta.id_grupo IN (%s)
+                    GROUP BY g
+                    UNION ALL
+                    SELECT SUM(ta.normal_count) AS modules_ok,
+                        SUM(ta.critical_count) AS modules_critical,
+                        SUM(ta.warning_count) AS modules_warning,
+                        SUM(ta.unknown_count) AS modules_unknown,
+                        SUM(ta.notinit_count) AS modules_not_init,
+                        SUM(ta.total_count) AS modules_total,
+                        SUM(ta.fired_count) AS alerts_fired,
+                        SUM(IF(ta.critical_count > 0, 1, 0)) AS agents_critical,
+                        SUM(IF(ta.warning_count > 0 AND ta.critical_count = 0, 1, 0)) AS agents_warnings,
+                        SUM(IF(ta.total_count = ta.notinit_count OR ta.total_count = 0, 1, 0)) AS agents_not_init,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count = 0 AND ta.normal_count > 0, 1, 0)) AS agents_normal,
+                        SUM(IF(ta.critical_count = 0 AND ta.warning_count = 0 AND ta.unknown_count > 0, 1, 0)) AS agents_unknown,
+                        COUNT(ta.id_agente) AS agents_total,
+                        tasg.id_group AS g
+                    FROM %s ta
+                    LEFT JOIN %s tasg
+                        ON ta.id_agente = tasg.id_agent
+                    WHERE ta.disabled = 0
+                        AND (ta.id_grupo IN (%s) OR tasg.id_group IN (%s))
+                    GROUP BY g
+                ) counters
+                RIGHT JOIN tgrupo tg
+                    ON counters.g = tg.id_grupo
+                WHERE tg.id_grupo IN (%s)
+                GROUP BY tg.id_grupo',
+                $agent_table,
+                $id_group,
+                $agent_table,
+                $agent_secondary_table,
+                $id_group,
+                $id_group,
+                $id_group
+            );
 
-            if (is_array($data_array_2) || is_object($data_array_2)) {
-                foreach ($data_array_2 as $key => $value) {
-                    if ($value['monitor_agent_critical'] != 0) {
-                        $data['agent_critical'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0) {
-                        $data['agent_warning'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] != 0
-                    ) {
-                        $data['agent_unknown'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0
-                    ) {
-                        $data['agent_ok'] ++;
-                    } else if ($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0
-                        && $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] == 0
-                        && $value['monitor_agent_not_init'] != 0
-                    ) {
-                        $data['agent_not_init'] ++;
-                    }
-
-                    $data['total_agents'] ++;
-                }
-            }
-
-            // Get total count of monitors for this group, except disabled.
-            $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
-
-            // Calculate not_normal monitors
-            $data['monitor_not_normal'] += ($data['monitor_checks'] - $data['monitor_ok']);
+            $group_stat = db_get_all_rows_sql($sql);
+            $data = [
+                'monitor_checks'            => (int) $group_stat[0]['modules'],
+                'monitor_alerts'            => (int) groups_monitor_alerts($group_array),
+                'monitor_alerts_fired'      => (int) $group_stat[0]['alerts_fired'],
+                'monitor_alerts_fire_count' => (int) $group_stat[0]['alerts_fired'],
+                'monitor_ok'                => (int) $group_stat[0]['normal'],
+                'monitor_warning'           => (int) $group_stat[0]['warning'],
+                'monitor_critical'          => (int) $group_stat[0]['critical'],
+                'monitor_unknown'           => (int) $group_stat[0]['unknown'],
+                'monitor_not_init'          => (int) $group_stat[0]['non-init'],
+                'agent_not_init'            => (int) $group_stat[0]['agents_not_init'],
+                'agent_unknown'             => (int) $group_stat[0]['agents_unknown'],
+                'agent_ok'                  => (int) $group_stat[0]['agents_normal'],
+                'agent_warning'             => (int) $group_stat[0]['agents_warnings'],
+                'agent_critical'            => (int) $group_stat[0]['agents_critical'],
+                'total_checks'              => (int) $group_stat[0]['modules'],
+                'total_alerts'              => (int) groups_monitor_alerts($group_array),
+                'total_agents'              => (int) $group_stat[0]['agents'],
+                'utimestamp'                => (int) $group_stat[0]['utimestamp'],
+            ];
         }
-
-        // Get total count of monitors for this group, except disabled.
-        $data['monitor_checks'] = ($data['monitor_not_init'] + $data['monitor_unknown'] + $data['monitor_warning'] + $data['monitor_critical'] + $data['monitor_ok']);
     }
 
     if ($data['monitor_unknown'] > 0 && $data['monitor_checks'] > 0) {
@@ -10222,7 +10334,7 @@ function reporting_get_stats_alerts($data, $links=false)
     $table_al = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/bell.png', true, ['title' => __('Defined alerts')], false, false, false, true);
+    $tdata[0] = html_print_image('images/bell.png', true, ['title' => __('Defined alerts'), 'class' => 'invert_filter'], false, false, false, true);
     $tdata[1] = $data['monitor_alerts'] <= 0 ? '-' : $data['monitor_alerts'];
     $tdata[1] = '<a class="big_data" href="'.$urls['monitor_alerts'].'">'.$tdata[1].'</a>';
 
@@ -10233,10 +10345,21 @@ function reporting_get_stats_alerts($data, $links=false)
     */
 
     if ($data['monitor_alerts'] > $data['total_agents'] && !enterprise_installed()) {
-        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     }
 
-    $tdata[3] = html_print_image('images/bell_error.png', true, ['title' => __('Fired alerts')], false, false, false, true);
+    $tdata[3] = html_print_image(
+        'images/bell_error.png',
+        true,
+        [
+            'title' => __('Fired alerts'),
+            'class' => 'invert_filter',
+        ],
+        false,
+        false,
+        false,
+        true
+    );
     $tdata[4] = $data['monitor_alerts_fired'] <= 0 ? '-' : $data['monitor_alerts_fired'];
     $tdata[4] = '<a style="color: '.COL_ALERTFIRED.';" class="big_data" href="'.$urls['monitor_alerts_fired'].'">'.$tdata[4].'</a>';
     $table_al->rowclass[] = '';
@@ -10368,7 +10491,7 @@ function reporting_get_stats_agents_monitors($data)
     $table_am = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/agent.png', true, ['title' => __('Total agents')], false, false, false, true);
+    $tdata[0] = html_print_image('images/agent.png', true, ['title' => __('Total agents'), 'class' => 'invert_filter'], false, false, false, true);
     $tdata[1] = $data['total_agents'] <= 0 ? '-' : $data['total_agents'];
     $tdata[1] = '<a class="big_data" href="'.$urls['total_agents'].'">'.$tdata[1].'</a>';
 
@@ -10379,10 +10502,10 @@ function reporting_get_stats_agents_monitors($data)
     */
 
     if ($data['total_agents'] > 500 && !enterprise_installed()) {
-        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     }
 
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks')], false, false, false, true);
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
     $tdata[4] = $data['monitor_checks'] <= 0 ? '-' : $data['monitor_checks'];
     $tdata[4] = '<a class="big_data" href="'.$urls['monitor_checks'].'">'.$tdata[4].'</a>';
 
@@ -10393,7 +10516,7 @@ function reporting_get_stats_agents_monitors($data)
     */
     if ($data['total_agents']) {
         if (($data['monitor_checks'] / $data['total_agents'] > 100) && !enterprise_installed()) {
-            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         }
     }
 
@@ -10423,7 +10546,7 @@ function reporting_get_stats_users($data)
     $table_us = html_get_predefined_table();
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/user_green.png', true, ['title' => __('Defined users')]);
+    $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
     $tdata[1] = count(get_users());
     $tdata[1] = '<a class="big_data" href="'.$urls['defined_users'].'">'.$tdata[1].'</a>';
 
@@ -11256,7 +11379,7 @@ function reporting_tiny_stats(
 
     if (isset($counts_info['total_count'])) {
         $not_init = isset($counts_info['notinit_count']) ? $counts_info['notinit_count'] : 0;
-        $total_count = ($counts_info['total_count'] - $not_init);
+        $total_count = $counts_info['total_count'];
         $stats[] = [
             'name'  => 'total_count',
             'count' => $total_count,
@@ -11339,63 +11462,62 @@ function reporting_tiny_stats(
 
     if ($modern === true) {
         $out .= '<div id="bullets_modules">';
-        // $out .='<span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 13pt">'.$total_count.$separator.'</span>';
         if (isset($fired_count) && $fired_count > 0) {
             $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$fired_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$fired_count.'</span></div>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
             $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$critical_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$critical_count.'</span></div>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
             $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$warning_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$warning_count.'</span></div>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
             $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$unknown_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$unknown_count.'</span></div>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
             $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$not_init_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$not_init_count.'</span></div>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
             $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
-            $out .= '<span style="font-size: 12pt">'.$normal_count.'</span></div>';
+            $out .= '<span  class="font_12pt">'.$normal_count.'</span></div>';
         }
 
         $out .= '</div>';
     } else {
         // Classic ones.
-        $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title" style="font-size: 7pt">'.$total_count.'</span>';
+        $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title"  >'.$total_count.'</span>';
         if (isset($fired_count) && $fired_count > 0) {
-            $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'" style="font-size: 7pt">'.$fired_count.'</span>';
+            $out .= ' '.$separator.' <span class="orange forced_title" id="fired_count_'.$uniq_id.'"  >'.$fired_count.'</span>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
-            $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'" style="font-size: 7pt">'.$critical_count.'</span>';
+            $out .= ' '.$separator.' <span class="red forced_title" id="critical_count_'.$uniq_id.'"  >'.$critical_count.'</span>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
-            $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'" style="font-size: 7pt">'.$warning_count.'</span>';
+            $out .= ' '.$separator.' <span class="yellow forced_title" id="warning_count_'.$uniq_id.'"  >'.$warning_count.'</span>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
-            $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'" style="font-size: 7pt">'.$unknown_count.'</span>';
+            $out .= ' '.$separator.' <span class="grey forced_title" id="unknown_count_'.$uniq_id.'"  >'.$unknown_count.'</span>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
-            $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'" style="font-size: 7pt">'.$not_init_count.'</span>';
+            $out .= ' '.$separator.' <span class="blue forced_title" id="not_init_count_'.$uniq_id.'"  >'.$not_init_count.'</span>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
-            $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'" style="font-size: 7pt">'.$normal_count.'</span>';
+            $out .= ' '.$separator.' <span class="green forced_title" id="normal_count_'.$uniq_id.'"  >'.$normal_count.'</span>';
         }
 
         $out .= '</b>';
@@ -12675,40 +12797,40 @@ function reporting_get_stats_servers()
     $table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules')]);
+    $tdata[0] = html_print_image('images/module.png', true, ['title' => __('Total running modules'), 'class' => 'invert_filter']);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['total_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+    $tdata[0] = '<hr class="border_0 height_1px bg_ddd">';
     $table_srv->colspan[count($table_srv->data)][0] = 4;
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     $tdata = [];
-    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules')]);
+    $tdata[0] = html_print_image('images/database.png', true, ['title' => __('Local modules'), 'class' => 'invert_filter']);
     $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_local_modules']).'</span>';
     $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['local_modules_rate'], 2).'</span>';
-    $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+    $tdata[3] = html_print_image('images/database.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
 
     if (isset($server_performance['total_network_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules')]);
+        $tdata[0] = html_print_image('images/network.png', true, ['title' => __('Network modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_network_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['network_modules_rate'], 2).'</span>';
 
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         if ($server_performance['total_remote_modules'] > 10000 && !enterprise_installed()) {
-            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise left' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         } else {
             $tdata[4] = '&nbsp;';
         }
@@ -12719,11 +12841,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_plugin_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules')]);
+        $tdata[0] = html_print_image('images/plugin.png', true, ['title' => __('Plugin modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_plugin_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['plugin_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -12731,11 +12853,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_prediction_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules')]);
+        $tdata[0] = html_print_image('images/chart_bar.png', true, ['title' => __('Prediction modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_prediction_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['prediction_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -12743,11 +12865,11 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_wmi_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules')]);
+        $tdata[0] = html_print_image('images/wmi.png', true, ['title' => __('WMI modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_wmi_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['wmi_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
@@ -12759,14 +12881,14 @@ function reporting_get_stats_servers()
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';
-        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second')]).'/sec </span>';
+        $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         $table_srv->rowclass[] = '';
         $table_srv->data[] = $tdata;
     }
 
     $tdata = [];
-    $tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+    $tdata[0] = '<hr class="border_0 height_1px bg_ddd">';
     $table_srv->colspan[count($table_srv->data)][0] = 4;
     $table_srv->rowclass[] = '';
     $table_srv->data[] = $tdata;
@@ -12777,12 +12899,13 @@ function reporting_get_stats_servers()
         true,
         [
             'title' => __('Total events'),
+            'class' => 'invert_filter',
         ]
     );
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
-    if ($system_events > 50000 && !enterprise_installed()) {
-        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+    if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
+        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     } else {
         $tdata[3] = '&nbsp;';
     }
@@ -13448,7 +13571,7 @@ function reporting_header_table_for_pdf($title='', $description='')
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
     $result_pdf .= $title;
-    $result_pdf .= '</th><th style="font-size: 15px;" align="right">';
+    $result_pdf .= '</th><th class="font_15px" align="right">';
     $result_pdf .= '</th></tr><tr><th colspan="3" class="th_description">';
     $result_pdf .= $description;
     $result_pdf .= '</th></tr></thead></table>';
@@ -13513,7 +13636,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
 
     $urlImage = ui_get_full_url(false, true, false, false);
 
-    $return['type'] = 'module_histogram_graph';
+    $return['type'] = $content['type'];
 
     $ttl = 1;
     if ($pdf) {

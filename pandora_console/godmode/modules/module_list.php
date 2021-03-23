@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,7 +77,7 @@ foreach ($rows as $row) {
 
     echo "
 	<tr>
-		<td class='$tdcolor' align=''>".html_print_image('images/'.$row['icon'], true, ['border' => '0'])."</td>
+		<td class='$tdcolor' align=''>".html_print_image('images/'.$row['icon'], true, ['border' => '0', 'class' => 'invert_filter'])."</td>
 		<td class='$tdcolor'>
 		<b>".$row['id_tipo']."
 		</b></td>

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -150,18 +150,24 @@ if (empty($dashboards) === true) {
         $data['full_screen'] = '<a href="'.$urlFull.'">';
         $data['full_screen'] .= \html_print_image(
             'images/fullscreen.png',
-            true
+            true,
+            ['class' => 'invert_filter']
         );
         $data['full_screen'] .= '</a>';
 
         if ($manageDashboards === 1) {
+            $data['copy'] = '';
+            $data['delete'] = '';
+        }
+
+        if (check_acl_restricted_all($config['id_user'], $dashboard['id_group'], 'RM')) {
             $dataQueryCopy = [
                 'dashboardId'   => $dashboard['id'],
                 'copyDashboard' => 1,
             ];
             $urlCopy = $urlDashboard.'&'.\http_build_query($dataQueryCopy);
             $data['copy'] = '<a href="'.$urlCopy.'">';
-            $data['copy'] .= html_print_image('images/copy.png', true);
+            $data['copy'] .= html_print_image('images/copy.png', true, ['class' => 'invert_filter']);
             $data['copy'] .= '</a>';
 
             $dataQueryDelete = [
@@ -174,7 +180,8 @@ if (empty($dashboards) === true) {
             $data['delete'] .= '" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">';
             $data['delete'] .= \html_print_image(
                 'images/cross.png',
-                true
+                true,
+                ['class' => 'invert_filter']
             );
             $data['delete'] .= '</a>';
         }
@@ -202,11 +209,16 @@ if (empty($dashboards) === true) {
 }
 
 if ($writeDashboards === 1) {
+    $text = __('Create a new dashboard');
+    if ($dashboard !== null) {
+        $text = __('Update Dashboard');
+    }
+
     // Button for display modal options dashboard.
-    $output = '<a href="#" style="float:right;" onclick=\'';
+    $output = '<a href="#" class="float-right" onclick=\'';
     $output .= 'show_option_dialog('.json_encode(
         [
-            'title'       => __('Update Dashboard'),
+            'title'       => $text,
             'btn_text'    => __('Ok'),
             'btn_cancel'  => __('Cancel'),
             'url'         => $ajaxController,
@@ -228,7 +240,7 @@ if ($writeDashboards === 1) {
     echo $output;
 
     // Div for modal update dashboard.
-    echo '<div id="modal-update-dashboard" style="display:none;"></div>';
+    echo '<div id="modal-update-dashboard" class="invisible"></div>';
 
     ui_require_javascript_file('pandora_dashboards');
 }

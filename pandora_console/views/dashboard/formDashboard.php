@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ if (empty($arrayDashboard) === true) {
     $arrayDashboard['name'] = 'Default';
     $arrayDashboard['id_user'] = '';
     $private = 0;
-    $arrayDashboard['id_group'] = 0;
+    $arrayDashboard['id_group'] = null;
     $arrayDashboard['active'] = 0;
     $arrayDashboard['cells_slideshow'] = 0;
 } else {
@@ -41,6 +41,12 @@ if (empty($arrayDashboard) === true) {
     if (empty($arrayDashboard['id_user']) === true) {
         $private = 0;
     }
+}
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('RW') === true) {
+    $return_all_group = true;
 }
 
 $dataQuery = ['dashboardId' => $dashboardId];
@@ -100,11 +106,13 @@ $inputs = [
             [
                 'label'     => __('Group'),
                 'arguments' => [
-                    'name'     => 'id_group',
-                    'id'       => 'id_group',
-                    'type'     => 'select_groups',
-                    'selected' => $arrayDashboard['id_group'],
-                    'return'   => true,
+                    'name'           => 'id_group',
+                    'id'             => 'id_group',
+                    'type'           => 'select_groups',
+                    'returnAllGroup' => $return_all_group,
+                    'selected'       => $arrayDashboard['id_group'],
+                    'return'         => true,
+                    'required'       => true,
                 ],
             ],
         ],

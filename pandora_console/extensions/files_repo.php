@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,25 +111,25 @@ function pandora_files_repo_godmode()
         return;
     }
 
-    // Header tabs
-    $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view')]).'</a>';
+    // Header tabs.
+    $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view'), 'class' => 'invert_filter']).'</a>';
     $godmode['godmode'] = 1;
     $godmode['active'] = 1;
 
-    $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/operation.png', true, ['title' => __('Operation view')]).'</a>';
+    $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/eye_show.png', true, ['title' => __('Operation view'), 'class' => 'invert_filter']).'</a>';
     $operation['operation'] = 1;
 
     $onheader = [
         'godmode'   => $godmode,
         'operation' => $operation,
     ];
-    // Header
+    // Header.
     ui_print_page_header(__('Files repository manager'), 'images/extensions.png', false, '', true, $onheader);
 
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
     include_once $full_extensions_dir.'files_repo/functions_files_repo.php';
 
-    // Directory files_repo check
+    // Directory files_repo check.
     if (!files_repo_check_directory(true)) {
         return;
     }
@@ -139,19 +139,19 @@ function pandora_files_repo_godmode()
         $server_content_length = $_SERVER['CONTENT_LENGTH'];
     }
 
-    // Check for an anoying error that causes the $_POST and $_FILES arrays
-    // were empty if the file is larger than the post_max_size
+    // Check for an anoying error that causes the $_POST and $_FILES arrays.
+    // were empty if the file is larger than the post_max_size.
     if (intval($server_content_length) > 0 && empty($_POST)) {
         ui_print_error_message(__('The file exceeds the maximum size'));
     }
 
-    // GET and POST parameters
+    // GET and POST parameters.
     $file_id = (int) get_parameter('file_id');
     $add_file = (bool) get_parameter('add_file');
     $update_file = (bool) get_parameter('update_file');
     $delete_file = (bool) get_parameter('delete');
 
-    // File add or update
+    // File add or update.
     if ($add_file || ($update_file && $file_id > 0)) {
         $groups = get_parameter('groups', []);
         $public = (bool) get_parameter('public');
@@ -174,7 +174,7 @@ function pandora_files_repo_godmode()
         }
     }
 
-    // File delete
+    // File delete.
     if ($delete_file && $file_id > 0) {
         $result = files_repo_delete_file($file_id);
         if ($result !== -1) {
@@ -184,10 +184,10 @@ function pandora_files_repo_godmode()
         $file_id = 0;
     }
 
-    // FORM
+    // FORM.
     include $full_extensions_dir.'files_repo/files_repo_form.php';
     if (!$file_id) {
-        // LIST
+        // LIST.
         $manage = true;
         include $full_extensions_dir.'files_repo/files_repo_list.php';
     }
@@ -198,13 +198,13 @@ function pandora_files_repo_operation()
 {
     global $config;
 
-    // Header tabs
+    // Header tabs.
     $onheader = [];
     if (check_acl($config['id_user'], 0, 'PM')) {
-        $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view')]).'</a>';
+        $godmode['text'] = '<a href="index.php?sec=godmode/extensions&sec2=extensions/files_repo">'.html_print_image('images/setup.png', true, ['title' => __('Administration view'), 'class' => 'invert_filter']).'</a>';
         $godmode['godmode'] = 1;
 
-        $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/operation.png', true, ['title' => __('Operation view')]).'</a>';
+        $operation['text'] = '<a href="index.php?sec=extensions&sec2=extensions/files_repo">'.html_print_image('images/eye_show.png', true, ['title' => __('Operation view'), 'class' => 'invert_filter']).'</a>';
         $operation['operation'] = 1;
         $operation['active'] = 1;
 
@@ -214,18 +214,18 @@ function pandora_files_repo_operation()
         ];
     }
 
-    // Header
+    // Header.
     ui_print_page_header(__('Files repository'), 'images/extensions.png', false, '', false, $onheader);
 
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
     include_once $full_extensions_dir.'files_repo/functions_files_repo.php';
 
-    // Directory files_repo check
+    // Directory files_repo check.
     if (!files_repo_check_directory(true)) {
         return;
     }
 
-    // LIST
+    // LIST.
     $full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
 
     include $full_extensions_dir.'files_repo/files_repo_list.php';
@@ -237,5 +237,4 @@ extensions_add_main_function('pandora_files_repo_operation');
 extensions_add_godmode_menu_option(__('Files repository manager'), 'PM', null, null, 'v1r1');
 extensions_add_godmode_function('pandora_files_repo_godmode');
 
-// pandora_files_repo_uninstall();
 pandora_files_repo_install();

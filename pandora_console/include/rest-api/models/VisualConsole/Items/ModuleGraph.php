@@ -62,8 +62,14 @@ final class ModuleGraph extends Item
         $return = parent::encode($data);
 
         $id_custom_graph = static::extractIdCustomGraph($data);
-        if ($id_custom_graph !== null) {
-            $return['id_custom_graph'] = $id_custom_graph;
+        if (!empty($id_custom_graph)) {
+            if (\is_metaconsole()) {
+                $explode_custom_graph = explode('|', $id_custom_graph);
+                $return['id_custom_graph'] = $explode_custom_graph[0];
+                $return['id_metaconsole'] = $explode_custom_graph[1];
+            } else {
+                $return['id_custom_graph'] = $id_custom_graph;
+            }
         }
 
         $type_graph = static::getTypeGraph($data);
@@ -89,7 +95,7 @@ final class ModuleGraph extends Item
      */
     private static function extractIdCustomGraph(array $data)
     {
-        return static::parseIntOr(
+        return static::notEmptyStringOr(
             static::issetInArray(
                 $data,
                 [
@@ -362,6 +368,7 @@ final class ModuleGraph extends Item
                 'show_legend'        => $showLegend,
                 'return_img_base_64' => true,
                 'show_title'         => false,
+                'server_id'          => $metaconsoleId,
             ];
 
             $paramsCombined = [
@@ -414,6 +421,7 @@ final class ModuleGraph extends Item
                 'show_legend'        => $showLegend,
                 'show_title'         => false,
                 'dashboard'          => true,
+                'server_id'          => $metaconsoleId,
             ];
 
             if ($imageOnly !== false) {
@@ -452,16 +460,16 @@ final class ModuleGraph extends Item
                 true,
                 'RR'
             );
-        }
 
-        $data = array_reduce(
-            $data,
-            function ($carry, $item) {
-                $carry[$item['id_graph']] = $item['name'];
-                return $carry;
-            },
-            []
-        );
+            $data = array_reduce(
+                $data,
+                function ($carry, $item) {
+                    $carry[$item['id_graph']] = $item['name'];
+                    return $carry;
+                },
+                []
+            );
+        }
 
         return $data;
     }

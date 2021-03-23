@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,7 +82,7 @@ $table->colspan[][1] = 3;
 $row = [];
 $row[0] = __('Description');
 $row[0] .= ui_print_help_tip(__('Only 200 characters are permitted'), true);
-$row[1] = html_print_textarea('description', 3, 20, $file['description'], 'style="min-height: 40px; max-height: 40px; width: 98%;"', true);
+$row[1] = html_print_textarea('description', 3, 20, $file['description'], 'class="file_repo_description"', true);
 $table->data[] = $row;
 $table->colspan[][1] = 3;
 
@@ -90,7 +90,7 @@ $table->colspan[][1] = 3;
 $row = [];
 // Public checkbox
 $checkbox = html_print_checkbox('public', 1, (bool) !empty($file['hash']), true);
-$style = 'style="padding: 2px 10px; display: inline-block;"';
+$style = 'class="inline padding-2-10"';
 
 $row[0] = __('File');
 if ($file_id > 0) {

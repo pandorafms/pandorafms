@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -344,6 +344,12 @@ class TreeViewWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -354,6 +360,7 @@ class TreeViewWidget extends Widget
                 'privilege'      => 'AR',
                 'selected'       => $values['groupId'],
                 'return'         => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -649,7 +656,7 @@ class TreeViewWidget extends Widget
         ];
 
         // Show the modal window of an module.
-        $output .= '<div id="module_details_window" style="display:none;">';
+        $output .= '<div id="module_details_window" class="invisible">';
         $output .= '</div>';
 
         // Script.

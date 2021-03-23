@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.751";
-my $pandora_build = "201215";
+my $pandora_version = "7.0NG.752";
+my $pandora_build = "210323";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -60,11 +60,9 @@ my %pa_config;
 sub help_screen {
 	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	print "Following options are optional : \n";
-	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
-	print "	-q        :  Quiet startup \n";
 	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
@@ -103,17 +101,11 @@ sub pandora_init {
 		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
 			help_screen();
 		}
-		elsif ($parametro =~ m/-v\z/i) {
-			$pa_config->{"verbosity"}=5;
-		}
 		elsif ($parametro =~ m/^-P\z/i) {
 			$pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}
-		elsif ($parametro =~ m/-q\z/) {
-			$pa_config->{"quiet"}=1;
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
@@ -338,6 +330,7 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_updates"} = 5; # 7.0
 	$pa_config->{"dynamic_warning"} = 25; # 7.0
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
+	$pa_config->{"mssql_driver"} = undef; # 745 
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
@@ -822,7 +815,9 @@ sub pandora_load_config {
 			$pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
-			$pa_config->{"verbosity"} = clean_blank($1); 
+			if ($pa_config->{"verbosity"} == 0) {
+				$pa_config->{"verbosity"} = clean_blank($1);
+			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"server_threshold"} = clean_blank($1); 

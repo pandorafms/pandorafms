@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@ if (get_parameter('remove_source_on_database', 0)) {
 if (get_parameter('update_config', 0)) {
     $element = (string) get_parameter('element', '');
     $value = (int) get_parameter('value', 0);
+    $source = (string) get_parameter('source');
 
     // Update the label value.
     ob_clean();
@@ -73,6 +74,37 @@ if (get_parameter('update_config', 0)) {
         // All users has other action.
         case 'all_users':
             $res = ($value) ? notifications_add_group_to_source($source, [0]) : notifications_remove_group_from_source($source, [0]);
+        break;
+
+        case 'subtype':
+            $data = explode('.', $source, 2);
+            $source_id = $data[0];
+            $subtype = $data[1];
+            $source = notifications_get_all_sources(
+                [ 'id' => $source_id ]
+            );
+
+            if ($source !== false && is_array($source[0]) === true) {
+                $source = $source[0];
+
+                $blacklist = json_decode($source['subtype_blacklist'], 1);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $blacklist = [];
+                }
+
+                if ((bool) $value === true) {
+                    unset($blacklist[$subtype]);
+                } else {
+                    $blacklist[$subtype] = 1;
+                }
+
+                $source['subtype_blacklist'] = json_encode($blacklist, 1);
+                $res = (bool) db_process_sql_update(
+                    'tnotification_source',
+                    ['subtype_blacklist' => $source['subtype_blacklist']],
+                    ['id' => $source['id']]
+                );
+            }
         break;
 
         default:
@@ -337,7 +369,7 @@ function remove_source_elements(id, source_id) {
 
 function notifications_handle_change_element(event) {
     event.preventDefault();
-    var match = /nt-([0-9]+)-(.*)/.exec(event.target.id);
+    var match = /nt-(.+)-(.*)/.exec(event.target.id);
     if (!match) {
         console.error(
             "Cannot handle change element. Id not valid: ", event.target.id
@@ -356,6 +388,7 @@ function notifications_handle_change_element(event) {
     var value;
     switch (action.bit) {
         case 'enabled':
+        case 'subtype':
         case 'also_mail':
         case 'user_editable':
         case 'all_users':
@@ -383,6 +416,7 @@ function notifications_handle_change_element(event) {
             } else {
                 switch (action.bit) {
                     case 'enabled':
+                    case 'subtype':
                     case 'also_mail':
                     case 'user_editable':
                     case 'all_users':

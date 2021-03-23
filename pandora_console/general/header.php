@@ -1,15 +1,18 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
@@ -18,7 +21,8 @@ ui_require_css_file('order_interpreter');
 
 // Check permissions
 // Global errors/warnings checking.
- config_check();
+config_check();
+
 
 
 if ($config['menu_type'] == 'classic') {
@@ -73,9 +77,9 @@ if ($config['menu_type'] == 'classic') {
         if ($check_minor_release_available) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] == 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }
@@ -94,8 +98,8 @@ if ($config['menu_type'] == 'classic') {
 
         if ($acl_head_search) {
             // Search bar.
-            $search_bar = '<form autocomplete="off" method="get" style="display: inline;" name="quicksearch" action="">';
-            '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
+            $search_bar = '<form autocomplete="off" method="get" class="display_in" name="quicksearch" action="">';
+            '<input autocomplete="false" name="hidden" type="text" class="invisible">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
             } else {
@@ -142,7 +146,7 @@ if ($config['menu_type'] == 'classic') {
         }
 
         if ($_GET['sec'] == 'main' || !isset($_GET['sec'])) {
-            // home screen chosen by the user
+            // Home screen chosen by the user.
             $home_page = '';
             if (isset($config['id_user'])) {
                 $user_info = users_get_user_by_id($config['id_user']);
@@ -169,6 +173,7 @@ if ($config['menu_type'] == 'classic') {
                     break;
 
                     case 'Default':
+                    default:
                         $_GET['sec2'] = 'general/logon_ok';
                     break;
 
@@ -252,7 +257,7 @@ if ($config['menu_type'] == 'classic') {
                     $ignored_params['refr'] = '';
                     $values = get_refresh_time_array();
 
-                    $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
+                    $autorefresh_additional = '<span id="combo_refr" class="invisible">';
                     $autorefresh_additional .= html_print_select(
                         $values,
                         'ref',
@@ -288,7 +293,15 @@ if ($config['menu_type'] == 'classic') {
                     $autorefresh_link_close = '</a>';
                     $display_counter = 'display:block';
                 } else {
-                    $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
+                    $autorefresh_img = html_print_image(
+                        'images/header_refresh_disabled_gray.png',
+                        true,
+                        [
+                            'class' => 'bot autorefresh_disabled invert_filter',
+                            'alt'   => 'lightning',
+                            'title' => __('Disabled autorefresh'),
+                        ]
+                    );
 
                     $ignored_params['refr'] = false;
 
@@ -303,7 +316,7 @@ if ($config['menu_type'] == 'classic') {
                     'images/header_refresh_disabled_gray.png',
                     true,
                     [
-                        'class' => 'bot autorefresh_disabled',
+                        'class' => 'bot autorefresh_disabled invert_filter',
                         'alt'   => 'lightning',
                         'title' => __('Disabled autorefresh'),
                     ]
@@ -335,10 +348,10 @@ if ($config['menu_type'] == 'classic') {
         // Button for feedback pandora.
         if (enterprise_installed()) {
             $header_feedback = '<div id="feedback-icon-header">';
-            $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
-            $header_feedback .= '<div id="msg-header" style="display: none"></div>';
+            $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
+            $header_feedback .= '<div id="msg-header" class="invisible"></div>';
             $header_feedback .= html_print_image(
-                '/images/feedback-header.png',
+                'images/feedback-header.png',
                 true,
                 [
                     'title' => __('Feedback'),
@@ -360,13 +373,29 @@ if ($config['menu_type'] == 'classic') {
 
         $header_support = '<div id="header_support">';
         $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
-        $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
+        $header_support .= html_print_image(
+            'images/header_support.png',
+            true,
+            [
+                'title' => __('Go to support'),
+                'class' => 'bot invert_filter',
+                'alt'   => 'user',
+            ]
+        );
         $header_support .= '</a></div>';
 
         // Documentation.
         $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
-        $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
+        $header_docu .= html_print_image(
+            'images/header_docu.png',
+            true,
+            [
+                'title' => __('Go to documentation'),
+                'class' => 'bot invert_filter',
+                'alt'   => 'user',
+            ]
+        );
         $header_docu .= '</a></div>';
 
 
@@ -393,7 +422,7 @@ if ($config['menu_type'] == 'classic') {
             );
         }
 
-        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
+        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span id="user_name_header"> ('.$config['id_user'].')</span></a></div>';
 
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
@@ -402,7 +431,7 @@ if ($config['menu_type'] == 'classic') {
             true,
             [
                 'alt'   => __('Logout'),
-                'class' => 'bot',
+                'class' => 'bot invert_filter',
                 'title' => __('Logout'),
             ]
         );
@@ -417,10 +446,10 @@ if ($config['menu_type'] == 'classic') {
 
 
 <!-- Notifications content wrapper-->
-<div id='notification-content' style='display:none;' /></div>
+<div id='notification-content' class='invisible'/></div>
 
 <!-- Old style div wrapper -->
-<div id="alert_messages" style="display: none"></div>
+<div id="alert_messages" class="invisible"></div>
 
 <script type="text/javascript">
     /* <![CDATA[ */
@@ -763,6 +792,7 @@ if ($config['menu_type'] == 'classic') {
                     page: 'include/ajax/order_interpreter',
                     method: 'getResult',
                     text: $('#keywords').val(),
+                    enterprise: <?php echo (int) enterprise_installed(); ?>,
                 },
                 success: function (data) {
                    $('#result_order').html(data);

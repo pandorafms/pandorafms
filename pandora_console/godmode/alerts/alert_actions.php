@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@ require_once $config['homedir'].'/include/functions_groups.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
+
+
 
 enterprise_hook('open_meta_frame');
 
@@ -76,6 +78,15 @@ if ($copy_action) {
     $id = get_parameter('id');
 
     $al_action = alerts_get_alert_action($id);
+
+    if (!check_acl_restricted_all($config['id_user'], $al_action['id_group'], 'LM')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Alert Management'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
 
     if ($al_action !== false) {
         // If user tries to copy an action with group=ALL.
@@ -143,6 +154,15 @@ if ($delete_action) {
     $id = get_parameter('id');
 
     $al_action = alerts_get_alert_action($id);
+
+    if (!check_acl_restricted_all($config['id_user'], $al_action['id_group'], 'LM')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Alert Management'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
 
     if ($al_action !== false) {
         // If user tries to delete an action with group=ALL.
@@ -236,11 +256,18 @@ $table_filter->data[0][1] = html_print_input_text(
     255,
     true
 );
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('LM') === true) {
+    $return_all_group = true;
+}
+
 $table_filter->data[0][2] = __('Group');
 $table_filter->data[0][3] = html_print_select_groups(
     $config['id_user'],
     'LM',
-    true,
+    $return_all_group,
     'group_search',
     $group_search,
     '',
@@ -370,7 +397,12 @@ foreach ($actions as $action) {
 
     $data = [];
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.$action['name'].'</a>';
+    if (check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')) {
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.$action['name'].'</a>';
+    } else {
+        $data[0] = $action['name'];
+    }
+
     $data[1] = $action['command_name'];
     $data[2] = ui_print_group_icon($action['id_group'], true).'&nbsp;';
     if (!alerts_validate_command_to_action($action['id_group'], $action['command_group'])) {
@@ -384,8 +416,11 @@ foreach ($actions as $action) {
         );
     }
 
+    $data[3] = '';
+    $data[4] = '';
+
     if (is_central_policies_on_node() === false
-        && check_acl($config['id_user'], $action['id_group'], 'LM')
+        && check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')
     ) {
         $table->cellclass[] = [
             3 => 'action_buttons',
@@ -396,9 +431,9 @@ foreach ($actions as $action) {
         $text_confirm = __('Are you sure?');
 
         $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions" 
-        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true).'</a>';
+        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
         $data[4] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions"
-        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true).'</a>';
+        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
     }
 
     array_push($table->data, $data);

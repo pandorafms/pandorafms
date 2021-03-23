@@ -7,7 +7,7 @@
 
 <br><br>
 
-<table width="750px" style="display:inline">
+<table width="750px" class="inline_line">
 <tr>
     <td class=""> 新たなパーミッションを追加する場合、次のようにテキストを追加する必要があります。
         <nav>

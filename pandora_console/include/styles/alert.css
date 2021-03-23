@@ -136,8 +136,20 @@ div.target.flex {
 .blocks {
   cursor: move;
 }
+#drop_mssg {
+  position: relative;
+  top: 25%;
+  display: block;
+  left: 37%;
+  font-size: 3em;
+  color: #aaa;
+  overflow: hidden;
+  width: 6em;
+  background: #fff;
+  text-align: center;
+  z-index: 2;
+}
 div#rules.show::after {
-  content: "Drop here";
   position: relative;
   top: 25%;
   display: block;

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@
  */
 
 global $config;
+
+
 
 if (is_ajax()) {
     $search_agents = (bool) get_parameter('search_agents');
@@ -82,6 +84,20 @@ $update_graph = (bool) get_parameter('update_graph', false);
 $change_weight = (bool) get_parameter('change_weight', false);
 $change_label = (bool) get_parameter('change_label', false);
 $id_graph = (int) get_parameter('id', 0);
+
+if ($id_graph > 0) {
+    $graph_group = db_get_value('id_group', 'tgraph', 'id_graph', $id_graph);
+    if (!check_acl_restricted_all($config['id_user'], $graph_group, 'RW')
+        && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access graph builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
 
 if ($id_graph !== 0) {
     $sql = "SELECT * FROM tgraph 
@@ -269,19 +285,48 @@ if ($edit_graph) {
     $buttons = [
         'graph_list'   => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('Graph list'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'main'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/chart.png', true, ['title' => __('Main data')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/chart.png',
+                true,
+                [
+                    'title' => __('Main data'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'graph_editor' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/builder.png', true, ['title' => __('Graph editor')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/builder.png',
+                true,
+                [
+                    'title' => __('Graph editor'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'view'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image('images/operation.png', true, ['title' => __('View graph')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/operation.png',
+                true,
+                [
+                    'title' => __('View graph'),
+                    'class' => 'invert_filter',
+
+                ]
+            ).'</a>',
         ],
     ];
 

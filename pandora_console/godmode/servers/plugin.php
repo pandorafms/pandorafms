@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,13 +158,13 @@ if ($filemanager) {
         // echo "<a href='index.php?sec=gagente&sec2=enterprise/godmode/agentes/collections&action=file&id=" . $collection['id'] . "&directory=" . $relative_dir . "&hash2=" . $hash2 . "'>" . __('Back to file explorer') . "</a>";
         echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1"."&update_file=1'>";
         // html_print_input_hidden('location_file', $locationFile);
-        echo "<table style='width: 98%'>";
+        echo "<table class='w98p'>";
         echo '<tr>';
         echo '<th>'.__('Edit').'</th>';
         echo '</tr>';
         echo '<tr>';
         echo '<td>';
-        echo "<textarea name='content_file' style='width: 100%; height: 400px;' >";
+        echo "<textarea name='content_file' class='w100p height_400px' >";
         echo $file;
         echo '</textarea>';
         echo '</td>';
@@ -362,10 +362,6 @@ if (($create != '') || ($view != '')) {
     $table->colspan['plugin_desc'][1] = 3;
     $table->data['plugin_desc'] = $data;
 
-    // if (!defined("METACONSOLE")) {
-        // echo '<br>';
-        // echo '<table class="databox" style="margin: 0 auto; width: 100%;"><tr><td>';
-    // }
     $table->width = '100%';
     $table->class = 'databox filters';
 
@@ -407,11 +403,11 @@ if (($create != '') || ($view != '')) {
     $data[0] = __('Plugin command').ui_print_help_tip(__('Specify interpreter and plugin path. The server needs permissions to run it.'), true);
     $data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
     if ($locked) {
-        $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);
+        $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
     }
 
-    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" style="vertical-align: bottom;">';
-    $data[1] .= html_print_image('images/file.png', true, false, false, true);
+    $data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin='.$form_id.'" class="bot">';
+    $data[1] .= html_print_image('images/file.png', true, ['class' => 'invert_filter'], false, true);
     $data[1] .= '</a>';
     $table->data['plugin_command'] = $data;
 
@@ -419,14 +415,14 @@ if (($create != '') || ($view != '')) {
     $data[0] = __('Plug-in parameters');
     $data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
     if ($locked) {
-        $data[1] .= html_print_image('images/lock.png', true, ['class' => 'command_advanced_conf lock']);
+        $data[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_advanced_conf lock', 'class' => 'invert_filter']);
     }
 
     $table->data['plugin_parameters'] = $data;
 
     $data = [];
     $data[0] = __('Command preview');
-    $data[1] = '<div id="command_preview" style="font-style:italic"></div>';
+    $data[1] = '<div id="command_preview" class="italic"></div>';
     $table->data['plugin_preview'] = $data;
 
     $table->width = '100%';
@@ -488,17 +484,17 @@ if (($create != '') || ($view != '')) {
         }
 
         $datam = [];
-        $datam[0] = __('Description')."<span style='font-weight: normal'> ($macro_name)</span>";
+        $datam[0] = __('Description')."<span class='normal_weight'> ($macro_name)</span>";
         $datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
         $datam[1] = html_print_input_text_extended($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_macro'", true);
         if ($locked) {
-            $datam[1] .= html_print_image('images/lock.png', true, ['class' => 'command_macro lock']);
+            $datam[1] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
         }
 
-        $datam[2] = __('Default value')."<span style='font-weight: normal'> ($macro_name)</span>";
+        $datam[2] = __('Default value')."<span class='normal_weight'> ($macro_name)</span>";
         $datam[3] = html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_macro'", true);
         if ($locked) {
-            $datam[3] .= html_print_image('images/lock.png', true, ['class' => 'command_macro lock']);
+            $datam[3] .= html_print_image('images/lock_mc.png', true, ['class' => 'command_macro lock', 'class' => 'invert_filter']);
         }
 
         $table->data['plugin_'.$next_name_number] = $datam;
@@ -508,8 +504,20 @@ if (($create != '') || ($view != '')) {
         $table->colspan['plugin_'.$next_name_number][1] = 3;
 
         $datam = [];
-        $datam[0] = __('Hide value').ui_print_help_tip(__('This field will show up as dots like a password'), true);
-        $datam[1] = html_print_checkbox_extended($macro_hide_value_name, 1, $macro_hide_value_value, 0, '', ['class' => 'command_macro'], true, 'checkbox-'.$macro_hide_value_name);
+        $datam[0] = __('Hide value').ui_print_help_tip(
+            __('This field will show up as dots like a password'),
+            true
+        );
+        $datam[1] = html_print_checkbox_extended(
+            $macro_hide_value_name,
+            1,
+            $macro_hide_value_value,
+            0,
+            '',
+            ['class' => 'command_macro'],
+            true,
+            'checkbox-'.$macro_hide_value_name
+        );
 
         $table->data['plugin_'.$next_name_number] = $datam;
         $next_name_number++;
@@ -517,12 +525,23 @@ if (($create != '') || ($view != '')) {
         $table->colspan['plugin_'.$next_name_number][1] = 3;
 
         $datam = [];
-        $datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
+        $datam[0] = __('Help')."<span class='normal_weight'> ($macro_name)</span><br><br><br>";
         $tadisabled = $locked === true ? ' disabled' : '';
-        $datam[1] = html_print_textarea($macro_help_name, 6, 100, $macro_help_value, 'class="command_macro" style="width: 97%;"'.$tadisabled, true);
+        $datam[1] = html_print_textarea(
+            $macro_help_name,
+            6,
+            100,
+            $macro_help_value,
+            'class="command_macro" class="w97p"'.$tadisabled,
+            true
+        );
 
         if ($locked) {
-            $datam[1] .= html_print_image('images/lock.png', true, ['class' => 'command_macro lock']);
+            $datam[1] .= html_print_image(
+                'images/lock_mc.png',
+                true,
+                ['class' => 'command_macro lock invert_filter']
+            );
         }
 
         $datam[1] .= '<br><br><br>';
@@ -534,9 +553,13 @@ if (($create != '') || ($view != '')) {
 
     // Add/Delete buttons
     $datam = [];
-    $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span style="font-weight: bold;">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image('images/add.png', true).'</a>';
-    $datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
-    $datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+    $datam[0] = '<a id="add_macro_btn" href="javascript:;">'.'<span class="bolder">'.__('Add macro').'</span>'.'&nbsp;'.html_print_image(
+        'images/add.png',
+        true,
+        ['class' => 'invert_filter']
+    ).'</a>';
+    $datam[0] .= '<div id="next_macro" class="invisible">'.$i.'</div>';
+    $datam[0] .= '<div id="next_row" class="invisible">'.$next_name_number.'</div>';
 
     if (!$locked) {
         $delete_macro_style = '';
@@ -544,7 +567,7 @@ if (($create != '') || ($view != '')) {
             $delete_macro_style = 'display:none;';
         }
 
-        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span style="font-weight: bold;">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.png', true).'</a>'.'</div>';
+        $datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.'<a href="javascript:;">'.'<span class="bolder">'.__('Delete macro').'</span>'.'&nbsp;'.html_print_image('images/delete.png', true, ['class' => 'invert_filter']).'</a>'.'</div>';
 
         $table->colspan['plugin_action'][0] = 2;
         $table->colspan['plugin_action'][2] = 2;
@@ -592,13 +615,15 @@ if (($create != '') || ($view != '')) {
         $sec = 'advanced';
         $management_allowed = is_management_allowed();
         if (!$management_allowed) {
-            ui_print_warning_message(__('To manage plugin you must activate centralized management'));
+            ui_print_warning_message(
+                __('To manage plugin you must activate centralized management')
+            );
         }
 
         if (!$config['metaconsole_deploy_plugin_server'] && $management_allowed) {
             $deploy_plugin_server = true;
 
-            echo '<div id="deploy_messages" style="display: none">';
+            echo '<div id="deploy_messages" class="invisible">';
             echo '<span>'.__('The previous configuration of plugins has been imported from the nodes. Please check that the definitions are correct.').'</br></br>'.'<b>'.__('Note:').'</b>'.__(
                 'These definitions will not be operational until you manually 
     			copy the files from the nodes to the atachment/plugin/ directory of the meta console.'
@@ -983,7 +1008,7 @@ if (($create != '') || ($view != '')) {
         echo '<th>'.__('Type').'</th>';
         echo '<th>'.__('Command').'</th>';
         if ($management_allowed) {
-            echo "<th style='width: 120px;'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
+            echo "<th class='w120px'>".'<span title="Operations">'.__('Op.').'</span>'.'</th>';
         }
 
         echo '</tr></thead>';
@@ -1036,14 +1061,35 @@ if (($create != '') || ($view != '')) {
                 );
                 if (($components_using_plugin + $modules_using_plugin) > 0) {
                     echo '<a href="javascript: show_locked_dialog('.$row['id'].', \''.$row['name'].'\');">';
-                    html_print_image('images/lock.png');
+                    html_print_image('images/lock_mc.png', false, ['class' => 'invert_filter']);
                     echo '</a>';
                 }
 
-                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>&nbsp;&nbsp;';
-                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&view=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'title' => __('Edit'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>&nbsp;&nbsp;';
+                echo "<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&kill_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."' onclick='javascript: if (!confirm(\"".__('All the modules that are using this plugin will be deleted').'. '.__('Are you sure?')."\")) return false;'>".html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a>';
                 if (is_metaconsole()) {
-                    echo "&nbsp;&nbsp;&nbsp;<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&deploy_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image('images/deploy.png', true, ['title' => __('Deploy'), 'width' => '21 px']).'</a>&nbsp;&nbsp;';
+                    echo "&nbsp;&nbsp;&nbsp;<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&deploy_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image(
+                        'images/deploy.png',
+                        true,
+                        [
+                            'title' => __('Deploy'),
+                            'width' => '21 px',
+                        ]
+                    ).'</a>&nbsp;&nbsp;';
                 }
 
                 echo '</td>';
@@ -1064,11 +1110,11 @@ if (($create != '') || ($view != '')) {
         echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=".$config['pure']."'>";
         echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
         echo '</td></tr></table>';
-        echo '<div id="deploy_messages" style="display: none">';
+        echo '<div id="deploy_messages" class="invisible">';
     }
 
     // The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
-    echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' style='display: none; text-align: left;'>";
+    echo "<div id='dialog_locked' title='".__('List of modules and components created by "%s" ')."' class='invisible left'>";
     echo '</div>';
 
     enterprise_hook('close_meta_frame');

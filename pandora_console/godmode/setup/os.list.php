@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,7 +72,7 @@ foreach ($osList as $os) {
         if (is_metaconsole()) {
             $data[] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
         } else {
-            $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true).'</a>';
+            $data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'].'">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
         }
     } else {
         // The original icons of pandora don't delete.

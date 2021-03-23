@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -251,7 +251,16 @@ if (is_ajax()) {
 
 $tab = (string) get_parameter('tab', 'groups');
 
-if ($tab != 'credbox' && ! check_acl($config['id_user'], 0, 'PM')) {
+if ($tab != 'credbox' && ! check_acl(
+    $config['id_user'],
+    0,
+    'PM'
+) && ! check_acl(
+    $config['id_user'],
+    0,
+    'AW'
+)
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'
@@ -282,6 +291,7 @@ $buttons['tree'] = [
         true,
         [
             'title' => __('Tree Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -293,6 +303,7 @@ $buttons['groups'] = [
         true,
         [
             'title' => __('Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -304,6 +315,7 @@ $buttons['credbox'] = [
         true,
         [
             'title' => __('Credential Store'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -670,7 +682,7 @@ if ($tab == 'tree') {
     }
 
     $form = "<form method='post' action=''>";
-        $form .= "<table class='databox filters' width='100%' style='font-weight: bold;'>";
+        $form .= "<table class='databox filters bolder' width='100%'>";
             $form .= '<tr><td>'.__('Search').'&nbsp;';
                 $form .= html_print_input_text('search', $search, '', 100, 100, true);
             $form .= '</td><td>';
@@ -835,7 +847,7 @@ if ($tab == 'tree') {
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
-        echo '<div class="action-buttons" style="width:100%;">';
+        echo '<div class="action-buttons w100p">';
             html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');
         echo '</div>';
     echo '</form>';

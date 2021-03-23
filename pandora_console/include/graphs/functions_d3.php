@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -306,7 +306,7 @@ function d3_gauges(
     $output = include_javascript_d3(true);
 
     foreach ($chart_data as $module) {
-        $output .= "<div class='gauge_d3_class' id='".$module['gauge']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
+        $output .= "<div class='gauge_d3_class gauge_class' id='".$module['gauge']."'></div>";
     }
 
     $output .= "<script language=\"javascript\" type=\"text/javascript\">

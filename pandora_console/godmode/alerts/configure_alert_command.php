@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'LM')) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Alert Management'
@@ -48,15 +48,18 @@ if (is_metaconsole() === true) {
     );
 }
 
-
-if ($update_command) {
-    $id = (int) get_parameter('id');
+if ($id > 0) {
     $alert = alerts_get_alert_command($id);
-    if ($alert['internal']) {
+
+    if ($alert['internal'] || !check_acl_restricted_all($config['id_user'], $alert['id_group'], 'PM')) {
         db_pandora_audit('ACL Violation', 'Trying to access Alert Management');
         include 'general/noaccess.php';
         exit;
     }
+}
+
+if ($update_command) {
+    $alert = alerts_get_alert_command($id);
 
     $name = (string) get_parameter('name');
     $command = (string) get_parameter('command');
@@ -216,12 +219,18 @@ $table->data['command'][1] = html_print_textarea(
     $is_central_policies_on_node
 );
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('LM') === true) {
+    $return_all_group = true;
+}
+
 $table->colspan['group'][1] = 3;
 $table->data['group'][0] = __('Group');
 $table->data['group'][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     'LM',
-    true,
+    $return_all_group,
     'id_group',
     $id_group,
     false,

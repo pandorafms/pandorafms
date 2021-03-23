@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,14 +37,28 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image('images/list.png', true, ['title' => __('List categories')]).'</a>',
+            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List categories'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 } else {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image('images/list.png', true, ['title' => __('List categories')]).'</a>',
+            'text'   => '<a href="index.php?sec=gmodules&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List categories'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 }
@@ -120,9 +134,9 @@ else {
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action='.$action.'&id_category='.$id_category.'&pure='.(int) $config['pure'].'" enctype="multipart/form-data">';
 
 if (!defined('METACONSOLE')) {
-    echo '<div align=left style="width: 100%" class="pandora_form">';
+    echo '<div align=left  class="pandora_form w100p">';
 } else {
-    echo '<div align=left style="width: 100%" class="pandora_form">';
+    echo '<div align=left  class="pandora_form w100p">';
 }
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
@@ -146,7 +160,7 @@ if (defined('METACONSOLE')) {
 }
 
     echo '<tr>';
-        echo "<td style='font-weight: bold'>";
+        echo "<td class='bolder'>";
 
         html_print_label(__('Name'), 'name');
         echo '</td>';

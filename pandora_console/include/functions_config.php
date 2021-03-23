@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -727,6 +727,14 @@ function config_update_config()
 
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
+                    } else {
+                        if ((int) get_parameter('session_timeout') === 0) {
+                            $error_update[] = __('Session timeout forced to 90 minutes');
+
+                            if (!config_update_value('session_timeout', 90)) {
+                                $error_update[] = __('Session timeout');
+                            }
+                        }
                     }
 
                     if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
@@ -855,6 +863,14 @@ function config_update_config()
 
                     if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
                         $error_update[] = __('Row limit in csv log');
+                    }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
                     }
                 break;
 
@@ -1175,6 +1191,10 @@ function config_update_config()
 
                     if (!config_update_value('type_module_charts', (string) get_parameter('type_module_charts', 'area'))) {
                         $error_update[] = __('Default type of module charts.');
+                    }
+
+                    if (!config_update_value('items_combined_charts', (string) get_parameter('items_combined_charts', 10))) {
+                        $error_update[] = __('Default Number of elements in Custom Graph.');
                     }
 
                     if (!config_update_value('type_interface_charts', (string) get_parameter('type_interface_charts', 'line'))) {
@@ -1544,7 +1564,13 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        $integria_hostname = 'http://'.$integria_hostname;
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 
@@ -1619,12 +1645,12 @@ function config_update_config()
 
                 case 'module_library':
                     $module_library_user = get_parameter('module_library_user');
-                    if ($module_library_user == '' || !config_update_value('module_library_user', $module_library_user)) {
+                    if (!config_update_value('module_library_user', $module_library_user)) {
                         $error_update[] = __('User');
                     }
 
                     $module_library_password = get_parameter('module_library_password');
-                    if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
+                    if (!config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
                     }
                 break;
@@ -1860,6 +1886,32 @@ function config_process_config()
         config_update_value('row_limit_csv', 10000);
     }
 
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
+    }
+
     if (!isset($config['event_purge'])) {
         config_update_value('event_purge', 15);
     }
@@ -1894,6 +1946,10 @@ function config_process_config()
 
     if (!isset($config['collection_max_size'])) {
         config_update_value('collection_max_size', 1000000);
+    }
+
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
     }
 
     if (!isset($config['event_replication'])) {
@@ -2178,7 +2234,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2194,7 +2250,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {
@@ -2766,7 +2822,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {
@@ -2867,6 +2923,10 @@ function config_process_config()
 
     if (!isset($config['type_module_charts'])) {
         config_update_value('type_module_charts', 'area');
+    }
+
+    if (!isset($config['items_combined_charts'])) {
+        config_update_value('items_combined_charts', 10);
     }
 
     if (!isset($config['type_interface_charts'])) {

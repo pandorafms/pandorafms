@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for Delete alerts in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -321,14 +336,12 @@ $table->data[2][3] = html_print_select([], 'module[]', '', false, '', '', true, 
 echo '<form method="post" id="form_alerts" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_alerts" >';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden('delete', 1);
-html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
-echo '</div>';
+attachActionButton('delete', 'delete', $table->width);
+
 echo '</form>';
 
 // Hack to translate text "none" in PHP to javascript
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
@@ -371,7 +384,7 @@ $(document).ready (function () {
     
     $("#id_group").change (function () {
         var $select = $("#id_agents").disable ();
-        $("#agent_loading").show ();
+        showSpinner();
         $("option", $select).remove ();
         
         jQuery.post ("ajax.php",
@@ -393,7 +406,7 @@ $(document).ready (function () {
                     options += "<option value=\""+id+"\">"+value+"</option>";
                 });
                 $("#id_agents").append (options);
-                $("#agent_loading").hide ();
+                hideSpinner();
                 $select.enable ();
             },
             "json"

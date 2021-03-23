@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,11 +41,25 @@ if (!defined('METACONSOLE')) {
     $buttons = [
         'user'    => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                'images/gm_users.png',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'profile' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                'images/profiles.png',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -333,7 +347,14 @@ if ($profiles === false) {
     $profiles = [];
 }
 
-$img = html_print_image('images/ok.png', true, ['border' => 0]);
+$img = html_print_image(
+    'images/ok.png',
+    true,
+    [
+        'border' => 0,
+        'class'  => 'invert_filter',
+    ]
+);
 
 foreach ($profiles as $profile) {
     $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
@@ -361,9 +382,20 @@ foreach ($profiles as $profile) {
     $data['VM'] = ($profile['vconsole_management'] ? $img : '');
     $data['PM'] = ($profile['pandora_management'] ? $img : '');
     $table->cellclass[]['operations'] = 'action_buttons';
-    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
+    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
+        'images/config.png',
+        true,
+        [
+            'title' => __('Edit'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+            'images/cross.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
     }
 
     array_push($table->data, $data);

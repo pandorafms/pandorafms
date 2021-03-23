@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ require_once '../include/config.php';
 require_once '../include/functions.php';
 require_once '../include/functions_html.php';
 ?>
-<html style="height:100%; margin-top: 25px; margin-left: 15px; margin-right: 15px; background-color: #333;"><head><title>
+<html class="help_pname"><head><title>
 <?php
 echo __('%s help system', get_product_name());
 ?>
@@ -26,7 +26,7 @@ echo __('%s help system', get_product_name());
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 </head>
 <?php echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">'; ?>
-<body style="height: 100%;background-color: #333">
+<body class="height_100p bg_333">
 <?php
 $id = get_parameter('id');
 $id_user = get_parameter('id_user');
@@ -59,30 +59,30 @@ foreach ($files as $file) {
 $logo = ui_get_custom_header_logo(true);
 
 if (! $id || ! file_exists($help_file)) {
-    echo '<div id="main_help" style="background-color: #fff;text-align:center; padding-top: 15px; padding-bottom: 15px; ">';
+    echo '<div id="main_help">';
     if (!is_metaconsole()) {
         echo html_print_image($logo, true, ['border' => '0']);
     }
 
     echo '</div>';
-    echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left; background-color: #fff;">';
-    echo '<div style="font-size: 12px; background-color: #fff; ;border:0px;" class="databox">';
-    echo '<HR style="margin-top: 0px;">';
-    echo '<h1 style="padding-left: 30px">';
+    echo '<div id="parent_dic">';
+    echo '<div  class="databox bg-white font_12px no_border">';
+    echo '<hr class="mgn_tp_0">';
+    echo '<h1 class="pdd_l_30px">';
     echo __('Help system error');
     echo '</h1>';
-    echo "<div style='text-align: center; background-color: #fff'>";
+    echo "<div class='center bg-white'>";
 
     echo '</div>';
-    echo '<div class="msg" style="padding-left: 30px;padding-right: 30px;padding-bottom: 15px;">'.__("%s help system has been called with a help reference that currently don't exist. There is no help content to show.", get_product_name()).'</div></div></div>';
+    echo '<div class="msg msg_pandora_help">'.__("%s help system has been called with a help reference that currently don't exist. There is no help content to show.", get_product_name()).'</div></div></div>';
     echo '<br /><br />';
-    echo '<div style="text-align: center; padding: 5px; font-family: verdana, arial; font-size: 11px;">';
+    echo '<div id="footer_help">';
     include 'footer.php';
     return;
 }
 
 // Show help
-echo '<div id="main_help_new" style="background-color: #fff">';
+echo '<div id="main_help_new">';
 if (!empty($config['enterprise_installed']) && is_metaconsole()) {
     echo '<img src="'.$config['homeurl'].$logo.'">';
 } else {
@@ -90,7 +90,7 @@ if (!empty($config['enterprise_installed']) && is_metaconsole()) {
 }
 
 echo '</div>';
-echo '<div id="main_help_new_content" style="height: auto ! important;overfloat: auto;">';
+echo '<div id="main_help_new_content">';
 ob_start();
 require_once $help_file;
 $help = ob_get_contents();

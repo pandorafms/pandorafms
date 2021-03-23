@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -89,8 +89,9 @@ foreach ($sources as $source) {
     echo '</div>';
 }
 
-if ($disabled_flag) {
-    echo '<span style="font-weight: bold; color: #ff0000;">Disabled controls have been set by the system administrator</span>';
+if ((bool) $disabled_flag === true) {
+    $s = __('Controls have been disabled by the system administrator');
+    echo '<span class="bolder color_ff0">'.$s.'</span>';
 }
 
 echo '</div>';

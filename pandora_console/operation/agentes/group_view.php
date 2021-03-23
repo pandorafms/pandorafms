@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,26 +148,26 @@ if ($total_agentes > 0) {
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
     echo '<tr>';
-        echo "<th colspan=2 style='text-align: center;'>".__('Summary of the status groups').'</th>';
+        echo "<th colspan=2 class='center'>".__('Summary of the status groups').'</th>';
     echo '</tr>';
     echo '<tr>';
-        echo "<th width=50% style='text-align:center'>".__('Agents').'</th>';
-        echo "<th width=50% style='text-align:center'>".__('Modules').'</th>';
+        echo "<th width=50% class='center'>".__('Agents').'</th>';
+        echo "<th width=50% class='center'>".__('Modules').'</th>';
     echo '</tr>';
     echo "<tr height=70px'>";
         echo "<td align='center'>";
-            echo "<span id='sumary' style='background-color:#e63c52;'>".$total_agent_critical.'%</span>';
-            echo "<span id='sumary' style='background-color:#f3b200;'>".$total_agent_warning.'%</span>';
-            echo "<span id='sumary' style='background-color:#82b92e;'>".$total_agent_ok.'%</span>';
-            echo "<span id='sumary' style='background-color:#B2B2B2;'>".$total_agent_unknown.'%</span>';
-            echo "<span id='sumary' style='background-color:#5bb6e5;'>".$total_not_init.'%</span>';
+            echo "<span id='sumary' class='red_background'>".$total_agent_critical.'%</span>';
+            echo "<span id='sumary' class='yellow_background'>".$total_agent_warning.'%</span>';
+            echo "<span id='sumary' class='green_background'>".$total_agent_ok.'%</span>';
+            echo "<span id='sumary' class='bg_B2B2B2'>".$total_agent_unknown.'%</span>';
+            echo "<span id='sumary' class='bg_5bb6e5'>".$total_not_init.'%</span>';
         echo '</td>';
         echo "<td align='center'>";
-            echo "<span id='sumary' style='background-color:#e63c52;'>".$total_critical.'%</span>';
-            echo "<span id='sumary' style='background-color:#f3b200;'>".$total_warning.'%</span>';
-            echo "<span id='sumary' style='background-color:#82b92e;'>".$total_ok.'%</span>';
-            echo "<span id='sumary' style='background-color:#B2B2B2;'>".$total_unknown.'%</span>';
-            echo "<span id='sumary' style='background-color:#5bb6e5;'>".$total_monitor_not_init.'%</span>';
+            echo "<span id='sumary' class='red_background'>".$total_critical.'%</span>';
+            echo "<span id='sumary' class='yellow_background'>".$total_warning.'%</span>';
+            echo "<span id='sumary' class='green_background'>".$total_ok.'%</span>';
+            echo "<span id='sumary' class='bg_B2B2B2'>".$total_unknown.'%</span>';
+            echo "<span id='sumary' class='bg_5bb6e5'>".$total_monitor_not_init.'%</span>';
         echo '</td>';
     echo '</tr>';
 echo '</table>';
@@ -181,28 +181,28 @@ if ($count == 1) {
 ui_pagination($count);
 
 if (!empty($result_groups)) {
-    echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox data" border="0" width="100%">';
+    echo '<table cellpadding="0" cellspacing="0" class="databox data mrgn_top_10px" border="0" width="100%">';
         echo '<tr>';
             echo '<th colspan=2 ></th>';
-            echo "<th colspan=6 class='difference' style='text-align:center'>".__('Agents').'</th>';
-            echo "<th colspan=6 style='text-align:center'>".__('Modules').'</th>';
+            echo "<th colspan=6 class='difference center'>".__('Agents').'</th>';
+            echo "<th colspan=6 class='center'>".__('Modules').'</th>';
         echo '</tr>';
 
         echo '<tr>';
-            echo "<th style='width: 26px;'>".__('Force').'</th>';
-            echo "<th width='30%' style='min-width: 60px;'>".__('Group').'/'.__('Tags').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Total').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Unknown').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Not init').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Normal').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Warning').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Critical').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Unknown').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Not init').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Normal').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Warning').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Critical').'</th>';
-            echo "<th width='10%' style='min-width: 60px;text-align:center;'>".__('Alert fired').'</th>';
+            echo "<th class='w26px'>".__('Force').'</th>';
+            echo "<th width='30%' class='mw60px' style='text-align: justify'>".__('Group').'/'.__('Tags').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Total').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Unknown').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Not init').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Normal').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Warning').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Critical').'</th>';
+            echo "<th width='10%' class='mw60px center'>".__('Alert fired').'</th>';
         echo '</tr>';
 
     foreach ($result_groups as $data) {
@@ -234,12 +234,20 @@ if (!empty($result_groups)) {
             $status_image = ui_print_status_image('agent_no_data_ball.png', '', true);
         }
 
-        echo "<tr style='height: 35px;'>";
+        echo "<tr class='height_35px'>";
 
         // Force
-        echo "<td class='group_view_data' style='text-align: center; vertica-align: middle;'>";
+        echo "<td class='group_view_data center vertical_middle'>";
         if (!isset($data['_is_tag_']) && check_acl($config['id_user'], $data['_id_'], 'AW')) {
-            echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+            echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$data['_id_'].'">'.html_print_image(
+                'images/target.png',
+                true,
+                [
+                    'border' => '0',
+                    'title'  => __('Force'),
+                    'class'  => 'invert_filter',
+                ]
+            ).'</a>';
         }
 
         echo '</td>';
@@ -261,7 +269,7 @@ if (!empty($result_groups)) {
             $link = "<a href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
         }
 
-        $group_name = "<b><span style='font-size: 7.5pt'>".ui_print_truncate_text($data['_name_'], 50).'</span></b>';
+        $group_name = '<b><span>'.ui_print_truncate_text($data['_name_'], 50).'</span></b>';
 
         $item_icon = '';
         if (isset($data['_iconImg_']) && !empty($data['_iconImg_'])) {
@@ -286,12 +294,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Total agents
-        echo "<td style='font-weight: bold; font-size: 18px;' align='center' class='$color_class'>";
+        echo "<td align='center' class='$color_class bolder font_18pt'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder center font_18px'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
         }
 
@@ -306,12 +314,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Agents unknown
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_UNKNOWN."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_UNKNOWN."'>";
         }
 
@@ -326,12 +334,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Agents not init
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_NOT_INIT."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_NOT_INIT."'>";
         }
 
@@ -346,12 +354,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Agents Normal
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder font_18px center'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_NORMAL."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder font_18px center' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_NORMAL."'>";
         }
 
@@ -366,12 +374,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Agents warning
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder center font_18px'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_WARNING."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_WARNING."'>";
         }
 
@@ -386,12 +394,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Agents critical
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder center font_18px'>";
         if (isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+            $link = "<a class='group_view_data $color_class bolder center font_18px'
 				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_'].'&status='.AGENT_STATUS_CRITICAL."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/estado_agente&group_id=".$data['_id_'].'&status='.AGENT_STATUS_CRITICAL."'>";
         }
 
@@ -406,12 +414,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Monitors unknown
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_UNKNOWN."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_UNKNOWN."'>";
         }
 
@@ -426,12 +434,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Monitors not init
-        echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_unk $color_class bolder font_18px center'>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_NOT_INIT."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_NOT_INIT."'>";
         }
 
@@ -446,12 +454,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Monitors OK
-        echo "<td class='group_view_data group_view_data_ok $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_ok $color_class bolder center font_18px'>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_NORMAL."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_NORMAL."'>";
         }
 
@@ -466,12 +474,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Monitors Warning
-        echo "<td class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_warn $color_class bolder center font_18px'>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data group_view_data_warn $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_WARNING."'>";
         } else {
-            $link = "<a class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data group_view_data_warn $color_class bolder center font_18px' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_WARNING."'>";
         }
 
@@ -486,12 +494,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Monitors Critical
-        echo "<td class='group_view_data group_view_data_crit $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_crit $color_class bolder center font_18px'>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class font_18px bolder center' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&ag_group=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_CRITICAL_BAD."'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class font_18px bolder center' 
 				href='index.php?sec=view&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_'].'&status='.AGENT_MODULE_STATUS_CRITICAL_BAD."'>";
         }
 
@@ -506,12 +514,12 @@ if (!empty($result_groups)) {
         echo '</td>';
 
         // Alerts fired
-        echo "<td class='group_view_data group_view_data_alrm $color_class' style='font-weight: bold; font-size: 18px;  text-align: center;'>";
+        echo "<td class='group_view_data group_view_data_alrm $color_class bolder center font_18px's>";
         if (!isset($data['_is_tag_'])) {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px's 
 				href='index.php?sec=estado&sec2=operation/agentes/alerts_status&ag_group=".$data['_id_']."&filter=fired'>";
         } else {
-            $link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
+            $link = "<a class='group_view_data $color_class bolder center font_18px' 
 				href='index.php?sec=estado&sec2=operation/agentes/alerts_status&tag_filter=".$data['_id_']."&filter=fired'>";
         }
 

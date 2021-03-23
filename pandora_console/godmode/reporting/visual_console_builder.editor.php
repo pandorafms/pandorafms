@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,9 +83,9 @@ visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
 if (!defined('METACONSOLE')) {
-    echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll; margin: 0 auto;">';
+    echo '<div id="frame_view" class="frame_view_meta">';
 } else {
-    echo '<div id="frame_view" style="overflow: auto; margin: 0px auto; padding: 5px; ">';
+    echo '<div id="frame_view" class="frame_view_node">';
 }
 
 echo '<div id="background" class="" style="top:0px;
@@ -119,6 +119,7 @@ foreach ($layoutDatas as $layoutData) {
     }
 
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             visual_map_print_user_line_handles($layoutData);
             visual_map_print_user_lines($layoutData);
@@ -145,7 +146,7 @@ foreach ($layoutDatas as $layoutData) {
     );
 }
 
-echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='".$metaconsole_hack.'images/console/background/'.$background."' width='100%' height='100%' />";
+echo "<img class='vc_bg_image' id='background_img' src='".$metaconsole_hack.'images/console/background/'.$background."' width='100%' height='100%' />";
 
 echo '</div>';
 echo '</div>';
@@ -163,11 +164,11 @@ html_print_input_hidden('message_size', __('Min allowed size is 1024x768'));
 
 
 // Loading dialog
-echo "<div id='loading_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Loading in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='loading_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Loading in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
-echo "<div id='saving_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Saving in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='saving_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Saving in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
-echo "<div id='delete_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='delete_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
 // CSS
 ui_require_css_file('color-picker', 'include/styles/js/');

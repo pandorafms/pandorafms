@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -159,11 +159,25 @@ switch ($action) {
 $buttons = [
     'list'    => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List OS')]).'</a>',
+        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('List OS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
     'builder' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">'.html_print_image('images/builder.png', true, ['title' => __('Builder OS')]).'</a>',
+        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">'.html_print_image(
+            'images/builder.png',
+            true,
+            [
+                'title' => __('Builder OS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
 ];
 

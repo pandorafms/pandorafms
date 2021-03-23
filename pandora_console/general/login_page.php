@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,7 +17,11 @@ if (isset($config['homedir'])) {
     $homedir = '';
 }
 
-ui_require_css_file('login');
+global $config;
+
+
+
+ui_require_css_file('login', 'include/styles/', true);
 
 require_once __DIR__.'/../include/functions_ui.php';
 require_once __DIR__.'/../include/functions.php';
@@ -146,8 +150,8 @@ if (isset($config['custom_support_url'])) {
         echo '<li>'.__('Support').'</li>';
     }
 } else if (!$custom_conf_enabled) {
-    echo '<li id="li_margin_left"><a href="https://support.artica.es" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li><a href="https://support.artica.es" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_left"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
 }
 
         echo '</ul></div>';
@@ -159,11 +163,31 @@ echo '<div class="container_login">';
 echo '<div class="login_page">';
     echo '<form method="post" action="'.ui_get_full_url('index.php'.$url).'" ><div class="login_logo_icon">';
         echo '<a href="'.$logo_link.'">';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     if (!isset($config['custom_logo_login'])) {
-        html_print_image(ui_get_full_url('images/custom_logo_login/login_logo.png'), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(
+            'enterprise/images/custom_logo_login/login_logo.png',
+            false,
+            [
+                'class'  => 'login_logo',
+                'alt'    => 'logo',
+                'border' => 0,
+                'title'  => $logo_title,
+            ],
+            false
+        );
     } else {
-        html_print_image(ui_get_full_url('images/custom_logo_login/'.$config['custom_logo_login']), false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
+        html_print_image(
+            'enterprise/images/custom_logo_login/'.$config['custom_logo_login'],
+            false,
+            [
+                'class'  => 'login_logo',
+                'alt'    => 'logo',
+                'border' => 0,
+                'title'  => $logo_title,
+            ],
+            false
+        );
     }
 } else if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (!isset($config['custom_logo_login'])) {
@@ -177,9 +201,6 @@ if (defined('METACONSOLE')) {
     } else {
         html_print_image(ui_get_full_url('images/custom_logo_login/').$config['custom_logo_login'], false, ['class' => 'login_logo', 'alt' => 'logo', 'border' => 0, 'title' => $logo_title], false, true);
     }
-
-    // I comment this in case in the future we put a logo without text.
-    // echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";.
 }
 
         echo '</a></div>';
@@ -194,7 +215,7 @@ switch ($login_screen) {
         }
 
         if ($config['auth'] == 'saml') {
-            echo '<div id="log_nick" class="login_nick" style="display: none;">';
+            echo '<div id="log_nick" class="login_nick invisible" >';
                 html_print_input_text_extended(
                     'nick',
                     '',
@@ -208,7 +229,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
 
-            echo '<div id="log_pass" class="login_pass" style="display: none;">';
+            echo '<div id="log_pass" class="login_pass invisible">';
                 html_print_input_text_extended(
                     'pass',
                     '',
@@ -224,7 +245,7 @@ switch ($login_screen) {
                 );
             echo '</div>';
 
-            echo '<div id="log_button" class="login_button" style="display: none;">';
+            echo '<div id="log_button" class="login_button invisible">';
                 html_print_submit_button(__('Login as admin'), 'login_button', false, 'class="next_login"');
             echo '</div>';
 
@@ -344,9 +365,27 @@ if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
         echo '<div class ="img_banner_login">';
 if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
     if (isset($config['custom_splash_login'])) {
-        html_print_image('enterprise/images/custom_splash_login/'.$config['custom_splash_login'], false, [ 'alt' => 'splash', 'border' => 0], false, true);
+        html_print_image(
+            'enterprise/images/custom_splash_login/'.$config['custom_splash_login'],
+            false,
+            [
+                'alt'    => 'splash',
+                'border' => 0,
+            ],
+            false,
+            false
+        );
     } else {
-        html_print_image('enterprise/images/custom_splash_login/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);
+        html_print_image(
+            'enterprise/images/custom_splash_login/splash_image_default.png',
+            false,
+            [
+                'alt'    => 'logo',
+                'border' => 0,
+            ],
+            false,
+            false
+        );
     }
 } else {
     html_print_image('images/splash_image_default.png', false, ['alt' => 'logo', 'border' => 0], false, true);

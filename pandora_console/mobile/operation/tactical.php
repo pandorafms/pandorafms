@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -234,7 +234,7 @@ class Tactical
 				}
 				
 				function ajax_load_status_pie() {
-					$('#status_pie').html('<div style=\"text-align: center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					$('#status_pie').html('<div class=\"center\"> ".__('Loading...')."<br /><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var pie_width = $('#tactical2').width() * 0.9;
 

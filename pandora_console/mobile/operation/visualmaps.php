@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -166,7 +166,7 @@ class Visualmaps
         }
 
         if (count($maps) == 0) {
-            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
+            $ui->contentAddHtml('<p class="color_ff0">'.__('No maps defined').'</p>');
         } else {
             $table = new Table();
             $table->id = 'list_visualmaps';

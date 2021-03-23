@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,8 @@
  */
 
 global $config;
+
+
 
 check_login();
 
@@ -53,7 +55,10 @@ $buttons = [
     'text' => "<a href='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'>".html_print_image(
         'images/list.png',
         true,
-        ['title' => __('List')]
+        [
+            'title' => __('List'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -145,118 +150,7 @@ $user_groups_ad = array_keys(
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION.
 if ($insert_downtime_agent === 1) {
-    // Check AD permission on downtime.
-    $downtime_group = db_get_value(
-        'id_group',
-        'tplanned_downtime',
-        'id',
-        $id_downtime
-    );
-
-    if ($downtime_group === false
-        || !in_array($downtime_group, $user_groups_ad)
-    ) {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to access downtime scheduler'
-        );
-        include 'general/noaccess.php';
-        return;
-    }
-
-    $agents = (array) get_parameter('id_agents');
-    $module_names = (array) get_parameter('module');
-
-    $all_modules = (empty($module_names) || ($module_names[0] === '0'));
-
-    // 'Is running' check.
-    $is_running = (bool) db_get_value(
-        'executed',
-        'tplanned_downtime',
-        'id',
-        $id_downtime
-    );
-    if ($is_running) {
-        ui_print_error_message(
-            __('This elements cannot be modified while the downtime is being executed')
-        );
-    } else {
-        foreach ($agents as $agent_id) {
-            // Check module belongs to the agent.
-            if ($modules_selection_mode == 'all') {
-                $check = false;
-                foreach ($module_names as $module_name) {
-                    $check_module = modules_get_agentmodule_id(
-                        $module_name,
-                        $agent_id
-                    );
-                    if (!empty($check_module)) {
-                        $check = true;
-                    }
-                }
-
-                if (!$check) {
-                    continue;
-                }
-            }
-
-            // Check AD permission on agent.
-            $agent_group = db_get_value(
-                'id_grupo',
-                'tagente',
-                'id_agente',
-                $agent_id
-            );
-
-            if ($agent_group === false
-                || !in_array($agent_group, $user_groups_ad)
-            ) {
-                continue;
-            }
-
-            $values = [
-                'id_downtime' => $id_downtime,
-                'id_agent'    => $agent_id,
-                'all_modules' => $all_modules,
-            ];
-            $result = db_process_sql_insert(
-                'tplanned_downtime_agents',
-                $values
-            );
-
-            if ($result && !$all_modules) {
-                foreach ($module_names as $module_name) {
-                    $module = modules_get_agentmodule_id(
-                        $module_name,
-                        $agent_id
-                    );
-
-                    if (empty($module)) {
-                        continue;
-                    }
-
-                    $values = [
-                        'id_downtime'     => $id_downtime,
-                        'id_agent'        => $agent_id,
-                        'id_agent_module' => $module['id_agente_modulo'],
-                    ];
-                    $result = db_process_sql_insert(
-                        'tplanned_downtime_modules',
-                        $values
-                    );
-
-                    if ($result) {
-                        $values = ['id_user' => $config['id_user']];
-                        $result = db_process_sql_update(
-                            'tplanned_downtime',
-                            $values,
-                            ['id' => $id_downtime]
-                        );
-                    }
-                }
-            }
-        }
-    }
+    insert_downtime_agent($id_downtime, $user_groups_ad);
 }
 
 // DELETE A DOWNTIME_AGENT ASSOCIATION.
@@ -462,10 +356,6 @@ if ($create_downtime || $update_downtime) {
                     'date_to'     => $datetime_to,
                     'id_user'     => $config['id_user'],
                 ];
-            } else if ($is_running) {
-                ui_print_error_message(
-                    __('Cannot be modified while the downtime is being executed')
-                );
             } else {
                 $values = [
                     'name'                   => $name,
@@ -496,12 +386,16 @@ if ($create_downtime || $update_downtime) {
                 }
             }
 
-            if (!empty($values)) {
-                $result = db_process_sql_update(
-                    'tplanned_downtime',
-                    $values,
-                    ['id' => $id_downtime]
-                );
+            if ($is_running) {
+                $result = false;
+            } else {
+                if (!empty($values)) {
+                    $result = db_process_sql_update(
+                        'tplanned_downtime',
+                        $values,
+                        ['id' => $id_downtime]
+                    );
+                }
             }
         }
 
@@ -514,6 +408,9 @@ if ($create_downtime || $update_downtime) {
         } else {
             if ($create_downtime && $name && !$check) {
                 $id_downtime = $result;
+
+                insert_downtime_agent($id_downtime, $user_groups_ad);
+
                 ui_print_success_message(__('Successfully created'));
             } else if ($update_downtime && $name) {
                 ui_print_success_message(__('Successfully updated'));
@@ -556,8 +453,8 @@ if ($id_downtime > 0) {
         case 'postgresql':
             $columns_str = implode(',', $columns);
             $sql = "SELECT $columns_str
-					FROM tplanned_downtime
-					WHERE id = $id_downtime";
+                    FROM tplanned_downtime
+                    WHERE id = $id_downtime";
         break;
 
         case 'oracle':
@@ -579,8 +476,8 @@ if ($id_downtime > 0) {
 
             $columns_str = implode(',', $columns);
             $sql = "SELECT $columns_str
-					FROM tplanned_downtime
-					WHERE id = $id_downtime";
+                    FROM tplanned_downtime
+                    WHERE id = $id_downtime";
         break;
     }
 
@@ -713,23 +610,23 @@ $days = array_combine(range(1, 31), range(1, 31));
 $table->data[5][0] = __('Configure the time').'&nbsp;';
 ;
 $table->data[5][1] = "
-	<div id='once_time' style='display: none;'>
-		<table>
-			<tr>
-				<td>".__('From:').'</td>
-				<td>'.html_print_input_text('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution).html_print_input_text('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution).'</td>
-			</tr>
-			<tr>
-				<td>'.__('To:').'</td>
-				<td>'.html_print_input_text('once_date_to', $once_date_to, '', 10, 10, true).html_print_input_text('once_time_to', $once_time_to, '', 9, 9, true)."</td>
-			</tr>
-		</table>
-	</div>
-	<div id='periodically_time' style='display: none;'>
-		<table>
-			<tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
-			<tr>
-				<td>'.__('Type Periodicity:').'&nbsp;'.html_print_select(
+    <div id='once_time' style='display: none;'>
+        <table>
+            <tr>
+                <td>".__('From:').'</td>
+                <td>'.html_print_input_text('once_date_from', $once_date_from, '', 10, 10, true, $disabled_in_execution).html_print_input_text('once_time_from', $once_time_from, '', 9, 9, true, $disabled_in_execution).'</td>
+            </tr>
+            <tr>
+                <td>'.__('To:').'</td>
+                <td>'.html_print_input_text('once_date_to', $once_date_to, '', 10, 10, true).html_print_input_text('once_time_to', $once_time_to, '', 9, 9, true)."</td>
+            </tr>
+        </table>
+    </div>
+    <div id='periodically_time' style='display: none;'>
+        <table>
+            <tr><td>".ui_get_using_system_timezone_warning().'</td></tr>
+            <tr>
+                <td>'.__('Type Periodicity:').'&nbsp;'.html_print_select(
     [
         'weekly'  => __('Weekly'),
         'monthly' => __('Monthly'),
@@ -745,24 +642,24 @@ $table->data[5][1] = "
     '',
     $disabled_in_execution
 )."</td>
-			</tr>
-			<tr>
-				<td colspan='2'>
-					<table id='weekly_item' style='display: none;'>
-						<tr>
-							<td>".__('Mon').html_print_checkbox('monday', 1, $monday, true, $disabled_in_execution).'</td>
-							<td>'.__('Tue').html_print_checkbox('tuesday', 1, $tuesday, true, $disabled_in_execution).'</td>
-							<td>'.__('Wed').html_print_checkbox('wednesday', 1, $wednesday, true, $disabled_in_execution).'</td>
-							<td>'.__('Thu').html_print_checkbox('thursday', 1, $thursday, true, $disabled_in_execution).'</td>
-							<td>'.__('Fri').html_print_checkbox('friday', 1, $friday, true, $disabled_in_execution).'</td>
-							<td>'.__('Sat').html_print_checkbox('saturday', 1, $saturday, true, $disabled_in_execution).'</td>
-							<td>'.__('Sun').html_print_checkbox('sunday', 1, $sunday, true, $disabled_in_execution)."</td>
-						</tr>
-					</table>
-					<table id='monthly_item' style='display: none;'>
-						<tr>
-							<td>".__('From day:').'</td>
-							<td>'.html_print_select(
+            </tr>
+            <tr>
+                <td colspan='2'>
+                    <table id='weekly_item' style='display: none;'>
+                        <tr>
+                            <td>".__('Mon').html_print_checkbox('monday', 1, $monday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Tue').html_print_checkbox('tuesday', 1, $tuesday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Wed').html_print_checkbox('wednesday', 1, $wednesday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Thu').html_print_checkbox('thursday', 1, $thursday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Fri').html_print_checkbox('friday', 1, $friday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Sat').html_print_checkbox('saturday', 1, $saturday, true, $disabled_in_execution).'</td>
+                            <td>'.__('Sun').html_print_checkbox('sunday', 1, $sunday, true, $disabled_in_execution)."</td>
+                        </tr>
+                    </table>
+                    <table id='monthly_item' style='display: none;'>
+                        <tr>
+                            <td>".__('From day:').'</td>
+                            <td>'.html_print_select(
     $days,
     'periodically_day_from',
     $periodically_day_from,
@@ -775,8 +672,8 @@ $table->data[5][1] = "
     '',
     $disabled_in_execution
 ).'</td>
-							<td>'.__('To day:').'</td>
-							<td>'.html_print_select(
+                            <td>'.__('To day:').'</td>
+                            <td>'.html_print_select(
     $days,
     'periodically_day_to',
     $periodically_day_to,
@@ -789,13 +686,13 @@ $table->data[5][1] = "
     '',
     $disabled_in_execution
 ).'</td>
-							<td>'.ui_print_help_tip(__('The end day must be higher than the start day'), true).'</td>
-						</tr>
-					</table>
-					<table>
-						<tr>
-							<td>'.__('From hour:').'</td>
-							<td>'.html_print_input_text(
+                            <td>'.ui_print_help_tip(__('The end day must be higher than the start day'), true).'</td>
+                        </tr>
+                    </table>
+                    <table>
+                        <tr>
+                            <td>'.__('From hour:').'</td>
+                            <td>'.html_print_input_text(
     'periodically_time_from',
     $periodically_time_from,
     '',
@@ -807,8 +704,8 @@ $table->data[5][1] = "
     __('The end time must be higher than the start time'),
     true
 ).'</td>
-							<td>'.__('To hour:').'</td>
-							<td>'.html_print_input_text(
+                            <td>'.__('To hour:').'</td>
+                            <td>'.html_print_input_text(
     'periodically_time_to',
     $periodically_time_to,
     '',
@@ -820,25 +717,137 @@ $table->data[5][1] = "
     __('The end time must be higher than the start time'),
     true
 ).'</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</div>';
-
-echo '<form method="POST" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>';
 
 if ($id_downtime > 0) {
-    echo '<table width=100% border=0 cellpadding=4 >';
-    echo "<tr><td width=75% valign='top'>";
+    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
+} else {
+    echo '<form method="POST" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
 }
 
 // Editor form.
 html_print_table($table);
 
+echo "<td valign=top style='width:300px;padding-left:20px;'>";
+
+$filter_group = (int) get_parameter('filter_group', 0);
+
+// User AD groups to str for the filter.
+$id_groups_str = implode(',', $user_groups_ad);
+
+if (empty($id_groups_str)) {
+    // Restrictive filter on error. This will filter all the downtimes.
+    $id_groups_str = '-1';
+}
+
+$filter_cond = '';
+if ($filter_group > 0) {
+    if ($recursion) {
+        $rg = groups_get_children_ids($filter_group, true);
+        $filter_cond .= ' AND id_grupo IN (';
+
+        $i = 0;
+        $len = count($rg);
+
+        foreach ($rg as $key) {
+            if ($i == ($len - 1)) {
+                $filter_cond .= $key.')';
+            } else {
+                $i++;
+                $filter_cond .= $key.',';
+            }
+        }
+    } else {
+        $filter_cond = " AND id_grupo = $filter_group ";
+    }
+}
+
+$agents = get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str);
+
+$disabled_add_button = false;
+if (empty($agents) || $disabled_in_execution) {
+    $disabled_add_button = true;
+}
+
+// Show available agents to include into downtime
+$table = new StdClass();
+$table->class = 'databox filters';
+$table->width = '100%';
+$table->data = [];
+
+$table->data[0][0] = __('Group filter');
+$table->data[0][1] = html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', true, false, true, '', false, 'min-width:180px;margin-right:15px;');
+$table->data[0][2] = __('Recursion').'&nbsp&nbsp'.html_print_checkbox('recursion', 1, $recursion, true, false, '');
+
+$table->data[1][0] = __('Available agents');
+$table->data[1][1] = html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, true, true, true, '', false, 'width: 180px;');
+
+
+if ($type_downtime != 'quiet') {
+    echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
+} else {
+    echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
+}
+
+$table->data[2][1] = html_print_select(
+    [
+        'common' => __('Show common modules'),
+        'all'    => __('Show all modules'),
+    ],
+    'modules_selection_mode',
+    'common',
+    false,
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    'min-width:180px;'
+);
+
+echo '</div>';
+
+$table->data[3][0] = __('Available modules:').ui_print_help_tip(
+    __('Only for type Quiet for downtimes.'),
+    true
+);
+
+if ($type_downtime != 'quiet') {
+    echo '<div id="available_modules" style="display: none;">';
+} else {
+    echo '<div id="available_modules" style="">';
+}
+
+$table->data[3][1] = html_print_select(
+    [],
+    'module[]',
+    '',
+    '',
+    '',
+    0,
+    true,
+    true,
+    true,
+    '',
+    false,
+    'width: 180px;'
+);
+echo '</div>';
+
+// Print agent table.
+html_print_table($table);
+
+echo '<br /><br /><br />';
+
 html_print_input_hidden('id_agent', $id_agent);
-echo '<div class="action-buttons" style="width: 100%">';
+echo '<div class="action-buttons w100p" >';
 if ($id_downtime > 0) {
     html_print_input_hidden('update_downtime', 1);
     html_print_input_hidden('id_downtime', $id_downtime);
@@ -859,240 +868,97 @@ if ($id_downtime > 0) {
 }
 
 echo '</div>';
+html_print_input_hidden('all_agents', implode(',', array_keys($agents)));
+html_print_input_hidden('all_common_modules', '');
 echo '</form>';
 
-if ($id_downtime > 0) {
-    echo "<td valign=top style='width:300px;padding-left:20px;'>";
+// Start Overview of existing planned downtime.
+echo '<h4>'.__('Agents planned for this downtime').':</h4>';
 
-    $filter_group = (int) get_parameter('filter_group', 0);
+// User the $id_groups_str built before.
+$sql = sprintf(
+    'SELECT ta.nombre, tpda.id,
+                    ta.id_os, ta.id_agente, ta.id_grupo,
+                    ta.ultimo_contacto, tpda.all_modules
+                FROM tagente ta
+                INNER JOIN tplanned_downtime_agents tpda
+                    ON ta.id_agente = tpda.id_agent
+                        AND tpda.id_downtime = %d
+                WHERE ta.id_grupo IN (%s)',
+    $id_downtime,
+    $id_groups_str
+);
+$downtimes_agents = db_get_all_rows_sql($sql);
 
-    // User AD groups to str for the filter.
-    $id_groups_str = implode(',', $user_groups_ad);
+if (empty($downtimes_agents)) {
+    echo '<div class="nf">'.__('There are no agents').'</div>';
+} else {
+    $table = new stdClass();
+    $table->id = 'list';
+    $table->class = 'databox data';
+    $table->width = '100%';
+    $table->data = [];
+    $table->head = [];
+    $table->head[0] = __('Name');
+    $table->head[1] = __('Group');
+    $table->head[2] = __('OS');
+    $table->head[3] = __('Last contact');
+    $table->head['count_modules'] = __('Modules');
 
-    if (empty($id_groups_str)) {
-        // Restrictive filter on error. This will filter all the downtimes.
-        $id_groups_str = '-1';
+    if (!$running) {
+        $table->head[5] = __('Actions');
+        $table->align[5] = 'center';
+        $table->size[5] = '5%';
     }
 
-    $filter_cond = '';
-    if ($filter_group > 0) {
-        if ($recursion) {
-            $rg = groups_get_children_ids($filter_group, true);
-            $filter_cond .= ' AND id_grupo IN (';
+    foreach ($downtimes_agents as $downtime_agent) {
+        $data = [];
 
-            $i = 0;
-            $len = count($rg);
+        $alias = db_get_value(
+            'alias',
+            'tagente',
+            'id_agente',
+            $downtime_agent['id_agente']
+        );
+        $data[0] = $alias;
 
-            foreach ($rg as $key) {
-                if ($i == ($len - 1)) {
-                    $filter_cond .= $key.')';
-                } else {
-                    $i++;
-                    $filter_cond .= $key.',';
-                }
-            }
+        $data[1] = db_get_sql(
+            'SELECT nombre
+            FROM tgrupo
+            WHERE id_grupo = '.$downtime_agent['id_grupo']
+        );
+
+        $data[2] = ui_print_os_icon($downtime_agent['id_os'], true, true);
+
+        $data[3] = $downtime_agent['ultimo_contacto'];
+
+        if ($type_downtime == 'disable_agents_alerts') {
+            $data['count_modules'] = __('All alerts');
+        } else if ($type_downtime == 'disable_agents') {
+            $data['count_modules'] = __('Entire agent');
         } else {
-            $filter_cond = " AND id_grupo = $filter_group ";
+            if ($downtime_agent['all_modules']) {
+                $data['count_modules'] = __('All modules');
+            } else {
+                $data['count_modules'] = __('Some modules');
+            }
         }
-    }
-
-    $sql = sprintf(
-        'SELECT tagente.id_agente, tagente.alias
-					FROM tagente
-					WHERE tagente.id_agente NOT IN (
-							SELECT tagente.id_agente
-							FROM tagente, tplanned_downtime_agents
-							WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
-								AND tplanned_downtime_agents.id_downtime = %d
-						) AND disabled = 0 %s
-						AND tagente.id_grupo IN (%s)
-					ORDER BY tagente.nombre',
-        $id_downtime,
-        $filter_cond,
-        $id_groups_str
-    );
-    $agents = db_get_all_rows_sql($sql);
-    if (empty($agents)) {
-        $agents = [];
-    }
-
-    $agent_ids = extract_column($agents, 'id_agente');
-    $agent_names = extract_column($agents, 'alias');
-
-    $agents = array_combine($agent_ids, $agent_names);
-    if ($agents === false) {
-        $agents = [];
-    }
-
-    $disabled_add_button = false;
-    if (empty($agents) || $disabled_in_execution) {
-        $disabled_add_button = true;
-    }
-
-    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
-    html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'min-width:180px;margin-right:15px;');
-
-    html_print_checkbox('recursion', 1, $recursion, false, false, '');
-    echo __('Recursion').'&nbsp;';
-    echo '<br /><br />';
-    html_print_submit_button(__('Filter by group'), '', false, 'class="sub next"', false);
-    echo '</form>';
-    // Show available agents to include into downtime
-    echo '<h4>'.__('Available agents').':</h4>';
-    echo "<form method=post action='index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
-
-    echo html_print_select($agents, 'id_agents[]', -1, '', _('Any'), -2, false, true, true, '', false, 'width: 180px;');
-
-    if ($type_downtime != 'quiet') {
-        echo '<div id="available_modules_selection_mode" style="padding-top:20px;display: none;">';
-    } else {
-        echo '<div id="available_modules_selection_mode" style="padding-top:20px">';
-    }
-
-    echo html_print_select(
-        [
-            'common' => __('Show common modules'),
-            'all'    => __('Show all modules'),
-        ],
-        'modules_selection_mode',
-        'common',
-        false,
-        '',
-        '',
-        true,
-        false,
-        true,
-        '',
-        false,
-        'min-width:180px;'
-    );
-    echo '</div>';
-
-    echo '<h4>'.__('Available modules:').ui_print_help_tip(
-        __('Only for type Quiet for downtimes.'),
-        true
-    ).'</h4>';
-
-    if ($type_downtime != 'quiet') {
-        echo '<div id="available_modules" style="display: none;">';
-    } else {
-        echo '<div id="available_modules" style="">';
-    }
-
-    echo html_print_select(
-        [],
-        'module[]',
-        '',
-        '',
-        '',
-        0,
-        false,
-        true,
-        true,
-        '',
-        false,
-        'width: 180px;'
-    );
-    echo '</div>';
-    echo '<br /><br /><br />';
-    html_print_submit_button(
-        __('Add'),
-        'add_item',
-        $disabled_add_button,
-        'class="sub next"',
-        false
-    );
-    echo '</form>';
-    echo '</table>';
-
-    // Start Overview of existing planned downtime.
-    echo '<h4>'.__('Agents planned for this downtime').':</h4>';
-
-    // User the $id_groups_str built before.
-    $sql = sprintf(
-        'SELECT ta.nombre, tpda.id,
-						ta.id_os, ta.id_agente, ta.id_grupo,
-						ta.ultimo_contacto, tpda.all_modules
-					FROM tagente ta
-					INNER JOIN tplanned_downtime_agents tpda
-						ON ta.id_agente = tpda.id_agent
-							AND tpda.id_downtime = %d
-					WHERE ta.id_grupo IN (%s)',
-        $id_downtime,
-        $id_groups_str
-    );
-    $downtimes_agents = db_get_all_rows_sql($sql);
-
-    if (empty($downtimes_agents)) {
-        echo '<div class="nf">'.__('There are no agents').'</div>';
-    } else {
-        $table = new stdClass();
-        $table->id = 'list';
-        $table->class = 'databox data';
-        $table->width = '100%';
-        $table->data = [];
-        $table->head = [];
-        $table->head[0] = __('Name');
-        $table->head[1] = __('Group');
-        $table->head[2] = __('OS');
-        $table->head[3] = __('Last contact');
-        $table->head['count_modules'] = __('Modules');
 
         if (!$running) {
-            $table->head[5] = __('Actions');
-            $table->align[5] = 'center';
-            $table->size[5] = '5%';
-        }
-
-        foreach ($downtimes_agents as $downtime_agent) {
-            $data = [];
-
-            $alias = db_get_value(
-                'alias',
-                'tagente',
-                'id_agente',
-                $downtime_agent['id_agente']
-            );
-            $data[0] = $alias;
-
-            $data[1] = db_get_sql(
-                'SELECT nombre
-                FROM tgrupo
-                WHERE id_grupo = '.$downtime_agent['id_grupo']
-            );
-
-            $data[2] = ui_print_os_icon($downtime_agent['id_os'], true, true);
-
-            $data[3] = $downtime_agent['ultimo_contacto'];
-
-            if ($type_downtime == 'disable_agents_alerts') {
-                $data['count_modules'] = __('All alerts');
-            } else if ($type_downtime == 'disable_agents') {
-                $data['count_modules'] = __('Entire agent');
-            } else {
-                if ($downtime_agent['all_modules']) {
-                    $data['count_modules'] = __('All modules');
-                } else {
-                    $data['count_modules'] = __('Some modules');
-                }
+            $data[5] = '';
+            if ($type_downtime != 'disable_agents_alerts'
+                && $type_downtime != 'disable_agents'
+            ) {
+                $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
             }
 
-            if (!$running) {
-                $data[5] = '';
-                if ($type_downtime != 'disable_agents_alerts'
-                    && $type_downtime != 'disable_agents'
-                ) {
-                    $data[5] = '<a href="javascript:show_editor_module('.$downtime_agent['id_agente'].');">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
-                }
-
-                $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
-            }
-
-            $table->data['agent_'.$downtime_agent['id_agente']] = $data;
+            $data[5] .= '<a href="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent='.$downtime_agent['id_agente'].'&delete_downtime_agent=1&id_downtime_agent='.$downtime_agent['id'].'&id_downtime='.$id_downtime.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         }
 
-        html_print_table($table);
+        $table->data['agent_'.$downtime_agent['id_agente']] = $data;
     }
+
+    html_print_table($table);
 }
 
 $table = new stdClass();
@@ -1103,7 +969,7 @@ $table->style[0] = 'text-align: center;';
 $table->data = [];
 $table->data['loading'] = [];
 $table->data['loading'][0] = html_print_image('images/spinner.gif', true);
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 html_print_table($table);
 echo '</div>';
 
@@ -1118,30 +984,31 @@ $table->data['module'][1] = '<h4>'.__('Modules').'</h4>';
 
 // List of modules, empty, it is populated by javascript.
 $table->data['module'][1] = "
-	<table cellspacing='4' cellpadding='4' border='0' width='100%'
-		id='modules_in_agent' class='databox_color'>
-		<thead>
-			<tr>
-				<th scope='col' class='header c0'>".__('Module')."</th>
-				<th scope='col' class='header c1'>".__('Action')."</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr class='datos' id='template' style='display: none;'>
-				<td class='name_module' style=''></td>
-				<td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
-						onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
-						href="">'.html_print_image(
+    <table cellspacing='4' cellpadding='4' border='0' width='100%'
+        id='modules_in_agent' class='databox_color'>
+        <thead>
+            <tr>
+                <th scope='col' class='header c0'>".__('Module')."</th>
+                <th scope='col' class='header c1'>".__('Action')."</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class='datos' id='template' style='display: none;'>
+                <td class='name_module' style=''></td>
+                <td class='cell_delete_button' style='text-align: right; width:10%;' id=''>".'<a class="link_delete"
+                        onclick="if(!confirm(\''.__('Are you sure?').'\')) return false;"
+                        href="">'.html_print_image(
     'images/cross.png',
     true,
     [
         'border' => '0',
         'alt'    => __('Delete'),
+        'class'  => 'invert_filter',
     ]
 ).'</a>'."</td>
-			</tr>
-			<tr class='datos2' id='add_modules_row'>
-				<td class='datos2' style='' id=''>".__('Add Module:').'&nbsp;'.html_print_select(
+            </tr>
+            <tr class='datos2' id='add_modules_row'>
+                <td class='datos2' style='' id=''>".__('Add Module:').'&nbsp;'.html_print_select(
     [],
     'modules',
     '',
@@ -1150,46 +1017,178 @@ $table->data['module'][1] = "
     0,
     true
 )."</td>
-				<td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
+                <td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
     'images/add.png',
     true,
     [
         'border' => '0',
         'alt'    => __('Add'),
+        'class'  => 'invert_filter',
     ]
-).'</a>'.'</div>'."<div id='spinner_add' style='display: none;'>".html_print_image('images/spinner.gif', true).'</div>'.'</td>
-			</tr>
-		</tbody></table>';
+).'</a></div>'."<div id='spinner_add' style='display: none;'>".html_print_image('images/spinner.gif', true).'</div></td>
+            </tr>
+        </tbody></table>';
 
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 html_print_table($table);
 echo '</div>';
 
-echo "<div style='display: none;'>";
+echo "<div class='invisible'>";
 echo "<div id='spinner_template'>";
 html_print_image('images/spinner.gif');
 echo '</div>';
 echo '</div>';
 
-echo "<div id='some_modules_text' style='display: none;'>";
+echo "<div id='some_modules_text' class='invisible'>";
 echo __('Some modules');
 echo '</div>';
 
-echo "<div id='some_modules_text' style='display: none;'>";
+echo "<div id='some_modules_text' class='invisible'>";
 echo __('Some modules');
 echo '</div>';
 
-echo "<div id='all_modules_text' style='display: none;'>";
+echo "<div id='all_modules_text' class='invisible'>";
 echo __('All modules');
 echo '</div>';
 
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
+// Auxiliary function for downtime agent creation.
+function insert_downtime_agent($id_downtime, $user_groups_ad)
+{
+    // Check AD permission on downtime.
+    $downtime_group = db_get_value(
+        'id_group',
+        'tplanned_downtime',
+        'id',
+        $id_downtime
+    );
+
+    if ($downtime_group === false
+        || !in_array($downtime_group, $user_groups_ad)
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access downtime scheduler'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
+
+    $agents = (array) get_parameter('id_agents');
+    $module_names = (array) get_parameter('module');
+    $modules_selection_mode = (string) get_parameter('modules_selection_mode');
+
+    $all_modules = ($modules_selection_mode === 'all' && (empty($module_names) || (string) $module_names[0] === '0'));
+    $all_common_modules = ($modules_selection_mode === 'common' && (empty($module_names) || (string) $module_names[0] === '0'));
+
+    if ($all_common_modules === true) {
+        $module_names = explode(',', get_parameter('all_common_modules'));
+    }
+
+    // 'Is running' check.
+    $is_running = (bool) db_get_value(
+        'executed',
+        'tplanned_downtime',
+        'id',
+        $id_downtime
+    );
+    if ($is_running) {
+        ui_print_error_message(
+            __('This elements cannot be modified while the downtime is being executed')
+        );
+    } else {
+        // If is selected 'Any', get all the agents.
+        if (count($agents) === 1 && (int) $agents[0] === -2) {
+            $all_agents = get_parameter('all_agents');
+            $agents = explode(',', $all_agents);
+        }
+
+        foreach ($agents as $agent_id) {
+            // Check module belongs to the agent.
+            if ($modules_selection_mode == 'all' && $all_modules === false) {
+                $check = false;
+                foreach ($module_names as $module_name) {
+                    $check_module = modules_get_agentmodule_id(
+                        $module_name,
+                        $agent_id
+                    );
+                    if (!empty($check_module)) {
+                        $check = true;
+                    }
+                }
+
+                if (!$check) {
+                    continue;
+                }
+            }
+
+            // Check AD permission on agent.
+            $agent_group = db_get_value(
+                'id_grupo',
+                'tagente',
+                'id_agente',
+                $agent_id
+            );
+
+            if ($agent_group === false
+                || !in_array($agent_group, $user_groups_ad)
+            ) {
+                continue;
+            }
+
+            $values = [
+                'id_downtime' => $id_downtime,
+                'id_agent'    => $agent_id,
+                'all_modules' => $all_modules,
+            ];
+            $result = db_process_sql_insert(
+                'tplanned_downtime_agents',
+                $values
+            );
+
+            if ($result && !$all_modules) {
+                foreach ($module_names as $module_name) {
+                    $module = modules_get_agentmodule_id(
+                        $module_name,
+                        $agent_id
+                    );
+
+                    if (empty($module)) {
+                        continue;
+                    }
+
+                    $values = [
+                        'id_downtime'     => $id_downtime,
+                        'id_agent'        => $agent_id,
+                        'id_agent_module' => $module['id_agente_modulo'],
+                    ];
+                    $result = db_process_sql_insert(
+                        'tplanned_downtime_modules',
+                        $values
+                    );
+
+                    if ($result) {
+                        $values = ['id_user' => $config['id_user']];
+                        $result = db_process_sql_update(
+                            'tplanned_downtime',
+                            $values,
+                            ['id' => $id_downtime]
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 ?>
 <script language="javascript" type="text/javascript">
     var id_downtime = <?php echo $id_downtime; ?>;
     var action_in_progress = false;
+    var recursion = false;
     
     function change_type_downtime() {
         switch ($("#type_downtime").val()) {
@@ -1450,6 +1449,8 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
     }
     
     $(document).ready (function () {
+        populate_agents_selector();
+
         $("#id_agents").change(agent_changed_by_multiple_agents);
         $("#modules_selection_mode").change(agent_changed_by_multiple_agents);
         
@@ -1502,5 +1503,47 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
         }
         // Disable datepickers when it has readonly attribute
         $('input.hasDatepicker[readonly]').disable();
+
+        $("#checkbox-recursion").click(function() {
+            recursion = this.checked;
+            $("#filter_group").trigger("change");
+        });
+
+        // Change agent selector based on group.
+        $("#filter_group").change(function() {
+            populate_agents_selector();
+        });
+
+        function populate_agents_selector() {
+            jQuery.post ("ajax.php",
+                {"page": "operation/agentes/ver_agente",
+                    "get_agents_group_json": 1,
+                    "id_group": $("#filter_group").val(),
+                    "privilege": "AW",
+                    "keys_prefix": "_",
+                    "recursion": recursion,
+                },
+                function (data, status) {
+                    $("#id_agents").empty();
+                    $("#module").html('');
+
+                    option_any = $("<option></option>")
+                        .attr ("value", -2)
+                        .html ("Any");
+                    $("#id_agents").append (option_any);
+
+                    jQuery.each (data, function (id, value) {
+                        // Remove keys_prefix from the index
+                        id = id.substring(1);
+
+                        option = $("<option></option>")
+                            .attr ("value", value["id_agente"])
+                            .html (value["alias"]);
+                        $("#id_agents").append (option);
+                    });
+                },
+                "json"
+            );
+        }  
     });
 </script>

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,6 +131,7 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
+
 $table_styles->data[$row][0] = __('Style template');
 $table_styles->data[$row][1] = html_print_select(
     themes_get_css(),
@@ -142,6 +143,7 @@ $table_styles->data[$row][1] = html_print_select(
     true
 );
 $row++;
+
 
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
@@ -463,19 +465,15 @@ if (enterprise_installed()) {
     $row++;
 }
 
-// Title Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Title (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
-    $row++;
-}
+// Title Header.
+$table_styles->data[$row][0] = __('Title (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_title_header', $config['custom_title_header'], '', 50, 40, true);
+$row++;
 
-// Subtitle Header
-if (enterprise_installed()) {
-    $table_styles->data[$row][0] = __('Subtitle (header)');
-    $table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
-    $row++;
-}
+// Subtitle Header.
+$table_styles->data[$row][0] = __('Subtitle (header)');
+$table_styles->data[$row][1] = html_print_input_text('custom_subtitle_header', $config['custom_subtitle_header'], '', 50, 40, true);
+$row++;
 
 // login title1
 if (enterprise_installed()) {
@@ -908,6 +906,20 @@ $row++;
     );
     $row++;
 
+    $table_chars->data[$row][0] = __('Number of elements in Custom Graph');
+    $table_chars->data[$row][1] = html_print_input_text(
+        'items_combined_charts',
+        $config['items_combined_charts'],
+        '',
+        5,
+        5,
+        true,
+        false,
+        false,
+        ''
+    );
+    $row++;
+
     $table_chars->data[$row][0] = __('Use round corners');
     $table_chars->data[$row][1] = html_print_checkbox_switch(
         'round_corner',
@@ -1233,7 +1245,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_header']),
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px"',
         true
     );
 
@@ -1256,7 +1268,7 @@ $row++;
         15,
         15,
         $custom_report_front_firstpage,
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px"',
         true
     );
 
@@ -1269,7 +1281,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_footer']),
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px""',
         true
     );
 
@@ -1290,16 +1302,6 @@ $row++;
     $table_other->size[2] = '12%';
     $table_other->size[3] = '12%';
     $table_other->data = [];
-
-    $table_other->data[$row][0] = __('Custom graphviz directory');
-    $table_other->data[$row][1] = html_print_input_text(
-        'graphviz_bin_dir',
-        $config['graphviz_bin_dir'],
-        '',
-        25,
-        255,
-        true
-    );
 
     $row++;
 
@@ -1469,11 +1471,42 @@ $row++;
     ];
     $table_other->data[$row][0] = __('CSV divider');
     if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['csv_divider'] != '|') {
-        $table_other->data[$row][1] = html_print_input_text('csv_divider', $config['csv_divider'], '', 20, 255, true);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/default_list.png', true, ['id' => 'select']).'</a>';
+        $table_other->data[$row][1] = html_print_input_text(
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            20,
+            255,
+            true
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'id'    => 'select',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     } else {
-        $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
+        $table_other->data[$row][1] = html_print_select(
+            $common_dividers,
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            '',
+            '',
+            true,
+            false,
+            false
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/pencil.png',
+            true,
+            [
+                'id'    => 'pencil',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
 
     $row++;
@@ -1623,6 +1656,13 @@ var added_config1 = {
     defineTinyMCE(added_config2);
 
 $(document).ready (function () {
+
+    var enterprise = '<?php echo enterprise_installed(); ?>';
+
+    if (enterprise === '') {
+        $('#text-custom_title_header').prop( "disabled", true );
+        $('#text-custom_subtitle_header').prop( "disabled", true );
+    }
 
     // Show the cache expiration conf or not.
     $("input[name=legacy_vc]").change(function (e) {

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -206,7 +206,14 @@ $table->data[2][0] = '';
 
 $table->data[2][1] = __('Begin date');
 $table->data[2][2] = html_print_input_text('start_date', substr($start_date, 0, 10), '', 10, 40, true);
-$table->data[2][2] .= html_print_image('images/calendar_view_day.png', true, ['onclick' => "scwShow(scwID('text-start_date'),this);"]);
+$table->data[2][2] .= html_print_image(
+    'images/calendar_view_day.png',
+    true,
+    [
+        'class'   => 'invert_filter',
+        'onclick' => "scwShow(scwID('text-start_date'),this);",
+    ]
+);
 
 $table->data[3][1] = __('Time range');
 
@@ -250,12 +257,12 @@ if (check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, '
         'save_custom_graph',
         false,
         '',
-        'class="sub add" style=""',
+        'class="sub add"  ',
         true
     );
 }
 
-$htmlForm .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub upd" style=""', true);
+$htmlForm .= '&nbsp;&nbsp;'.html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub upd"  ', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 
@@ -272,25 +279,25 @@ if ($start_date != $current) {
 
 if ($combined) {
     // Pass the $modules before the ajax call
-    echo '<div class="combined-graph-container" style="width: 100%; text-align: center;"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+    echo '<div class="combined-graph-container center w100p"'.'data-period="'.$period.'"'.'data-stacked="'.CUSTOM_GRAPH_LINE.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
 } else {
     foreach ($modules as $id_module) {
         $title = modules_get_agentmodule_name($id_module);
         $unit = modules_get_unit($id_module);
 
         echo '<h4>'.$title.'</h4>';
-        echo '<div class="sparse-graph-container" style="width: 100%; text-align: center;"'.'data-id_module="'.$id_module.'"'.'data-period="'.$period.'"'.'data-draw_events="'.(int) $draw_events.'"'.'data-title="'.$title.'"'.'data-draw_alerts="'.(int) $draw_alerts.'"'.'data-date="'.$date.'"'.'data-unit="'.$unit.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
+        echo '<div class="sparse-graph-container center w100p"'.'data-id_module="'.$id_module.'"'.'data-period="'.$period.'"'.'data-draw_events="'.(int) $draw_events.'"'.'data-title="'.$title.'"'.'data-draw_alerts="'.(int) $draw_alerts.'"'.'data-date="'.$date.'"'.'data-unit="'.$unit.'"'.'data-date="'.$date.'"'.'data-height="'.$height.'"'.'>'.html_print_image('images/spinner.gif', true).'</div>';
     }
 }
 
-echo "<div style='clear: both;'></div>";
+echo "<div class='both'></div>";
 
-echo '<div id="graph-error-message" style="display: none;">';
+echo '<div id="graph-error-message" class="invisible">';
 ui_print_error_message(__('There was an error loading the graph'));
 echo '</div>';
 
 // Dialog to save the custom graph
-echo "<div id='dialog_save_custom_graph' style='display: none;'>";
+echo "<div id='dialog_save_custom_graph' class='invisible'>";
 $table = new stdClass();
 $table->width = '100%';
 $table->style[0] = 'font-weight: bolder; text-align: right;';
@@ -516,7 +523,7 @@ echo "<div style='width: ".$table->width."; text-align: right;'>";
                 $container.html($errorMessage.html());
             }
             
-            requestCustomGraph(0, width, height, period, stacked, date, modules)
+            requestCustomGraph(0, -1, height, period, stacked, date, modules)
                 .done(handleSuccess)
                 .fail(handleError);
         }

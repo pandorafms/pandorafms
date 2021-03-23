@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -295,7 +295,7 @@ class Alerts
         $table = [];
         foreach ($alerts as $alert) {
             if ($alert['alert_disabled']) {
-                $disabled_style = "<i style='color: grey;'>%s</i>";
+                $disabled_style = "<i class='grey'>%s</i>";
             } else {
                 $disabled_style = '%s';
             }

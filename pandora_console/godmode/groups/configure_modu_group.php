@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ if ($id_group) {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,7 +121,7 @@ class Events
                         $status_icon = html_print_image($img_st, true, false, false, false, false, true);
 
                         $row = [];
-                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="javascript: openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
+                        $row[] = '<b class="ui-table-cell-label">'.__('Event Name').'</b><a href="#" onclick="openDetails('.$event['id_evento'].')"><div class="event_name">'.io_safe_output(str_replace(['&nbsp;', '&#20;'], ' ', $event['evento'])).'</div></a>';
 
                         if ($event['id_agente'] == 0) {
                             $agent_name = __('System');
@@ -162,7 +162,7 @@ class Events
                         }
 
                         if ($event['id_agente'] > 0) {
-                            $event['agent'] = "<a style='color: black;'"."href='index.php?page=agent&id=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</a>';
+                            $event['agent'] = "<a class='black'"."href='index.php?page=agent&id=".$event['id_agente']."'>".agents_get_alias($event['id_agente']).'</a>';
                         } else {
                             $event['agent'] = '<i>'.__('N/A').'</i>';
                         }
@@ -483,7 +483,7 @@ class Events
 
         $options['dialog_id'] = 'detail_event_dialog_error';
         $options['title_text'] = __('ERROR: Event detail');
-        $options['content_text'] = '<span style="color: #ff0000;">'.__('Error connecting to DB.').'</span>';
+        $options['content_text'] = '<span class="color_ff0">'.__('Error connecting to DB.').'</span>';
 
         return $options;
     }
@@ -578,12 +578,12 @@ class Events
             'type'  => 'hidden',
         ];
         $options['content_text'] .= $ui->getInput($options_hidden);
-        $options['content_text'] .= '<div id="validate_button_loading" style="display: none; text-align: center;">
+        $options['content_text'] .= '<div id="validate_button_loading" class="invisible center">
 			<img src="images/ajax-loader.gif" /></div>';
-        $options['content_text'] .= '<div id="validate_button_correct" style="display: none; text-align: center;">
+        $options['content_text'] .= '<div id="validate_button_correct" class="invisible center">
 			<h3>'.__('Sucessful validate').'</h3></div>';
-        $options['content_text'] .= '<div id="validate_button_fail" style="display: none; text-align: center;">
-			<h3 style="color: #ff0000;">'.__('Fail validate').'</h3></div>';
+        $options['content_text'] .= '<div id="validate_button_fail" class="invisible center">
+			<h3 class="color_ff0">'.__('Fail validate').'</h3></div>';
 
         $options['button_close'] = false;
 
@@ -618,8 +618,8 @@ class Events
         );
         $ui->showFooter(false);
         $ui->beginContent();
-            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
-            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' style='display:none;'>detail_event_dialog_error_hook</a>");
+            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
+            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
             $filter_title = sprintf(__('Filter Events by %s'), $this->filterEventsGetString());
             $ui->contentBeginCollapsible($filter_title);
@@ -855,7 +855,7 @@ class Events
         $table = new Table();
         $table->id = $id_table;
 
-        $no_events = '<p id="empty_advice_events" class="empty_advice" style="display: none;">'.__('No events').'</p>';
+        $no_events = '<p id="empty_advice_events" class="empty_advice invisible" class="invisible">'.__('No events').'</p>';
 
         if (!$return) {
             $ui->contentAddHtml($table->getHTML());
@@ -1041,10 +1041,10 @@ class Events
 						var new_rows = \"\";
 						$.each(data.events, function(key, event) {
 							new_rows = \"<tr class='events \" + event[2] + \"'>\" +
-									\"<td class='cell_0' style='vertical-align:middle;'>\" +
+									\"<td class='cell_0' class='vertical_middle'>\" +
 										event[0] +
 									\"</td>\" +
-									\"<td style='vertical-align:middle;'>\" + event[1] + \"</td>\" +
+									\"<td class='vertical_middle'>\" + event[1] + \"</td>\" +
 								\"</tr>\" + new_rows;
 							});
 							

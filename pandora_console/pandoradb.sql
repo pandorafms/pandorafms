@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2011 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2021 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -441,6 +441,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field19_recovery` text NOT NULL,
 	`field20_recovery` text NOT NULL,
 	`previous_name` text,
+	`create_wu_integria` tinyint(1) default NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -469,6 +470,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field13` text NOT NULL,
 	`field14` text NOT NULL,
 	`field15` text NOT NULL,
+	`field16` text NOT NULL,
+	`field17` text NOT NULL,
+	`field18` text NOT NULL,
+	`field19` text NOT NULL,
+	`field20` text NOT NULL,
 	`type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal'),
 	`value` varchar(255) default '',
 	`matches_value` tinyint(1) default 0,
@@ -502,6 +508,11 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`field13_recovery` text NOT NULL,
 	`field14_recovery` text NOT NULL,
 	`field15_recovery` text NOT NULL,
+	`field16_recovery` text NOT NULL,
+	`field17_recovery` text NOT NULL,
+	`field18_recovery` text NOT NULL,
+	`field19_recovery` text NOT NULL,
+	`field20_recovery` text NOT NULL,
 	`priority` tinyint(4) default '0',
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`special_day` tinyint(1) default 0,
@@ -1307,6 +1318,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1549,6 +1561,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
 	`uncompressed_module` TINYINT DEFAULT '0',
+	`summary` tinyint(1) DEFAULT 0,
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
@@ -2060,7 +2073,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttag` ( 
 	`id_tag` integer(10) unsigned NOT NULL auto_increment, 
-	`name` varchar(100) NOT NULL default '', 
+	`name` text NOT NULL default '', 
 	`description` text NOT NULL, 
 	`url` mediumtext NOT NULL,
 	`email` text NULL,
@@ -2642,6 +2655,7 @@ CREATE TABLE IF NOT EXISTS `tinventory_alert`(
     `last_fired` text NOT NULL default '',
     `disable_event` tinyint(1) UNSIGNED default 0,
     `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
 	PRIMARY KEY (`id`),
     FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -3151,6 +3165,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`current_month` TINYINT(1) DEFAULT '1',
 	`failover_mode` tinyint(1) DEFAULT '1',
 	`failover_type` tinyint(1) DEFAULT '1',
+	`summary` tinyint(1) DEFAULT 0,
 	`uncompressed_module` TINYINT DEFAULT '0',
 	`landscape` tinyint(1) UNSIGNED NOT NULL default 0,
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
@@ -3866,4 +3881,102 @@ CREATE TABLE `tnode_relations` (
 	`imei` VARCHAR(100) NOT NULL,
 	`node_address` VARCHAR(60) NOT NULL,
 	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`network` varchar(100) NOT NULL default '',
+	`name_network` varchar(255) default '',
+	`description` text NOT NULL,
+	`location` tinytext NOT NULL,
+	`id_recon_task` int(10) unsigned NOT NULL,
+	`scan_interval` tinyint(2) default 1,
+	`monitoring` tinyint(2) default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`lightweight_mode` tinyint(2) default 0,
+	`users_operator` text,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_ip`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_ip` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_network` bigint(20) unsigned NOT NULL default 0,
+	`id_agent` int(10) unsigned NOT NULL,
+	`forced_agent` tinyint(2) NOT NULL default '0',
+	`ip` varchar(100) NOT NULL default '',
+	`ip_dec` int(10) unsigned NOT NULL,
+	`id_os` int(10) unsigned NOT NULL,
+	`forced_os` tinyint(2) NOT NULL default '0',
+	`hostname` tinytext NOT NULL,
+	`forced_hostname` tinyint(2) NOT NULL default '0',
+	`comments` text NOT NULL,
+	`alive` tinyint(2) NOT NULL default '0',
+	`managed` tinyint(2) NOT NULL default '0',
+	`reserved` tinyint(2) NOT NULL default '0',
+	`time_last_check` datetime NOT NULL default '1970-01-01 00:00:00',
+	`time_create` datetime NOT NULL default '1970-01-01 00:00:00',
+	`users_operator` text,
+	`time_last_edit` datetime NOT NULL default '1970-01-01 00:00:00',
+	`enabled` tinyint(2) NOT NULL default '1',
+	`generate_events` tinyint(2) NOT NULL default '0',
+	`leased` tinyint(2) DEFAULT '0',
+	`leased_expiration` bigint(20) DEFAULT '0',
+	`mac_address` varchar(20) DEFAULT NULL,
+	`leased_mode` tinyint(2) DEFAULT '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_vlan`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_vlan` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_vlan_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_vlan_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_vlan` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_vlan`) REFERENCES tipam_vlan(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_supernet`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_supernet` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text default '',
+	`address` varchar(250) NOT NULL,
+	`mask` varchar(250) NOT NULL,
+	`subneting_mask` varchar(250) default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tipam_supernet_network`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_supernet` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,11 +37,25 @@ if (!is_metaconsole()) {
     $buttons = [
         'user'    => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                'images/gm_users.png',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'profile' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                'images/profiles.png',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -121,7 +135,7 @@ if ($id_profile || $new_profile) {
         if ($profile === false) {
             ui_print_error_message(__('There was a problem loading profile')).'</table>';
             echo '</div>';
-            echo '<div style="clear:both">&nbsp;</div>';
+            echo '<div id="both">&nbsp;</div>';
             echo '</div>';
             echo '<div id="foot">';
             include 'general/footer.php';

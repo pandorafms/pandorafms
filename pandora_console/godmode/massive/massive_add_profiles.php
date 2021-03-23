@@ -1,19 +1,33 @@
 <?php
+/**
+ * View for Add profiles in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
-
 
 if (!check_acl($config['id_user'], 0, 'UM')) {
     db_pandora_audit(
@@ -109,6 +123,9 @@ $table->size[2] = '33%';
 
 $data = [];
 $data[0] = '<form method="post" id="form_profiles" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users&option=add_profiles">';
+
+$group_um = users_get_groups_UM($config['id_user']);
+
 $display_all_group = true;
 if (check_acl($config['id_user'], 0, 'PM')) {
     $data[0] .= html_print_select(
@@ -126,13 +143,15 @@ if (check_acl($config['id_user'], 0, 'PM')) {
         'width: 100%'
     );
 } else {
-    $display_all_group = false;
+    if (!isset($group_um[0])) {
+        $display_all_group = false;
+    }
+
     $data[0] .= html_print_select(
         profile_get_profiles(
             [
                 'pandora_management' => '<> 1',
                 'db_management'      => '<> 1',
-                'user_management'    => '<> 1',
             ]
         ),
         'profiles_id[]',
@@ -175,18 +194,27 @@ $users_order = [
 ];
 
 $info_users = [];
-// Is admin or has group permissions all.
-if (check_acl($config['id_user'], 0, 'PM') || isset($group_um[0])) {
+// Is admin.
+if (users_is_admin()) {
     $info_users = users_get_info($users_order, 'id_user');
+    // has PM permission.
+} else if (check_acl($config['id_user'], 0, 'PM')) {
+    $info_users = users_get_info($users_order, 'id_user');
+    foreach ($info_users as $id_user => $value) {
+        if (users_is_admin($id_user)) {
+            unset($info_users[$value]);
+        }
+    }
 } else {
     $info = [];
-    $group_um = users_get_groups_UM($config['id_user']);
     foreach ($group_um as $group => $value) {
         $info = array_merge($info, users_get_users_by_group($group, $value));
     }
 
     foreach ($info as $key => $value) {
-        $info_users[$key] = $value['id_user'];
+        if (!$value['is_admin']) {
+            $info_users[$key] = $value['id_user'];
+        }
     }
 }
 
@@ -205,14 +233,14 @@ $data[2] .= html_print_select(
     'width: 100%'
 );
 
+// Waiting spinner.
+ui_print_spinner(__('Loading'));
+
 array_push($table->data, $data);
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('create_profiles', 1);
-html_print_submit_button(__('Create'), 'go', false, 'class="sub add"');
-echo '</div>';
+attachActionButton('create_profiles', 'update', $table->width);
 
 echo '</form>';
 

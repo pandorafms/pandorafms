@@ -2,7 +2,7 @@
 /**
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2020 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,6 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
@@ -493,6 +494,15 @@ if ($update_alert || $duplicate_alert) {
     $position = $alert['position'];
     $disable_event = $alert['disable_event'];
     $group = $alert['id_group'];
+
+    if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access SNMP Alert Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else if ($create_alert) {
     // Variable init
     $id_as = -1;
@@ -787,11 +797,11 @@ if ($create_alert || $update_alert) {
     }
 
     // SNMP alert filters
-    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter" style="font-weight: bold">';
+    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter bolder">';
 
     // Description
     echo '<tr>'.'<td class="datos" valign="top">'.__('Description').'</td>'.'<td class="datos">';
-            html_print_textarea('description', 3, 2, $description, 'style="width:400px;"');
+            html_print_textarea('description', 3, 2, $description, 'class="w400px"');
     echo '</td>'.'</tr>';
 
     // echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
@@ -804,7 +814,7 @@ if ($create_alert || $update_alert) {
     echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
 
     echo '</td><td class="datos">';
-    html_print_textarea('custom_value', 2, 2, $custom_value, 'style="width:400px;"');
+    html_print_textarea('custom_value', 2, 2, $custom_value, 'class="w400px"');
 
     echo '</td></tr>';
 
@@ -813,13 +823,19 @@ if ($create_alert || $update_alert) {
     html_print_input_text('source_ip', $source_ip, '', 20);
     echo '</td></tr>';
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LW') === true) {
+        $return_all_group = true;
+    }
+
     // Group
     echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
     echo '<div class="w250px">';
     html_print_select_groups(
         $config['id_user'],
         'AR',
-        true,
+        $return_all_group,
         'group',
         $group,
         '',
@@ -1013,13 +1029,6 @@ if ($create_alert || $update_alert) {
     html_print_input_text('custom_oid_data_20', $custom_oid_data_20, '', 60);
     echo '</td></tr>';
 
-    // Button
-    // echo '<tr><td></td><td align="right">';
-    // End table
-    // echo "</td></tr></table>";
-    // Alert configuration
-    // echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
-    // echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
     // Alert fields
     $al = [
         'al_field1'  => $al_field1,
@@ -1079,8 +1088,8 @@ if ($create_alert || $update_alert) {
     $fields[SECONDS_1WEEK] = human_time_description_raw(SECONDS_1WEEK);
     $fields[-1] = __('Other value');
 
-    html_print_select($fields, 'time_threshold', $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
-    echo '<div id="div-time_other" style="display:none">';
+    html_print_select($fields, 'time_threshold', $time_threshold, '', '', '0', false, false, false, '" class="mrgn_right_60px');
+    echo '<div id="div-time_other" class="invisible">';
     html_print_input_text('time_other', 0, '', 6);
     echo ' '.__('seconds').'</div></td></tr>';
 
@@ -1138,7 +1147,7 @@ if ($create_alert || $update_alert) {
     echo '</td></tr>';
     echo '</table>';
 
-    echo "<table style='width:100%'>";
+    echo "<table class='w100p'>";
     echo '<tr><td></td><td align="right">';
     if ($id_as > 0) {
         html_print_submit_button(__('Update'), 'submit', false, 'class="sub upd"', false);
@@ -1345,9 +1354,16 @@ if ($create_alert || $update_alert) {
         $url = 'index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'id_alert_snmp='.$row['id_as'].'&'.'update_alert=1';
         $data[1] = '<table>';
         $data[1] .= '<tr>';
-        $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+            $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+        } else {
+            $data[1] .= alerts_get_alert_action_name($row['id_alert']);
+        }
+
         $other_actions = db_get_all_rows_filter('talert_snmp_action', ['id_alert_snmp' => $row['id_as']]);
         $data[1] .= '</tr>';
+
 
         if ($other_actions != false) {
             foreach ($other_actions as $action) {
@@ -1359,6 +1375,7 @@ if ($create_alert || $update_alert) {
         }
 
         $data[1] .= '</table>';
+
 
         $data[2] = $row['agent'];
         $data[3] = $row['oid'];
@@ -1372,18 +1389,23 @@ if ($create_alert || $update_alert) {
             $data[7] = __('Never');
         }
 
-        $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter', 'alt' => __('Delete')]).'</a>';
 
 
-        $data[9] = html_print_checkbox_extended(
-            'delete_ids[]',
-            $row['id_as'],
-            false,
-            false,
-            false,
-            'class="chk_delete"',
-            true
-        );
+                $data[9] = html_print_checkbox_extended(
+                    'delete_ids[]',
+                    $row['id_as'],
+                    false,
+                    false,
+                    false,
+                    'class="chk_delete"',
+                    true
+                );
+        } else {
+            $data[8] = '';
+            $data[9] = '';
+        }
 
         $idx = count($table->data);
         // The current index of the table is 1 less than the count of table data so we count before adding to table->data
@@ -1393,12 +1415,12 @@ if ($create_alert || $update_alert) {
     }
 
     // DIALOG ADD MORE ACTIONS
-    echo '<div id="add_action_snmp-div" style="display:none;text-align:left">';
+    echo '<div id="add_action_snmp-div" class="invisible left">';
 
         echo '<form id="add_action_form" method="post">';
-            echo '<table class="databox_color" style="width:100%">';
+            echo '<table class="databox_color w100p">';
                 echo '<tr>';
-                    echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                    echo '<td class="datos2 bolder_6px">';
                         echo __('ID Alert SNMP');
                     echo '</td>';
                     echo '<td class="datos">';
@@ -1406,7 +1428,7 @@ if ($create_alert || $update_alert) {
                     echo '</td>';
                 echo '</tr>';
                 echo '<tr class="datos2">';
-                    echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                    echo '<td class="datos2 bolder_6px">';
                         echo __('Action');
                     echo '</td>';
                     echo '<td class="datos2">';
@@ -1474,7 +1496,10 @@ if ($create_alert || $update_alert) {
 
                 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
                     echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif', true);
-                    echo '<td class="datos">'.html_print_image('images/spinner.gif', true);
+                    echo '<td class="datos">'.html_print_image(
+                        'images/spinner.gif',
+                        true
+                    );
                     html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
                     echo '</td>';
                     echo '</tr>';
@@ -1494,20 +1519,20 @@ if ($create_alert || $update_alert) {
 
                     ui_pagination($count, $url_pagination);
 
-                    echo '<div style="float:right; margin-left: 10px;">';
+                    echo '<div class="right mrgn_lft_10px;">';
                     html_print_input_hidden('multiple_delete', 1);
                     html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
                     echo '</div>';
                     echo '</form>';
                 }
 
-                echo '<div style="float:right;">';
+                echo '<div class="right">';
                 echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
                 html_print_input_hidden('create_alert', 1);
                 html_print_submit_button(__('Create'), 'alert', false, 'class="sub next"');
                 echo '</form></div>';
 
-                echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';
+                echo '<div class="snmp_legend">';
                 echo '<h3>'.__('Legend').'</h3>';
                 foreach (get_priorities() as $num => $name) {
                     echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';

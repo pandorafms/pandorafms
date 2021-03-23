@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -141,7 +141,7 @@ if (is_ajax()) {
         include_once __DIR__.'/../styles/progress.css';
         echo '</style>';
 
-        echo '<div class="left_align">';
+        echo '<div class="left_align backgrund_primary_important">';
         if (!empty($id) && !empty($type)) {
             switch ($type) {
                 case 'agent':

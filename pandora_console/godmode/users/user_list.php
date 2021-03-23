@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -180,25 +180,53 @@ if (defined('METACONSOLE')) {
         $buttons = [
             'user'    => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                    'images/gm_users.png',
+                    true,
+                    [
+                        'title' => __('User management'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
             'profile' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                    'images/profiles.png',
+                    true,
+                    [
+                        'title' => __('Profile management'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
         ];
     } else {
         $buttons = [
             'user' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                    'images/gm_users.png',
+                    true,
+                    [
+                        'title' => __('User management'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
         ];
     }
 
     $buttons[$tab]['active'] = true;
 
-    ui_print_page_header(__('User management').' &raquo; '.__('Users defined on %s', get_product_name()), 'images/gm_users.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('User management').' &raquo; '.__('Users defined on %s', get_product_name()),
+        'images/gm_users.png',
+        false,
+        '',
+        true,
+        $buttons
+    );
 
     $sec = 'gusuarios';
 }
@@ -535,7 +563,7 @@ foreach ($info as $user_id => $user_info) {
         $data[0] = $user_id;
     }
 
-    $data[1] = '<ul style="margin-top: 0 !important; margin-left: auto !important; padding-left: 10px !important; list-style-type: none !important;">';
+    $data[1] = '<ul class="user_list_ul">';
     $data[1] .= '<li>'.$user_info['fullname'].'</li>';
     $data[1] .= '<li>'.$user_info['phone'].'</li>';
     $data[1] .= '<li>'.$user_info['email'].'</li>';
@@ -549,6 +577,7 @@ foreach ($info as $user_id => $user_info) {
             [
                 'alt'   => __('Admin'),
                 'title' => __('Administrator'),
+                'class' => 'invert_filter',
             ]
         ).'&nbsp;';
     } else {
@@ -559,26 +588,33 @@ foreach ($info as $user_id => $user_info) {
     if ($user_profiles !== false) {
         $total_profile = 0;
 
-            $data[4] .= '<div style="text-align: end;">';
+            $data[4] .= '<div class="text_end">';
         foreach ($user_profiles as $row) {
             if ($total_profile <= 5) {
-                $data[4] .= "<div style='float:left;'>";
+                $data[4] .= "<div class='left'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
-                $data[4] .= "<div style='float:left; padding-left:5px;'>";
+                $data[4] .= "<div class='left pdd_l_5px'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
 
                 if ($total_profile == 0 && count($user_profiles) >= 5) {
-                    $data[4] .= '<span onclick="showGroups()" style="padding-left: 15px;">
-                    '.html_print_image('images/input_zoom_gray.png', true, ['title' => __('Show')]).'</span>';
+                    $data[4] .= '<span onclick="showGroups()" class="pdd_l_15px">
+                    '.html_print_image(
+                        'images/zoom.png',
+                        true,
+                        [
+                            'title' => __('Show'),
+                            'class' => 'invert_filter',
+                        ]
+                    ).'</span>';
                 }
 
                 $data[4] .= '<br />';
                 $data[4] .= '<br />';
                 $data[4] .= '</div>';
             } else {
-                $data[4] .= "<div id='groups_list' style='display:none;'>";
+                $data[4] .= "<div id='groups_list' class='invisible'>";
                 $data[4] .= '<div >';
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / '.groups_get_name($row['id_grupo'], true).'</div>';
@@ -604,17 +640,17 @@ foreach ($info as $user_id => $user_info) {
     if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
         if (!isset($user_info['not_delete'])) {
             if ($user_info['disabled'] == 0) {
-                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable')]).'</a>';
+                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable'), 'class' => 'invert_filter']).'</a>';
             } else {
                 $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, ['title' => __('Enable')]).'</a>';
             }
         }
 
-        $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
+        $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit'), 'class' => 'invert_filter']).'</a>';
         if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && !isset($user_info['not_delete'])) {
-            $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
+            $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['class' => 'invert_filter', 'title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
             if (defined('METACONSOLE')) {
-                $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
+                $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['class' => 'invert_filter', 'title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
             }
         } else {
             $data[6] .= '';

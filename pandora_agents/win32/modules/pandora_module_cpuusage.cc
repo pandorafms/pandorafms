@@ -1,7 +1,7 @@
 /* Pandora cpuusage module. These modules check if a cpuusage is running in the
    system.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify

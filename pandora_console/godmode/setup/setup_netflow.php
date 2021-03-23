@@ -6,7 +6,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -75,7 +75,7 @@ echo '<form id="netflow_setup" method="post">';
 html_print_table($table);
 
 // Update button.
-echo '<div class="action-buttons" style="width:100%;">';
+echo '<div class="action-buttons w100p">';
     html_print_input_hidden('update_config', 1);
     html_print_submit_button(__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</div></form>';

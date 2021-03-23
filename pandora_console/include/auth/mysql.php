@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -34,7 +34,7 @@ if (!isset($config)) {
 		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
 	</head>
 	<body>
-		<div id="main" style="float:left; margin-left: 100px">
+		<div id="main" class="float-left mrgn_lft_100px">
 			<div align="center">
 				<div id="login_f">
 					<h1 id="log_f" class="error">You cannot access this file</h1>
@@ -68,28 +68,40 @@ $config['admin_can_make_admin'] = true;
 
 
 /**
- * process_user_login accepts $login and $pass and handles it according to current authentication scheme
+ * Process_user_login accepts $login and $pass and handles it according to
+ * current authentication scheme.
  *
- * @param string  $login
- * @param string  $pass
- * @param boolean $api
+ * @param string  $login Login.
+ * @param string  $pass  Pass.
+ * @param boolean $api   Api.
  *
- * @return mixed False in case of error or invalid credentials, the username in case it's correct.
+ * @return mixed False in case of error or invalid credentials, the username in
+ * case it's correct.
  */
 function process_user_login($login, $pass, $api=false)
 {
-    global $config, $mysql_cache;
+    global $config;
 
-    // Always authenticate admins against the local database
-    if (strtolower($config['auth']) == 'mysql' || is_user_admin($login)) {
+    // 1. Try remote.
+    if (strtolower($config['auth']) != 'mysql') {
+        $login_remote = process_user_login_remote(
+            $login,
+            io_safe_output($pass),
+            $api
+        );
+    } else {
+        $login_remote = false;
+    }
+
+    // 2. Try local.
+    if ($login_remote === false
+        && ($config['fallback_local_auth']
+        || is_user_admin($login)
+        || strtolower($config['auth']) == 'mysql')
+    ) {
         return process_user_login_local($login, $pass, $api);
     } else {
-        $login_remote = process_user_login_remote($login, io_safe_output($pass), $api);
-        if ($login_remote == false && $config['fallback_local_auth']) {
-            return process_user_login_local($login, $pass, $api);
-        } else {
-            return $login_remote;
-        }
+        return $login_remote;
     }
 
     return false;

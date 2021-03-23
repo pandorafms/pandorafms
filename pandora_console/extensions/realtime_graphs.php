@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -207,7 +207,7 @@ function pandora_realtime_graphs()
         'reset',
         false,
         'javascript:realtimeGraphs.clearGraph();',
-        'class="sub delete" style="margin-top:0px;"',
+        'class="sub delete mgn_tp_0" ',
         true
     );
     $table->data[] = $data;
@@ -230,7 +230,7 @@ function pandora_realtime_graphs()
         'custom_action',
         urlencode(
             base64_encode(
-                '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" style="vertical-align: middle;"></img></a>'
+                '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" class="vertical_middle"></img></a>'
             )
         ),
         false

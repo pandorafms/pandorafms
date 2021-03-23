@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,12 +73,8 @@ class Agents
                         $agents = [];
                         foreach ($listAgents['agents'] as $key => $agent) {
                             $agent[0] = '<b class="ui-table-cell-label">'.__('Agent').'</b>'.$agent[0];
-                            // ~ $agent[1] = '<b class="ui-table-cell-label">' .
-                                // ~ __('Description') . '</b>' . $agent[1];
                             $agent[2] = '<b class="ui-table-cell-label">'.__('OS').'</b>'.$agent[2];
                             $agent[3] = '<b class="ui-table-cell-label">'.__('Group').'</b>'.$agent[3];
-                            // ~ $agent[4] = '<b class="ui-table-cell-label">' .
-                                // ~ __('Interval') . '</b>' . $agent[4];
                             $agent[5] = '<b class="ui-table-cell-label">'.__('Modules').'</b>'.$agent[5];
                             $agent[6] = '<b class="ui-table-cell-label">'.__('Status').'</b>'.$agent[6];
                             $agent[7] = '<b class="ui-table-cell-label">'.__('Alerts').'</b>'.$agent[7];
@@ -385,18 +381,13 @@ class Agents
 
             $serialized_filters_q_param = empty($this->serializedFilters) ? '' : '&agents_filter='.$this->serializedFilters;
 
-            $row[0] = $row[__('Agent')] = '<span class="tiny" style="margin-right: 5px;">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
-            // ~ $row[1] = $row[__('Description')] = '<span class="small">' .
-                // ~ ui_print_truncate_text($agent["description"], 'description', false, true) .
-                // ~ '</span>';
+            $row[0] = $row[__('Agent')] = '<span class="tiny mrgn_right_5px">'.$img_status.'</span>'.'<a class="ui-link" data-ajax="false" href="index.php?page=agent&id='.$agent['id_agente'].$serialized_filters_q_param.'">'.ui_print_truncate_text($agent['alias'], 30, false).'</a>';
             $row[2] = $row[__('OS')] = ui_print_os_icon($agent['id_os'], false, true);
             $row[3] = $row[__('Group')] = ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
-            // ~ $row[4] = $row[__('Interval')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">&nbsp;&nbsp;' . __('I.') . ' </span>' .
-                // ~ '<span style="vertical-align: 0%;">' . human_time_description_raw($agent["intervalo"]) . '</span>';
-            $row[5] = $row[__('Status')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">'.__('S.').' </span>'.$img_status;
-            $row[6] = $row[__('Alerts')] = '<span class="show_collapside" style="vertical-align: 10%; display: none; font-weight: bolder;">&nbsp;&nbsp;'.__('A.').' </span>'.$img_alert;
+            $row[5] = $row[__('Status')] = '<span class="show_collapside align-none-10p">'.__('S.').' </span>'.$img_status;
+            $row[6] = $row[__('Alerts')] = '<span class="show_collapside align-none-10p">&nbsp;&nbsp;'.__('A.').' </span>'.$img_alert;
 
-            $row[7] = $row[__('Modules')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">'.__('Modules').' </span>'.'<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', '&nbsp;').' </span>';
+            $row[7] = $row[__('Modules')] = '<span class="show_collapside align-none-0p">'.__('Modules').' </span>'.'<span class="agents_tiny_stats">'.reporting_tiny_stats($agent, true, 'agent', '&nbsp;').' </span>';
 
             $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
             $now = get_system_time();
@@ -404,12 +395,12 @@ class Agents
             $time = ui_print_timestamp($last_time, true, ['style' => 'font-size: 12px; margin-left: 20px;', 'units' => 'tiny']);
             $style = '';
             if ($diferencia > ($agent['intervalo'] * 2)) {
-                $row[8] = $row[__('Last contact')] = '<b><span style="color: #ff0000;">'.$time.'</span></b>';
+                $row[8] = $row[__('Last contact')] = '<b><span class="color_ff0">'.$time.'</span></b>';
             } else {
                 $row[8] = $row[__('Last contact')] = $time;
             }
 
-            $row[8] = $row[__('Last contact')] = '<span class="show_collapside" style="vertical-align: 0%; display: none; font-weight: bolder;">'.__('Last contact').' </span>'.'<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
+            $row[8] = $row[__('Last contact')] = '<span class="show_collapside align-none-0p">'.__('Last contact').' </span>'.'<span class="agents_last_contact">'.$row[__('Last contact')].'</span>';
 
             if (!$ajax) {
                 unset($row[0]);
@@ -441,7 +432,7 @@ class Agents
         $listAgents = $this->getListAgents($page);
 
         if ($listAgents['total'] == 0) {
-            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No agents').'</p>');
+            $ui->contentAddHtml('<p class="color_ff0">'.__('No agents').'</p>');
         } else {
             $table = new Table();
             $table->id = 'list_agents';
@@ -563,13 +554,6 @@ class Agents
 
             $string = '('.implode(' - ', $filters_to_serialize).')';
 
-            // ~ $status = $this->list_status[$this->status];
-            // ~ $group = groups_get_name($this->group, true);
-            // ~
-            // ~
-            // ~ $string = sprintf(
-                // ~ __("(Status: %s - Group: %s - Free Search: %s)"),
-                // ~ $status, $group, $this->free_search);
             return $string;
         }
     }

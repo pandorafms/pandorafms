@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -44,7 +44,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'tag')."'>".html_print_image(
             'images/tag.png',
             true,
-            ['title' => __('Tags')]
+            [
+                'title' => __('Tags'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'tag'),
     ];
@@ -53,7 +56,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'os')."'>".html_print_image(
             'images/operating_system.png',
             true,
-            ['title' => __('OS')]
+            [
+                'title' => __('OS'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'os'),
     ];
@@ -62,7 +68,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'group')."'>".html_print_image(
             'images/group.png',
             true,
-            ['title' => __('Groups')]
+            [
+                'title' => __('Groups'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'group'),
     ];
@@ -71,7 +80,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'module_group')."'>".html_print_image(
             'images/module_group.png',
             true,
-            ['title' => __('Module groups')]
+            [
+                'title' => __('Module groups'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'module_group'),
     ];
@@ -80,7 +92,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'module')."'>".html_print_image(
             'images/brick.png',
             true,
-            ['title' => __('Modules')]
+            [
+                'title' => __('Modules'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'module'),
     ];
@@ -90,7 +105,10 @@ if (!$strict_acl) {
             'text'   => "<a href='".sprintf($url, 'policies')."'>".html_print_image(
                 'images/policies_mc.png',
                 true,
-                ['title' => __('Policies')]
+                [
+                    'title' => __('Policies'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
             'active' => ($tab == 'policies'),
         ];
@@ -164,7 +182,7 @@ $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = [];
 $row[] = __('Search group');
-$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 40, 30, true);
+$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 25, 30, true);
 
 if (is_metaconsole()) {
     $row[] = __('Show not init modules');
@@ -177,7 +195,7 @@ $table->data[] = $row;
 
 $row = [];
 $row[] = __('Search agent');
-$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 40, 30, true);
+$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 25, 30, true);
 
 $row[] = __('Show not init agents');
 $row[] = html_print_checkbox('show_not_init_agents', $show_not_init_agents, true, true);
@@ -208,7 +226,7 @@ if (!is_metaconsole()) {
 
     $row = [];
     $row[] = __('Search module');
-    $row[] = html_print_input_text('search_module', $search_module, '', 40, 30, true);
+    $row[] = html_print_input_text('search_module', $search_module, '', 25, 30, true);
 
     $row[] = __('Show not init modules');
     $row[] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -2125,6 +2125,8 @@ function get_group_alerts(
         $disabled = $filter;
     }
 
+    $filter .= ' AND talert_template_modules.disabled = 0 ';
+
     switch ($disabled) {
         case 'notfired':
             $filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -2181,7 +2183,7 @@ function get_group_alerts(
                 if (empty($id_group)) {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo
-						WHERE 1 = 0';
+                        WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo
@@ -2190,7 +2192,8 @@ function get_group_alerts(
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg
 									ON ta.id_agente = tasg.id_agent
-								WHERE
+								WHERE ta.disabled = 0
+                                    AND
 										id_grupo IN ('.implode(',', $id_group).')
 										OR id_group IN ('.implode(',', $id_group).'))';
                 }
@@ -2199,7 +2202,7 @@ function get_group_alerts(
 					FROM tagente_modulo
 					WHERE delete_pending = 0
 						AND id_agente IN (SELECT id_agente
-							FROM tagente WHERE id_grupo = '.$idGroup.')';
+							FROM tagente WHERE id_grupo = '.$idGroup.' AND tagente.disabled = 0)';
             }
         } else {
             // ALL GROUP
@@ -2747,6 +2750,7 @@ function alerts_ui_update_or_create_actions($update=true)
     $id_alert_command = (int) get_parameter('id_command');
     $group = get_parameter('group');
     $action_threshold = (int) get_parameter('action_threshold');
+    $create_wu_integria = (int) get_parameter('create_wu_integria');
 
     // Validate some values
     if (!$id_alert_command) {
@@ -2769,14 +2773,36 @@ function alerts_ui_update_or_create_actions($update=true)
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-        $values['field'.$i] = (string) get_parameter('field'.$i.'_value');
+        $field_value = get_parameter('field'.$i.'_value');
+
+        if (is_array($field_value)) {
+            $field_value = reset(array_filter($field_value));
+
+            if ($field_value === false) {
+                $field_value = '';
+            }
+        }
+
+        $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
-        $values['field'.$i.'_recovery'] = (string) get_parameter('field'.$i.'_recovery_value');
+
+        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+
+        if (is_array($field_recovery_value)) {
+            $field_recovery_value = reset(array_filter($field_recovery_value));
+
+            if ($field_recovery_value === false) {
+                $field_recovery_value = '';
+            }
+        }
+
+        $values['field'.$i.'_recovery'] = (string) $field_recovery_value;
         $info_fields .= ' Field'.$i.'Recovery: '.$values['field'.$i.'_recovery'];
     }
 
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
+    $values['create_wu_integria'] = $create_wu_integria;
     if ($update) {
         $values['name'] = $name;
         $values['id_alert_command'] = $id_alert_command;

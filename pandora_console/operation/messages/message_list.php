@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,8 @@
 
 require_once 'include/functions_messages.php';
 
+global $config;
+
 $delete_msg = get_parameter('delete_message', 0);
 $multiple_delete = get_parameter('multiple_delete', 0);
 $show_sent = get_parameter('show_sent', 0);
@@ -41,14 +43,16 @@ if ($show_sent !== 0) {
     $active_sent = true;
 }
 
+
+
 $buttons['message_list'] = [
     'active' => $active_list,
-    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">'.html_print_image('images/email_inbox.png', true, ['title' => __('Received messages')]).'</a>',
+    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">'.html_print_image('images/email_inbox.png', true, ['title' => __('Received messages'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['sent_messages'] = [
     'active' => $active_sent,
-    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">'.html_print_image('images/email_outbox.png', true, ['title' => __('Sent messages')]).'</a>',
+    'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">'.html_print_image('images/email_outbox.png', true, ['title' => __('Sent messages'), 'class' => 'invert_filter']).'</a>',
 ];
 
 $buttons['create_message'] = [
@@ -56,7 +60,10 @@ $buttons['create_message'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image(
         'images/new_message.png',
         true,
-        ['title' => __('Create message')]
+        [
+            'title' => __('Create message'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -189,21 +196,21 @@ if (empty($messages)) {
         if ($message['read'] == 1) {
             if ($show_sent) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_open.png', true, ['border' => 0, 'title' => __('Click to read')]);
+                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Click to read'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
             } else {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&amp;mark_unread=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email_open.png', true, ['border' => 0, 'title' => __('Mark as unread')]);
+                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Mark as unread'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
             }
         } else {
             if ($show_sent) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email.png', true, ['border' => 0, 'title' => __('Message unread - click to read')]);
+                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Message unread - click to read'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
             } else {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
-                $data[0] .= html_print_image('images/email.png', true, ['border' => 0, 'title' => __('Message unread - click to read')]);
+                $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Message unread - click to read'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
             }
         }
@@ -247,10 +254,10 @@ if (empty($messages)) {
         $table->cellclass[][4] = 'action_buttons';
         if ($show_sent) {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         } else {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&delete_message=1&id='.$message_id.'"
-                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         }
 
         array_push($table->data, $data);
@@ -266,7 +273,7 @@ if (!empty($messages)) {
 
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-        echo "<div style='float: right;'>";
+        echo "<div class='float-right'>";
             html_print_submit_button(
                 __('Delete'),
                 'delete_btn',
@@ -277,9 +284,9 @@ if (!empty($messages)) {
     echo '</form>';
 }
 
-echo "<div style='float: right;'>";
-    echo '<form method="post" style="float:right;" action="index.php?sec=message_list&sec2=operation/messages/message_edit">';
-        html_print_submit_button(__('Create message'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+echo "<div class='float-right'>";
+    echo '<form method="post" class="float-right" action="index.php?sec=message_list&sec2=operation/messages/message_edit">';
+        html_print_submit_button(__('Create message'), 'create', false, 'class="sub next mrgn_right_5px"');
     echo '</form>';
 echo '</div>';
 ?>

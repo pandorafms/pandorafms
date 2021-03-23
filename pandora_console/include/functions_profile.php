@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -279,7 +279,7 @@ function profile_print_profile_table($id)
         $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
         $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
         $data['actions'] .= html_print_input_hidden('id_user', $id, true);
-        $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, '', true);
+        $data['actions'] .= html_print_input_image('del', 'images/cross.png', 1, ['class' => 'invert_filter'], true);
         $data['actions'] .= '</form>';
 
         array_push($table->data, $data);

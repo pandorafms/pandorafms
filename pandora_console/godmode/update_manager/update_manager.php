@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,19 +32,19 @@ $tab = get_parameter('tab', 'online');
 
 $buttons['setup'] = [
     'active' => ($tab == 'setup') ? true : false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options')]).'</a>',
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
 ];
 
 if (enterprise_installed()) {
     $buttons['offline'] = [
         'active' => ($tab == 'offline') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager')]).'</a>',
+        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 
 $buttons['online'] = [
     'active' => ($tab == 'online') ? true : false,
-    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager')]).'</a>',
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">'.html_print_image('images/op_gis.png', true, ['title' => __('Online update manager'), 'class' => 'invert_filter']).'</a>',
 ];
 
 

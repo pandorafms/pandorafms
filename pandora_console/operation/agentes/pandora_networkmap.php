@@ -5,7 +5,7 @@
 // |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
 //
 // ============================================================================
-// Copyright (c) 2007-2010 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
 // This code is NOT free software. This code is NOT licenced under GPL2 licence
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
@@ -57,8 +57,8 @@ if (enterprise_installed()) {
 
         // ACL for the network map.
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -145,8 +145,8 @@ if (enterprise_installed()) {
 
 
         // ACL for the new network map
-        $networkmap_write_new = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -230,8 +230,8 @@ if ($new_networkmap || $save_networkmap) {
 
         // ACL for the network map
         // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -420,8 +420,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         return;
     }
 
-    $networkmap_write = check_acl($config['id_user'], $id_group_map_old, 'MW');
-    $networkmap_manage = check_acl($config['id_user'], $id_group_map_old, 'MM');
+    $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MW');
+    $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MM');
 
     if (!$networkmap_write && !$networkmap_manage) {
         db_pandora_audit(
@@ -440,8 +440,8 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 
         // ACL for the new network map
         $id_group_map = (int) get_parameter('id_group_map', 0);
-        $networkmap_write_new = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -590,10 +590,10 @@ switch ($tab) {
 
         if (!empty($ent_maps_to_migrate) || !empty($open_maps_to_migrate)) {
             ?>
-            <div id="migration_dialog" style="text-align: center;">
-                <p style="text-align: center;"><strong>Networkmaps are not migrated, wait while migration is processed...</strong></p>
+            <div id="migration_dialog" class="center">
+                <p class="center"><strong>Networkmaps are not migrated, wait while migration is processed...</strong></p>
                 <br>
-                <img style="vertical-align: middle;" src="images/spinner.gif"> 
+                <img class="vertical_middle" src="<?php echo 'images/spinner.gif'; ?>"> 
             </div>
             <script>
                 $("#migration_dialog").dialog({
@@ -727,9 +727,9 @@ switch ($tab) {
 
             foreach ($network_maps as $network_map) {
                 // ACL for the network map
-                $networkmap_read = check_acl($config['id_user'], $network_map['id_group_map'], 'MR');
-                $networkmap_write = check_acl($config['id_user'], $network_map['id_group_map'], 'MW');
-                $networkmap_manage = check_acl($config['id_user'], $network_map['id_group_map'], 'MM');
+                $networkmap_read = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MR');
+                $networkmap_write = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MW');
+                $networkmap_manage = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MM');
 
                 if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
                     db_pandora_audit(
@@ -785,15 +785,19 @@ switch ($tab) {
 
                 $data['groups'] = ui_print_group_icon($network_map['id_group_map'], true);
 
+                $data['copy'] = '';
+                $data['edit'] = '';
+                $data['delete'] = '';
+
                 if ($networkmap_write || $networkmap_manage) {
                     $table->cellclass[] = [
                         'copy'   => 'action_buttons',
                         'edit'   => 'action_buttons',
                         'delete' => 'action_buttons',
                     ];
-                    $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true).'</a>';
-                    $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true).'</a>';
-                    $data['delete'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'delete=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Delete').'" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+                    $data['copy'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&amp;'.'copy_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Copy').'">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
+                    $data['edit'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'tab=edit&'.'edit_networkmap=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Config').'">'.html_print_image('images/config.png', true, ['class' => 'invert_filter']).'</a>';
+                    $data['delete'] = '<a href="index.php?'.'sec=network&'.'sec2=operation/agentes/pandora_networkmap&'.'delete=1&'.'id_networkmap='.$network_map['id'].'" alt="'.__('Delete').'" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
                 }
 
                 $table->data[] = $data;
@@ -810,7 +814,7 @@ switch ($tab) {
             echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
             echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
             html_print_input_hidden('new_networkmap', 1);
-            html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next" style="float: right;"');
+            html_print_submit_button(__('Create network map'), 'crt', false, 'class="sub next float-right"');
             echo '</form>';
             echo '</div>';
 
@@ -818,7 +822,7 @@ switch ($tab) {
                 echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
                 echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
                 html_print_input_hidden('new_empty_networkmap', 1);
-                html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next" style="float: right; margin-right:20px;"');
+                html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next float-right mrgn_right_20px"');
                 echo '</form>';
                 echo '</div>';
             }

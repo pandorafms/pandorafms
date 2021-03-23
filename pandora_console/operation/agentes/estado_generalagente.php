@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,7 +92,7 @@ $alive_animation = agents_get_status_animation(
 $agent_name = ui_print_agent_name(
     $agent['id_agente'],
     true,
-    500,
+    'agent_medium',
     'font-size: medium;font-weight:bold',
     true
 );
@@ -111,9 +111,25 @@ if ($agent['disabled']) {
     }
 } else if ($agent['quiet']) {
     if ($in_planned_downtime) {
-        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']);
+        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        );
     } else {
-        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']).'</em>';
+        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        ).'</em>';
     }
 } else {
     $agent_name = $agent_name;
@@ -198,23 +214,40 @@ foreach ($addresses as $k => $add) {
 }
 
 if (!empty($address)) {
-    $table_agent_ip = '<p>'.html_print_image('images/world.png', true, ['title' => __('IP address')]);
-    $table_agent_ip .= '<span style="vertical-align:top; display: inline-block;">';
+    $table_agent_ip = '<p>'.html_print_image(
+        'images/world.png',
+        true,
+        [
+            'title' => __('IP address'),
+            'class' => 'invert_filter',
+        ]
+    );
+    $table_agent_ip .= '<span class="align-top inline">';
     $table_agent_ip .= empty($address) ? '<em>'.__('N/A').'</em>' : $address;
     $table_agent_ip .= '</span></p>';
 }
 
-$table_agent_version = '<p>'.html_print_image('images/version.png', true, ['title' => __('Agent Version')]);
-$table_agent_version .= '<span style="vertical-align:top; display: inline-block;">';
+$table_agent_version = '<p>'.html_print_image(
+    'images/version.png',
+    true,
+    [
+        'title' => __('Agent Version'),
+        'class' => 'invert_filter',
+    ]
+);
+$table_agent_version .= '<span class="align-top inline">';
 $table_agent_version .= empty($agent['agent_version']) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
 $table_agent_version .= '</span></p>';
 
 $table_agent_description = '<p>'.html_print_image(
-    'images/default_list.png',
+    'images/list.png',
     true,
-    ['title' => __('Description')]
+    [
+        'title' => __('Description'),
+        'class' => 'invert_filter',
+    ]
 );
-$table_agent_description .= '<span style="vertical-align:top; display: inline-block;">';
+$table_agent_description .= '<span class="align-top inline">';
 $table_agent_description .= empty($agent['comentarios']) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
 $table_agent_description .= '</span></p>';
 
@@ -233,7 +266,11 @@ $has_remote_conf = enterprise_hook(
 );
 
 if ($has_remote_conf) {
-    $remote_cfg = '<p>'.html_print_image('images/remote_configuration.png', true);
+    $remote_cfg = '<p>'.html_print_image(
+        'images/remote_configuration.png',
+        true,
+        ['class' => 'invert_filter']
+    );
     $remote_cfg .= __('Remote configuration enabled').'</p>';
 } else {
     $remote_cfg = '';
@@ -279,9 +316,25 @@ $table_contact->headstyle[1] = 'padding-top:6px; padding-bottom:6px;padding-righ
 $table_contact->head[0] = ' <span>'.__('Agent contact').'</span>';
 
 $buttons_refresh_agent_view = '<div class="buttons_agent_view">';
-$buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['title' => __('Refresh data'), 'alt' => '']).'</a><br>';
+$buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">'.html_print_image(
+    'images/refresh.png',
+    true,
+    [
+        'title' => __('Refresh data'),
+        'class' => 'invert_filter',
+        'alt'   => '',
+    ]
+).'</a><br>';
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    $buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">'.html_print_image('images/target.png', true, ['title' => __('Force remote checks'), 'alt' => '']).'</a>';
+    $buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/target.png',
+        true,
+        [
+            'title' => __('Force remote checks'),
+            'alt'   => '',
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 $buttons_refresh_agent_view .= '</div>';
@@ -396,7 +449,7 @@ $table_data->head[0] = html_print_image(
     true,
     $options
 );
-$table_data->head[0] .= ' <span style="vertical-align: middle; font-weight:bold; padding-left:20px">'.__('Agent info').'</span>';
+$table_data->head[0] .= ' <span class="vertical_middle bolder pdd_l_20px">'.__('Agent info').'</span>';
 $table_data->head_colspan[0] = 4;
 
 // Gis and url address.
@@ -439,7 +492,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="overflow-y: scroll; max-height:50px;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div class="overflow-y mx_height50px">'.implode('<br>', $addresses).'</div>';
     }
 }
 
@@ -648,9 +701,12 @@ if (!empty($network_interfaces)) {
                 $graph_link .= $params_encoded."','";
                 $graph_link .= $win_handle."', 800, 480)\">";
                 $graph_link .= html_print_image(
-                    'images/chart_curve.png',
+                    'images/chart.png',
                     true,
-                    ['title' => __('Interface traffic')]
+                    [
+                        'title' => __('Interface traffic'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>';
             } else {
                 $graph_link = '';
@@ -862,7 +918,7 @@ echo '<div id="agent_details_first_row">
 if ($table_access_rate) {
     echo '<div class="agent_access_rate_events">'.$table_access_rate.$table_events.'</div>';
 } else {
-    echo '<div style="width: 100%">'.$table_events.'</div>';
+    echo '<div class="w100p">'.$table_events.'</div>';
 }
 
 echo $agent_incidents;

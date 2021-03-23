@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for copy modules in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -294,22 +309,17 @@ echo '<legend><span>'.__('To agent(s)').'</span></legend>';
 html_print_table($table);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+attachActionButton('do_operation', 'copy', $table->width);
 
-html_print_input_hidden('do_operation', 1);
-html_print_submit_button(__('Copy'), 'go', false, 'class="sub wand"');
-echo '</div>';
 echo '</form>';
 
-
-
 echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
-
+// Load JS files.
+ui_require_javascript_file('pandora_modules');
 ui_require_jquery_file('form');
 ui_require_jquery_file('pandora.controls');
 ?>
 
-<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var module_alerts;
@@ -514,7 +524,7 @@ $(document).ready (function () {
     });
     
     $("#manage_config_form").submit (function () {
-        var get_parameters_count = window.location.href.slice(
+        /* var get_parameters_count = window.location.href.slice(
             window.location.href.indexOf('?') + 1).split('&').length;
         var post_parameters_count = $("#manage_config_form").serializeArray().length;
         
@@ -522,9 +532,13 @@ $(document).ready (function () {
             get_parameters_count + post_parameters_count;
         
         if (count_parameters > limit_parameters_massive) {
-            alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
+            alert("
+            <?php
+            // echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.');
+            ?>
+            ");
             return false;
-        }
+        } */
         
         
         

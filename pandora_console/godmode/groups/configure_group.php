@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,7 +66,7 @@ if ($id_group) {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';
@@ -210,11 +210,11 @@ $table->data[$i][1] = html_print_input_text('description', $description, '', 60,
 $i++;
 
 $table->data[$i][0] = __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true);
-$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true);
 $i++;
 
 $table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true);
-$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
 $i++;
 
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');

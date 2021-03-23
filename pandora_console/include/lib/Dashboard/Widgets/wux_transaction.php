@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -365,15 +365,15 @@ class WuxWidget extends Widget
 
                 $output .= '<div>';
                 $output .= '<div>';
-                $output .= "<p style='font-size:20px;'>";
+                $output .= "<p class='font_20px'>";
                 if ($have_errors === true) {
                     $output .= __('Global status').': ';
-                    $output .= "<span style='color: #e63c52; font-size:20px;'>";
+                    $output .= "<span class='color: #e63c52; font_20px'>";
                     $output .= __('Failed');
                     $output .= '</span>';
                 } else {
                     $output .= __('Global status').': ';
-                    $output .= "<span style='color: #82b92e; font-size:20px;'>";
+                    $output .= "<span class='color_82b92e font_20px'>";
                     $output .= __('Ok');
                     $output .= '</span>';
                 }

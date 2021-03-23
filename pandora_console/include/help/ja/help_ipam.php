@@ -31,23 +31,23 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 </tr>
 <tr>
 <td>エージェント未割当<br><br>イベント無効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>エージェント割当済<br><br>イベント無効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>エージェント未割当<br><br>イベント有効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>エージェント割当済<br><br>イベント有効</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/red_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>未管理</th>
@@ -58,9 +58,9 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 <th>非応答ホスト<</th>
 </tr>
 <tr>
-<td style="width: 100px;">IP アドレスが管理されていない場合、応答があるかどうかだけを見ることができます。</td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/extensions/ipam/images/not_host.png"></td>
+<td class="w100px">IP アドレスが管理されていない場合、応答があるかどうかだけを見ることができます。</td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>未割当</th>
@@ -70,7 +70,7 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 </tr>
 </table>
 <br><br>
-それぞれの IP アドレスは、右下にそれを編集する(管理者権限)リンクがあります。左下には、検出した OS を表示する小さいアイコンがあります。無効化アドレスでは OS の代わりに、次のようなアイコンが表示されます。<br><br><img src="../images/delete.png" style="width:18px;"><br><br>
+それぞれの IP アドレスは、右下にそれを編集する(管理者権限)リンクがあります。左下には、検出した OS を表示する小さいアイコンがあります。無効化アドレスでは OS の代わりに、次のようなアイコンが表示されます。<br><br><img src="../images/delete.png" class="w18px"><br><br>
 
 メインのアイコンをクリックすると、関連づけられたエージェントおよび OS、IP および他の情報の設定、作成日時、最終編集日時、サーバで最後にチェックされ時間を含む、全ての IP 情報を表示するウインドウが開きます。この画面では、手動で IP アドレスが ping に応答するかどうか、リアルタイムのチェックをすることができます。この ping は、自動検出サーバで実行される通常の処理とは違い、コンソールで実行されることに注意してください。
 
@@ -84,12 +84,12 @@ IP 管理は、<?php echo get_product_name(); ?> エージェントで設定し�
 <th colspan=2>手動と自動の切り替え</th>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/manual.png"></td>
+<td class="center w25px"><img src="../images/manual.png"></td>
 <td><b>手動モード</b>: この表示の場合、フィールドは自動検出システムで更新されません。手動で編集することができます。クリックすることにより、自動モードに切り替えることができます。
 </td>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/automatic.png"></td>
+<td class="center w25px"><img src="../images/automatic.png"></td>
 <td><b>自動モード</b>:このアイコンの場合、フィールドは自動検出スクリプトで更新されます。クリックすることにより、手動モードに切り替えることができます。</td>
 </tr>
 </table

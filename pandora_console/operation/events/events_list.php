@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -377,7 +377,7 @@ if (check_acl($config['id_user'], 0, 'EW')
     || check_acl($config['id_user'], 0, 'EM')
 ) {
     // Save filter div for dialog.
-    echo '<div id="save_filter_layer" style="display: none">';
+    echo '<div id="save_filter_layer" class="invisible">';
     $table = new StdClass;
     $table->id = 'save_filter_form';
     $table->width = '100%';
@@ -481,7 +481,7 @@ if (check_acl($config['id_user'], 0, 'EW')
             __('Save filter'),
             'save_filter',
             false,
-            'class="sub upd" style="float:right;"',
+            'class="sub upd float-right"',
             true
         );
     echo '</div>';
@@ -489,7 +489,7 @@ if (check_acl($config['id_user'], 0, 'EW')
 }
 
 // Load filter div for dialog.
-echo '<div id="load_filter_layer" style="display: none">';
+echo '<div id="load_filter_layer" class="invisible">';
 $table = new StdClass;
 $table->id = 'load_filter_form';
 $table->width = '100%';
@@ -599,6 +599,7 @@ $data[1] = html_print_image(
         'id'    => 'button-add_with',
         'style' => 'cursor: pointer;',
         'title' => __('Add'),
+        'class' => 'invert_filter',
     ]
 );
 
@@ -615,6 +616,7 @@ $data[1] .= '<br><br>'.html_print_image(
         'id'    => 'button-remove_with',
         'style' => 'cursor: pointer;',
         'title' => __('Remove'),
+        'class' => 'invert_filter',
     ]
 );
 
@@ -875,11 +877,11 @@ $table_advanced->rowclass[] = '';
 
 $data = [];
 if (defined('METACONSOLE')) {
-    $data[0] = '<fieldset class="" style="padding:0px; width: 510px;"><legend style="padding:0px;">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
-    $data2[1] = '<fieldset class="" style="padding:0px; width: 310px;"><legend style="padding:0px;">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
+    $data[0] = '<fieldset class="pdd_0px w510px"><legend class="pdd_0px">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
+    $data2[1] = '<fieldset class="pdd_0px w310px"><legend class="pdd_0px">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 } else {
-    $data[0] = '<fieldset class="databox" style="padding:0px; width: 30%; "><legend>'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
-    $data[1] = '<fieldset class="databox" style="padding:0px; width: 30%;"><legend>'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
+    $data[0] = '<fieldset class="databox pdd_0px w30p "><legend>'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
+    $data[1] = '<fieldset class="databox pdd_0px w30p"><legend>'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 }
 
 $table_advanced->data[] = $data;
@@ -1031,7 +1033,7 @@ $table->rowclass[] = '';
 
 // The buttons.
 $data = [];
-$data[0] = '<div style="width:100%; text-align:left">';
+$data[0] = '<div class="w100p left">';
 if ($event_w || $event_m) {
     $data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">'.html_print_image('images/disk.png', true, ['border' => '0', 'title' => __('Save filter'), 'alt' => __('Save filter')]).'</a> &nbsp;';
 }
@@ -1054,12 +1056,12 @@ $events_filter .= html_print_table($table, true);
 
 unset($table);
 
-$botom_update = "<div style='width:100%;float:right;'>";
+$botom_update = "<div class='w100p float-right'>";
 $botom_update .= html_print_submit_button(
     __('Update'),
     'update',
     false,
-    'class="sub upd"  style="float:right;"',
+    'class="sub upd float-right"',
     true
 );
 $botom_update .= '</div>';
@@ -1096,7 +1098,7 @@ if (is_metaconsole()) {
 
 
 // Error div for ajax messages.
-echo "<div id='show_filter_error' style='display: none;'>";
+echo "<div id='show_filter_error' class='invisible'>";
 ui_print_error_message(
     __('Error creating filter.'),
     'data-type_info_box="error_create_filter"'

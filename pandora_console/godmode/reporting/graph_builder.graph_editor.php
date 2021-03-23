@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,11 +193,13 @@ if ($editGraph) {
 
 
 $count_module_array = count($module_array);
-if ($count_module_array > 10) {
+if ($count_module_array > $config['items_combined_charts']) {
     ui_print_warning_message(
         __(
-            'The maximum number of items in a chart is 10. You have %s elements, only first 10 will be displayed.',
-            $count_module_array
+            'The maximum number of items in a chart is %d. You have %d elements, only first %d will be displayed.',
+            $config['items_combined_charts'],
+            $count_module_array,
+            $config['items_combined_charts']
         )
     );
 }
@@ -233,7 +235,7 @@ if ($count_module_array > 0) {
         echo '<table><tr>';
 
         echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_label=1&id=".$id_graph.'&graph='.$idgs_array[$a]."'>";
-        html_print_input_text('label', $label_array[$a], '', 20, 30, false, false);
+        html_print_input_text('label', $label_array[$a], '', 30, 80, false, false);
         html_print_submit_button('Ok', 'btn', false, '', false);
         echo '</form>';
 
@@ -251,7 +253,7 @@ if ($count_module_array > 0) {
         echo '</tr></table>';
         echo '</td>';
         echo "<td class='$tdcolor' align=''>";
-        echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=".$id_graph.'&delete='.$idgs_array[$a]."'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+        echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=".$id_graph.'&delete='.$idgs_array[$a]."'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
 
         echo '</td>';
 
@@ -324,7 +326,7 @@ echo '<br>';
 
 
 // Configuration form.
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=".$id_graph."'>";
 
 echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters'>";
@@ -343,11 +345,14 @@ echo "<td colspan='3'>".html_print_select_groups(
     true
 ).'</td>';
 echo '</tr><tr>';
-echo "<td style='vertical-align: top;'>".__('Agents').ui_print_help_tip(__('If you select several agents, only the common modules will be displayed'), true).'</td>';
+echo "<td class='top'>".__('Agents').ui_print_help_tip(
+    __('If you select several agents, only the common modules will be displayed'),
+    true
+).'</td>';
 echo '<td></td>';
-echo "<td style='vertical-align: top;'>".__('Modules').'</td>';
+echo "<td class='top'>".__('Modules').'</td>';
 echo '</tr><tr>';
-echo '<td style="width: 50%;">'.html_print_select(
+echo '<td class="w50p">'.html_print_select(
     agents_get_group_agents(),
     'id_agents[]',
     0,
@@ -361,8 +366,8 @@ echo '<td style="width: 50%;">'.html_print_select(
     false,
     ''
 ).'</td>';
-echo "<td style='width: 3em;vertical-align: center; text-align: center;'>".html_print_image('images/darrowright.png', true).'</td>';
-echo '<td style="width: 50%;">'.html_print_select(
+echo '<td class="select_module_graph"></td>';
+echo '<td class="w50p">'.html_print_select(
     [],
     'module[]',
     0,
@@ -386,7 +391,7 @@ echo '</td>';
 echo '</tr><tr>';
 echo "<td colspan='3' align='right'></td>";
 echo '</tr></table>';
-echo "<div style='width:100%'><input style='float:right;' id='submit-add' type=submit name='store' class='sub add' value='".__('Add')."'></div></form>";
+echo "<div class='w100p'><input id='submit-add' type=submit name='store' class='sub add right' value='".__('Add')."'></div></form>";
 
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');

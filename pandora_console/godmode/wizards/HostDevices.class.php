@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -793,7 +793,7 @@ class HostDevices extends Wizard
                                 'return'     => true,
                             ],
                         ],
-                        '1' => '<div style="height: 50%; margin-bottom: 35px;">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
+                        '1' => '<div class="height_50p mrgn_btn_35px">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
                         '2' => [
                             'label'     => '<b>'.__('Interval').':</b>'.ui_print_help_tip(
                                 __('Manual interval means that it will be executed only On-demand'),

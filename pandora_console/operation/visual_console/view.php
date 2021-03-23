@@ -484,6 +484,8 @@ ui_require_css_file('form');
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
+    var controls = document.getElementById('vc-controls');
+    autoHideElement(controls, 1000);
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 

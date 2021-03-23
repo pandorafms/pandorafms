@@ -2122,7 +2122,7 @@ sub snmp_get_command {
       $command .= " -x$self->{'snmp_privacy_method'} -X \'$self->{'snmp_privacy_pass'}\' ";
     }
   } else {
-    $command .= " -c$community$vlan ";
+    $command .= " -c\'$community\'$vlan ";
   }
 
   return "$command $device $oid 2>$DEVNULL";

@@ -235,80 +235,117 @@ if ($pure === false) {
         echo '<div id ="edit-vc">';
         echo '<div id ="edit-controls" class="visual-console-edit-controls" style="visibility:hidden">';
         echo '<div>';
+        $class_camera = 'camera_min link-create-item';
+        $class_percentile = 'percentile_item_min link-create-item';
+        $class_module_graph = 'graph_min link-create-item';
+        $class_donut = 'donut_graph_min link-create-item';
+        $class_bars = 'bars_graph_min link-create-item';
+        $class_value = 'binary_min link-create-item';
+        $class_sla = 'auto_sla_graph_min link-create-item';
+        $class_label = 'label_min link-create-item';
+        $class_icon = 'icon_min link-create-item';
+        $class_clock = 'clock_min link-create-item';
+        $class_group = 'group_item_min link-create-item';
+        $class_box = 'box_item link-create-item';
+        $class_line = 'line_item link-create-item';
+        $class_cloud = 'color_cloud_min link-create-item';
+        $class_nlink = 'network_link_min link-create-item';
+        $class_delete = 'delete_item delete_min';
+        $class_copy = 'copy_item';
+        if ($config['style'] === 'pandora_black') {
+            $class_camera = 'camera_min_white link-create-item';
+            $class_percentile = 'percentile_item_min_white link-create-item';
+            $class_module_graph = 'graph_min_white link-create-item';
+            $class_donut = 'donut_graph_min_white link-create-item';
+            $class_bars = 'bars_graph_min_white link-create-item';
+            $class_value = 'binary_min_white link-create-item';
+            $class_sla = 'auto_sla_graph_min_white link-create-item';
+            $class_label = 'label_min_white link-create-item';
+            $class_icon = 'icon_min_white link-create-item';
+            $class_clock = 'clock_min_white link-create-item';
+            $class_group = 'group_item_min_white link-create-item';
+            $class_box = 'box_item_white link-create-item';
+            $class_line = 'line_item_white link-create-item';
+            $class_cloud = 'color_cloud_min_white link-create-item';
+            $class_nlink = 'network_link_min_white link-create-item';
+            $class_delete = 'delete_item_white delete_min_white';
+            $class_copy = 'copy_item_white';
+        }
+
         visual_map_print_button_editor_refactor(
             'STATIC_GRAPH',
             __('Static Image'),
-            'camera_min link-create-item'
+            $class_camera
         );
         visual_map_print_button_editor_refactor(
             'PERCENTILE_BAR',
             __('Percentile Item'),
-            'percentile_item_min link-create-item'
+            $class_percentile
         );
         visual_map_print_button_editor_refactor(
             'MODULE_GRAPH',
             __('Module Graph'),
-            'graph_min link-create-item'
+            $class_module_graph
         );
         visual_map_print_button_editor_refactor(
             'DONUT_GRAPH',
             __('Serialized pie graph'),
-            'donut_graph_min link-create-item'
+            $class_donut
         );
         visual_map_print_button_editor_refactor(
             'BARS_GRAPH',
             __('Bars Graph'),
-            'bars_graph_min link-create-item'
+            $class_bars
         );
         visual_map_print_button_editor_refactor(
             'AUTO_SLA_GRAPH',
             __('Event history graph'),
-            'auto_sla_graph_min link-create-item'
+            $class_sla
         );
         visual_map_print_button_editor_refactor(
             'SIMPLE_VALUE',
             __('Simple Value'),
-            'binary_min link-create-item'
+            $class_value
         );
         visual_map_print_button_editor_refactor(
             'LABEL',
             __('Label'),
-            'label_min link-create-item'
+            $class_label
         );
         visual_map_print_button_editor_refactor(
             'ICON',
             __('Icon'),
-            'icon_min link-create-item'
+            $class_icon
         );
         visual_map_print_button_editor_refactor(
             'CLOCK',
             __('Clock'),
-            'clock_min link-create-item'
+            $class_clock
         );
         visual_map_print_button_editor_refactor(
             'GROUP_ITEM',
             __('Group'),
-            'group_item_min link-create-item'
+            $class_group
         );
         visual_map_print_button_editor_refactor(
             'BOX_ITEM',
             __('Box'),
-            'box_item link-create-item'
+            $class_box
         );
         visual_map_print_button_editor_refactor(
             'LINE_ITEM',
             __('Line'),
-            'line_item link-create-item'
+            $class_line
         );
         visual_map_print_button_editor_refactor(
             'COLOR_CLOUD',
             __('Color cloud'),
-            'color_cloud_min link-create-item'
+            $class_cloud
         );
         visual_map_print_button_editor_refactor(
             'NETWORK_LINK',
             __('Network link'),
-            'network_link_min link-create-item'
+            $class_nlink
         );
         enterprise_include_once('include/functions_visual_map_editor.php');
         enterprise_hook(
@@ -319,13 +356,13 @@ if ($pure === false) {
             visual_map_print_button_editor_refactor(
                 'button_delete',
                 __('Delete Item'),
-                'delete_item delete_min',
+                $class_delete,
                 true
             );
             visual_map_print_button_editor_refactor(
                 'button_copy',
                 __('Copy Item'),
-                'copy_item',
+                $class_copy,
                 true
             );
         echo '</div>';

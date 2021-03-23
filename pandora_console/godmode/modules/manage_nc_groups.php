@@ -279,7 +279,7 @@ if (isset($data)) {
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
     if (is_management_allowed() === true) {
-        echo "<div class='pdd_l_10px float-right'>";
+        echo "<div class='pdd_l_10px float-right mrgn_btn_15px'>";
         html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
         echo '</div>';
     }

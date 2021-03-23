@@ -565,7 +565,7 @@ $table_ichanges = '<div class="autorefresh_select">
                             <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
                             <div>'.$select_out.'</div>
                         </div>
-                        <div class="autorefresh_select_arrows">
+                        <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
     'images/darrowright_green.png',
     true,

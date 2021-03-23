@@ -52,6 +52,10 @@ if ((int) $develop_bypass === 1) {
     }
 
     ini_set('display_errors', 1);
+} else {
+    // Leave user decide error_level, but limit errors to be displayed only in
+    // logs.
+    ini_set('display_errors', 0);
 }
 
 // Check if mysqli is available

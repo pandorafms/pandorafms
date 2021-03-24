@@ -102,7 +102,6 @@ class ModuleType extends Entity
     public static function validate(int $id_module_type, int $id_modulo)
     {
         switch ($id_modulo) {
-            default:
             case MODULE_PLUGIN:
             case MODULE_PREDICTION:
             case MODULE_DATA:
@@ -114,6 +113,7 @@ class ModuleType extends Entity
                     return false;
                 }
             break;
+
             case MODULE_NETWORK:
             case MODULE_SNMP:
                 if ($id_module_type < 6 || $id_module_type > 18) {
@@ -132,6 +132,9 @@ class ModuleType extends Entity
                     return false;
                 }
             break;
+
+            default:
+            return false;
         }
 
         return true;

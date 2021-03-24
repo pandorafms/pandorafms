@@ -4,6 +4,11 @@
  * ---------------------------------------------------------------------
  */
 
+div.external-visual-console-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
 div#vc-controls {
   position: fixed;
   top: 30px;
@@ -412,6 +417,16 @@ div#cont {
   max-height: 320px;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+div.label strong {
+  color: inherit;
+  font-family: inherit;
+}
+
+div.label strong span {
+  color: inherit;
+  font-family: inherit;
 }
 
 /*.termframe{

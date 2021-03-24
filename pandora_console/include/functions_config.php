@@ -3229,7 +3229,7 @@ function get_um_url()
  */
 function config_return_in_bytes($val)
 {
-    $val = trim($val);
+    $val = (int) trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
     switch ($last) {
         // The 'G' modifier is available since PHP 5.1.0.

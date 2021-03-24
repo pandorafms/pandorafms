@@ -690,9 +690,37 @@ final class DBMaintainer
         if (file_exists($path) === true) {
             if ($transactional === true) {
                 global $config;
+
+                // Adapt to PandoraFMS classic way to do things...
+                $backup_dbhost = $config['dbhost'];
+                $backup_dbuser = $config['dbuser'];
+                $backup_dbpass = $config['dbpass'];
+                $backup_dbname = $config['dbname'];
+                $backup_dbport = $config['dbport'];
+                $backup_mysqli = $config['mysqli'];
+
+                $config['dbhost'] = $this->host;
+                $config['dbuser'] = $this->user;
+                $config['dbpass'] = $this->pass;
+                $config['dbname'] = $this->name;
+                $config['dbport'] = $this->port;
+
+                // Not using mysqli in > php 7 is a completely non-sense.
+                $config['mysqli'] = true;
+
                 // MR are loaded in transactions.
                 include_once $config['homedir'].'/include/db/mysql.php';
-                return db_run_sql_file($path);
+                $return = db_run_sql_file($path);
+
+                // Revert global variable.
+                $config['dbhost'] = $backup_dbhost;
+                $config['dbuser'] = $backup_dbuser;
+                $config['dbpass'] = $backup_dbpass;
+                $config['dbname'] = $backup_dbname;
+                $config['dbport'] = $backup_dbport;
+                $config['mysqli'] = $backup_mysqli;
+
+                return (bool) $return;
             } else {
                 $file_content = file($path);
                 $query = '';

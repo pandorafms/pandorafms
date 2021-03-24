@@ -587,6 +587,33 @@ class TreeViewWidget extends Widget
             true
         );
 
+        switch ($tab) {
+            case 'policies':
+                $foundMessage = __('Policies found');
+            break;
+
+            case 'os':
+                $foundMessage = __('Operating systems found');
+            break;
+
+            case 'tag':
+                $foundMessage = __('Tags found');
+            break;
+
+            case 'module_group':
+                $foundMessage = __('Module Groups found');
+            break;
+
+            case 'module':
+                $foundMessage = __('Modules found');
+            break;
+
+            case 'group':
+            default:
+                $foundMessage = __('Groups found');
+            break;
+        }
+
         $settings = [
             'page'         => 'include/ajax/tree.ajax',
             'id_user'      => $config['id_user'],
@@ -607,7 +634,7 @@ class TreeViewWidget extends Widget
             'userLanguage' => get_user_language(),
             'translate'    => [
                 'emptyMessage'  => __('No data found'),
-                'foundMessage'  => 'not',
+                'foundMessage'  => $foundMessage,
                 'total'         => [
                     'agents'  => __('Total agents'),
                     'modules' => __('Total modules'),

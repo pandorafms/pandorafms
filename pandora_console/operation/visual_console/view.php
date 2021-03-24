@@ -376,7 +376,9 @@ if ($pure === false) {
     }
 }
 
+echo '<div class="external-visual-console-container">';
 echo '<div id="visual-console-container"></div>';
+echo '</div>';
 
 if ($pure === true) {
     // Floating menu - Start.
@@ -501,7 +503,7 @@ ui_require_css_file('form');
         if (div !== null) {
             var parent = div.parentElement;
             if (parent !== null) {
-            parent.removeChild(div);
+                parent.removeChild(div);
             }
         }
 

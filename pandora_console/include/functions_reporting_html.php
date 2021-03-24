@@ -403,10 +403,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_enterprise_html_SLA_monthly($table, $item, $mini);
             break;
 
-            case 'nt_top_n':
-                reporting_html_nt_top_n($table, $item, $mini);
-            break;
-
             case 'SLA_weekly':
                 reporting_enterprise_html_SLA_weekly($table, $item, $mini);
             break;
@@ -5588,65 +5584,6 @@ function reporting_get_event_histogram_meta($width)
     }
 
     return $event_graph;
-}
-
-
-/**
- * Print network traffic data into top n tables
- * (one for received data and another for sent)
- *
- * @param stdClass Table class to paint the report
- * @param array Associative array with info about
- * @param bool Unused
- */
-function reporting_html_nt_top_n($table, $item, $mini)
-{
-    // Prepare the table
-    $table_top = new stdClass();
-    $table_top->cellpadding = 0;
-    $table_top->cellspacing = 0;
-    $table_top->width = '100%';
-    $table_top->class = 'databox data';
-    $table_top->cellpadding = 0;
-    $table_top->cellspacing = 0;
-    $table_top->width = '100%';
-    $table_top->class = 'databox data';
-    $table_top->head['host'] = __('Agent');
-    $table_top->head['bytes'] = __('Kilobytes');
-    $table_top->head['pkts'] = __('Packages');
-
-    // Build the table for sent packages
-    if (empty($item['data']['send'])) {
-        $table->data['send_title'] = '<h3>'.__('No network traffic sent data').'</h3>';
-    } else {
-        foreach ($item['data']['send'] as $s_item) {
-            $table_top->data[] = [
-                'host'  => $s_item['host'],
-                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
-                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
-            ];
-        }
-
-        $table->data['send_title'] = '<h3>'.__('Network traffic sent').'</h3>';
-        $table->data['send'] = html_print_table($table_top, true);
-    }
-
-    // Reset the table and build the table for received packages
-    $table_top->data = [];
-    if (empty($item['data']['send'])) {
-        $table->data['recv_title'] = '<h3>'.__('No network traffic received data').'</h3>';
-    } else {
-        foreach ($item['data']['recv'] as $s_item) {
-            $table_top->data[] = [
-                'host'  => $s_item['host'],
-                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
-                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
-            ];
-        }
-
-        $table->data['recv_title'] = '<h3>'.__('Network traffic received').'</h3>';
-        $table->data['recv'] = html_print_table($table_top, true);
-    }
 }
 
 

@@ -231,7 +231,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
     const handleCreate = () => {
       if (isValid(state)) onCreate(state);
       state = initialState;
-      console.log(state);
       rangesInputFromValue.value = `${state.fromValue || ""}`;
       rangesInputToValue.value = `${state.toValue || ""}`;
       rangesInputColor.value = `${state.color}`;

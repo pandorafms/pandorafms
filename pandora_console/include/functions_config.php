@@ -225,10 +225,6 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
-                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
-                        $error_update[] = __('Enable Network Traffic Analyzer');
-                    }
-
                     $timezone = (string) get_parameter('timezone');
                     if ($timezone != '') {
                         if (!config_update_value('timezone', $timezone)) {
@@ -2369,10 +2365,6 @@ function config_process_config()
         config_update_value('activate_netflow', 0);
     }
 
-    if (!isset($config['activate_nta'])) {
-        config_update_value('activate_nta', 0);
-    }
-
     if (!isset($config['netflow_path'])) {
         if ($is_windows) {
             $default = 'C:\PandoraFMS\Pandora_Server\data_in\netflow';
@@ -3229,7 +3221,7 @@ function get_um_url()
  */
 function config_return_in_bytes($val)
 {
-    $val = trim($val);
+    $val = (int) trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
     switch ($last) {
         // The 'G' modifier is available since PHP 5.1.0.

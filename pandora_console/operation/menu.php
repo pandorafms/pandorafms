@@ -67,7 +67,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
 
     enterprise_hook('inventory_menu');
 
-    if ($config['activate_netflow'] || $config['activate_nta']) {
+    if ($config['activate_netflow']) {
         $sub['network_traffic'] = [
             'text'    => __('Network'),
             'id'      => 'Network',
@@ -79,45 +79,29 @@ if (check_acl($config['id_user'], 0, 'AR')) {
         // Initialize the submenu.
         $netflow_sub = [];
 
-        if ($config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/netflow/netflow_explorer' => [
-                        'text' => __('Netflow explorer'),
-                        'id'   => 'Netflow explorer',
-                    ],
-                    'operation/netflow/nf_live_view'     => [
-                        'text' => __('Netflow Live View'),
-                        'id'   => 'Netflow Live View',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/netflow/netflow_explorer' => [
+                    'text' => __('Netflow explorer'),
+                    'id'   => 'Netflow explorer',
+                ],
+                'operation/netflow/nf_live_view'     => [
+                    'text' => __('Netflow Live View'),
+                    'id'   => 'Netflow Live View',
+                ],
+            ]
+        );
 
-        if ($config['activate_nta']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_explorer' => [
-                        'text' => __('Network explorer'),
-                        'id'   => 'Network explorer',
-                    ],
-                ]
-            );
-        }
-
-        if ($config['activate_nta'] || $config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_usage_map' => [
-                        'text' => __('Network usage map'),
-                        'id'   => 'Network usage map',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/network/network_usage_map' => [
+                    'text' => __('Network usage map'),
+                    'id'   => 'Network usage map',
+                ],
+            ]
+        );
 
         $sub['network_traffic']['sub2'] = $netflow_sub;
     }

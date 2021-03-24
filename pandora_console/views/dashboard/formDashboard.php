@@ -33,7 +33,7 @@ if (empty($arrayDashboard) === true) {
     $arrayDashboard['name'] = 'Default';
     $arrayDashboard['id_user'] = '';
     $private = 0;
-    $arrayDashboard['id_group'] = 0;
+    $arrayDashboard['id_group'] = null;
     $arrayDashboard['active'] = 0;
     $arrayDashboard['cells_slideshow'] = 0;
 } else {
@@ -112,6 +112,7 @@ $inputs = [
                     'returnAllGroup' => $return_all_group,
                     'selected'       => $arrayDashboard['id_group'],
                     'return'         => true,
+                    'required'       => true,
                 ],
             ],
         ],

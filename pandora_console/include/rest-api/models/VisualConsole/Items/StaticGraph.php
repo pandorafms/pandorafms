@@ -133,7 +133,8 @@ final class StaticGraph extends Item
     /**
      * Fetch a vc item data structure from the database using a filter.
      *
-     * @param array $filter Filter of the Visual Console Item.
+     * @param array      $filter Filter of the Visual Console Item.
+     * @param float|null $ratio  Ratio.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \InvalidArgumentException When an agent Id cannot be found.
@@ -171,44 +172,57 @@ final class StaticGraph extends Item
             throw new \InvalidArgumentException('missing module Id');
         }
 
-        // Get the img src.
-        // There's no need to connect to the metaconsole before searching for
-        // the image status cause the function itself does that for us.
-        $imagePath = \visual_map_get_image_status_element($data);
-        $data['statusImageSrc'] = \ui_get_full_url(
-            $imagePath,
-            false,
-            false,
-            false
-        );
+        if ((bool) $data['agentDisabled'] === false
+            && (bool) $data['moduleDisabled'] === false
+        ) {
+            // Get the img src.
+            // There's no need to connect to the metaconsole before searching
+            // for the image status cause the function itself does that for us.
+            $imagePath = \visual_map_get_image_status_element($data);
+            $data['statusImageSrc'] = \ui_get_full_url(
+                $imagePath,
+                false,
+                false,
+                false
+            );
 
-        $status = \visual_map_get_status_element($data);
+            $status = \visual_map_get_status_element($data);
 
-        // Magic numbers from the hell.
-        switch ($status) {
-            case 1:
-            case 4:
-                // Critical or critical alert (BAD).
-                $data['colorStatus'] = COL_CRITICAL;
-            break;
+            // Magic numbers from the hell.
+            switch ($status) {
+                case 1:
+                case 4:
+                    // Critical or critical alert (BAD).
+                    $data['colorStatus'] = COL_CRITICAL;
+                break;
 
-            case 0:
-                // Normal (OK).
-                $data['colorStatus'] = COL_NORMAL;
-            break;
+                case 0:
+                    // Normal (OK).
+                    $data['colorStatus'] = COL_NORMAL;
+                break;
 
-            case 2:
-            case 10:
-                // Warning or warning alert.
-                $data['colorStatus'] = COL_WARNING;
-            break;
+                case 2:
+                case 10:
+                    // Warning or warning alert.
+                    $data['colorStatus'] = COL_WARNING;
+                break;
 
-            case 3:
-                // Unknown.
-            default:
-                // Default is Grey (Other).
-                $data['colorStatus'] = COL_UNKNOWN;
-            break;
+                case 3:
+                    // Unknown.
+                default:
+                    // Default is Grey (Other).
+                    $data['colorStatus'] = COL_UNKNOWN;
+                break;
+            }
+        } else {
+            $data['colorStatus'] = COL_UNKNOWN;
+            $imagePath = 'images/console/icons/'.$data['image'].'.png';
+            $data['statusImageSrc'] = \ui_get_full_url(
+                $imagePath,
+                false,
+                false,
+                false
+            );
         }
 
         // If the width or the height are equal to 0 we will extract them
@@ -359,7 +373,6 @@ final class StaticGraph extends Item
                 'label'     => __('Module'),
                 'arguments' => [
                     'type'           => 'autocomplete_module',
-                    'fields'         => $fields,
                     'name'           => 'moduleId',
                     'selected'       => $values['moduleId'],
                     'return'         => true,

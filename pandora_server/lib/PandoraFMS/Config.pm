@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.752";
-my $pandora_build = "210318";
+my $pandora_build = "210324";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -510,10 +510,6 @@ sub pandora_load_config {
 	$pa_config->{"warmup_event_on"} = 0; # 6.1
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
-
-	# Logstash
-	$pa_config->{"logstash_host"} = '';
-	$pa_config->{"logstash_port"} = 0;
 
 	$pa_config->{"wuxserver"} = 1; # 7.0
 	$pa_config->{"wux_host"} = undef; # 7.0
@@ -1189,13 +1185,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mssql_driver\s+(.*)/i) {
 			$pa_config->{'mssql_driver'}= clean_blank($1);
-		}
-
-		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {
-			$pa_config->{'logstash_host'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^logstash_port\s+([0-9]*)/i) {
-			$pa_config->{'logstash_port'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^wuxserver\s+([0-1]*)/i) {
 			$pa_config->{"wuxserver"} = clean_blank($1);

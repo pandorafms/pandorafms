@@ -22,7 +22,8 @@ export type SimpleValueProps = {
   | {
       processValue: "avg" | "max" | "min";
       period: number;
-    }) &
+    }
+) &
   ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -94,6 +95,13 @@ export default class SimpleValue extends Item<SimpleValueProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
     element.className = "simple-value";
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
 
     if (this.props.valueType === "image") {
       const img = document.createElement("img");

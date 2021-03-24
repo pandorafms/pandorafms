@@ -390,7 +390,6 @@ table.group_modules_status_box tr td > span {
 }
 
 table.group_modules_status_box tr td div {
-  background-color: #82b92e;
   width: 90%;
   padding: 3px;
   text-align: center;
@@ -533,4 +532,14 @@ div#main_pure {
 
 #select_multiple_modules_filtered > div > div > * {
   flex: auto;
+}
+
+.visual-console-container-dashboard div.label strong {
+  color: inherit;
+  font-family: inherit;
+}
+
+.visual-console-container-dashboard div.label strong span {
+  color: inherit;
+  font-family: inherit;
 }

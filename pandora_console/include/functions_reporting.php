@@ -851,14 +851,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'nt_top_n':
-                $report['contents'][] = reporting_nt_top_n_report(
-                    $report,
-                    $content,
-                    $pdf
-                );
-            break;
-
             default:
                 // Default.
             break;
@@ -13577,43 +13569,6 @@ function reporting_header_table_for_pdf($title='', $description='')
     $result_pdf .= '</th></tr></thead></table>';
 
     return $result_pdf;
-}
-
-
-/**
- * Build the required data to build network traffic top N report
- *
- * @param int Period (time window).
- * @param array Information about the item of report.
- * @param bool Pdf or not
- *
- * @return array With report presentation info and report data.
- */
-function reporting_nt_top_n_report($period, $content, $pdf)
-{
-    $return = [];
-    $return['type'] = 'nt_top_n';
-    $return['title'] = $content['name'];
-    $return['landscape'] = $content['landscape'];
-    $return['pagebreak'] = $content['pagebreak'];
-    $return['description'] = $content['description'];
-
-    // Get the data sent and received
-    $return['data'] = [];
-    $start_time = ($period['datetime'] - (int) $content['period']);
-    $return['data']['send'] = network_matrix_get_top(
-        $content['top_n_value'],
-        true,
-        $start_time,
-        $period['datetime']
-    );
-    $return['data']['recv'] = network_matrix_get_top(
-        $content['top_n_value'],
-        false,
-        $start_time,
-        $period['datetime']
-    );
-    return $return;
 }
 
 

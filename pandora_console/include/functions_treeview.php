@@ -337,7 +337,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
         // Actions table
-        echo '<div class="actions_treeview">';
+        echo '<div class="actions_treeview" style="text-align: right">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
             html_print_submit_button(__('Go to module edition'), 'upd_button', false, 'class="sub config"');
         echo '</a>';
@@ -694,7 +694,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $agent_table = html_print_table($table, true);
 
     if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
-        $go_to_agent = '<div class="right">';
+        $go_to_agent = '<div style="text-align: right">';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
             if (enterprise_installed()) {

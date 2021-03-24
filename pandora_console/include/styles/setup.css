@@ -22,3 +22,12 @@ input[type="number"] {
 .fit > tbody > tr > td img {
   width: 15px;
 }
+
+.clean-toggles .white_table_graph_header {
+  border: none;
+}
+
+.dbhist tr td:first-child {
+  width: 45%;
+  min-width: 450px;
+}

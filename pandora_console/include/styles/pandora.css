@@ -5968,7 +5968,7 @@ div#status_pie {
 .table_services_item {
   display: grid;
   align-items: center;
-  grid-template-columns: 50px auto;
+  grid-template-columns: auto auto auto;
 }
 
 /*

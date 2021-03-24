@@ -641,6 +641,14 @@ var TreeController = {
 
                 $content.append($statusImage);
               }
+              var image_tooltip =
+                '<span><img src="' +
+                (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                'images/help.png" class="img_help" title="' +
+                element.name +
+                '" alt="' +
+                element.name +
+                '"/></span> ';
 
               var $serviceDetailImage = $(
                 '<img src="' +
@@ -661,6 +669,8 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 $content.append($serviceDetailImage);
+                $content.append(" " + image_tooltip);
+
                 if (
                   typeof element.elementDescription !== "undefined" &&
                   element.elementDescription != ""
@@ -674,7 +684,6 @@ var TreeController = {
                 } else {
                   $content.append(" " + element.name);
                 }
-                // $content.append(" " + element.name);
               } else {
                 $content.remove($node);
               }

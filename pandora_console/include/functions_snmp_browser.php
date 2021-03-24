@@ -604,9 +604,11 @@ function snmp_browser_print_oid(
     if ($custom_action != '') {
         $table->head[0] = '<span id="snmp_custom_action">'.$closer.$custom_action.'</span>';
     } else {
+        $table->headstyle[0] = 'text-align: left';
         $table->head[0] = $closer;
     }
 
+    $table->headstyle[1] = 'text-align: left';
     $table->head[1] = __('OID Information');
     $output .= html_print_table($table, true);
 
@@ -636,7 +638,7 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add float-left"',
+        'class="sub add float-left mrgn_right_20px"',
         true
     );
 

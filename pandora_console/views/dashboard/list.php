@@ -210,9 +210,6 @@ if (empty($dashboards) === true) {
 
 if ($writeDashboards === 1) {
     $text = __('Create a new dashboard');
-    if ($dashboard !== null) {
-        $text = __('Update Dashboard');
-    }
 
     // Button for display modal options dashboard.
     $output = '<a href="#" class="float-right" onclick=\'';

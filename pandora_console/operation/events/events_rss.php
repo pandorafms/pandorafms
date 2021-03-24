@@ -30,7 +30,7 @@
 global $config;
 
 // Don't display other errors, messes up XML.
-ini_set('display_errors', E_ALL);
+ini_set('display_errors', 0);
 
 require_once '../../include/config.php';
 require_once '../../include/functions.php';

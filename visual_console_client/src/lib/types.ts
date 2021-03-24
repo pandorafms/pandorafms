@@ -23,12 +23,14 @@ export interface WithAgentProps {
   agentAlias: string | null;
   agentDescription: string | null;
   agentAddress: string | null;
+  agentDisabled: boolean;
 }
 
 export interface WithModuleProps extends WithAgentProps {
   moduleId: number | null;
   moduleName: string | null;
   moduleDescription: string | null;
+  moduleDisabled: boolean;
 }
 
 export type LinkedVisualConsolePropsStatus =

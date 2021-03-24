@@ -261,6 +261,13 @@ export default class Percentile extends Item<PercentileProps> {
         break;
     }
 
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      svg.setAttribute("opacity", "0.2");
+    }
+
     if (svg !== null) element.append(svg);
 
     return element;

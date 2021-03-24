@@ -91,10 +91,6 @@ if (isset($config['gotty']) === false) {
     config_update_value('gotty', '/usr/bin/gotty');
 }
 
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 $os = strtolower(PHP_OS);
 if (substr($os, 0, 3) !== 'win') {
     if (empty($config['gotty']) === false) {

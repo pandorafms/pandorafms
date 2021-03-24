@@ -177,7 +177,8 @@ export function agentPropsDecoder(data: AnyObject): WithAgentProps {
     agentName: notEmptyStringOr(data.agentName, null),
     agentAlias: notEmptyStringOr(data.agentAlias, null),
     agentDescription: notEmptyStringOr(data.agentDescription, null),
-    agentAddress: notEmptyStringOr(data.agentAddress, null)
+    agentAddress: notEmptyStringOr(data.agentAddress, null),
+    agentDisabled: parseBoolean(data.agentDisabled)
   };
 
   return data.metaconsoleId != null
@@ -198,6 +199,7 @@ export function modulePropsDecoder(data: AnyObject): WithModuleProps {
     moduleId: parseIntOr(data.moduleId, null),
     moduleName: notEmptyStringOr(data.moduleName, null),
     moduleDescription: notEmptyStringOr(data.moduleDescription, null),
+    moduleDisabled: parseBoolean(data.moduleDisabled),
     ...agentPropsDecoder(data) // Object spread: http://es6-features.org/#SpreadOperator
   };
 }

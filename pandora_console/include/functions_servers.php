@@ -1202,7 +1202,7 @@ function servers_show_type($id)
 
         case 8:
             $return = html_print_image(
-                'images/module_wux.png',
+                'images/module-wux.png',
                 true,
                 [
                     'title' => get_product_name().' WUX server',

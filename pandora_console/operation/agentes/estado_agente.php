@@ -176,7 +176,14 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $tab = 'setup';
 
     // Setup tab.
-    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image('images/setup.png', true, ['title' => __('Setup')]).'</a>';
+    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image(
+        'images/setup.png',
+        true,
+        [
+            'title' => __('Setup'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     $setuptab['godmode'] = true;
 
@@ -187,7 +194,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
 
 ui_print_page_header(
     __('Agent detail'),
-    'images/agent_mc.png',
+    'images/agent.png',
     false,
     '',
     false,
@@ -211,9 +218,9 @@ if (isset($result_delete)) {
 
 echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
 
-echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%" style="font-weight: bold; margin-bottom: 10px;">';
+echo '<table cellpadding="4" cellspacing="4" class="databox filters bolder mrgn_btn_10px" width="100%">';
 
-echo '<tr><td class="nowrap mw250px padding-right-2-imp">';
+echo '<tr><td class="nowrap mw180px padding-right-2-imp">';
 
 echo __('Group').'&nbsp;';
 
@@ -258,7 +265,7 @@ html_print_submit_button(
     ['class' => 'sub search']
 );
 
-echo '</td><td style="width:5%;">&nbsp;</td>';
+echo '</td>';
 
 echo '</tr></table></form>';
 
@@ -702,7 +709,7 @@ $table->class = 'info_table';
 
 $table->head = [];
 $table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$table->size[0] = '10%';
+$table->size[0] = '12%';
 
 $table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
 $table->size[1] = '16%';
@@ -788,11 +795,23 @@ foreach ($agents as $agent) {
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';
-        $data[0] .= html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']);
+        $data[0] .= html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        );
     }
 
     if ($in_planned_downtime) {
-        $data[0] .= ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+        $data[0] .= ui_print_help_tip(
+            __('Agent in planned downtime'),
+            true,
+            $config['image']['minireloj_16']
+        );
         $data[0] .= '</em>';
     }
 
@@ -843,15 +862,31 @@ foreach ($agents as $agent) {
     if (enterprise_installed()) {
         enterprise_include_once('include/functions_config_agents.php');
         if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image('images/application_edit.png', true, ['align' => 'middle', 'title' => __('Remote config')]).'</a>';
+            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
+                'images/application_edit.png',
+                true,
+                [
+                    'align' => 'middle',
+                    'title' => __('Remote config'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>';
         }
     }
 
     $data[2] = ui_print_os_icon($agent['id_os'], false, true);
 
-    $data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent['intervalo']).'</span>';
+    $data[3] = '<span>'.human_time_description_raw(
+        $agent['intervalo']
+    ).'</span>';
     $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
-    $data[4] .= ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
+    $data[4] .= ui_print_group_icon(
+        $agent['id_grupo'],
+        true,
+        'groups_small',
+        '',
+        false
+    );
     $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];
 
@@ -900,7 +935,7 @@ if (!empty($table->data)) {
     );
 
     if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div style="text-align: right; float: right;">';
+        echo '<div class="right float-right">';
         echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
             html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
         echo '</form>';
@@ -910,7 +945,7 @@ if (!empty($table->data)) {
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
-    echo '<div style="text-align: right; float: right;">';
+    echo '<div class="right float-right">';
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
         html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
     echo '</form>';

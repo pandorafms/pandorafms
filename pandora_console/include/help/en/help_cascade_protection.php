@@ -1,9 +1,9 @@
-<h1 style='text-align:center;'>Cascade protection</h1>
+<h1 class='center'>Cascade protection</h1>
 <br>
 
 <h2>Agent cascade protection</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_agent.png', false); ?>
 </div>
 <br>
@@ -18,7 +18,7 @@ If you want to use an advanced cascade protection system, just use correlation a
 
 <h2>Module cascade protection</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_module.png', false); ?>
 <br>
 </div>

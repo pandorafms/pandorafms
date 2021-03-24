@@ -1584,7 +1584,7 @@ function gis_add_conection_maps_in_form($map_connection_list)
                 <tr class="row_0">
                     <td>'.html_print_input_text('map_connection_name_'.$mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true).'</td>
                     <td>'.$radioButton.'</td>
-                    <td><a id="delete_row" href="javascript: deleteConnectionMap(\''.$mapConnection['id_conection'].'\')">'.html_print_image('images/cross.png', true, ['alt' => '']).'</a></td>
+                    <td><a id="delete_row" href="javascript: deleteConnectionMap(\''.$mapConnection['id_conection'].'\')">'.html_print_image('images/cross.png', true, ['alt' => '', 'class' => 'invert_filter']).'</a></td>
                 </tr>
             </tbody>
             <script type="text/javascript">

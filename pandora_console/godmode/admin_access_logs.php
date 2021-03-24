@@ -35,8 +35,21 @@ $filter_ip = (string) get_parameter('filter_ip');
 
 $filter_query = '&filter_type='.$filter_type.'&filter_user='.$filter_user.'&filter_text='.$filter_text.'&filter_period='.$filter_period.'&filter_ip='.$filter_ip;
 
-$csv_url = ui_get_full_url(false, false, false, false).'index.php?sec=gextensions&sec2=godmode/audit_log_csv'.$filter_query;
-$csv_img = html_print_image('images/csv_mc.png', true, ['title' => __('Export to CSV')]);
+$csv_url = ui_get_full_url(
+    false,
+    false,
+    false,
+    false
+).'index.php?sec=gextensions&sec2=godmode/audit_log_csv'.$filter_query;
+$csv_img = html_print_image(
+    'images/csv.png',
+    true,
+    [
+        'title' => __(
+            'Export to CSV'
+        ),'class' => 'invert_filter',
+    ]
+);
 $header_buttons = [
     'csv' => [
         'active' => false,

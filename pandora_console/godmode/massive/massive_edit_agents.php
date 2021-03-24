@@ -506,7 +506,7 @@ $id_os = 0;
 $server_name = 0;
 $description = '';
 
-echo '<div id="form_agents" style="display: none;">';
+echo '<div id="form_agents" class="invisible">';
 
 $table = new StdClass();
 $table->width = '100%';
@@ -668,26 +668,26 @@ $table->data[0][1] = html_print_input_text('custom_id', $custom_id, '', 16, 255,
 
 // Learn mode / Normal mode
 $table->data[1][0] = __('Module definition');
-$table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended('mode', 2, '', $mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] = __('No change').' '.html_print_radio_button_extended('mode', -1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
+$table->data[1][1] .= __('Learning mode').' '.html_print_radio_button_extended('mode', 1, '', $mode, false, '', 'class="mrgn_right_40px"', true);
+$table->data[1][1] .= __('Normal mode').' '.html_print_radio_button_extended('mode', 0, '', $mode, false, '', 'class="mrgn_right_40px"', true);
+$table->data[1][1] .= __('Autodisable mode').' '.html_print_radio_button_extended('mode', 2, '', $mode, false, '', 'class="mrgn_right_40px"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
-$table->data[2][1] = __('No change').' '.html_print_radio_button_extended('disabled', -1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Disabled').' '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).' '.html_print_radio_button_extended('disabled', 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended('disabled', 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] = __('No change').' '.html_print_radio_button_extended('disabled', -1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][1] .= __('Disabled').' '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).' '.html_print_radio_button_extended('disabled', 1, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
+$table->data[2][1] .= __('Active').' '.html_print_radio_button_extended('disabled', 0, '', $disabled, false, '', 'class="mrgn_right_40px"', true);
 
 // Remote configuration
 $table->data[3][0] = __('Remote configuration');
 
 // Delete remote configuration
-$table->data[3][1] = '<div id="delete_configurations" style="display: none">'.__('Delete available remote configurations').' (';
+$table->data[3][1] = '<div id="delete_configurations" class="invisible">'.__('Delete available remote configurations').' (';
 $table->data[3][1] .= '<span id="n_configurations"></span>';
-$table->data[3][1] .= ') '.html_print_checkbox_extended('delete_conf', 1, 0, false, '', 'style="margin-right: 40px;"', true).'</div>';
+$table->data[3][1] .= ') '.html_print_checkbox_extended('delete_conf', 1, 0, false, '', 'class="mrgn_right_40px"', true).'</div>';
 
-$table->data[3][1] .= '<div id="not_available_configurations" style="display: none"><em>'.__('Not available').'</em></div>';
+$table->data[3][1] .= '<div id="not_available_configurations" class="invisible"><em>'.__('Not available').'</em></div>';
 
 $listIcons = gis_get_array_list_icons();
 
@@ -720,9 +720,9 @@ $table->data[4][1] = html_print_select($arraySelectIcon, 'icon_path', $icon_path
 
 if ($config['activate_gis']) {
     $table->data[5][0] = __('Ignore new GIS data:');
-    $table->data[5][1] = __('No change').' '.html_print_radio_button_extended('update_gis_data', -1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-    $table->data[5][1] .= __('Yes').' '.html_print_radio_button_extended('update_gis_data', 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-    $table->data[5][1] .= __('No').' '.html_print_radio_button_extended('update_gis_data', 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+    $table->data[5][1] = __('No change').' '.html_print_radio_button_extended('update_gis_data', -1, '', $update_gis_data, false, '', 'class="mrgn_right_40px"', true);
+    $table->data[5][1] .= __('Yes').' '.html_print_radio_button_extended('update_gis_data', 0, '', $update_gis_data, false, '', 'class="mrgn_right_40px"', true);
+    $table->data[5][1] .= __('No').' '.html_print_radio_button_extended('update_gis_data', 1, '', $update_gis_data, false, '', 'class="mrgn_right_40px"', true);
 }
 
 $table->data[6][0] = __('Quiet');
@@ -815,7 +815,7 @@ foreach ($fields as $field) {
             true
         );
     } else {
-        $data[1] = html_print_textarea('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+        $data[1] = html_print_textarea('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'class="mrgn_right_30px"', true);
     }
 
     if ($field['combo_values'] !== '') {

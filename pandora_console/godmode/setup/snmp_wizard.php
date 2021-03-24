@@ -97,7 +97,7 @@ $table->data['editor'] = [
     'oid'          => html_print_input_text('oid_editor', '', '', 40, 255, true),
     'description'  => html_print_input_text('description_editor', '', '', 40, 255, true),
     'post_process' => html_print_input_text('post_process_editor', '', '', 20, 255, true),
-    'op'           => '<img class="loading" src="images/spinner.gif" style="display: none;" />'.'<a class="button_save_snmp" href="javascript: save_translation();">'.html_print_image('images/save_mc.png', true, ['title' => __('Save')]).'</a>'.'<a class="button_update_snmp" href="javascript: update_snmp();" style="display: none;">'.html_print_image('images/update.png', true, ['title' => __('Update')]).'</a>'.'<a class="cancel_button_snmp" href="javascript: cancel_snmp();" style="display: none;">'.html_print_image('images/cancel.png', true, ['title' => __('Cancel')]).'</a>',
+    'op'           => '<img class="loading invisible" src="'.'images/spinner.gif'.'" />'.'<a class="button_save_snmp" href="javascript: save_translation();">'.html_print_image('images/save_mc.png', true, ['title' => __('Save')]).'</a>'.'<a class="button_update_snmp invisible" href="javascript: update_snmp();">'.html_print_image('images/update.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>'.'<a class="cancel_button_snmp invisible" href="javascript: cancel_snmp();">'.html_print_image('images/cancel.png', true, ['title' => __('Cancel')]).'</a>',
 ];
 
 
@@ -107,7 +107,7 @@ html_print_table($table);
 
 function cell_op($oid='')
 {
-    return '<img class="loading" src="images/spinner.gif" style="display: none;" />'.'<a class="button_edit_snmp" href="javascript: edit_snmp(\''.$oid.'\');">'.html_print_image('images/cog.png', true, ['title' => __('Edit')]).'</a>'.'<a class="delete_button_snmp" href="javascript: delete_snmp(\''.$oid.'\');">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    return '<img class="loading invisible" src="'.'images/spinner.gif'.'" />'.'<a class="button_edit_snmp" href="javascript: edit_snmp(\''.$oid.'\');">'.html_print_image('images/cog.png', true, ['class' => 'invert_filter', 'title' => __('Edit')]).'</a>'.'<a class="delete_button_snmp" href="javascript: delete_snmp(\''.$oid.'\');">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
 }
 
 

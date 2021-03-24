@@ -2837,16 +2837,16 @@ class NetworkMap
      */
     public function loadSimpleInterface()
     {
-        $output = '<div id="open_version_dialog" style="display: none;">';
+        $output = '<div id="open_version_dialog" class="invisible">';
         $output .= __(
             'In the Open version of %s can not be edited nodes or map',
             get_product_name()
         );
         $output .= '</div>';
 
-        $output .= '<div id="dialog_node_edit" style="display: none;" title="';
+        $output .= '<div id="dialog_node_edit" class="invisible" title="';
         $output .= __('Edit node').'">';
-        $output .= '<div style="text-align: left; width: 100%;">';
+        $output .= '<div class="left w100p">';
 
         $table = new StdClass();
         $table->id = 'node_details';
@@ -2895,9 +2895,9 @@ class NetworkMap
             $id = 'open_version_dialog';
         }
 
-        $output .= '<div id="'.$id.'" style="display: none;" title="';
+        $output .= '<div id="'.$id.'" class="invisible" title="';
         $output .= __('Edit node').'">';
-        $output .= '<div style="text-align: left; width: 100%;">';
+        $output .= '<div class="left w100p">';
 
         $table = new StdClass();
         $table->id = 'node_details';
@@ -2966,7 +2966,7 @@ class NetworkMap
             '',
             0,
             true
-        ).'&nbsp;<span id="shape_icon_in_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" style="display: none;">'.html_print_image('images/success.png', true, ['width' => '18px']).'</span><span id="shape_icon_fail" style="display: none;">'.html_print_image('images/icono-bad.png', true, ['width' => '18px']).'</span>';
+        ).'&nbsp;<span id="shape_icon_in_progress" class="invisible">'.html_print_image('images/spinner.gif', true).'</span><span id="shape_icon_correct" class="invisible">'.html_print_image('images/success.png', true, ['width' => '18px']).'</span><span id="shape_icon_fail" class="invisible">'.html_print_image('images/icono-bad.png', true, ['width' => '18px']).'</span>';
         $table->data['node_name'][0] = __('Name');
         $table->data['node_name'][1] = html_print_input_text(
             'edit_name_node',
@@ -3062,7 +3062,7 @@ class NetworkMap
         $table->data['template_row']['node_target'] = '';
         $table->data['template_row']['edit'] = '';
 
-        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct" style="display: none;">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail" style="display: none;">'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress" style="display: none;">'.html_print_image('images/spinner.gif', true).'</span><span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true).'</a></span>';
+        $table->data['template_row']['edit'] .= '<span class="edit_icon_correct invisible">'.html_print_image('images/dot_green.png', true).'</span><span class="edit_icon_fail invisible" >'.html_print_image('images/dot_red.png', true).'</span><span class="edit_icon_progress invisible">'.html_print_image('images/spinner.gif', true).'</span><span class="edit_icon"><a class="edit_icon_link" title="'.__('Update').'" href="#">'.html_print_image('images/config.png', true).'</a></span>';
 
         $table->data['template_row']['edit'] .= '<a class="delete_icon" href="#">'.html_print_image('images/delete.png', true).'</a>';
 
@@ -3090,8 +3090,8 @@ class NetworkMap
 
         $output .= '</div></div>';
 
-        $output .= '<div id="dialog_interface_link" style="display: none;" title="Interface link">';
-        $output .= '<div style="text-align: left; width: 100%;">';
+        $output .= '<div id="dialog_interface_link" class="invisible" title="Interface link">';
+        $output .= '<div class="left w100p">';
 
         $table = new stdClass();
         $table->id = 'interface_link_table';
@@ -3149,9 +3149,9 @@ class NetworkMap
         $output .= html_print_table($table, true);
         $output .= '</div></div>';
 
-        $output .= '<div id="dialog_node_add" style="display: none;" title="';
+        $output .= '<div id="dialog_node_add" class="invisible" title="';
         $output .= __('Add node').'">';
-        $output .= '<div style="text-align: left; width: 100%;">';
+        $output .= '<div class="left w100p">';
 
         $table = new StdClass();
         $table->width = '100%';
@@ -3411,7 +3411,7 @@ class NetworkMap
             ).'" />'."\n";
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
-            $output .= 'style="border: 1px #ddd solid;';
+            $output .= 'class="border_1px_dd';
 
             if ($this->fullSize) {
                 $output .= ' width:100%';
@@ -3455,9 +3455,9 @@ class NetworkMap
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';
             if ($this->fullSize) {
                 if ($this->widget) {
-                    $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden;">';
+                    $output .= ' class="networkconsole">';
                 } else {
-                    $output .= ' style="width: 100%; height: 100%;position: relative; overflow: hidden; background: #FAFAFA">';
+                    $output .= ' class="networkconsole">';
                 }
             } else {
                 $output .= ' style="width: '.$this->mapOptions['width'].'px; height: '.$this->mapOptions['height'].'px;position: relative; overflow: hidden; background: #FAFAFA">';
@@ -3465,22 +3465,22 @@ class NetworkMap
 
             $output .= '<div style="display: '.$minimap_display.';">';
             $output .= '<canvas id="minimap_'.$networkmap['id'].'"';
-            $output .= ' style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">';
+            $output .= ' class="minimap">';
             $output .= '</canvas>';
             $output .= '<div id="arrow_minimap_'.$networkmap['id'].'"';
-            $output .= ' style="position: absolute; left: 0px; top: 0px;">';
+            $output .= ' class="absolute left_0px top_0px">';
             $output .= '<a title="'.__('Open Minimap').'" href="javascript: toggle_minimap();">';
             $output .= html_print_image('/images/minimap_open_arrow.png', true, ['id' => 'arrow_minimap_'.$networkmap['id']]);
             $output .= '</a></div></div>';
 
             $output .= '<div id="hide_labels_'.$networkmap['id'].'"';
-            $output .= ' style="position: absolute; right: 10px; top: 10px;">';
+            $output .= ' class="absolute right_10px top_10px">';
             $output .= '<a title="'.__('Hide Labels').'" href="javascript: hide_labels();">';
             $output .= html_print_image('/images/icono_borrar.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</a></div>';
 
             $output .= '<div id="holding_spinner_'.$networkmap['id'].'" ';
-            $output .= ' style="display: none; position: absolute; right: 50px; top: 20px;">';
+            $output .= ' class="holding_networkmap">';
             $output .= html_print_image('/images/spinner.png', true, ['id' => 'image_hide_show_labels']);
             $output .= '</div>';
 

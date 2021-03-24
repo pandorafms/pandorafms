@@ -30,23 +30,23 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 </tr>
 <tr>
 <td>No assigned agent<br><br>Disabled events</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>With assigned agent<br><br>Disabled events</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>No assigned agent<br><br>Activated events</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>With assigned agent<br><br>Activated events</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>Not managed</th>
@@ -57,9 +57,9 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 <th>Unresponsive host</th>
 </tr>
 <tr>
-<td style="width: 100px;">If an IP address is not managed, you can only view if is responding or not.</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/not_host.png"></td>
+<td class="w100px">If an IP address is not managed, you can only view if is responding or not.</td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>Not assigned</th>
@@ -69,7 +69,7 @@ Addresses will be shown as icons, large or small. This icons will render the fol
 </tr>
 </table>
 <br><br>
-Each IP address have in the bottom right position a link to edit it (with adminitration rights). In the bottom left position, there is a small icon showing the OS detected. On disabled addresses, instead the OS icon, you will see this icon:<br><br><img src="../images/delete.png" style="width:18px;"><br><br>
+Each IP address have in the bottom right position a link to edit it (with adminitration rights). In the bottom left position, there is a small icon showing the OS detected. On disabled addresses, instead the OS icon, you will see this icon:<br><br><img src="../images/delete.png" class="w18px"><br><br>
 
 When you click on the main icon, a modal window will be opened showing all the IP information, including associated agent and OS, setup for that IP and other information, like creation date, last user edition or last time it was checked by server. In this view you can also do a manual, realtime check to see if that IP respond to ping. Note that this ping is done by the console, instead the regular check, done by the recon server.
 
@@ -83,12 +83,12 @@ Some fields, are automatically filled by the recon script, like hostname, if it 
 <th colspan=2>Changing between manual and automated</th>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/manual.png"></td>
+<td class="center w25px"><img src="../images/manual.png"></td>
 <td><b>Manual mode</b>: With this symbol, the field will not be updated by the recon system and you can edit manually. By clicking on it, you will switch to automated mode.
 </td>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/automatic.png"></td>
+<td class="center w25px"><img src="../images/automatic.png"></td>
 <td><b>Automated mode</b>:With this icon, the field will be updated automatically from the recon script. By clicking on it, it will switch to manual mode..</td>
 </tr>
 </table>

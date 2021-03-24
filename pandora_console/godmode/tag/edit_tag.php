@@ -47,7 +47,14 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+            'text'   => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List tags'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -58,13 +65,27 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+            'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List tags'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
     $buttons[$tab]['active'] = true;
     // Header
-    ui_print_page_header(__('Tags configuration'), 'images/tag.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Tags configuration'),
+        'images/tag.png',
+        false,
+        ['class' => 'invert_filter'],
+        true,
+        $buttons
+    );
 }
 
 // Two actions can performed in this page: update and create tags
@@ -153,16 +174,16 @@ else {
 // Create/Update tag form
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action='.$action.'&id_tag='.$id_tag.'" enctype="multipart/form-data">';
 
-echo '<div align=left style="width: 100%" class="pandora_form">';
+echo '<div align=left class="pandora_form w100p">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
 if (defined('METACONSOLE')) {
     if ($action == 'update') {
-        echo "<th colspan=8 style='text-align:center'>".__('Update Tag').'</th>';
+        echo "<th colspan=8 class='center'>".__('Update Tag').'</th>';
     }
 
     if ($action == 'new') {
-        echo "<th colspan=8 style='text-align:center'>".__('Create Tag').'</th>';
+        echo "<th colspan=8 class='center'>".__('Create Tag').'</th>';
     }
 }
 

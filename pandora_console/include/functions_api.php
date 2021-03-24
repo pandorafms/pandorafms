@@ -1864,9 +1864,13 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType)
  * @param $thrast2 Don't use.
  * @param $thrash3 Don't use.
  */
-function api_set_delete_agent($id, $thrash1, $other, $thrash3)
+function api_set_delete_agent($id, $thrash1, $other, $returnType)
 {
     global $config;
+
+    if (empty($returnType)) {
+        $returnType = 'string';
+    }
 
     $agent_by_alias = false;
 
@@ -1910,7 +1914,7 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
     } else {
         // Delete only if the centralised mode is disabled.
         $headers = getallheaders();
-        if (isset($headers['idk']) === false || is_management_allowed($headers['idk']) === false) {
+        if (isset($headers['idk']) === false && is_management_allowed($headers['idk']) === false) {
             returnError('centralized');
             exit;
         }
@@ -1934,19 +1938,27 @@ function api_set_delete_agent($id, $thrash1, $other, $thrash3)
                 }
             }
         } else {
-            $idAgent = agents_get_agent_id($id, true);
+            $idAgent = agents_get_agent_id($id, false);
             if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
                 return;
             }
 
-            $result = agents_delete_agent($idAgent, true);
+            $result = agents_delete_agent($idAgent, false);
         }
     }
 
-    if (!$result) {
-        returnError('The agent could not be deleted');
+    if ($result === false) {
+        if ($returnType !== 'string') {
+            return false;
+        }
+
+        returnError('The agent could not be deleted', $returnType);
     } else {
-        returnData('string', ['type' => 'string', 'data' => __('The agent was successfully deleted')]);
+        if ($returnType !== 'string') {
+            return true;
+        }
+
+        returnData($returnType, ['type' => 'string', 'data' => __('The agent was successfully deleted')]);
     }
 }
 

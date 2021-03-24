@@ -70,7 +70,7 @@ $table = new stdClass();
 $table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 
-$table->data['0']['0'] = '<div style="display: flex;">';
+$table->data['0']['0'] = '<div class="flex">';
 $table->data['0']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['0']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);

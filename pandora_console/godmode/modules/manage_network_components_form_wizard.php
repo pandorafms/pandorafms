@@ -59,7 +59,7 @@ function generateExtraFields($extra_fields, $protocol)
         }
 
         $data = [];
-        $data[0] = '<div style="text-align: right;">'.$extraFieldText.'</div>';
+        $data[0] = '<div class="right">'.$extraFieldText.'</div>';
         $data[1] = html_print_input_text_extended(
             'extra_field_'.$protocol.'_'.$idField,
             $field,
@@ -88,6 +88,7 @@ function generateExtraFields($extra_fields, $protocol)
                 [
                     'title'   => __('Add a macro oid'),
                     'onclick' => 'manageComponentFields(\'add\', \'oid-list-'.$rowId.'\');',
+                    'class'   => 'invert_filter',
                 ]
             ),
         ],
@@ -106,6 +107,7 @@ function generateExtraFields($extra_fields, $protocol)
                     'title'   => __('Remove last macro oid'),
                     'onclick' => 'manageComponentFields(\'del\', \'oid-list-'.$rowId.'\');',
                     'style'   => 'margin-left: 1em;',
+                    'class'   => 'invert_filter',
                 ]
             ),
         ],
@@ -615,7 +617,7 @@ $table->style[0] = 'font-weight: bold;';
 push_table_row($data, 'title-query-filters-wmiRow');
 
 $data = [];
-$data[0] = '<div style="text-align: right;">'.__('Scan').'</div>';
+$data[0] = '<div class="right">'.__('Scan').'</div>';
 $data[1] = html_print_input_text_extended(
     'query_filter_scan',
     $query_filter['scan'],
@@ -633,7 +635,7 @@ push_table_row($data, 'query-filter-scan-wmiRow');
 
 if ($execution_type == EXECUTION_TYPE_NETWORK) {
     $data = [];
-    $data[0] = '<div style="text-align: right;">'.__('Execution').'</div>';
+    $data[0] = '<div class="right">'.__('Execution').'</div>';
     $data[1] = html_print_input_text_extended(
         'query_filter_execution',
         $query_filter['execution'],

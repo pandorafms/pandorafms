@@ -15,13 +15,13 @@
     For example:
 </p>
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         _technology_
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         _modulepriority_
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         _contactperson_
     </li>
 </ol>
@@ -36,25 +36,25 @@
 Dynamic macros will have a special format starting with @ and will have these possible substitutions:
 </p>
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT (current date/time with user-defined format)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_nh (hours)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_nm (minutes)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_nd (days)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_ns (seconds)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_nM (month)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder lato_bolderfont_12pt">
         @DATE_FORMAT_nY (years)
     </li>
 </ol>

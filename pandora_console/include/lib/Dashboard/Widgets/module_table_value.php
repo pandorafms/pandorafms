@@ -283,7 +283,6 @@ class ModuleTableValueWidget extends Widget
             'label'     => __('Module'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
                 'name'           => 'moduleId',
                 'selected'       => $values['moduleId'],
                 'return'         => true,
@@ -291,7 +290,9 @@ class ModuleTableValueWidget extends Widget
                 'agent_id'       => $values['agentId'],
                 'metaconsole_id' => $values['metaconsoleId'],
                 'style'          => 'width: inherit;',
-                'filter_modules' => users_access_to_agent($values['agentId']) === false ? [$values['moduleId']] : [],
+                'filter_modules' => users_access_to_agent(
+                    ($values['agentId']) === false
+                ) ? [$values['moduleId']] : [],
             ],
         ];
 
@@ -308,12 +309,12 @@ class ModuleTableValueWidget extends Widget
         ];
 
         $fields = [
-            '&lt;br&gt;' => __('Carriage Return'),
-            '|'          => __('Vertical Bar'),
-            ';'          => __('Semicolon'),
-            ':'          => __('Colon'),
-            ','          => __('Commas'),
-            '&nbsp;'     => __('Blank'),
+            '&#x0a;' => __('Carriage Return'),
+            '|'      => __('Vertical Bar'),
+            ';'      => __('Semicolon'),
+            ':'      => __('Colon'),
+            ','      => __('Commas'),
+            '&#x20;' => __('Blank'),
         ];
 
         $inputs[] = [
@@ -358,11 +359,7 @@ class ModuleTableValueWidget extends Widget
      */
     public function load()
     {
-        global $config;
-
         $output = '';
-        $id_agent = $this->values['agentId'];
-        $id_group = \agents_get_agent_group($id_agent);
 
         $id_module = $this->values['moduleId'];
         $size_text = $this->values['sizeLabel'];
@@ -370,33 +367,11 @@ class ModuleTableValueWidget extends Widget
         $data_module = modules_get_last_value($id_module);
         $value = (string) $data_module;
 
-        $array_values = explode('&#x0a;', io_safe_input($value));
-
-        if (isset($array_values) === true && is_array($array_values) === true) {
-            io_safe_output_array($array_values);
-
-            $value = implode(
-                io_safe_output(
-                    $this->values['separator']
-                ),
-                $array_values
-            );
-
-            $value = preg_replace(
-                '/'.$this->values['separator'].'/i',
-                '<br>',
-                $value
-            );
-        } else {
-            $value = preg_replace(
-                '/\n/i',
-                io_safe_output(
-                    $this->values['separator']
-                ),
-                io_safe_output($value)
-            );
-            $value = preg_replace('/\s/i', '&nbsp;', $value);
-        }
+        $value = str_replace(
+            io_safe_output($this->values['separator']),
+            '<br/>',
+            $value
+        );
 
         $output .= '<div class="container-center">';
         $output .= '<div class="container-icon">';

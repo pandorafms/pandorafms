@@ -942,6 +942,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_image(
@@ -954,6 +955,7 @@ function notifications_print_two_ways_select($info_selec, $users, $source_id)
                     $users,
                     $source_id
                 ),
+                'class'   => 'invert_filter',
             ]
         ),
         html_print_select(
@@ -1076,6 +1078,27 @@ function notifications_print_dropdown_element($message_info)
                 '<br><pre>'
             );
         break;
+    }
+
+    $split_subject = explode(' ', io_safe_output($message_info['subject']));
+    $is_image = false;
+    $img = '';
+    foreach ($split_subject as $item) {
+        if ($is_image) {
+            if (preg_match('/src/', $item)) {
+                $img .= $item.' >';
+                $is_image = false;
+            }
+        }
+
+        if (preg_match('/img/', $item)) {
+            $img = '<img ';
+            $is_image = true;
+        }
+    }
+
+    if ($img !== '') {
+        $message_info['subject'] = io_safe_input($img);
     }
 
     return sprintf(

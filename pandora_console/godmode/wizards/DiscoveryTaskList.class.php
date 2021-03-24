@@ -616,7 +616,14 @@ class DiscoveryTaskList extends HTML
                         }
 
                         $data[0] .= ');" >';
-                        $data[0] .= html_print_image('images/target.png', true, ['title' => __('Force')]);
+                        $data[0] .= html_print_image(
+                            'images/target.png',
+                            true,
+                            [
+                                'title' => __('Force'),
+                                'class' => 'invert_filter',
+                            ]
+                        );
                         $data[0] .= '</span>';
                     }
                 } else if ($task['disabled'] == 2) {
@@ -660,57 +667,9 @@ class DiscoveryTaskList extends HTML
                     $data[4] = '-';
                 }
 
-                $can_be_reviewed = false;
-                if (empty($task['summary']) === false
-                    && $task['summary'] == 'cancelled'
-                ) {
-                    $data[5] = __('Cancelled').ui_print_help_tip(
-                        __('Server has been restarted while executing this task, please retry.'),
-                        true
-                    );
-                } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
-                    if ($task['type'] == DISCOVERY_APP_VMWARE) {
-                        if ($task['status'] <= 0 && $task['utimestamp'] != 0) {
-                            $data[5] = __('Done');
-                        } else if ($task['status'] > 0) {
-                            $data[5] = __('Pending');
-                        } else {
-                            $data[5] = __('Not started');
-                        }
-                    } else {
-                        if ($task['status'] <= 0
-                            && empty($task['summary']) === false
-                        ) {
-                            $data[5] = __('Done');
-                        } else if ($task['utimestamp'] == 0
-                            && empty($task['summary'])
-                        ) {
-                            $data[5] = __('Not started');
-                        } else {
-                            $data[5] = __('Pending');
-                        }
-                    }
-                } else {
-                    if ($task['status'] <= 0
-                        && empty($task['summary']) === false
-                        && (int) $task['type'] === DISCOVERY_HOSTDEVICES
-                    ) {
-                        $can_be_reviewed = true;
-                        $data[5] = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
-                        $data[5] .= __('Review');
-                        $data[5] .= '</span>';
-                    } else if ($task['utimestamp'] == 0
-                        && empty($task['summary'])
-                    ) {
-                        $data[5] = __('Not started');
-                    } else {
-                        if ($task['review_mode'] == DISCOVERY_RESULTS) {
-                            $data[5] = __('Processing');
-                        } else {
-                            $data[5] = __('Searching');
-                        }
-                    }
-                }
+                $_rs = $this->getStatusMessage($task);
+                $can_be_reviewed = $_rs['can_be_reviewed'];
+                $data[5] = $_rs['message'];
 
                 switch ($task['type']) {
                     case DISCOVERY_CLOUD_AZURE_COMPUTE:
@@ -718,7 +677,10 @@ class DiscoveryTaskList extends HTML
                         $data[6] = html_print_image(
                             'images/plugin.png',
                             true,
-                            ['title' => __('Discovery Cloud Azure Compute')]
+                            [
+                                'title' => __('Discovery Cloud Azure Compute'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Cloud.Azure.Compute');
                     break;
@@ -728,7 +690,10 @@ class DiscoveryTaskList extends HTML
                         $data[6] = html_print_image(
                             'images/plugin.png',
                             true,
-                            ['title' => __('Discovery Cloud AWS EC2')]
+                            [
+                                'title' => __('Discovery Cloud AWS EC2'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Cloud.AWS.EC2');
                     break;
@@ -736,9 +701,12 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_CLOUD_AWS_RDS:
                         // Discovery Cloud RDS.
                         $data[6] = html_print_image(
-                            'images/network.png',
+                            'images/op_network.png',
                             true,
-                            ['title' => __('Discovery Cloud RDS')]
+                            [
+                                'title' => __('Discovery Cloud RDS'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Discovery.Cloud.Aws.RDS');
                     break;
@@ -746,9 +714,12 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_APP_MYSQL:
                         // Discovery Applications MySQL.
                         $data[6] = html_print_image(
-                            'images/network.png',
+                            'images/op_network.png',
                             true,
-                            ['title' => __('Discovery Applications MySQL')]
+                            [
+                                'title' => __('Discovery Applications MySQL'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Discovery.App.MySQL');
                     break;
@@ -756,9 +727,12 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_APP_ORACLE:
                         // Discovery Applications Oracle.
                         $data[6] = html_print_image(
-                            'images/network.png',
+                            'images/op_network.png',
                             true,
-                            ['title' => __('Discovery Applications Oracle')]
+                            [
+                                'title' => __('Discovery Applications Oracle'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Discovery.App.Oracle');
                     break;
@@ -766,9 +740,12 @@ class DiscoveryTaskList extends HTML
                     case DISCOVERY_APP_DB2:
                         // Discovery Applications DB2.
                         $data[6] = html_print_image(
-                            'images/network.png',
+                            'images/op_network.png',
                             true,
-                            ['title' => __('Discovery Applications DB2')]
+                            [
+                                'title' => __('Discovery Applications DB2'),
+                                'class' => 'invert_filter',
+                            ]
                         ).'&nbsp;&nbsp;';
                         $data[6] .= __('Discovery.App.DB2');
                     break;
@@ -784,21 +761,35 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.Agent.Deployment');
                     break;
 
+                    case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+                        // Discovery Applications Oracle.
+                        $data[6] = html_print_image(
+                            'images/network.png',
+                            true,
+                            ['title' => __('Discovery Applications Microsoft SQL Server')]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.App.Microsoft SQL Server');
+                    break;
+
                     case DISCOVERY_HOSTDEVICES:
                     default:
                         if ($task['id_recon_script'] == 0) {
                             // Discovery NetScan.
                             $data[6] = html_print_image(
-                                'images/network.png',
+                                'images/op_network.png',
                                 true,
-                                ['title' => __('Discovery NetScan')]
+                                [
+                                    'title' => __('Discovery NetScan'),
+                                    'class' => 'invert_filter',
+                                ]
                             ).'&nbsp;&nbsp;';
                             $data[6] .= __('Discovery.NetScan');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
                                 'images/plugin.png',
-                                true
+                                true,
+                                ['class' => 'invert_filter']
                             ).'&nbsp;&nbsp;';
                             $data[6] .= $recon_script_name;
                         }
@@ -849,7 +840,10 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= html_print_image(
                                 'images/expand.png',
                                 true,
-                                ['title' => __('Review results')]
+                                [
+                                    'title' => __('Review results'),
+                                    'class' => 'invert_filter',
+                                ]
                             );
                             $data[9] .= '</a>';
                         }
@@ -858,7 +852,10 @@ class DiscoveryTaskList extends HTML
                         $data[9] .= html_print_image(
                             'images/eye.png',
                             true,
-                            ['title' => __('View summary')]
+                            [
+                                'title' => __('View summary'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[9] .= '</a>';
                     }
@@ -875,7 +872,10 @@ class DiscoveryTaskList extends HTML
                             $data[9] .= html_print_image(
                                 'images/dynamic_network_icon.png',
                                 true,
-                                ['title' => __('View map')]
+                                [
+                                    'title' => __('View map'),
+                                    'class' => 'invert_filter',
+                                ]
                             );
                             $data[9] .= '</a>';
                         }
@@ -896,14 +896,20 @@ class DiscoveryTaskList extends HTML
                             ).'">'.html_print_image(
                                 'images/config.png',
                                 true,
-                                ['title' => __('Edit task')]
+                                [
+                                    'title' => __('Edit task'),
+                                    'class' => 'invert_filter',
+                                ]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 'index.php?sec=gextensions&sec2=enterprise/tools/ipam/ipam&action=delete&id='.$tipam_task_id
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
                                 true,
-                                ['title' => __('Delete task')]
+                                [
+                                    'title' => __('Delete task'),
+                                    'class' => 'invert_filter',
+                                ]
                             ).'</a>';
                         } else {
                             // Check if is a H&D, Cloud or Application or IPAM.
@@ -916,14 +922,20 @@ class DiscoveryTaskList extends HTML
                             ).'">'.html_print_image(
                                 'images/config.png',
                                 true,
-                                ['title' => __('Edit task')]
+                                [
+                                    'title' => __('Edit task'),
+                                    'class' => 'invert_filter',
+                                ]
                             ).'</a>';
                             $data[9] .= '<a href="'.ui_get_full_url(
                                 'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&delete=1&task='.$task['id_rt']
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/cross.png',
                                 true,
-                                ['title' => __('Delete task')]
+                                [
+                                    'title' => __('Delete task'),
+                                    'class' => 'invert_filter',
+                                ]
                             ).'</a>';
                         }
 
@@ -954,7 +966,7 @@ class DiscoveryTaskList extends HTML
                 $table->cellclass[][9] = 'action_buttons';
 
                 // Div neccesary for modal progress task.
-                echo '<div id="progress_task_'.$task['id_rt'].'" style="display:none"></div>';
+                echo '<div id="progress_task_'.$task['id_rt'].'" class="invisible"></div>';
 
                 array_push($table->data, $data);
             }
@@ -970,9 +982,9 @@ class DiscoveryTaskList extends HTML
             ui_toggle($content, __('Server Tasks'), '', '', false);
 
             // Div neccesary for modal map task.
-            echo '<div id="map_task" style="display:none"></div>';
-            echo '<div id="task_review" style="display:none"></div>';
-            echo '<div id="msg" style="display:none"></div>';
+            echo '<div id="map_task" class="invisible"></div>';
+            echo '<div id="task_review" class="invisible"></div>';
+            echo '<div id="msg" class="invisible"></div>';
             echo '<input type="hidden" id="ajax-url" value="'.ui_get_full_url('ajax.php').'"/>';
             echo '<input type="hidden" id="success-str" value="'.__('Success').'"/>';
             echo '<input type="hidden" id="failed-str" value="'.__('Failed').'"/>';
@@ -1040,6 +1052,9 @@ class DiscoveryTaskList extends HTML
             case DISCOVERY_APP_MYSQL:
             return 'wiz=app&mode=mysql&page=0';
 
+            case DISCOVERY_APP_MICROSOFT_SQL_SERVER:
+            return 'wiz=app&mode=MicrosoftSQLServer&page=0';
+
             case DISCOVERY_APP_ORACLE:
             return 'wiz=app&mode=oracle&page=0';
 
@@ -1104,11 +1119,11 @@ class DiscoveryTaskList extends HTML
      */
     private function progressTaskGraph($task)
     {
-        $result .= '<div style="display: flex;">';
+        $result .= '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
 
-        $result .= '<div style="margin-top: 25px;">';
+        $result .= '<div class="mrgn_top_25px">';
         $result .= progress_circular_bar(
             $task['id_rt'],
             ($task['status'] < 0) ? 100 : $task['status'],
@@ -1178,7 +1193,7 @@ class DiscoveryTaskList extends HTML
 
             $result .= '</span>';
 
-            $result .= '<div style="margin-top: 25px;">';
+            $result .= '<div class="mrgn_top_25px">';
             $result .= progress_circular_bar(
                 $task['id_rt'].'_detail',
                 $task['stats']['c_network_percent'],
@@ -1710,6 +1725,67 @@ class DiscoveryTaskList extends HTML
         echo json_encode(
             ['result' => $out]
         );
+    }
+
+
+    /**
+     * Generates task status string for given task.
+     *
+     * @param array $task Discovery task (retrieved from DB).
+     *
+     * @return array Message to be displayed and review status.
+     */
+    public function getStatusMessage(array $task)
+    {
+        $status = '';
+        $can_be_reviewed = false;
+
+        if (empty($task['summary']) === false
+            && $task['summary'] == 'cancelled'
+        ) {
+            $status = __('Cancelled').ui_print_help_tip(
+                __('Server has been restarted while executing this task, please retry.'),
+                true
+            );
+        } else if ($task['review_mode'] == DISCOVERY_STANDARD) {
+            if ($task['status'] <= 0
+                && empty($task['summary']) === false
+            ) {
+                $status = __('Done');
+            } else if ($task['utimestamp'] == 0
+                && empty($task['summary'])
+            ) {
+                $status = __('Not started');
+            } else if ($task['utimestamp'] > 0) {
+                $status = __('Done');
+            } else {
+                $status = __('Pending');
+            }
+        } else {
+            if ($task['status'] <= 0
+                && empty($task['summary']) === false
+            ) {
+                $can_be_reviewed = true;
+                $status = '<span class="link review" onclick="show_review('.$task['id_rt'].',\''.$task['name'].'\')">';
+                $status .= __('Review');
+                $status .= '</span>';
+            } else if ($task['utimestamp'] == 0
+                && empty($task['summary'])
+            ) {
+                $status = __('Not started');
+            } else {
+                if ($task['review_mode'] == DISCOVERY_RESULTS) {
+                    $status = __('Processing');
+                } else {
+                    $status = __('Searching');
+                }
+            }
+        }
+
+        return [
+            'message'         => $status,
+            'can_be_reviewed' => $can_be_reviewed,
+        ];
     }
 
 

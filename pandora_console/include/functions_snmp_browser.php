@@ -37,27 +37,26 @@ enterprise_include_once(
 
 // Date format for nfdump.
 global $nfdump_date_format;
-$nfdump_date_format = 'Y/m/d.H:i:s';
+$nfdump_date_format = 'Y/m/d.H:i:s';/**
+                                     * Generates a Tree with given $tree information.
+                                     *
+                                     * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+                                     * Used also in Cloud Wizard.
+                                     *
+                                     * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+                                     * @param string  $id              Level ID. Do not set, used for recursion.
+                                     * @param string  $depth           Branch depth. Do not set, used for recursion.
+                                     * @param integer $last            Last.
+                                     * @param array   $last_array      Last_array.
+                                     * @param string  $sufix           Sufix.
+                                     * @param array   $checked         Checked.
+                                     * @param boolean $descriptive_ids Descriptive_ids.
+                                     * @param string  $previous_id     Previous_id.
+                                     *
+                                     * @return string HTML code with complete tree.
+                                     */
 
 
-/**
- * Generates a Tree with given $tree information.
- *
- * Selects all netflow filters (array (id_name => id_name)) or filters filtered
- * Used also in Cloud Wizard.
- *
- * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
- * @param string  $id              Level ID. Do not set, used for recursion.
- * @param string  $depth           Branch depth. Do not set, used for recursion.
- * @param integer $last            Last.
- * @param array   $last_array      Last_array.
- * @param string  $sufix           Sufix.
- * @param array   $checked         Checked.
- * @param boolean $descriptive_ids Descriptive_ids.
- * @param string  $previous_id     Previous_id.
- *
- * @return string HTML code with complete tree.
- */
 function snmp_browser_get_html_tree(
     $tree,
     $id=0,
@@ -89,23 +88,23 @@ function snmp_browser_get_html_tree(
     $class = 'item_'.$depth;
 
     if ($depth > 0) {
-        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0; display: none;">';
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px invisible">';
     } else {
-        $output .= '<ul id="ul_'.$id.'" style="margin: 0; padding: 0;">';
+        $output .= '<ul id="ul_'.$id.'" class="mrgn_0px pdd_0px">';
     }
 
     foreach ($tree['__LEAVES__'] as $level => $sub_level) {
         // Id used to expand leafs.
         $sub_id = time().rand(0, getrandmax());
         // Display the branch.
-        $output .= '<li id="li_'.$sub_id.'" class="'.$class.'" style="margin: 0; padding: 0;">';
+        $output .= '<li id="li_'.$sub_id.'" class="'.$class.' mrgn_0px pdd_0px">';
 
         // Indent sub branches.
         for ($i = 1; $i <= $depth; $i++) {
             if ($last_array[$i] == 1) {
-                $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/branch.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/branch.png" class="vertical_middle">';
             }
         }
 
@@ -114,14 +113,14 @@ function snmp_browser_get_html_tree(
             $output .= "<a id='anchor_$sub_id' onfocus='javascript: this.blur();' href='javascript: toggleTreeNode(\"$sub_id\", \"$id\");'>";
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    $output .= '<img src="'.$url.'/one_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/one_closed.png" class="vertical_middle">';
                 } else {
-                    $output .= '<img src="'.$url.'/first_closed.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_closed.png" class="vertical_middle">';
                 }
             } else if ($count == $total) {
-                $output .= '<img src="'.$url.'/last_closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_closed.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/closed.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/closed.png" class="vertical_middle">';
             }
 
             $output .= '</a>';
@@ -131,21 +130,21 @@ function snmp_browser_get_html_tree(
         else {
             if ($depth == 0 && $count == 0) {
                 if ($count == $total) {
-                    $output .= '<img src="'.$url.'/no_branch.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/no_branch.png" class="vertical_middle">';
                 } else {
-                    $output .= '<img src="'.$url.'/first_leaf.png" style="vertical-align: middle;">';
+                    $output .= '<img src="'.$url.'/first_leaf.png" class="vertical_middle">';
                 }
             } else if ($count == $total) {
-                $output .= '<img src="'.$url.'/last_leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/last_leaf.png" class="vertical_middle">';
             } else {
-                $output .= '<img src="'.$url.'/leaf.png" style="vertical-align: middle;">';
+                $output .= '<img src="'.$url.'/leaf.png" class="vertical_middle">';
             }
         }
 
         // Branch or leave with branches!
         if (isset($sub_level['__OID__'])) {
             $output .= "<a onfocus='javascript: this.blur();' href='javascript: snmpGet(\"".addslashes($sub_level['__OID__'])."\");'>";
-            $output .= '<img src="'.$url.'/../../images/eye.png" style="vertical-align: middle;">';
+            $output .= '<img src="'.$url.'/../../images/operation.png" class="vertical_middle">';
             $output .= '</a>';
         }
 
@@ -160,7 +159,7 @@ function snmp_browser_get_html_tree(
         $status = (!empty($checked) && isset($checked[$level]));
         $output .= html_print_checkbox($checkbox_name, 0, $status, true, false, '').'&nbsp;<span>'.$level.'</span>';
         if (isset($sub_level['__VALUE__'])) {
-            $output .= '<span class="value" style="display: none;">&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
+            $output .= '<span class="value invisible" class="invisible" >&nbsp;=&nbsp;'.io_safe_input($sub_level['__VALUE__']).'</span>';
         }
 
         $output .= '</li>';
@@ -605,14 +604,16 @@ function snmp_browser_print_oid(
     if ($custom_action != '') {
         $table->head[0] = '<span id="snmp_custom_action">'.$closer.$custom_action.'</span>';
     } else {
+        $table->headstyle[0] = 'text-align: left';
         $table->head[0] = $closer;
     }
 
+    $table->headstyle[1] = 'text-align: left';
     $table->head[1] = __('OID Information');
     $output .= html_print_table($table, true);
 
     $url = 'index.php?'.'sec=gmodules&'.'sec2=godmode/modules/manage_network_components';
-    $output .= '<form id="snmp_create_module" style="text-align: center; margin: 10px" target="_blank" method="post" action="'.$url.'">';
+    $output .= '<form id="snmp_create_module" class="center mrgn_10px" target="_blank" method="post" action="'.$url.'">';
     $output .= html_print_input_hidden('create_network_from_snmp_browser', 1, true);
     $output .= html_print_input_hidden('id_component_type', 2, true);
     $output .= html_print_input_hidden('type', 17, true);
@@ -637,7 +638,7 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add"',
+        'class="sub add float-left mrgn_right_20px"',
         true
     );
 
@@ -647,7 +648,7 @@ function snmp_browser_print_oid(
         'create_module_agent_single',
         false,
         'show_add_module()',
-        'class="sub add" style="display:none"',
+        'class="sub add invisible"',
         true
     );
 
@@ -686,6 +687,8 @@ function snmp_browser_print_container(
     $display='',
     $show_massive_buttons=false
 ) {
+    global $config;
+
     $snmp_version = get_parameter('snmp_browser_version', '2c');
     // Target selection.
     $table = new stdClass();
@@ -799,7 +802,7 @@ function snmp_browser_print_container(
             'name'       => 'browse',
             'disabled'   => false,
             'script'     => 'snmpBrowse()',
-            'attributes' => 'class="sub search" style="margin-top:0px;"',
+            'attributes' => 'class="sub search mrgn_top_0px"',
             'return'     => true,
         ],
         'div',
@@ -922,6 +925,7 @@ function snmp_browser_print_container(
             'title'   => __('Search'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchText();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][0] .= '</a>';
@@ -935,6 +939,7 @@ function snmp_browser_print_container(
             'title'   => __('First match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchFirstMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -947,6 +952,7 @@ function snmp_browser_print_container(
             'title'   => __('Previous match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchPrevMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -959,6 +965,7 @@ function snmp_browser_print_container(
             'title'   => __('Next match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchNextMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -971,6 +978,7 @@ function snmp_browser_print_container(
             'title'   => __('Last match'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'searchLastMatch();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][1] .= '</a>';
@@ -984,6 +992,7 @@ function snmp_browser_print_container(
             'title'   => __('Expand the tree (can be slow)'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'expandAll();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][2] .= '</a>';
@@ -996,6 +1005,7 @@ function snmp_browser_print_container(
             'title'   => __('Collapse the tree'),
             'style'   => 'vertical-align: middle;',
             'onclick' => 'collapseAll();',
+            'class'   => 'invert_filter',
         ]
     );
     $table2->data[0][2] .= '</a>';
@@ -1004,7 +1014,7 @@ function snmp_browser_print_container(
     // This extra div that can be handled by jquery's dialog.
     $output = '<div id="snmp_browser_container" style="'.$display.'">';
     $output .= '<div style="text-align: left; width: '.$width.'; height: '.$height.';">';
-    $output .= '<div style="width: 100%">';
+    $output .= '<div class="w100p">';
     $output .= '<form onsubmit="snmpBrowse(); return false;">';
     $output .= html_print_table($table, true);
     $output .= '</form></div>';
@@ -1028,7 +1038,7 @@ function snmp_browser_print_container(
         true
     );
     $output .= '</div>';
-    $output .= '<div style="width: 100%; padding-top: 10px;">';
+    $output .= '<div class="search_options">';
     $output .= ui_toggle(
         html_print_table($table2, true),
         __('Search options'),
@@ -1040,7 +1050,7 @@ function snmp_browser_print_container(
     $output .= '</div>';
 
     // SNMP tree container.
-    $output .= '<div style="width: 100%; height: 100%; margin-top: 5px; position: relative;">';
+    $output .= '<div class="snmp_tree_container">';
     $output .= html_print_input_hidden('search_count', 0, true);
     $output .= html_print_input_hidden('search_index', -1, true);
 
@@ -1056,11 +1066,11 @@ function snmp_browser_print_container(
         true
     );
 
-    $output .= '<div id="search_results" style="display: none; padding: 5px; background-color: #EAEAEA; border: 1px solid #E2E2E2; border-radius: 4px;"></div>';
-    $output .= '<div id="spinner" style="position: absolute; top:0; left:0px; display:none; padding: 5px;">'.html_print_image('images/spinner.gif', true).'</div>';
+    $output .= '<div id="search_results" class="search_results"></div>';
+    $output .= '<div id="spinner" class="spinner_none_padding" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
     $output .= '<div id="snmp_browser">';
     $output .= '</div>';
-    $output .= '<div class="databox" id="snmp_data" style="margin: 5px; display: none"></div>';
+    $output .= '<div class="databox" id="snmp_data"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';
@@ -1459,7 +1469,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
     $table->width = '100%';
     $table->data = [];
 
-    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+    $table->data[0][0] = __('Filter group')."<div id='loading_group' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
 
     $table->data[0][1] = html_print_select_groups(
         false,
@@ -1482,7 +1492,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         $strict_user
     );
 
-    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div' style='display:none; float:left;'><img src='images/spinner.gif'></div>";
+    $table->data[1][0] = __('Search')."<div id='loading_filter' class='loading_div invisible left'><img src='images/spinner.gif'></div>";
     $table->data[1][1] = html_print_input_text(
         'filter',
         '',
@@ -1519,7 +1529,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
                 'snmp_browser_create_policy',
                 false,
                 '',
-                'class="sub add" style="margin-left:0px"',
+                'class="sub add mrgn_lft_0"',
                 true
             );
         }
@@ -1540,6 +1550,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         [
             'id'    => 'right',
             'title' => __('Add'),
+            'class' => 'invert_filter',
         ]
     ).'<br /><br /><br /><br />'.html_print_image(
         'images/darrowleft.png',
@@ -1547,6 +1558,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
         [
             'id'    => 'left',
             'title' => __('Undo'),
+            'class' => 'invert_filter',
         ]
     );
     $table->data[3][2] = html_print_select(
@@ -1596,7 +1608,7 @@ function snmp_browser_print_create_module_massive($target='agent', $snmp_conf, $
  */
 function snmp_browser_print_create_modules($return=false)
 {
-    $output = "<div id='dialog_create_module' style='display: none;' title='Select agent'>";
+    $output = "<div id='dialog_create_module' class='invisible' title='Select agent'>";
 
     $table = new stdClass();
     $table->width = '100%';
@@ -1638,11 +1650,9 @@ function snmp_browser_print_create_policy()
     $description = get_parameter('description');
 
     $table->width = '100%';
-    $table->class = 'databox filters';
+    $table->class = 'databox filters bold_top';
     $table->style = [];
-    $table->style[0] = 'font-weight: bold; vertical-align: top';
     $table->data = [];
-
     $table->data[0][0] = __('Name');
     $table->data[0][1] = html_print_input_text('name', $name, '', '60%', 150, true);
 

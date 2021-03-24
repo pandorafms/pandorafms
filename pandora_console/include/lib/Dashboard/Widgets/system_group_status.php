@@ -507,7 +507,7 @@ class SystemGroupStatusWidget extends Widget
                 $url .= '&ag_group='.$group['g'];
 
                 if ($show_normal === true) {
-                    $outputLine = '<div style="background-color:#82b92e">';
+                    $outputLine = '<div class="bg_82B92E">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Modules in normal status');
                     $outputLine .= '" class="group_view_data"';
@@ -523,7 +523,7 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_warning === true) {
-                    $outputLine = '<div style="background-color:#ffd036">';
+                    $outputLine = '<div class="bg_ffd">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Modules in warning status');
                     $outputLine .= '" class="group_view_data"';
@@ -539,7 +539,7 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_critical === true) {
-                    $outputLine = '<div style="background-color:#ff5653">';
+                    $outputLine = '<div class="bg_ff5">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="';
                     $outputLine .= __('Modules in critical status');
@@ -556,7 +556,7 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_alert_fired === true) {
-                    $outputLine = '<div style="background-color:#ff9e39">';
+                    $outputLine = '<div class="bg_ff9">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Alerts fired');
                     $outputLine .= '" class="group_view_data"';

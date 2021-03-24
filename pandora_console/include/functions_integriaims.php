@@ -38,9 +38,9 @@ function integriaims_tabs($active_tab, $view=false)
 
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
-    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS')]).'</a>';
-    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list')]).'</a>';
-    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket')]).'</a>';
+    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS'), 'class' => 'invert_filter']).'</a>';
+    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list'), 'class' => 'invert_filter']).'</a>';
+    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket'), 'class' => 'invert_filter']).'</a>';
 
     switch ($active_tab) {
         case 'setup_tab':
@@ -161,21 +161,31 @@ function integriaims_get_details($details, $detail_index=false)
  * @param string User password.
  * @param string API password.
  * @param string API Operation.
- * @param array Array with parameters required by the API function.
+ * @param mixed String or array with parameters required by the API function.
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array=[], $show_credentials_error_msg=false)
+function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params='', $show_credentials_error_msg=false, $return_type='', $token='')
 {
-    $params_string = implode(',', $params_array);
+    if (is_array($params)) {
+        $params = implode($token, $params);
+    }
 
     $url_data = [
         'user'      => $user,
         'user_pass' => $user_pass,
         'pass'      => $api_pass,
         'op'        => $operation,
-        'params'    => html_entity_decode($params_string),
+        'params'    => html_entity_decode($params),
     ];
+
+    if ($return_type !== '') {
+        $url_data['return_type'] = $return_type;
+    }
+
+    if ($token !== '') {
+        $url_data['token'] = $token;
+    }
 
     // Build URL for API request.
     $url = $api_hostname.'/integria/include/api.php';
@@ -355,7 +365,10 @@ function get_tickets_integriaims($tickets_filters)
             '0',
             $incident_owner,
             $incident_creator,
-        ]
+        ],
+        false,
+        '',
+        ','
     );
 
     // Return array of api call 'get_incidents'.

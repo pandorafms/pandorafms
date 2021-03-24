@@ -180,24 +180,20 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
             case 21:
             case 31:
                 if (is_numeric($last_data['datos']) && $last_data['datos'] >= 1) {
-                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".$config['render_proc_ok'].'</span>';
+                    $data = "<span class='span_treeview'>".$config['render_proc_ok'].'</span>';
                 } else {
-                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".$config['render_proc_fail'].'</span>';
+                    $data = "<span class='span_treeview'>".$config['render_proc_fail'].'</span>';
                 }
             break;
 
             default:
-                // ~ if (is_numeric($last_data["datos"]))
-                // ~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
-                // ~ else
-                // ~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
                 switch ($module['id_tipo_modulo']) {
                     case 15:
                         $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
                         if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                            $data = "<span title='".$last_data['datos']."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
+                            $data = "<span title='".$last_data['datos']."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                         } else if (is_numeric($last_data['datos'])) {
-                            $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -213,7 +209,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
                     default:
                         if (is_numeric($last_data['datos'])) {
-                            $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                            $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                         } else {
                             $data = ui_print_truncate_text(
                                 io_safe_output($last_data['datos']),
@@ -234,9 +230,9 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
             case 15:
                 $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
                 if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                    $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' style='white-space: nowrap;'>".human_milliseconds_to_string($last_data['datos']).'</span>';
+                    $data = "<span title='".human_milliseconds_to_string($last_data['datos'])."' class='nowrap'>".human_milliseconds_to_string($last_data['datos']).'</span>';
                 } else if (is_numeric($last_data['datos'])) {
-                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -252,7 +248,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
             default:
                 if (is_numeric($last_data['datos'])) {
-                    $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
+                    $data = "<span class='span_treeview'>".remove_right_zeros(number_format($last_data['datos'], $config['graph_precision'])).'</span>';
                 } else {
                     $data = ui_print_truncate_text(
                         io_safe_output($last_data['datos']),
@@ -275,7 +271,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
             $data_macro = modules_get_unit_macro($last_data['datos'], $module['unit']);
             if ($data_macro) {
                 if (is_numeric($data_macro)) {
-                    $last_data_str = "<span style='height: 20px; display: inline-table; vertical-align: top;'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'])).'</span>';
+                    $last_data_str = "<span class='span_treeview'>".remove_right_zeros(number_format($data_macro, $config['graph_precision'])).'</span>';
                 } else {
                     $last_data_str = ui_print_truncate_text(
                         io_safe_output($data_macro),
@@ -341,7 +337,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'AW')) {
         // Actions table
-        echo '<div style="width:100%; text-align: right; min-width: 300px;padding-right: 1em;">';
+        echo '<div class="actions_treeview" style="text-align: right">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].$url_hash.'">';
             html_print_submit_button(__('Go to module edition'), 'upd_button', false, 'class="sub config"');
         echo '</a>';
@@ -350,7 +346,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
     }
 
     // id_module and id_agent hidden
-    echo '<div id="ids" style="display:none;">';
+    echo '<div id="ids" class="invisible">';
         html_print_input_text('id_module', $id_module);
         html_print_input_text('id_agent', $module['id_agente']);
         html_print_input_text('server_name', $server_name);
@@ -477,7 +473,7 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'LW')) {
         // Actions table
-        echo '<div style="width:100%; text-align: right; min-width: 300px;">';
+        echo '<div class="w100p right mw300px">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'" target="_blank">';
             html_print_submit_button(__('Go to alerts edition'), 'upd_button', false, 'class="sub search"');
         echo '</a>';
@@ -608,16 +604,16 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         $url = $server_data['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agent['id_agente'].'&'.'loginhash=auto&'."loginhash_data=$hashdata&".'loginhash_user='.str_rot13($user);
 
         if ($grants_on_node) {
-            $cellName .= '<a href="'.$url.'">'.'<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+            $cellName .= '<a href="'.$url.'">'.'<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
         } else {
-            $cellName .= '<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
+            $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b>';
         }
     } else {
         $url = ui_get_full_url(
             'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente']
         );
         $cellName .= '<a href="'.$url.'">';
-        $cellName .= '<b><span style="font-weight:bold;text-transform:uppercase;" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+        $cellName .= '<b><span class="bolder pandora_upper" title="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
     }
 
     if ($agent['disabled']) {
@@ -698,7 +694,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $agent_table = html_print_table($table, true);
 
     if ($user_access_node && check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
-        $go_to_agent = '<div style="text-align: right;">';
+        $go_to_agent = '<div style="text-align: right">';
 
         if ($agent['id_os'] == CLUSTER_OS_ID) {
             if (enterprise_installed()) {
@@ -810,7 +806,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     ui_toggle($table_advanced, __('Advanced information'));
 
     if ($config['agentaccess']) {
-        $access_graph = '<div style="width:100%; height:130px; text-align:center;">';
+        $access_graph = '<div class="w100p height_130px center">';
         $access_graph .= graphic_agentaccess(
             $id_agente,
             SECONDS_1DAY,
@@ -824,7 +820,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         );
     }
 
-    $events_graph = '<div style="width: 100%; height: 90px; display: flex; flex-direction: row; justify-content: center;">';
+    $events_graph = '<div class="graphic_agents">';
     $events_graph .= graph_graphic_agentevents(
         $id_agente,
         '340px;margin:0',

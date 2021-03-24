@@ -366,11 +366,10 @@ class CustomGraphWidget extends Widget
                     );
 
                     $hackLegendHight = (30 * count($sources));
-                    if ($hackLegendHight < ($size['height'] - 10 - $hackLegendHight)) {
-                        $height = ($size['height'] - 10 - $hackLegendHight);
+                    if ($hackLegendHight > ($size['height'] - 10 - $hackLegendHight)) {
+                        $height = ($size['height'] - $hackLegendHight);
                     } else {
                         $height = ($size['height'] - 10);
-                        $this->values['showLegend'] = 0;
                     }
                 } else {
                     $height = ($size['height'] - 10);
@@ -396,6 +395,11 @@ class CustomGraphWidget extends Widget
             break;
         }
 
+        // Not posible height < 0.
+        if ($height <= 0) {
+            $height = 10;
+        }
+
         $params = [
             'period'          => $this->values['period'],
             'width'           => ($size['width'] - 10),
@@ -407,6 +411,7 @@ class CustomGraphWidget extends Widget
             'menu'            => false,
             'show_legend'     => $this->values['showLegend'],
             'vconsole'        => true,
+            'dashboard'       => true,
         ];
 
         $params_combined = [

@@ -242,6 +242,13 @@ class Item extends CachedModel
             );
         }
 
+        $decodedData['agentDisabled'] = static::parseBool(
+            $data['agentDisabled']
+        );
+        $decodedData['moduleDisabled'] = static::parseBool(
+            $data['moduleDisabled']
+        );
+
         return $decodedData;
     }
 
@@ -922,7 +929,8 @@ class Item extends CachedModel
         // Can't fetch an agent with an invalid Id.
         $agentId = static::extractAgentId($itemData);
         if ($agentId === null) {
-            throw new \InvalidArgumentException('invalid agent Id');
+            $agentId = 0;
+            // throw new \InvalidArgumentException('invalid agent Id');
         }
 
         // Staticgraph don't need to have an agent.
@@ -938,7 +946,7 @@ class Item extends CachedModel
 
         if (\is_metaconsole()) {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tmetaconsole_agent
                 WHERE id_tagente = %s and id_tmetaconsole_setup = %s',
                 $agentId,
@@ -946,7 +954,7 @@ class Item extends CachedModel
             );
         } else {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tagente
                 WHERE id_agente = %s',
                 $agentId
@@ -956,7 +964,8 @@ class Item extends CachedModel
         $agent = \db_get_row_sql($sql);
 
         if ($agent === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $agentData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         // The agent name should be a valid string or a null value.
@@ -964,6 +973,7 @@ class Item extends CachedModel
         $agentData['agentAlias'] = $agent['alias'];
         $agentData['agentDescription'] = $agent['comentarios'];
         $agentData['agentAddress'] = $agent['direccion'];
+        $agentData['agentDisabled'] = $agent['disabled'];
 
         return \io_safe_output($agentData);
     }
@@ -996,7 +1006,8 @@ class Item extends CachedModel
         // Can't fetch an module with a invalid Id.
         $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
-            throw new \InvalidArgumentException('invalid module Id');
+            $moduleId = 0;
+            // throw new \InvalidArgumentException('invalid module Id');
         }
 
         // Staticgraph don't need to have a module.
@@ -1023,7 +1034,7 @@ class Item extends CachedModel
         }
 
         $sql = sprintf(
-            'SELECT nombre, descripcion
+            'SELECT nombre, descripcion, `disabled`
             FROM tagente_modulo
             WHERE id_agente_modulo = %s',
             $moduleId
@@ -1037,11 +1048,13 @@ class Item extends CachedModel
         }
 
         if ($moduleName === false) {
-            throw new \Exception('error fetching the data from the DB');
+            return $moduleData;
+            // throw new \Exception('error fetching the data from the DB');
         }
 
         $moduleData['moduleName'] = $moduleName['nombre'];
         $moduleData['moduleDescription'] = $moduleName['descripcion'];
+        $moduleData['moduleDisabled'] = $moduleName['disabled'];
 
         return \io_safe_output($moduleData);
     }
@@ -1071,6 +1084,12 @@ class Item extends CachedModel
         $linkedAgent = static::extractLinkedAgent($data);
 
         $baseUrl = \ui_get_full_url('index.php');
+
+        if ((bool) $data['agentDisabled'] === true
+            || (bool) $data['moduleDisabled'] === true
+        ) {
+            return null;
+        }
 
         // TODO: There's a feature to get the link from the label.
         if (static::$useLinkedVisualConsole === true

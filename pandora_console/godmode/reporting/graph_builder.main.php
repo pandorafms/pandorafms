@@ -94,7 +94,7 @@ if ($edit_graph) {
 } else {
     $id_agent = 0;
     $id_module = 0;
-    $id_group = 0;
+    $id_group = null;
     $period = SECONDS_1DAY;
     $factor = 1;
     $stacked = 4;
@@ -142,35 +142,43 @@ if (users_can_manage_group_all('RW') === false
 
 $output .= '<td><b>'.__('Group').'</b></td><td>';
 if (check_acl($config['id_user'], 0, 'RW')) {
-    $output .= html_print_select_groups(
-        $config['id_user'],
-        'RW',
-        $return_all_group,
-        'graph_id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
+    $output .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RW',
+            'returnAllGroup' => $return_all_group,
+            'name'           => 'graph_id_group',
+            'selected'       => $id_group,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+        ]
     );
 } else if (check_acl($config['id_user'], 0, 'RM')) {
-    $output .= html_print_select_groups(
-        $config['id_user'],
-        'RM',
-        $return_all_group,
-        'graph_id_group',
-        $id_group,
-        '',
-        '',
-        '',
-        true
+    $output .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'id_user'        => $config['id_user'],
+            'privilege'      => 'RM',
+            'returnAllGroup' => $return_all_group,
+            'name'           => 'graph_id_group',
+            'selected'       => $id_group,
+            'script'         => '',
+            'nothing'        => '',
+            'nothing_value'  => '',
+            'return'         => true,
+            'required'       => true,
+        ]
     );
 }
 
 $output .= '</td></tr>';
 $output .= '<tr>';
 $output .= "<td class='datos2'><b>".__('Description').'</b></td>';
-$output .= "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=55 rows=2>";
+$output .= "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=55 rows=2>";
 if ($edit_graph) {
     $output .= $graphInTgraph['description'];
 }
@@ -178,7 +186,7 @@ if ($edit_graph) {
 $output .= '</textarea>';
 $output .= '</td></tr>';
 if ($stacked == CUSTOM_GRAPH_GAUGE) {
-    $hidden = ' style="display:none;" ';
+    $hidden = ' class="invisible" ';
 } else {
     $hidden = '';
 }
@@ -198,7 +206,7 @@ $output .= html_print_extended_select_for_time(
 );
 $output .= "</td><td class='datos2'>";
 $output .= '<b>'.__('Type of graph').'</b></td>';
-$output .= "<td class='datos2'> <div style='float:left;display:inline-block'>";
+$output .= "<td class='datos2'> <div class='left inline'>";
 
 require_once $config['homedir'].'/include/functions_graph.php';
 
@@ -284,12 +292,12 @@ $output .= '</tr>';
 $output .= '</table>';
 
 if ($edit_graph) {
-    $output .= "<div style='width:100%'>";
-    $output .= "<input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update')."'>";
+    $output .= "<div class='w100p'>";
+    $output .= "<input type=submit name='store' class='sub upd right' value='".__('Update')."'>";
     $output .= '</div>';
 } else {
-    $output .= "<div style='width:100%'>";
-    $output .= "<input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'>";
+    $output .= "<div class='w100p'>";
+    $output .= "<input type=submit name='store' class='sub next right' value='".__('Create')."'>";
     $output .= '</div>';
 }
 

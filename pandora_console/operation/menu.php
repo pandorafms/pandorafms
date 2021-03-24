@@ -430,11 +430,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
-
-        // Marquee.
-        $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
-        $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
-        $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
     // Sound Events.
@@ -498,9 +493,8 @@ if (check_acl($config['id_user'], 0, 'IR')
     ];
 
     $sub2 = [];
-    $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
-    $sub2[$sec2sub]['text'] = __('Statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Tickets');
+    $sub2[$sec2sub]['text'] = __('Integria IMS statistics');
+    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
 
     $sub[$sec2]['sub2'] = $sub2;
     $sec2 = $temp_sec2;

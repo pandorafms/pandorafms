@@ -20,7 +20,7 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210210';
+$build_version = 'PC210324';
 $pandora_version = 'v7.0NG.752';
 
 // Do not overwrite default timezone set if defined.
@@ -40,6 +40,7 @@ if (!is_dir($config['homedir'])) {
 }
 
 
+
 // Help to debug problems. Override global PHP configuration
 global $develop_bypass;
 if ((int) $develop_bypass === 1) {
@@ -51,6 +52,10 @@ if ((int) $develop_bypass === 1) {
     }
 
     ini_set('display_errors', 1);
+} else {
+    // Leave user decide error_level, but limit errors to be displayed only in
+    // logs.
+    ini_set('display_errors', 0);
 }
 
 // Check if mysqli is available
@@ -163,6 +168,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 config_process_config();
 config_prepare_session();
+
+if ((bool) $config['console_log_enabled'] === true) {
+    error_reporting(E_ALL ^ E_NOTICE);
+}
 
 // Set a the system timezone default
 if ((!isset($config['timezone'])) or ($config['timezone'] == '')) {

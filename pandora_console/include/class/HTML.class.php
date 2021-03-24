@@ -631,18 +631,18 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    $output .= '<div class="flex mrgn_btn_25px wrap">';
                     if (!isset($input['extra'])) {
-                        $output .= '<div style="width: 50%;">';
+                        $output .= '<div class="w50p">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="display: flex; margin-right:10px;">';
+                        $output .= '<div class="flex mrgn_right_10px">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="margin-right:10px;">';
+                    $output .= '<div class="mrgn_right_10px">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -663,11 +663,11 @@ class HTML
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
                     if (isset($input['extra'])) {
-                        $output .= '<div style="">';
-                        $output .= '<div style="float: left;">';
+                        $output .= '<div  >';
+                        $output .= '<div class="float-left">';
                     } else {
-                        $output .= '<div style="width:50%;">';
-                        $output .= '<div style="float: right;">';
+                        $output .= '<div class="w50p">';
+                        $output .= '<div class="float-right">';
                     }
 
                     $output .= self::printInput($input['arguments']);
@@ -925,7 +925,7 @@ class HTML
                     if ($first_block_printed === true) {
                         // If first form block has been placed, then close it before starting a new one.
                         $output .= '</div>';
-                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                        $output .= '<div class="white_box mrgn_top_30px">';
                     } else {
                         $output .= '<div class="white_box">';
                     }

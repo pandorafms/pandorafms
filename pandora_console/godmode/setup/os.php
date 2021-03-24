@@ -159,11 +159,25 @@ switch ($action) {
 $buttons = [
     'list'    => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List OS')]).'</a>',
+        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('List OS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
     'builder' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">'.html_print_image('images/builder.png', true, ['title' => __('Builder OS')]).'</a>',
+        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">'.html_print_image(
+            'images/builder.png',
+            true,
+            [
+                'title' => __('Builder OS'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
 ];
 

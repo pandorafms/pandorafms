@@ -502,7 +502,7 @@ var TreeController = {
           var $content = $("<div></div>");
 
           // Leaf icon
-          $leafIcon.addClass("leaf-icon");
+          $leafIcon.addClass("leaf-icon invert_filter");
 
           // Content
           $content.addClass("node-content");
@@ -535,7 +535,7 @@ var TreeController = {
                 var $updateicon = $(
                   '<img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/config.png" style="width:18px; vertical-align: middle;"/>'
+                    'images/config.png" class="invert_filter" style="width:18px; vertical-align: middle;"/>'
                 );
                 var $updatebtn = $('<a href = "' + url_edit + '"></a>').append(
                   $updateicon
@@ -551,7 +551,7 @@ var TreeController = {
                 var $deleteBtn = $(
                   '<a><img src="' +
                     (controller.baseURL.length > 0 ? controller.baseURL : "") +
-                    'images/cross.png" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
+                    'images/cross.png" class="invert_filter" style="width:18px; vertical-align: middle; cursor: pointer;"/></a>'
                 );
                 $deleteBtn.click(function(event) {
                   var ok_function = function() {
@@ -641,6 +641,14 @@ var TreeController = {
 
                 $content.append($statusImage);
               }
+              var image_tooltip =
+                '<span><img src="' +
+                (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                'images/help.png" class="img_help" title="' +
+                element.name +
+                '" alt="' +
+                element.name +
+                '"/></span> ';
 
               var $serviceDetailImage = $(
                 '<img src="' +
@@ -661,6 +669,8 @@ var TreeController = {
                   .css("cursor", "pointer");
 
                 $content.append($serviceDetailImage);
+                $content.append(" " + image_tooltip);
+
                 if (
                   typeof element.elementDescription !== "undefined" &&
                   element.elementDescription != ""
@@ -674,7 +684,6 @@ var TreeController = {
                 } else {
                   $content.append(" " + element.name);
                 }
-                // $content.append(" " + element.name);
               } else {
                 $content.remove($node);
               }
@@ -1073,7 +1082,25 @@ var TreeController = {
                             $node.append($group);
                           }
 
-                          _.each(data.tree, function(element) {
+                          // Get the main values of the tree.
+                          var rawTree = Object.values(data.tree);
+                          // Sorting tree by description (services.treeview_services.php).
+                          rawTree.sort(function(a, b) {
+                            // Only the services are ordered since only they have the elementDescription property.
+                            if (a.elementDescription && b.elementDescription) {
+                              var x = a.elementDescription.toLowerCase();
+                              var y = b.elementDescription.toLowerCase();
+                              if (x < y) {
+                                return -1;
+                              }
+                              if (x > y) {
+                                return 1;
+                              }
+                            }
+                            return 0;
+                          });
+
+                          _.each(rawTree, function(element) {
                             element.jqObject = _processNode($group, element);
                           });
 

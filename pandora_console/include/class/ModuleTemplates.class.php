@@ -874,7 +874,7 @@ class ModuleTemplates extends HTML
         $table = new StdClasS();
         $table->class = 'databox data';
         $table->width = '75%';
-        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
         $table->rowid = [];
         $table->data = [];
 
@@ -888,7 +888,7 @@ class ModuleTemplates extends HTML
 
         $table->head[1] = __('Name');
         $table->head[2] = __('Description');
-        $table->head[3] = '<span style="margin-right:7%;">'.__('Action').'</span>';
+        $table->head[3] = '<span class="mrgn_right_7p">'.__('Action').'</span>';
         $table->size = [];
         $table->size[0] = '20px';
         $table->size[2] = '65%';
@@ -911,7 +911,10 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
+                [
+                    'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+                    'class'   => 'invert_filter',
+                ]
             );
             $data[3] .= html_print_input_image(
                 'export_profile',
@@ -919,17 +922,20 @@ class ModuleTemplates extends HTML
                 $row['id_np'],
                 '',
                 true,
-                ['title' => 'Export tdaso CSV']
+                [
+                    'title' => 'Export tdaso CSV',
+                    'class' => 'invert_filter',
+                ]
             );
-            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+            $data[3] = '<a href="'.$this->baseUrl.'&action=delete&id_np='.$row['id_np'].'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+            $data[3] .= '<a href="'.$this->baseUrl.'&action=export&id_np='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
             array_push($table->data, $data);
         }
 
         html_print_table($table);
 
-        $output = '<div style="float:right;" class="">';
+        $output = '<div class="float-right">';
 
         $form = [
             'method' => 'POST',
@@ -987,6 +993,8 @@ class ModuleTemplates extends HTML
      */
     public function moduleTemplateForm()
     {
+        global $config;
+
         $createNewTemplate = ($this->id_np == 0) ? true : false;
 
         if ($createNewTemplate) {
@@ -1162,7 +1170,7 @@ class ModuleTemplates extends HTML
 
                         $blockComponentList = chop($blockComponentList, ',');
                         // Title of Block.
-                        $blockTitle = '<div style="padding-top: 8px;">';
+                        $blockTitle = '<div class="pdd_t_8px">';
                         $blockTitle .= $blockTable['name'];
                         $blockTitle .= '<div class="white_table_header_checkbox">';
                         $blockTitle .= html_print_input_image(
@@ -1173,6 +1181,7 @@ class ModuleTemplates extends HTML
                             true,
                             [
                                 'title'   => __('Delete this block'),
+                                'class'   => 'invert_filter',
                                 'onclick' => 'if(confirm(\''.__('Do you want delete this block?').'\')){deleteModuleTemplate(\'block\',\''.$blockComponentList.'\')};return false;',
                             ]
                         );
@@ -1182,7 +1191,7 @@ class ModuleTemplates extends HTML
                         $table = new StdClasS();
                         $table->class = 'databox data';
                         $table->width = '75%';
-                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+                        $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
                         $table->rowid = [];
                         $table->data = [];
 
@@ -1193,10 +1202,10 @@ class ModuleTemplates extends HTML
 
                         $table->head = [];
                         $table->head[0] = __('Module Name');
-                        $table->head[1] = '<span style="margin-left: 0">'.__('Format').'</span>';
-                        $table->head[2] = '<span style="text-align: center">'.__('Type').'</span>';
+                        $table->head[1] = '<span class="mrgn_lft_0px">'.__('Format').'</span>';
+                        $table->head[2] = '<span class="center">'.__('Type').'</span>';
                         $table->head[3] = __('Description');
-                        $table->head[4] = '<span style="float:right;margin-right:1.2em;">'.__('Delete').'</span>';
+                        $table->head[4] = '<span class="float-right mrgn_right_1.2em">'.__('Delete').'</span>';
 
                         $table->size = [];
                         $table->size[0] = '15%';
@@ -1218,7 +1227,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/network.png',
                                         true,
-                                        ['title' => __('Network module')]
+                                        [
+                                            'title' => __('Network module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1226,7 +1238,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/wmi.png',
                                         true,
-                                        ['title' => __('WMI module')]
+                                        [
+                                            'title' => __('WMI module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1234,7 +1249,10 @@ class ModuleTemplates extends HTML
                                     $formatInfo = html_print_image(
                                         'images/plugin.png',
                                         true,
-                                        ['title' => __('Plug-in module')]
+                                        [
+                                            'title' => __('Plug-in module'),
+                                            'class' => 'invert_filter',
+                                        ]
                                     );
                                 break;
 
@@ -1260,6 +1278,7 @@ class ModuleTemplates extends HTML
                                 true,
                                 [
                                     'title'   => __('Delete this module'),
+                                    'class'   => 'invert_filter',
                                     'onclick' => 'if(confirm(\''.__('Do you want delete this module?').'\')){deleteModuleTemplate(\'module\','.$module['component_id'].')};return false;',
                                 ]
                             );
@@ -1287,8 +1306,8 @@ class ModuleTemplates extends HTML
         );
 
         if ($createNewTemplate === false) {
-            echo '<div style="display:none;" id="modal"></div>';
-            echo '<div style="display:none;" id="msg"></div>';
+            echo '<div class="invisible" id="modal"></div>';
+            echo '<div class="invisible" id="msg"></div>';
         }
 
         $this->printGoBackButton($this->baseUrl);

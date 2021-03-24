@@ -406,6 +406,7 @@ function load_modal(settings) {
 // eslint-disable-next-line no-unused-vars
 function confirmDialog(settings) {
   var randomStr = uniqId();
+  var hideOkButton = "";
 
   if (settings.size == undefined) {
     settings.size = 350;
@@ -413,6 +414,10 @@ function confirmDialog(settings) {
 
   if (settings.maxHeight == undefined) {
     settings.maxHeight = 1000;
+  }
+  // You can hide the OK button.
+  if (settings.hideOkButton != undefined) {
+    hideOkButton = "invisible_important ";
   }
 
   if (typeof settings.message == "function") {
@@ -435,6 +440,7 @@ function confirmDialog(settings) {
       modal: true,
       buttons: [
         {
+          id: "cancel_btn_dialog",
           text: "Cancel",
           class:
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
@@ -447,6 +453,7 @@ function confirmDialog(settings) {
         {
           text: "Ok",
           class:
+            hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
           click: function() {
             $(this).dialog("close");

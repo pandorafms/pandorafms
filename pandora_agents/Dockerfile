@@ -1,15 +1,15 @@
-FROM centos:centos8
-MAINTAINER Pandora FMS Team <info@pandorafms.com>
+FROM centos:7
+LABEL maintainer="Pandora FMS Team <info@pandorafms.com>"
 
 # Add Pandora FMS agent installer
 ADD unix /opt/pandora/pandora_agent/unix
 
 RUN export LC_ALL=C
 
-RUN dnf install -y dnf-plugins-core; dnf config-manager --set-enabled PowerTools
+RUN yum -y update
 
 # Install dependencies
-RUN dnf -y install \
+RUN yum -y install \
 	epel-release \
 	unzip \
 	perl \
@@ -17,7 +17,7 @@ RUN dnf -y install \
 	sed \
 	perl-YAML-Tiny \
 	"perl(Sys::Syslog)" \
-	&& dnf clean all
+	&& yum clean all
 
  
 # Install Pandora FMS agent

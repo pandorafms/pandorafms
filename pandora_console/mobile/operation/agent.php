@@ -140,7 +140,7 @@ class Agent
         $ui->beginContent();
         if (empty($this->agent)) {
             $ui->contentAddHtml(
-                '<span style="color: red;">'.__('No agent found').'</span>'
+                '<span class="red">'.__('No agent found').'</span>'
             );
         } else {
             $ui->contentBeginGrid();
@@ -332,8 +332,8 @@ class Agent
             $options = $events->get_event_dialog_error_options($options);
             $ui->addDialog($options);
 
-            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' style='display:none;'>detail_event_hook</a>");
-            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' style='display:none;'>detail_event_dialog_error_hook</a>");
+            $ui->contentAddHtml("<a id='detail_event_dialog_hook' href='#detail_event_dialog' class='invisible'>detail_event_hook</a>");
+            $ui->contentAddHtml("<a id='detail_event_dialog_error_hook' href='#detail_event_dialog_error' class='invisible'>detail_event_dialog_error_hook</a>");
 
             $ui->contentBeginCollapsible(sprintf(__('Last %s Events'), $system->getPageSize()));
             $tabledata = $events->listEventsHtml(0, true, 'last_agent_events');

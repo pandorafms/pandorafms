@@ -38,14 +38,28 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image('images/list.png', true, ['title' => __('List categories')]).'</a>',
+            'text'   => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List categories'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 } else {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=galertas&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image('images/list.png', true, ['title' => __('List categories')]).'</a>',
+            'text'   => '<a href="index.php?sec=galertas&sec2=godmode/category/category&tab=list&pure='.(int) $config['pure'].'">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List categories'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 }
@@ -125,13 +139,29 @@ if (!empty($result)) {
 
         if (defined('METACONSOLE')) {
             $data[0] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
-            $data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>&nbsp;&nbsp;';
-            $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
+            $data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
+                'images/config.png',
+                true,
+                ['title' => 'Edit']
+            ).'</a>&nbsp;&nbsp;';
+            $data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+                'images/cross.png',
+                true,
+                ['title' => 'Delete']
+            ).'</a>';
         } else {
             $data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
             $table->cellclass[][1] = 'action_buttons';
-            $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
-            $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
+            $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
+                'images/config.png',
+                true,
+                ['title' => 'Edit']
+            ).'</a>';
+            $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+                'images/cross.png',
+                true,
+                ['title' => 'Delete']
+            ).'</a>';
         }
 
         array_push($table->data, $data);
@@ -145,7 +175,7 @@ if (!empty($result)) {
 }
 
 // Form to add new categories or search categories
-echo "<div style='width=100%; float:right;'>";
+echo "<div class='w100p right_align'>";
 if (defined('METACONSOLE')) {
     echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
 } else {

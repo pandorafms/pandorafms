@@ -146,7 +146,7 @@ class WelcomeWindow extends Wizard
     public function run()
     {
         ui_require_css_file('new_installation_welcome_window');
-        echo '<div id="welcome_modal_window" style="display: none"; >';
+        echo '<div id="welcome_modal_window" class="invisible"; >';
 
         ?>
     <script type="text/javascript">
@@ -336,6 +336,7 @@ class WelcomeWindow extends Wizard
     public function loadWelcomeWindow()
     {
         global $config;
+
         $btn_configure_mail_class = 'pending';
         $btn_create_agent_class = 'pending';
         $btn_create_module_class = '';
@@ -435,7 +436,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_configure_mail_class.'"',
+                            'attributes' => 'class="go '.$btn_configure_mail_class.' second_background"',
                             'name'       => 'btn_email_conf',
                             'id'         => 'btn_email_conf',
                         ],
@@ -469,7 +470,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_agent_class.'"',
+                            'attributes' => 'class="go '.$btn_create_agent_class.' second_background"',
                             'name'       => 'btn_create_agent',
                             'id'         => 'btn_create_agent',
                         ],
@@ -494,7 +495,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_module_class.'"',
+                            'attributes' => 'class="go '.$btn_create_module_class.' second_background"',
                             'name'       => 'btn_create_module',
                             'id'         => 'btn_create_module',
                         ],
@@ -519,7 +520,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_alert_class.'"',
+                            'attributes' => 'class="go '.$btn_create_alert_class.' second_background"',
                             'name'       => 'btn_create_alert',
                             'id'         => 'btn_create_alert',
                         ],
@@ -544,7 +545,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_discovery_class.'"',
+                            'attributes' => 'class="go '.$btn_create_discovery_class.' second_background"',
                             'name'       => 'btn_discover_devices',
                             'id'         => 'btn_discover_devices',
                         ],

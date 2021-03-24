@@ -1056,6 +1056,9 @@ class DiscoveryTaskList extends HTML
                         case DISCOVERY_CLOUD_AZURE_COMPUTE:
                         return 'wiz=cloud&mode=azure&ki='.$task['auth_strings'].'&sub=compute&page=0';
 
+                        case DISCOVERY_CLOUD_AWS_S3:
+                        return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
+
                         default:
                         return 'wiz=cloud';
                     }
@@ -1081,9 +1084,6 @@ class DiscoveryTaskList extends HTML
 
             case DISCOVERY_CLOUD_AWS_RDS:
             return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=rds&page=0';
-
-            case DISCOVERY_CLOUD_AWS_S3:
-            return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
 
             case DISCOVERY_APP_SAP:
             return 'wiz=app&mode=SAP&page=0';

@@ -891,13 +891,6 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
-    if (!is_metaconsole()) {
-        $types['nt_top_n'] = [
-            'optgroup' => __('Network traffic'),
-            'name'     => __('Network Traffic Top N'),
-        ];
-    }
-
     if ($template === false) {
         $types['permissions_report'] = [
             'optgroup' => __('Permissions report'),

@@ -322,8 +322,8 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
 			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title" class="pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
-			<td class="icon" class="right pdd_r_3px">';
+			<td class="title pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
+			<td class="icon right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.

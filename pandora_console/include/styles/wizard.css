@@ -9,8 +9,8 @@ ul.wizard {
 }
 
 ul.wizard li {
-  padding-bottom: 10px;
-  padding-top: 10px;
+  padding-bottom: 0px;
+  padding-top: 0px;
 }
 
 ul.wizard.inline li {

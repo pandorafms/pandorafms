@@ -148,7 +148,8 @@ class ConsoleSupervisor
      */
     public function runBasic()
     {
-        global $config;
+        // Ensure functions are installed and up to date.
+        enterprise_hook('cron_extension_install_functions');
 
         /*
          * PHP configuration warnings:

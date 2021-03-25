@@ -3283,7 +3283,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     echo '</tbody>';
                     ?>
                     <tbody id="sla_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
@@ -3687,7 +3687,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     ?>
 
                     <tbody id="general_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php

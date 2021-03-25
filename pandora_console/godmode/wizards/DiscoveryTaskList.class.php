@@ -515,19 +515,21 @@ class DiscoveryTaskList extends HTML
             }
 
             // Task name.
-            $table->headstyle[1] .= 'min-width: 150px; width: 300px;';
+            $table->headstyle[1] .= 'min-width: 170px; width: 300px;';
+            // Server Name.
+            $table->headstyle[2] .= 'min-width: 130px; width: 400px;';
             // Name.
             $table->headstyle[4] .= 'min-width: 100px; width: 400px;';
             // Status.
-            $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
+            $table->headstyle[5] .= 'min-width: 70px; width: 190px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 200px; width: 200px;';
+            $table->headstyle[6] .= 'min-width: 190px; width: 200px;';
             // Progress.
-            $table->headstyle[7] .= 'min-width: 50px; width: 150px;';
+            $table->headstyle[7] .= 'min-width: 60px; width: 150px;';
             // Updated at.
             $table->headstyle[8] .= 'min-width: 50px; width: 150px;';
             // Operations.
-            $table->headstyle[9] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[9] .= 'min-width: 150px; width: 250px;';
 
             if (check_acl($config['id_user'], 0, 'AW')) {
                 $table->head[0] = __('Force');
@@ -850,7 +852,7 @@ class DiscoveryTaskList extends HTML
 
                         $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[9] .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
                             [
                                 'title' => __('View summary'),

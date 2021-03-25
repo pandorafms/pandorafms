@@ -242,14 +242,6 @@ $table->data[$i++][1] = html_print_checkbox_switch_extended(
     true
 );
 
-$table->data[$i][0] = __('Enable Network Traffic Analyzer');
-$table->data[$i++][1] = html_print_switch(
-    [
-        'name'  => 'activate_nta',
-        'value' => $config['activate_nta'],
-    ]
-);
-
 
 $zone_name = [
     'Africa'     => __('Africa'),

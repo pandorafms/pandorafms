@@ -77,3 +77,4 @@ pandora_console/extensions/net_tools.php
 include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php
+operation/network/network_explorer.php

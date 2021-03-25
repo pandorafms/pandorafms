@@ -521,7 +521,10 @@ final class DBMaintainer
             $target_mr = $matches[1];
         }
 
-        $active_mr = (int) Config::get('MR', null);
+        // Active database MR version.
+        $active_mr = (int) Config::get('MR', 0);
+
+        // Historical database MR version.
         $last_mr_curr = (int) $this->getValue(
             'tconfig',
             'value',
@@ -575,18 +578,19 @@ final class DBMaintainer
                     $err .= $last_mr_curr.': ';
                     $this->lastError = $err.$this->lastError;
                     return false;
+                } else {
+                    // Update MR value.
+                    $this->setConfigToken('MR', $last_mr_curr);
                 }
             }
         }
 
-        if ($last_mr_curr === $active_mr) {
-            $this->setConfigToken('MR', $last_mr_curr);
-
-            return true;
+        if ($last_mr_curr !== $active_mr) {
+            $this->lastError = 'Unknown database schema version, check MR in both active and historical database';
+            return false;
         }
 
-        $this->lastError = 'Unknown database schema version, check MR in both active and historical database';
-        return false;
+        return true;
     }
 
 
@@ -711,6 +715,9 @@ final class DBMaintainer
                 // MR are loaded in transactions.
                 include_once $config['homedir'].'/include/db/mysql.php';
                 $return = db_run_sql_file($path);
+                if ($return === false) {
+                    $this->lastError = $config['db_run_sql_file_error'];
+                }
 
                 // Revert global variable.
                 $config['dbhost'] = $backup_dbhost;

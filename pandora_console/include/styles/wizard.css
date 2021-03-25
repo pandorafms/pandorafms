@@ -9,8 +9,8 @@ ul.wizard {
 }
 
 ul.wizard li {
-  padding-bottom: 0px;
-  padding-top: 0px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }
 
 ul.wizard.inline li {
@@ -164,4 +164,12 @@ ul.wizard li > textarea {
 .searchbox ul li.textbox {
   justify-content: space-evenly !important;
   flex: 1 1 auto;
+}
+
+ul.wizard li.mrgn_0px {
+  margin: 0;
+}
+
+ul.wizard li.pdd_0px {
+  padding: 0;
 }

@@ -2208,24 +2208,26 @@ function html_print_input_text_extended(
 
 
 /**
- * Render an input password element.
+ * Render a section <div> html element.
  *
- * The element will have an id like: "password-$name"
- *
- * @param mixed parameters:
+ * @param array   $options Parameters:
  *             - id: string
  *             - style: string
+ *             - class: string
+ *             - title: string
  *             - hidden: boolean
- *             - content: string
- * @param bool return or echo flag
+ *             - content: string.
+ * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_div($options, $return=false)
-{
+function html_print_div(
+    array $options,
+    bool $return=false
+) {
     $output = '<div';
 
-    // Valid attributes (invalid attributes get skipped)
+    // Valid attributes (invalid attributes get skipped).
     $attrs = [
         'id',
         'style',
@@ -2262,13 +2264,14 @@ function html_print_div($options, $return=false)
 
 
 /**
- * Render an anchor html element.
+ * Render an anchor <a> html element.
  *
  * @param array   $options Parameters
- *                - id: string
- *                - style: string
- *                - title: string
+ *                - id: string.
+ *                - style: string.
+ *                - title: string.
  *                - href: string.
+ *                - content: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.

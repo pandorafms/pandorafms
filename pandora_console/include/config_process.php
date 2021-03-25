@@ -97,7 +97,7 @@ require_once $ownDir.'functions.php';
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
-if (!is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl']) || !is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl_static'])) {
+if (!is_dir($config['homedir'])) {
     $url = explode('/', $_SERVER['REQUEST_URI']);
     $flag_url = 0;
     foreach ($url as $key => $value) {

@@ -50,7 +50,7 @@
   width: 100%;
 }
 
-li:hover ul {
+.menu_full li:hover ul {
   display: block;
 }
 

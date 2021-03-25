@@ -3770,6 +3770,7 @@ function ui_print_event_priority(
  * @param string       $attributes_switch Switch attributes.
  * @param string       $toggl_attr        Main box extra attributes.
  * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
+ * @param string|null  $switch_name       Use custom switch input name or generate one.
  *
  * @return string HTML.
  */
@@ -3790,7 +3791,8 @@ function ui_toggle(
     $switch=false,
     $attributes_switch='',
     $toggl_attr='',
-    $switch_on=null
+    $switch_on=null,
+    $switch_name=null
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3826,7 +3828,7 @@ function ui_toggle(
             $main_class = '';
         }
 
-        if (empty($container_class) === true) {
+        if ($container_class == 'white-box-content') {
             $container_class = 'white-box-content-clean';
         }
     }
@@ -3836,11 +3838,15 @@ function ui_toggle(
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
+            if (empty($switch_name) === true) {
+                $switch_name = 'box_enable_toggle'.$uniqid;
+            }
+
             $output .= html_print_div(
                 [
                     'class'   => 'float-left',
                     'content' => html_print_checkbox_switch_extended(
-                        'box_enable_toggle'.$uniqid,
+                        $switch_name,
                         1,
                         ($switch_on === null) ? (($hidden_default === true) ? 0 : 1) : $switch_on,
                         false,
@@ -3910,7 +3916,7 @@ function ui_toggle(
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
-    $output .= "		$('#checkbox-box_enable_toggle".$uniqid."').click(function() {\n";
+    $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
     $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
@@ -3925,13 +3931,13 @@ function ui_toggle(
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', true);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', false);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";
     $output .= "		});\n";
     $output .= "	});\n";
@@ -3951,23 +3957,24 @@ function ui_toggle(
  * Simplified way of ui_toggle ussage.
  *
  * @param array $data Arguments:
- * 'content'
- * 'name'
- * 'title'
- * 'id'
- * 'hidden_default'
- * 'return'
- * 'toggle_class'
- * 'container_class'
- * 'main_class'
- * 'img_a'
- * 'img_b'
- * 'clean'
- * 'reverseImg'
- * 'switch'
- * 'attributes_switch'
- * 'toggl_attr'
- * 'switch_on'.
+ *  - content
+ *  - name
+ *  - title
+ *  - id
+ *  - hidden_default
+ *  - return
+ *  - toggle_class
+ *  - container_class
+ *  - main_class
+ *  - img_a
+ *  - img_b
+ *  - clean
+ *  - reverseImg
+ *  - switch
+ *  - attributes_switch
+ *  - toggl_attr
+ *  - switch_on
+ *  - switch_name.
  *
  * @return string HTML code with toggle content.
  */
@@ -3990,7 +3997,8 @@ function ui_print_toggle($data)
         (isset($data['switch']) === true) ? $data['switch'] : false,
         (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
         (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : '',
-        (isset($data['switch_on']) === true) ? $data['switch_on'] : null
+        (isset($data['switch_on']) === true) ? $data['switch_on'] : null,
+        (isset($data['switch_name']) === true) ? $data['switch_name'] : null
     );
 }
 
@@ -5703,6 +5711,12 @@ function ui_print_module_string_value(
     // without HTML entities.
     if ($is_web_content_string) {
         $value = io_safe_input($value);
+    }
+
+    $is_snapshot = is_snapshot_data($module['datos']);
+    $is_large_image = is_text_to_black_string($module['datos']);
+    if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+        $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
     }
 
     $is_snapshot = is_snapshot_data($value);

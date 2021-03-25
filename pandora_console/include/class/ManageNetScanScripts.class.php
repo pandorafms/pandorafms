@@ -47,8 +47,8 @@ class ManageNetScanScripts extends Wizard
      * @var array
      */
     public $pageLabels = [
-        'List net scan scripts',
-        'Operation net scan cripts',
+        'List NetScan scripts',
+        'Operation NetScan scripts',
     ];
 
 

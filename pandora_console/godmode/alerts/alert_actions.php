@@ -61,6 +61,11 @@ if (defined('METACONSOLE')) {
     $sec = 'galertas';
 }
 
+$can_edit_all = false;
+if (check_acl_restricted_all($config['id_user'], 0, 'LM')) {
+    $can_edit_all = true;
+}
+
 // Header.
 if (defined('METACONSOLE')) {
     alerts_meta_print_header();
@@ -79,30 +84,13 @@ if ($copy_action) {
 
     $al_action = alerts_get_alert_action($id);
 
-    if (!check_acl_restricted_all($config['id_user'], $al_action['id_group'], 'LM')) {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to access Alert Management'
-        );
-        include 'general/noaccess.php';
-        exit;
-    }
-
     if ($al_action !== false) {
-        // If user tries to copy an action with group=ALL.
-        if ($al_action['id_group'] == 0) {
-            // Then must have "PM" access privileges.
-            if (! check_acl($config['id_user'], 0, 'PM')) {
-                db_pandora_audit(
-                    'ACL Violation',
-                    'Trying to access Alert Management'
-                );
-                include 'general/noaccess.php';
-                exit;
-            }
+        // If user who doesn't have permission to modify group all tries to copy an action with group=ALL.
+        if ($can_edit_all == false && $al_action['id_group'] == 0) {
+            $al_action['id_group'] = users_get_first_group(false, 'LM', false);
         } else {
             $own_info = get_user_info($config['id_user']);
-            if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
+            if ($can_edit_all == true || check_acl($config['id_user'], 0, 'PM')) {
                 $own_groups = array_keys(
                     users_get_groups($config['id_user'], 'LM')
                 );
@@ -125,7 +113,7 @@ if ($copy_action) {
         }
     }
 
-    $result = alerts_clone_alert_action($id);
+    $result = alerts_clone_alert_action($id, $al_action['id_group']);
 
     if ($result) {
         db_pandora_audit(
@@ -397,10 +385,9 @@ foreach ($actions as $action) {
 
     $data = [];
 
-    if (check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')) {
-        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.$action['name'].'</a>';
-    } else {
-        $data[0] = $action['name'];
+    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'&pure='.$pure.'">'.$action['name'].'</a>';
+    if ($action['id_group'] == 0 && $can_edit_all == false) {
+        $data[0] .= ui_print_help_tip(__('You cannot edit this action, You don\'t have the permission to edit All group.'), true);
     }
 
     $data[1] = $action['command_name'];
@@ -420,7 +407,7 @@ foreach ($actions as $action) {
     $data[4] = '';
 
     if (is_central_policies_on_node() === false
-        && check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')
+        && check_acl($config['id_user'], $action['id_group'], 'LM')
     ) {
         $table->cellclass[] = [
             3 => 'action_buttons',
@@ -430,10 +417,35 @@ foreach ($actions as $action) {
         $id_action = $action['id'];
         $text_confirm = __('Are you sure?');
 
-        $data[3] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions" 
-        onClick="copy_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
-        $data[4] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions"
-        onClick="delete_action('.$id_action.',\''.$text_confirm.'\');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
+        $data[3] = '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.$text_confirm.'\')) return false;">';
+        $data[3] .= html_print_input_hidden('copy_action', 1, true);
+        $data[3] .= html_print_input_hidden('id', $id_action, true);
+        $data[3] .= html_print_input_image(
+            'dup',
+            'images/copy.png',
+            1,
+            '',
+            true,
+            ['title' => __('Duplicate')]
+        );
+        $data[3] .= '</form> ';
+
+        if ($action['id_group'] != 0 || $can_edit_all == true) {
+            $data[4] = '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.$text_confirm.'\')) return false;">';
+            $data[4] .= html_print_input_hidden('delete_action', 1, true);
+            $data[4] .= html_print_input_hidden('id', $id_action, true);
+            $data[4] .= html_print_input_image(
+                'del',
+                'images/cross.png',
+                1,
+                '',
+                true,
+                ['title' => __('Delete')]
+            );
+            $data[4] .= '</form> ';
+        } else {
+            $data[4] = '';
+        }
     }
 
     array_push($table->data, $data);
@@ -458,44 +470,3 @@ if (is_central_policies_on_node() === false) {
 
 enterprise_hook('close_meta_frame');
 ?>
-
-<script type="text/javascript">
-
-function copy_action(id_action, text_confirm) {
-    if (!confirm(text_confirm)) {
-        return false;
-    } else {
-        jQuery.post ("ajax.php",
-            {
-            "page" : "godmode/alerts/alert_actions",
-            "copy_action" : 1,
-            "id" : id_action
-            },
-            function (data, status) {
-                // No data.
-            },
-            "json"
-        );
-    }
-}
-
-function delete_action(id_action, text_confirm) {
-    if (!confirm(text_confirm)) {
-        return false;
-    } else {
-        jQuery.post ("ajax.php",
-            {
-            "page" : "godmode/alerts/alert_actions",
-            "delete_action" : 1,
-            "id" : id_action
-            },
-            function (data, status) {
-                // No data.
-            },
-            "json"
-        );
-    }
-}
-
-</script>
-

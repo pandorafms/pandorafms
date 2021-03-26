@@ -28,12 +28,6 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     exit;
 }
 
-if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
-    echo "<div id='message_permissions'  title='".__('Permissions warning')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('Command management is limited to administrator users or user profiles with permissions over Pandora FMS management').'</p>';
-    echo '</div>';
-}
-
 if (is_metaconsole()) {
     $sec = 'advanced';
 } else {
@@ -463,6 +457,17 @@ if (is_ajax()) {
     }
 
     return;
+}
+
+// This check should be after ajax. Because, ajax will be called from configure_alert_action.
+if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user
+'])) {
+    echo "<div id='message_permissions'  title='".__('Permissions warning')."' s
+tyle='display:none;'>";
+    echo "<p style='text-align: center;font-weight: bold;'>".__('Command managem
+ent is limited to administrator users or user profiles with permissions over Pan
+dora FMS management').'</p>';
+    echo '</div>';
 }
 
 enterprise_hook('open_meta_frame');

@@ -1086,6 +1086,11 @@ li.ui-btn {
   border-radius: 0px;
 }
 
+.center {
+  margin: 0 auto;
+  text-align: center;
+}
+
 /* For mobiles */
 @media screen and (max-width: 750px) {
   .ui-content > .ui-btn {

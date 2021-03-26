@@ -286,9 +286,28 @@ class Agent
                 ];
             }
 
+            // Module searchbox.
+            $ui->beginForm('javascript:agent_filter_modules();');
+            $ui->formAddInput(
+                [
+                    'id'   => 'filter-modules',
+                    'name' => 'filter-modules',
+                ]
+            );
+            $ui->formAddInput(
+                [
+                    'id'    => 'filter-modules',
+                    'name'  => 'filter-modules',
+                    'type'  => 'submit',
+                    'value' => __('Search'),
+                ]
+            );
+            $filtering = $ui->getEndForm();
+
             $modules->setFilters($filters);
             $modules->disabledColumns(['agent']);
             $ui->contentBeginCollapsible(__('Modules'));
+            $ui->contentCollapsibleAddItem($filtering);
             $ui->contentCollapsibleAddItem($modules->listModulesHtml(0, true));
             $ui->contentEndCollapsible();
 
@@ -389,11 +408,74 @@ class Agent
 					set_same_heigth();
 				}
 			});
+
+            function agent_filter_modules() {
+                $.mobile.showPageLoadingMsg();
+                $.ajax ({
+                    type: 'POST',
+                    url: 'index.php',
+                    dataType: 'text',
+                    data: {
+                        'action': 'ajax',
+                        'parameter1': 'agent',
+                        'id': ".$this->id.",
+                        'parameter2': 'filter-modules',
+                        'filter': $('#filter-modules').val()
+                    },
+                    success: function(r) {
+                        $.mobile.hidePageLoadingMsg();
+                        var className = $('#list_agent_Modules').attr('class');
+                        $('#list_agent_Modules').parent().html(r);
+                        $('#list_agent_Modules').addClass(className);
+                    },
+                    error: function(r, t, e) {
+                        $.mobile.hidePageLoadingMsg();
+                        console.error(e);
+                    }
+                });
+            }
+
 			</script>"
         );
 
         $ui->endContent();
         $ui->showPage();
+    }
+
+
+    /**
+     * Bob do something!
+     *
+     * @return void
+     */
+    public function ajax($parameter2=null)
+    {
+        $system = System::getInstance();
+
+        if ($parameter2 === 'filter-modules') {
+            $name_filter = $system->getRequest('filter', '');
+            $modules = new Modules();
+
+            if ($system->getConfig('metaconsole')) {
+                $filters = [
+                    'id_agent'    => $this->agent['id_tagente'],
+                    'all_modules' => true,
+                    'status'      => -1,
+                    'name'        => $name_filter,
+                ];
+            } else {
+                $filters = [
+                    'id_agent'    => $this->id,
+                    'all_modules' => true,
+                    'status'      => -1,
+                    'name'        => $name_filter,
+                ];
+            }
+
+            $modules->setFilters($filters);
+            $modules->disabledColumns(['agent']);
+            echo $modules->listModulesHtml(0, true);
+        }
     }
 
 

@@ -333,7 +333,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output .= '</td>
 		</tr>
 		<tr>
-			<td class="black pdd_t_10px">'.$text_message.'</td>
+			<td class="black pdd_t_10px" style="color: #000">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';

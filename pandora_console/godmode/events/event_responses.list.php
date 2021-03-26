@@ -86,7 +86,7 @@ foreach ($event_responses as $response) {
 html_print_table($table);
 
 
-echo '<div class="w100p right">';
+echo '<div class="w100p right_align">';
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
 html_print_submit_button(
     __('Create response'),

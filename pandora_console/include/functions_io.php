@@ -227,7 +227,7 @@ function io_safe_output_array(&$item, $key=false, $utf8=true)
  * @param string|array $value String or array of strings to be cleaned.
  * @param boolean      $utf8  Flag, set the output encoding in utf8, by default true.
  *
- * @return unknown_type
+ * @return mixed
  */
 function io_safe_output($value, $utf8=true)
 {

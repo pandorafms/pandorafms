@@ -9,6 +9,10 @@ if (!is_ajax()) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+
+// Require also some stuff from Pandora FMS.
+enterprise_include('include/functions_metaconsole.php');
+
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
 use Models\VisualConsole\Item as Item;
@@ -109,7 +113,7 @@ if ($getVisualConsole === true) {
         $ratio
     );
 
-    echo '['.implode($vcItems, ',').']';
+    echo '['.implode(',', $vcItems).']';
     return;
 } else if ($getVisualConsoleItem === true
     || $updateVisualConsoleItem === true
@@ -121,6 +125,7 @@ if ($getVisualConsole === true) {
     } catch (Throwable $e) {
         // Bad params.
         http_response_code(400);
+        hd($e);
         return;
     }
 
@@ -245,7 +250,9 @@ if ($getVisualConsole === true) {
     $item = VisualConsole::getItemFromDB($itemId);
     $data = $item->toArray();
     $data['id_layout'] = $visualConsoleId;
-    if ($data['type'] === LINE_ITEM) {
+    if ($data['type'] === LINE_ITEM
+        || $data['type'] === NETWORK_LINK
+    ) {
         $data['endX'] = ($data['endX'] + 20);
         $data['endY'] = ($data['endY'] + 20);
         $data['startX'] = ($data['startX'] + 20);

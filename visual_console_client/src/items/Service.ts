@@ -68,6 +68,14 @@ export default class Service extends Item<ServiceProps> {
       element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
       element.style.backgroundSize = "contain";
       element.style.backgroundPosition = "center";
+      if (this.props.encodedTitle !== null) {
+        element.className = "service image forced_title";
+        element.setAttribute("data-use_title_for_force_title", "1");
+        element.setAttribute(
+          "data-title",
+          decodeBase64(this.props.encodedTitle)
+        );
+      }
     } else if (this.props.encodedTitle !== null) {
       element.innerHTML = decodeBase64(this.props.encodedTitle);
     }
@@ -84,6 +92,14 @@ export default class Service extends Item<ServiceProps> {
       element.style.background = `url(${this.props.statusImageSrc}) no-repeat`;
       element.style.backgroundSize = "contain";
       element.style.backgroundPosition = "center";
+      if (this.props.encodedTitle !== null) {
+        element.className = "service image forced_title";
+        element.setAttribute("data-use_title_for_force_title", "1");
+        element.setAttribute(
+          "data-title",
+          decodeBase64(this.props.encodedTitle)
+        );
+      }
       element.innerHTML = "";
     } else if (this.props.encodedTitle !== null) {
       element.innerHTML = decodeBase64(this.props.encodedTitle);

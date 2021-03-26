@@ -134,7 +134,7 @@ class Groups
             $ui->contentAddHtml('<ul data-role="listview" class="groups_sublist">');
 
             $ui->contentAddHtml(
-                '<li data-icon="false"><a href="'.sprintf($url_agent, $group['_id_'], AGENT_STATUS_ALL).'">'.'<span class="name_count">'.html_print_image('images/agent.png', true, false, false, false, false, true).__('Total agents').'</span>'.'<span class="number_count">'.$group['_total_agents_'].'</span>'.'</a></li>'
+                '<li data-icon="false"><a href="'.sprintf($url_agent, $group['_id_'], AGENT_STATUS_ALL).'">'.'<span class="name_count">'.html_print_image('images/agent.png', true, ['class' => 'invert_filter'], false, false, false, true).__('Total agents').'</span>'.'<span class="number_count">'.$group['_total_agents_'].'</span>'.'</a></li>'
             );
             $ui->contentAddHtml(
                 '<li data-icon="false"><a href="'.sprintf($url_agent, $group['_id_'], AGENT_STATUS_NOT_INIT).'">'.'<span class="name_count">'.html_print_image('images/agent_notinit.png', true, false, false, false, false, true).__('Agents not init').'</span>'.'<span class="number_count">'.$group['_agents_not_init_'].'</span>'.'</a></li>'

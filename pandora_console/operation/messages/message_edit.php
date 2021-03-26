@@ -48,7 +48,10 @@ $buttons['message_list'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">'.html_print_image(
         'images/email_inbox.png',
         true,
-        ['title' => __('Received messages')]
+        [
+            'title' => __('Received messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -57,7 +60,10 @@ $buttons['sent_messages'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">'.html_print_image(
         'images/email_outbox.png',
         true,
-        ['title' => __('Sent messages')]
+        [
+            'title' => __('Sent messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -66,7 +72,10 @@ $buttons['create_message'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image(
         'images/new_message.png',
         true,
-        ['title' => __('Create message')]
+        [
+            'title' => __('Create message'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -206,23 +215,6 @@ if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
         $return,
         __('Message successfully sent to user %s', $user_name),
         __('Error sending message to user %s', $user_name)
-    );
-}
-
-// Create message (destination group).
-if (($new_msg) && ($dst_group != '') && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [],
-        [$dst_group],
-        $subject,
-        $message
-    );
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent'),
-        __('Error sending message to group %s', groups_get_name($dst_group))
     );
 }
 

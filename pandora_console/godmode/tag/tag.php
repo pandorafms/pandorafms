@@ -116,7 +116,14 @@ if (is_metaconsole()) {
 $buttons = [
     'list' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+        'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('List tags'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
 ];
 
@@ -253,7 +260,11 @@ if (!empty($result)) {
 
         // The tooltip needs a title on the item, don't delete the title
         $data[3] = '<a class="tag_details img_help" title="'.__('Tag details').'"
-			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image('images/zoom.png', true).'</a> ';
+			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image(
+            'images/zoom.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a> ';
 
         $modules_count = 0;
         if (is_metaconsole() && !empty($servers)) {
@@ -281,7 +292,11 @@ if (!empty($result)) {
         if ($email_large == $email_small) {
             $output = $email_large;
         } else {
-            $output = "<div title='".sprintf(__('Emails for the tag: %s'), $tag['name'])."' style='display: none;' class='email_large' id='email_large_".$tag['id_tag']."'>".$email_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$email_small.'</span> '."<a href='javascript: show_dialog(".$tag['id_tag'].")'>".html_print_image('images/rosette.png', true).''.'</a></span>';
+            $output = "<div title='".sprintf(__('Emails for the tag: %s'), $tag['name'])."' class='email_large invisible' id='email_large_".$tag['id_tag']."'>".$email_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$email_small.'</span> '."<a href='javascript: show_dialog(".$tag['id_tag'].")'>".html_print_image(
+                'images/rosette.png',
+                true,
+                ['class' => 'invert_filter']
+            ).''.'</a></span>';
         }
 
         $data[4] = $output;
@@ -291,14 +306,32 @@ if (!empty($result)) {
         if ($phone_large == $phone_small) {
             $output = $phone_large;
         } else {
-            $output = "<div title='".sprintf(__('Phones for the tag: %s'), $tag['name'])."' style='display: none;' class='phone_large' id='phone_large_".$tag['id_tag']."'>".$phone_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> '."<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>".html_print_image('images/rosette.png', true).''.'</a></span>';
+            $output = "<div title='".sprintf(__('Phones for the tag: %s'), $tag['name'])."' class='phone_large invisible' id='phone_large_".$tag['id_tag']."'>".$phone_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> '."<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>".html_print_image(
+                'images/rosette.png',
+                true,
+                ['class' => 'invert_filter']
+            ).''.'</a></span>';
         }
 
         $data[5] = $output;
 
         $table->cellclass[][6] = 'action_buttons';
-        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
-        $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
+        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image(
+            'images/config.png',
+            true,
+            [
+                'title' => 'Edit',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
+        $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => 'Delete',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         array_push($table->data, $data);
     }
 

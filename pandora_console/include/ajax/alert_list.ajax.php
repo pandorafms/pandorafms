@@ -423,7 +423,7 @@ if ($show_update_action_menu) {
     );
 
     $data .= '<form id="update_action-'.$alert['id'].'" method="post">';
-    $data .= '<table class="databox_color" style="width:100%">';
+    $data .= '<table class="databox_color w100p">';
         $data .= html_print_input_hidden(
             'update_action',
             1,
@@ -436,7 +436,7 @@ if ($show_update_action_menu) {
         );
     if (! $id_agente) {
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+            $data .= '<td class="datos2 bolder_6px">';
             $data .= __('Agent').'&nbsp;'.ui_print_help_icon(
                 'alert_scalate',
                 true,
@@ -457,7 +457,7 @@ if ($show_update_action_menu) {
     }
 
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos" style="font-weight:bold;padding:6px;">';
+            $data .= '<td class="datos bolder_6px">';
             $data .= __('Module');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -472,7 +472,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+            $data .= '<td class="datos2 bolder_6px">';
                 $data .= __('Action');
             $data .= '</td>';
             $data .= '<td class="datos2">';
@@ -493,7 +493,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos">';
-            $data .= '<td class="datos" style="font-weight:bold;padding:6px;">';
+            $data .= '<td class="datos bolder_6px">';
                 $data .= __('Number of alerts match from');
             $data .= '</td>';
             $data .= '<td class="datos">';
@@ -517,7 +517,7 @@ if ($show_update_action_menu) {
             $data .= '</td>';
         $data .= '</tr>';
         $data .= '<tr class="datos2">';
-            $data .= '<td class="datos2" style="font-weight:bold;padding:6px;">';
+            $data .= '<td class="datos2 bolder_6px">';
                 $data .= __('Threshold');
             $data .= '</td>';
             $data .= '<td class="datos2">';

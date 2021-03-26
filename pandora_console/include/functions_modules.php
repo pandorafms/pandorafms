@@ -675,6 +675,8 @@ function modules_create_agent_module(
     $time = 0;
     if (empty($values['interval']) === false) {
         $time = (time() - (int) $values['interval']);
+    } else {
+        $values['interval'] = null;
     }
 
     $result = db_process_sql_insert(
@@ -806,7 +808,7 @@ function modules_format_verbatim($data)
     // We need to replace \n by <br> to create a "similar" output to
     // information recolected in logs.
     $data2 = preg_replace("/\\n/", '<br>', $data);
-    return "<span style='font-size:10px;'>".$data2.'</span>';
+    return "<span class='font_10px'>".$data2.'</span>';
 }
 
 
@@ -842,7 +844,7 @@ function modules_format_delete($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -863,7 +865,7 @@ function modules_format_delete_string($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -884,7 +886,7 @@ function modules_format_delete_log4x($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -3485,6 +3487,7 @@ function get_module_realtime_link_graph($module)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Realtime SNMP graph'),
+            'class'  => 'invert_filter',
         ]
     );
     $link_button .= '</a>';

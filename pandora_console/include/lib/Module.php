@@ -34,10 +34,16 @@ use PandoraFMS\Agent;
 use PandoraFMS\ModuleType;
 
 /**
- * PandoraFMS agent entity.
+ * PandoraFMS module entity.
  */
 class Module extends Entity
 {
+
+    const INTERFACE_STATUS = 1;
+    const INTERFACE_INOCTETS = 2;
+    const INTERFACE_OUTOCTETS = 3;
+    const INTERFACE_HC_INOCTETS = 4;
+    const INTERFACE_HC_OUTOCTETS = 5;
 
     /**
      * Module status (From tagente_estado).
@@ -85,8 +91,10 @@ class Module extends Entity
      * @return PandoraFMS\Module found or null if not found.
      * @throws \Exception On error.
      */
-    public static function search(array $params, ?int $limit=0)
-    {
+    public static function search(
+        array $params,
+        ?int $limit=0
+    ) {
         if (empty($params) === true) {
             return null;
         }
@@ -186,20 +194,39 @@ class Module extends Entity
      *
      * @param integer|null $id_agent_module Module id.
      * @param boolean      $link_agent      Link agent object.
+     * @param integer|null $nodeId          Target node (if metaconsole
+     *                                      environment).
      *
      * @throws \Exception On error.
      */
     public function __construct(
         ?int $id_agent_module=null,
-        bool $link_agent=false
+        bool $link_agent=false,
+        ?int $nodeId=null
     ) {
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
-            parent::__construct(
-                'tagente_modulo',
-                ['id_agente_modulo' => $id_agent_module]
-            );
+            if ($nodeId > 0) {
+                $this->nodeId = $nodeId;
+            }
+
+            try {
+                // Connect to node if needed.
+                $this->connectNode();
+
+                parent::__construct(
+                    'tagente_modulo',
+                    ['id_agente_modulo' => $id_agent_module]
+                );
+
+                // Restore.
+                $this->restoreConnection();
+            } catch (\Exception $e) {
+                $this->restoreConnection();
+                // Forward exception.
+                throw $e;
+            }
 
             if ($this->nombre() === 'delete_pending') {
                 return null;
@@ -223,14 +250,22 @@ class Module extends Entity
         }
 
         try {
+            // Connect to node if needed.
+            $this->connectNode();
+
             // Customize certain fields.
             $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
+
+            // Restore.
+            $this->restoreConnection();
         } catch (\Exception $e) {
+            // Restore.
+            $this->restoreConnection();
+
             $this->status = new Modulestatus();
         }
 
         // Customize certain fields.
-        $this->status = new ModuleStatus($this->fields['id_agente_modulo']);
         $this->moduleType = new ModuleType($this->id_tipo_modulo());
 
         // Include some enterprise dependencies.
@@ -261,8 +296,15 @@ class Module extends Entity
     {
         if ($this->linkedAgent === null) {
             try {
+                // Connect to node if needed.
+                $this->connectNode();
                 $this->linkedAgent = new Agent($this->id_agente());
+                // Connect to node if needed.
+                $this->restoreConnection();
             } catch (\Exception $e) {
+                // Connect to node if needed.
+                $this->restoreConnection();
+
                 // Unexistent agent.
                 return null;
             }
@@ -754,6 +796,84 @@ class Module extends Entity
 
 
     /**
+     * Return true if module represents an interface (operStatus, in/outOctets)
+     *
+     * @return integer > 0 if interface module, 0 if not.
+     */
+    public function isInterfaceModule():int
+    {
+        if (strstr($this->name(), '_ifOperStatus') !== false) {
+            return self::INTERFACE_STATUS;
+        }
+
+        if (strstr($this->name(), '_ifInOctets') !== false) {
+            return self::INTERFACE_INOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifOutOctets') !== false) {
+            return self::INTERFACE_OUTOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifHCInOctets') !== false) {
+            return self::INTERFACE_HC_INOCTETS;
+        }
+
+        if (strstr($this->name(), '_ifHCOutOctets') !== false) {
+            return self::INTERFACE_HC_OUTOCTETS;
+        }
+
+        return 0;
+    }
+
+
+    /**
+     * Return interface name if module represents an interface module.
+     *
+     * @return string|null Interface name or null.
+     */
+    public function getInterfaceName():?string
+    {
+        $label = null;
+        switch ($this->isInterfaceModule()) {
+            case self::INTERFACE_STATUS:
+                $label = '_ifOperStatus';
+            break;
+
+            case self::INTERFACE_INOCTETS:
+                $label = '_ifInOctets';
+            break;
+
+            case self::INTERFACE_OUTOCTETS:
+                $label = '_ifOutOctets';
+            break;
+
+            case self::INTERFACE_HC_INOCTETS:
+                $label = '_ifHCInOctets';
+            break;
+
+            case self::INTERFACE_HC_OUTOCTETS:
+                $label = '_ifHCOutOctets';
+            break;
+
+            default:
+                // Not an interface module.
+            return null;
+        }
+
+        if (preg_match(
+            '/^(.*?)'.$label.'$/',
+            $this->name(),
+            $matches
+        ) > 0
+        ) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+
+    /**
      * Transforms configuration data into an array.
      *
      * @return array Configuration data in array format.
@@ -902,12 +1022,13 @@ class Module extends Entity
     /**
      * Calculates cascade protection service value for this service.
      *
-     * @param integer|null $id_node Meta searching node will use this field.
+     * @param integer|null $id_node   Meta searching node will use this field.
+     * @param boolean      $connected Connected to a node.
      *
      * @return integer CPS value.
      * @throws \Exception On error.
      */
-    public function calculateCPS(?int $id_node=null)
+    public function calculateCPS(?int $id_node=null, bool $connected=false)
     {
         if ($this->cps() < 0) {
             return $this->cps();
@@ -927,6 +1048,7 @@ class Module extends Entity
         // Here could happen 2 things.
         // 1. Metaconsole service is using this method impersonating node DB.
         // 2. Node service is trying to find parents into metaconsole.
+        // 3. Impersonated node searching metaconsole.
         if (empty($id_node) === true
             && is_metaconsole() === false
             && has_metaconsole() === true
@@ -999,6 +1121,38 @@ class Module extends Entity
             if ($r !== NOERR) {
                 throw new \Exception(__('Cannot connect to node %d', $r));
             }
+        } else if (is_metaconsole() === true
+            // True in impersonated nodes.
+            && has_metaconsole() === false
+            && empty($id_node) === true
+        ) {
+            // Impersonated node checking metaconsole.
+            \enterprise_hook('metaconsole_restore_db');
+
+            $mc_parents = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT id_service,
+                            cps,
+                            cascade_protection,
+                            name
+                    FROM `tservice_element` te
+                    INNER JOIN `tservice` t ON te.id_service = t.id
+                    WHERE te.id_agente_modulo = %d',
+                    $this->id_agente_modulo()
+                ),
+                false,
+                false
+            );
+
+            // Restore impersonation.
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $r = \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $id_node,
+                ]
+            );
         }
 
         $cps = 0;

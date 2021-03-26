@@ -48,7 +48,9 @@ if (enterprise_installed()) {
             'basic'    => __('Basic'),
             'advanced' => __('Advanced'),
         ];
-        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' '.ui_print_help_icon('meta_access', true);
+        // TODO review help tips on meta.
+        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' ';
+        // .ui_print_help_icon('meta_access', true)
     } else {
         $table->data[0][2] = '';
         $table->data[0][3] = html_print_input_hidden('wizard_level', $wizard_level, true);
@@ -139,7 +141,14 @@ $table->data[2][3] = html_print_extended_select_for_time('module_interval', $mod
 
 $table->data[3][0] = __('Dynamic Interval');
 $table->data[3][1] = html_print_extended_select_for_time('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px', false);
-$table->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
+$table->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
+    'images/cog.png',
+    true,
+    [
+        'title' => __('Advanced options Dynamic Threshold'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 $table->data[3][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
 $table->data[3][2] .= html_print_input_text('dynamic_min', $dynamic_min, '', 10, 255, true);
@@ -351,10 +360,8 @@ $table->data[$next_row][1] .= html_print_select_from_sql(
     'width: 200px',
     '5'
 );
-$table->data[$next_row][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module')]);
-// html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
-$table->data[$next_row][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module')]);
-// html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+$table->data[$next_row][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module'), 'class' => 'invert_filter']);
+$table->data[$next_row][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module'), 'class' => 'invert_filter']);
 $table->data[$next_row][3] = '<b>'.__('Tags selected').'</b><br>';
 $table->data[$next_row][3] .= html_print_select_from_sql(
     "SELECT name AS name1, name AS name2

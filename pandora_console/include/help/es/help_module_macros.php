@@ -16,13 +16,13 @@
 </p>
 
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         _technology_
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         _modulepriority_
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         _contactperson_
     </li>
 </ol>
@@ -37,25 +37,25 @@
     Las macros dinámicas tendrán un formato especial que empieza por @ y tendrán estas posibles sustituciones:
 </p>
 <ol>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT (fecha/hora actual con formato definido por el usuario)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_nh (horas)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_nm (minutos)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_nd (días)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_ns (segundos)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_nM (mes)
     </li>
-    <li style="font-family: 'lato-bolder'; font-size: 12pt;">
+    <li class="lato_bolder font_12pt">
         @DATE_FORMAT_nY (años)
     </li>
 </ol>

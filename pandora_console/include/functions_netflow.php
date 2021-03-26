@@ -1124,7 +1124,7 @@ function netflow_draw_item(
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html .= "<div style='width: 100%; overflow: auto;'>";
+                $html .= "<div class='w100p overflow'>";
                 $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
                 $html .= '</div>';
 
@@ -1164,12 +1164,12 @@ function netflow_draw_item(
             }
 
             if ($output === 'HTML' || $output === 'PDF') {
-                $html = '<table style="width: 100%">';
+                $html = '<table class="w100p">';
                 $html .= '<tr>';
-                $html .= '<td style="width: 50%">';
+                $html .= '<td class="w50p">';
                 $html .= netflow_summary_table($data_summary);
                 $html .= '</td>';
-                $html .= '<td style="width: 50%">';
+                $html .= '<td class="w50p">';
                 $html .= graph_netflow_aggregate_pie(
                     $data_pie,
                     netflow_format_aggregate($aggregate),
@@ -1206,7 +1206,7 @@ function netflow_draw_item(
                 netflow_aggregate_is_ip($aggregate)
             );
 
-            $html = '<div style="text-align:center;">';
+            $html = '<div class="center">';
             $html .= graph_netflow_circular_mesh($data_circular);
             $html .= '</div>';
         return $html;

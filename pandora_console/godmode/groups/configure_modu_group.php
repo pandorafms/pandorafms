@@ -46,7 +46,7 @@ if ($id_group) {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';

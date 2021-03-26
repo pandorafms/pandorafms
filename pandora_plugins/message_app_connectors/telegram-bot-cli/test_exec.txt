@@ -1,0 +1,6 @@
+#exetution example
+
+python3 pandora-telegram-cli.py -t 1412764845:AAG-OxOKISOXwhITLFFNm6oq5YD2KI72fTQ -c -432610056 -m "Testing pandora telegram cli"
+
+# Pandora FMS command definition example
+python3 pandora-telegram-cli.py -t _field1_ -c _field2_ -m" _field3_"

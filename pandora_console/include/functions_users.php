@@ -304,6 +304,7 @@ function users_get_groups(
     $search=''
 ) {
     static $group_cache = [];
+    $filter = '';
 
     // Added users_group_cache to avoid unnecessary proccess on massive calls...
     static $users_group_cache = [];

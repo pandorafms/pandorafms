@@ -71,7 +71,7 @@ check_pre_pandora () {
 check_repo_connection () {
     execute_cmd "ping -c 2 8.8.8.8" "Checking internet connection"
     execute_cmd "ping -c 2 firefly.artica.es" "Checking Community repo"
-    execute_cmd "ping -c 2 support.artica.es" "Checking Enterprise repo"
+    execute_cmd "ping -c 2 support.pandorafms.com" "Checking Enterprise repo"
 }
 
 check_root_permissions () {
@@ -120,7 +120,7 @@ check_repo_connection
 execute_cmd "systemctl status" "Cheking SystemD" 'This is not a SystemD enable system, if tryng to use in a docker env plese check: https://github.com/pandorafms/pandorafms/tree/develop/extras/docker/centos8'
 
 # Check memomry greather or equal to 2G
-execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -le 2000000 ]" 'Checking memory (required: 2 GB)'
+execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -ge 1700000 ]" 'Checking memory (required: 2 GB)'
 
 # Check disk size at least 10 Gb free space
 execute_cmd "[ $(df -BM / | tail -1 | awk '{print $4}' | tr -d M) -gt 10000 ]" 'Checking Disk (required: 10 GB free min)'

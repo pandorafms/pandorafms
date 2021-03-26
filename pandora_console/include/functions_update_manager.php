@@ -164,13 +164,13 @@ function config_wiz_modal(
     $output = '';
 
     // Prints first step pandora registration.
-    $output .= '<div id="configuration_wizard" title="'.__('%s configuration wizard', get_product_name()).'" style="display: none;">';
+    $output .= '<div id="configuration_wizard" title="'.__('%s configuration wizard', get_product_name()).'" class="invisible">';
 
-    $output .= '<div style="font-size: 10pt; margin: 20px;">';
+    $output .= '<div id="help_dialog">';
     $output .= __('Please fill the following information in order to configure your %s instance successfully', get_product_name()).'.';
     $output .= '</div>';
 
-    $output .= '<div style="">';
+    $output .= '<div  >';
     $table = new StdClass();
     $table->class = 'databox filters';
     $table->width = '100%';
@@ -236,25 +236,25 @@ function config_wiz_modal(
     $output .= html_print_table($table, true);
     $output .= '</div>';
 
-    $output .= '<div style="float: left">';
+    $output .= '<div class="left">';
     $output .= html_print_submit_button(
         __('Cancel'),
         'cancel',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel submit-cancel" style="width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel submit-cancel w100px"',
         true
     );
     $output .= '</div>';
-    $output .= '<div style="float: right">';
+    $output .= '<div class="right">';
     $output .= html_print_submit_button(
         __('Continue'),
         'register-next',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
         true
     );
     $output .= '</div>';
-    $output .= '<div id="all-required" style="clear:both; float: right; margin-right: 30px; display: none; color: red;">';
+    $output .= '<div id="all-required" class="all_required">';
     $output .= __('All fields required');
     $output .= '</div>';
     $output .= '</div>';
@@ -262,8 +262,8 @@ function config_wiz_modal(
     $output .= '</div>';
 
     // Verification modal.
-    $output .= '<div id="wiz_ensure_cancel" title="Confirmation Required" style="display: none;">';
-    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= '<div id="wiz_ensure_cancel" title="Confirmation Required" class="invisible">';
+    $output .= '<div class="font_12_20">';
     $output .= __('Are you sure you don\'t want to configure a base email?');
     $output .= '<p>';
     $output .= __('You could change this options later in "alert actions" and setting your account.');
@@ -493,26 +493,26 @@ function registration_wiz_modal(
 
     $output .= '<div id="registration_wizard" title="';
     $output .= __('Register to Update Manager');
-    $output .= '" style="display: none;">';
-    $output .= '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
+    $output .= '" class="invisible">';
+    $output .= '<div class="register_update_manager">';
     $output .= html_print_image('images/pandora_circle_big.png', true);
     $output .= '</div>';
 
-    $output .= '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
+    $output .= '<div class="newsletter_div">';
     $output .= __(
         'Keep this %s console up to date with latest updates.',
         $product_name
     );
     $output .= '</div>';
 
-    $output .= '<div class="license_text" style="clear:both;">';
+    $output .= '<div class="license_text both">';
     $output .= '<p>';
     $output .= __('When you subscribe to the %s Update Manager service, you accept that we register your %s instance as an identifier on a database owned by %s. This data will solely be used to provide you with information about %s and will not be conceded to third parties. You can unregister from said database at any time from the Update Manager options.', $product_name, $product_name, $product_name, $product_name);
     $output .= '</p>';
     $output .= '</div>';
 
     $output .= '<div class="submit_buttons_container">';
-    $output .= '<div style="float: left;">';
+    $output .= '<div class="left">';
     $output .= html_print_submit_button(
         __('Cancel'),
         'cancel_registration',
@@ -521,24 +521,24 @@ function registration_wiz_modal(
         true
     );
     $output .= '</div>';
-    $output .= '<div style="float: right;">';
+    $output .= '<div class="right">';
     $output .= html_print_submit_button(
         __('OK!'),
         'register',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
         true
     );
     $output .= '</div>';
     $output .= '</div>';
 
-    $output .= '<div style="clear:both"></div>';
+    $output .= '<div id="both"></div>';
     $output .= '<br/>';
     $output .= '</div>';
 
     // Verification modal.
-    $output .= '<div id="reg_ensure_cancel" title="Confirmation Required" style="display: none;">';
-    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= '<div id="reg_ensure_cancel" title="Confirmation Required" class="invisible">';
+    $output .= '<div class="font_12_20">';
     $output .= __('Are you sure you don\'t want to use update manager?');
     $output .= '<p>';
     $output .= __('You will need to update your system manually, through source code or RPM packages to be up to date with latest updates.');
@@ -547,8 +547,8 @@ function registration_wiz_modal(
     $output .= '</div>';
 
     // Results modal.
-    $output .= '<div id="reg_result" title="Registration process result" style="display: none;">';
-    $output .= '<div id="reg_result_content" style="font-size: 12pt; margin: 20px;">';
+    $output .= '<div id="reg_result" title="Registration process result" class="invisible">';
+    $output .= '<div id="reg_result_content" class="font_12_20">';
     $output .= '</div>';
     $output .= '</div>';
 
@@ -761,19 +761,19 @@ function newsletter_wiz_modal(
 
     $output .= '<div id="newsletter_wizard" title="';
     $output .= __('Do you want to be up to date?');
-    $output .= '" style="display: none;">';
-    $output .= '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
-    $output .= html_print_image('images/pandora_circle_big.png', true);
+    $output .= '" class="invisible">';
+    $output .= '<div class="register_update_manager">';
+    $output .= html_print_image('image/pandora_big_circle.png', true);
     $output .= '</div>';
 
-    $output .= '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
+    $output .= '<div class="newsletter_div">';
     $output .= __(
         'Subscribe to our newsletter',
         $product_name
     );
     $output .= '</div>';
 
-    $output .= '<div class="license_text" style="clear:both;">';
+    $output .= '<div class="license_text both">';
     $output .= '<p>Stay up to date with updates, upgrades and promotions by subscribing to our newsletter.</p>';
     $output .= '<p>';
     $output .= __(
@@ -788,7 +788,7 @@ function newsletter_wiz_modal(
     // Show regiter to newsletter state.
     $show_newsletter = ($display_newsletter !== true) ? 'inline-block' : 'none';
 
-    $output .= '<div style="margin-left: 4em;">';
+    $output .= '<div class="mrgn_lft_4em">';
     $output .= '<div id="box_newsletter">';
     $output .= '<span id="label-email-newsletter">'.__('Email').' </span>';
     $output .= html_print_input_text_extended(
@@ -806,34 +806,34 @@ function newsletter_wiz_modal(
     $output .= '</div><br /><br />';
 
     $output .= '<div class="submit_buttons_container">';
-    $output .= '<div style="float: left;">';
+    $output .= '<div class="left">';
     $output .= html_print_submit_button(
         __('Cancel'),
         'cancel_newsletter',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel" style="width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel w100px"',
         true
     );
     $output .= '</div>';
-    $output .= '<div style="float: right;">';
+    $output .= '<div class="right">';
     $output .= html_print_submit_button(
         __('OK!'),
         'newsletter',
         false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next" style="width:100px;"',
+        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
         true
     );
     $output .= '</div>';
     $output .= '</div>';
 
-    $output .= '<div style="clear:both"></div>';
+    $output .= '<div id="both"></div>';
     $output .= '<br/>';
     $output .= '</div>';
     $output .= '</div>';
 
     // Verification modal.
-    $output .= '<div id="news_ensure_cancel" title="Confirmation Required" style="display: none;">';
-    $output .= '<div style="font-size: 12pt; margin: 20px;">';
+    $output .= '<div id="news_ensure_cancel" title="Confirmation Required" class="invisible">';
+    $output .= '<div class="font_12_20">';
     $output .= __('Are you sure you don\'t want to subscribe?');
     $output .= '<p>';
     $output .= __('You will miss all news about amazing features and fixes!');
@@ -842,8 +842,8 @@ function newsletter_wiz_modal(
     $output .= '</div>';
 
     // Results modal.
-    $output .= '<div id="news_result" title="Subscription process result" style="display: none;">';
-    $output .= '<div id="news_result_content" style="font-size: 12pt; margin: 20px;">';
+    $output .= '<div id="news_result" title="Subscription process result" class="invisible">';
+    $output .= '<div id="news_result_content" class="font_12_20">';
     $output .= '</div>';
     $output .= '</div>';
 
@@ -1437,7 +1437,7 @@ function update_manager_check_online_free_packages($is_ajax=true)
 
                     var text4_mr_file = "<?php echo __(' to this process'); ?>";
                     text4_mr_file += "<br><br>";
-                    text4_mr_file += "<a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"" + docsUrl + "\">";
+                    text4_mr_file += "<a class=\"font_10pt italic\" target=\"blank\" href=\"" + docsUrl + "\">";
                     text4_mr_file += "<?php echo __('About minor release update'); ?>";
                     text4_mr_file += "</a>";
 

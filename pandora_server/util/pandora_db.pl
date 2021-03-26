@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.752 PS210201";
+my $version = "7.0NG.752 PS210326";
 
 # Pandora server configuration
 my %conf;
@@ -404,7 +404,9 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old tgraph_source data
+	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
 
 	# Delete network traffic old data.
 	log_message ('PURGE', 'Deleting old network matrix data.');
@@ -1021,8 +1023,8 @@ sub pandora_delete_old_session_data {
 ###############################################################################
 # Main
 ###############################################################################
-sub pandoradb_main ($$$) {
-	my ($conf, $dbh, $history_dbh) = @_;
+sub pandoradb_main ($$$;$) {
+	my ($conf, $dbh, $history_dbh, $running_in_history) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
@@ -1043,8 +1045,12 @@ sub pandoradb_main ($$$) {
 		}
 	}
 
+	# Only active database should be compacted. Disabled for historical database.
 	# Compact on if enable and DaysCompact are below DaysPurge 
-	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
+	if (!$running_in_history
+		&& ($conf->{'_onlypurge'} == 0)
+		&& ($conf->{'_days_compact'} < $conf->{'_days_purge'})
+	) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
 	}
 
@@ -1055,6 +1061,9 @@ sub pandoradb_main ($$$) {
 	# Move SNMP modules back to the Enterprise server
 	enterprise_hook("claim_back_snmp_modules", [$dbh, $conf]);
 
+	# Check if there are discovery tasks with wrong id_recon_server
+	pandora_check_forgotten_discovery_tasks ($conf, $dbh);
+
 	# Recalculating dynamic intervals.
 	enterprise_hook("update_min_max", [$dbh, $conf]);
 
@@ -1063,6 +1072,41 @@ sub pandoradb_main ($$$) {
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
+
+###############################################################################
+# Check for discovery tasks configured with servers down
+###############################################################################
+
+sub pandora_check_forgotten_discovery_tasks {
+	my ($conf, $dbh) = @_;
+
+    log_message ('FORGOTTEN DISCOVERY TASKS', "Check for discovery tasks bound to inactive servers.");
+
+		my @discovery_tasks = get_db_rows ($dbh, 'SELECT id_rt, id_recon_server, name FROM trecon_task');
+		my $discovery_tasks_count = @discovery_tasks;
+
+		# End of the check (this server has not discovery tasks!).
+		if ($discovery_tasks_count eq 0) {
+			log_message('FORGOTTEN DISCOVERY TASKS', 'There are not defined discovery tasks. Skipping.');
+			return;
+		}
+
+		my $master_server = get_db_value ($dbh, 'SELECT id_server FROM tserver WHERE server_type = ? AND status != -1', DISCOVERYSERVER);
+
+		# Goes through all the tasks to check if any have the server down.
+		foreach my $task (@discovery_tasks) {
+			if ($task->{'id_recon_server'} ne $master_server) {
+				my $this_server_status = get_db_value ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $task->{'id_recon_server'});
+				if (!defined($this_server_status) || $this_server_status eq -1) {
+					my $updated_task = db_process_update ($dbh, 'trecon_task', { 'id_recon_server' => $master_server }, { 'id_rt' => $task->{'id_rt'} });
+					log_message('FORGOTTEN DISCOVERY TASKS', 'Updated discovery task '.$task->{'name'});
+				}
+			}
+		}
+
+		log_message('FORGOTTEN DISCOVERY TASKS', 'Step ended');
+}
+
 
 # Init
 pandora_init_pdb(\%conf);
@@ -1126,9 +1170,31 @@ if (defined($history_dbh)) {
 	pandoradb_main(
 		$h_conf,
 		$history_dbh,
-		undef
+		undef,
+		1 # Disable certain funcionality while runningn in historical database.
 	);
 
+	# Handle partitions.
+	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);
+	
+}
+
+# Keep integrity between PandoraFMS agents and IntegriaIMS inventory objects.
+pandora_sync_agents_integria($dbh);
+
+# Get Integria IMS ticket types for alert commands.
+my @types = pandora_get_integria_ticket_types($dbh);
+
+if (scalar(@types) != 0) {
+	my $query_string = '';
+	foreach my $type (@types) {
+	        $query_string .= $type->{'id'} . ',' . $type->{'name'} . ';';
+	}
+
+	$query_string = substr $query_string, 0, -1;
+
+	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
+	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
 
 # Release the lock

@@ -198,7 +198,7 @@ $(document).ready (function () {
 
         if(selected_fields_total === current_fields_size){
             display_confirm_dialog(
-                "<?php echo '<span style=text-transform:none;font-size:9.5pt;>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
+                "<?php echo '<span class=transform_none font_9pt>'.__('There must be at least one custom field. Timestamp will be set by default').'</span>'; ?>",
                 "<?php echo __('Confirm'); ?>",
                 "<?php echo __('Cancel'); ?>",
                 function () {

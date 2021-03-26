@@ -704,9 +704,9 @@ class Tree
         if ((bool) $module['alerts']) {
             // Module has alerts triggered.
             if ($module_alert_triggered === true) {
-                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts')]);
+                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
             } else {
-                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts')]);
+                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
             }
         }
     }

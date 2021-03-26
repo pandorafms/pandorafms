@@ -119,7 +119,7 @@ function dbmgr_extension_main()
     echo "<form method='post' action=''>";
     html_print_textarea('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
     echo '<br />';
-    echo '<div class="action-buttons" style="width: 100%">';
+    echo '<div class="action-buttons w100p">';
     echo '<br />';
     html_print_submit_button(__('Execute SQL'), '', false, 'class="sub next"');
     echo '</div>';
@@ -156,7 +156,7 @@ function dbmgr_extension_main()
         return;
     }
 
-    echo "<div style='overflow: auto;'>";
+    echo "<div class='overflow'>";
     $table = new stdClass();
     $table->width = '100%';
     $table->class = 'info_table';

@@ -70,7 +70,7 @@ $table = new stdClass();
 $table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 
-$table->data['0']['0'] = '<div style="display: flex;">';
+$table->data['0']['0'] = '<div class="flex">';
 $table->data['0']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['0']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
@@ -121,7 +121,6 @@ $table->data['0']['2'] .= html_print_select(
     true
 );
 
-
 $table->data['1']['0'] = __('Data to show').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_select(
     network_get_report_actions(),
@@ -145,23 +144,9 @@ if ((bool) $config['activate_netflow'] === true) {
     );
 }
 
-$nta_button = '';
-if ((bool) $config['activate_nta'] === true) {
-    $nta_button = html_print_submit_button(
-        __('Show NTA map'),
-        'update_nta',
-        false,
-        'class="sub upd"',
-        true
-    );
-}
-
 $table->data['1']['2'] .= implode(
     '&nbsp;&nbsp;',
-    [
-        $netflow_button,
-        $nta_button,
-    ]
+    [$netflow_button]
 );
 
 echo '<form method="post">';
@@ -178,15 +163,6 @@ if ((bool) get_parameter('update_netflow') === true) {
         $utimestamp_greater,
         $top,
         ($action === 'talkers') ? 'srcip' : 'dstip'
-    );
-    $has_data = !empty($map_data['nodes']);
-    $first_load = false;
-} else if ((bool) get_parameter('update_nta') === true) {
-    $map_data = network_build_map_data(
-        $utimestamp_lower,
-        $utimestamp_greater,
-        $top,
-        $action === 'talkers'
     );
     $has_data = !empty($map_data['nodes']);
     $first_load = false;

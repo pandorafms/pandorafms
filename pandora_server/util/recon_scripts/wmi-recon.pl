@@ -136,13 +136,6 @@ sub recon_scan($$) {
 
 	# Mark the recon task as done.
 	update_recon_task ($DBH, $task->{'id_rt'}, -1);
-
-	# Create an incident.
-	if (defined($ADDED_HOSTS[0]) && $task->{'create_incident'} == 1) {
-		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " (". scalar(@ADDED_HOSTS) . ") new hosts were detected by Pandora FMS WMI Recon Script running on [" . $CONF{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
-		$text .= "\n\nThis is the list of IP addresses found: \n\n" . join(',', @ADDED_HOSTS);
-		pandora_create_incident (\%CONF, $DBH, "[RECON] New hosts detected", $text, 0, 0, 'Pandora FMS Recon Server', $task->{'id_group'});
-	}
 }
 
 ##########################################################################
@@ -369,6 +362,5 @@ die("Error retrieving recon task ID $TASK_ID\n") unless defined($task);
 # Scan!
 $task->{'subnet'} = $NETWORKS;
 $task->{'id_group'} = $GROUP_ID;
-$task->{'create_incident'} = $CREATE_INCIDENT;
 recon_scan($task, \&wmi_scan);
 

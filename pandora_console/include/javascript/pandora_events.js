@@ -808,8 +808,7 @@ function delete_event(table, id_evento, event_rep, row) {
     processed += 1;
     return;
   }
-  var message =
-    "<h4 style = 'text-align: center; color: black;' > Are you sure?</h4> ";
+  var message = "<h4 style = 'text-align: center;' > Are you sure?</h4> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,
@@ -848,8 +847,7 @@ function execute_delete_event_reponse(table, id_evento, event_rep, row) {
 
 // Imported from old files.
 function execute_event_response(event_list_btn) {
-  var message =
-    "<h4 style = 'text-align: center; color: black;' > Are you sure?</h4> ";
+  var message = "<h4 style = 'text-align: center;' > Are you sure?</h4> ";
   confirmDialog({
     title: "ATTENTION",
     message: message,
@@ -1001,4 +999,12 @@ function check_massive_response_event(
 
     counter++;
   });
+}
+
+function event_widget_options() {
+  if ($("#customFilter").val() != "-1") {
+    $(".event-widget-input").disable();
+  } else {
+    $(".event-widget-input").enable();
+  }
 }

@@ -605,7 +605,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Description');
-            $datam[0] .= "<span class='normal'> ( ";
+            $datam[0] .= "<span class='normal_weight'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span>';
             $datam[0] .= html_print_input_hidden(
@@ -634,7 +634,7 @@ class ManageNetScanScripts extends Wizard
             }
 
             $datam[2] = __('Default value');
-            $datam[2] .= "<span class='normal'> ( ";
+            $datam[2] .= "<span class='normal_weight'> ( ";
             $datam[2] .= $macro_name;
             $datam[2] .= ' ) </span>';
             $datam[3] = html_print_input_text_extended(
@@ -688,7 +688,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Help');
-            $datam[0] .= "<span class='normal'> ( ";
+            $datam[0] .= "<span class='normal_weight'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span><br><br><br>';
 

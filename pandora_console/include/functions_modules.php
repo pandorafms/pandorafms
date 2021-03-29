@@ -1,22 +1,32 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Modules
+ * Functions for modules.
+ *
+ * @category   Functions script.
+ * @package    Pandora FMS
+ * @subpackage Modules.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_tags.php';
@@ -570,38 +580,39 @@ function modules_update_agent_module(
  * @param integer $name       Module name id.
  * @param array   $values     Extra values for the module.
  * @param boolean $disableACL Disable the ACL checking, for default false.
- * @param mixed   $tags       Array with tag's ids or false.
+ * @param array   $tags       Array with tag's ids or false.
  *
  * @return New module id if the module was created. False if not.
  */
 function modules_create_agent_module(
-    $id_agent,
-    $name,
-    $values=false,
-    $disableACL=false,
-    $tags=false
+    int $id_agent,
+    int $name,
+    array $values=[],
+    bool $disableACL=false,
+    array $tags=false
 ) {
     global $config;
 
-    if (!$disableACL) {
-        if (!users_is_admin() && (empty($id_agent)
-            || !users_access_to_agent($id_agent, 'AW'))
+    if ((bool) $disableACL === false) {
+        if ((bool) users_is_admin() === false
+            && (empty($id_agent) === true
+            || users_access_to_agent($id_agent, 'AW') === false)
         ) {
             return false;
         }
     }
 
-    if (empty($name)) {
+    if (empty($name) === true) {
         return ERR_INCOMPLETE;
     }
 
     // Check for non valid characters in module name.
-    if (mb_ereg_match('[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]', io_safe_output($name)) !== false) {
+    if (mb_ereg_match(
+        '[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]',
+        io_safe_output($name)
+    ) !== false
+    ) {
         return ERR_GENERIC;
-    }
-
-    if (! is_array($values)) {
-        $values = [];
     }
 
     $values['nombre'] = $name;
@@ -616,23 +627,25 @@ function modules_create_agent_module(
         ]
     );
 
-    if ($exists) {
+    if ($exists === true) {
         return ERR_EXIST;
     }
 
     // Encrypt passwords.
-    if (isset($values['plugin_pass'])) {
-        // Avoid two times encryption
+    if (isset($values['plugin_pass']) === true) {
+        // Avoid two times encryption.
         $plugin_pass = io_safe_output($values['plugin_pass']);
 
         $values['plugin_pass'] = io_input_password($plugin_pass);
     }
 
     // Encrypt SNMPv3 passwords.
-    if (isset($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] >= 15
-        && $values['id_tipo_modulo'] <= 18)
-        && isset($values['tcp_send']) && ($values['tcp_send'] == 3)
-        && isset($values['custom_string_2'])
+    if (isset($values['id_tipo_modulo']) === true
+        && ((int) $values['id_tipo_modulo'] >= MODULE_TYPE_REMOTE_SNMP
+        && (int) $values['id_tipo_modulo'] <= MODULE_TYPE_REMOTE_SNMP_PROC)
+        && isset($values['tcp_send']) === true
+        && ((int) $values['tcp_send'] === 3)
+        && isset($values['custom_string_2']) === true
     ) {
         $values['custom_string_2'] = io_input_password(
             $values['custom_string_2']
@@ -640,7 +653,7 @@ function modules_create_agent_module(
     }
 
     // Only for Web server modules.
-    if (isset($values['id_tipo_modulo'])
+    if (isset($values['id_tipo_modulo']) === true
         && ($values['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
         && $values['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING)
     ) {
@@ -654,7 +667,7 @@ function modules_create_agent_module(
     }
 
     $return_tag = true;
-    if (($tags !== false) || (empty($tags))) {
+    if (($tags !== false) || (empty($tags) === true)) {
         $return_tag = tags_insert_module_tag($id_agent_module, $tags);
     }
 
@@ -667,10 +680,10 @@ function modules_create_agent_module(
         return ERR_DB;
     }
 
-    if (isset($values['id_tipo_modulo'])
-        && ($values['id_tipo_modulo'] == 21
-        || $values['id_tipo_modulo'] == 22
-        || $values['id_tipo_modulo'] == 23)
+    if (isset($values['id_tipo_modulo']) === true
+        && ((int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_PROC
+        || (int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_DATA
+        || (int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_STRING)
     ) {
         // Async modules start in normal status.
         $status = AGENT_MODULE_STATUS_NORMAL;
@@ -714,8 +727,8 @@ function modules_create_agent_module(
     }
 
     // Update module status count if the module is not created disabled.
-    if (!isset($values['disabled']) || $values['disabled'] == 0) {
-        if ($status == 0) {
+    if (isset($values['disabled']) === false || (int) $values['disabled'] === 0) {
+        if ((int) $status === AGENT_MODULE_STATUS_NORMAL) {
             db_process_sql(
                 'UPDATE tagente
                 SET total_count=total_count+1, normal_count=normal_count+1
@@ -2364,7 +2377,7 @@ function modules_get_agentmodule_data_for_humans($module)
         }
     } else {
         $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
-        if ($data_macro) {
+        if ($data_macro !== false) {
             $salida = $data_macro;
         } else {
             $salida = ui_print_module_string_value(

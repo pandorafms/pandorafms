@@ -639,6 +639,14 @@ function modules_create_agent_module(
         );
     }
 
+    // Only for Web server modules.
+    if (isset($values['id_tipo_modulo'])
+        && ($values['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
+        && $values['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING)
+    ) {
+        $values['debug_content'] = io_safe_input($values['debug_content']);
+    }
+
     $id_agent_module = db_process_sql_insert('tagente_modulo', $values);
 
     if ($id_agent_module === false) {

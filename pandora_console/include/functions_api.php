@@ -11009,10 +11009,10 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $group = $other['data'][0];
+    $group = (int) $other['data'][0];
     $profile = $other['data'][1];
 
-    if (db_get_value('id_grupo', 'tgrupo', 'id_grupo', $group) === false) {
+    if ($group !== 0 && db_get_value('id_grupo', 'tgrupo', 'id_grupo', $group) === false) {
         returnError('There is not any group with the ID provided.');
         return;
     }

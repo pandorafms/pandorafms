@@ -266,7 +266,7 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $form_table = html_print_table($table, true);
-$form_table .= '<div class="w100p right">';
+$form_table .= '<div class="w100p right right_align">';
 $form_table .= html_print_submit_button(
     __('Reload'),
     'submit',

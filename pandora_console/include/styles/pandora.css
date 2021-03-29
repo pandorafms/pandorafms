@@ -805,6 +805,11 @@ select:-internal-list-box {
 .flex-nowrap {
   flex-wrap: nowrap;
 }
+
+.flex-evenly {
+  justify-content: space-evenly;
+}
+
 .flex-row-baseline {
   display: flex;
   flex-direction: row;
@@ -8440,4 +8445,7 @@ div.stat-win-spinner {
 div.stat-win-spinner img {
   width: 100px;
   height: 100px;
+}
+.lign_right {
+  text-align: right;
 }

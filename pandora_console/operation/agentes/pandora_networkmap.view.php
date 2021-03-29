@@ -265,7 +265,7 @@ if (is_ajax()) {
         $return['correct'] = true;
 
         $return['content'] = '<div class="border_1px_black">
-			<div class="w100p right"><a class="no_decoration black" href="javascript: hide_tooltip();">X</a></div>
+			<div class="w100p right right_align"><a class="no_decoration black" href="javascript: hide_tooltip();">X</a></div>
 			<div class="mrgn_5px">
 			';
 

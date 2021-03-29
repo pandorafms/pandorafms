@@ -994,7 +994,7 @@ if ($group_rep == 2) {
 
             if (check_acl($config['id_user'], 0, 'EW')) {
                 if ($config['event_replication'] != 1) {
-                    echo '<div class="w100p right">';
+                    echo '<div class="w100p right right_align">';
                     echo '<form method="post" id="form_event_response">';
                     html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
                     echo '&nbsp&nbsp';

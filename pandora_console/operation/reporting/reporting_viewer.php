@@ -238,7 +238,7 @@ if (reporting_get_description($id_report)) {
     $table->data[0][1] = '<div class="float-left">'.reporting_get_name($id_report).'</div>';
 }
 
-$table->data[0][1] .= '<div class="right w100p mrgn_right_50px">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
+$table->data[0][1] .= '<div class="right w100p mrgn_right_50px right_align">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 $html_enterprise = enterprise_hook(
     'reporting_print_button_PDF',
     [$id_report]

@@ -16,7 +16,7 @@ global $config;
 check_login();
 
 // Visual console required.
-if (empty($visualConsole)) {
+if (empty($visualConsole) === true) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access report builder'

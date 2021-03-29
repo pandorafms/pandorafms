@@ -1692,8 +1692,8 @@ echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 
 // Load filter div for dialog.
-echo '<div id="load-modal-filter" class="invisible"></div>';
-echo '<div id="save-modal-filter" class="invisible"></div>';
+echo '<div id="load-modal-filter" style="display:none"></div>';
+echo '<div id="save-modal-filter" style="display:none"></div>';
 
 if ($_GET['refr'] || $do_refresh === true) {
     $autorefresh_draw = true;

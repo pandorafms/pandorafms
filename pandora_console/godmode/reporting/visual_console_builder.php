@@ -795,7 +795,7 @@ if ($config['legacy_vc']) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/operation.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/eye.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
 ];
 
 if ($idVisualConsole === false) {

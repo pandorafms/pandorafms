@@ -4329,7 +4329,7 @@ function events_page_details($event, $server='')
 
     if (!empty($agent)) {
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Name').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
         if (can_user_access_node() && is_metaconsole() && empty($event['server_id']) === true) {
             $data[1] = ui_print_truncate_text(
                 $agent['alias'],
@@ -4362,12 +4362,12 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('IP Address').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('IP Address').'</div>';
         $data[1] = empty($agent['direccion']) ? '<i>'.__('N/A').'</i>' : $agent['direccion'];
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('OS').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('OS').'</div>';
         $data[1] = ui_print_os_icon($agent['id_os'], true, true);
         if (!empty($agent['os_version'])) {
             $data[1] .= ' ('.$agent['os_version'].')';
@@ -4376,17 +4376,17 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Last contact').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last contact').'</div>';
         $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Last remote contact').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last remote contact').'</div>';
         $data[1] = ($agent['ultimo_contacto_remoto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto_remoto']);
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Custom fields').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Custom fields').'</div>';
         $data[1] = html_print_button(
             __('View custom fields'),
             'custom_button',
@@ -4418,13 +4418,13 @@ function events_page_details($event, $server='')
     if (!empty($module)) {
         // Module name.
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Name').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
         $data[1] = $module['nombre'];
         $table_details->data[] = $data;
 
         // Module group.
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Module group').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Module group').'</div>';
         $id_module_group = $module['id_module_group'];
         if ($id_module_group == 0) {
             $data[1] = __('No assigned');
@@ -4461,7 +4461,7 @@ function events_page_details($event, $server='')
 
         if ($acl_graph) {
             $data = [];
-            $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Graph').'</div>';
+            $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Graph').'</div>';
 
             $module_type = -1;
             if (isset($module['module_type'])) {
@@ -4510,7 +4510,7 @@ function events_page_details($event, $server='')
 
     if ($event['id_alert_am'] != 0) {
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Source').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Source').'</div>';
         $data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event['id_agente'].'&amp;tab=alert'.$hashstring.'">';
         $standby = db_get_value('standby', 'talert_template_modules', 'id', $event['id_alert_am']);
         if (!$standby) {
@@ -4542,7 +4542,7 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Priority').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Priority').'</div>';
 
         $priority_code = db_get_value('priority', 'talert_template_modules', 'id', $event['id_alert_am']);
         $alert_priority = get_priority_name($priority_code);

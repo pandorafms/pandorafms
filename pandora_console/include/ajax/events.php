@@ -1115,16 +1115,16 @@ if ($dialogue_event_response) {
                 );
                 echo '</div><br>';
 
-                echo "<div id='response_loading_command_".$out_iterator."' class='invisible'>";
+                echo "<div id='response_loading_command_".$out_iterator."' style='display: none'>";
                 echo html_print_image(
                     'images/spinner.gif',
                     true
                 );
-                echo '</div>';
-                echo "<br><div id='response_out_".$out_iterator."' class='invisible'></div>";
+                echo '</div><br>';
+                echo "<br><div id='response_out_".$out_iterator."'><br><br></div><br>";
 
                 if ($end) {
-                    echo "<br><div id='re_exec_command_".$out_iterator."' class='invisible'>";
+                    echo "<br><div id='re_exec_command_".$out_iterator."' style='display: none'><br>";
                     html_print_button(
                         __('Execute again'),
                         'btn_str',
@@ -1132,7 +1132,7 @@ if ($dialogue_event_response) {
                         'execute_event_response(false);',
                         "class='sub next'"
                     );
-                    echo "<span id='execute_again_loading' class='invisible'>";
+                    echo "<span id='execute_again_loading' style='display: none'>";
                     echo html_print_image(
                         'images/spinner.gif',
                         true
@@ -1146,10 +1146,10 @@ if ($dialogue_event_response) {
                 echo $prompt."Executing command: $command";
                 echo '</div><br>';
 
-                echo "<div id='response_loading_command' class='invisible'>".html_print_image('images/spinner.gif', true).'</div>';
-                echo "<br><div id='response_out' class='left'></div>";
+                echo "<div id='response_loading_command' style='display:none'>".html_print_image('images/spinner.gif', true).'</div>';
+                echo "<br><br><br><div id='response_out' class='left'></div>";
 
-                echo "<br><div id='re_exec_command' class='invisible'>";
+                echo "<br><div id='re_exec_command' style='display:none'><br><br>";
                 html_print_button(__('Execute again'), 'btn_str', false, "perform_response({'target':'".$command."','event_id':".$event_id.",'server_id':".$server_id.'}, '.$response_id.');', "class='sub next'");
 
                 echo '</div>';

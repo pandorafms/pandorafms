@@ -850,7 +850,7 @@ class DiscoveryTaskList extends HTML
 
                         $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[9] .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
                             [
                                 'title' => __('View summary'),

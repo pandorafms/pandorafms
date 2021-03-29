@@ -473,7 +473,7 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'LW')) {
         // Actions table
-        echo '<div class="w100p right mw300px">';
+        echo '<div class="w100p right mw300px right_align">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'" target="_blank">';
             html_print_submit_button(__('Go to alerts edition'), 'upd_button', false, 'class="sub search"');
         echo '</a>';

@@ -164,6 +164,9 @@ class SystemGroupStatusWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
+        if (empty($this->values['groupId']) === true) {
+            $this->configurationRequired = true;
+        }
 
         $this->overflow_scrollbars = false;
     }
@@ -299,6 +302,7 @@ class SystemGroupStatusWidget extends Widget
                 'return'         => true,
                 'multiple'       => true,
                 'returnAllGroup' => $return_all_group,
+                'required'       => true,
             ],
         ];
 

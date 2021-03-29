@@ -120,18 +120,23 @@ echo '<td class="tactical_left_column" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$bg_color = 'background-color: #222';
+if ($config['style'] !== 'pandora_black') {
+    $bg_color = 'background-color: #fff';
+}
+
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'info_table no-td-borders td-bg-white';
+$table->class = 'info_table no-td-borders';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
 $table->head = [];
 $table->data = [];
-$table->style = [];
+$table->style = [$bg_color];
 
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
-$status = '<table class="status_tactical">';
+$status = '<table class="status_tactical bg_white">';
 foreach ($stats as $stat) {
     $status .= '<tr><td><b>'.$stat['title'].'</b>'.'</td><td>'.$stat['graph'].'</td></tr>';
 }
@@ -175,7 +180,7 @@ ui_toggle(
 
 echo '</td>';
 // Left column
-echo '<td class="align-top w75p pdd_t_0px" id="rightcolumn">';
+echo '<td class="w75p pdd_t_0px" id="rightcolumn">';
 
 // ---------------------------------------------------------------------
 // Last events information

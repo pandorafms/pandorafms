@@ -386,7 +386,7 @@ ui_print_message_dialog(
         );
 
         $form_table = html_print_table($table, true);
-        $form_table .= '<div class="w100p right mrgn_top_15px">';
+        $form_table .= '<div class="w100p right mrgn_top_15px right_align">';
         $form_table .= html_print_submit_button(
             __('Reload'),
             'submit',

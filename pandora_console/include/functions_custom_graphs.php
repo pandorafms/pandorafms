@@ -113,7 +113,7 @@ function custom_graphs_create(
  * @param $returnAllGroup Wheter to return graphs of group All or not.
  * @param $privileges Privileges to check in user group
  *
- * @return Custom graphs of a an user. Empty array if none.
+ * @return array graphs of a an user. Empty array if none.
  */
 function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=true, $privileges='RR')
 {

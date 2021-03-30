@@ -264,7 +264,7 @@ foreach ($groups as $group) {
     $table->cellclass[][1] = 'action_buttons';
     if (is_management_allowed() === true) {
         $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
     }
 
     array_push($table->data, $data);
@@ -279,7 +279,7 @@ if (isset($data)) {
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
     if (is_management_allowed() === true) {
-        echo "<div style='padding-left: 10px; float: right;'>";
+        echo "<div class='pdd_l_10px float-right mrgn_btn_15px'>";
         html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
         echo '</div>';
     }
@@ -291,7 +291,7 @@ if (isset($data)) {
 
 if (is_management_allowed() === true) {
     echo '<form method="post" action='.$url.'>';
-    echo '<div class="" style="float:right;">';
+    echo '<div class="float-right">';
         html_print_input_hidden('new', 1);
         html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
     echo '</div>';

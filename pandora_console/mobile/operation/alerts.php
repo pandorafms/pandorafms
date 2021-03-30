@@ -295,7 +295,7 @@ class Alerts
         $table = [];
         foreach ($alerts as $alert) {
             if ($alert['alert_disabled']) {
-                $disabled_style = "<i style='color: grey;'>%s</i>";
+                $disabled_style = "<i class='grey'>%s</i>";
             } else {
                 $disabled_style = '%s';
             }

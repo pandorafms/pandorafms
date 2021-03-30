@@ -455,7 +455,6 @@ function createVisualConsole(
     },
     createItem: function(typeString) {
       var type;
-      console.log(typeString);
       switch (typeString) {
         case "STATIC_GRAPH":
           type = 0;

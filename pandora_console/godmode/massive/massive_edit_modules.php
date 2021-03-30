@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for edit modules in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -275,14 +290,11 @@ $table->width = '100%';
 $table->data = [];
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data['selection_mode'][1] = '<span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br>';
+$table->data['selection_mode'][1] .= '<span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true);
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
-$table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
-$table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
-$table->data['form_modules_1'][0] .= '</span>';
 
 $types[0] = __('All');
 $table->colspan['form_modules_1'][1] = 2;
@@ -304,7 +316,7 @@ $table->data['form_modules_1'][3] = __('Select all modules of this type').' '.ht
     '',
     '',
     false,
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true,
     ''
 );
@@ -351,7 +363,7 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group').' '.ht
     '',
     false,
     '',
-    'style="margin-right: 40px;"'
+    'class="mrgn_right_40px"'
 );
 
 $table->rowclass['form_modules_3'] = '';
@@ -791,11 +803,11 @@ $table->data['edit1'][1] = '<table width="100%">';
                 true
             );
             $table->data['edit36'][2] = __('Auth password').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
-            $table->data['edit36'][3] = html_print_input_text('plugin_pass_snmp', '', '', 15, 60, true);
+            $table->data['edit36'][3] = html_print_input_password('plugin_pass_snmp', '', '', 15, 60, true);
             $table->data['edit37'][0] = __('Privacy method');
-            $table->data['edit37'][1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'custom_string_1', '', '', __('No change'), '', true);
+            $table->data['edit37'][1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', '', '', __('No change'), '', true);
             $table->data['edit37'][2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
-            $table->data['edit37'][3] = html_print_input_text('custom_string_2', '', '', 15, 60, true);
+            $table->data['edit37'][3] = html_print_input_password('snmp3_privacy_pass', '', '', 15, 60, true);
             $table->data['edit38'][0] = __('Auth method');
             $table->data['edit38'][1] = html_print_select(['MD5' => __('MD5'), 'SHA' => __('SHA')], 'plugin_parameter', '', '', __('No change'), '', true);
             $table->data['edit38'][2] = __('Security level');
@@ -1161,30 +1173,37 @@ $table->data['edit1'][1] = '<table width="100%">';
                 ''
             );
 
-            if (!empty($id_plugin)) {
-                $preload = db_get_sql("SELECT description FROM tplugin WHERE id = $id_plugin");
+            if (empty($id_plugin) === false) {
+                $preload = db_get_sql(
+                    sprintf(
+                        'SELECT description FROM tplugin WHERE id = %s',
+                        $id_plugin
+                    )
+                );
                 $preload = io_safe_output($preload);
                 $preload = str_replace("\n", '<br>', $preload);
             } else {
                 $preload = '';
             }
 
-            $table->data['edit21'][1] = '<span style="font-weight: normal;" id="plugin_description">'.$preload.'</span>';
+            $table->data['edit21'][1] = sprintf(
+                '<span class="normal" id="plugin_description">%s</span>',
+                $preload
+            );
 
-
-            echo '<form method="post" '.'action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" '.'id="form_edit">';
+            echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit">';
             html_print_table($table);
 
-            echo '<div class="action-buttons" style="width: '.$table->width.'">';
-            html_print_input_hidden('update', 1);
-            html_print_submit_button(__('Update'), 'go', false, 'class="sub upd"');
-            echo '</div>';
+            attachActionButton('update', 'update', $table->width);
+
             echo '</form>';
 
             echo '<h3 class="error invisible" id="message"> </h3>';
-            // Hack to translate text "none" in PHP to javascript
-            echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-            echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
+            // Hack to translate text "none" in PHP to javascript.
+            echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
+            echo '<span id ="select_agent_first_text" class="invisible">'.__('Please, select an agent first').'</span>';
+            // Load JS files.
+            ui_require_javascript_file('pandora_modules');
             ui_require_jquery_file('pandora.controls');
 
             if ($selection_mode == 'modules') {
@@ -1196,27 +1215,11 @@ $table->data['edit1'][1] = '<table width="100%">';
             }
 
             ?>
-<script type="text/javascript">flag_load_plugin_component = false;</script>
-<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
-var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
+flag_load_plugin_component = false;
 
 $(document).ready (function () {
-    $("#form_edit").submit(function() {
-        var get_parameters_count = window.location.href.slice(
-            window.location.href.indexOf('?') + 1).split('&').length;
-        var post_parameters_count = $("#form_edit").serializeArray().length;
-        
-        var count_parameters =
-            get_parameters_count + post_parameters_count;
-        
-        if (count_parameters > limit_parameters_massive) {
-            alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
-            return false;
-        }
-    });
 
     $("#checkbox-select_all_modules").change(function() {
         if( $('#checkbox-select_all_modules').prop('checked')) {
@@ -1340,7 +1343,7 @@ $(document).ready (function () {
             }
         }
         
-        $("#module_loading").show ();
+        showSpinner();
         $("tr#delete_table-edit1, tr#delete_table-edit0, tr#delete_table-edit2").hide ();
         $("#module_name").attr ("disabled", "disabled")
         $("#module_name option[value!=0]").remove ();
@@ -1351,7 +1354,7 @@ $(document).ready (function () {
                     option = $("<option></option>").attr ("value", value["nombre"]).html (value["nombre"]);
                     $("#module_name").append (option);
                 });
-                $("#module_loading").hide ();
+                hideSpinner();
                 $("#module_name").removeAttr ("disabled");
                 //Filter modules. Call the function when the select is fully loaded.
                 var textNoData = "<?php echo __('None'); ?>";
@@ -1667,7 +1670,7 @@ $(document).ready (function () {
         }
     });
     
-    $('#tcp_send').change(function() {
+    $('#snmp_version').change(function() {
         if($(this).val() == 3) {
             $("tr#delete_table-edit36, tr#delete_table-edit37, tr#delete_table-edit38").show();
         }
@@ -1864,9 +1867,8 @@ function changePluginSelect() {
                     $('#hidden-macros').val(data['base64']);
                     
                     jQuery.each (data['array'], function (i, macro) {
-                        console.log(macro);
                         if (macro['desc'] != '') {
-                            $("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td style='font-weight:bold;'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
+                            $("#delete_table-edit21").after("<tr class='macro_field' id='delete_table-edit"+(80+parseInt(i))+"'><td class='bolder'>"+macro['desc']+"<input type='hidden' name='desc"+macro['macro']+"' value='"+macro['desc']+"'></td><td><input type='text' name='"+macro['macro']+"'></td></tr>");
                         }
                     });
                     //Plugin text can be larger
@@ -2094,7 +2096,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
     }
 
     // Specific snmp reused fields
-    if (get_parameter('tcp_send', '') == 3) {
+    if (get_parameter('snmp_version', '') == 3) {
         $plugin_user_snmp = get_parameter('plugin_user_snmp', '');
         if ($plugin_user_snmp != '') {
             $values['plugin_user'] = $plugin_user_snmp;
@@ -2105,7 +2107,12 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             $values['plugin_pass'] = io_input_password($plugin_pass_snmp);
         }
 
-        $snmp3_privacy_pass = get_parameter('custom_string_2', '');
+        $snmp3_privacy_method = get_parameter('snmp3_privacy_method', '');
+        if ($snmp3_privacy_method != '') {
+            $values['custom_string_1'] = io_input_password($snmp3_privacy_method);
+        }
+
+        $snmp3_privacy_pass = get_parameter('snmp3_privacy_pass', '');
         if ($snmp3_privacy_pass != '') {
             $values['custom_string_2'] = io_input_password($snmp3_privacy_pass);
         }
@@ -2207,7 +2214,11 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         }
 
         // Set tcp_send value according to module type since the purpose of this field in database varies in case of SNMP modules.
-        if ($module['id_tipo_modulo'] >= 15 && $module['id_tipo_modulo'] <= 18) {
+        if ($module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP_INC
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_SNMP_STRING
+            || $module['id_tipo_modulo'] <= MODULE_TYPE_REMOTE_SNMP_PROC
+        ) {
             if ($snmp_version != '') {
                 $values['tcp_send'] = $snmp_version;
             } else {

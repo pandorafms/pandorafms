@@ -749,3 +749,10 @@ define('MODULE_TYPE_REMOTE_CMD_PROC', 35);
 define('MODULE_TYPE_REMOTE_CMD_STRING', 36);
 define('MODULE_TYPE_REMOTE_CMD_INC', 37);
 define('MODULE_TYPE_KEEP_ALIVE', 100);
+
+// Commands basics for external tools.
+define('COMMAND_TRACEROUTE', 1);
+define('COMMAND_PING', 2);
+define('COMMAND_SNMP', 3);
+define('COMMAND_NMAP', 4);
+define('COMMAND_DIGWHOIS', 5);

@@ -31,23 +31,23 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 </tr>
 <tr>
 <td>Sin agente asignado<br><br>Eventos desactivados</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host.png"></td>
 </tr>
 <tr>
 <td>Con agente asignado<br><br>Eventos desactivados</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent.png"></td>
 </tr>
 <tr>
 <td>Sin agente asignado<br><br>Eventos activados</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_alert.png"></td>
 </tr>
 <tr>
 <td>Con agente asignado<br><br>Eventos activados</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_agent_alert.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/red_host_agent_alert.png"></td>
 </tr>
 <tr>
 <th colspan=3>Sin administrar</th>
@@ -58,9 +58,9 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 <th>Host no responde</th>
 </tr>
 <tr>
-<td style="width: 100px;">Independientemente de la configuración, si el host no está administrado solo se diferenciará entre si está vivo y no responde</td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
-<td style="text-align:center;"><img src="../enterprise/images/ipam/not_host.png"></td>
+<td class="w100px">Independientemente de la configuración, si el host no está administrado solo se diferenciará entre si está vivo y no responde</td>
+<td class="center"><img src="../enterprise/images/ipam/green_host_dotted.png"></td>
+<td class="center"><img src="../enterprise/images/ipam/not_host.png"></td>
 </tr>
 <tr>
 <th colspan=3>No asignado</th>
@@ -71,7 +71,7 @@ Cada dirección tendrá un icono grande que nos aportará información:<br><br>
 </table>
 <br><br>
 Cada dirección tendrá en la parte inferior derecha un enlace para editarla, si disponemos de privilegios suficientes. Así mismo, en la parte inferior izquierda, tendrá un pequeño icono indicando el sistema operativo asociado. 
-En el caso de las direcciones desactivadas, el icono del sistema operativo se verá sustituido por el siguiente icono:<br><br><img src="../images/delete.png" style="width:18px;"><br><br>
+En el caso de las direcciones desactivadas, el icono del sistema operativo se verá sustituido por el siguiente icono:<br><br><img src="../images/delete.png" class="w18px"><br><br>
 Si hacemos click en el icono principal, se abrirá una ventana modal con toda la información de la IP, incluyendo agente y sistema operativo asociados, configuración y el seguimiento de cuando se creó, editó por el usuario o fue chequeado por el servidor por última vez. En esta vista también se podrá hacer un ping a dicha dirección*.<br><br>
 <b>* El ping se realiza desde la máquina donde esté instalada la consola de <?php echo get_product_name(); ?>.</b>
 
@@ -86,11 +86,11 @@ Algunos campos, se rellenan automáticamente por el script de reconocimiento, co
 <th colspan=2>Cambio entre manual y automático</th>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/manual.png"></td>
+<td class="tcenter w25px"><img src="../images/manual.png"></td>
 <td><b>Modo manual</b>: Con este símbolo el campo no se actualizará desde el script de reconocimiento y podremos editarlo a mano. Al hacer click cambiaremos a modo automático.</td>
 </tr>
 <tr>
-<td style="text-align:center; width: 25px;"><img src="../images/automatic.png"></td>
+<td class="center w25px"><img src="../images/automatic.png"></td>
 <td><b>Modo automático</b>:Con este símbolo el campo se actualizará desde el script de reconocimiento. Al hacer click cambiaremos a modo manual.</td>
 </tr>
 </table>

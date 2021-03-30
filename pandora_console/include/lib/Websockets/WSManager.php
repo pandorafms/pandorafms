@@ -40,14 +40,12 @@
  */
 
 // Begin.
-namespace PandoraFMS\WebSockets;
+namespace PandoraFMS\Websockets;
 
 use \PandoraFMS\Websockets\WebSocketServer;
-use \PandoraFMS\Websockets\WebSocketUser;
 use \PandoraFMS\User;
 
-
-require_once __DIR__.'/../functions.php';
+require_once __DIR__.'/../../functions.php';
 
 /**
  * Redirects ws communication between two endpoints.
@@ -212,7 +210,7 @@ class WSManager extends WebSocketServer
      */
     public function readSocket($user)
     {
-        $buffer;
+        $buffer = '';
 
         $numBytes = socket_recv(
             $user->socket,
@@ -271,7 +269,7 @@ class WSManager extends WebSocketServer
     {
         global $config;
 
-        $match;
+        $match = [];
         $php_session_id = '';
         \preg_match(
             '/PHPSESSID=(.*)/',

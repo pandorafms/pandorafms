@@ -38,23 +38,36 @@ if (check_login()) {
     $get_plugin_macros = get_parameter('get_plugin_macros');
     $search_modules = get_parameter('search_modules');
     $get_module_detail = get_parameter('get_module_detail', 0);
-    $get_module_autocomplete_input = (bool) get_parameter('get_module_autocomplete_input');
+    $get_module_autocomplete_input = (bool) get_parameter(
+        'get_module_autocomplete_input'
+    );
     $add_module_relation = (bool) get_parameter('add_module_relation');
     $remove_module_relation = (bool) get_parameter('remove_module_relation');
-    $change_module_relation_updates = (bool) get_parameter('change_module_relation_updates');
+    $change_module_relation_updates = (bool) get_parameter(
+        'change_module_relation_updates'
+    );
     $get_id_tag = (bool) get_parameter('get_id_tag', 0);
     $get_type = (bool) get_parameter('get_type', 0);
     $list_modules = (bool) get_parameter('list_modules', 0);
-    $get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
+    $get_agent_modules_json_by_name = (bool) get_parameter(
+        'get_agent_modules_json_by_name',
+        0
+    );
+    $get_graph_module = (bool) get_parameter('get_graph_module', 0);
+    $get_graph_module_interfaces = (bool) get_parameter(
+        'get_graph_module_interfaces',
+        0
+    );
 
-    if ($get_agent_modules_json_by_name) {
+    if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
 
         $agent_id = agents_get_agent_id($agent_name);
 
         $agent_modules = db_get_all_rows_sql(
-            'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
-											WHERE id_agente = '.$agent_id
+            'SELECT id_agente_modulo as id_module,
+                nombre as name FROM tagente_modulo
+			WHERE id_agente = '.$agent_id
         );
 
         echo json_encode($agent_modules);
@@ -91,7 +104,10 @@ if (check_login()) {
 
         $id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
         $filter = '%'.get_parameter('q', '').'%';
-        $other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);
+        $other_filter = json_decode(
+            io_safe_output(get_parameter('other_filter')),
+            true
+        );
         // TODO TAGS agents_get_modules.
         $modules = agents_get_modules(
             $id_agents,
@@ -112,9 +128,13 @@ if (check_login()) {
     }
 
     if ($get_module_detail) {
-        // This script is included manually to be included after jquery and avoid error.
+        // This script is included manually to be
+        // included after jquery and avoid error.
         ui_include_time_picker();
-        ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+        ui_require_jquery_file(
+            'ui.datepicker-'.get_user_language(),
+            'include/javascript/i18n/'
+        );
 
         $module_id = (int) get_parameter('id_module');
         $period = get_parameter('period', SECONDS_1DAY);
@@ -145,10 +165,22 @@ if (check_login()) {
         $free_checkbox = (bool) get_parameter('free_checkbox', false);
         $selection_mode = get_parameter('selection_mode', 'fromnow');
         $utimestamp = get_system_time();
-        $date_from = (string) get_parameter('date_from', date(DATE_FORMAT, ($utimestamp - SECONDS_1DAY)));
-        $time_from = (string) get_parameter('time_from', date(TIME_FORMAT, ($utimestamp - SECONDS_1DAY)));
-        $date_to = (string) get_parameter('date_to', date(DATE_FORMAT, $utimestamp));
-        $time_to = (string) get_parameter('time_to', date(TIME_FORMAT, $utimestamp));
+        $date_from = (string) get_parameter(
+            'date_from',
+            date(DATE_FORMAT, ($utimestamp - SECONDS_1DAY))
+        );
+        $time_from = (string) get_parameter(
+            'time_from',
+            date(TIME_FORMAT, ($utimestamp - SECONDS_1DAY))
+        );
+        $date_to = (string) get_parameter(
+            'date_to',
+            date(DATE_FORMAT, $utimestamp)
+        );
+        $time_to = (string) get_parameter(
+            'time_to',
+            date(TIME_FORMAT, $utimestamp)
+        );
 
         // Definition of new table.
         $formtable = new stdClass();
@@ -186,10 +218,20 @@ if (check_login()) {
             $selection_mode,
             false,
             '',
-            'style="margin-right: 15px;"',
+            'class="mrgn_right_15px"',
             true
         ).__('Choose a time from now');
-        $formtable->data[0][1] = html_print_select($periods, 'period', $period, '', '', 0, true, false, false);
+        $formtable->data[0][1] = html_print_select(
+            $periods,
+            'period',
+            $period,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false
+        );
         $formtable->data[0][2] = '';
         $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh.png', true, ['style' => 'vertical-align: middle;', 'border' => '0' ]).'</a>';
         $formtable->rowspan[0][3] = 2;
@@ -202,7 +244,7 @@ if (check_login()) {
             $selection_mode,
             false,
             '',
-            'style="margin-right: 15px;"',
+            'class="mrgn_right_15px"',
             true
         ).__('Specify time range');
         $formtable->data[1][1] = __('Timestamp from:');
@@ -248,8 +290,20 @@ if (check_login()) {
         $freesearch_object = '';
         if (preg_match('/_string/', $moduletype_name)) {
             $formtable->data[2][0] = __('Free search').' ';
-            $formtable->data[2][1] = html_print_input_text('freesearch', $freesearch, '', 20, null, true);
-            $formtable->data[2][2] = html_print_checkbox('free_checkbox', 1, $free_checkbox, true);
+            $formtable->data[2][1] = html_print_input_text(
+                'freesearch',
+                $freesearch,
+                '',
+                20,
+                null,
+                true
+            );
+            $formtable->data[2][2] = html_print_checkbox(
+                'free_checkbox',
+                1,
+                $free_checkbox,
+                true
+            );
             $formtable->data[2][2] .= ' '.__('Exact phrase');
             $freesearch_object = json_encode(
                 [
@@ -340,6 +394,12 @@ if (check_login()) {
         $index = 0;
         foreach ($columns as $col => $attr) {
             $table->head[$index] = $col;
+            if ($col === 'Data') {
+                $table->head[$index] .= ui_print_help_tip(
+                    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+                    true
+                );
+            }
 
             if (isset($attr['align'])) {
                 $table->align[$index] = $attr['align'];
@@ -359,8 +419,16 @@ if (check_login()) {
             'web_content_string'
         );
 
-        $post_process = db_get_value_filter('post_process', 'tagente_modulo', ['id_agente_modulo' => $module_id]);
-        $unit = db_get_value_filter('unit', 'tagente_modulo', ['id_agente_modulo' => $module_id]);
+        $post_process = db_get_value_filter(
+            'post_process',
+            'tagente_modulo',
+            ['id_agente_modulo' => $module_id]
+        );
+        $unit = db_get_value_filter(
+            'unit',
+            'tagente_modulo',
+            ['id_agente_modulo' => $module_id]
+        );
         foreach ($result as $row) {
             $data = [];
 
@@ -378,10 +446,10 @@ if (check_login()) {
                     $data[] = date('d F Y h:i:s A', $row['utimestamp']);
                 } else if (is_snapshot_data($row[$attr[0]])) {
                     if ($config['command_snapshot']) {
-                        $imagetab = '<img style="width:100%" src="';
+                        $imagetab = '<img class="w100p" src="';
                         $imagetab .= io_safe_input($row[$attr[0]]);
                         $imagetab .= '">';
-                        $image = '<img style="width:300px" src="';
+                        $image = '<img class="w300px" src="';
                         $image .= io_safe_input($row[$attr[0]]);
                         $image .= '">';
                         $data[] = '<a style="cursor:pointer;" onclick="newTabjs(\''.base64_encode($imagetab).'\')">'.$image.'</a>';
@@ -400,32 +468,65 @@ if (check_login()) {
                     // Fixed the data from Selenium Plugin.
                     if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
                         $data[] = html_print_result_div($row[$attr[0]]);
-                    } else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type'])) {
+                    } else if (is_numeric($row[$attr[0]])
+                        && !modules_is_string_type($row['module_type'])
+                    ) {
                         switch ($row['module_type']) {
                             case 15:
-                                $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+                                $value = db_get_value(
+                                    'snmp_oid',
+                                    'tagente_modulo',
+                                    'id_agente_modulo',
+                                    $module_id
+                                );
                                 // System Uptime:
-                                // In case of System Uptime module, shows data in format "Days hours minutes seconds" if and only if
+                                // In case of System Uptime module,
+                                // shows data in format
+                                // "Days hours minutes seconds" if and only if
                                 // selected module unit is "_timeticks_"
-                                // Take notice that selected unit may not be postrocess unit
-                                if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                        $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
+                                // Take notice that selected unit
+                                // may not be postrocess unit.
+                                if ($value == '.1.3.6.1.2.1.1.3.0'
+                                    || $value == '.1.3.6.1.2.1.25.1.1.0'
+                                ) {
+                                        $data_macro = modules_get_unit_macro(
+                                            $row[$attr[0]],
+                                            $unit
+                                        );
                                     if ($data_macro) {
                                         $data[] = $data_macro;
                                     } else {
-                                        $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+                                        $data[] = remove_right_zeros(
+                                            number_format(
+                                                $row[$attr[0]],
+                                                $config['graph_precision']
+                                            )
+                                        );
                                     }
                                 } else {
-                                    $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+                                    $data[] = remove_right_zeros(
+                                        number_format(
+                                            $row[$attr[0]],
+                                            $config['graph_precision']
+                                        )
+                                    );
                                 }
                             break;
 
                             default:
-                                $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
+                                $data_macro = modules_get_unit_macro(
+                                    $row[$attr[0]],
+                                    $unit
+                                );
                                 if ($data_macro) {
                                     $data[] = $data_macro;
                                 } else {
-                                    $data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+                                    $data[] = remove_right_zeros(
+                                        number_format(
+                                            $row[$attr[0]],
+                                            $config['graph_precision']
+                                        )
+                                    );
                                 }
                             break;
                         }
@@ -433,11 +534,16 @@ if (check_login()) {
                         if ($row[$attr[0]] == '') {
                             $data[] = 'No data';
                         } else {
-                            $data_macro = modules_get_unit_macro($row[$attr[0]], $unit);
+                            $data_macro = modules_get_unit_macro(
+                                $row[$attr[0]],
+                                $unit
+                            );
                             if ($data_macro) {
                                 $data[] = $data_macro;
                             } else {
-                                $data[] = html_print_result_div($row[$attr[0]]);
+                                $data[] = html_print_result_div(
+                                    $row[$attr[0]]
+                                );
                             }
                         }
                     }
@@ -453,7 +559,16 @@ if (check_login()) {
         if (empty($table->data)) {
             ui_print_error_message(__('No available data to show'));
         } else {
-            ui_pagination(count($count), false, $offset, 0, false, 'offset', true, 'binary_dialog');
+            ui_pagination(
+                count($count),
+                false,
+                $offset,
+                0,
+                false,
+                'offset',
+                true,
+                'binary_dialog'
+            );
             html_print_table($table);
         }
 
@@ -727,11 +842,17 @@ if (check_login()) {
             }
         }
 
-        $status_filter_monitor = (int) get_parameter('status_filter_monitor', -1);
+        $status_filter_monitor = (int) get_parameter(
+            'status_filter_monitor',
+            -1
+        );
         $status_text_monitor = get_parameter('status_text_monitor', '');
         $filter_monitors = (bool) get_parameter('filter_monitors', false);
         $status_module_group = get_parameter('status_module_group', -1);
-        $monitors_change_filter = (bool) get_parameter('monitors_change_filter', false);
+        $monitors_change_filter = (bool) get_parameter(
+            'monitors_change_filter',
+            false
+        );
 
         $status_filter_sql = '1 = 1';
         if ($status_filter_monitor == AGENT_MODULE_STATUS_NOT_NORMAL) {
@@ -787,7 +908,9 @@ if (check_login()) {
 			AND tagente_estado.estado != $monitor_filter
 		";
 
-        $count_modules = db_get_all_rows_sql('SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)'.$sql_condition);
+        $count_modules = db_get_all_rows_sql(
+            'SELECT COUNT(DISTINCT tagente_modulo.id_agente_modulo)'.$sql_condition
+        );
 
         if (isset($count_modules[0])) {
             $count_modules = reset($count_modules[0]);
@@ -796,7 +919,7 @@ if (check_login()) {
         }
 
         // Get monitors/modules
-        // Get all module from agent
+        // Get all module from agent.
         $sql_modules_info = "SELECT tagente_estado.*, tagente_modulo.*, tmodule_group.* 
 		$sql_condition
 		GROUP BY tagente_modulo.id_agente_modulo ORDER BY $order_sql";
@@ -926,7 +1049,7 @@ if (check_login()) {
             if (($module['id_modulo'] != 1) && ($module['id_tipo_modulo'] != 100)) {
                 if ($agent_w) {
                     if ($module['flag'] == 0) {
-                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force')]).'</a>';
+                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter' ]).'</a>';
                     } else {
                         $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh')]).'</a>';
                     }
@@ -960,7 +1083,7 @@ if (check_login()) {
                             $img = 'images/policies_brick.png';
                             $title = '('.__('Adopted').') '.$name_policy;
                         } else {
-                            $img = 'images/policies.png';
+                            $img = 'images/policies_mc.png';
                             $title = $name_policy;
                         }
                     } else {
@@ -1086,7 +1209,15 @@ if (check_login()) {
 
                 $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&amp;".'period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;'."draw_events=$draw_events', 'day_".$win_handle."', 800, 480)";
                 if (!is_snapshot_data($module['datos'])) {
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a> &nbsp;&nbsp;';
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image(
+                        'images/chart.png',
+                        true,
+                        [
+                            'border' => '0',
+                            'alt'    => '',
+                            'class'  => 'invert_filter',
+                        ]
+                    ).'</a> &nbsp;&nbsp;';
                 }
 
                 $server_name = '';
@@ -1095,7 +1226,15 @@ if (check_login()) {
                 // Escape the double quotes that may have the name of the module.
                 $modules_get_agentmodule_name = str_replace('&quot;', '\"', $modules_get_agentmodule_name);
 
-                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image('images/binary.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                $data[8] .= "<a href='javascript: ".'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$id_agente.', "'.$server_name.'", '.(0).', '.SECONDS_1DAY.', " '.$modules_get_agentmodule_name."\")'>".html_print_image(
+                    'images/binary.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => '',
+                        'class'  => 'invert_filter',
+                    ]
+                ).'</a>';
             }
 
             if ($module['estado'] == 3) {
@@ -1193,6 +1332,57 @@ if (check_login()) {
         $module = modules_get_agentmodule($id_module);
         $graph_type = return_graphtype($module['id_tipo_modulo']);
         echo $graph_type;
+        return;
+    }
+
+    if ($get_graph_module === true) {
+        global $config;
+        $output = '';
+        $graph_data = get_parameter('graph_data', '');
+        $params = json_decode(base64_decode($graph_data), true);
+        $server_id = (int) get_parameter('server_id', 0);
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        // Metaconsole connection to the node.
+        if (is_metaconsole() === true && empty($server_id) === false) {
+            $server = metaconsole_get_connection_by_id($server_id);
+            metaconsole_connect($server);
+        }
+
+        $output .= grafico_modulo_sparse($params);
+        echo $output;
+
+        if (is_metaconsole() === true && empty($server_id) === false) {
+            metaconsole_restore_db();
+        }
+
+        return;
+    }
+
+    if ($get_graph_module_interfaces === true) {
+        global $config;
+        include_once $config['homedir'].'/include/functions_graph.php';
+
+        $output = '';
+        $graph_data = get_parameter('graph_data', '');
+        $params = json_decode(base64_decode($graph_data), true);
+
+        $modules = get_parameter('modules', '');
+        $modules = json_decode(base64_decode($modules), true);
+
+        $graph_data_combined = get_parameter('graph_data_combined', '');
+        $params_combined = json_decode(
+            base64_decode($graph_data_combined),
+            true
+        );
+
+        $output .= graphic_combined_module(
+            $modules,
+            $params,
+            $params_combined
+        );
+        echo $output;
+
         return;
     }
 }

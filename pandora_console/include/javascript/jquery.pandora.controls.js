@@ -35,11 +35,23 @@
 					$("option[value!=0]", $select).remove ();
 					if (! config.callbackBefore (this))
 						return;
+
+					if (typeof config.recursion === "function") {
+						// Perform this for those cases where recursion parameter is obtained through a function that returns a variable that is set in the lexical environment where this constructor is called.
+						var recursion_value = config.recursion();
+
+						if (typeof recursion_value === "boolean") {
+							recursion_value = recursion_value ? 1 : 0;
+						}
+					} else {
+						var recursion_value = config.recursion;
+					}
+
 					var opts = {
 						"page" : "godmode/groups/group_list",
 						"get_group_agents" : 1,
 						"id_group" : this.value,
-						"recursion" : config.recursion,
+						"recursion" : recursion_value,
 						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : (typeof config.disabled === "function")
 							? (config.disabled())

@@ -387,7 +387,7 @@ class AgentModuleWidget extends Widget
     ):string {
         $style = 'display:flex; width:100%; height:100%; margin: 10px;';
         $table_data = '<div style="'.$style.'">';
-        $table_data .= '<table class="widget_agent_module" cellpadding="1" cellspacing="0" border="0" style="background-color: transparent; margin: 0 auto;">';
+        $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 
         if (empty($visualData) === false) {
             $table_data .= '<th>'.__('Agents').' / '.__('Modules').'</th>';
@@ -403,11 +403,11 @@ class AgentModuleWidget extends Widget
                     false,
                     '...'
                 );
-                $table_data .= '<th style="padding: 10px;">'.$file_name.'</th>';
+                $table_data .= '<th class="pdd_10px">'.$file_name.'</th>';
             }
 
             foreach ($visualData as $row) {
-                $table_data .= "<tr style='height: 35px;'>";
+                $table_data .= "<tr class='height_35px'>";
                 switch ($row['agent_status']) {
                     case AGENT_STATUS_ALERT_FIRED:
                         $rowcolor = COL_ALERTFIRED;

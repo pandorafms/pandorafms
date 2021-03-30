@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for delete modules in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -296,8 +311,8 @@ $table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
 $table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = '<span style="width:110px;display:inline-block;">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true).'<br>';
-$table->data['selection_mode'][1] .= '<span style="width:110px;display:inline-block;">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data['selection_mode'][1] = '<span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br>';
+$table->data['selection_mode'][1] .= '<span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true);
 
 $table->rowclass['form_modules_1'] = 'select_modules_row';
 $table->data['form_modules_1'][0] = __('Module type');
@@ -326,7 +341,7 @@ $table->data['form_modules_1'][3] = __('Select all modules of this type').' '.ht
     '',
     '',
     false,
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true,
     ''
 );
@@ -371,7 +386,7 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group').' '.ht
     '',
     false,
     '',
-    'style="margin-right: 40px;"',
+    'class="mrgn_right_40px"',
     true
 );
 
@@ -563,18 +578,19 @@ $table->data['form_agents_3'][3] = html_print_select(
 echo '<form method="post" id="form_modules" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" >';
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('delete', 1);
-html_print_submit_button(__('Delete'), 'go', false, 'class="sub delete"');
-echo '</div>';
+attachActionButton('delete', 'delete', $table->width);
+
 echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file('form');
 // Hack to translate text "none" in PHP to javascript
-echo '<span id ="none_text" style="display: none;">'.__('None').'</span>';
-echo '<span id ="select_agent_first_text" style="display: none;">'.__('Please, select an agent first').'</span>';
+echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
+echo '<span id ="select_agent_first_text" class="invisible">'.__('Please, select an agent first').'</span>';
+
+// Load JS files.
+ui_require_javascript_file('pandora_modules');
 ui_require_jquery_file('pandora.controls');
 
 if ($selection_mode == 'modules') {
@@ -586,13 +602,10 @@ if ($selection_mode == 'modules') {
 }
 ?>
 
-<script type="text/javascript" src="include/javascript/pandora_modules.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
-
-var limit_parameters_massive = <?php echo $config['limit_parameters_massive']; ?>;
-
 $(document).ready (function () {
+
     $("#checkbox-select_all_modules").change(function() {
         if( $('#checkbox-select_all_modules').prop('checked')) {
             $("#module_name option").prop('selected', 'selected');
@@ -689,7 +702,7 @@ $(document).ready (function () {
             }
         }
         
-        $("#module_loading").show ();
+        showSpinner();
         $("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
         $("#module_name").attr ("disabled", "disabled")
         $("#module_name option[value!=0]").remove ();
@@ -702,7 +715,7 @@ $(document).ready (function () {
                         .html(value["nombre"]);
                     $("#module_name").append (option);
                 });
-                $("#module_loading").hide();
+                hideSpinner();
                 $("#module_name").removeAttr ("disabled");
                 //Filter modules. Call the function when the select is fully loaded.
                 var textNoData = "<?php echo __('None'); ?>";
@@ -832,21 +845,7 @@ $(document).ready (function () {
         selector = $("#form_edit input[name=selection_mode]:checked").val();
         $("#id_agents").trigger("change");
     });
-    
-    $("#form_modules").submit(function() {
-        var get_parameters_count = window.location.href.slice(
-            window.location.href.indexOf('?') + 1).split('&').length;
-        var post_parameters_count = $("#form_modules").serializeArray().length;
         
-        var count_parameters =
-            get_parameters_count + post_parameters_count;
-        
-        if (count_parameters > limit_parameters_massive) {
-            alert("<?php echo __('Unsucessful sending the data, please contact with your administrator or make with less elements.'); ?>");
-            return false;
-        }
-    });
-    
     if("<?php echo $delete; ?>"){
         if("<?php echo $selection_mode; ?>" == 'agents'){
             $("#groups_select").trigger("change");

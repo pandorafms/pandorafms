@@ -688,7 +688,7 @@ if (!empty($table->data)) {
         );
     }
 
-    echo '<div id="alerts_list" style="width:100%;">';
+    echo '<div id="alerts_list w100p">';
     html_print_table($table);
     echo '</div>';
 
@@ -746,7 +746,7 @@ if ($agent_view_page === true) {
 
 
 // strict user hidden
-echo '<div id="strict_hidden" style="display:none;">';
+echo '<div id="strict_hidden" class="invisible">';
 html_print_input_text('strict_user_hidden', $strict_user);
 
 html_print_input_text('is_meta_hidden', (int) is_metaconsole());

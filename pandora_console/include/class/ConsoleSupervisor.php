@@ -46,6 +46,11 @@ class ConsoleSupervisor
 {
 
     /**
+     * Minimum modules to check performance.
+     */
+    public const MIN_PERFORMANCE_MODULES = 100;
+
+    /**
      * Show if console supervisor is enabled or not.
      *
      * @var boolean
@@ -115,12 +120,6 @@ class ConsoleSupervisor
         } else {
             $this->enabled = (bool) $source['enabled'];
             $this->sourceId = $source['id'];
-
-            // Assign targets.
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = true;
         }
 
         return $this;
@@ -149,7 +148,8 @@ class ConsoleSupervisor
      */
     public function runBasic()
     {
-        global $config;
+        // Ensure functions are installed and up to date.
+        enterprise_hook('cron_extension_install_functions');
 
         /*
          * PHP configuration warnings:
@@ -620,20 +620,28 @@ class ConsoleSupervisor
             return;
         }
 
-        if ($this->targetUpdated === false) {
-            $targets = get_notification_source_targets($this->sourceId);
-            $this->targetGroups = $targets['groups'];
-            $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
-        }
-
         if ($source_id === 0) {
             $source_id = $this->sourceId;
-            // Assign targets.
-            $targets = get_notification_source_targets($source_id);
+        }
+
+        static $_cache_targets;
+        $key = $source_id.'|'.$data['type'];
+
+        if ($_cache_targets === null) {
+            $_cache_targets = [];
+        }
+
+        if ($_cache_targets[$key] !== null) {
+            $targets = $_cache_targets[$key];
+        } else {
+            $targets = get_notification_source_targets(
+                $source_id,
+                $data['type']
+            );
             $this->targetGroups = $targets['groups'];
             $this->targetUsers = $targets['users'];
-            $this->targetUpdated = false;
+
+            $_cache_targets[$key] = $targets;
         }
 
         switch ($data['type']) {
@@ -658,7 +666,6 @@ class ConsoleSupervisor
             case 'NOTIF.PANDORADB.HISTORICAL':
             case 'NOTIF.HISTORYDB.MR':
             case 'NOTIF.EXT.ELASTICSEARCH':
-            case 'NOTIF.EXT.LOGSTASH':
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
             case 'NOTIF.DOWNTIME':
             case 'NOTIF.UPDATEMANAGER.REGISTRATION':
@@ -1141,6 +1148,12 @@ class ConsoleSupervisor
                     $max_grown = ($total_modules[$queue['server_type']] * 0.40);
                 }
 
+                if ($total_modules[$queue['server_type']] < self::MIN_PERFORMANCE_MODULES) {
+                    $this->cleanNotifications('NOTIF.SERVER.QUEUE.'.$key);
+                    // Skip.
+                    continue;
+                }
+
                 // Compare queue increments in a not over 900 seconds.
                 if (empty($previous[$key]['modules'])
                     || ($time - $previous[$key]['utime']) > 900
@@ -1553,7 +1566,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li style='color: #676767'>".__('Report download in PDF format').'</li>'."<li style='color: #676767'>".__('Emails Sending').'</li><li style="color: #676767">'.__('Metaconsole Collections').'</li><li style="color: #676767">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );
@@ -1790,7 +1803,6 @@ class ConsoleSupervisor
     {
         global $config;
 
-        // Cannot check logstash, configuration is only available from server.
         // Cannot check selenium, configuration is only available from server.
         if (isset($config['log_collector'])
             && $config['log_collector'] == 1
@@ -2096,7 +2108,7 @@ class ConsoleSupervisor
                 [
                     'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
                     'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
+                    'message' => __('Click <a class="bolder underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
                     'url'     => 'javascript: force_run_register();',
                 ]
             );
@@ -2262,7 +2274,7 @@ class ConsoleSupervisor
                             'New %s Console update',
                             get_product_name()
                         ),
-                        'message' => __('There is a new update available. Please<a style="font-weight:bold;" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
+                        'message' => __('There is a new update available. Please<a class="bolder" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
                         'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online'),
                     ]
                 );
@@ -2298,7 +2310,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.UPDATEMANAGER.MINOR',
                     'title'   => __('Minor release/s available'),
                     'message' => __(
-                        'There is one or more minor releases available. <a style="font-size:8pt;font-style:italic;" target="blank" href="%s">.About minor release update</a>.',
+                        'There is one or more minor releases available. <a id="aviable_updates" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
                     'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
@@ -2328,7 +2340,7 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<pre>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
+                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate ';
                 $message_conf_cron .= str_replace(
                     ENTERPRISE_DIR.'/meta/',
                     '',

@@ -1,0 +1,19 @@
+#exetution example
+
+python3 pandora_discord_cli.py -d "Agent=Server22,Module=test_module,Group=Servers,State=Critical,Data=22,Timestamp=2020-11-04 11:14:00" \
+-u https://discord.com/api/webhooks/702868786843353179/YI1LOUzC64EcYcpPVB_ \
+--tittle_color ed2512 \
+--footer "PandoraFMS Alert" \
+-A "Sauron Systems" \
+--author_icon_url "https://pandorafms.com/wp-content/uploads/2019/04/software-de-monitorizacion-pandorafms-logo.png" \
+-m "We have bad news for you. Something is on CRITICAL status 2" \
+--author_url https://pandorafms.com/ \
+-D "Module test is going to critical" \
+--thumb https://pandorafms.com/images/alerta_roja.png \
+--avatar_url https://pandorafms.com/images/alerta_roja.png \
+--api_conf "user=admin,pass=pandora,api_pass=pandora,api_url=http://192.168.80.222/pandora_console/include/api.php" \
+--module_graph "module_id=6266, interval=3600" \
+--tmp_dir /tmp
+
+# Pandora FMS command definition example
+python3 /usr/share/pandora_server/util/pandora-discord/pandora_discord_cli.py -u "_field1_" -d "_field2_" -D "_field3_" --tittle_color _field4_ --thumb _field5_ --api_conf "_field6_" --module_graph "_field7_" -A "Pandora FMS Alert system" --footer "PandoraFMS" --author_icon_url "https://pandorafms.com/wp-content/uploads/2019/04/software-de-monitorizacion-pandorafms-logo.png" --author_url https://pandorafms.com/ --tmp_dir /tmp

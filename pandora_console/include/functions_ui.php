@@ -663,12 +663,17 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
         if (empty($icon)) {
             $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
         } else {
+            $class = 'bot';
+            if ($icon === 'transmit') {
+                $class .= ' invert_filter';
+            }
+
             $output .= html_print_image(
                 'images/'.$path.'/'.$icon.'.png',
                 true,
                 [
                     'style' => $style,
-                    'class' => 'bot',
+                    'class' => $class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],

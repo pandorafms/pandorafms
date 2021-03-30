@@ -1654,12 +1654,12 @@ if (check_acl(
         true
     ).'</span>';
     echo '</form>';
-    echo '<span id="max_custom_event_resp_msg" class="max_custom_events">';
+    echo '<span id="max_custom_event_resp_msg" style="display: none; color: #e63c52; line-height: 200%;">';
     echo __(
         'A maximum of %s event custom responses can be selected',
         $config['max_execution_event_response']
     ).'</span>';
-    echo '<span id="max_custom_selected" class="max_custom_events">';
+    echo '<span id="max_custom_selected" style="display: none; color: #e63c52; line-height: 200%;">';
     echo __(
         'Please, select an event'
     ).'</span>';
@@ -1692,8 +1692,8 @@ echo "<div id='event_response_window'></div>";
 echo "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
 
 // Load filter div for dialog.
-echo '<div id="load-modal-filter" class="invisible"></div>';
-echo '<div id="save-modal-filter" class="invisible"></div>';
+echo '<div id="load-modal-filter" style="display:none"></div>';
+echo '<div id="save-modal-filter" style="display:none"></div>';
 
 if ($_GET['refr'] || $do_refresh === true) {
     $autorefresh_draw = true;

@@ -20,10 +20,13 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 enterprise_include_once('include/functions_visual_map.php');
 
-// Retrieve the visual console id
+// Retrieve the visual console id.
 set_unless_defined($idVisualConsole, 0);
-// Set default
+// Set default.
 $idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+if (empty($idVisualConsole) === true) {
+    $idVisualConsole = get_parameter('id_visualmap', 0);
+}
 
 if (!defined('METACONSOLE')) {
     $action_name_parameter = 'action';
@@ -792,10 +795,10 @@ if ($config['legacy_vc']) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/operation.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
+    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/eye.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
 ];
 
-if ($action == 'new' || $idVisualConsole === false) {
+if ($idVisualConsole === false) {
     $buttons = ['data' => $buttons['data']];
     // Show only the data tab
     // If it is a fail try, reset the values
@@ -822,7 +825,7 @@ if ($statusProcessInDB !== null) {
     echo $statusProcessInDB['message'];
 }
 
-// The source code for PAINT THE PAGE
+// The source code for PAINT THE PAGE.
 switch ($activeTab) {
     case 'wizard':
         include_once $config['homedir'].'/godmode/reporting/visual_console_builder.wizard.php';

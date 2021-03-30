@@ -604,9 +604,11 @@ function snmp_browser_print_oid(
     if ($custom_action != '') {
         $table->head[0] = '<span id="snmp_custom_action">'.$closer.$custom_action.'</span>';
     } else {
+        $table->headstyle[0] = 'text-align: left';
         $table->head[0] = $closer;
     }
 
+    $table->headstyle[1] = 'text-align: left';
     $table->head[1] = __('OID Information');
     $output .= html_print_table($table, true);
 
@@ -636,7 +638,7 @@ function snmp_browser_print_oid(
         __('Create network component'),
         'create_network_component',
         false,
-        'class="sub add float-left"',
+        'class="sub add float-left mrgn_right_20px"',
         true
     );
 
@@ -1065,16 +1067,16 @@ function snmp_browser_print_container(
     );
 
     $output .= '<div id="search_results" class="search_results"></div>';
-    $output .= '<div id="spinner" class="spinner_none_padding">'.html_print_image('images/spinner.gif', true).'</div>';
+    $output .= '<div id="spinner" class="spinner_none_padding" style="display:none">'.html_print_image('images/spinner.gif', true).'</div>';
     $output .= '<div id="snmp_browser">';
     $output .= '</div>';
-    $output .= '<div class="databox mrgn_5px" id="snmp_data"></div>';
+    $output .= '<div class="databox" id="snmp_data"></div>';
     $output .= '</div>';
     $output .= '</div>';
     $output .= '</div>';
 
     if ($show_massive_buttons) {
-        $output .= '<div id="snmp_create_buttons" class="invisible">';
+        $output .= '<div id="snmp_create_buttons" style="display:none">';
         $output .= html_print_submit_button(
             __('Create agent modules'),
             'create_modules_agent',

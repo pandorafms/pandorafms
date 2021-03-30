@@ -209,11 +209,13 @@ if (empty($dashboards) === true) {
 }
 
 if ($writeDashboards === 1) {
+    $text = __('Create a new dashboard');
+
     // Button for display modal options dashboard.
     $output = '<a href="#" class="float-right" onclick=\'';
     $output .= 'show_option_dialog('.json_encode(
         [
-            'title'       => __('Update Dashboard'),
+            'title'       => $text,
             'btn_text'    => __('Ok'),
             'btn_cancel'  => __('Cancel'),
             'url'         => $ajaxController,

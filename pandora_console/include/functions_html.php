@@ -467,10 +467,9 @@ function html_print_select_groups(
     $output = '';
 
     global $config;
+    $select2_css = 'select2.min';
 
-    if ($config['style'] === 'pandora') {
-        $select2_css = 'select2.min';
-    } else {
+    if ($config['style'] === 'pandora_black') {
         $select2_css = 'select2_dark.min';
     }
 
@@ -576,6 +575,10 @@ function html_print_select_groups(
         $required
     );
 
+    if ($required !== false) {
+        $require_message = __('Please select an item from this list.');
+    }
+
     if (empty($size) === true) {
         $size = '100%';
     }
@@ -629,6 +632,25 @@ function html_print_select_groups(
                             }
                         }
                     });
+
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    $(this).on('change', function(e) {
+                        e.currentTarget.setCustomValidity('');
+                    })
+
+                    $(this).on('invalid', function(e) {
+                        if ($(e.currentTarget).val() == null) {
+                            e.currentTarget.setCustomValidity(
+                                '<?php echo $require_message; ?>'
+                            );
+                        }
+                    })
+                        <?php
+                    }
+                    ?>
+
                 }
             );
 
@@ -2194,24 +2216,26 @@ function html_print_input_text_extended(
 
 
 /**
- * Render an input password element.
+ * Render a section <div> html element.
  *
- * The element will have an id like: "password-$name"
- *
- * @param mixed parameters:
+ * @param array   $options Parameters:
  *             - id: string
  *             - style: string
+ *             - class: string
+ *             - title: string
  *             - hidden: boolean
- *             - content: string
- * @param bool return or echo flag
+ *             - content: string.
+ * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_div($options, $return=false)
-{
+function html_print_div(
+    array $options,
+    bool $return=false
+) {
     $output = '<div';
 
-    // Valid attributes (invalid attributes get skipped)
+    // Valid attributes (invalid attributes get skipped).
     $attrs = [
         'id',
         'style',
@@ -2248,13 +2272,14 @@ function html_print_div($options, $return=false)
 
 
 /**
- * Render an anchor html element.
+ * Render an anchor <a> html element.
  *
  * @param array   $options Parameters
- *                - id: string
- *                - style: string
- *                - title: string
+ *                - id: string.
+ *                - style: string.
+ *                - title: string.
  *                - href: string.
+ *                - content: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.

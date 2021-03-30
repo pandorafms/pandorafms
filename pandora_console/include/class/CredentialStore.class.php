@@ -1075,7 +1075,7 @@ class CredentialStore extends Wizard
 
             item.options = '<a href="javascript:" onclick="show_form(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show')]); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show')]); ?></a>';
 
             item.options += '<a href="javascript:" onclick="delete_key(\'';
             item.options += id;

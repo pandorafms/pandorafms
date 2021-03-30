@@ -364,7 +364,7 @@ ui_toggle(
 ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
 
-echo "<div id='module_details_dialog' class='invisible'></div>";
+echo "<div id='module_details_dialog' class='display:none'></div>";
 
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
@@ -386,15 +386,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
             cluetipClass: 'default',
             sticky: true,
             mouseOutClose: 'both',
-            closeText: '
-            <?php
-            html_print_image(
-                'images/cancel.png',
-                false,
-                ['class' => 'invert_filter']
-            );
-            ?>
-            '
+            closeText: '<?php html_print_image('images/cancel.png', false, ['class' => 'invert_filter']); ?>'
         });
         
     // Show the modal window of an module

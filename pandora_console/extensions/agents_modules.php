@@ -686,7 +686,7 @@ function mainAgentsModules()
 
     echo '<tr>';
 
-    echo "<th width='140px' class='right pdd_r_10px'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='140px' class='pdd_r_10px lign_right'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);

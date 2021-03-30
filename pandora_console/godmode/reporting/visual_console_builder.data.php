@@ -122,10 +122,10 @@ if ($action == 'new') {
 	src="">';
 } else {
     if (defined('METACONSOLE')) {
-        $table->data[0][2] = '<img id="imagen2"
+        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
 		src="../../images/console/background/'.$background.'">';
     } else {
-        $table->data[0][2] = '<img id="imagen2" 
+        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
 		src="images/console/background/'.$background.'">';
     }
 
@@ -141,16 +141,20 @@ if (users_can_manage_group_all('RW') === true) {
     $return_all_group = true;
 }
 
-$table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
-    $config['id_user'],
-    'RW',
-    $return_all_group,
-    'id_group',
-    $idGroup,
-    '',
-    '',
-    '',
-    true
+$table->data[1][1] = '<div class="w250px">'.html_print_input(
+    [
+        'type'           => 'select_groups',
+        'id_user'        => $config['id_user'],
+        'privilege'      => 'RW',
+        'returnAllGroup' => $return_all_group,
+        'name'           => 'id_group',
+        'selected'       => $idGroup,
+        'script'         => '',
+        'nothing'        => '',
+        'nothing_value'  => '',
+        'return'         => true,
+        'required'       => true,
+    ]
 ).'</div>';
 $backgrounds_list = list_files(
     $config['homedir'].'/images/console/background/',

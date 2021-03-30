@@ -74,3 +74,7 @@ enterprise/extensions/ipam
 enterprise/extensions/disabled/visual_console_manager.php
 enterprise/extensions/visual_console_manager.php
 pandora_console/extensions/net_tools.php
+include/lib/WSManager.php
+include/lib/WebSocketServer.php
+include/lib/WebSocketUser.php
+operation/network/network_explorer.php

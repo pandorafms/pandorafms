@@ -648,7 +648,7 @@ class CustomNetScan extends Wizard
             );
 
             $form['inputs'][] = [
-                'label'     => __('Explanation').'<span id="spinner_recon_script" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>',
+                'label'     => __('Explanation').'<span id="spinner_recon_script" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>',
                 'arguments' => [
                     'type'    => 'textarea',
                     'rows'    => 4,
@@ -656,7 +656,8 @@ class CustomNetScan extends Wizard
                     'name'    => 'explanation',
                     'value'   => $explanation,
                     'return'  => true,
-                    'class'   => 'discovery_textarea_input w388px',
+                    'class'   => 'w388px discovery_textarea_input',
+                    'style'   => 'width: 388px',
                 ],
             ];
 

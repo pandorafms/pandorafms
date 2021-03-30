@@ -536,7 +536,7 @@ $table->valign[1] = 'top';
 $table->data = [];
 
 $table->data[0][0] = '<h4>'.__('List of layers').'</h4>';
-$table->data[0][1] = '<divclass="right">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true).'</div>';
+$table->data[0][1] = '<div class="right">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add "', true).'</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers"></table>';
 $table->data[1][1] = '<div id="form_layer" class="invisible">
@@ -972,15 +972,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;">
-    <?php
-    echo html_print_image(
-        'images/cross.png',
-        true,
-        ['class' => 'invert_filter']
-    );
-    ?>
-        </a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);

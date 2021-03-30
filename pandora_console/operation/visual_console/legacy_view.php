@@ -183,7 +183,7 @@ if ($vconsole_write || $vconsole_manage) {
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$view_refresh.'">'.html_print_image(
-    'images/operation.png',
+    'images/eye.png',
     true,
     [
         'title' => __('View'),

@@ -787,8 +787,40 @@ class HTML
         }
 
         if (isset($data['form']) === true) {
-            $output_head .= '<form name="'.$form['name'].'" id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-            $output_head .= '" '.$form['extra'].'>';
+            $output_head .= '<form ';
+            if (isset($form['name']) === true) {
+                $output_head .= 'name="'.$form['name'].'" ';
+            }
+
+            if (isset($form['id']) === true) {
+                $output_head .= 'id="'.$form['id'].'" ';
+            }
+
+            if (isset($form['class']) === true) {
+                $output_head .= 'class="discovery '.$form['class'].'" ';
+            }
+
+            if (isset($form['onsubmit']) === true) {
+                $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
+            }
+
+            if (isset($form['enctype']) === true) {
+                $output_head .= 'enctype="'.$form['enctype'].'" ';
+            }
+
+            if (isset($form['action']) === true) {
+                $output_head .= 'action="'.$form['action'].'" ';
+            }
+
+            if (isset($form['method']) === true) {
+                $output_head .= 'method="'.$form['method'].'" ';
+            }
+
+            if (isset($form['extra']) === true) {
+                $output_head .= $form['extra'];
+            }
+
+            $output_head .= '>';
         }
 
         if ($return === false) {

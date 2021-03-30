@@ -284,12 +284,15 @@ class TopNEventByGroupWidget extends Widget
         if ($values['groupId']) {
             $selected_groups = explode(',', $values['groupId'][0]);
 
-            if (users_can_manage_group_all('RM') || in_array(0, $selected_groups) === true) {
-                // Return all group if user has permissions or it is a currently selected group.
+            if (users_can_manage_group_all('RM') === true
+                || in_array(0, $selected_groups) === true
+            ) {
+                // Return all group if user has permissions
+                // or it is a currently selected group.
                 $return_all_group = true;
             }
         } else {
-            if (users_can_manage_group_all('RM')) {
+            if (users_can_manage_group_all('RM') === true) {
                 $return_all_group = true;
             }
         }
@@ -301,10 +304,11 @@ class TopNEventByGroupWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => $selected_groups,
+                'selected'       => (empty($selected_groups) === true) ? [0] : $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
                 'returnAllGroup' => $return_all_group,
+                'required'       => true,
             ],
         ];
 

@@ -28,7 +28,7 @@
 
 // Begin.
 require_once __DIR__.'/vendor/autoload.php';
-use \PandoraFMS\WebSockets\WSManager;
+use \PandoraFMS\Websockets\WSManager;
 
 // Set to true to get full output.
 $debug = false;
@@ -90,10 +90,6 @@ if (isset($config['gotty_ssh_port']) === false) {
 if (isset($config['gotty']) === false) {
     config_update_value('gotty', '/usr/bin/gotty');
 }
-
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
 $os = strtolower(PHP_OS);
 if (substr($os, 0, 3) !== 'win') {

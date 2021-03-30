@@ -78,6 +78,13 @@ export default class StaticGraph extends Item<StaticGraphProps> {
     element.style.backgroundSize = "contain";
     element.style.backgroundPosition = "center";
 
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
+
     // Show last value in a tooltip.
     if (
       this.props.lastValue !== null &&

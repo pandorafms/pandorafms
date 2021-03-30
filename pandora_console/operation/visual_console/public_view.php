@@ -28,7 +28,6 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
-ui_require_css_file('visual_maps');
 ui_require_css_file('register', 'include/styles/', true);
 
 // Connection lost alert.

@@ -148,7 +148,8 @@ class ConsoleSupervisor
      */
     public function runBasic()
     {
-        global $config;
+        // Ensure functions are installed and up to date.
+        enterprise_hook('cron_extension_install_functions');
 
         /*
          * PHP configuration warnings:
@@ -665,7 +666,6 @@ class ConsoleSupervisor
             case 'NOTIF.PANDORADB.HISTORICAL':
             case 'NOTIF.HISTORYDB.MR':
             case 'NOTIF.EXT.ELASTICSEARCH':
-            case 'NOTIF.EXT.LOGSTASH':
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
             case 'NOTIF.DOWNTIME':
             case 'NOTIF.UPDATEMANAGER.REGISTRATION':
@@ -1803,7 +1803,6 @@ class ConsoleSupervisor
     {
         global $config;
 
-        // Cannot check logstash, configuration is only available from server.
         // Cannot check selenium, configuration is only available from server.
         if (isset($config['log_collector'])
             && $config['log_collector'] == 1

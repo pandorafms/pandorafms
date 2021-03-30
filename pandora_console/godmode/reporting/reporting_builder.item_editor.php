@@ -770,12 +770,6 @@ switch ($action) {
                     // Max values.
                 break;
 
-                case 'nt_top_n':
-                    $period = $item['period'];
-                    $description = $item['description'];
-                    $top_n_value = $item['top_n_value'];
-                break;
-
                 case 'permissions_report':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -818,7 +812,6 @@ switch ($action) {
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
-                case 'nt_top_n':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
 
@@ -3290,7 +3283,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     echo '</tbody>';
                     ?>
                     <tbody id="sla_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
@@ -3694,7 +3687,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     ?>
 
                     <tbody id="general_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php
@@ -5906,12 +5899,6 @@ function chooseType() {
             $("#row_resolution").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
-            break;
-
-        case 'nt_top_n':
-            $("#row_description").show();
-            $("#row_period").show();
-            $("#row_quantity").show();
             break;
 
         case 'permissions_report':

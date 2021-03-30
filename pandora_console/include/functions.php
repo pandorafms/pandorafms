@@ -4347,6 +4347,8 @@ function pandora_xhprof_display_result($key='', $method='link')
     switch ($method) {
         case 'console':
             error_log("'{$new_url}'");
+        break;
+
         case 'link':
         default:
             echo "<a href='{$new_url}' target='_new'>Performance</a>\n";

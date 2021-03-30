@@ -1005,7 +1005,7 @@ class Tree
         $agent_search_filter = $this->getAgentSearchFilter();
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
-        $module_status_filter = $this->getModuleStatusFilter();
+        $module_status_filter = $this->getModuleStatusFilterFromTestado($this->filter['statusModule']);
 
         $condition = $this->L2condition;
         $condition_inside = $this->L2conditionInside;

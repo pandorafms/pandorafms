@@ -4670,6 +4670,7 @@ function ui_print_agent_autocomplete_input($parameters)
 {
     global $config;
 
+    $text_color = '';
     // Normalize and extract the data from $parameters
     // ------------------------------------------------------------------.
     $return = false;
@@ -4700,6 +4701,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $icon_agent = 'images/search_agent.png';
 
     if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
 
@@ -5203,7 +5205,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						
 						//Set icon
 						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+							.css("background","url(\"'.$icon_image.'\") right center no-repeat '.$icon_image.'");
 						return;
 					}
 					else {
@@ -5544,8 +5546,13 @@ function ui_print_agent_autocomplete_input($parameters)
     // ------------------------------------------------------------------.
     $html = '';
 
+    $text_color = '';
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
+    }
+
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right;';
+    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

@@ -730,7 +730,7 @@ function filemanager_file_explorer(
                 && (! is_dir($fileinfo['realpath']) || count(scandir($fileinfo['realpath'])) < 3) && (!$readOnly)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
-                $data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+                $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
                 $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['dbpass']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);

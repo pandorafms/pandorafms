@@ -1501,7 +1501,7 @@ if ($is_sap) {
 }
 
 // External Tools tab.
-$external_tools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools')]).'</a>';
+$external_tools['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools'), 'class' => 'invert_filter']).'</a>';
 if ($tab == 'external_tools') {
     $external_tools['active'] = true;
 } else {

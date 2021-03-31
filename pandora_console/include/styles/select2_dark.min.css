@@ -12,6 +12,7 @@
   height: 28px;
   user-select: none;
   -webkit-user-select: none;
+  color: white;
 }
 .select2-container .select2-selection--single .select2-selection__rendered {
   display: block;
@@ -20,6 +21,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: white;
 }
 .select2-container .select2-selection--single .select2-selection__clear {
   position: relative;
@@ -37,6 +39,7 @@
   min-height: 32px;
   user-select: none;
   -webkit-user-select: none;
+  color: white;
 }
 .select2-container .select2-selection--multiple .select2-selection__rendered {
   display: inline-block;

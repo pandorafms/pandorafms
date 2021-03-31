@@ -723,6 +723,7 @@ function html_print_select(
 
     static $idcounter = [];
 
+    global $config;
     // If duplicate names exist, it will start numbering. Otherwise it won't
     if (isset($idcounter[$name])) {
         $idcounter[$name]++;
@@ -763,7 +764,14 @@ function html_print_select(
 
     if ($style === false) {
         $styleText = ' ';
+        if ($config['style'] === 'pandora_black') {
+            $styleText = 'style="color: white"';
+        }
     } else {
+        if ($config['style'] === 'pandora_black') {
+            $style .= ' color: white';
+        }
+
         $styleText = 'style="'.$style.'"';
     }
 
@@ -2606,11 +2614,18 @@ function html_print_input_number(array $settings):string
         'step',
     ];
 
+    global $config;
+    $text_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
+    }
+
     $output = '';
     if (isset($settings) === true && is_array($settings) === true) {
         // Check Name is necessary.
         if (isset($settings['name']) === true) {
-            $output = '<input type="number" ';
+            $output = '<input '.$text_color.' type="number" ';
 
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
@@ -4062,8 +4077,10 @@ function html_print_autocomplete_modules(
 
     ob_start();
 
+    $text_color = '';
     $module_icon = 'images/search_module.png';
     if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
     }
 
@@ -4076,7 +4093,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url('.$module_icon.') no-repeat right;']
+        ['style' => 'background: url('.$module_icon.') no-repeat right; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
@@ -4353,8 +4370,13 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
  */
 function html_print_input($data, $wrapper='div', $input_only=false)
 {
+    global $config;
     if (is_array($data) === false) {
         return '';
+    }
+
+    if ($config['style'] === 'pandora_black') {
+            $style = 'style="color: white"';
     }
 
     $output = '';
@@ -4362,7 +4384,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     if ($data['label'] && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
-        $output .= '<label class="'.$data['label_class'].'">';
+        $output .= '<label '.$style.' class="'.$data['label_class'].'">';
         $output .= $data['label'];
         $output .= '</label>';
 
@@ -5077,8 +5099,16 @@ function html_print_autocomplete_users_from_integria(
 
 function html_print_tabs(array $tabs)
 {
+    global $config;
+
+    $bg_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $bg_color = 'style="background-color: #222"';
+    }
+
     $result = '<div id="html-tabs">';
-    $result .= '<ul class="">';
+    $result .= '<ul class="" '.$bg_color.'>';
     foreach ($tabs as $key => $value) {
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(

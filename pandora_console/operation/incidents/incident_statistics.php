@@ -26,6 +26,11 @@ if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 
 
 ui_print_page_header(__('Incidents').' &raquo; '.__('Statistics'), 'images/book_edit.png', false, '', false, '');
 
+if (!$config['integria_enabled']) {
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
+    exit;
+}
+
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
 echo graph_incidents_status();
@@ -38,8 +43,5 @@ echo graphic_incident_group();
 
 echo '<td><h3>'.__('Incidents by user').'</h3>';
 echo graphic_incident_user();
-
-echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
-echo graphic_incident_source();
 
 echo '</table>';

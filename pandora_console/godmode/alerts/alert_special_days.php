@@ -270,8 +270,8 @@ if ($delete_special_day) {
 }
 
 
-echo "<table cellpadding='4' cellspacing='4' class='databox upload' width='100%
-' style='font-weight: bold; margin-bottom: 10px;'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox upload bolder margin-bottom-10' width='100%
+'><tr>";
 echo "<form method='post' enctype='multipart/form-data' action='index.php?sec=gagente&sec2=godmode/alerts/alert_special_days'>";
 echo '<td>';
 echo __('iCalendar(.ics) file').'&nbsp;';
@@ -329,12 +329,12 @@ if ($display_range) {
         $html .= '">&lt;&lt;&nbsp;</a>';
     }
 
-    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range='.$display_range.'" style="font-weight: bold;">['.$display_range.']</a>';
+    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range='.$display_range.'" class="bolder">['.$display_range.']</a>';
     $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range=';
     $html .= ($display_range + 1);
     $html .= '">&nbsp;&gt;&gt;</a>';
 } else {
-    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days" style="font-weight: bold;">['.__('Default').']</a>&nbsp;&nbsp;';
+    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days" class="bolder">['.__('Default').']</a>&nbsp;&nbsp;';
     $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range=';
     $html .= ($this_year - 1);
     $html .= '">&lt;&lt;&nbsp;</a>';
@@ -472,7 +472,7 @@ for ($month = 1; $month <= 12; $month++) {
 
         if ($special_days != '') {
             foreach ($special_days as $special_day) {
-                $cal_table->data[$cal_line][$week] .= '<div style="font-size: 18px;';
+                $cal_table->data[$cal_line][$week] .= '<div class="font_18px" style="';
                 if ($special_day['same_day'] == 'sunday' || $special_day['same_day'] == 'saturday') {
                     $cal_table->data[$cal_line][$week] .= 'color: red;';
                 }
@@ -525,10 +525,18 @@ for ($month = 1; $month <= 12; $month++) {
                 if ($special_day['id_group'] || ($can_manage_group_all && $special_day['id_group'] == 0)) {
                     $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&id='.$special_day['id'].'" title=';
                     $cal_table->data[$cal_line][$week] .= __('Edit');
-                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/wrench_orange.png', true).'</a> &nbsp;';
+                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                        'images/config.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    ).'</a> &nbsp;';
                     $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&delete_special_day=1&id='.$special_day['id'].'"onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;" title=';
                     $cal_table->data[$cal_line][$week] .= __('Remove');
-                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/cross.png', true).'</a>';
+                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                        'images/cross.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    ).'</a>';
                     ;
                 }
 
@@ -542,7 +550,11 @@ for ($month = 1; $month <= 12; $month++) {
 
         $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&create_special_day=1&date='.$date.'" title=';
         $cal_table->data[$cal_line][$week] .= __('Create');
-        $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/plus.png', true).'</a>';
+        $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+            'images/add_mc.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
 
         if ($week == 6) {
             $cal_line++;

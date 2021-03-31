@@ -97,6 +97,12 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
 
     element.innerHTML = this.props.html;
     element.className = "module-graph";
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
 
     // Remove the overview graph.
     const legendP = element.getElementsByTagName("p");

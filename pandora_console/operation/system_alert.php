@@ -16,11 +16,11 @@ if (check_login()) {
 <img class='modalclosex cerrar' src='".$config['homeurl']."/images/icono_cerrar.png'>
 </div>";
 
-    echo "<div style='overflow-y:auto;height:400px;min-height:400px;max-height:400px;padding:20px;'>";
+    echo "<div class='modal_sys_alert'>";
     echo get_pandora_error_for_header();
     echo '</div>';
 
-    echo "<div class='modalokbutton cerrar' style='margin-top: 10px'>
+    echo "<div class='modalokbutton cerrar mrgn_top_10px'>
 <span class='modalokbuttontext close'>OK</span>
 </div>";
 }

@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_integriaims.php';
 
 
 /**
@@ -2971,42 +2972,24 @@ function graph_sla_slicebar(
 function grafico_incidente_prioridad()
 {
     global $config;
-    global $graphic_type;
 
-    $data_tmp = [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-    ];
-    $sql = 'SELECT COUNT(id_incidencia) n_incidents, prioridad
-        FROM tincidencia
-        GROUP BY prioridad
-        ORDER BY 2 DESC';
-    $incidents = db_get_all_rows_sql($sql);
+    $integria_ticket_count_by_priority_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
 
-    if ($incidents == false) {
-        $incidents = [];
+    $integria_priorities_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', '', false, 'json');
+
+    $integria_ticket_count_by_priority = json_decode($integria_ticket_count_by_priority_json, true);
+    $integria_priorities_map = json_decode($integria_priorities_map_json, true);
+
+    $integria_priorities_map_ids = array_column($integria_priorities_map, 'id');
+    $integria_priorities_map_names = array_column($integria_priorities_map, 'name');
+    $integria_priorities_map_indexed_by_id = array_combine($integria_priorities_map_ids, $integria_priorities_map_names);
+
+    $data = [];
+
+    foreach ($integria_ticket_count_by_priority as $item) {
+        $priority_name = $integria_priorities_map_indexed_by_id[$item['prioridad']];
+        $data[__($priority_name)] = $item['n_incidents'];
     }
-
-    foreach ($incidents as $incident) {
-        if ($incident['prioridad'] < 5) {
-            $data_tmp[$incident['prioridad']] = $incident['n_incidents'];
-        } else {
-            $data_tmp[5] += $incident['n_incidents'];
-        }
-    }
-
-    $data = [
-        __('Informative')  => $data_tmp[0],
-        __('Low')          => $data_tmp[1],
-        __('Medium')       => $data_tmp[2],
-        __('Serious')      => $data_tmp[3],
-        __('Very serious') => $data_tmp[4],
-        __('Maintenance')  => $data_tmp[5],
-    ];
 
     if ($config['fixed_graph'] == false) {
         $water_mark = [
@@ -3034,52 +3017,23 @@ function grafico_incidente_prioridad()
 function graph_incidents_status()
 {
     global $config;
-    global $graphic_type;
-    $data = [
-        0,
-        0,
-        0,
-        0,
-    ];
+
+    $integria_ticket_count_by_status_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['estado', 30], false, '', '|;|');
+
+    $integria_status_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', '', false, 'json');
+
+    $integria_ticket_count_by_status = json_decode($integria_ticket_count_by_status_json, true);
+    $integria_status_map = json_decode($integria_status_map_json, true);
+
+    $integria_status_map_ids = array_column($integria_status_map, 'id');
+    $integria_status_map_names = array_column($integria_status_map, 'name');
+    $integria_status_map_indexed_by_id = array_combine($integria_status_map_ids, $integria_status_map_names);
 
     $data = [];
-    $data[__('Open incident')] = 0;
-    $data[__('Closed incident')] = 0;
-    $data[__('Outdated')] = 0;
-    $data[__('Invalid')] = 0;
 
-    $incidents = db_get_all_rows_filter(
-        'tincidencia',
-        [
-            'estado' => [
-                0,
-                2,
-                3,
-                13,
-            ],
-        ],
-        ['estado']
-    );
-    if ($incidents === false) {
-        $incidents = [];
-    }
-
-    foreach ($incidents as $incident) {
-        if ($incident['estado'] == 0) {
-            $data[__('Open incident')]++;
-        }
-
-        if ($incident['estado'] == 2) {
-            $data[__('Closed incident')]++;
-        }
-
-        if ($incident['estado'] == 3) {
-            $data[__('Outdated')]++;
-        }
-
-        if ($incident['estado'] == 13) {
-            $data[__('Invalid')]++;
-        }
+    foreach ($integria_ticket_count_by_status as $item) {
+        $status_name = $integria_status_map_indexed_by_id[$item['estado']];
+        $data[__($status_name)] = $item['n_incidents'];
     }
 
     if ($config['fixed_graph'] == false) {
@@ -3108,53 +3062,19 @@ function graph_incidents_status()
 function graphic_incident_group()
 {
     global $config;
-    global $graphic_type;
+
+    $integria_ticket_count_by_group_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
+
+    $integria_group_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', '', false, 'json');
+
+    $integria_ticket_count_by_group = json_decode($integria_ticket_count_by_group_json, true);
+    $integria_group_map = json_decode($integria_group_map_json, true);
 
     $data = [];
-    $max_items = 5;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = sprintf(
-                'SELECT COUNT(id_incidencia) n_incidents, nombre
-                FROM tincidencia,tgrupo
-                WHERE tgrupo.id_grupo = tincidencia.id_grupo
-                GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC LIMIT %d',
-                $max_items
-            );
-        break;
 
-        case 'oracle':
-            $sql = sprintf(
-                'SELECT COUNT(id_incidencia) n_incidents, nombre
-                FROM tincidencia,tgrupo
-                WHERE tgrupo.id_grupo = tincidencia.id_grupo
-                AND rownum <= %d
-                GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC',
-                $max_items
-            );
-        break;
-    }
-
-    $incidents = db_get_all_rows_sql($sql);
-
-    $sql = sprintf(
-        'SELECT COUNT(id_incidencia) n_incidents
-        FROM tincidencia
-        WHERE tincidencia.id_grupo = 0'
-    );
-
-    $incidents_all = db_get_value_sql($sql);
-
-    if ($incidents == false) {
-        $incidents = [];
-    }
-
-    foreach ($incidents as $incident) {
-        $data[$incident['nombre']] = $incident['n_incidents'];
-    }
-
-    if ($incidents_all > 0) {
-        $data[__('All')] = $incidents_all;
+    foreach ($integria_ticket_count_by_group as $item) {
+        $group_name = $integria_group_map[$item['id_grupo']];
+        $data[__($group_name)] = $item['n_incidents'];
     }
 
     if ($config['fixed_graph'] == false) {
@@ -3188,47 +3108,15 @@ function graphic_incident_group()
 function graphic_incident_user()
 {
     global $config;
-    global $graphic_type;
+
+    $integria_ticket_count_by_user_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
+
+    $integria_ticket_count_by_user = json_decode($integria_ticket_count_by_user_json, true);
 
     $data = [];
-    $max_items = 5;
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = sprintf(
-                'SELECT COUNT(id_incidencia) n_incidents, id_usuario
-                FROM tincidencia
-                GROUP BY id_usuario
-                ORDER BY 1 DESC LIMIT %d',
-                $max_items
-            );
-        break;
 
-        case 'oracle':
-            $sql = sprintf(
-                'SELECT COUNT(id_incidencia) n_incidents, id_usuario
-                FROM tincidencia
-                WHERE rownum <= %d
-                GROUP BY id_usuario
-                ORDER BY 1 DESC',
-                $max_items
-            );
-        break;
-    }
-
-    $incidents = db_get_all_rows_sql($sql);
-
-    if ($incidents == false) {
-        $incidents = [];
-    }
-
-    foreach ($incidents as $incident) {
-        if ($incident['id_usuario'] == false) {
-            $name = __('System');
-        } else {
-            $name = $incident['id_usuario'];
-        }
-
-        $data[$name] = $incident['n_incidents'];
+    foreach ($integria_ticket_count_by_user as $item) {
+        $data[__($item['id_usuario'])] = $item['n_incidents'];
     }
 
     if ($config['fixed_graph'] == false) {
@@ -4008,7 +3896,7 @@ function graph_graphic_agentevents(
     $width,
     $height,
     $period=0,
-    $homeurl,
+    $homeurl='',
     $return=false,
     $from_agent_view=false,
     $widgets=false,
@@ -5149,7 +5037,7 @@ function graph_nodata_image(
         }
 
         $style = $width.' height:'.$height.'px;';
-        $style .= ' background-color: white; margin: 0 auto;';
+        $style .= 'margin: 0 auto;';
         $div = '<div style="'.$style.'">'.$image_div.'</div>';
     }
 

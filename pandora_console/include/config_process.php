@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210218';
-$pandora_version = 'v7.0NG.752';
+$build_version = 'PC210331';
+$pandora_version = 'v7.0NG.753';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -40,6 +40,7 @@ if (!is_dir($config['homedir'])) {
 }
 
 
+
 // Help to debug problems. Override global PHP configuration
 global $develop_bypass;
 if ((int) $develop_bypass === 1) {
@@ -51,6 +52,10 @@ if ((int) $develop_bypass === 1) {
     }
 
     ini_set('display_errors', 1);
+} else {
+    // Leave user decide error_level, but limit errors to be displayed only in
+    // logs.
+    ini_set('display_errors', 0);
 }
 
 // Check if mysqli is available
@@ -92,7 +97,7 @@ require_once $ownDir.'functions.php';
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
-if (!is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl']) || !is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl_static'])) {
+if (!is_dir($config['homedir'])) {
     $url = explode('/', $_SERVER['REQUEST_URI']);
     $flag_url = 0;
     foreach ($url as $key => $value) {
@@ -163,6 +168,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 config_process_config();
 config_prepare_session();
+
+if ((bool) $config['console_log_enabled'] === true) {
+    error_reporting(E_ALL ^ E_NOTICE);
+}
 
 // Set a the system timezone default
 if ((!isset($config['timezone'])) or ($config['timezone'] == '')) {

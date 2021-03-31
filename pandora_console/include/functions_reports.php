@@ -754,6 +754,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
     ];
+    $types['histogram_data'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Histogram'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),
@@ -884,13 +888,6 @@ function reports_get_report_types($template=false, $not_editor=false)
         $types['event_report_log'] = [
             'optgroup' => __('Log'),
             'name'     => __('Log report'),
-        ];
-    }
-
-    if (!is_metaconsole()) {
-        $types['nt_top_n'] = [
-            'optgroup' => __('Network traffic'),
-            'name'     => __('Network Traffic Top N'),
         ];
     }
 

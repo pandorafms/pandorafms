@@ -64,16 +64,35 @@ foreach ($event_responses as $response) {
     $data[1] = $response['description'];
     $data[2] = ui_print_group_icon($response['id_group'], true);
     $table->cellclass[][3] = 'action_buttons';
-    $data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-    $data[3] .= '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit')]).'</a>';
+    $data[3] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&action=delete_response&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image(
+        'images/cross.png',
+        true,
+        [
+            'title' => __('Delete'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+    $data[3] .= '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.html_print_image(
+        'images/pencil.png',
+        true,
+        [
+            'title' => __('Edit'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     $table->data[] = $data;
 }
 
 html_print_table($table);
 
 
-echo '<div style="width:100%;text-align:right;">';
+echo '<div class="w100p right_align">';
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
-html_print_submit_button(__('Create response'), 'create_response_button', false, ['class' => 'sub next']);
+html_print_submit_button(
+    __('Create response'),
+    'create_response_button',
+    false,
+    ['class' => 'sub next']
+);
 echo '</form>';
 echo '</div>';

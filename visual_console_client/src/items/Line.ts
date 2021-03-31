@@ -446,10 +446,14 @@ export default class Line extends Item<LineProps> {
       }
 
       // Init the movement listeners.
-      this.initStartPositionMovementListener(startCircle, this.elementRef
-        .parentElement as HTMLElement);
-      this.initEndPositionMovementListener(endCircle, this.elementRef
-        .parentElement as HTMLElement);
+      this.initStartPositionMovementListener(
+        startCircle,
+        this.elementRef.parentElement as HTMLElement
+      );
+      this.initEndPositionMovementListener(
+        endCircle,
+        this.elementRef.parentElement as HTMLElement
+      );
     } else if (!this.moveMode) {
       this.stopStartPositionMovementListener();
       // Remove circles.

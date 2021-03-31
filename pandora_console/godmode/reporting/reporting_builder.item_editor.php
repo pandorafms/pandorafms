@@ -29,6 +29,7 @@
 
 global $config;
 
+
 require_once $config['homedir'].'/include/functions_custom_graphs.php';
 require_once $config['homedir'].'/include/db/oracle.php';
 
@@ -140,6 +141,8 @@ $visual_format = 0;
 
 // Others.
 $filter_search = '';
+$filter_exclude = '';
+
 
 // Added for select fields.
 $total_time = true;
@@ -183,6 +186,7 @@ switch ($action) {
         $dyn_height = 230;
         $landscape = false;
         $pagebreak = false;
+        $summary = 0;
     break;
 
     case 'save':
@@ -312,11 +316,12 @@ switch ($action) {
                     $idCustomGraph = $item['id_gs'];
                 break;
 
+                case 'availability_graph':
+                    $summary = $item['summary'];
                 case 'SLA':
                 case 'SLA_weekly':
                 case 'SLA_monthly':
                 case 'SLA_hourly':
-                case 'availability_graph':
                     $description = $item['description'];
                     $only_display_wrong = $item['only_display_wrong'];
                     $monday = $item['monday'];
@@ -339,6 +344,7 @@ switch ($action) {
                     $failover_type = $item['failover_type'];
                 break;
 
+                case 'histogram_data':
                 case 'module_histogram_graph':
                     $description = $item['description'];
                     $period = $item['period'];
@@ -546,9 +552,18 @@ switch ($action) {
 
 
                     $show_summary_group    = $style['show_summary_group'];
-                    $filter_event_severity = json_decode($style['filter_event_severity'], true);
-                    $filter_event_status   = json_decode($style['filter_event_status'], true);
-                    $filter_event_type     = json_decode($style['filter_event_type'], true);
+                    $filter_event_severity = json_decode(
+                        $style['filter_event_severity'],
+                        true
+                    );
+                    $filter_event_status   = json_decode(
+                        $style['filter_event_status'],
+                        true
+                    );
+                    $filter_event_type     = json_decode(
+                        $style['filter_event_type'],
+                        true
+                    );
 
                     $event_graph_by_user_validator = $style['event_graph_by_user_validator'];
                     $event_graph_by_criticity = $style['event_graph_by_criticity'];
@@ -556,6 +571,7 @@ switch ($action) {
                     $include_extended_events = $item['show_extended_events'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
                 break;
 
                 case 'event_report_group':
@@ -570,6 +586,7 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
 
                     $filter_event_severity = json_decode($style['filter_event_severity'], true);
                     $filter_event_status   = json_decode($style['filter_event_status'], true);
@@ -607,6 +624,8 @@ switch ($action) {
                     $event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 
                     $filter_search = $style['event_filter_search'];
+                    $filter_exclude = $style['event_filter_exclude'];
+
 
                     $include_extended_events = $item['show_extended_events'];
                 break;
@@ -751,12 +770,6 @@ switch ($action) {
                     // Max values.
                 break;
 
-                case 'nt_top_n':
-                    $period = $item['period'];
-                    $description = $item['description'];
-                    $top_n_value = $item['top_n_value'];
-                break;
-
                 case 'permissions_report':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -790,6 +803,7 @@ switch ($action) {
                 case 'database_serialized':
                 case 'last_value':
                 case 'monitor_report':
+                case 'histogram_data':
                 case 'min_value':
                 case 'max_value':
                 case 'avg_value':
@@ -798,7 +812,6 @@ switch ($action) {
                 case 'simple_baseline_graph':
                 case 'event_report_log':
                 case 'increment':
-                case 'nt_top_n':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
 
@@ -823,7 +836,7 @@ html_print_input_hidden('id_item', $idItem);
 $class = 'databox filters';
 
 ?>
-<table style="" class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
+<table   class="<?php echo $class; ?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
     <?php
     if (defined('METACONSOLE')) {
         echo '<thead>
@@ -836,11 +849,11 @@ $class = 'databox filters';
     }
     ?>
     <tbody>
-        <tr id="row_type" style="" class="datos">
-            <td style="font-weight:bold; width: 220px;">
+        <tr id="row_type"   class="datos">
+            <td class="bolder w220px">
                 <?php echo __('Type'); ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 if ($action == 'new') {
                     html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '', '', '', '', '', '', '', '', '', true, 'reportingmodal');
@@ -866,11 +879,11 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_name" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_name"   class="datos">
+            <td class="bolder">
                 <?php echo __('Name'); ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 if ($name_from_template != '') {
                     html_print_input_text(
@@ -902,8 +915,8 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_netflow_filter" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Filter'); ?></td>
+        <tr id="row_netflow_filter"   class="datos">
+            <td class="bolder"><?php echo __('Filter'); ?></td>
             <td>
                 <?php
                 $own_info = get_user_info($config['id_user']);
@@ -939,9 +952,9 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_description" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Description'); ?></td>
-            <td style="">
+        <tr id="row_description"   class="datos">
+            <td class="bolder"><?php echo __('Description'); ?></td>
+            <td  >
                 <?php
                 echo html_print_textarea('description', 3, 25, $description);
                 ?>
@@ -951,9 +964,9 @@ $class = 'databox filters';
         <?php
         if ($meta) {
             ?>
-        <tr id="row_servers" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Server'); ?></td>
-            <td style="">
+        <tr id="row_servers"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
                 <?php
                 html_print_select(
                     $servers,
@@ -970,13 +983,13 @@ $class = 'databox filters';
         }
         ?>
 
-        <tr id="row_label" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_label"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Label');
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 echo html_print_input_text(
                     'label',
@@ -994,19 +1007,19 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_search" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_search"   class="datos">
+            <td class="bolder">
                 <?php echo __('Search'); ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_input_text('search', $search, '', 40, 100);
                 ?>
             </td>
         </tr>
 
-        <tr id="row_log_number" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_log_number"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Log number');
                 ui_print_help_tip(
@@ -1014,15 +1027,15 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 echo "<input name='log_number' max='10000' min='1' size='10' type='number' value='".$log_number."'>";
                 ?>
             </td>
         </tr>
 
-        <tr id="row_period" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_period"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Time lapse');
                 ui_print_help_tip(
@@ -1030,7 +1043,7 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_extended_select_for_time(
                     'period',
@@ -1044,8 +1057,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_last_value" style="" class="datos">
-            <td style="font-weight:bold;" class="datos">
+        <tr id="row_last_value"   class="datos">
+            <td class="bolder" class="datos">
                 <?php
                 echo __('Last value');
                 ui_print_help_tip(
@@ -1053,7 +1066,7 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_checkbox_switch(
                     'last_value',
@@ -1067,13 +1080,13 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_period1" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_period1"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Period');
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_extended_select_for_time(
                     'period1',
@@ -1086,13 +1099,13 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_estimate" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_estimate"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Projection period');
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_extended_select_for_time(
                     'period2',
@@ -1105,8 +1118,8 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_interval" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_interval"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Data range');
             ?>
@@ -1120,8 +1133,8 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_only_display_wrong" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Only display wrong SLAs'); ?></td>
+        <tr id="row_only_display_wrong"   class="datos">
+            <td class="bolder"><?php echo __('Only display wrong SLAs'); ?></td>
             <td>
                 <?php
                 html_print_checkbox_switch(
@@ -1134,11 +1147,11 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_current_month">
-            <td style="font-weight:bold;">
+            <td class="bolder">
                 <?php echo __('Current month'); ?>
             </td>
 
-            <td style="font-weight:bold;">
+            <td class="bolder">
                 <?php
                 html_print_checkbox_switch(
                     'current_month',
@@ -1150,7 +1163,7 @@ $class = 'databox filters';
         </tr>
 
         <tr id="row_working_time">
-            <td style="font-weight:bold;">
+            <td class="bolder">
                 <?php echo __('Working time'); ?>
             </td>
             <td>
@@ -1158,7 +1171,7 @@ $class = 'databox filters';
                 <table border="0">
                     <tr>
                         <td>
-                        <p style="margin-right:30px;">
+                        <p class="mrgn_right_30px">
                             <?php
                             echo __('Monday').'<br>';
                                 html_print_checkbox_switch('monday', 1, $monday);
@@ -1166,7 +1179,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Tuesday').'<br>';
                                 html_print_checkbox_switch('tuesday', 1, $tuesday);
@@ -1174,7 +1187,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Wednesday').'<br>';
                                 html_print_checkbox_switch('wednesday', 1, $wednesday);
@@ -1182,7 +1195,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Thursday').'<br>';
                                 html_print_checkbox_switch('thursday', 1, $thursday);
@@ -1190,7 +1203,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Friday').'<br>';
                                 html_print_checkbox_switch('friday', 1, $friday);
@@ -1198,7 +1211,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Saturday').'<br>';
                                 html_print_checkbox_switch('saturday', 1, $saturday);
@@ -1206,7 +1219,7 @@ $class = 'databox filters';
                             </p>
                         </td>
                         <td>
-                            <p style="margin-right:30px;">
+                            <p class="mrgn_right_30px">
                                 <?php
                                 echo __('Sunday').'<br>';
                                 html_print_checkbox_switch('sunday', 1, $sunday);
@@ -1270,9 +1283,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_group" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Group'); ?></td>
-            <td style="">
+        <tr id="row_group"   class="datos">
+            <td class="bolder"><?php echo __('Group'); ?></td>
+            <td  >
                 <?php
                 echo '<div class="w250px inline padding-right-2-imp">';
                 if (check_acl($config['id_user'], 0, 'RW')) {
@@ -1306,9 +1319,9 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_source" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Source'); ?></td>
-            <td style="">
+        <tr id="row_source"   class="datos">
+            <td class="bolder"><?php echo __('Source'); ?></td>
+            <td  >
                 <?php
                 $agents = agents_get_group_agents($group);
                 if ((empty($agents)) || $agents == -1) {
@@ -1349,9 +1362,9 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-        <tr id="row_module_group" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Module group'); ?></td>
-            <td style="">
+        <tr id="row_module_group"   class="datos">
+            <td class="bolder"><?php echo __('Module group'); ?></td>
+            <td  >
                 <?php
                 html_print_select_from_sql(
                     'SELECT * FROM tmodule_group ORDER BY name',
@@ -1364,9 +1377,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_agent" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Agent'); ?></td>
-            <td style="">
+        <tr id="row_agent"   class="datos">
+            <td class="bolder"><?php echo __('Agent'); ?></td>
+            <td  >
                 <?php
                 if ($meta) {
                     $connection = metaconsole_get_connection($server_name);
@@ -1419,13 +1432,13 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_module" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_module"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Module');
                 ?>
             </td>
-            <td style="max-width: 180px">
+            <td class="mx180px">
                 <?php
                 if ($idAgent) {
                     $sql = 'SELECT id_agente_modulo, nombre
@@ -1471,7 +1484,7 @@ $class = 'databox filters';
                     }
                 } else {
                     ?>
-                    <select style="max-width: 180px" id="id_agent_module" name="id_agent_module" disabled="disabled">
+                    <select class="mx180px" id="id_agent_module" name="id_agent_module" disabled="disabled">
                         <option value="0">
                         <?php echo __('Select an Agent first'); ?>
                         </option>
@@ -1482,8 +1495,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="agents_row" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+        <tr id="agents_row"   class="datos">
+            <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
                 if ($source) {
@@ -1536,7 +1549,7 @@ $class = 'databox filters';
                     false,
                     'min-width: 180px'
                 );
-                echo "<span id='spinner_hack' style='display:none;'>".html_print_image(
+                echo "<span id='spinner_hack' class='invisible'>".html_print_image(
                     'images/spinner.gif',
                     true
                 ).'</span>';
@@ -1544,8 +1557,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="agents_modules_row" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+        <tr id="agents_modules_row"   class="datos">
+            <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
                 $all_agent_log = agents_get_agents(false, ['id_agente', 'alias']);
@@ -1586,8 +1599,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="select_agent_modules" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Show modules'); ?></td>
+        <tr id="select_agent_modules"   class="datos">
+            <td class="bolder"><?php echo __('Show modules'); ?></td>
             <td>
                 <?php
                 $selection = [
@@ -1613,8 +1626,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="modules_row" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
+        <tr id="modules_row"   class="datos">
+            <td class="bolder"><?php echo __('Modules'); ?></td>
             <td>
                 <?php
                 if (empty($id_agents) || $id_agents == null || $id_agents === 0) {
@@ -1664,8 +1677,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_agent_multi" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+        <tr id="row_agent_multi"   class="datos">
+            <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
                 $fields = [];
@@ -1705,8 +1718,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_module_multi" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
+        <tr id="row_module_multi"   class="datos">
+            <td class="bolder"><?php echo __('Modules'); ?></td>
             <td>
                 <?php
                 html_print_select(
@@ -1738,9 +1751,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_date" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Date'); ?></td>
-            <td style="max-width: 180px">
+        <tr id="row_date"   class="datos">
+            <td class="bolder"><?php echo __('Date'); ?></td>
+            <td class="mx180px">
                 <?php
                 $dates = enterprise_hook(
                     'inventory_get_dates',
@@ -1774,9 +1787,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_custom_graph" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Custom graph'); ?></td>
-            <td style="">
+        <tr id="row_custom_graph"   class="datos">
+            <td class="bolder"><?php echo __('Custom graph'); ?></td>
+            <td  >
                 <?php
                 if ($meta) {
                     $graphs = [];
@@ -1813,11 +1826,11 @@ $class = 'databox filters';
                     );
                 }
 
-                $style_button_create_custom_graph = 'style="display: none;"';
+                $style_button_create_custom_graph = 'class="invisible"';
                 $style_button_edit_custom_graph = '';
                 if (empty($idCustomGraph)) {
                     $style_button_create_custom_graph = '';
-                    $style_button_edit_custom_graph = 'style="display: none;"';
+                    $style_button_edit_custom_graph = 'class="invisible"';
                     // Select the target server.
                     if ($meta) {
                         $metaconsole_connections = enterprise_hook(
@@ -1838,14 +1851,14 @@ $class = 'databox filters';
 
                         // Print select combo with metaconsole servers.
                         if (!empty($result_servers)) {
-                            echo '<div id="meta_target_servers" style="display:none;">';
+                            echo '<div id="meta_target_servers" class="invisible">';
                             echo '&nbsp;&nbsp;&nbsp;&nbsp;'.__('Target server').'&nbsp;&nbsp;';
                             html_print_select($result_servers, 'meta_servers', '', '', __('None'), 0);
                             echo '</div>';
                         } else {
                             // If there are not metaconsole servers
                             // don't allow to create new custom graphs.
-                            $style_button_create_custom_graph = 'style="display: none;"';
+                            $style_button_create_custom_graph = 'class="invisible"';
                         }
                     }
                 }
@@ -1870,9 +1883,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_text" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Text'); ?></td>
-            <td style="">
+        <tr id="row_text"   class="datos">
+            <td class="bolder"><?php echo __('Text'); ?></td>
+            <td  >
             <?php
             html_print_textarea(
                 'text',
@@ -1884,13 +1897,13 @@ $class = 'databox filters';
                 </td>
         </tr>
 
-        <tr id="row_custom" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_custom"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Custom SQL template');
             ?>
             </td>
-            <td style="">
+            <td  >
             <?php
             html_print_select_from_sql(
                 'SELECT id, name FROM treport_custom_sql',
@@ -1904,8 +1917,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_query" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_query"   class="datos">
+            <td class="bolder">
             <?php
             echo __('SQL query').ui_print_help_tip(
                 __('The entities of the fields that contain them must be included.'),
@@ -1913,26 +1926,26 @@ $class = 'databox filters';
             );
             ?>
                 </td>
-            <td style="" id="sql_entry">
+            <td   id="sql_entry">
                 <?php
                 html_print_textarea('sql', 5, 25, $sql_query_report);
                 ?>
             </td>
-            <td style="" id="sql_example"></td>
+            <td   id="sql_example"></td>
         </tr>
 
-        <tr id="row_max_items" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Max items'); ?></td>
-            <td style="">
+        <tr id="row_max_items"   class="datos">
+            <td class="bolder"><?php echo __('Max items'); ?></td>
+            <td  >
                 <?php
                 html_print_input_text('max_items', $top_n_value, '', 7, 7);
                 ?>
             </td>
-            <td style="" id="max_items_example"></td>
+            <td   id="max_items_example"></td>
         </tr>
 
-        <tr id="row_header" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_header"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Serialized header').ui_print_help_tip(
                 __('The separator character is |'),
@@ -1940,7 +1953,7 @@ $class = 'databox filters';
             );
             ?>
             </td>
-            <td style="">
+            <td  >
             <?php
             html_print_input_text(
                 'header',
@@ -1953,9 +1966,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_url" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('URL'); ?></td>
-            <td style="">
+        <tr id="row_url"   class="datos">
+            <td class="bolder"><?php echo __('URL'); ?></td>
+            <td  >
             <?php
             html_print_input_text(
                 'url',
@@ -1965,11 +1978,11 @@ $class = 'databox filters';
                 250
             );
             ?>
-                <span id="url_warning_text" class="error" style="display: none; font-weight: bold;"><?php echo __('Protocol must be specified in URL (e.g.: "https://")'); ?></span>
+                <span id="url_warning_text" class="error invisible bolder"><?php echo __('Protocol must be specified in URL (e.g.: "https://")'); ?></span>
                 </td>
         </tr>
-        <tr id="row_field_separator" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_field_separator"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Field separator').ui_print_help_tip(
                 __('Separator for different fields in the serialized text chain'),
@@ -1977,7 +1990,7 @@ $class = 'databox filters';
             );
             ?>
                 </td>
-            <td style="">
+            <td  >
             <?php
             html_print_input_text(
                 'field',
@@ -1989,8 +2002,8 @@ $class = 'databox filters';
             ?>
                 </td>
         </tr>
-        <tr id="row_line_separator" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_line_separator"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Line separator').ui_print_help_tip(
                 __('Separator in different lines (composed by fields) of the serialized text chain'),
@@ -1998,7 +2011,7 @@ $class = 'databox filters';
             );
             ?>
                 </td>
-            <td style="">
+            <td  >
             <?php
             html_print_input_text(
                 'line',
@@ -2010,8 +2023,8 @@ $class = 'databox filters';
             ?>
                 </td>
         </tr>
-        <tr id="row_group_by_agent" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_group_by_agent"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Group by agent');
             ?>
@@ -2026,8 +2039,8 @@ $class = 'databox filters';
             ?>
                 </td>
         </tr>
-        <tr id="row_order_uptodown" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Order'); ?></td>
+        <tr id="row_order_uptodown"   class="datos">
+            <td class="bolder"><?php echo __('Order'); ?></td>
             <td>
                 <?php
                 echo __('Ascending');
@@ -2055,9 +2068,9 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_quantity" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Quantity (n)'); ?></td>
-            <td style="">
+        <tr id="row_quantity"   class="datos">
+            <td class="bolder"><?php echo __('Quantity (n)'); ?></td>
+            <td  >
             <?php
             html_print_input_text(
                 'quantity',
@@ -2070,9 +2083,9 @@ $class = 'databox filters';
                 </td>
         </tr>
 
-        <tr id="row_max_values" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Max. values'); ?></td>
-            <td style="">
+        <tr id="row_max_values"   class="datos">
+            <td class="bolder"><?php echo __('Max. values'); ?></td>
+            <td  >
             <?php
             html_print_input_text(
                 'max_values',
@@ -2085,8 +2098,8 @@ $class = 'databox filters';
                 </td>
         </tr>
 
-        <tr id="row_max_min_avg" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Display'); ?></td>
+        <tr id="row_max_min_avg"   class="datos">
+            <td class="bolder"><?php echo __('Display'); ?></td>
             <td>
                 <?php
                 echo __('Max');
@@ -2114,8 +2127,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_graph_render" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_graph_render"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Graph render');
             ?>
@@ -2137,8 +2150,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_fullscale" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_fullscale"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Full resolution graph (TIP)').ui_print_help_tip(
                 __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
@@ -2157,8 +2170,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_time_compare_overlapped" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_time_compare_overlapped"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Time compare (Overlapped)');
             ?>
@@ -2174,14 +2187,14 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_percentil" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Percentil'); ?></td>
+        <tr id="row_percentil"   class="datos">
+            <td class="bolder"><?php echo __('Percentil'); ?></td>
             <td><?php html_print_checkbox_switch('percentil', 1, $percentil); ?></td>
         </tr>
 
-        <tr id="row_exception_condition_value" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Value'); ?></td>
-            <td style="">
+        <tr id="row_exception_condition_value"   class="datos">
+            <td class="bolder"><?php echo __('Value'); ?></td>
+            <td  >
                 <?php
                 html_print_input_text(
                     'exception_condition_value',
@@ -2194,8 +2207,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_exception_condition" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Condition'); ?></td>
+        <tr id="row_exception_condition"   class="datos">
+            <td class="bolder"><?php echo __('Condition'); ?></td>
             <td>
                 <?php
                 $list_exception_condition = [
@@ -2218,8 +2231,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_graph" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Show graph'); ?></td>
+        <tr id="row_show_graph"   class="datos">
+            <td class="bolder"><?php echo __('Show graph'); ?></td>
             <td>
             <?php
             html_print_select(
@@ -2230,8 +2243,8 @@ $class = 'databox filters';
             ?>
                 </td>
         </tr>
-        <tr id="row_select_fields" style="" class="datos">
-        <td style="font-weight:bold;margin-right:150px;">
+        <tr id="row_select_fields"   class="datos">
+        <td class="bolder mrgn_right_150px">
             <?php
             echo __('Select fields to show');
             ?>
@@ -2239,7 +2252,7 @@ $class = 'databox filters';
             <td>
             <table border="0">
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Total time').'<br>';
                 html_print_checkbox_switch('total_time', 1, $total_time);
@@ -2247,7 +2260,7 @@ $class = 'databox filters';
              </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Time failed').'<br>';
                 html_print_checkbox_switch('time_failed', 1, $time_failed);
@@ -2255,7 +2268,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Time in OK status').'<br>';
                 html_print_checkbox_switch('time_in_ok_status', 1, $time_in_ok_status);
@@ -2263,7 +2276,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Time in unknown status').'<br>';
                 html_print_checkbox_switch(
@@ -2275,7 +2288,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Time of not initialized module').'<br>';
                 html_print_checkbox_switch(
@@ -2287,7 +2300,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Time of downtime').'<br>';
                 html_print_checkbox_switch('time_of_downtime', 1, $time_of_downtime);
@@ -2298,8 +2311,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_address_agent" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_show_address_agent"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Show address instead module name').ui_print_help_tip(
                     __('Show the main address of agent.'),
@@ -2318,8 +2331,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_resume" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_show_resume"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Show resume').ui_print_help_tip(
                 __('Show a summary chart with max, min and average number of total modules at the end of the report and Checks.'),
@@ -2338,16 +2351,16 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_select_fields2" style="" class="datos">
-        <td style="font-weight:bold;margin-right:150px;">
+        <tr id="row_select_fields2"   class="datos">
+        <td class="bolder mrgn_right_150px">
             <?php
-            echo __('<p style= "margin-left:15px;">Select fields to show</p>');
+            echo __('<p class= "mrgn_lft_15px">Select fields to show</p>');
             ?>
             </td>
             <td>
             <table border="0">
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Total checks');
                 html_print_checkbox('total_checks', 1, $total_checks);
@@ -2355,7 +2368,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Checks failed');
                 html_print_checkbox('checks_failed', 1, $checks_failed);
@@ -2363,7 +2376,7 @@ $class = 'databox filters';
              </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Checks in OK status');
                 html_print_checkbox(
@@ -2375,7 +2388,7 @@ $class = 'databox filters';
                 </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Unknown checks');
                 html_print_checkbox('unknown_checks', 1, $unknown_checks);
@@ -2386,16 +2399,16 @@ $class = 'databox filters';
             </table>
             </td>
         </tr>
-        <tr id="row_select_fields3" style="" class="datos">
-        <td style="font-weight:bold;margin-right:150px;">
+        <tr id="row_select_fields3"   class="datos">
+        <td class="bolder mrgn_right_150px">
             <?php
-            echo __('<p style= "margin-left:15px;">Select fields to show</p>');
+            echo __('<p class="mrgn_lft_15px">Select fields to show</p>');
             ?>
             </td>
             <td>
             <table border="0">
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Agent max value');
                 html_print_checkbox('agent_max_value', 1, $agent_max_value);
@@ -2403,7 +2416,7 @@ $class = 'databox filters';
              </p>
             </td>
             <td>
-            <p style="margin-right:30px;">
+            <p class="mrgn_right_30px">
                 <?php
                 echo __('Agent min values');
                 html_print_checkbox('agent_min_value', 1, $agent_min_value);
@@ -2415,8 +2428,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_show_summary_group" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_show_summary_group"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Show Summary group');
             ?>
@@ -2432,8 +2445,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_event_severity" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Severity'); ?></td>
+        <tr id="row_event_severity"   class="datos">
+            <td class="bolder"><?php echo __('Severity'); ?></td>
             <td>
                 <?php
                 $valuesSeverity = get_priorities();
@@ -2459,8 +2472,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_event_type" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
+        <tr id="row_event_type"   class="datos">
+            <td class="bolder"><?php echo __('Event type'); ?></td>
             <td>
                 <?php
                 $event_types_select = get_event_types();
@@ -2486,8 +2499,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_event_status" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Event Status'); ?></td>
+        <tr id="row_event_status"   class="datos">
+            <td class="bolder"><?php echo __('Event Status'); ?></td>
             <td>
                 <?php
                 $fields = events_get_all_status(true);
@@ -2513,8 +2526,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_extended_events" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_extended_events"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Include extended events');
             ?>
@@ -2530,8 +2543,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_event_graphs" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
+        <tr id="row_event_graphs"   class="datos">
+            <td class="bolder"><?php echo __('Event graphs'); ?></td>
             <td>
                 <span id="row_event_graph_by_agent">
                 <?php
@@ -2576,8 +2589,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_historical_db_check" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_historical_db_check"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Query History Database').ui_print_help_tip(
                     __('With the token enabled the query will affect the Historical Database, which may mean a small drop in performance.'),
@@ -2585,15 +2598,15 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_checkbox_switch('historical_db_check', 1, $historical_db);
                 ?>
             </td>
         </tr>
 
-        <tr id="row_dyn_height" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_dyn_height"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Height (dynamic graphs)');
             ?>
@@ -2611,8 +2624,8 @@ $class = 'databox filters';
                 </td>
         </tr>
 
-        <tr id="row_show_in_same_row" style="" class="datos">
-            <td style="font-weight:bold;" class="datos">
+        <tr id="row_show_in_same_row"   class="datos">
+            <td class="bolder" class="datos">
                 <?php
                 echo __('Show in the same row');
                 ui_print_help_tip(
@@ -2620,7 +2633,7 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_checkbox_switch(
                     'show_in_same_row',
@@ -2634,8 +2647,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_sort" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_sort"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Order').ui_print_help_tip(
                 __('SLA items sorted by fulfillment value'),
@@ -2657,8 +2670,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_priority_mode" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_priority_mode"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Priority mode');
             ?>
@@ -2666,7 +2679,7 @@ $class = 'databox filters';
             <td>
                 <?php
                 echo __('Priority ok mode');
-                echo '<span style="margin-left:5px;"></span>';
+                echo '<span class="mrgn_lft_5px"></span>';
                 html_print_radio_button(
                     'priority_mode',
                     REPORT_PRIORITY_MODE_OK,
@@ -2675,10 +2688,10 @@ $class = 'databox filters';
                     ''
                 );
 
-                echo '<span style="margin:30px;"></span>';
+                echo '<span class="mrgn_30px"></span>';
 
                 echo __('Priority unknown mode');
-                echo '<span style="margin-left:5px;"></span>';
+                echo '<span class="mrgn_lft_5px"></span>';
                 html_print_radio_button(
                     'priority_mode',
                     REPORT_PRIORITY_MODE_UNKNOWN,
@@ -2690,8 +2703,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_failover_mode" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_failover_mode"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Failover mode').ui_print_help_tip(
                 __('SLA calculation must be performed taking into account the failover modules assigned to the primary module'),
@@ -2710,8 +2723,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_failover_type" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_failover_type"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Failover type');
             ?>
@@ -2719,7 +2732,7 @@ $class = 'databox filters';
             <td>
                 <?php
                 echo __('Failover normal');
-                echo '<span style="margin-left:5px;"></span>';
+                echo '<span class="mrgn_lft_5px"></span>';
                 html_print_radio_button(
                     'failover_type',
                     REPORT_FAILOVER_TYPE_NORMAL,
@@ -2728,10 +2741,10 @@ $class = 'databox filters';
                     ''
                 );
 
-                echo '<span style="margin:30px;"></span>';
+                echo '<span class="mrgn_30px"></span>';
 
                 echo __('Failover simple');
-                echo '<span style="margin-left:5px;"></span>';
+                echo '<span class="mrgn_lft_5px"></span>';
                 html_print_radio_button(
                     'failover_type',
                     REPORT_FAILOVER_TYPE_SIMPLE,
@@ -2743,28 +2756,59 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_filter_search" style="" class="datos">
-            <td style="font-weight:bold;"><?php echo __('Free search'); ?></td>
+        <tr id="row_summary"class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Summary');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'summary',
+                1,
+                $summary,
+                false,
+                false,
+                '',
+                false
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_filter_search" class="datos">
+            <td class="bolder"><?php echo __('Include filter'); ?></td>
             <td>
                 <?php
                 html_print_input_text('filter_search', $filter_search);
+                ui_print_help_tip(__('Free text string search on event description'));
+                ?>
+            </td>
+        </tr>
+        <tr id="row_filter_exclude" style="" class="datos">
+            <td style="font-weight:bold;"><?php echo __('Exclude filter'); ?></td>
+            <td>
+                <?php
+                html_print_input_text('filter_exclude', $filter_exclude);
+                ui_print_help_tip(__('Free text string search on event description'));
                 ?>
             </td>
         </tr>
 
-        <tr id="row_lapse_calc" style="" class="datos advanced_elements">
-            <td style="font-weight:bold;">
+        <tr id="row_lapse_calc"   class="datos advanced_elements">
+            <td class="bolder">
                 <?php echo __('Calculate for custom intervals'); ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_checkbox_switch('lapse_calc', 1, $lapse_calc);
                 ?>
             </td>
         </tr>
 
-        <tr id="row_lapse" style="" class="datos advanced_elements">
-            <td style="font-weight:bold;">
+        <tr id="row_lapse"   class="datos advanced_elements">
+            <td class="bolder">
                 <?php
                 echo __('Time lapse intervals');
                 ui_print_help_tip(
@@ -2775,7 +2819,7 @@ $class = 'databox filters';
                 );
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 html_print_extended_select_for_time(
                     'lapse',
@@ -2794,8 +2838,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_visual_format" style="" class="datos advanced_elements">
-            <td style="font-weight:bold;" colspan="2">
+        <tr id="row_visual_format"   class="datos advanced_elements">
+            <td class="bolder" colspan="2">
                 <?php
                 if ($visual_format == 1) {
                     $visual_format_table = true;
@@ -2812,7 +2856,7 @@ $class = 'databox filters';
                 }
 
                 echo __('Table only');
-                echo '<span style="margin-left:10px;"></span>';
+                echo '<span class="mrgn_lft_10px"></span>';
                 html_print_radio_button(
                     'visual_format',
                     1,
@@ -2821,9 +2865,9 @@ $class = 'databox filters';
                     '',
                     !$lapse_calc
                 );
-                echo '<span style="margin:30px;"></span>';
+                echo '<span class="mrgn_30px"></span>';
                 echo __('Graph only');
-                echo '<span style="margin-left:10px;"></span>';
+                echo '<span class="mrgn_lft_10px"></span>';
                 html_print_radio_button(
                     'visual_format',
                     2,
@@ -2832,9 +2876,9 @@ $class = 'databox filters';
                     '',
                     !$lapse_calc
                 );
-                echo '<span style="margin:30px;"></span>';
+                echo '<span class="mrgn_30px;"></span>';
                 echo __('Graph and table');
-                echo '<span style="margin-left:10px;"></span>';
+                echo '<span class="mrgn_lft_10px"></span>';
                 html_print_radio_button(
                     'visual_format',
                     3,
@@ -2847,8 +2891,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_uncompressed_module" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_uncompressed_module"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Uncompress module').ui_print_help_tip(
                 __('Use uncompressed module data.'),
@@ -2856,15 +2900,15 @@ $class = 'databox filters';
             );
             ?>
             </td>
-            <td style="">
+            <td  >
             <?php
             html_print_checkbox_switch('uncompressed_module', 1, $item['uncompressed_module'], false, false, '', false);
             ?>
             </td>
         </tr>
         
-        <tr id="row_profiles_group" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_profiles_group"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Group');
                 ?>
@@ -2894,13 +2938,13 @@ $class = 'databox filters';
                 </td>
         </tr>
 
-        <tr id="row_users" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_users"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('User');
                 ?>
             </td>
-            <td style="">
+            <td  >
                 <?php
                 $tmp_users = db_get_all_rows_filter('tusuario', [], 'id_user');
                 foreach ($tmp_users as $key => $user) {
@@ -2940,8 +2984,8 @@ $class = 'databox filters';
             </td>
         </tr>
 
-        <tr id="row_select_by_group" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_select_by_group"   class="datos">
+            <td class="bolder">
                 <?php
                 echo __('Select by group');
                 ?>
@@ -2958,8 +3002,8 @@ $class = 'databox filters';
                 </td>
         </tr>
         
-        <tr id="row_landscape" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_landscape"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Show item in landscape format (only PDF)');
             ?>
@@ -2967,8 +3011,8 @@ $class = 'databox filters';
             <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
         </tr>
 
-        <tr id="row_pagebreak" style="" class="datos">
-            <td style="font-weight:bold;">
+        <tr id="row_pagebreak"   class="datos">
+            <td class="bolder">
             <?php
             echo __('Page break at the end of the item (only PDF)');
             ?>
@@ -2982,7 +3026,7 @@ $class = 'databox filters';
 <?php
 print_SLA_list('100%', $action, $idItem);
 print_General_list('100%', $action, $idItem, $type);
-echo '<div class="action-buttons" style="width: 100%">';
+echo '<div class="action-buttons w100p" >';
 if ($action == 'new') {
     html_print_submit_button(
         __('Create item'),
@@ -3103,7 +3147,7 @@ function print_SLA_list($width, $action, $idItem=null)
             switch ($action) {
                 case 'new':
                     ?>
-                    <tr id="sla_template" style="" class="datos">
+                    <tr id="sla_template"   class="datos">
                         <td colspan="6">
                         <?php
                         echo __('Please save the SLA for start to add items in this list.');
@@ -3176,7 +3220,7 @@ function print_SLA_list($width, $action, $idItem=null)
                             $server_name_element .= ' ('.$server_name.')';
                         }
 
-                        echo '<tr id="sla_'.$item['id'].'" style="" class="datos">';
+                        echo '<tr id="sla_'.$item['id'].'"   class="datos">';
                         echo '<td class="sla_list_agent_col">';
                         echo printSmallFont($nameAgent).$server_name_element;
                         echo '</td>';
@@ -3223,9 +3267,9 @@ function print_SLA_list($width, $action, $idItem=null)
                         echo '<td class="sla_list_sla_limit_col">';
                         echo $item_sla_limit;
                         echo '</td>';
-                        echo '<td class="sla_list_action_col" style="text-align: center;">';
+                        echo '<td class="sla_list_action_col center">';
                         echo '<a href="javascript: deleteSLARow('.$item['id'].');">';
-                        echo html_print_image('images/cross.png', true);
+                        echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']);
                         echo '</a>';
                         echo '</td>';
                         echo '</tr>';
@@ -3239,7 +3283,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     echo '</tbody>';
                     ?>
                     <tbody id="sla_template">
-                        <tr id="row" style="display: none;" class="datos">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
@@ -3262,12 +3306,13 @@ function print_SLA_list($width, $action, $idItem=null)
                             <td class="sla_list_sla_max_col sla_max"></td>
                             <td class="sla_list_sla_limit_col sla_limit"></td>
 
-                            <td class="sla_list_action_col" style="text-align: center;">
+                            <td class="sla_list_action_col center">
                                 <a class="delete_button" href="javascript: deleteSLARow(0);">
                                     <?php
                                     html_print_image(
                                         'images/cross.png',
-                                        false
+                                        false,
+                                        ['class' => 'invert_filter']
                                     );
                                     ?>
                                 </a>
@@ -3276,10 +3321,10 @@ function print_SLA_list($width, $action, $idItem=null)
                     </tbody>
 
                     <tbody>
-                        <tr id="sla_form" style="" class="datos">
+                        <tr id="sla_form"   class="datos">
                             <td class="sla_list_agent_col">
                                 <input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
-                                <input id="hidden-server_name" name="server_name" value="" type="hidden">
+                                <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
                                 $params = [];
                                 $params['show_helptip'] = true;
@@ -3299,7 +3344,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 ui_print_agent_autocomplete_input($params);
                                 ?>
                             <td class="sla_list_module_col">
-                                <select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" style="max-width: 180px">
+                                <select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled" class="mx180px">
                                     <option value="0">
                                         <?php
                                         echo __('Select an Agent first');
@@ -3335,7 +3380,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                     ?>
                                 </td>
                                 <td class="sla_list_module_failover_col">
-                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" style="max-width: 180px">
+                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" class="mx180px">
                                         <option value="0">
                                             <?php
                                             echo __('Select an Agent first');
@@ -3408,12 +3453,13 @@ function print_SLA_list($width, $action, $idItem=null)
                             <td class="sla_list_sla_limit_col">
                                 <input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text">
                             </td>
-                            <td class="sla_list_action_col" style="text-align: center;">
+                            <td class="sla_list_action_col center">
                                 <a href="javascript: addSLARow();">
                                     <?php
                                     html_print_image(
                                         'images/disk.png',
-                                        false
+                                        false,
+                                        ['class' => 'invert_filter']
                                     );
                                     ?>
                                 </a>
@@ -3429,7 +3475,7 @@ function print_SLA_list($width, $action, $idItem=null)
             }
             ?>
     </table>
-    <span style="display: none" id="module_sla_text">
+    <span class="invisible" id="module_sla_text">
         <?php echo __('Select an Agent first'); ?>
     </span>
     <?php
@@ -3528,7 +3574,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
             switch ($action) {
                 case 'new':
                     ?>
-                    <tr id="general_template" style="" class="datos">
+                    <tr id="general_template"   class="datos">
                         <td colspan="4">
                             <?php
                             echo __('Please save the report to start adding items into the list.');
@@ -3602,31 +3648,31 @@ function print_General_list($width, $action, $idItem=null, $type='general')
 
                         if ($type == 'availability') {
                             if ($failover_mode) {
-                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                echo '<tr id="general_'.$item['id'].'"   class="datos">
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
                                     <td>'.printSmallFont($nameAgentFailover).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModuleFailover).'</td>
-                                    <td style="text-align: center;">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    <td class="center">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
                                     </td>
                                 </tr>';
                             } else {
-                                echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                                echo '<tr id="general_'.$item['id'].'"   class="datos">
                                     <td>'.printSmallFont($nameAgent).$server_name_element.'</td>
                                     <td>'.printSmallFont($nameModule).'</td>
-                                    <td style="text-align: center;">
-                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+                                    <td class="center">
+                                        <a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
                                     </td>
                                 </tr>';
                             }
                         } else {
-                            echo '<tr id="general_'.$item['id'].'" style="" class="datos">
+                            echo '<tr id="general_'.$item['id'].'"   class="datos">
 								<td>'.printSmallFont($nameAgent).$server_name_element.'</td>
 								<td>'.printSmallFont($nameModule).'</td>
 								<td>'.printSmallFont($operation[$item['operation']]).'</td>
-								<td style="text-align: center;">
-									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true).'</a>
+								<td class="center">
+									<a href="javascript: deleteGeneralRow('.$item['id'].');">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>
 								</td>
 							</tr>';
                         }
@@ -3641,7 +3687,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     ?>
 
                     <tbody id="general_template">
-                        <tr id="row" style="display: none;" class="datos">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php
@@ -3660,12 +3706,13 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                 <?php
                             }
                             ?>
-                            <td style="text-align: center;">
+                            <td class="center">
                                 <a class="delete_button" href="javascript: deleteGeneralRow(0);">
                                     <?php
                                     html_print_image(
                                         'images/cross.png',
-                                        false
+                                        false,
+                                        ['class' => 'invert_filter']
                                     );
                                     ?>
                                 </a>
@@ -3674,7 +3721,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     </tbody>
 
                     <tbody>
-                        <tr id="general_form" style="" class="datos">
+                        <tr id="general_form"   class="datos">
                             <td>
                                 <input id="hidden-id_agent_general" name="id_agent_general" value="" type="hidden">
                                 <input id="hidden-server_name_general" name="server_name_general" value="" type="hidden">
@@ -3698,7 +3745,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                 ?>
                             </td>
                             <td>
-                                <select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px">
+                                <select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" class="mx180px">
                                     <option value="0">
                                         <?php
                                         echo __('Select an Agent first');
@@ -3732,7 +3779,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     ?>
                                 </td>
                                 <td class="sla_list_module_failover_col">
-                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" style="max-width: 180px">
+                                    <select id="id_agent_module_failover" name="id_agent_module_failover" disabled="disabled" class="mx180px">
                                         <option value="0">
                                             <?php
                                             echo __('Select an Agent first');
@@ -3766,12 +3813,13 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                 <?php
                             }
                             ?>
-                            <td style="text-align: center;">
+                            <td class="center">
                                 <a href="javascript: addGeneralRow();">
                                     <?php
                                     html_print_image(
                                         'images/disk.png',
-                                        false
+                                        false,
+                                        ['class' => 'invert_filter']
                                     );
                                     ?>
                                 </a>
@@ -3787,43 +3835,43 @@ function print_General_list($width, $action, $idItem=null, $type='general')
             }
             ?>
     </table>
-    <span style="display: none" id="module_general_text">
+    <span class="invisible" id="module_general_text">
         <?php echo __('Select an Agent first'); ?>
     </span>
     <?php
 }
 
 
-echo "<div id='message_no_name'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a name.').'</p>';
+echo "<div id='message_no_name'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please select a name.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_agent'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please select an agent.').'</p>';
+echo "<div id='message_no_agent'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please select an agent.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_module'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a module.').'</p>';
+echo "<div id='message_no_module'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please select a module.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_sql_query'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a SQL query.').'</p>';
+echo "<div id='message_no_sql_query'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please insert a SQL query.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_url'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please insert a URL.').'</p>';
+echo "<div id='message_no_url'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please insert a URL.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_interval_option'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please checked a custom interval option.').'</p>';
+echo "<div id='message_no_interval_option'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder''>".__('Please checked a custom interval option.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_user'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a user.').'</p>';
+echo "<div id='message_no_user'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please select a user.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_group'  title='".__('Item Editor Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('Please select a group.').'</p>';
+echo "<div id='message_no_group'  title='".__('Item Editor Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please select a group.').'</p>';
 echo '</div>';
 
 ui_require_javascript_file(
@@ -4096,6 +4144,7 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
+            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4149,6 +4198,7 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
+            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -4234,6 +4284,7 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
+            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4282,6 +4333,7 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
+            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -5099,6 +5151,7 @@ function chooseType() {
     $("#row_current_month").hide();
     $("#row_failover_mode").hide();
     $("#row_failover_type").hide();
+    $("#row_summary").hide();
     $("#row_working_time").hide();
     $("#row_working_time_compare").hide();
     $("#row_only_display_wrong").hide();
@@ -5141,6 +5194,7 @@ function chooseType() {
     $("#row_resolution").hide();
     $("#row_last_value").hide();
     $("#row_filter_search").hide();
+    $("#row_filter_exclude").hide();
     $("#row_percentil").hide();
     $("#log_help_tip").css("visibility", "hidden");
     $("#agents_row").hide();
@@ -5191,6 +5245,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
 
             $("#row_event_severity").show();
             $("#row_event_status").show();
@@ -5290,8 +5346,10 @@ function chooseType() {
             if(failover_checked){
                 $("#row_failover_type").show();
             }
+            $("#row_summary").show();
             break;
 
+        case 'histogram_data':
         case 'module_histogram_graph':
             $("#row_description").show();
             $("#row_period").show();
@@ -5403,11 +5461,9 @@ function chooseType() {
         case 'sql':
             $("#row_description").show();
             $("#row_query").show();
-            $("#row_max_items").show();
             $("#row_header").show();
             $("#row_custom").show();
             $("#row_custom_example").show();
-            $("#row_dyn_height").show();
             $("#row_servers").show();
             $("#row_historical_db_check").show();
             break;
@@ -5486,6 +5542,8 @@ function chooseType() {
             $("#row_extended_events").show();
 
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5509,6 +5567,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5531,6 +5591,8 @@ function chooseType() {
             $('#agent_autocomplete').hide();
             $('#agent_autocomplete_events').show();
             $("#row_filter_search").show();
+            $("#row_filter_exclude").show();
+
             $("#row_historical_db_check").hide();
             break;
 
@@ -5837,12 +5899,6 @@ function chooseType() {
             $("#row_resolution").show();
             $("#row_servers").show();
             $("#row_historical_db_check").hide();
-            break;
-
-        case 'nt_top_n':
-            $("#row_description").show();
-            $("#row_period").show();
-            $("#row_quantity").show();
             break;
 
         case 'permissions_report':

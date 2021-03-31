@@ -49,20 +49,20 @@ $table->style[2] = 'font-weight: bold';
 $table->style[4] = 'font-weight: bold';
 $table->style[6] = 'font-weight: bold';
 
-echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('You cannot set the Password type until you clear the combo values and click on update button.').'</p>';
+echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('You cannot set the Password type until you clear the combo values and click on update button.').'</p>';
 echo '</div>';
 
-echo "<div id='message_set_combo'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('You cannot unset the enable combo until you clear the combo values and click on update.').'</p>';
+echo "<div id='message_set_combo'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('You cannot unset the enable combo until you clear the combo values and click on update.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_set_password'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('If you select Enabled combo the Password type will be disabled.').'</p>';
+echo "<div id='message_no_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('If you select Enabled combo the Password type will be disabled.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_set_combo'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('If you select Passord type the Enabled combo will be disabled.').'</p>';
+echo "<div id='message_no_set_combo'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('If you select Passord type the Enabled combo will be disabled.').'</p>';
 echo '</div>';
 
 

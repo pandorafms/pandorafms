@@ -187,7 +187,7 @@ if ($maps !== false) {
             }
 
             $table->cellclass[]['op'] = 'action_buttons';
-            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         }
 
         array_push($table->data, $data);

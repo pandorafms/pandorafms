@@ -107,36 +107,36 @@ try {
                 );
 
                 // Div for error/succes dialog.
-                $output = '<div id="snmp_result_msg" style="display:none"></div>';
+                $output = '<div id="snmp_result_msg" class="invisible"></div>';
 
                 // Dialog error.
-                $output .= '<div id="dialog_error" style="display:none" title="'.__('SNMP modules').'">';
+                $output .= '<div id="dialog_error" class="invisible" title="'.__('SNMP modules').'">';
                 $output .= '<div>';
-                $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
-                $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-                $output .= "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Error creating the following modules:').'</p>';
-                $output .= "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
+                $output .= "<div class='w25p float-left'><img class='pdd_l_20px pdd_t_20px' src='images/icono_error_mr.png'></div>";
+                $output .= "<div class='w75p float-left'><h3><strong class='verdana font_13pt'>ERROR</strong></h3>";
+                $output .= "<p class='verdana font_12pt mrgn_btn_0px'>".__('Error creating the following modules:').'</p>';
+                $output .= "<p id='error_text' class='verdana font_12pt;'></p>";
                 $output .= '</div>';
                 $output .= '</div>';
                 $output .= '</div>';
 
                 // Dialog success.
-                $output .= '<div id="dialog_success" style="display: none" title="'.__('SNMP modules').'">';
+                $output .= '<div id="dialog_success" class="invisible" title="'.__('SNMP modules').'">';
                 $output .= '<div>';
-                $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_exito_mr.png'></div>";
-                $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>SUCCESS</strong></h3>";
-                $output .= "<p style='font-family:Verdana; font-size:12pt;'>".__('Modules successfully created').'</p>';
+                $output .= "<div class='w25p float-left'><img class='pdd_l_20px pdd_t_20px' src='images/icono_exito_mr.png'></div>";
+                $output .= "<div class='w75p float-left'><h3><strong class='verdana font_13pt'>SUCCESS</strong></h3>";
+                $output .= "<p class='verdana font_12pt'>".__('Modules successfully created').'</p>';
                 $output .= '</div>';
                 $output .= '</div>';
                 $output .= '</div>';
 
                 // Dialog no agent selected.
-                $output .= '<div id="dialog_no_agents_selected" style="display:none" title="'.__('SNMP modules').'">';
+                $output .= '<div id="dialog_no_agents_selected" class="invisible" title="'.__('SNMP modules').'">';
                 $output .= '<div>';
-                $output .= "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_error_mr.png'></div>";
-                $output .= "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>ERROR</strong></h3>";
-                $output .= "<p style='font-family:Verdana; font-size:12pt;margin-bottom: 0px'>".__('Module must be applied to an agent or a policy').'</p>';
-                $output .= "<p id='error_text' style='font-family:Verdana; font-size:12pt;'></p>";
+                $output .= "<div class='w25p float-left'><img class='pdd_l_20px pdd_t_20px' src='images/icono_error_mr.png'></div>";
+                $output .= "<div class='w75p float-left'><h3><strong class='verdana font_13pt'>ERROR</strong></h3>";
+                $output .= "<p class='verdana font_12pt mrgn_btn_0px'>".__('Module must be applied to an agent or a policy').'</p>';
+                $output .= "<p id='error_text' class='verdana font_12pt'></p>";
                 $output .= '</div>';
                 $output .= '</div>';
                 $output .= '</div>';

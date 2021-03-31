@@ -141,14 +141,18 @@ foreach ($fields as $field) {
     $data[1] = '<b>'.$field['name'].'</b>';
 
     if ($field['display_on_front']) {
-        $data[2] = html_print_image('images/tick.png', true);
+        $data[2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
     } else {
-        $data[2] = html_print_image('images/icono_stop.png', true, ['style' => 'width:21px;height:21px;']);
+        $data[2] = html_print_image(
+            'images/icono_stop.png',
+            true,
+            ['style' => 'width:21px;height:21px;']
+        );
     }
 
     $table->cellclass[][3] = 'action_buttons';
-    $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0']).'</a>';
-    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0']).'</a>';
+    $data[3] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configure_field&id_field='.$field['id_field'].'">'.html_print_image('images/config.png', true, ['alt' => __('Edit'), 'title' => __('Edit'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
+    $data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/fields_manager&delete_field=1&id_field='.$field['id_field'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete'), 'border' => '0', 'class' => 'invert_filter']).'</a>';
 
     array_push($table->data, $data);
 }

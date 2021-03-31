@@ -84,7 +84,7 @@ if (function_exists('quickShellSettings') === true) {
     quickShellSettings();
 }
 
-echo '<div class="action-buttons" style="width: 100%;">';
+echo '<div class="action-buttons w100p">';
 html_print_submit_button(
     __('Update'),
     'update_button',

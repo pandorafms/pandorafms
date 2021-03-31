@@ -80,7 +80,7 @@ if ($mapsConnections !== false) {
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2&amp;action=edit_connection_map&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'">'.$mapsConnection['conection_name'].'</a>',
             ui_print_group_icon($mapsConnection['group_id'], true),
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=gis&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
-				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>',
+				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>',
         ];
         $table->cellclass[][2] = 'action_buttons';
     }

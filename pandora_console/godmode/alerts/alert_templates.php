@@ -414,7 +414,7 @@ foreach ($templates as $template) {
         && check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'action_buttons';
-        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" style="display: inline; float: left">';
+        $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" class="float-left inline_line">';
         $data[4] .= html_print_input_hidden('duplicate_template', 1, true);
         $data[4] .= html_print_input_hidden('source_id', $template['id'], true);
         $data[4] .= html_print_input_image(
@@ -427,7 +427,7 @@ foreach ($templates as $template) {
         );
         $data[4] .= '</form> ';
 
-        $data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+        $data[4] .= '<form method="post" class="float-right inline_line" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
         $data[4] .= html_print_input_hidden('delete_template', 1, true);
         $data[4] .= html_print_input_hidden('id', $template['id'], true);
         $data[4] .= html_print_input_image(

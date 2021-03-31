@@ -18,6 +18,11 @@ require_once 'include/functions_incidents.php';
 
 check_login();
 
+if (!$config['integria_enabled']) {
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
+    return;
+}
+
 $group = $id_grupo;
 
 if (! check_acl($config['id_user'], $group, 'AW', $id_agente)) {
@@ -38,30 +43,25 @@ $groups = users_get_groups($config['id_user'], 'IR');
 $filter = ' AND id_agent = '.$id_agent;
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=incident&id_agente='.$id_agent;
 
-// Select incidencts where the user has access to ($groups from
-// get_user_groups), array_keys for the id, implode to pass to SQL
-switch ($config['dbtype']) {
-    case 'mysql':
-        $sql = 'SELECT * FROM tincidencia WHERE
-			id_grupo IN ('.implode(',', array_keys($groups)).')'.$filter.'
-			ORDER BY actualizacion DESC LIMIT '.$offset.','.$config['block_size'];
-    break;
+$params = [
+    '',
+    '-10',
+    '1',
+    '-1',
+    '0',
+    '',
+    '',
+    '',
+    agents_get_name($id_agent),
+];
 
-    case 'oracle':
-        $sql = 'SELECT * FROM tincidencia WHERE
-			id_grupo IN ('.implode(',', array_keys($groups)).')'.$filter.'
-			AND rownum <= '.$offset.','.$config['block_size'].'
-			ORDER BY actualizacion DESC';
-    break;
-}
+$result = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents', $params, false, 'json', ',');
 
-$result = db_get_all_rows_sql($sql);
+$result = json_decode($result, true);
 
-$count_sql = 'SELECT count(*) FROM tincidencia WHERE 
-	id_grupo IN ('.implode(',', array_keys($groups)).')'.$filter.' 
-	ORDER BY actualizacion DESC';
+$count = count($result);
 
-$count = db_get_value_sql($count_sql);
+$result = array_slice($result, $offset, $config['block_size']);
 
 if (empty($result)) {
     $result = [];
@@ -91,8 +91,6 @@ $table->head[2] = __('Incident');
 $table->head[3] = __('Priority');
 $table->head[4] = __('Group');
 $table->head[5] = __('Updated');
-$table->head[6] = __('Source');
-$table->head[7] = __('Owner');
 
 $table->size[0] = 43;
 $table->size[7] = 50;
@@ -115,7 +113,7 @@ foreach ($result as $row) {
 
     $data = [];
 
-    $data[0] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.$row['id_incidencia'].'</a>';
+    $data[0] = '<a href="index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$row['id_incidencia'].'">'.$row['id_incidencia'].'</a>';
     $attach = incidents_get_attach($row['id_incidencia']);
 
     if (!empty($attach)) {
@@ -123,12 +121,10 @@ foreach ($result as $row) {
     }
 
     $data[1] = incidents_print_status_img($row['estado'], true);
-    $data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row['id_incidencia'].'">'.substr(io_safe_output($row['titulo']), 0, 45).'</a>';
+    $data[2] = '<a href="index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$row['id_incidencia'].'">'.substr(io_safe_output($row['titulo']), 0, 45).'</a>';
     $data[3] = incidents_print_priority_img($row['prioridad'], true);
-    $data[4] = ui_print_group_icon($row['id_grupo'], true);
+    $data[4] = $row['id_grupo'];
     $data[5] = ui_print_timestamp($row['actualizacion'], true);
-    $data[6] = $row['origen'];
-    $data[7] = ui_print_username($row['id_usuario'], true);
 
     array_push($table->data, $data);
 }
@@ -139,4 +135,4 @@ echo '</div>';
 unset($table);
 echo '<br><br>';
 
-echo '<div style="clear:both">&nbsp;</div>';
+echo '<div id="both">&nbsp;</div>';

@@ -277,7 +277,7 @@ autocreate_group 10
 # If set to 1, new agents will be added to the group specified by autocreate_group (the group specified by the agent will be used as fallback).
 # If set to 0, new agents will be added to the group specified by the agent (the group specified by autocreate_group will be used as fallback).
 
-autocreate_group_force 1
+autocreate_group_force 0
 
 # Set to 1 if want to autocreate agents with Pandora FMS Data Server, 
 # set to 0 to disable

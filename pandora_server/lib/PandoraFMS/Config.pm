@@ -117,9 +117,9 @@ sub pandora_init {
 			($pa_config->{"pandora_path"} = $parametro);
 		}
 	}
-	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
-		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
+	if (!defined ($pa_config->{"pandora_path"}) || $pa_config->{"pandora_path"} eq ""){
+		print "[ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
+		print "For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
 		exit;
 	}
 }

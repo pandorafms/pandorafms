@@ -31,7 +31,7 @@ global $config;
 
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
-hd($_REQUEST);
+
 if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';

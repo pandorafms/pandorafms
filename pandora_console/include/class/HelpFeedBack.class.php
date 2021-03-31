@@ -114,7 +114,7 @@ class HelpFeedBack extends Wizard
         echo '<div class="help_feedback">';
         // Load feedback form.
         echo $this->loadFeedbackForm();
-        echo '</div><div id="back" style="display: none"></div>';
+        echo '</div><div id="back" class="invisible"></div>';
     }
 
 
@@ -236,6 +236,7 @@ class HelpFeedBack extends Wizard
      */
     public function sendMailMethod()
     {
+        global $config;
         $suggestion = get_parameter('type', 'false');
         $feedback_text = get_parameter('feedback_text', null);
         $feedback_mail = get_parameter('feedback_email', null);

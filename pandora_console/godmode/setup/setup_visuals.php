@@ -131,6 +131,7 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->size[0] = '50%';
 $table_styles->data = [];
 
+
 $table_styles->data[$row][0] = __('Style template');
 $table_styles->data[$row][1] = html_print_select(
     themes_get_css(),
@@ -142,6 +143,7 @@ $table_styles->data[$row][1] = html_print_select(
     true
 );
 $row++;
+
 
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets['default'] = __('Colors');
@@ -1243,7 +1245,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_header']),
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px"',
         true
     );
 
@@ -1266,7 +1268,7 @@ $row++;
         15,
         15,
         $custom_report_front_firstpage,
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px"',
         true
     );
 
@@ -1279,7 +1281,7 @@ $row++;
         5,
         15,
         io_safe_output($config['custom_report_front_footer']),
-        'style="width: 90%; height: 300px !important;"',
+        'class="w90p height_300px""',
         true
     );
 
@@ -1300,16 +1302,6 @@ $row++;
     $table_other->size[2] = '12%';
     $table_other->size[3] = '12%';
     $table_other->data = [];
-
-    $table_other->data[$row][0] = __('Custom graphviz directory');
-    $table_other->data[$row][1] = html_print_input_text(
-        'graphviz_bin_dir',
-        $config['graphviz_bin_dir'],
-        '',
-        25,
-        255,
-        true
-    );
 
     $row++;
 
@@ -1479,11 +1471,42 @@ $row++;
     ];
     $table_other->data[$row][0] = __('CSV divider');
     if ($config['csv_divider'] != ';' && $config['csv_divider'] != ',' && $config['csv_divider'] != '|') {
-        $table_other->data[$row][1] = html_print_input_text('csv_divider', $config['csv_divider'], '', 20, 255, true);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/default_list.png', true, ['id' => 'select']).'</a>';
+        $table_other->data[$row][1] = html_print_input_text(
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            20,
+            255,
+            true
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'id'    => 'select',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     } else {
-        $table_other->data[$row][1] = html_print_select($common_dividers, 'csv_divider', $config['csv_divider'], '', '', '', true, false, false);
-        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image('images/pencil.png', true, ['id' => 'pencil']).'</a>';
+        $table_other->data[$row][1] = html_print_select(
+            $common_dividers,
+            'csv_divider',
+            $config['csv_divider'],
+            '',
+            '',
+            '',
+            true,
+            false,
+            false
+        );
+        $table_other->data[$row][1] .= '<a id="csv_divider_custom" onclick="javascript: edit_csv_divider();">'.html_print_image(
+            'images/pencil.png',
+            true,
+            [
+                'id'    => 'pencil',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
 
     $row++;

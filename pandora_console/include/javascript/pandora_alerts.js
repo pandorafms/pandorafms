@@ -1,4 +1,5 @@
-var original_command = "";
+/* globals $ */
+
 function parse_alert_command(command, classs) {
   if (classs == "recovery") {
     classs = "fields_recovery";
@@ -9,16 +10,20 @@ function parse_alert_command(command, classs) {
   var nfield = 1;
   $("." + classs).each(function() {
     // Only render values different from ''
-    if ($(this).val() == "") {
-      nfield++;
-
-      return;
-    }
     var field = "_field" + nfield + "_";
-
     var regex = new RegExp(field, "gi");
-
-    if ($(this).css("-webkit-text-security") == "disc") {
+    console.log($(this).val());
+    if ($(this).val() == "") {
+      if (
+        classs == "fields_recovery" &&
+        $($(".fields")[nfield - 1]).val() != ""
+      ) {
+        command = command.replace(
+          regex,
+          "[RECOVER]" + $($(".fields")[nfield - 1]).val()
+        );
+      }
+    } else if ($(this).css("-webkit-text-security") == "disc") {
       var hidden_character = "*";
       var hidden_string = hidden_character.repeat($(this).val().length);
 

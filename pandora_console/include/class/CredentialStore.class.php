@@ -837,9 +837,9 @@ class CredentialStore extends Wizard
         }
 
         // Auxiliar div.
-        $modal = '<div id="modal" style="display: none"></div>';
-        $msg = '<div id="msg" style="display: none"></div>';
-        $aux = '<div id="aux" style="display: none"></div>';
+        $modal = '<div id="modal" class="invisible"></div>';
+        $msg = '<div id="msg"     class="invisible"></div>';
+        $aux = '<div id="aux"     class="invisible"></div>';
 
         echo $modal.$msg.$aux;
 
@@ -1075,11 +1075,11 @@ class CredentialStore extends Wizard
 
             item.options = '<a href="javascript:" onclick="show_form(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show')]); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show')]); ?></a>';
 
             item.options += '<a href="javascript:" onclick="delete_key(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete')]); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']); ?></a>';
         }
 
         /**

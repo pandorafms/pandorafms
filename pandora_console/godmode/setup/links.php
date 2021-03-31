@@ -115,7 +115,7 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     echo '</tr><tr>
 	<td class="datos2">'.__('Link').'</td>
 	<td class="datos2">
-	<input type="text" name="link" size="150" value="'.$link.'"></td>';
+	<input type="text" name="link" size="50" value="'.$link.'"></td>';
     echo '</tr>';
     echo '</table>';
     echo "<table width='100%'>";
@@ -137,7 +137,7 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
     if (empty($rows)) {
         ui_print_info_message(['no_close' => true, 'message' => __("There isn't links") ]);
     } else {
-        echo "<table cellpadding='0' cellspacing='0' class='info_table' style='width:100%'>";
+        echo "<table cellpadding='0' cellspacing='0' class='info_table w100p'>";
         echo '<thead><tr>';
         echo "<th width='180px'>".__('Link name').'</th>';
         echo "<th width='10px'>".__('Delete').'</th>';
@@ -154,7 +154,11 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
             }
 
             echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row['id_link']."'>".$row['name'].'</a></b></td>';
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                'images/cross.png',
+                true,
+                ['class' => 'invert_filter']
+            ).'</a></td></tr>';
         }
 
         echo '</table>';

@@ -27,6 +27,10 @@
  */
 
 // Button for display full screen mode.
+global $config;
+
+
+
 $queryFull = [
     'dashboardId' => $dashboardId,
     'refr'        => $refr,
@@ -37,7 +41,10 @@ $fullscreen['text'] = '<a id="full_screen_link" href="'.$urlFull.'">';
 $fullscreen['text'] .= html_print_image(
     'images/full_screen.png',
     true,
-    ['title' => __('Full screen mode')]
+    [
+        'title' => __('Full screen mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $fullscreen['text'] .= '</a>';
 
@@ -48,7 +55,10 @@ $normalscreen['text'] = '<a href="'.$urlNormal.'">';
 $normalscreen['text'] .= html_print_image(
     'images/normal_screen.png',
     true,
-    ['title' => __('Back to normal mode')]
+    [
+        'title' => __('Back to normal mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $normalscreen['text'] .= '</a>';
 
@@ -68,7 +78,10 @@ $options['text'] .= ')\'>';
 $options['text'] .= html_print_image(
     'images/setup.png',
     true,
-    ['title' => __('Options')]
+    [
+        'title' => __('Options'),
+        'class' => 'invert_filter',
+    ]
 );
 $options['text'] .= '</a>';
 
@@ -77,7 +90,10 @@ $back_to_dashboard_list['text'] = '<a href="'.$url.'">';
 $back_to_dashboard_list['text'] .= html_print_image(
     'images/list.png',
     true,
-    ['title' => __('Back to dashboards list')]
+    [
+        'title' => __('Back to dashboards list'),
+        'class' => 'invert_filter',
+    ]
 );
 $back_to_dashboard_list['text'] .= '</a>';
 
@@ -97,7 +113,10 @@ $slides['text'] .= ')\'>';
 $slides['text'] .= html_print_image(
     'images/images.png',
     true,
-    ['title' => __('Slides mode')]
+    [
+        'title' => __('Slides mode'),
+        'class' => 'invert_filter',
+    ]
 );
 $slides['text'] .= '</a>';
 
@@ -115,7 +134,10 @@ $publiclink['text'] = '<a id="public_link" href="'.$publicUrl.'" target="_blank"
 $publiclink['text'] .= html_print_image(
     'images/camera_mc.png',
     true,
-    ['title' => __('Show link to public dashboard')]
+    [
+        'title' => __('Show link to public dashboard'),
+        'class' => 'invert_filter',
+    ]
 );
 $publiclink['text'] .= '</a>';
 
@@ -132,8 +154,8 @@ if (isset($config['public_dashboard']) === true
     $urlRefresh = $url.'&'.http_build_query($queryRefresh);
 }
 
-$comboRefreshCountdown['text'] = '<div class="dashboard-countdown" style="display: inline;"></div>';
-$comboRefresh['text'] = '<form id="refr-form" method="post" style="margin-top: 13px;" action="'.$urlRefresh.'">';
+$comboRefreshCountdown['text'] = '<div class="dashboard-countdown display_in"></div>';
+$comboRefresh['text'] = '<form id="refr-form" method="post" class="mrgn_top_13px" action="'.$urlRefresh.'">';
 $comboRefresh['text'] .= __('Refresh').':';
 $comboRefresh['text'] .= html_print_select(
     \get_refresh_time_array(),
@@ -182,11 +204,14 @@ $enable_disable['text'] = html_print_checkbox_switch(
 );
 
 // New Widget.
-$newWidget['text'] = '<a href="#" id="add-widget" style="display:none;">';
+$newWidget['text'] = '<a href="#" id="add-widget" class="invisible">';
 $newWidget['text'] .= html_print_image(
     'images/add.png',
     true,
-    ['title' => __('Add Cell')]
+    [
+        'title' => __('Add Cell'),
+        'class' => 'invert_filter',
+    ]
 );
 $newWidget['text'] .= '</a>';
 

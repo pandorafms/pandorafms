@@ -33,7 +33,6 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 }
 
 $action = get_parameter('action', 'listeners');
-$is_network = false;
 
 ui_print_page_header(__('Netflow explorer'));
 

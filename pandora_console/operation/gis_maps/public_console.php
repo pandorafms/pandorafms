@@ -131,11 +131,11 @@ $controls = [
 
 $layers = gis_get_layers($idMap);
 
-echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
+echo '<div class="gis_layers">';
 echo '<h1>'.$map['map_name'].'</h1>';
 echo '<br />';
 
-echo "<div id='map' style='z-index:100; width: 99%; height: 500px; min-height:500px; border: 1px solid black;' ></div>";
+echo "<div id='map' class='map_gis' ></div>";
 
 echo '</div>';
 

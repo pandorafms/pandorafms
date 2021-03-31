@@ -623,7 +623,7 @@ class EventsListWidget extends Widget
             // Filter.
             $filter,
             // Offset.
-            null,
+            0,
             // Limit.
             $this->values['limit'],
             // Order.

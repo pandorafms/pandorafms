@@ -345,7 +345,7 @@ class ReportsWidget extends Widget
         $output = '';
         ob_start();
         if ($this->values['reportId'] !== 0) {
-            $output .= '<div style="width:90%; height:100%; display:flex; flex-direction:column;">';
+            $output .= '<div class="w90p height_100p flex flex_column">';
             $this->printReport();
             $output .= ob_get_clean();
 

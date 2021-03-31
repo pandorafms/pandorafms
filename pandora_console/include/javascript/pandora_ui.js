@@ -202,33 +202,70 @@ function load_modal(settings) {
         if (Array.isArray(settings.form) === false) {
           $("#" + settings.form + " :input").each(function() {
             if (this.checkValidity() === false) {
-              $(this).attr("title", this.validationMessage);
-              $(this).tooltip({
-                tooltipClass: "uitooltip",
-                position: {
-                  my: "right bottom",
-                  at: "right top",
-                  using: function(position, feedback) {
-                    $(this).css(position);
-                    $("<div>")
-                      .addClass("arrow")
-                      .addClass(feedback.vertical)
-                      .addClass(feedback.horizontal)
-                      .appendTo(this);
-                  }
-                }
-              });
-              $(this).tooltip("open");
+              var select2 = $(this).attr("data-select2-id");
+              if (typeof select2 !== typeof undefined && select2 !== false) {
+                $(this)
+                  .next()
+                  .attr("title", this.validationMessage);
+                $(this)
+                  .next()
+                  .tooltip({
+                    tooltipClass: "uitooltip",
+                    position: {
+                      my: "right bottom",
+                      at: "right top",
+                      using: function(position, feedback) {
+                        $(this).css(position);
+                        $("<div>")
+                          .addClass("arrow")
+                          .addClass(feedback.vertical)
+                          .addClass(feedback.horizontal)
+                          .appendTo(this);
+                      }
+                    }
+                  });
+                $(this)
+                  .next()
+                  .tooltip("open");
 
-              var element = $(this);
-              setTimeout(
-                function(element) {
-                  element.tooltip("destroy");
-                  element.removeAttr("title");
-                },
-                3000,
-                element
-              );
+                var element = $(this).next();
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              } else {
+                $(this).attr("title", this.validationMessage);
+                $(this).tooltip({
+                  tooltipClass: "uitooltip",
+                  position: {
+                    my: "right bottom",
+                    at: "right top",
+                    using: function(position, feedback) {
+                      $(this).css(position);
+                      $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                    }
+                  }
+                });
+                $(this).tooltip("open");
+
+                var element = $(this);
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              }
 
               flagError = true;
             }
@@ -440,6 +477,7 @@ function confirmDialog(settings) {
       modal: true,
       buttons: [
         {
+          id: "cancel_btn_dialog",
           text: "Cancel",
           class:
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",

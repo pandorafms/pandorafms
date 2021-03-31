@@ -126,47 +126,79 @@ if ($vconsole_write || $vconsole_manage) {
     $options['public_link']['text'] = '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config['id_user']).'" target="_blank">'.html_print_image(
         'images/camera_mc.png',
         true,
-        ['title' => __('Show link to public Visual Console')]
+        [
+            'title' => __('Show link to public Visual Console'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['public_link']['active'] = false;
 
     $options['data']['text'] = '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$id_layout.'">'.html_print_image(
         'images/op_reporting.png',
         true,
-        ['title' => __('Main data')]
+        [
+            'title' => __('Main data'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['list_elements']['text'] = '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$id_layout.'">'.html_print_image(
         'images/list.png',
         true,
-        ['title' => __('List elements')]
+        [
+            'title' => __('List elements'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     if (enterprise_installed()) {
         $options['wizard_services']['text'] = '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$id_layout.'">'.html_print_image(
             'images/wand_services.png',
             true,
-            ['title' => __('Services wizard')]
+            [
+                'title' => __('Services wizard'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>';
     }
 
     $options['wizard']['text'] = '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$id_layout.'">'.html_print_image(
         'images/wand.png',
         true,
-        ['title' => __('Wizard')]
+        [
+            'title' => __('Wizard'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
     $options['editor']['text'] = '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$id_layout.'">'.html_print_image(
         'images/builder.png',
         true,
-        ['title' => __('Builder')]
+        [
+            'title' => __('Builder'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$view_refresh.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$view_refresh.'">'.html_print_image(
+    'images/eye.png',
+    true,
+    [
+        'title' => __('View'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 $options['view']['active'] = true;
 
 if (!is_metaconsole()) {
     if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'.html_print_image(
+            'images/full_screen.png',
+            true,
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
     }
 

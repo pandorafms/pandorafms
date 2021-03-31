@@ -165,3 +165,11 @@ ul.wizard li > textarea {
   justify-content: space-evenly !important;
   flex: 1 1 auto;
 }
+
+ul.wizard li.mrgn_0px {
+  margin: 0;
+}
+
+ul.wizard li.pdd_0px {
+  padding: 0;
+}

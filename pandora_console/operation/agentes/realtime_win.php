@@ -92,7 +92,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
             include_javascript_dependencies_flot_graph();
         ?>
     </head>
-    <body bgcolor="#ffffff" style='background:#ffffff;'>
+    <body bgcolor="#ffffff" class='bg_white'>
         <?php
         if (!check_acl($config['id_user'], 0, 'AR')) {
             include $config['homedir'].'/general/noaccess.php';

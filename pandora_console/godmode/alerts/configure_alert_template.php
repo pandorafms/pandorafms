@@ -835,7 +835,7 @@ if ($step == 2) {
         '',
         $is_central_policies_on_node
     );
-    $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+    $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
     $table->data[6][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
     $table->data[6][1] .= html_print_label(
         __('Trigger when matches the value'),
@@ -959,7 +959,7 @@ if ($step == 2) {
         // TinyMCE.
         // triggering fields.
         // Basic.
-        $table->data['field'.$i][1] = '<div style="padding: 4px 0px;"><b><small>';
+        $table->data['field'.$i][1] = '<div id="command_div"><b><small>';
         $table->data['field'.$i][1] .= __('Basic').'&nbsp;&nbsp;';
         $table->data['field'.$i][1] .= html_print_radio_button_extended(
             'editor_type_value_'.$i,
@@ -992,7 +992,7 @@ if ($step == 2) {
             1,
             1,
             isset($fields[$i]) ? $fields[$i] : '',
-            'style="min-height:40px;" class="fields"',
+            'class="fields" min-height-40px',
             true,
             '',
             $is_central_policies_on_node
@@ -1000,7 +1000,7 @@ if ($step == 2) {
 
         // Recovery.
         // Basic.
-        $table->data['field'.$i][2] = '<div style="padding: 4px 0px;"><b><small>';
+        $table->data['field'.$i][2] = '<div id="command_div"><b><small>';
         $table->data['field'.$i][2] .= __('Basic').'&nbsp;&nbsp;';
         $table->data['field'.$i][2] .= html_print_radio_button_extended(
             'editor_type_recovery_value_'.$i,
@@ -1033,7 +1033,7 @@ if ($step == 2) {
             1,
             1,
             isset($fields_recovery[$i]) ? $fields_recovery[$i] : '',
-            'style="min-height:40px" class="fields"',
+            'class="fields min-height-40px"',
             true,
             '',
             $is_central_policies_on_node

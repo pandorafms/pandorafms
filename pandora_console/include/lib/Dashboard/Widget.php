@@ -653,9 +653,9 @@ class Widget
         }
 
         if ($this->width === 0) {
-            $width = (((int) $this->position['width'] / 12 * $gridWidth) - 50);
+            $width = (((int) $this->position['width'] / 12 * $gridWidth) - 60);
         } else {
-            $width = (((int) $this->width / 12 * $gridWidth) - 50);
+            $width = (((int) $this->width / 12 * $gridWidth) - 60);
         }
 
         if ($this->height === 0) {

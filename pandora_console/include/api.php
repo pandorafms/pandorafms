@@ -35,6 +35,11 @@ global $config;
 define('DEBUG', 0);
 define('VERBOSE', 0);
 
+// Enterprise support.
+if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php') === true) {
+    include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php';
+}
+
 // TESTING THE UPDATE MANAGER.
 enterprise_include_once('include/functions_enterprise_api.php');
 

@@ -400,7 +400,7 @@ if ($id_agente) {
 
     // Module tab.
     $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/module.png',
+        'images/gm_modules.png',
         true,
         [
             'title' => __('Modules'),
@@ -416,7 +416,7 @@ if ($id_agente) {
 
     // Alert tab.
     $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/bell.png',
+        'images/gm_alerts.png',
         true,
         [
             'title' => __('Alerts'),

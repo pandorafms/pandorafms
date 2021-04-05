@@ -11,8 +11,28 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-function mysql_connect_db($host=null, $db=null, $user=null, $pass=null, $port=null, $charset=null)
-{
+
+
+/**
+ * Connect db
+ *
+ * @param string $host    Host.
+ * @param string $db      Db.
+ * @param string $user    User.
+ * @param string $pass    Pass.
+ * @param string $port    Port.
+ * @param string $charset Charset.
+ *
+ * @return mysqli|false
+ */
+function mysql_connect_db(
+    $host=null,
+    $db=null,
+    $user=null,
+    $pass=null,
+    $port=null,
+    $charset=null
+) {
     global $config;
 
     if ($host === null) {

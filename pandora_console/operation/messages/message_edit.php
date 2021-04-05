@@ -38,10 +38,11 @@ $send_mes     = (bool) get_parameter('send_mes', false);
 $new_msg      = (string) get_parameter('new_msg');
 $dst_user     = get_parameter('dst_user');
 $dst_group    = get_parameter('dst_group');
-$subject      = (string) get_parameter('subject');
+$subject      = (string) strip_tags(get_parameter('subject'));
 $message      = (string) get_parameter('message');
 $read_message = (bool) get_parameter('read_message', false);
 $reply        = (bool) get_parameter('reply', false);
+$replied      = (bool) get_parameter('replied', false);
 $show_sent    = get_parameter('show_sent', 0);
 
 $buttons['message_list'] = [
@@ -201,7 +202,7 @@ if ($send_mes === true) {
     if (empty($dst_user) === true && empty($dst_group) === true) {
         // The user or group must be selected for send the message.
         ui_print_error_message(__('User or group must be selected.'));
-    } else if ((bool) $reply === false) {
+    } else {
         // Create message (destination user).
         $return = messages_create_message(
             $config['id_user'],
@@ -221,6 +222,11 @@ if ($send_mes === true) {
             __('Message successfully sent to user %s', $user_name),
             __('Error sending message to user %s', $user_name)
         );
+
+        // If is a reply, is not necessary do more.
+        if ($replied === true) {
+            return;
+        }
     }
 }
 
@@ -270,48 +276,54 @@ foreach ($users_full as $user_id => $user_info) {
 }
 
 // Check if the user to reply is in the list, if not add reply user.
-if ($reply) {
-    if (array_key_exists($dst_user, $users) === false) {
-        // Add the user to reply.
-        $user_reply = db_get_row('tusuario', 'id_user', $dst_user);
-        $users[$user_reply['id_user']] = $user_reply['fullname'];
-    }
+if ($reply === true) {
+    $table->data[1][1] = (array_key_exists($dst_user, $users) === true) ? $users[$dst_user] : $dst_user;
+    $table->data[1][1] .= html_print_input_hidden(
+        'dst_user',
+        $dst_user,
+        true
+    );
+    $table->data[1][1] .= html_print_input_hidden(
+        'replied',
+        '1',
+        true
+    );
+} else {
+    $return_all_groups = ((bool) $own_info['is_admin'] === true
+    || check_acl($config['id_user'], 0, 'PM') === true);
+
+    $groups = users_get_groups($config['id_user'], 'AR');
+    // Get a list of all groups.
+    $table->data[1][1] = html_print_select(
+        $users,
+        'dst_user',
+        $dst_user,
+        'changeStatusOtherSelect(\'dst_user\', \'dst_group\')',
+        __('Select user'),
+        false,
+        true,
+        false,
+        ''
+    );
+    $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
+    $table->data[1][1] .= html_print_div(
+        [
+            'class'   => 'w250px inline',
+            'content' => html_print_select_groups(
+                $config['id_user'],
+                'AR',
+                $return_all_groups,
+                'dst_group',
+                $dst_group,
+                'changeStatusOtherSelect(\'dst_group\', \'dst_user\')',
+                __('Select group'),
+                '',
+                true
+            ),
+        ],
+        true
+    );
 }
-
-$return_all_groups = ((bool) $own_info['is_admin'] === true
-|| check_acl($config['id_user'], 0, 'PM') === true);
-
-$groups = users_get_groups($config['id_user'], 'AR');
-// Get a list of all groups.
-$table->data[1][1] = html_print_select(
-    $users,
-    'dst_user',
-    $dst_user,
-    '',
-    __('Select user'),
-    false,
-    true,
-    false,
-    ''
-);
-$table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-$table->data[1][1] .= html_print_div(
-    [
-        'class'   => 'w250px inline',
-        'content' => html_print_select_groups(
-            $config['id_user'],
-            'AR',
-            $return_all_groups,
-            'dst_group',
-            $dst_group,
-            '',
-            __('Select group'),
-            '',
-            true
-        ),
-    ],
-    true
-);
 
 $table->data[2][0] = __('Subject');
 $table->data[2][1] = html_print_input_text(
@@ -333,6 +345,23 @@ $table->data[3][1] = html_print_textarea(
     true
 );
 
+$jsOutput = '';
+ob_start();
+?>
+<script type="text/javascript">
+    function changeStatusOtherSelect(myId, otherId) {
+        if (document.getElementById(myId).value !== "") {
+            if (otherId === "dst_group") {
+                $('#'+otherId).select2('val', '0');
+            } else {
+                document.getElementById(otherId).value = "";
+            }
+        }
+    }
+</script>
+<?php
+$jsOutput = ob_get_clean();
+
 echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
 // Print the main table.
 html_print_table($table);
@@ -352,3 +381,4 @@ html_print_div(
 );
 
 echo '</form>';
+echo $jsOutput;

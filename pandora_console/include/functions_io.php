@@ -590,3 +590,29 @@ function io_output_password($password)
 
     return io_safe_output($plaintext);
 }
+
+
+/**
+ * Prevents html tags if exists
+ */
+function io_safe_html_tags(string $string)
+{
+    $init = strpos($string, '<');
+    $output = '';
+
+    if ($init !== false) {
+        $output = strstr($string, '<', true);
+        $tmpOutput = strstr($string, '<');
+        $output .= strstr(substr($tmpOutput, 1), '>', true);
+        $tmpOutput = strstr($string, '>');
+        $output .= substr($tmpOutput, 1);
+        $init = strpos($output, '<');
+        if ($init !== false) {
+            $output .= io_safe_html_tags($output);
+        }
+    } else {
+        $output = $string;
+    }
+
+    return $output;
+}

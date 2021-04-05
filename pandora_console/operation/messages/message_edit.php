@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Message Edition.
  *
- * @category   Extensions
+ * @category   Workspace
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 require_once 'include/functions_users.php';
@@ -34,14 +34,15 @@ require_once 'include/functions_groups.php';
 require_once 'include/functions_io.php';
 
 // Parse parameters.
-$new_msg = get_parameter('new_msg', 0);
-$dst_user = get_parameter('dst_user');
-$dst_group = get_parameter('dst_group');
-$subject = get_parameter('subject', '');
-$message = get_parameter('message');
-$read_message = get_parameter('read_message', 0);
-$reply = get_parameter('reply', 0);
-$show_sent = get_parameter('show_sent', 0);
+$send_mes     = (bool) get_parameter('send_mes', false);
+$new_msg      = (string) get_parameter('new_msg');
+$dst_user     = get_parameter('dst_user');
+$dst_group    = get_parameter('dst_group');
+$subject      = (string) get_parameter('subject');
+$message      = (string) get_parameter('message');
+$read_message = (bool) get_parameter('read_message', false);
+$reply        = (bool) get_parameter('reply', false);
+$show_sent    = get_parameter('show_sent', 0);
 
 $buttons['message_list'] = [
     'active' => false,
@@ -92,7 +93,7 @@ ui_print_page_header(
 // Read a message.
 if ($read_message) {
     $message_id = (int) get_parameter('id_message');
-    if ($show_sent) {
+    if ((bool) $show_sent === true) {
         $message = messages_get_message_sent($message_id);
     } else {
         $message = messages_get_message($message_id);
@@ -196,26 +197,31 @@ if ($read_message) {
     return;
 }
 
-// Create message (destination user).
-if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [$dst_user],
-        [],
-        $subject,
-        $message
-    );
+if ($send_mes === true) {
+    if (empty($dst_user) === true && empty($dst_group) === true) {
+        // The user or group must be selected for send the message.
+        ui_print_error_message(__('User or group must be selected.'));
+    } else if ((bool) $reply === false) {
+        // Create message (destination user).
+        $return = messages_create_message(
+            $config['id_user'],
+            [$dst_user],
+            [],
+            $subject,
+            $message
+        );
 
-    $user_name = get_user_fullname($dst_user);
-    if (!$user_name) {
-        $user_name = $dst_user;
+        $user_name = get_user_fullname($dst_user);
+        if (empty($user_name) === true) {
+            $user_name = $dst_user;
+        }
+
+        ui_print_result_message(
+            $return,
+            __('Message successfully sent to user %s', $user_name),
+            __('Error sending message to user %s', $user_name)
+        );
     }
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent to user %s', $user_name),
-        __('Error sending message to user %s', $user_name)
-    );
 }
 
 // Message creation form.
@@ -230,11 +236,7 @@ $table->data = [];
 
 $table->data[0][0] = __('Sender');
 
-if (!empty($own_info['fullname'])) {
-    $table->data[0][1] = $own_info['fullname'];
-} else {
-    $table->data[0][1] = $config['id_user'];
-}
+$table->data[0][1] = (empty($own_info['fullname']) === false) ? $own_info['fullname'] : $config['id_user'];
 
 $table->data[1][0] = __('Destination');
 
@@ -245,7 +247,7 @@ $is_admin = (bool) db_get_value(
     $config['id_user']
 );
 
-if ($is_admin) {
+if ($is_admin === true) {
     $users_full = db_get_all_rows_filter(
         'tusuario',
         [],
@@ -264,24 +266,20 @@ if ($is_admin) {
 
 $users = [];
 foreach ($users_full as $user_id => $user_info) {
-    $users[$user_info['id_user']] = $user_info['fullname'];
+    $users[$user_info['id_user']] = (empty($user_info['fullname']) === true) ? $user_info['id_user'] : $user_info['fullname'];
 }
 
 // Check if the user to reply is in the list, if not add reply user.
 if ($reply) {
-    if (!array_key_exists($dst_user, $users)) {
+    if (array_key_exists($dst_user, $users) === false) {
         // Add the user to reply.
         $user_reply = db_get_row('tusuario', 'id_user', $dst_user);
         $users[$user_reply['id_user']] = $user_reply['fullname'];
     }
 }
 
-
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-    $return_all_groups = true;
-} else {
-    $return_all_groups = false;
-}
+$return_all_groups = ((bool) $own_info['is_admin'] === true
+|| check_acl($config['id_user'], 0, 'PM') === true);
 
 $groups = users_get_groups($config['id_user'], 'AR');
 // Get a list of all groups.
@@ -294,21 +292,26 @@ $table->data[1][1] = html_print_select(
     false,
     true,
     false,
-    '',
-    false
+    ''
 );
 $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-$table->data[1][1] .= '<div class="w250px inline">'.html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    $return_all_groups,
-    'dst_group',
-    $dst_group,
-    '',
-    __('Select group'),
-    '',
+$table->data[1][1] .= html_print_div(
+    [
+        'class'   => 'w250px inline',
+        'content' => html_print_select_groups(
+            $config['id_user'],
+            'AR',
+            $return_all_groups,
+            'dst_group',
+            $dst_group,
+            '',
+            __('Select group'),
+            '',
+            true
+        ),
+    ],
     true
-).'</div>';
+);
 
 $table->data[2][0] = __('Subject');
 $table->data[2][1] = html_print_input_text(
@@ -331,14 +334,21 @@ $table->data[3][1] = html_print_textarea(
 );
 
 echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
+// Print the main table.
 html_print_table($table);
+// Print the action buttons section.
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'style'   => 'width: '.$table->width,
+        'content' => html_print_submit_button(
+            __('Send message'),
+            'send_mes',
+            false,
+            'class="sub wand"',
+            true
+        ),
+    ]
+);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(
-        __('Send message'),
-        'send_mes',
-        false,
-        'class="sub wand"'
-    );
-    echo '</form>';
-    echo '</div>';
+echo '</form>';

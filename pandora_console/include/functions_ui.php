@@ -5451,15 +5451,23 @@ function ui_print_agent_autocomplete_input($parameters)
 				return;
 			}
 			
-			if ('.((int) $check_only_empty_javascript_on_blur_function).') {
-				return
-			}
-			
-			
 			if (select_item_click) {
+                select_item_click = 0;
+                $("#'.$input_id.'")
+                .css("background",
+                    "url(\"'.$icon_image.'\") right center no-repeat");
 				return;
-			}
-			
+			} else {
+                // Clear selectbox if item is not selected.
+                $("#'.$selectbox_id.'").empty();
+                $("#'.$selectbox_id.'").append($("<option value=0>'.__('Select an Agent first').'</option>"));
+                $("#'.$selectbox_id.'").attr("disabled", "disabled");
+                // Not allow continue on blur .
+                if ('.((int) $check_only_empty_javascript_on_blur_function).') {
+                    return
+                }
+            }
+
 			//Set loading
 			$("#'.$input_id.'")
 				.css("background",
@@ -5533,7 +5541,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						if ('.((int) !empty($javascript_function_action_after_select_js_call)).') {
 							'.$javascript_function_action_after_select_js_call.'
 						}
-						
+
 						//Set icon
 						$("#'.$input_id.'")
 							.css("background",

@@ -3335,6 +3335,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                 $params['javascript_is_function_select'] = true;
                                 $params['selectbox_id'] = 'id_agent_module_sla';
                                 $params['add_none_module'] = false;
+                                $params['check_only_empty_javascript_on_blur_function'] = true;
                                 if ($meta) {
                                     $params['use_input_id_server'] = true;
                                     $params['input_id_server_id'] = 'hidden-id_server';
@@ -4733,8 +4734,10 @@ function addSLARow() {
     var serviceId = $("select#id_service>option:selected").val();
     var serviceName = $("select#id_service>option:selected").text();
 
-    if (((idAgent != '') && (slaMin != '') && (slaMax != '')
-        && (slaLimit != '')) || serviceId != '') {
+    if ((((idAgent != '') && (idAgent > 0))
+        && ((idModule != '') && (idModule > 0)))
+        || serviceId != null)
+    {
             if (nameAgent != '') {
                 //Truncate nameAgent
                 var params = [];

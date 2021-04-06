@@ -36,6 +36,7 @@ define('DEBUG', 0);
 define('VERBOSE', 0);
 
 // TESTING THE UPDATE MANAGER.
+enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];

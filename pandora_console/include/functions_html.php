@@ -2136,7 +2136,7 @@ function html_print_input_text_extended(
         'list',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
 
     if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
@@ -2406,7 +2406,7 @@ function html_print_input_text(
     $function='',
     $class='',
     $onChange='',
-    $autocomplete='',
+    $autocomplete='off',
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
@@ -2445,10 +2445,6 @@ function html_print_input_text(
         $attr['onkeyup'] = $onKeyUp;
     }
 
-    if ($autocomplete !== '') {
-        $attr['autocomplete'] = $autocomplete;
-    }
-
     if ($autofocus === true) {
         $attr['autofocus'] = $autofocus;
     }
@@ -2474,7 +2470,7 @@ function html_print_input_text(
         $return,
         false,
         $function,
-        'off',
+        $autocomplete,
         $disabled
     );
 }
@@ -2544,6 +2540,10 @@ function html_print_input_email(array $settings):string
                 || $settings['size'] === 0
             ) {
                 $settings['size'] = 255;
+            }
+
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -2630,6 +2630,10 @@ function html_print_input_number(array $settings):string
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
                 $settings['maxlength'] = 255;
+            }
+
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -4420,7 +4424,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
                 ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),

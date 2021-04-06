@@ -3209,7 +3209,7 @@ if ($enterpriseEnable) {
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View report'),

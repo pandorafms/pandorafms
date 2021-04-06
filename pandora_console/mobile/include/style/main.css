@@ -18,6 +18,14 @@ body {
   font-size: 10px !important;
 }
 
+.center {
+  text-align: center;
+}
+
+.invisible {
+  display: none;
+}
+
 .ui-header .ui-title {
   font-size: 14px !important;
 }

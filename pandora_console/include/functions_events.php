@@ -5152,7 +5152,8 @@ function events_page_comments($event, $ajax=false)
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" class="w98p">';
+        $event['evento'] = io_safe_output($event['evento']);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">';
         $comments_form .= html_print_textarea(
             'comment',
             3,

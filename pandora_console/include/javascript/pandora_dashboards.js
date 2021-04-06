@@ -304,7 +304,7 @@ function initialiceLayout(data) {
       },
       dataType: "html",
       success: function(data) {
-        console.log(data);
+        return data;
       },
       error: function(error) {
         console.error(error);

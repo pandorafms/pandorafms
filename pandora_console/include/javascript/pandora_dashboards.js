@@ -782,7 +782,8 @@ function dashboardLoadNetworkMap(settings) {
       auth_class: settings.auth_class,
       auth_hash: settings.auth_hash,
       id_user: settings.id_user,
-      ignore_acl: 1
+      ignore_acl: 1,
+      node: settings.node
     },
     dataType: "html",
     success: function(data) {

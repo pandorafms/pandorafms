@@ -22,15 +22,30 @@ function include_javascript_d3($return=false)
         $is_include_javascript = true;
 
         $output .= '<script type="text/javascript" src="';
-        $output .= ui_get_full_url('/include/javascript/d3.3.5.14.js');
+        $output .= ui_get_full_url(
+            'include/javascript/d3.3.5.14.js',
+            false,
+            false,
+            false
+        );
         $output .= '" charset="utf-8"></script>';
 
         $output .= '<script type="text/javascript" src="';
-        $output .= ui_get_full_url('/include/graphs/bullet.js');
+        $output .= ui_get_full_url(
+            'include/graphs/bullet.js',
+            false,
+            false,
+            false
+        );
         $output .= '" charset="utf-8"></script>';
 
         $output .= '<script type="text/javascript" src="';
-        $output .= ui_get_full_url('/include/graphs/pandora.d3.js');
+        $output .= ui_get_full_url(
+            'include/graphs/pandora.d3.js',
+            false,
+            false,
+            false
+        );
         $output .= '" charset="utf-8"></script>';
     }
 

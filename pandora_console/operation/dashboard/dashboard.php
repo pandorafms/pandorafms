@@ -34,7 +34,7 @@ require $config['homedir'].'/vendor/autoload.php';
 use PandoraFMS\Dashboard\Manager;
 
 if ((bool) is_metaconsole() === true) {
-    ui_require_css_file('meta_dashboards.css');
+    ui_require_css_file('meta_dashboards');
 }
 
 $ajaxPage = 'operation/dashboard/dashboard';

@@ -6374,6 +6374,136 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
 
 
 /**
+ * Validate an alert
+ *
+ * @param  string $id1    Alert template name (eg. 'Warning condition')
+ * @param  string $trash1 Do nnot use.
+ * @param  array  $other  [1] id/name agent.
+ *                       [2] id/name module
+ *                       [3] Use agent/module alias.
+ * @param  string $trash2 Do not use
+ * @return void
+ */
+function api_set_validate_alert($id1, $trash1, $other, $trash2)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'LW')) {
+        returnError('forbidden');
+        return;
+    }
+
+    if ($id1 === '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_template cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] == '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_agent cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][1] == '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_module cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][2] == 1) {
+        $use_alias = true;
+    }
+
+    $values = [
+        'alert_name'      => $id1,
+        'id_agent'        => $other['data'][0],
+        'id_agent_module' => $other['data'][1],
+    ];
+
+    if ($use_alias === true) {
+        $id_agents = agents_get_agent_id_by_alias($values['id_agent']);
+
+        foreach ($id_agents as $id) {
+            $values['id_agent'] = $id['id_agente'];
+            $values['id_agent_module'] = db_get_value_filter(
+                'id_agente_modulo as id_module',
+                'tagente_modulo',
+                [
+                    'id_agente' => $values['id_agent'],
+                    'nombre'    => $values['id_agent_module'],
+                ]
+            );
+
+            $id_template = db_get_value_filter(
+                'id as id_template',
+                'talert_templates',
+                [
+                    'name' => $values['alert_name'],
+                ]
+            );
+
+             // Get alert id.
+            $id_alert = db_get_value_filter(
+                'id as id_alert',
+                'talert_template_modules',
+                [
+                    'id_agent_module'   => $values['id_agent_module'],
+                    'id_alert_template' => $id_template,
+                ]
+            );
+        }
+
+        $result = alerts_validate_alert_agent_module($id_alert);
+    } else {
+        $id_template = db_get_value_filter(
+            'id as id_template',
+            'talert_templates',
+            [
+                'name' => $values['alert_name'],
+            ]
+        );
+
+        // Get alert id.
+        $id_alert = db_get_value_filter(
+            'id as id_alert',
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $values['id_agent_module'],
+                'id_alert_template' => $id_template,
+            ]
+        );
+
+        if ($id_alert === false) {
+            returnError(
+                'error_validate_alert',
+                __('Error validating alert. Specified alert does not exist.')
+            );
+            return;
+        }
+
+        $result = alerts_validate_alert_agent_module($id_alert);
+    }
+
+    if ($result) {
+        returnData('string', ['type' => 'string', 'data' => 'Alert succesfully validated']);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => __('Error validating alert')]);
+    }
+}
+
+
+/**
  * Validate all alerts. And return a message with the result of the operation.
  *
  * @param string Don't use.

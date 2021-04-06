@@ -1828,9 +1828,8 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
-
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
     }
@@ -1924,7 +1923,7 @@ function reporting_event_report_group(
         $filter_event_filter_exclude
     );
 
-    if (empty($data)) {
+    if (empty($data) === true) {
         $return['failed'] = __('No events');
     } else {
         $return['data'] = array_reverse($data);
@@ -1952,10 +1951,9 @@ function reporting_event_report_group(
     $return['chart']['by_criticity'] = null;
     $return['chart']['validated_vs_unvalidated'] = null;
     $server_name = $content['server_name'];
-    if (is_metaconsole() && $server_name != '') {
+    $metaconsole_dbtable = false;
+    if (is_metaconsole() === true && empty($server_name) === true) {
         $metaconsole_dbtable = true;
-    } else {
-        $metaconsole_dbtable = false;
     }
 
     if ($event_graph_by_agent) {
@@ -2065,11 +2063,11 @@ function reporting_event_report_group(
         );
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
-    // total_events.
+    // Total events.
     if ($return['data'] != '') {
         $return['total_events'] = count($return['data']);
     } else {

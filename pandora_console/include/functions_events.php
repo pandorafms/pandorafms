@@ -3161,7 +3161,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() && $id_server) ? true : false,
+            (is_metaconsole() === true && $id_server === false) ? true : false,
             $history
         );
     }
@@ -5337,16 +5337,22 @@ function events_get_count_events_by_agent(
 
     $tagente = 'tagente';
     $tevento = 'tevento';
+    $field_type = 'ta.id_agente';
+    if ($dbmeta === true) {
+        $tagente = 'tmetaconsole_agent';
+        $tevento = 'tmetaconsole_event';
+        $field_type = 'ta.id_tagente';
+    }
 
     $sql = sprintf(
-        'SELECT 
+        'SELECT
           ta.id_agente,
           ta.alias as agent_name,
           count(*) as count
         FROM %s te
         %s
         INNER JOIN %s ta
-            ON te.id_agente = ta.id_agente
+            ON te.id_agente = %s
         INNER JOIN tgrupo tg
             ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
             OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))
@@ -5355,6 +5361,7 @@ function events_get_count_events_by_agent(
         $tevento,
         events_get_secondary_groups_left_join($tevento),
         $tagente,
+        $field_type,
         implode(',', $id_group),
         implode(',', $id_group),
         $datelimit,
@@ -5412,6 +5419,9 @@ function events_get_count_events_validated_by_user(
 ) {
     global $config;
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     // Group.
     $tgroup_join = '';
@@ -5434,6 +5444,7 @@ function events_get_count_events_validated_by_user(
         );
     }
 
+    $sql_filter = '';
     if (!empty($filter['id_agent'])) {
         $sql_filter .= sprintf(' AND id_agente = %d ', $filter['id_agent']);
     }
@@ -5608,6 +5619,9 @@ function events_get_count_events_by_criticity(
     global $config;
 
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     $sql_filter = '';
     $tgroup_join = '';
@@ -5795,6 +5809,9 @@ function events_get_count_events_validated(
 ) {
     global $config;
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     // Group.
     $sql_filter = '';

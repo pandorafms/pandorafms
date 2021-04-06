@@ -65,14 +65,41 @@ function get_dbconnection(array $setup)
 }
 
 
-function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $critical=true, $charset=null)
-{
+/**
+ * Connect bbdd.
+ *
+ * @param string  $host     Host.
+ * @param string  $db       Db.
+ * @param string  $user     User.
+ * @param string  $pass     Pass.
+ * @param string  $port     Port.
+ * @param boolean $critical Critical.
+ * @param string  $charset  Charset.
+ *
+ * @return mysqli|false
+ */
+function db_connect(
+    $host=null,
+    $db=null,
+    $user=null,
+    $pass=null,
+    $port=null,
+    $critical=true,
+    $charset=null
+) {
     global $config;
     static $error = 0;
 
     switch ($config['dbtype']) {
         case 'mysql':
-            $return = mysql_connect_db($host, $db, $user, $pass, $port, $charset);
+            $return = mysql_connect_db(
+                $host,
+                $db,
+                $user,
+                $pass,
+                $port,
+                $charset
+            );
         break;
 
         case 'postgresql':
@@ -85,9 +112,10 @@ function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $c
 
         default:
             $return = false;
+        break;
     }
 
-    // Something went wrong
+    // Something went wrong.
     if ($return === false) {
         if ($critical) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
@@ -110,9 +138,12 @@ function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $c
             include $config['homedir'].'../general/error_screen.php';
             exit;
         } else if ($error == 0) {
-            // Display the error once even if multiple connection attempts are made
+            // Display the error once even if multiple
+            // connection attempts are made.
             $error = 1;
-            ui_print_error_message(__('Error connecting to database %s at %s.', $db, $host));
+            ui_print_error_message(
+                __('Error connecting to database %s at %s.', $db, $host)
+            );
         }
     }
 

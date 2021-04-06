@@ -173,12 +173,21 @@ function alerts_get_event_status_group($idGroup, $type='alert_fired', $query='AN
         $idAgents = array_values($agents);
     }
 
-    $result = db_get_all_rows_sql(
+    $sql = sprintf(
         'SELECT id_evento
-		FROM tevento
-		WHERE estado = 0 AND id_agente IN (0,'.implode(',', $idAgents).') '.$typeWhere.$query.'
-		ORDER BY id_evento DESC LIMIT 1'
+        FROM tevento
+        WHERE estado = 0
+            AND id_agente IN (0, %s)
+            %s
+            %s
+        ORDER BY id_evento DESC
+        LIMIT 1',
+        implode(',', $idAgents),
+        $typeWhere,
+        $query
     );
+
+    $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
         return false;

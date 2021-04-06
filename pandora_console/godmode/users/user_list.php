@@ -591,10 +591,10 @@ foreach ($info as $user_id => $user_info) {
             $data[4] .= '<div class="text_end">';
         foreach ($user_profiles as $row) {
             if ($total_profile <= 5) {
-                $data[4] .= "<div class='left'>";
+                $data[4] .= "<div class='float-left'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
-                $data[4] .= "<div class='left pdd_l_5px'>";
+                $data[4] .= "<div class='float-left pdd_l_5px'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
 

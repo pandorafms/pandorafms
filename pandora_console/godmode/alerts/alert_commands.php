@@ -46,6 +46,8 @@ $create_command = (bool) get_parameter('create_command');
 $delete_command = (bool) get_parameter('delete_command');
 $copy_command = (bool) get_parameter('copy_command');
 
+$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands';
+
 if (is_ajax()) {
     $get_alert_command = (bool) get_parameter('get_alert_command');
     if ($get_alert_command) {
@@ -634,6 +636,12 @@ if ($commands === false) {
     $commands = [];
 }
 
+// Pagination.
+$total_commands = count($commands);
+$offset = (int) get_parameter('offset');
+$limit = (int) $config['block_size'];
+$commands = array_slice($commands, $offset, $limit);
+
 foreach ($commands as $command) {
     $data = [];
 
@@ -678,10 +686,17 @@ foreach ($commands as $command) {
     array_push($table->data, $data);
 }
 
-if (count($table->data) > 0) {
+ui_pagination($total_commands, $url);
+if (isset($data) === true && count($table->data) > 0) {
     html_print_table($table);
+    ui_pagination($total_commands, $url, 0, 0, false, 'offset', true, 'pagination-bottom');
 } else {
-    ui_print_info_message(['no_close' => true, 'message' => __('No alert commands configured') ]);
+    ui_print_info_message(
+        [
+            'no_close' => true,
+            'message'  => __('No alert commands configured'),
+        ]
+    );
 }
 
 if ($is_central_policies_on_node === false && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {

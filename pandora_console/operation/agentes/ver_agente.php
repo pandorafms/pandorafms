@@ -163,7 +163,9 @@ if (is_ajax()) {
             // Add_alert_bulk_op.
             $cluster_mode,
             // Force_serialized.
-            false
+            false,
+            // Meta fields.
+            (bool) is_metaconsole()
         );
 
         if (empty($agents)) {
@@ -192,7 +194,93 @@ if (is_ajax()) {
         $id_agents = get_parameter('id_agents');
         $selection = get_parameter('selection');
 
-        select_modules_for_agent_group($id_group, $id_agents, $selection);
+        if ((bool) is_metaconsole() === true) {
+            if (count($id_agents) > 0) {
+                $rows = db_get_all_rows_sql(
+                    sprintf(
+                        'SELECT `id_agente`, `id_tagente`, `id_tmetaconsole_setup`
+                        FROM `tmetaconsole_agent`
+                        WHERE `id_agente` IN (%s)',
+                        implode(',', $id_agents)
+                    )
+                );
+            } else {
+                $rows = [];
+            }
+
+            $agents = array_reduce(
+                $rows,
+                function ($carry, $item) {
+                    if ($carry[$item['id_tmetaconsole_setup']]  === null) {
+                        $carry[$item['id_tmetaconsole_setup']] = [];
+                    }
+
+                    $carry[$item['id_tmetaconsole_setup']][] = $item['id_tagente'];
+                    return $carry;
+                },
+                []
+            );
+
+            $modules = [];
+
+            foreach ($agents as $tserver => $id_agents) {
+                if (metaconsole_connect(null, $tserver) == NOERR) {
+                    $modules[$tserver] = select_modules_for_agent_group(
+                        $id_group,
+                        $id_agents,
+                        $selection,
+                        false,
+                        false,
+                        true
+                    );
+
+                    metaconsole_restore_db();
+                }
+            }
+
+
+            if (!$selection) {
+                // Common modules.
+                $final_modules = [];
+                $nodes_consulted = count($modules);
+
+                foreach ($modules as $tserver => $mods) {
+                    foreach ($mods as $module) {
+                        if ($final_modules[$module['nombre']] === null) {
+                            $final_modules[$module['nombre']] = 0;
+                        }
+
+                        $final_modules[$module['nombre']]++;
+                    }
+                }
+
+                $modules = [];
+                $i = 1;
+                foreach ($final_modules as $module_name => $occurrences) {
+                    if ($occurrences === $nodes_consulted) {
+                        // Module already present in ALL nodes.
+                        $modules[] = [
+                            'id_agente_modulo' => ($i++),
+                            'nombre'           => $module_name,
+                        ];
+                    }
+                }
+            } else {
+                // All modules.
+                $modules = array_reduce(
+                    $modules[$tserver],
+                    function ($carry, $item) {
+                        $carry[] = $item;
+                        return $carry;
+                    },
+                    []
+                );
+            }
+
+            echo json_encode($modules);
+        } else {
+            select_modules_for_agent_group($id_group, $id_agents, $selection);
+        }
     }
 
     if ($get_modules_group_value_name_json) {

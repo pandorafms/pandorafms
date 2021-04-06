@@ -1351,7 +1351,29 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= '<div>';
     // Agent.
-    $agents = agents_get_group_agents($data['mGroup']);
+    $agents = agents_get_group_agents(
+        // Id_group.
+        $data['mGroup'],
+        // Search.
+        false,
+        // Case.
+        'lower',
+        // NoACL.
+        false,
+        // ChildGroups.
+        false,
+        // Serialized.
+        false,
+        // Separator.
+        '|',
+        // Add_alert_bulk_op.
+        false,
+        // Force_serialized.
+        false,
+        // Meta_fields.
+        $data['mMetaFields']
+    );
+
     if ((empty($agents)) === true || $agents == -1) {
         $agents = [];
     }

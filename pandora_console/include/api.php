@@ -312,7 +312,7 @@ if ($correctLogin) {
 }
 
 // Logout.
-if (session_status() === PHP_SESSION_ACTIVE) {
+if (session_status() !== PHP_SESSION_DISABLED) {
     $_SESSION = [];
     // Could give a warning if no session file is created. Ignore.
     @session_destroy();

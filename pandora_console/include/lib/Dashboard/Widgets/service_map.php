@@ -254,6 +254,15 @@ class ServiceMapWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $services_res = services_get_services();
+
+        // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
+        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
+        if ($values['serviceId'] !== null && !in_array($values['serviceId'], array_column($services_res, 'id'))) {
+            $selected_service = db_get_row('tservice', 'id', $values['serviceId']);
+
+            $services_res[] = $selected_service;
+        }
+
         $services = [0 => __('None')];
         if ($services_res !== false) {
             $fields = array_reduce(

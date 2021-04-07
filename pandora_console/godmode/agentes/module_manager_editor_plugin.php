@@ -71,7 +71,7 @@ if (!empty($id_plugin)) {
     $preload = '';
 }
 
-$data[2] = '<span style="font-weight: normal;" id="plugin_description">'.$preload.'</span>';
+$data[2] = '<span class="normal" id="plugin_description">'.$preload.'</span>';
 
 push_table_simple($data, 'plugin_1');
 

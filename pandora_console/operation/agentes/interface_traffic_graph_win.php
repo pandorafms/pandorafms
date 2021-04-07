@@ -31,8 +31,6 @@ require_once $config['homedir'].'/include/auth/mysql.php';
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
-require_once $config['homedir'].'/include/functions_graph.php';
-require_once $config['homedir'].'/include/functions_custom_graphs.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
@@ -45,7 +43,7 @@ $params = json_decode($params_json, true);
 
 // Metaconsole connection to the node.
 $server_id = (int) (isset($params['server']) ? $params['server'] : 0);
-if ($config['metaconsole'] && empty($server_id) === false) {
+if (is_metaconsole() === true && empty($server_id) === false) {
     $server = metaconsole_get_connection_by_id($server_id);
 
     // Error connecting.
@@ -113,7 +111,7 @@ require_once $config['homedir'].'/include/graphs/functions_flot.php';
     -->
     </script>
 </head>
-<body style='background:#ffffff;'>
+<body class='bg_white'>
 <?php
 // ACL.
 $all_groups = agents_get_all_groups_agent($agent_id);
@@ -268,28 +266,57 @@ $table->data[] = $data;
 $table->rowclass[] = '';
 
 $form_table = html_print_table($table, true);
-$form_table .= '<div style="width:100%; text-align:right;">'.html_print_submit_button(
+$form_table .= '<div class="w100p right right_align">';
+$form_table .= html_print_submit_button(
     __('Reload'),
     'submit',
     false,
     'class="sub upd"',
     true
-).'</div>';
+);
+$form_table .= '</div>';
 
 
 // Menu.
-$menu_form = "<form method='get' action='interface_traffic_graph_win.php' style='margin-top: 10px;'>".html_print_input_hidden('params', base64_encode($params_json), true);
+$menu_form = "<form method='get' action='interface_traffic_graph_win.php' class='mrgn_top-10px'>".html_print_input_hidden('params', base64_encode($params_json), true);
 
 if (empty($server_id) === false) {
     $menu_form .= html_print_input_hidden('server', $server_id, true);
 }
 
+$menu_form .= '<div class="module_graph_menu_dropdown">';
+$menu_form .= '<div id="module_graph_menu_header" class="module_graph_menu_header">';
+$menu_form .= html_print_image(
+    'images/arrow_down_green.png',
+    true,
+    [
+        'class' => 'module_graph_menu_arrow',
+        'float' => 'left',
+    ],
+    false,
+    false,
+    true
+);
+$menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
+$menu_form .= '<b>'.__('Graph configuration menu').'</b>';
+$menu_form .= ui_print_help_tip(
+    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+    true
+);
+$menu_form .= '</span>';
+$menu_form .= '</div>';
+$menu_form .= '<div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">';
+$menu_form .= $form_table;
+$menu_form .= '</div>';
+$menu_form .= '</div>';
+$menu_form .= '</form>';
+
 echo $menu_form;
 echo '<div class="module_graph_menu_dropdown">
         <div id="module_graph_menu_header" class="module_graph_menu_header">
             '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-            <span style="flex: 2;">'.__('Graph configuration menu').'</span></div>
-        <div class="module_graph_menu_content module_graph_menu_content_closed" style="display:none;">'.$form_table.'</div>
+            <span class="flex_2">'.__('Graph configuration menu').'</span></div>
+        <div class="module_graph_menu_content module_graph_menu_content_closed invisible" >'.$form_table.'</div>
     </div>';
 echo '</form>';
 
@@ -303,7 +330,7 @@ html_print_div(
 );
 
 // Graph.
-echo '<div id="stat-win-interface-graph">';
+$output = '<div id="stat-win-interface-graph">';
 
 $height = 280;
 $width  = '90%';
@@ -320,8 +347,8 @@ $params = [
     'zoom'      => $zoom,
 ];
 
-if (is_metaconsole()) {
-    $params['id_server'] = $server_id;
+if (is_metaconsole() === true) {
+    $params['server_id'] = $server_id;
 }
 
 if ($config['type_interface_charts'] == 'line') {
@@ -340,13 +367,13 @@ $params_combined = [
     'stacked'        => $stacked,
 ];
 
-graphic_combined_module(
-    array_values($interface_traffic_modules),
-    $params,
-    $params_combined
-);
+$modules = array_values($interface_traffic_modules);
+$output .= '<div id="stat-win-spinner" class="stat-win-spinner">';
+$output .= html_print_image('images/spinner_charts.gif', true);
+$output .= '</div>';
 
-echo '</div>';
+$output .= '</div>';
+echo $output;
 ?>
 
     </body>
@@ -362,6 +389,10 @@ ui_require_jquery_file(
     true
 );
 ui_include_time_picker(true);
+
+if (is_metaconsole() === true && empty($server_id) === false) {
+    metaconsole_restore_db();
+}
 ?>
 <script>
     var show_overview = false;
@@ -370,6 +401,19 @@ ui_include_time_picker(true);
     $(document).ready(function() {
         height_window = $(window).height();
         width_window = $(window).width();
+
+        var graph_data = "<?php echo base64_encode(json_encode($params)); ?>";
+        var modules = "<?php echo base64_encode(json_encode($modules)); ?>";
+        var graph_data_combined = "<?php echo base64_encode(json_encode($params_combined)); ?>";
+        var url = "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>";
+        var serverId = "<?php echo $server_id; ?>";
+        get_ajax_modules_interfaces(
+            url,
+            graph_data,
+            serverId,
+            graph_data_combined,
+            modules
+        );
     });
 
     $("*").filter(function() {
@@ -423,4 +467,26 @@ ui_include_time_picker(true);
         }
     });
 
+    function get_ajax_modules_interfaces(url, graph_data, serverId, graph_data_combined, modules) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: "html",
+            data: {
+                page: "include/ajax/module",
+                get_graph_module_interfaces: true,
+                graph_data: graph_data,
+                server_id: serverId,
+                graph_data_combined: graph_data_combined,
+                modules: modules
+            },
+            success: function (data) {
+                $("#stat-win-spinner").hide();
+                $("#stat-win-interface-graph").append(data);
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
 </script>

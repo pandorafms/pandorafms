@@ -2462,7 +2462,7 @@ sub p_decode_json {
 	
 	if ($JSON::VERSION > 2.90) {
 		# Initialize JSON manager.
-		my $json = JSON->new->allow_nonref;
+		my $json = JSON->new->utf8->allow_nonref;
 		$decoded_data = $json->decode($data);
 	} else {
 		$decoded_data = decode_json($data);

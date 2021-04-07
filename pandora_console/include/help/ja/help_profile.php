@@ -10,8 +10,8 @@
 
 <p>以下にコンソールでそれぞれの ACL でどのような権限があるかの一覧を示します。</p>
 
-<table cellpadding=4 cellspacing=0 style='background-color: #f0f0f0;'>
-<tr><th style='background-color: #cacaca'>機能<th style='background-color: #cacaca'>ACL
+<table cellpadding=4 cellspacing=0 class='bg_f0'>
+<tr><th class='bg_caca'>機能<th class='bg_caca'>ACL
 
 <tr><td>エージェントデータ参照 (全てのタブ)<td>AR
 <tr><td>概要表示<td>AR

@@ -10,7 +10,7 @@
 <p>
 不明モジュールの発生にはいくつかのケースがあります。
 </p>
-<ul style="list-style-type: disc; margin-left: 30px;">
+<ul class="list-type-disc mrgn_lft_30px">
     <li><?php echo get_product_name(); ?> サーバがダウンしている場合。それを再起動してくください。なぜダウンしたかを確認するために /var/log/pandora/pandora_server.log をチェックするのを忘れないようにしてください。</li>
     <li>tentacle サーバがダウンしている場合で、リモートサーバにインストールしている <?php echo get_product_name(); ?> からデータを取得できない場合。</li>
     <li>エージェントとサーバの間でネットワークの問題が発生している場合。</li>

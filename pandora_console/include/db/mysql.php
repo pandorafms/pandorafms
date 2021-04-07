@@ -1496,6 +1496,7 @@ function db_run_sql_file($location)
             // Undo results
         }
 
+        $config['db_run_sql_file_error'] = $mysqli->error;
         return false;
     }
 }

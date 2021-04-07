@@ -51,6 +51,7 @@ HTML::printForm(
     [
         'form'   => $form,
         'inputs' => $htmlInputs,
+        'js'     => $js,
     ]
 );
 

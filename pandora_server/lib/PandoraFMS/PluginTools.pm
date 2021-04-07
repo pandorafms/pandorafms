@@ -33,8 +33,8 @@ use base 'Exporter';
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.751";
-my $pandora_build = "210112";
+my $pandora_version = "7.0NG.753";
+my $pandora_build = "210407";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -504,10 +504,20 @@ sub print_agent {
 	# print header
 	$xml .= "<agent_data ";
 
+	my $group_password_specified = 0;
+
 	foreach my $kad (keys %{$agent_data}){
 		no warnings "uninitialized";
 		$xml .= $kad . "='";
 		$xml .= $agent_data->{$kad} . "' ";
+
+		if ($kad eq 'group_password') {
+			$group_password_specified = 1;
+		}
+	}
+
+	if ($group_password_specified == 0 && !empty($config->{'group_password'})) {
+		$xml .= " group_password='".$config->{'group_password'}."' ";
 	}
 
 	$xml .= ">";
@@ -959,7 +969,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 1;
+		exit 0;
 	}
 
 	print_module($conf, {
@@ -968,7 +978,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 1;
+	exit 0;
 }
 
 ################################################################################
@@ -2042,19 +2052,18 @@ sub api_create_group {
 #   -> means $context (v3)
 # 
 #  Configuration hash
-# 
-# 	$snmp{version}
-# 	$snmp{community}
-# 	$snmp{host}
-# 	$snmp{oid}
-# 	$snmp{port}
-#	$snmp{securityName}
-#	$snmp{context
-#	$snmp{securityLevel}
-#	$snmp{authProtocol}
-#	$snmp{authKey}
-#	$snmp{privProtocol}
-#	$snmp{privKey}
+#   $snmp{version}
+#   $snmp{community}
+#   $snmp{host}
+#   $snmp{oid}
+#   $snmp{port}
+#	  $snmp{securityName}
+#	  $snmp{context
+#	  $snmp{securityLevel}
+#	  $snmp{authProtocol}
+#	  $snmp{authKey}
+#	  $snmp{privProtocol}
+#	  $snmp{privKey}
 ################################################################################
 sub snmp_walk {
 	my $snmp = shift;

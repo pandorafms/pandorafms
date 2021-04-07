@@ -1,9 +1,9 @@
-<h1 style='text-align:center;'>関連障害検知抑制</h1>
+<h1 class='center'>関連障害検知抑制</h1>
 <br>
 
 <h2>エージェント関連障害検知抑制</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_agent.png', false); ?>
 </div>
 <br>
@@ -22,7 +22,7 @@
 
 <h2>モジュール関連障害検知抑制</h2>
 <hr>
-<div style='text-align:center;'>
+<div class='center'>
 <?php html_print_image('images/help/cascade_protection_module.png', false); ?>
 <br>
 </div>

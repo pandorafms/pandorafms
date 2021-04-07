@@ -20,10 +20,13 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 enterprise_include_once('include/functions_visual_map.php');
 
-// Retrieve the visual console id
+// Retrieve the visual console id.
 set_unless_defined($idVisualConsole, 0);
-// Set default
+// Set default.
 $idVisualConsole = get_parameter('id_visual_console', $idVisualConsole);
+if (empty($idVisualConsole) === true) {
+    $idVisualConsole = get_parameter('id_visualmap', 0);
+}
 
 if (!defined('METACONSOLE')) {
     $action_name_parameter = 'action';
@@ -85,8 +88,8 @@ else if ($activeTab != 'data' || ($activeTab == 'data' && $action != 'new')) {
 
     // ACL for the existing visual console
     // $vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
-    $vconsole_write = check_acl($config['id_user'], $visualConsole['id_group'], 'VW');
-    $vconsole_manage = check_acl($config['id_user'], $visualConsole['id_group'], 'VM');
+    $vconsole_write = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VW');
+    $vconsole_manage = check_acl_restricted_all($config['id_user'], $visualConsole['id_group'], 'VM');
 } else {
     db_pandora_audit(
         'ACL Violation',
@@ -143,8 +146,8 @@ switch ($activeTab) {
 
                 // ACL for the new visual console
                 // $vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
-                $vconsole_write_new = check_acl($config['id_user'], $idGroup, 'VW');
-                $vconsole_manage_new = check_acl($config['id_user'], $idGroup, 'VM');
+                $vconsole_write_new = check_acl_restricted_all($config['id_user'], $idGroup, 'VW');
+                $vconsole_manage_new = check_acl_restricted_all($config['id_user'], $idGroup, 'VM');
 
                 // The user should have permissions on the new group
                 if (!$vconsole_write_new && !$vconsole_manage_new) {
@@ -757,45 +760,45 @@ $buttons = [];
 
 $buttons['consoles_list'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual consoles list')]).'</a>',
+    'text'   => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr='.$refr.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual consoles list'), 'class' => 'invert_filter']).'</a>',
 ];
 $buttons['public_link'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>',
+    'text'   => '<a href="'.ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&refr='.$refr.'&id_layout='.$idVisualConsole.'&id_user='.$config['id_user']).'">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>',
 ];
 $buttons['data'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data')]).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=data&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
 ];
 $buttons['list_elements'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/list.png', true, ['title' => __('List elements')]).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=list_elements&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/list.png', true, ['title' => __('List elements'), 'class' => 'invert_filter']).'</a>',
 ];
 
 if (enterprise_installed()) {
     $buttons['wizard_services'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard')]).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=wizard_services&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand_services.png', true, ['title' => __('Services wizard'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 
 $buttons['wizard'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard')]).'</a>',
+    'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wand.png', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
 if ($config['legacy_vc']) {
     $buttons['editor'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder')]).'</a>',
+        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder.png', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
     ];
 }
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>',
+    'text'   => '<a href="'.$url_view.'">'.html_print_image('images/eye.png', true, ['title' => __('View'), 'class' => 'invert_filter']).'</a>',
 ];
 
-if ($action == 'new' || $idVisualConsole === false) {
+if ($idVisualConsole === false) {
     $buttons = ['data' => $buttons['data']];
     // Show only the data tab
     // If it is a fail try, reset the values
@@ -822,7 +825,7 @@ if ($statusProcessInDB !== null) {
     echo $statusProcessInDB['message'];
 }
 
-// The source code for PAINT THE PAGE
+// The source code for PAINT THE PAGE.
 switch ($activeTab) {
     case 'wizard':
         include_once $config['homedir'].'/godmode/reporting/visual_console_builder.wizard.php';

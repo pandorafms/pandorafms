@@ -46,7 +46,7 @@ $output = '';
 $output .= '<div id="modal-update-dashboard" style="display:none;"></div>';
 $output .= '<div id="modal-add-widget" style="display:none;"></div>';
 $output .= '<div id="modal-config-widget" style="display:none;"></div>';
-$output .= '<div id="modal-slides-dialog" style="display: none;"></div>';
+$output .= '<div id="modal-slides-dialog" style="display:none;"></div>';
 
 // Layout.
 $output .= '<div class="container-fluid">';

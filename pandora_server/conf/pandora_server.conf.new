@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.751
+# Version 7.0NG.753
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -139,6 +139,9 @@ discoveryserver 1
 
 # Discovery SAP utils (PANDORA FMS ENTERPRISE ONLY)
 # sap_utils /usr/share/pandora_server/util/recon_scripts/SAP
+
+# Discovery Microsoft SQL ODBC driver (PANDORA FMS ENTERPRISE ONLY)
+# mssql_driver ODBC Driver 17 for SQL Server
 
 # pluginserver : 1 or 0. Set to 1 to activate plugin server with this setup
 
@@ -350,7 +353,7 @@ max_log_generation 1
 
 max_queue_files 5000
 
-# Use the XML file last modification time as timestamp.
+# If set to 0, the timestamp attribute in XML data files will be ignored and the system time will be used instead.
 
 # use_xml_timestamp 1
 
@@ -667,10 +670,6 @@ syslog_max 65535
 
 # Address
 # sync_address
-
-# Target LogStash server, to allow Dataserver and SyslogServer store log information in ElasticSearch
-#logstash_host ip
-#logstash_port 10514
 
 # Pandora FMS Database HA Tool execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30

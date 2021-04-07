@@ -33,40 +33,106 @@ global $config;
 require_once $config['homedir'].'/include/functions_events.php';
 
 /**
- * PandoraFMS Group entity.
+ * PandoraFMS event entity.
  */
 class Event extends Entity
 {
 
     /**
-     * List of available ajax methods.
+     * Agent related to this event.
      *
-     * @var array
+     * @var \PandoraFMS\Agent
      */
-    private static $ajaxMethods = [];
+    private $linkedAgent;
+
+    /**
+     * Module related to this event.
+     *
+     * @var \PandoraFMS\Module
+     */
+    private $linkedModule;
 
 
     /**
-     * Builds a PandoraFMS\Group object from a group id.
+     * Builds a PandoraFMS\Event object from given event id.
      *
-     * @param integer $id_group Group Id.
+     * @param integer $event_id Event Id.
      */
-    public function __construct(?int $id_group=null)
+    public function __construct(?int $event_id=null)
     {
         $table = 'tevento';
         if ((bool) \is_metaconsole() === true) {
             $table = 'tmetaconsole_event';
         }
 
-        if ($id_group === 0) {
+        if ($event_id === 0) {
             parent::__construct($table);
-        } else if (is_numeric($id_group) === true) {
-            parent::__construct($table, ['id_grupo' => $id_group]);
+        } else if (is_numeric($event_id) === true) {
+            parent::__construct($table, ['id_evento' => $event_id]);
         } else {
             // Empty skel.
             parent::__construct($table);
         }
 
+        try {
+            if ((bool) \is_metaconsole() === true
+                && $this->server_id() !== null
+            ) {
+                $this->nodeId = $this->server_id();
+            }
+
+            $this->connectNode();
+
+            if ($this->id_agente() !== null) {
+                $this->linkedAgent = new Agent((int) $this->id_agente());
+            }
+
+            if ($this->id_agentmodule() !== null) {
+                $this->linkedModule = new Module((int) $this->id_agentmodule());
+            }
+        } catch (\Exception $e) {
+            // Do not link items if failed to find them.
+            $this->restoreConnection();
+        }
+
+        // Restore if needed.
+        $this->restoreConnection();
+    }
+
+
+    /**
+     * Get/set linked agent.
+     *
+     * @param Agent|null $agent New agent to link.
+     *
+     * @return Agent|null Agent or null if set operation.
+     */
+    public function agent(?Agent $agent=null) : ?Agent
+    {
+        if ($agent === null) {
+            return $this->linkedAgent;
+        }
+
+        $this->linkedAgent = $agent;
+        $this->id_agentmodule($agent->id_agentmodule());
+    }
+
+
+    /**
+     * Get/set linked agent.
+     *
+     * @param Module|null $module New module to link.
+     *
+     * @return Module|null module or null if set operation.
+     */
+    public function module(?Module $module=null) : ?Module
+    {
+        if ($module === null) {
+            return $this->linkedModule;
+        }
+
+        $this->linkedModule = $module;
+        $this->id_agentmodule($module->id_agentmodule());
     }
 
 
@@ -83,7 +149,8 @@ class Event extends Entity
      * @param boolean $return_sql Return sql or execute it.
      * @param string  $having     Having.
      *
-     * @return array|string|falsse Found events or SQL query or error.
+     * @return array|string|false Found events or SQL query or error.
+     * @throws \Exception On error.
      */
     public static function search(
         array $fields,
@@ -121,10 +188,10 @@ class Event extends Entity
         global $config;
 
         if (isset($config['centralized_management']) === true
-            && $config['centralized_management'] > 0
+            && (bool) $config['centralized_management'] === true
         ) {
             throw new \Exception(
-                get_class($this).' error, cannot be modified while centralized management environment.'
+                'error, cannot save in centralized management environment.'
             );
         }
 
@@ -144,32 +211,6 @@ class Event extends Entity
         }
 
         return false;
-    }
-
-
-    /**
-     * Return error message to target.
-     *
-     * @param string $msg Error message.
-     *
-     * @return void
-     */
-    public static function error(string $msg)
-    {
-        echo json_encode(['error' => $msg]);
-    }
-
-
-    /**
-     * Verifies target method is allowed to be called using AJAX call.
-     *
-     * @param string $method Method to be invoked via AJAX.
-     *
-     * @return boolean Available (true), or not (false).
-     */
-    public static function ajaxMethod(string $method):bool
-    {
-        return in_array($method, self::$ajaxMethods) === true;
     }
 
 

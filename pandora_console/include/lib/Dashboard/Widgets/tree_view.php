@@ -344,6 +344,12 @@ class TreeViewWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM')) {
+            $return_all_group = true;
+        }
+
         // Groups.
         $inputs[] = [
             'label'     => __('Groups'),
@@ -354,6 +360,7 @@ class TreeViewWidget extends Widget
                 'privilege'      => 'AR',
                 'selected'       => $values['groupId'],
                 'return'         => true,
+                'returnAllGroup' => $return_all_group,
             ],
         ];
 
@@ -580,6 +587,33 @@ class TreeViewWidget extends Widget
             true
         );
 
+        switch ($tab) {
+            case 'policies':
+                $foundMessage = __('Policies found');
+            break;
+
+            case 'os':
+                $foundMessage = __('Operating systems found');
+            break;
+
+            case 'tag':
+                $foundMessage = __('Tags found');
+            break;
+
+            case 'module_group':
+                $foundMessage = __('Module Groups found');
+            break;
+
+            case 'module':
+                $foundMessage = __('Modules found');
+            break;
+
+            case 'group':
+            default:
+                $foundMessage = __('Groups found');
+            break;
+        }
+
         $settings = [
             'page'         => 'include/ajax/tree.ajax',
             'id_user'      => $config['id_user'],
@@ -600,7 +634,7 @@ class TreeViewWidget extends Widget
             'userLanguage' => get_user_language(),
             'translate'    => [
                 'emptyMessage'  => __('No data found'),
-                'foundMessage'  => 'not',
+                'foundMessage'  => $foundMessage,
                 'total'         => [
                     'agents'  => __('Total agents'),
                     'modules' => __('Total modules'),
@@ -649,7 +683,7 @@ class TreeViewWidget extends Widget
         ];
 
         // Show the modal window of an module.
-        $output .= '<div id="module_details_window" style="display:none;">';
+        $output .= '<div id="module_details_window" class="invisible">';
         $output .= '</div>';
 
         // Script.

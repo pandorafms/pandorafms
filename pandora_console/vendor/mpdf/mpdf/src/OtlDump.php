@@ -1986,7 +1986,7 @@ $MarkAttachmentType = ' . var_export($this->MarkAttachmentType, true) . ';
 			if ($level == 1) {
 				$html .= '<bookmark level="1" content="' . $tag . ' [#' . $i . ']">';
 			}
-			$html .= 'Lookup #' . $i . ' [tag: <span style="color:#000066;">' . $tag . '</span>]</h5>';
+			$html .= 'Lookup #' . $i . ' [tag: <span class="color_006">' . $tag . '</span>]</h5>';
 			$ignore = $this->_getGSUBignoreString($Lookup[$i]['Flag'], $Lookup[$i]['MarkFilteringSet']);
 			if ($ignore) {
 				$html .= '<div class="ignore">Ignoring: ' . $ignore . '</div> ';
@@ -3231,7 +3231,7 @@ $MarkAttachmentType = ' . var_export($this->MarkAttachmentType, true) . ';
 			if ($level == 1) {
 				$html .= '<bookmark level="1" content="' . $tag . ' [#' . $luli . ']">';
 			}
-			$html .= 'Lookup #' . $luli . ' [tag: <span style="color:#000066;">' . $tag . '</span>]</h5>';
+			$html .= 'Lookup #' . $luli . ' [tag: <span class="color_006">' . $tag . '</span>]</h5>';
 			$ignore = $this->_getGSUBignoreString($Lookup[$luli]['Flag'], $Lookup[$luli]['MarkFilteringSet']);
 			if ($ignore) {
 				$html .= '<div class="ignore">Ignoring: ' . $ignore . '</div> ';

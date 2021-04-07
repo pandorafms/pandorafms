@@ -254,7 +254,7 @@ class HTML
      *
      * @return boolean Alowed or not.
      */
-    public function aclMulticheck($access=null)
+    public function aclMulticheck($access=null, $id_group=0)
     {
         global $config;
 
@@ -268,7 +268,7 @@ class HTML
         foreach ($perms as $perm) {
             $allowed = $allowed || (bool) check_acl(
                 $config['id_user'],
-                0,
+                $id_group,
                 $perm
             );
         }
@@ -472,6 +472,11 @@ class HTML
         bool $return=false,
         bool $direct=false
     ) {
+        global $config;
+        if ($config['style'] === 'pandora_black') {
+            $text_color = 'style="color: white"';
+        }
+
         $output = '';
         if ($input['hidden'] == 1) {
             $class = ' hidden';
@@ -488,7 +493,7 @@ class HTML
             $toggle = (bool) $input['toggle'];
 
             if (isset($input['label']) === true) {
-                $output .= '<span>'.$input['label'].'</span>';
+                $output .= '<span '.$text_color.'>'.$input['label'].'</span>';
             }
 
             // Print independent block of inputs.
@@ -559,7 +564,7 @@ class HTML
                 }
 
                 if (isset($input['label']) === true) {
-                    $output .= '<label>'.$input['label'].'</label>';
+                    $output .= '<label '.$text_color.'>'.$input['label'].'</label>';
                 }
 
                 $output .= self::printInput($input['arguments']);
@@ -631,18 +636,18 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    $output .= '<div class="flex mrgn_btn_25px wrap">';
                     if (!isset($input['extra'])) {
-                        $output .= '<div style="width: 50%;">';
+                        $output .= '<div class="w50p">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="display: flex; margin-right:10px;">';
+                        $output .= '<div class="flex mrgn_right_10px">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="margin-right:10px;">';
+                    $output .= '<div class="mrgn_right_10px">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -663,11 +668,11 @@ class HTML
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
                     if (isset($input['extra'])) {
-                        $output .= '<div style="">';
-                        $output .= '<div style="float: left;">';
+                        $output .= '<div  >';
+                        $output .= '<div class="float-left">';
                     } else {
-                        $output .= '<div style="width:50%;">';
-                        $output .= '<div style="float: right;">';
+                        $output .= '<div class="w50p">';
+                        $output .= '<div class="float-right">';
                     }
 
                     $output .= self::printInput($input['arguments']);
@@ -782,8 +787,40 @@ class HTML
         }
 
         if (isset($data['form']) === true) {
-            $output_head .= '<form name="'.$form['name'].'" id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-            $output_head .= '" '.$form['extra'].'>';
+            $output_head .= '<form ';
+            if (isset($form['name']) === true) {
+                $output_head .= 'name="'.$form['name'].'" ';
+            }
+
+            if (isset($form['id']) === true) {
+                $output_head .= 'id="'.$form['id'].'" ';
+            }
+
+            if (isset($form['class']) === true) {
+                $output_head .= 'class="discovery '.$form['class'].'" ';
+            }
+
+            if (isset($form['onsubmit']) === true) {
+                $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
+            }
+
+            if (isset($form['enctype']) === true) {
+                $output_head .= 'enctype="'.$form['enctype'].'" ';
+            }
+
+            if (isset($form['action']) === true) {
+                $output_head .= 'action="'.$form['action'].'" ';
+            }
+
+            if (isset($form['method']) === true) {
+                $output_head .= 'method="'.$form['method'].'" ';
+            }
+
+            if (isset($form['extra']) === true) {
+                $output_head .= $form['extra'];
+            }
+
+            $output_head .= '>';
         }
 
         if ($return === false) {
@@ -893,7 +930,7 @@ class HTML
                     if ($first_block_printed === true) {
                         // If first form block has been placed, then close it before starting a new one.
                         $output .= '</div>';
-                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                        $output .= '<div class="white_box mrgn_top_30px">';
                     } else {
                         $output .= '<div class="white_box">';
                     }

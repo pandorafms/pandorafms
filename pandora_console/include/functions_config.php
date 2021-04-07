@@ -26,7 +26,12 @@
  * ============================================================================
  */
 
- // Config functions.
+// Config functions.
+require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/functions.php';
+enterprise_include_once('include/functions_config.php');
+use PandoraFMS\Core\DBMaintainer;
+use PandoraFMS\Core\Config;
 
 
 /**
@@ -147,6 +152,8 @@ function config_update_config()
     }
 
     $error_update = [];
+    $errors = [];
+    $warnings = [];
 
     $sec2 = get_parameter('sec2');
 
@@ -223,10 +230,6 @@ function config_update_config()
 
                     if (!config_update_value('activate_netflow', (bool) get_parameter('activate_netflow'))) {
                         $error_update[] = __('Enable Netflow');
-                    }
-
-                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
-                        $error_update[] = __('Enable Network Traffic Analyzer');
                     }
 
                     $timezone = (string) get_parameter('timezone');
@@ -1456,24 +1459,37 @@ function config_update_config()
                 break;
 
                 case 'hist_db':
+                    if ($config['dbname'] == get_parameter('history_db_name')
+                        && $config['dbport'] == get_parameter('history_db_port')
+                        && $config['dbhost'] == io_input_password(get_parameter('history_db_host'))
+                    ) {
+                        // Same definition for active and historical database!
+                        // This is a critical error.
+                        $config['error_config_update_config']['correct'] = false;
+                        $config['error_config_update_config']['message'] = __(
+                            'Active and historical database cannot be the same.'
+                        );
+                        return;
+                    } else {
+                        if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
+                            $error_update[] = __('Host');
+                        }
+
+                        if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
+                            $error_update[] = __('Port');
+                        }
+
+                        if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
+                            $error_update[] = __('Database name');
+                        }
+                    }
+
                     if (!config_update_value('history_db_enabled', get_parameter('history_db_enabled'))) {
                         $error_update[] = __('Enable history database');
                     }
 
                     if (!config_update_value('history_event_enabled', get_parameter('history_event_enabled'))) {
                         $error_update[] = __('Enable history event');
-                    }
-
-                    if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
-                        $error_update[] = __('Host');
-                    }
-
-                    if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
-                        $error_update[] = __('Port');
-                    }
-
-                    if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
-                        $error_update[] = __('Database name');
                     }
 
                     if (!config_update_value('history_db_user', get_parameter('history_db_user'))) {
@@ -1515,6 +1531,68 @@ function config_update_config()
                     ) {
                         $error_update[] = __('Delay');
                     }
+
+                    if ((bool) $config['history_db_enabled'] === true) {
+                        $dbm = new DBMaintainer(
+                            [
+                                'host' => $config['history_db_host'],
+                                'port' => $config['history_db_port'],
+                                'name' => $config['history_db_name'],
+                                'user' => $config['history_db_user'],
+                                'pass' => $config['history_db_pass'],
+                            ]
+                        );
+
+                        // Performs several checks and installs if needed.
+                        if ($dbm->checkDatabaseDefinition() === true
+                            && $dbm->isInstalled() === false
+                        ) {
+                            // Target is ready but several tasks are pending.
+                            $dbm->process();
+                        } else if ($dbm->check() !== true) {
+                            $errors[] = $dbm->getLastError();
+                        }
+                    }
+
+                    // Historical configuration tokens (stored in historical db).
+                    if (Config::set(
+                        'days_purge',
+                        get_parameter('history_dbh_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database purge');
+                    }
+
+                    if (Config::set(
+                        'history_partitions_auto',
+                        get_parameter_switch('history_partitions_auto', 0),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database partitions');
+                    }
+
+                    if (Config::set(
+                        'event_purge',
+                        get_parameter('history_dbh_events_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database events purge');
+                    }
+
+                    if (Config::set(
+                        'string_purge',
+                        get_parameter('history_dbh_string_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database string purge');
+                    }
+
+                    // Disable history db in history db.
+                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':
@@ -1564,7 +1642,13 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        $integria_hostname = 'http://'.$integria_hostname;
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 
@@ -1639,12 +1723,12 @@ function config_update_config()
 
                 case 'module_library':
                     $module_library_user = get_parameter('module_library_user');
-                    if ($module_library_user == '' || !config_update_value('module_library_user', $module_library_user)) {
+                    if (!config_update_value('module_library_user', $module_library_user)) {
                         $error_update[] = __('User');
                     }
 
                     $module_library_password = get_parameter('module_library_password');
-                    if ($module_library_password == '' || !config_update_value('module_library_password', $module_library_password)) {
+                    if (!config_update_value('module_library_password', $module_library_password)) {
                         $error_update[] = __('Password');
                     }
                 break;
@@ -1681,6 +1765,14 @@ function config_update_config()
     } else {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = true;
+    }
+
+    if (count($errors) > 0) {
+        $config['error_config_update_config']['errors'] = $errors;
+    }
+
+    if (count($warnings) > 0) {
+        $config['error_config_update_config']['warnings'] = $warnings;
     }
 
     enterprise_include_once('include/functions_policies.php');
@@ -1940,6 +2032,10 @@ function config_process_config()
 
     if (!isset($config['collection_max_size'])) {
         config_update_value('collection_max_size', 1000000);
+    }
+
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
     }
 
     if (!isset($config['event_replication'])) {
@@ -2224,7 +2320,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2240,7 +2336,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo'])) {
@@ -2357,10 +2453,6 @@ function config_process_config()
 
     if (!isset($config['activate_netflow'])) {
         config_update_value('activate_netflow', 0);
-    }
-
-    if (!isset($config['activate_nta'])) {
-        config_update_value('activate_nta', 0);
     }
 
     if (!isset($config['netflow_path'])) {
@@ -3219,7 +3311,7 @@ function get_um_url()
  */
 function config_return_in_bytes($val)
 {
-    $val = trim($val);
+    $val = (int) trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
     switch ($last) {
         // The 'G' modifier is available since PHP 5.1.0.

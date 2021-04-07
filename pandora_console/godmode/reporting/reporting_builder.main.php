@@ -121,16 +121,20 @@ if (users_can_manage_group_all('RW') === true) {
 }
 
 $table->data['group'][1] = '<div class="w290px inline">';
-$table->data['group'][1] .= html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    $return_all_group,
-    'id_group',
-    $idGroupReport,
-    '',
-    '',
-    '',
-    true
+$table->data['group'][1] .= html_print_input(
+    [
+        'type'           => 'select_groups',
+        'id_user'        => $config['id_user'],
+        'privilege'      => 'AR',
+        'returnAllGroup' => $return_all_group,
+        'name'           => 'id_group',
+        'selected'       => $idGroupReport,
+        'script'         => '',
+        'nothing'        => '',
+        'nothing_value'  => '',
+        'return'         => true,
+        'required'       => true,
+    ]
 );
 $table->data['group'][1] .= '</div>';
 

@@ -1,18 +1,31 @@
 <?php
+/**
+ * Events sounds.
+ *
+ * @category   Sounds
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Don't start a session before this import.
-// The session is configured and started inside the config process.
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
 require_once '../../include/functions_db.php';
@@ -20,7 +33,7 @@ require_once '../../include/auth/mysql.php';
 
 global $config;
 
-// Check user
+// Check user.
 check_login();
 $config['id_user'] = $_SESSION['id_usuario'];
 
@@ -29,7 +42,10 @@ $event_w = check_acl($config['id_user'], 0, 'EW');
 $event_m = check_acl($config['id_user'], 0, 'EM');
 $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
 
-if (! check_acl($config['id_user'], 0, 'ER') && ! check_acl($config['id_user'], 0, 'EW') && ! check_acl($config['id_user'], 0, 'EM')) {
+if (check_acl($config['id_user'], 0, 'ER') === false
+    && check_acl($config['id_user'], 0, 'EW') === false
+    && check_acl($config['id_user'], 0, 'EM') === false
+) {
     db_pandora_audit('ACL Violation', 'Trying to access event viewer');
     include 'general/noaccess.php';
 
@@ -49,16 +65,21 @@ echo '<title>'.__('Sound Events').'</title>';
         margin: 0;
         padding: 0;
     }
-    
+
     img {
         border: 0;
     }
 </style>
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+if ($config['style'] === 'pandora_black') {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
+} else {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+}
+
 echo '</head>';
-echo "<body style='background-color: #494949; max-width: 550px; max-height: 400px; margin-top:40px;'>";
+echo "<body class='sound_events'>";
 echo "<h1 class='modalheaderh1'>".__('Sound console').'</h1>';
 
 // Connection lost alert.
@@ -67,45 +88,149 @@ $conn_title = __('Connection with server has been lost');
 $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
+ui_print_message_dialog(
+    $conn_title,
+    $conn_text,
+    'connection',
+    '/images/error_1.png'
+);
 
 $table = new StdClass;
 $table->width = '100%';
-$table->styleTable = 'padding-left:16px; padding-right:16px; padding-top:16px;';
-$table->class = ' ';
+$table->class = 'w16px sound_div_background ';
 $table->size[0] = '10%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
-$table->style[1] = 'font-weight: bold; vertical-align: top;';
-$table->style[2] = 'font-weight: bold; vertical-align: top;';
+$table->rowclass[0] = 'bold_top';
+$table->rowclass[1] = 'bold_top';
+$table->rowclass[2] = 'bold_top';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true, false, true, '', false, 'max-width:200px;').'<br />'.'<br />';
+$table->data[0][1] = html_print_select_groups(
+    false,
+    $access,
+    true,
+    'group',
+    '',
+    'changeGroup();',
+    '',
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'max-width:200px;'
+).'<br /><br />';
 
 $table->data[0][2] = __('Type');
-$table->data[0][3] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();').__('Alert fired').'<br />'.html_print_checkbox('critical', 'critical', true, true, false, 'changeType();').__('Monitor critical').'<br />'.html_print_checkbox('unknown', 'unknown', true, true, false, 'changeType();').__('Monitor unknown').'<br />'.html_print_checkbox('warning', 'warning', true, true, false, 'changeType();').__('Monitor warning').'<br />';
+$table->data[0][3] = html_print_checkbox(
+    'alert_fired',
+    'alert_fired',
+    true,
+    true,
+    false,
+    'changeType();'
+);
+$table->data[0][3] .= __('Alert fired').'<br />';
+$table->data[0][3] .= html_print_checkbox(
+    'critical',
+    'critical',
+    true,
+    true,
+    false,
+    'changeType();'
+);
+$table->data[0][3] .= __('Monitor critical').'<br />';
+$table->data[0][3] .= html_print_checkbox(
+    'unknown',
+    'unknown',
+    true,
+    true,
+    false,
+    'changeType();'
+);
+$table->data[0][3] .= __('Monitor unknown').'<br />';
+$table->data[0][3] .= html_print_checkbox(
+    'warning',
+    'warning',
+    true,
+    true,
+    false,
+    'changeType();'
+);
+$table->data[0][3] .= __('Monitor warning').'<br />';
 
 $table->data[1][0] = __('Agent');
-$table->data[1][1] = html_print_select($agents, 'id_agents[]', true, false, '', '', true, true, '', '', '', 'max-width:200px; height:100px', '', false, '', '', true);
+$table->data[1][1] = html_print_select(
+    $agents,
+    'id_agents[]',
+    true,
+    false,
+    '',
+    '',
+    true,
+    true,
+    '',
+    '',
+    '',
+    'max-width:200px; height:100px',
+    '',
+    false,
+    '',
+    '',
+    true
+);
 
 $table->data[1][2] = __('Event');
-$table->data[1][3] = html_print_textarea('events_fired', 200, 20, '', 'readonly="readonly" style="max-height:100px; background: #ddd; resize:none;"', true);
+$table->data[1][3] = html_print_textarea(
+    'events_fired',
+    200,
+    20,
+    '',
+    'readonly="readonly" style="max-height:100px; resize:none;"',
+    true
+);
 
 html_print_table($table);
 
 $table = new StdClass;
 $table->width = '100%';
-$table->rowstyle[0] = 'text-align:center;';
-$table->styleTable = 'padding-top:16px;padding-bottom:16px;';
-$table->class = ' ';
-$table->bgcolor = 'white';
+$table->class = 'w16px sound_div_background text_center';
 
-$table->data[0][0] = '<a href="javascript: toggleButton();">'.html_print_image('images/play.button.png', true, ['id' => 'button']).'</a>';
+$table->data[0][0] = '<a href="javascript: toggleButton();">';
+$table->data[0][0] .= html_print_image(
+    'images/play.button.png',
+    true,
+    ['id' => 'button']
+);
+$table->data[0][0] .= '</a>';
 
-$table->data[0][1] .= '<a href="javascript: ok();">'.html_print_image('images/ok.button.png', true, ['style' => 'margin-left: 15px;']).'</a>';
+$table->data[0][1] = '<a href="javascript: ok();">';
+$table->data[0][1] .= html_print_image(
+    'images/ok.button.png',
+    true,
+    ['style' => 'margin-left: 15px;']
+);
+$table->data[0][1] .= '</a>';
 
-$table->data[0][2] .= '<a href="javascript: test_sound_button();">'.html_print_image('images/icono_test.png', true, ['id' => 'button_try', 'style' => 'margin-left: 15px;']).'</a>';
+$table->data[0][2] = '<a href="javascript: test_sound_button();">';
+$table->data[0][2] .= html_print_image(
+    'images/icono_test.png',
+    true,
+    [
+        'id'    => 'button_try',
+        'style' => 'margin-left: 15px;',
+    ]
+);
+$table->data[0][2] .= '</a>';
 
-$table->data[0][3] .= html_print_image('images/tick_sound_events.png', true, ['id' => 'button_status', 'style' => 'margin-left: 15px;']);
+$table->data[0][3] = html_print_image(
+    'images/tick_sound_events.png',
+    true,
+    [
+        'id'    => 'button_status',
+        'style' => 'margin-left: 15px;',
+    ]
+);
 
 html_print_table($table);
 ?>
@@ -148,10 +273,12 @@ function changeGroup() {
         },
         function (data) {
             $("#id_agents").empty();
-            
             jQuery.each (data, function (id, value) {
                 if (value != "") {
-                    $("#id_agents").append('<option value="' + id + '">' + value + '</option>');
+                    $("#id_agents")
+                        .append(
+                            '<option value="' + id + '">' + value + '</option>'
+                        );
                 }
             });
         },
@@ -186,14 +313,14 @@ function toggleButton() {
     if (button_play_status == 'pause') {
         $("#button").attr('src', '../../images/play.button.png');
         stopSound();
-        
+
         button_play_status = 'play';
     }
     else {
         $("#button").attr('src', '../../images/pause.button.png');
         forgetPreviousEvents();
         startSound();
-        
+
         button_play_status = 'pause';
     }
 }
@@ -206,9 +333,7 @@ function ok() {
 
 function stopSound() {
     $('audio').remove();
-    
     $('body').css('background', '#494949');
-    
     running = false;
 }
 
@@ -262,13 +387,21 @@ function check_event() {
                     var actual_text = $('#textarea_events_fired').val();
                     if (actual_text == "") {
                         $('#textarea_events_fired').val(data['message'] + "\n");
+                    } else {
+                        $('#textarea_events_fired')
+                            .val(actual_text + "\n" + data['message'] + "\n");
                     }
-                    else {
-                        $('#textarea_events_fired').val(actual_text + "\n" + data['message'] + "\n");
-                    }
-                    $('#button_status').attr('src','../../images/sound_events_console_alert.gif');
+                    $('#button_status')
+                        .attr(
+                            'src','../../images/sound_events_console_alert.gif'
+                        );
                     $('audio').remove();
-                    $('body').append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
+                    if(data['sound'] == '') {
+                        data['sound'] = 'include/sounds/Star_Trek_emergency_simulation.wav';
+                    }
+
+                    $('body')
+                        .append("<audio src='../../" + data['sound'] + "' autoplay='true' hidden='true' loop='true'>");
                 }
             },
             "json"
@@ -277,9 +410,8 @@ function check_event() {
 }
 
 $(document).ready (function () {
-    setInterval("check_event()", (10 * 1000)); //10 seconds between ajax request
-    $("#table1").css("background-color", "#fff");
-    $("#table2").css("background-color", "#fff");
+    //10 seconds between ajax request
+    setInterval("check_event()", (10 * 1000));
 });
 
 </script>

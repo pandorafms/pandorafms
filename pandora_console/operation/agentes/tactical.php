@@ -115,23 +115,28 @@ if (!empty($all_data)) {
     $data['server_sanity'] = format_numeric((100 - $data['module_sanity']), 1);
 }
 
-echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 30em; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<table border=0 class="w100p"><tr>';
+echo '<td class="tactical_left_column" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$bg_color = 'background-color: #222';
+if ($config['style'] !== 'pandora_black') {
+    $bg_color = 'background-color: #fff';
+}
+
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'info_table no-td-borders td-bg-white';
+$table->class = 'info_table no-td-borders';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
 $table->head = [];
 $table->data = [];
-$table->style = [];
+$table->style = [$bg_color];
 
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
-$status = '<table class="status_tactical">';
+$status = '<table class="status_tactical bg_white">';
 foreach ($stats as $stat) {
     $status .= '<tr><td><b>'.$stat['title'].'</b>'.'</td><td>'.$stat['graph'].'</td></tr>';
 }
@@ -175,7 +180,7 @@ ui_toggle(
 
 echo '</td>';
 // Left column
-echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
+echo '<td class="w75p pdd_t_0px" id="rightcolumn">';
 
 // ---------------------------------------------------------------------
 // Last events information
@@ -209,7 +214,7 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
     $out .= '<fieldset class="databox tactical_set" id="total_event_graph">
 			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
     $out .= '</td><td>';

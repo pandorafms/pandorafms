@@ -37,7 +37,10 @@ $output .= '<a href="'.$url.'&'.$normalQuery.'">';
 $output .= html_print_image(
     'images/normal_screen.png',
     true,
-    ['title' => __('Exit fullscreen')]
+    [
+        'title' => __('Exit fullscreen'),
+        'class' => 'invert_filter',
+    ]
 );
 $output .= '</a>';
 $output .= '</div>';

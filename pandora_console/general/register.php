@@ -188,11 +188,16 @@ try {
 
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
-if (!$double_auth_enabled && $config['2FA_all_users'] != ''
+if (isset($config['2FA_all_users']) === false) {
+    $config['2FA_all_users'] = null;
+}
+
+if (!$double_auth_enabled
+    && $config['2FA_all_users'] != ''
     && $config['2Fa_auth'] != '1'
     && $config['double_auth_enabled']
 ) {
-    echo '<div id="doble_auth_window" style="display: none"; >';
+    echo '<div id="doble_auth_window" class="invisible"; >';
     ?>
     <script type="text/javascript">
   var userID = "<?php echo $config['id_user']; ?>";
@@ -234,8 +239,8 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     }
   });
 
-  $("div#doble_auth_window").dialog({
     <?php config_update_value('2Fa_auth', ''); ?>
+  $("div#doble_auth_window").dialog({
     resizable: true,
     draggable: true,
     modal: true,
@@ -247,12 +252,6 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
     width: 500,
     height: 400,
     close: function (event, ui) {
-        
-    <?php
-    if (!$double_auth_enabled) {
-        config_update_value('2Fa_auth', '1');
-    }
-    ?>
       // Abort the ajax request
       if (typeof request != 'undefined'){
         request.abort();
@@ -263,7 +262,11 @@ if (!$double_auth_enabled && $config['2FA_all_users'] != ''
       //document.location.reload();
     }
   })
-    .show();    </script>
+    .show();    
+    // Don't allow close the dialog with X button
+    $('.ui-dialog-titlebar-close').css('display', 'none');
+
+    </script>
     <?php
     echo '</div>';
 }

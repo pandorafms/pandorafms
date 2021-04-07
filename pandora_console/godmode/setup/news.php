@@ -189,10 +189,10 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
     $data[1] .= '</div>';
 
     $data[2] = __('Modal screen').'<br>';
-    $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'style="margin-top: 5px;margin-bottom: 7px;"', true);
+    $data[2] .= html_print_checkbox_extended('modal', 1, $modal, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
 
     $data[3] = __('Expire').'<br>';
-    $data[3] .= html_print_checkbox_extended('expire', 1, $expire, false, '', 'style="margin-top: 5px;margin-bottom: 7px;"', true);
+    $data[3] .= html_print_checkbox_extended('expire', 1, $expire, false, '', 'class="mrgn_top_5 mrg_btt_7"', true);
 
     $data[4] = __('Expiration').'<br>';
     $data[4] .= html_print_input_text('expire_date', $expire_date, '', 12, 10, true).' ';
@@ -287,7 +287,7 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo "<td class='$tdcolor'>".__('No').'</b></td>';
             }
 
-            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a></td></tr>';
+            echo '<td class="'.$tdcolor.' action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a></td></tr>';
         }
 
         echo '</table>';

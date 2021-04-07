@@ -24,6 +24,14 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
+\ui_print_page_header(
+    __('Monitoring').' &raquo; '.__('Clusters'),
+    'images/chart.png',
+    false,
+    '',
+    false
+);
+
 ui_require_css_file('first_task');
 ?>
 <?php
@@ -53,7 +61,7 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
             ?>
         
         <form action='index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&op=new' method="post">
-            <input style="margin-bottom:20px;" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
+            <input type="submit" class="button_task ui_toggle" value="<?php echo __('Create Cluster'); ?>" />
         </form>
         
             <?php

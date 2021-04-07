@@ -31,6 +31,7 @@ require_once 'functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 enterprise_include_once('include/functions_networkmap.php');
+enterprise_include_once('include/functions_metaconsole.php');
 
 // Check if a node descends from a given node
 function networkmap_is_descendant($node, $ascendant, $parents)
@@ -1228,7 +1229,7 @@ function networkmap_get_networkmap($id_networkmap, $filter=false, $fields=false,
  * @param array Extra filter.
  * @param array Fields to get.
  *
- * @return Networkmap with the given id. False if not available or readable.
+ * @return array Networkmap with the given id. False if not available or readable.
  */
 function networkmap_get_networkmaps(
     $id_user=null,
@@ -1243,10 +1244,16 @@ function networkmap_get_networkmaps(
         $id_user = $config['id_user'];
     }
 
-    // Configure filters
+    // Configure filters.
     $where = [];
     $where['type'] = MAP_TYPE_NETWORKMAP;
-    $where['id_group'] = array_keys(users_get_groups($id_user, 'AR', $return_all_group));
+    $where['id_group'] = array_keys(
+        users_get_groups(
+            $id_user,
+            'AR',
+            $return_all_group
+        )
+    );
     if (!empty($type)) {
         $where['subtype'] = $type;
     }
@@ -1256,7 +1263,30 @@ function networkmap_get_networkmaps(
     $where['order'][1]['field'] = 'name';
     $where['order'][1]['order'] = 'ASC';
 
-    $networkmaps_raw = db_get_all_rows_filter('tmap', $where);
+    if ((bool) is_metaconsole() === true) {
+        $servers = metaconsole_get_connection_names();
+        foreach ($servers as $key => $server) {
+            $connection = metaconsole_get_connection($server);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
+
+            $tmp_maps = db_get_all_rows_filter('tmap', $where);
+            if ($tmp_maps !== false) {
+                foreach ($tmp_maps as $g) {
+                    $g['id_t'] = $g['id'];
+                    $g['id'] = $connection['id'].'_'.$g['id'];
+                    $g['name'] = $g['name'].' ('.$connection['server_name'].')';
+                    $networkmaps_raw[] = $g;
+                }
+            }
+
+            metaconsole_restore_db();
+        }
+    } else {
+        $networkmaps_raw = db_get_all_rows_filter('tmap', $where);
+    }
+
     if (empty($networkmaps_raw)) {
         return [];
     }

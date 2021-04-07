@@ -48,6 +48,13 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
     element.className = "events-history";
     element.innerHTML = this.props.html;
 
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      element.style.opacity = "0.2";
+    }
+
     // Hack to execute the JS after the HTML is added to the DOM.
     const scripts = element.getElementsByTagName("script");
     for (let i = 0; i < scripts.length; i++) {

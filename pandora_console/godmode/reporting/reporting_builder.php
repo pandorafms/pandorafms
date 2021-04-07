@@ -141,6 +141,8 @@ require_once $config['homedir'].'/include/functions_reports.php';
 enterprise_include('operation/reporting/custom_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 
+
+
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
     $enterpriseEnable = true;
@@ -515,7 +517,14 @@ switch ($action) {
         $buttons = [
             'list_reports' => [
                 'active' => false,
-                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+                'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
+                    'images/report_list.png',
+                    true,
+                    [
+                        'title' => __('Reports list'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
             ],
         ];
 
@@ -958,14 +967,20 @@ switch ($action) {
                     $data[2] .= html_print_image(
                         'images/html.png',
                         true,
-                        ['title' => __('HTML view')]
+                        [
+                            'title' => __('HTML view'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[2] .= '</a>';
                     $data[3] = '<a href="'.ui_get_full_url(false, false, false, false).'ajax.php?page='.$config['homedir'].'/operation/reporting/reporting_xml&id='.$report['id_report'].'">';
                     $data[3] .= html_print_image(
                         'images/xml.png',
                         true,
-                        ['title' => __('Export to XML')]
+                        [
+                            'title' => __('Export to XML'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[3] .= '</a>';
                     // I chose ajax.php because it's supposed
@@ -1060,7 +1075,7 @@ switch ($action) {
                     }
 
                     if ($edit) {
-                        $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" style="display:inline">';
+                        $data[$next] = '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&pure='.$pure.'" class="inline_line">';
                         $data[$next] .= html_print_input_image(
                             'edit',
                             'images/config.png',
@@ -1078,14 +1093,17 @@ switch ($action) {
                     }
 
                     if ($delete) {
-                        $data[$next] .= '<form method="post" style="display:inline;" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+                        $data[$next] .= '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
                         $data[$next] .= html_print_input_image(
                             'delete',
                             'images/cross.png',
                             1,
                             'margin-right: 10px;',
                             true,
-                            ['title' => __('Delete')]
+                            [
+                                'title' => __('Delete'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[$next] .= html_print_input_hidden(
                             'id_report',
@@ -1155,9 +1173,9 @@ switch ($action) {
         ) {
             echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
             if (defined('METACONSOLE')) {
-                echo '<div class="action-buttons" style="width: 100%; ">';
+                echo '<div class="action-buttons w100p">';
             } else {
-                echo '<div class="action-buttons" style="width: 100%;">';
+                echo '<div class="action-buttons w100p">';
             }
 
             html_print_submit_button(
@@ -1168,7 +1186,7 @@ switch ($action) {
             );
 
             echo '</form>';
-            echo '<form style="display:inline;" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
+            echo '<form class="inline_line" id="massive_report_form" method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=delete">';
 
             foreach ($reports as $report) {
                 echo '<input class="massive_report_form_elements" id="hidden-id_report_'.$report['id_report'].'" name="id_report[]" type="hidden" disabled value="'.$report['id_report'].'">';
@@ -1179,7 +1197,7 @@ switch ($action) {
                 __('Delete'),
                 'delete_btn',
                 false,
-                'class="sub delete" style="margin-left:5px;"'
+                'class="sub delete" class="mrgn_lft_5px"'
             );
             echo '</form>';
             echo '</div>';
@@ -1193,7 +1211,7 @@ switch ($action) {
         switch ($activeTab) {
             case 'main':
                 $reportName = '';
-                $idGroupReport = 0;
+                $idGroupReport = null;
                 // All groups.
                 $description = '';
                 $resultOperationDB = null;
@@ -1518,12 +1536,16 @@ switch ($action) {
                                 $values['text'] = $intervals;
                             break;
 
+                            case 'availability_graph':
+                                $values['summary'] = get_parameter(
+                                    'summary',
+                                    0
+                                );
                             case 'SLA_monthly':
                             case 'SLA_weekly':
                             case 'SLA_hourly':
                             case 'SLA_services':
                             case 'SLA':
-                            case 'availability_graph':
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
                                     'combo_sla_sort_options',
@@ -1692,14 +1714,6 @@ switch ($action) {
                                 $values['lapse'] = get_parameter('lapse');
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
-                                );
-                                $good_format = true;
-                            break;
-
-                            case 'nt_top_n':
-                                $values['period'] = get_parameter('period');
-                                $values['top_n_value'] = get_parameter(
-                                    'quantity'
                                 );
                                 $good_format = true;
                             break;
@@ -1881,6 +1895,11 @@ switch ($action) {
                             ''
                         );
 
+                        $event_filter_exclude = get_parameter(
+                            'filter_exclude',
+                            ''
+                        );
+
                         // If metaconsole is activated.
                         if (is_metaconsole() === true) {
                             if (($values['type'] == 'custom_graph')
@@ -2018,6 +2037,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
 
                                 if ($label != '') {
                                     $style['label'] = $label;
@@ -2050,6 +2071,7 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
+                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2063,7 +2085,6 @@ switch ($action) {
                             case 'projection_graph':
                             case 'prediction_date':
                             case 'simple_baseline_graph':
-                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2349,14 +2370,6 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
-                            case 'nt_top_n':
-                                $values['top_n_value'] = get_parameter(
-                                    'quantity'
-                                );
-                                $values['period'] = get_parameter('period');
-                                $good_format = true;
-                            break;
-
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2563,6 +2576,11 @@ switch ($action) {
                             REPORT_FAILOVER_TYPE_NORMAL
                         );
 
+                        $values['summary'] = get_parameter(
+                            'summary',
+                            0
+                        );
+
                         $style = [];
                         $style['show_in_same_row'] = get_parameter(
                             'show_in_same_row',
@@ -2622,6 +2640,12 @@ switch ($action) {
                                     ''
                                 );
 
+                                $event_filter_exclude = get_parameter(
+                                    'filter_exclude',
+                                    ''
+                                );
+
+
                                 // Added for events items.
                                 $style['show_summary_group'] = $show_summary_group;
                                 $style['filter_event_severity'] = json_encode(
@@ -2639,6 +2663,8 @@ switch ($action) {
                                 $style['event_graph_by_criticity'] = $event_graph_by_criticity;
                                 $style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
                                 $style['event_filter_search'] = $event_filter_search;
+                                $style['event_filter_exclude'] = $event_filter_exclude;
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2670,6 +2696,7 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
+                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2683,7 +2710,6 @@ switch ($action) {
                             case 'projection_graph':
                             case 'prediction_date':
                             case 'simple_baseline_graph':
-                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -3078,7 +3104,7 @@ switch ($action) {
             $buttons = [
                 'list_reports' => [
                     'active' => false,
-                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+                    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
                 ],
             ];
 
@@ -3150,19 +3176,26 @@ $urlB = 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder';
 $buttons = [
     'list_reports' => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&pure='.$pure.'">'.html_print_image(
+            'images/report_list.png',
+            true,
+            [
+                'title' => __('Reports list'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
     'main'         => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=main&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Main data'), 'class' => 'invert_filter']).'</a>',
     ],
     'list_items'   => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=list_items&action=edit&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/list.png', true, ['title' => __('List items'), 'class' => 'invert_filter']).'</a>',
     ],
     'item_editor'  => [
         'active' => false,
-        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pen.png', true, ['title' => __('Item editor')]).'</a>',
+        'text'   => '<a href="'.$urlB.'&tab=item_editor&action=new&id_report='.$idReport.'&pure='.$pure.'">'.html_print_image('images/pencil.png', true, ['title' => __('Item editor'), 'class' => 'invert_filter']).'</a>',
     ],
 ];
 
@@ -3175,7 +3208,14 @@ if ($enterpriseEnable) {
 
 $buttons['view'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image('images/operation.png', true, ['title' => __('View report')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
+        'images/operation.png',
+        true,
+        [
+            'title' => __('View report'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 $buttons[$activeTab]['active'] = true;
@@ -3188,7 +3228,7 @@ if ($idReport != 0) {
     $buttons = [
         'main' => [
             'active' => true,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image('images/report_list.png', true, ['title' => __('Reports list'), 'class' => 'invert_filter']).'</a>',
         ],
     ];
     $textReportName = __('Create Custom Report');

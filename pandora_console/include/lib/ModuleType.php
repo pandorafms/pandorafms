@@ -91,4 +91,54 @@ class ModuleType extends Entity
     }
 
 
+    /**
+     * Validate id_module and id_module_type pair.
+     *
+     * @param integer $id_module_type Id module_type.
+     * @param integer $id_modulo      Id modulo.
+     *
+     * @return boolean True success, false if not.
+     */
+    public static function validate(int $id_module_type, int $id_modulo)
+    {
+        switch ($id_modulo) {
+            case MODULE_PLUGIN:
+            case MODULE_PREDICTION:
+            case MODULE_DATA:
+            case MODULE_WMI:
+                if (($id_module_type < 6 || $id_module_type > 18) === false
+                    && ($id_module_type < 29 || $id_module_type > 34) === false
+                    && ($id_module_type === 25)
+                ) {
+                    return false;
+                }
+            break;
+
+            case MODULE_NETWORK:
+            case MODULE_SNMP:
+                if ($id_module_type < 6 || $id_module_type > 18) {
+                    return false;
+                }
+            break;
+
+            case MODULE_WEB:
+                if ($id_module_type !== 25) {
+                    return false;
+                }
+            break;
+
+            case MODULE_WUX:
+                if ($id_module_type < 29 || $id_module_type > 34) {
+                    return false;
+                }
+            break;
+
+            default:
+            return false;
+        }
+
+        return true;
+    }
+
+
 }

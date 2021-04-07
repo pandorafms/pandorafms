@@ -808,7 +808,7 @@ function modules_format_verbatim($data)
     // We need to replace \n by <br> to create a "similar" output to
     // information recolected in logs.
     $data2 = preg_replace("/\\n/", '<br>', $data);
-    return "<span style='font-size:10px;'>".$data2.'</span>';
+    return "<span class='font_10px'>".$data2.'</span>';
 }
 
 
@@ -844,7 +844,7 @@ function modules_format_delete($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -865,7 +865,7 @@ function modules_format_delete_string($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -886,7 +886,7 @@ function modules_format_delete_log4x($id)
     $txt = '';
 
     if (check_acl($config['id_user'], $group, 'AW') == 1) {
-        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        $txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
     }
 
     return $txt;
@@ -2307,7 +2307,10 @@ function modules_get_agentmodule_data_for_humans($module)
                     switch ($module['id_tipo_modulo']) {
                         case 15:
                             $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                            if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                            if (($value == '.1.3.6.1.2.1.1.3.0'
+                                || $value == '.1.3.6.1.2.1.25.1.1.0')
+                                && modules_get_unit_macro($module['data'], $module['unit']) === true
+                            ) {
                                 if ($module['post_process'] > 0) {
                                     $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
                                 } else {
@@ -2328,7 +2331,10 @@ function modules_get_agentmodule_data_for_humans($module)
             switch ($module['id_tipo_modulo']) {
                 case 15:
                     $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-                    if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                    if (($value == '.1.3.6.1.2.1.1.3.0'
+                        || $value == '.1.3.6.1.2.1.25.1.1.0')
+                        && modules_get_unit_macro($module['data'], $module['unit']) === true
+                    ) {
                         if ($module['post_process'] > 0) {
                             $salida = human_milliseconds_to_string(($module['datos'] / $module['post_process']));
                         } else {
@@ -3487,6 +3493,7 @@ function get_module_realtime_link_graph($module)
             'border' => '0',
             'alt'    => '',
             'title'  => __('Realtime SNMP graph'),
+            'class'  => 'invert_filter',
         ]
     );
     $link_button .= '</a>';

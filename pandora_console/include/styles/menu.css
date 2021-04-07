@@ -50,7 +50,7 @@
   width: 100%;
 }
 
-li:hover ul {
+.menu_full li:hover ul {
   display: block;
 }
 
@@ -142,76 +142,76 @@ li.sub_subMenu.selected {
 
 /* Icons specified here */
 #icon_oper-networkconsole {
-  background-image: url(../../images/op_network.menu_gray.png);
+  background-image: url(../../images/menu/op_network.menu_gray.png);
 }
 #icon_oper-agents {
-  background-image: url(../../images/op_monitoring.menu_gray.png);
+  background-image: url(../../images/menu/op_monitoring.menu_gray.png);
 }
 #icon_oper-events {
-  background-image: url(../../images/op_events.menu_gray.png);
+  background-image: url(../../images/menu/op_events.menu_gray.png);
 }
 
 /* users */
 #icon_oper-users {
-  background-image: url(../../images/op_workspace.menu_gray.png);
+  background-image: url(../../images/menu/op_workspace.menu_gray.png);
 }
 /* trap console */
 #icon_oper-snmpc,
 #icon_god-snmpc {
-  background-image: url(../../images/op_snmp.menu.png);
+  background-image: url(../../images/menu/op_snmp.menu.png);
 }
 #icon_oper-reporting {
-  background-image: url(../../images/op_reporting.menu_gray.png);
+  background-image: url(../../images/menu/op_reporting.menu_gray.png);
 }
 #icon_oper-gismaps {
-  background-image: url(../../images/op_gis.menu.png);
+  background-image: url(../../images/menu/op_gis.menu.png);
 }
 #icon_oper-netflow {
-  background-image: url(../../images/op_netflow.menu.png);
+  background-image: url(../../images/menu/op_netflow.menu.png);
 }
 #icon_oper-extensions {
-  background-image: url(../../images/extensions.menu_gray.png);
+  background-image: url(../../images/menu/extensions.menu_gray.png);
 }
 
 /* Godmode images */
 #icon_god-discovery {
-  background-image: url(../../images/gm_discovery.menu.png);
+  background-image: url(../../images/menu/gm_discovery.menu.png);
 }
 #icon_god-resources {
-  background-image: url(../../images/gm_resources.menu_gray.png);
+  background-image: url(../../images/menu/gm_resources.menu_gray.png);
 }
 #icon_god-configuration {
-  background-image: url(../../images/gm_configuration.menu_gray.png);
+  background-image: url(../../images/menu/gm_configuration.menu_gray.png);
 }
 #icon_god-alerts {
-  background-image: url(../../images/gm_alerts.menu_gray.png);
+  background-image: url(../../images/menu/gm_alerts.menu_gray.png);
 }
 #icon_god-users {
-  background-image: url(../../images/gm_users.menu_gray.png);
+  background-image: url(../../images/menu/gm_users.menu_gray.png);
 }
 #icon_god-reporting {
-  background-image: url(../../images/reporting_edit.menu.png);
+  background-image: url(../../images/menu/reporting_edit.menu.png);
 }
 #icon_god-servers {
-  background-image: url(../../images/gm_servers.menu_gray.png);
+  background-image: url(../../images/menu/gm_servers.menu_gray.png);
 }
 #icon_god-setup {
-  background-image: url(../../images/gm_setup.menu_gray.png);
+  background-image: url(../../images/menu/gm_setup.menu_gray.png);
 }
 #icon_god-events {
-  background-image: url(../../images/gm_events.menu_gray.png);
+  background-image: url(../../images/menu/gm_events.menu_gray.png);
 }
 #icon_god-extensions {
-  background-image: url(../../images/builder.menu_gray.png);
+  background-image: url(../../images/menu/builder.menu_gray.png);
 }
 #icon_god-links {
-  background-image: url(../../images/links.menu_gray.png);
+  background-image: url(../../images/menu/links.menu_gray.png);
 }
 #icon_god-um_messages {
-  background-image: url(../../images/um_messages.menu_gray.png);
+  background-image: url(../../images/menu/um_messages.menu_gray.png);
 }
 #icon_god-module_library {
-  background-image: url(../../images/gm_library.menu_gray.png);
+  background-image: url(../../images/menu/gm_library.menu_gray.png);
 }
 
 #menu_container {
@@ -324,58 +324,58 @@ ul li {
 
 /* Menu icons active */
 .selected#icon_oper-networkconsole {
-  background-image: url(../../images/op_network.menu_white.png);
+  background-image: url(../../images/menu/op_network.menu_white.png);
 }
 .selected#icon_oper-agents {
-  background-image: url(../../images/op_monitoring.menu_white.png);
+  background-image: url(../../images/menu/op_monitoring.menu_white.png);
 }
 .selected#icon_oper-events {
-  background-image: url(../../images/op_events.menu_white.png);
+  background-image: url(../../images/menu/op_events.menu_white.png);
 }
 .selected#icon_oper-users {
-  background-image: url(../../images/op_workspace.menu_white.png);
+  background-image: url(../../images/menu/op_workspace.menu_white.png);
 }
 .selected#icon_oper-reporting {
-  background-image: url(../../images/op_reporting.menu_white.png);
+  background-image: url(../../images/menu/op_reporting.menu_white.png);
 }
 .selected#icon_oper-extensions {
-  background-image: url(../../images/extensions.menu_white.png);
+  background-image: url(../../images/menu/extensions.menu_white.png);
 }
 .selected#icon_god-discovery {
-  background-image: url(../../images/gm_discovery.menu_white.png);
+  background-image: url(../../images/menu/gm_discovery.menu_white.png);
 }
 .selected#icon_god-resources {
-  background-image: url(../../images/gm_resources.menu_white.png);
+  background-image: url(../../images/menu/gm_resources.menu_white.png);
 }
 .selected#icon_god-configuration {
-  background-image: url(../../images/gm_configuration.menu_white.png);
+  background-image: url(../../images/menu/gm_configuration.menu_white.png);
 }
 .selected#icon_god-alerts {
-  background-image: url(../../images/gm_alerts.menu_white.png);
+  background-image: url(../../images/menu/gm_alerts.menu_white.png);
 }
 .selected#icon_god-users {
-  background-image: url(../../images/gm_users.menu_white.png);
+  background-image: url(../../images/menu/gm_users.menu_white.png);
 }
 .selected#icon_god-servers {
-  background-image: url(../../images/gm_servers.menu_white.png);
+  background-image: url(../../images/menu/gm_servers.menu_white.png);
 }
 .selected#icon_god-setup {
-  background-image: url(../../images/gm_setup.menu_white.png);
+  background-image: url(../../images/menu/gm_setup.menu_white.png);
 }
 .selected#icon_god-events {
-  background-image: url(../../images/gm_events.menu_white.png);
+  background-image: url(../../images/menu/gm_events.menu_white.png);
 }
 .selected#icon_god-extensions {
-  background-image: url(../../images/builder.menu_white.png);
+  background-image: url(../../images/menu/builder.menu_white.png);
 }
 .selected#icon_god-links {
-  background-image: url(../../images/links.menu_white.png);
+  background-image: url(../../images/menu/links.menu_white.png);
 }
 .selected#icon_god-um_messages {
-  background-image: url(../../images/um_messages.menu_white.png);
+  background-image: url(../../images/menu/um_messages.menu_white.png);
 }
 .selected#icon_god-module_library {
-  background-image: url(../../images/gm_library.menu_white.png);
+  background-image: url(../../images/menu/gm_library.menu_white.png);
 }
 
 #menu_full {

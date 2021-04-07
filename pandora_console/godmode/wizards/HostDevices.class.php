@@ -793,7 +793,7 @@ class HostDevices extends Wizard
                                 'return'     => true,
                             ],
                         ],
-                        '1' => '<div style="height: 50%; margin-bottom: 35px;">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
+                        '1' => '<div class="height_50p mrgn_btn_35px">'.html_print_image('images/wizard/netscan_green.png', true, ['title' => __('Close')], false).'</div>',
                         '2' => [
                             'label'     => '<b>'.__('Interval').':</b>'.ui_print_help_tip(
                                 __('Manual interval means that it will be executed only On-demand'),
@@ -809,7 +809,7 @@ class HostDevices extends Wizard
                                 'name'     => 'interval_manual_defined',
                                 'return'   => true,
                             ],
-                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container">'.ui_print_help_tip(
+                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container mrgn_top_20px">'.ui_print_help_tip(
                                 __('The minimum recomended interval for Recon Task is 5 minutes'),
                                 true
                             ).html_print_extended_select_for_time(

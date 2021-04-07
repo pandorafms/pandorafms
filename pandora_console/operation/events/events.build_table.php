@@ -109,10 +109,10 @@ if ($group_rep == 2) {
 
         $uniq = uniqid();
         if ($meta) {
-            $table->data[$key][2] = '<img id="open_agent_groups" src=images/zoom_mc.png data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
+            $table->data[$key][2] = '<img id="open_agent_groups" src="'.'images/zoom_mc.png'.'" data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
 				onclick=\'show_events_group_agent("'.$table->id.'-'.$uniq.'-0","'.$res['id_agent'].'",'.$res['id_server'].');\' />';
         } else {
-            $table->data[$key][2] = '<img id="open_agent_groups" src="images/zoom_mc.png" data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
+            $table->data[$key][2] = '<img id="open_agent_groups" src="'.'images/zoom_mc.png'.'" data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
 				onclick=\'show_events_group_agent("'.$table->id.'-'.$uniq.'-0",'.$res['id_agent'].',false);\'/>';
         }
 
@@ -348,7 +348,7 @@ if ($group_rep == 2) {
     }
 
     if (in_array('estado', $show_fields)) {
-        $table->head[$i] = '<span style="white-space: nowrap;">'.__('Status').html_print_sort_arrows(
+        $table->head[$i] = '<span class="nowrap">'.__('Status').html_print_sort_arrows(
             array_merge($params, ['sort_field' => 'status']),
             'sort'
         ).'</span>';
@@ -528,7 +528,10 @@ if ($group_rep == 2) {
                     $data[$i] .= '<a href="javascript:" onclick="show_event_dialog('.$event['id_evento'].', '.$group_rep.');">';
                 }
 
-                $data[$i] .= '<span class="'.$myclass.'" style="font-size: 7.5pt;">'.ui_print_truncate_text(strip_tags(io_safe_output($event['evento'])), 160).'</span>';
+                $data[$i] .= '<span class="'.$myclass.' size_7pt">'.ui_print_truncate_text(
+                    strip_tags(io_safe_output($event['evento'])),
+                    160
+                ).'</span>';
                 if ($allow_action) {
                     $data[$i] .= '</a>';
                 }
@@ -752,30 +755,30 @@ if ($group_rep == 2) {
                 switch ($event['event_type']) {
                     case 'going_unknown':
                         if (!empty($event['unknown_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']))]);
                         }
                     break;
 
                     case 'going_up_critical':
                     case 'going_down_critical':
                         if (!empty($event['critical_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['critical_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['critical_instructions']))]);
                         }
                     break;
 
                     case 'going_down_warning':
                         if (!empty($event['warning_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['warning_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['warning_instructions']))]);
                         }
                     break;
 
                     case 'system':
                         if (!empty($event['critical_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['critical_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['critical_instructions']))]);
                         } else if (!empty($event['warning_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['warning_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['warning_instructions']))]);
                         } else if (!empty($event['unknown_instructions'])) {
-                            $data[$i] = html_print_image('images/page_white_text.png', true, ['title' => str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']))]);
+                            $data[$i] = html_print_image('images/page_white_text.png', true, ['class' => 'invert_filter', 'title' => str_replace("\n", '<br>', io_safe_output($event['unknown_instructions']))]);
                         }
                     break;
                 }
@@ -828,7 +831,10 @@ if ($group_rep == 2) {
             $data[$i] .= html_print_image(
                 'images/eye.png',
                 true,
-                ['title' => __('Show more')]
+                [
+                    'class' => 'invert_filter',
+                    'title' => __('Show more'),
+                ]
             );
             $data[$i] .= '</a>';
 
@@ -849,7 +855,10 @@ if ($group_rep == 2) {
                         $data[$i] .= html_print_image(
                             'images/hourglass.png',
                             true,
-                            ['title' => __('Change to in progress status')]
+                            [
+                                'class' => 'invert_filter',
+                                'title' => __('Change to in progress status'),
+                            ]
                         );
                         $data[$i] .= '</a>';
                     }
@@ -864,6 +873,7 @@ if ($group_rep == 2) {
                             'images/cross.png',
                             true,
                             [
+                                'class' => 'invert_filter',
                                 'title' => __('Delete event'),
                                 'id'    => 'delete_cross_'.$event['id_evento'],
                             ]
@@ -984,19 +994,22 @@ if ($group_rep == 2) {
 
             if (check_acl($config['id_user'], 0, 'EW')) {
                 if ($config['event_replication'] != 1) {
-                    echo '<div style="width:100%;text-align:right;">';
+                    echo '<div class="w100p right right_align">';
                     echo '<form method="post" id="form_event_response">';
                     html_print_select($array_events_actions, 'response_id', '', '', '', 0, false, false, false);
                     echo '&nbsp&nbsp';
                     html_print_button(__('Execute event response'), 'submit_event_response', false, 'execute_event_response(true);', 'class="sub next"');
-                    echo "<span id='response_loading_dialog' style='display:none'>".html_print_image('images/spinner.gif', true).'</span>';
+                    echo "<span id='response_loading_dialog' class='invisible'>".html_print_image(
+                        'images/spinner.gif',
+                        true
+                    ).'</span>';
                     echo '</form>';
-                    echo '<span id="max_custom_event_resp_msg" style="display:none; color:#e63c52; line-height: 200%;">';
+                    echo '<span id="max_custom_event_resp_msg" style="display: none; color: #e63c52; line-height: 200%;">';
                     echo __(
                         'A maximum of %s event custom responses can be selected',
                         $config['max_execution_event_response']
                     ).'</span>';
-                    echo '<span id="max_custom_selected" style="display:none; color:#e63c52; line-height: 200%;">';
+                    echo '<span id="max_custom_selected" style="display: none; color: #e63c52; line-height: 200%;">';
                     echo __(
                         'Please, select an event'
                     ).'</span>';

@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre style="z-index: 10000; background: #fff; padding: 1em;">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -214,7 +214,7 @@ function html_print_side_layer($params)
         break;
     }
 
-    $out_html = '<div id="side_layer" class="menu_sidebar '.$round_class.'" style="display:none; z-index:1; overflow: hidden; height: '.$params['height'].'; width: '.$params['width'].';">';
+    $out_html = '<div id="side_layer" class="menu_sidebar invisible overflow_hidden'.$round_class.'" style=" z-index:1; height: '.$params['height'].'; width: '.$params['width'].';">';
 
     $table = new stdClass();
     $table->id = 'side_layer_layout';
@@ -223,9 +223,9 @@ function html_print_side_layer($params)
     $table->cellpadding = 2;
     $table->class = 'none';
 
-    $top = '<div id="side_top_text" style="width: 100%";">'.$params['top_text'].'</div>';
+    $top = '<div id="side_top_text" class="w100p">'.$params['top_text'].'</div>';
 
-    $button = '<div id="show_menu" style="vertical-align: middle; position: relative; width: '.$params['icon_width'].'px;  padding-right: 17px; text-align: right; height: '.$params['icon_height'].'px;">';
+    $button = '<div id="show_menu" class="vertical_middle relative right pdd_r_17px" style="width: '.$params['icon_width'].'px; height: '.$params['icon_height'].'px;">';
     // Use the no_meta parameter because this image is only in the base console
     $button .= html_print_image(
         $params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'],
@@ -237,7 +237,7 @@ function html_print_side_layer($params)
     );
     $button .= '</div>';
 
-    $body = '<div id="side_body_text" style="width: 100%;">'.$params['body_text'].'</div>';
+    $body = '<div id="side_body_text" class="w100p">'.$params['body_text'].'</div>';
 
     $bottom = '<div id="side_bottom_text" style="text-align: '.$params['position'].';">'.$params['bottom_text'].'</div>';
 
@@ -466,6 +466,13 @@ function html_print_select_groups(
 ) {
     $output = '';
 
+    global $config;
+    $select2_css = 'select2.min';
+
+    if ($config['style'] === 'pandora_black') {
+        $select2_css = 'select2_dark.min';
+    }
+
     if (is_ajax()) {
         $output .= '<script src="';
         $output .= ui_get_full_url(
@@ -478,14 +485,14 @@ function html_print_select_groups(
 
         $output .= '<link rel="stylesheet" href="';
         $output .= ui_get_full_url(
-            'include/styles/select2.min.css',
+            'include/styles/'.$select2_css.'.css',
             false,
             false,
             false
         );
         $output .= '"/>';
     } else {
-        ui_require_css_file('select2.min');
+        ui_require_css_file($select2_css);
         ui_require_javascript_file('select2.min');
     }
 
@@ -568,6 +575,10 @@ function html_print_select_groups(
         $required
     );
 
+    if ($required !== false) {
+        $require_message = __('Please select an item from this list.');
+    }
+
     if (empty($size) === true) {
         $size = '100%';
     }
@@ -621,6 +632,25 @@ function html_print_select_groups(
                             }
                         }
                     });
+
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    $(this).on('change', function(e) {
+                        e.currentTarget.setCustomValidity('');
+                    })
+
+                    $(this).on('invalid', function(e) {
+                        if ($(e.currentTarget).val() == null) {
+                            e.currentTarget.setCustomValidity(
+                                '<?php echo $require_message; ?>'
+                            );
+                        }
+                    })
+                        <?php
+                    }
+                    ?>
+
                 }
             );
 
@@ -687,12 +717,14 @@ function html_print_select(
     $message='',
     $select_all=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $truncate_size=false
 ) {
     $output = "\n";
 
     static $idcounter = [];
 
+    global $config;
     // If duplicate names exist, it will start numbering. Otherwise it won't
     if (isset($idcounter[$name])) {
         $idcounter[$name]++;
@@ -732,8 +764,15 @@ function html_print_select(
     }
 
     if ($style === false) {
-        $styleText = 'style=""';
+        $styleText = ' ';
+        if ($config['style'] === 'pandora_black') {
+            $styleText = 'style="color: white"';
+        }
     } else {
+        if ($config['style'] === 'pandora_black') {
+            $style .= ' color: white';
+        }
+
         $styleText = 'style="'.$style.'"';
     }
 
@@ -815,6 +854,18 @@ function html_print_select(
                 $output .= ' style="'.$option_style[$value].'"';
             }
 
+            if ($truncate_size !== false) {
+                $output .= ' Title="'.$optlabel.'"';
+
+                $optlabel = ui_print_truncate_text(
+                    $optlabel,
+                    $truncate_size,
+                    false,
+                    true,
+                    false
+                );
+            }
+
             if ($optlabel === '') {
                 $output .= '>None</option>';
             } else {
@@ -830,8 +881,35 @@ function html_print_select(
     $output .= '</select>';
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
+    }
+
+    if ($multiple === false) {
+        if (is_ajax()) {
+            $output .= '<script src="';
+            $output .= ui_get_full_url(
+                'include/javascript/select2.min.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" type="text/javascript"></script>';
+
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                'include/styles/select2.min.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        } else {
+            ui_require_css_file('select2.min');
+            ui_require_javascript_file('select2.min');
+        }
+
+        $output .= '<script>$("#'.$id.'").select2();</script>';
     }
 
     if ($return) {
@@ -1088,6 +1166,7 @@ function html_print_select_multiple_filtered(
             'options' => [
                 'title'   => $texts['title-add'],
                 'onclick' => $add,
+                'class'   => 'invert_filter',
             ],
         ]
     );
@@ -1100,6 +1179,7 @@ function html_print_select_multiple_filtered(
             'options' => [
                 'title'   => $texts['title-del'],
                 'onclick' => $del,
+                'class'   => 'invert_filter',
             ],
         ]
     );
@@ -1311,7 +1391,29 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= '<div>';
     // Agent.
-    $agents = agents_get_group_agents($data['mGroup']);
+    $agents = agents_get_group_agents(
+        // Id_group.
+        $data['mGroup'],
+        // Search.
+        false,
+        // Case.
+        'lower',
+        // NoACL.
+        false,
+        // ChildGroups.
+        false,
+        // Serialized.
+        false,
+        // Separator.
+        '|',
+        // Add_alert_bulk_op.
+        false,
+        // Force_serialized.
+        false,
+        // Meta_fields.
+        $data['mMetaFields']
+    );
+
     if ((empty($agents)) === true || $agents == -1) {
         $agents = [];
     }
@@ -1435,7 +1537,7 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT,
+    $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
     $required=false
 ) {
@@ -1450,13 +1552,7 @@ function html_print_select_from_sql(
     foreach ($result as $row) {
         $id = array_shift($row);
         $value = array_shift($row);
-        $fields[$id] = ui_print_truncate_text(
-            $value,
-            $trucate_size,
-            false,
-            true,
-            false
-        );
+        $fields[$id] = $value;
     }
 
     return html_print_select(
@@ -1483,7 +1579,8 @@ function html_print_select_from_sql(
         // Simple_multiple_options.
         false,
         // Required.
-        $required
+        $required,
+        $truncate_size
     );
 }
 
@@ -1505,7 +1602,6 @@ function html_print_extended_select_for_unit(
 
     // $fields = post_process_get_custom_values();
     $fields['_timeticks_'] = 'Timeticks';
-    $fields['none'] = __('none');
 
     $default_module_custom_units = get_custom_module_units();
 
@@ -1532,7 +1628,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1559,7 +1655,7 @@ function html_print_extended_select_for_unit(
         ).'</a>';
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', 20);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1637,7 +1733,7 @@ function html_print_extended_select_for_post_process(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" style="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1664,7 +1760,7 @@ function html_print_extended_select_for_post_process(
         ).'</a>';
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" style="w100p inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', 20);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1796,7 +1892,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
-    echo '<div id="'.$uniq_name.'_default" style="width:auto;display:inline">';
+    echo '<div id="'.$uniq_name.'_default" class="wauto inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1817,7 +1913,7 @@ function html_print_extended_select_for_time(
             'images/pencil.png',
             true,
             [
-                'class' => $uniq_name.'_toggler '.$class,
+                'class' => $uniq_name.'_toggler '.$class.' invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
@@ -1830,7 +1926,7 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100 inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1849,10 +1945,10 @@ function html_print_extended_select_for_time(
             'font-size: xx-small;'.$select_style
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/default_list.png',
+            'images/list.png',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
@@ -2097,7 +2193,7 @@ function html_print_input_text_extended(
         'list',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
 
     if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
@@ -2177,24 +2273,26 @@ function html_print_input_text_extended(
 
 
 /**
- * Render an input password element.
+ * Render a section <div> html element.
  *
- * The element will have an id like: "password-$name"
- *
- * @param mixed parameters:
+ * @param array   $options Parameters:
  *             - id: string
  *             - style: string
+ *             - class: string
+ *             - title: string
  *             - hidden: boolean
- *             - content: string
- * @param bool return or echo flag
+ *             - content: string.
+ * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_div($options, $return=false)
-{
+function html_print_div(
+    array $options,
+    bool $return=false
+) {
     $output = '<div';
 
-    // Valid attributes (invalid attributes get skipped)
+    // Valid attributes (invalid attributes get skipped).
     $attrs = [
         'id',
         'style',
@@ -2231,13 +2329,14 @@ function html_print_div($options, $return=false)
 
 
 /**
- * Render an anchor html element.
+ * Render an anchor <a> html element.
  *
  * @param array   $options Parameters
- *                - id: string
- *                - style: string
- *                - title: string
+ *                - id: string.
+ *                - style: string.
+ *                - title: string.
  *                - href: string.
+ *                - content: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
@@ -2364,7 +2463,7 @@ function html_print_input_text(
     $function='',
     $class='',
     $onChange='',
-    $autocomplete='',
+    $autocomplete='off',
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
@@ -2403,10 +2502,6 @@ function html_print_input_text(
         $attr['onkeyup'] = $onKeyUp;
     }
 
-    if ($autocomplete !== '') {
-        $attr['autocomplete'] = $autocomplete;
-    }
-
     if ($autofocus === true) {
         $attr['autofocus'] = $autofocus;
     }
@@ -2432,7 +2527,7 @@ function html_print_input_text(
         $return,
         false,
         $function,
-        'off',
+        $autocomplete,
         $disabled
     );
 }
@@ -2504,6 +2599,10 @@ function html_print_input_email(array $settings):string
                 $settings['size'] = 255;
             }
 
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
+            }
+
             foreach ($settings as $attribute => $attr_value) {
                 // Check valid attribute.
                 if (in_array($attribute, $valid_attrs) === false) {
@@ -2572,15 +2671,26 @@ function html_print_input_number(array $settings):string
         'step',
     ];
 
+    global $config;
+    $text_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
+    }
+
     $output = '';
     if (isset($settings) === true && is_array($settings) === true) {
         // Check Name is necessary.
         if (isset($settings['name']) === true) {
-            $output = '<input type="number" ';
+            $output = '<input '.$text_color.' type="number" ';
 
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
                 $settings['maxlength'] = 255;
+            }
+
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -2900,7 +3010,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -3182,7 +3292,7 @@ function html_print_table(&$table, $return=false)
     $countcols = 0;
 
     if (!empty($table->caption)) {
-        $output .= '<caption style="text-align: left"><h4>'.$table->caption.'</h4></caption>';
+        $output .= '<caption class="left"><h4>'.$table->caption.'</h4></caption>';
     }
 
     if (!empty($table->head)) {
@@ -3392,7 +3502,7 @@ function html_print_radio_button_extended(
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4028,6 +4138,13 @@ function html_print_autocomplete_modules(
 
     ob_start();
 
+    $text_color = '';
+    $module_icon = 'images/search_module.png';
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
+        $module_icon = 'images/brick.menu.png';
+    }
+
     html_print_input_text_extended(
         $name,
         $default,
@@ -4037,7 +4154,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url(images/search_module.png) no-repeat right;']
+        ['style' => 'background: url('.$module_icon.') no-repeat right; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
@@ -4146,7 +4263,7 @@ function html_print_result_div($text)
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
 
-    $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+    $enclose = "<div id='result_div results_class'>";
     $enclose .= $text;
     $enclose .= '</div>';
     return $enclose;
@@ -4314,8 +4431,15 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
  */
 function html_print_input($data, $wrapper='div', $input_only=false)
 {
+    global $config;
     if (is_array($data) === false) {
         return '';
+    }
+
+    enterprise_include_once('include/functions_metaconsole.php');
+
+    if ($config['style'] === 'pandora_black') {
+        $style = 'style="color: white"';
     }
 
     $output = '';
@@ -4323,7 +4447,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     if ($data['label'] && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
-        $output .= '<label class="'.$data['label_class'].'">';
+        $output .= '<label '.$style.' class="'.$data['label_class'].'">';
         $output .= $data['label'];
         $output .= '</label>';
 
@@ -4359,7 +4483,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
                 ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
@@ -4541,6 +4665,28 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
                 ((isset($data['required']) === true) ? $data['required'] : false)
+            );
+        break;
+
+        case 'select_search':
+            $output .= html_print_select_search(
+                $data['fields'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['dropdownAutoWidth']) === true) ? $data['dropdownAutoWidth'] : false)
             );
         break;
 
@@ -5038,8 +5184,16 @@ function html_print_autocomplete_users_from_integria(
 
 function html_print_tabs(array $tabs)
 {
+    global $config;
+
+    $bg_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $bg_color = 'style="background-color: #222"';
+    }
+
     $result = '<div id="html-tabs">';
-    $result .= '<ul class="">';
+    $result .= '<ul class="" '.$bg_color.'>';
     foreach ($tabs as $key => $value) {
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(
@@ -5083,5 +5237,149 @@ function html_print_datalist(
         return $result;
     } else {
         echo $result;
+    }
+}
+
+
+/**
+ * Print or return selector with search bar.
+ *
+ * @param string  $fields                  Select fields
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
+ * @param boolean $dropdownAutoWidth       Set dropdown auto width.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_select_search(
+    $fields=[],
+    $name=null,
+    $selected='',
+    $script='',
+    $nothing='',
+    $nothing_value=0,
+    $return=false,
+    $multiple=false,
+    $sort=false,
+    $class='',
+    $disabled=false,
+    $style=false,
+    $option_style=false,
+    $size=false,
+    $simple_multiple_options=false,
+    $required=false,
+    $dropdownAutoWidth=false
+) {
+    $output = '';
+
+    ui_require_css_file('select2.min');
+    ui_require_javascript_file('select2.min');
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'select'.$idcounter[$name];
+    }
+
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+    }
+
+    $output .= html_print_select(
+        $fields,
+        $name,
+        $selected,
+        $script,
+        $nothing,
+        $nothing_value,
+        $return,
+        $multiple,
+        $sort,
+        $class,
+        $disabled,
+        $style,
+        $option_style,
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options,
+        $required
+    );
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+<script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        dropdownAutoWidth : '<?php echo $dropdownAutoWidth; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        }
+                    });
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
     }
 }

@@ -64,19 +64,6 @@ if (defined('METACONSOLE')) {
         $help_header = 'network_component_tab';
     }
 
-    ui_print_page_header(
-        __('Remote components'),
-        '',
-        false,
-        $help_header,
-        true,
-        '',
-        false,
-        'modulemodal',
-        GENERIC_SIZE_TEXT,
-        '',
-        __('Configuration').'&nbsp;/&nbsp;'.__('Templates').'&nbsp;/&nbsp;'.__('Remote components')
-    );
     $sec = 'gmodules';
 }
 
@@ -581,71 +568,19 @@ if ($id || $new_component
     return;
 }
 
-$url = ui_get_url_refresh(
-    [
-        'offset'                => false,
-        'id'                    => false,
-        'create_component'      => false,
-        'update_component'      => false,
-        'delete_component'      => false,
-        'id_network_component'  => false,
-        'upd'                   => false,
-        'crt'                   => false,
-        'type'                  => false,
-        'name'                  => false,
-        'description'           => false,
-        'max'                   => false,
-        'min'                   => false,
-        'tcp_send'              => false,
-        'tcp_rcv'               => false,
-        'tcp_port'              => false,
-        'snmp_oid'              => false,
-        'snmp_community'        => false,
-        'id_module_group'       => false,
-        'module_interval'       => false,
-        'id_group'              => false,
-        'plugin_user'           => false,
-        'plugin_pass'           => false,
-        'plugin_parameter'      => false,
-        'macros'                => false,
-        'max_timeout'           => false,
-        'max_retries'           => false,
-        'id_modulo'             => false,
-        'id_plugin'             => false,
-        'history_data'          => false,
-        'dynamic_interval'      => false,
-        'dynamic_max'           => false,
-        'dynamic_min'           => false,
-        'dynamic_two_tailed'    => false,
-        'min_warning'           => false,
-        'max_warning'           => false,
-        'str_warning'           => false,
-        'min_critical'          => false,
-        'max_critical'          => false,
-        'str_critical'          => false,
-        'ff_event'              => false,
-        'id_component_type'     => false,
-        'critical_instructions' => false,
-        'warning_instructions'  => false,
-        'unknown_instructions'  => false,
-        'critical_inverse'      => false,
-        'warning_inverse'       => false,
-        'id_category'           => false,
-        'tags'                  => false,
-        'ff_event_normal'       => false,
-        'ff_event_warning'      => false,
-        'ff_event_critical'     => false,
-        'each_ff'               => false,
-        'ff_type'               => false,
-    ]
-);
-
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
-if (!empty($search_string)) {
-    $search_string = trim($search_string, '&#x20;');
-}
+
+$url = ui_get_url_refresh(
+    [
+        'offset'          => false,
+        'search_string'   => $search_string,
+        'search_id_group' => $search_id_group,
+    ],
+    true,
+    false
+);
 
 $table = new stdClass();
 $table->width = '100%';
@@ -824,9 +759,12 @@ foreach ($components as $component) {
     switch ($component['id_modulo']) {
         case MODULE_NETWORK:
             $data[1] .= html_print_image(
-                'images/network.png',
+                'images/op_network.png',
                 true,
-                ['title' => __('Network module')]
+                [
+                    'title' => __('Network module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -834,7 +772,10 @@ foreach ($components as $component) {
             $data[1] .= html_print_image(
                 'images/wmi.png',
                 true,
-                ['title' => __('WMI module')]
+                [
+                    'title' => __('WMI module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -842,7 +783,10 @@ foreach ($components as $component) {
             $data[1] .= html_print_image(
                 'images/plugin.png',
                 true,
-                ['title' => __('Plug-in module')]
+                [
+                    'title' => __('Plug-in module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -850,7 +794,10 @@ foreach ($components as $component) {
             $data[1] .= html_print_image(
                 'images/wand.png',
                 true,
-                ['title' => __('Wizard module')]
+                [
+                    'title' => __('Wizard module'),
+                    'class' => 'invert_filter',
+                ]
             );
         break;
 
@@ -860,13 +807,29 @@ foreach ($components as $component) {
     }
 
     $data[2] = ui_print_moduletype_icon($component['type'], true);
-    $data[3] = "<span style='font-size: 8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
+    $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
 
     $table->cellclass[][6] = 'action_buttons';
-    $data[6] = '<a style="display: inline; float: left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>';
-    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image('images/cross.png', true, ['alt' => __('Delete'), 'title' => __('Delete')]).'</a>';
+    $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
+        'images/copy.png',
+        true,
+        [
+            'alt'   => __('Duplicate'),
+            'title' => __('Duplicate'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
+        'images/cross.png',
+        true,
+        [
+            'alt'   => __('Delete'),
+            'title' => __('Delete'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     array_push($table->data, $data);
 }
@@ -885,7 +848,7 @@ if (isset($data)) {
         true,
         'pagination-bottom'
     );
-    echo "<div style='float: right; margin-left: 5px;'>";
+    echo "<div id='btn_delete_5' class='float-right'>";
     html_print_submit_button(
         __('Delete'),
         'delete_btn',
@@ -904,7 +867,7 @@ if (isset($data)) {
 }
 
 echo '<form method="post" action="'.$url.'">';
-echo '<div class="" style="float:right;">';
+echo '<div class="right_align mrgn_btn_15px">';
 html_print_input_hidden('new_component', 1);
 html_print_select(
     [
@@ -924,7 +887,7 @@ html_print_submit_button(
     __('Create'),
     'crt',
     false,
-    'class="sub next" style="margin-left: 5px;"'
+    'class="sub next mrgn_lft_5px"'
 );
 echo '</div>';
 echo '</form>';

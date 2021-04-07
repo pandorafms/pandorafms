@@ -200,6 +200,10 @@ class CustomGraphWidget extends Widget
             $values['id_graph'] = $decoder['id_graph'];
         }
 
+        if (isset($decoder['node']) === true) {
+            $values['node'] = $decoder['node'];
+        }
+
         if (isset($decoder['stacked']) === true) {
             $values['type'] = $decoder['stacked'];
         }
@@ -245,19 +249,54 @@ class CustomGraphWidget extends Widget
 
         $return_all_group = false;
 
-        if (users_can_manage_group_all('RM')) {
+        if (users_can_manage_group_all('RM') === true) {
             $return_all_group = true;
         }
 
         // Custom graph.
         $fields = \custom_graphs_get_user(0, false, $return_all_group);
 
-        // If currently selected graph is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
-        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
-        if ($values['id_graph'] !== null && !array_key_exists($values['id_graph'], $fields)) {
-            $selected_graph = db_get_row('tgraph', 'id_graph', $values['id_graph']);
+        if ((bool) is_metaconsole() === true) {
+            $selected = $values['node'].'|'.$values['id_graph'];
+        } else {
+            $selected = $values['id_graph'];
+        }
 
-            $fields[$values['id_graph']] = $selected_graph;
+        // If currently selected graph is not included in fields array
+        // (it belongs to a group over which user has no permissions),
+        // then user has no grants over this item.
+        if ($values['id_graph'] !== null
+            && array_key_exists($selected, $fields) === false
+        ) {
+            if ((bool) is_metaconsole() === true) {
+                $server_name = \db_get_value(
+                    'server_name',
+                    'tmetaconsole_setup',
+                    'id',
+                    $values['node']
+                );
+
+                metaconsole_connect(null, $values['node']);
+            }
+
+            $name = \db_get_value(
+                'name',
+                'tgraph',
+                'id_graph',
+                $values['id_graph']
+            );
+
+            if ((bool) is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
+
+            if ($name === false) {
+                $name = \__('This graph has been deleted.');
+            } else {
+                $name .= ' ('.$server_name.')';
+            }
+
+            $fields[$selected] = $name;
         }
 
         $inputs[] = [
@@ -266,7 +305,7 @@ class CustomGraphWidget extends Widget
                 'type'     => 'select',
                 'fields'   => $fields,
                 'name'     => 'id_graph',
-                'selected' => $values['id_graph'],
+                'selected' => $selected,
                 'return'   => true,
             ],
         ];
@@ -331,8 +370,49 @@ class CustomGraphWidget extends Widget
     {
         // Retrieve global - common inputs.
         $values = parent::getPost();
+        $id_graph = \get_parameter('id_graph', null);
 
-        $values['id_graph'] = \get_parameter('id_graph', 0);
+        if ($id_graph !== null) {
+            $values['id_graph'] = $id_graph;
+
+            if ((bool) is_metaconsole() === true) {
+                $mc_stuff = explode('|', $values['id_graph']);
+                $values['node'] = $mc_stuff[0];
+                $values['id_graph'] = $mc_stuff[1];
+            }
+
+            // VERIFY ACCESS.
+            $return_all_group = false;
+
+            if (users_can_manage_group_all('RM') === true) {
+                $return_all_group = true;
+            }
+
+            $availables = \custom_graphs_get_user(0, false, $return_all_group);
+
+            if ((bool) is_metaconsole() === true) {
+                $selected = $values['node'].'|'.$values['id_graph'];
+            } else {
+                $selected = $values['id_graph'];
+            }
+
+            // If currently selected graph is not included in fields array
+            // (it belongs to a group over which user has no permissions),
+            // then user has no grants over this item.
+            if ($values['id_graph'] !== null
+                && array_key_exists($selected, $availables) === false
+            ) {
+                // User has no access to this graph.
+                // Keep previous definition if not grant over desired item.
+                $values['node'] = $this->values['node'];
+                $values['id_graph'] = $this->values['id_graph'];
+            }
+        } else {
+            // Keep previous definition if not grant over desired item.
+            $values['node'] = $this->values['node'];
+            $values['id_graph'] = $this->values['id_graph'];
+        }
+
         $values['type'] = \get_parameter('type', 0);
         $values['period'] = \get_parameter('period', 0);
         $values['showLegend'] = \get_parameter_switch('showLegend');
@@ -366,11 +446,11 @@ class CustomGraphWidget extends Widget
                     );
 
                     $hackLegendHight = (30 * count($sources));
-                    if ($hackLegendHight < ($size['height'] - 10 - $hackLegendHight)) {
-                        $height = ($size['height'] - 10 - $hackLegendHight);
+                    $operation = ($size['height'] - 10 - $hackLegendHight);
+                    if ($hackLegendHight < $operation) {
+                        $height = ($size['height'] - $hackLegendHight);
                     } else {
                         $height = ($size['height'] - 10);
-                        $this->values['showLegend'] = 0;
                     }
                 } else {
                     $height = ($size['height'] - 10);
@@ -396,17 +476,22 @@ class CustomGraphWidget extends Widget
             break;
         }
 
+        // Not posible height < 0.
+        if ($height <= 0) {
+            $height = 10;
+        }
+
         $params = [
             'period'          => $this->values['period'],
             'width'           => ($size['width'] - 10),
             'height'          => $height,
             'only_image'      => false,
             'homeurl'         => $config['homeurl'],
-            'percentil'       => $percentil,
             'backgroundColor' => 'transparent',
             'menu'            => false,
             'show_legend'     => $this->values['showLegend'],
             'vconsole'        => true,
+            'dashboard'       => true,
         ];
 
         $params_combined = [

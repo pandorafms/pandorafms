@@ -88,7 +88,7 @@ class Module extends Entity
      * @param array   $params Search parameters (fields from tagente_modulo).
      * @param integer $limit  Limit results to N rows.
      *
-     * @return PandoraFMS\Module found or null if not found.
+     * @return array|null of PandoraFMS\Module found or null if not found.
      * @throws \Exception On error.
      */
     public static function search(
@@ -207,7 +207,7 @@ class Module extends Entity
         if (is_numeric($id_agent_module) === true
             && $id_agent_module > 0
         ) {
-            if ($nodeId !== null) {
+            if ($nodeId > 0) {
                 $this->nodeId = $nodeId;
             }
 
@@ -1022,12 +1022,13 @@ class Module extends Entity
     /**
      * Calculates cascade protection service value for this service.
      *
-     * @param integer|null $id_node Meta searching node will use this field.
+     * @param integer|null $id_node   Meta searching node will use this field.
+     * @param boolean      $connected Connected to a node.
      *
      * @return integer CPS value.
      * @throws \Exception On error.
      */
-    public function calculateCPS(?int $id_node=null)
+    public function calculateCPS(?int $id_node=null, bool $connected=false)
     {
         if ($this->cps() < 0) {
             return $this->cps();
@@ -1047,6 +1048,7 @@ class Module extends Entity
         // Here could happen 2 things.
         // 1. Metaconsole service is using this method impersonating node DB.
         // 2. Node service is trying to find parents into metaconsole.
+        // 3. Impersonated node searching metaconsole.
         if (empty($id_node) === true
             && is_metaconsole() === false
             && has_metaconsole() === true
@@ -1119,6 +1121,38 @@ class Module extends Entity
             if ($r !== NOERR) {
                 throw new \Exception(__('Cannot connect to node %d', $r));
             }
+        } else if (is_metaconsole() === true
+            // True in impersonated nodes.
+            && has_metaconsole() === false
+            && empty($id_node) === true
+        ) {
+            // Impersonated node checking metaconsole.
+            \enterprise_hook('metaconsole_restore_db');
+
+            $mc_parents = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT id_service,
+                            cps,
+                            cascade_protection,
+                            name
+                    FROM `tservice_element` te
+                    INNER JOIN `tservice` t ON te.id_service = t.id
+                    WHERE te.id_agente_modulo = %d',
+                    $this->id_agente_modulo()
+                ),
+                false,
+                false
+            );
+
+            // Restore impersonation.
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $r = \enterprise_hook(
+                'metaconsole_connect',
+                [
+                    null,
+                    $id_node,
+                ]
+            );
         }
 
         $cps = 0;

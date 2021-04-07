@@ -77,7 +77,7 @@ foreach ($rows as $row) {
 
     echo "
 	<tr>
-		<td class='$tdcolor' align=''>".html_print_image('images/'.$row['icon'], true, ['border' => '0'])."</td>
+		<td class='$tdcolor' align=''>".html_print_image('images/'.$row['icon'], true, ['border' => '0', 'class' => 'invert_filter'])."</td>
 		<td class='$tdcolor'>
 		<b>".$row['id_tipo']."
 		</b></td>

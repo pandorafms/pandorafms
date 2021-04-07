@@ -172,7 +172,7 @@ class EventsListWidget extends Widget
         $this->className = $class->getShortName();
 
         // Title.
-        $this->title = __('List of latest events');
+        $this->title = \__('List of latest events');
 
         // Name.
         if (empty($this->name) === true) {
@@ -242,6 +242,14 @@ class EventsListWidget extends Widget
             $values['groupId'] = $decoder['id_groups'];
         }
 
+        if (isset($decoder['groupRecursion']) === true) {
+            $values['groupRecursion'] = $decoder['groupRecursion'];
+        }
+
+        if (isset($decoder['customFilter']) === true) {
+            $values['customFilter'] = $decoder['customFilter'];
+        }
+
         if (isset($decoder['groupId']) === true) {
             $values['groupId'] = $decoder['groupId'];
         }
@@ -251,6 +259,17 @@ class EventsListWidget extends Widget
         }
 
         return $values;
+    }
+
+
+    /**
+     * Aux javascript to be run after form load.
+     *
+     * @return string
+     */
+    public function getFormJS(): string
+    {
+        return '$( document ).ready(function() {event_widget_options();});';
     }
 
 
@@ -270,8 +289,23 @@ class EventsListWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        // Select pre built filter.
+        $inputs[] = [
+            'label'     => \__('Custom filters'),
+            'arguments' => [
+                'type'          => 'select',
+                'id'            => 'select-custom-filter',
+                'fields'        => \events_get_event_filter_select(false),
+                'name'          => 'customFilter',
+                'script'        => 'event_widget_options();',
+                'nothing'       => \__('None'),
+                'nothing_value' => -1,
+                'selected'      => $this->values['customFilter'],
+            ],
+        ];
+
         $fields = \get_event_types();
-        $fields['not_normal'] = __('Not normal');
+        $fields['not_normal'] = \__('Not normal');
 
         // Default values.
         if (isset($values['maxHours']) === false) {
@@ -284,24 +318,26 @@ class EventsListWidget extends Widget
 
         // Event Type.
         $inputs[] = [
-            'label'     => __('Event type'),
+            'label'     => \__('Event type'),
             'arguments' => [
                 'type'          => 'select',
                 'fields'        => $fields,
+                'class'         => 'event-widget-input',
                 'name'          => 'eventType',
                 'selected'      => $values['eventType'],
                 'return'        => true,
-                'nothing'       => __('Any'),
+                'nothing'       => \__('Any'),
                 'nothing_value' => 0,
             ],
         ];
 
         // Max. hours old. Default 8.
         $inputs[] = [
-            'label'     => __('Max. hours old'),
+            'label'     => \__('Max. hours old'),
             'arguments' => [
                 'name'   => 'maxHours',
                 'type'   => 'number',
+                'class'  => 'event-widget-input',
                 'value'  => $values['maxHours'],
                 'return' => true,
                 'min'    => 0,
@@ -320,10 +356,11 @@ class EventsListWidget extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Limit'),
+            'label'     => \__('Limit'),
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $fields,
+                'class'    => 'event-widget-input',
                 'name'     => 'limit',
                 'selected' => $values['limit'],
                 'return'   => true,
@@ -332,16 +369,17 @@ class EventsListWidget extends Widget
 
         // Event status.
         $fields = [
-            -1 => __('All event'),
-            1  => __('Only validated'),
-            0  => __('Only pending'),
+            -1 => \__('All event'),
+            1  => \__('Only validated'),
+            0  => \__('Only pending'),
         ];
 
         $inputs[] = [
-            'label'     => __('Event status'),
+            'label'     => \__('Event status'),
             'arguments' => [
                 'type'     => 'select',
                 'fields'   => $fields,
+                'class'    => 'event-widget-input',
                 'name'     => 'eventStatus',
                 'selected' => $values['eventStatus'],
                 'return'   => true,
@@ -352,14 +390,15 @@ class EventsListWidget extends Widget
         $fields = \get_priorities();
 
         $inputs[] = [
-            'label'     => __('Severity'),
+            'label'     => \__('Severity'),
             'arguments' => [
                 'type'          => 'select',
                 'fields'        => $fields,
+                'class'         => 'event-widget-input',
                 'name'          => 'severity',
                 'selected'      => $values['severity'],
                 'return'        => true,
-                'nothing'       => __('All'),
+                'nothing'       => \__('All'),
                 'nothing_value' => -1,
             ],
         ];
@@ -367,17 +406,22 @@ class EventsListWidget extends Widget
         $return_all_group = false;
         $selected_groups_array = explode(',', $values['groupId'][0]);
 
-        if (users_can_manage_group_all('RM') || ($selected_groups_array[0] !== '' && in_array(0, $selected_groups_array) === true)) {
-            // Return all group if user has permissions or it is a currently selected group.
+        if ((bool) \users_can_manage_group_all('RM') === true
+            || ($selected_groups_array[0] !== ''
+            && in_array(0, $selected_groups_array) === true)
+        ) {
+            // Return all group if user has permissions or it is a currently
+            // selected group.
             $return_all_group = true;
         }
 
         // Groups.
         $inputs[] = [
-            'label'     => __('Groups'),
+            'label'     => \__('Groups'),
             'arguments' => [
                 'type'           => 'select_groups',
                 'name'           => 'groupId[]',
+                'class'          => 'event-widget-input',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
                 'selected'       => $selected_groups_array,
@@ -387,18 +431,33 @@ class EventsListWidget extends Widget
             ],
         ];
 
+        // Group recursion.
+        $inputs[] = [
+            'label'     => \__('Group recursion'),
+            'arguments' => [
+                'type'   => 'switch',
+                'name'   => 'groupRecursion',
+                'class'  => 'event-widget-input',
+                'value'  => $values['groupRecursion'],
+                'return' => true,
+            ],
+        ];
+
         // Tags.
-        $fields = tags_get_user_tags($config['id_user'], 'AR');
+        $fields = \tags_get_user_tags($config['id_user'], 'AR');
 
         $inputs[] = [
-            'label'     => __('Tags'),
+            'label'     => \__('Tags'),
             'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'tagsId[]',
-                'selected' => explode(',', $values['tagsId'][0]),
-                'return'   => true,
-                'multiple' => true,
+                'type'          => 'select',
+                'fields'        => $fields,
+                'class'         => 'event-widget-input',
+                'name'          => 'tagsId[]',
+                'selected'      => explode(',', $values['tagsId'][0]),
+                'return'        => true,
+                'multiple'      => true,
+                'nothing'       => __('None'),
+                'nothing_value' => 0,
             ],
         ];
 
@@ -423,6 +482,8 @@ class EventsListWidget extends Widget
         $values['severity'] = \get_parameter_switch('severity', -1);
         $values['groupId'] = \get_parameter_switch('groupId', []);
         $values['tagsId'] = \get_parameter_switch('tagsId', []);
+        $values['groupRecursion'] = \get_parameter_switch('groupRecursion', 0);
+        $values['customFilter'] = \get_parameter('customFilter', -1);
 
         return $values;
     }
@@ -439,99 +500,149 @@ class EventsListWidget extends Widget
 
         $output = '';
 
-        $return_all_group = false;
-
-        if (users_can_manage_group_all('RM')) {
-            $return_all_group = true;
-        }
-
-        $user_groups = \users_get_groups(false, 'AR', $return_all_group);
-
-        ui_require_css_file('events', 'include/styles/', true);
-        ui_require_css_file('tables', 'include/styles/', true);
+        \ui_require_css_file('events', 'include/styles/', true);
+        \ui_require_css_file('tables', 'include/styles/', true);
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
         $this->values['tagsId'] = explode(',', $this->values['tagsId'][0]);
 
         if (empty($this->values['groupId']) === true) {
-            $output .= __('You must select some group');
+            $output .= \__('You must select some group');
             return $output;
         }
 
-        $useTags = \tags_has_user_acl_tags($config['id_user']);
-        if ($useTags) {
+        $useTags = (bool) \tags_has_user_acl_tags($config['id_user']);
+        if ($useTags === true) {
             if (empty($this->values['tagsId']) === true) {
-                $output .= __('You don\'t have access');
+                $output .= \__('You don\'t have access');
                 return;
             }
         }
 
         $hours = ($this->values['maxHours'] * SECONDS_1HOUR);
-        $unixtime = (get_system_time() - $hours);
 
         // Put hours in seconds.
         $filter = [];
-        // Group all.
-        if (in_array(0, $this->values['groupId'])) {
-            $filter['id_grupo'] = array_keys($user_groups);
-        } else {
-            $filter['id_grupo'] = array_intersect($this->values['groupId'], array_keys($user_groups));
-        }
+        $order = [];
 
-        if (empty($filter['id_grupo'])) {
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_error_message(
-                __('You have no access'),
-                '',
-                true
+        $customFilter = \events_get_event_filter($this->values['customFilter']);
+        if ($customFilter !== false) {
+            $filter = $customFilter;
+            $filter['tag_with'] = base64_encode(
+                json_encode($filter['tag_with'])
             );
-            $output .= '</div>';
-            return $output;
-        }
 
-        $filter['utimestamp'] = '>'.$unixtime;
+            $filter['tag_without'] = base64_encode(
+                json_encode($filter['tag_without'])
+            );
+        } else {
+            // Filtering.
+            $filter['event_view_hr'] = $hours;
 
-        if (empty($this->values['eventType']) === false) {
-            $filter['event_type'] = $this->values['eventType'];
-
-            if ($filter['event_type'] === 'warning'
-                || $filter['event_type'] === 'critical'
-                || $filter['event_type'] === 'normal'
+            // Group.
+            $filter['id_group_filter'] = $this->values['groupId'];
+            if (empty($filter['id_group_filter']) === true
+                || $filter['id_group_filter'][0] === ''
+                || $filter['id_group_filter'][0] === '0'
             ) {
-                $filter['event_type'] = '%'.$filter['event_type'].'%';
-            } else if ($filter['event_type'] === 'not_normal') {
-                unset($filter['event_type']);
-                $filter[] = '(event_type REGEXP "warning|critical|unknown")';
+                // No filter specified. Don't filter at all...
+                $filter['id_group_filter'] = null;
+            }
+
+            // Tags.
+            if (empty($this->values['tagsId']) === false) {
+                $filter['tag_with'] = base64_encode(
+                    json_encode($this->values['tagsId'])
+                );
+            }
+
+            // Severity.
+            if (isset($this->values['severity']) === true) {
+                $filter['severity'] = $this->values['severity'];
+            }
+
+            // Event types.
+            if (empty($this->values['eventType']) === false) {
+                $filter['event_type'] = $this->values['eventType'];
+            }
+
+            // Event status.
+            if ((int) $this->values['eventStatus'] !== -1) {
+                $filter['status'] = $this->values['eventStatus'];
             }
         }
 
-        if ((int) $this->values['eventStatus'] !== -1) {
-            $filter['estado'] = $this->values['eventStatus'];
+        // Order.
+        $order['field'] = 'timestamp';
+        $order['direction'] = 'DESC';
+
+        $fields = [
+            'te.id_evento',
+            'te.id_agente',
+            'te.id_usuario',
+            'te.id_grupo',
+            'te.estado',
+            'te.timestamp',
+            'te.evento',
+            'te.utimestamp',
+            'te.event_type',
+            'te.id_alert_am',
+            'te.criticity',
+            'te.user_comment',
+            'te.tags',
+            'te.source',
+            'te.id_extra',
+            'te.critical_instructions',
+            'te.warning_instructions',
+            'te.unknown_instructions',
+            'te.owner_user',
+            'if(te.ack_utimestamp > 0, from_unixtime(te.ack_utimestamp),"") as ack_utimestamp',
+            'te.custom_data',
+            'te.data',
+            'te.module_status',
+            'ta.alias as agent_name',
+            'tg.nombre as group_name',
+        ];
+
+        if ((bool) \is_metaconsole() === false
+            || $this->nodeId > 0
+        ) {
+            $fields[] = 'am.nombre as module_name';
+            $fields[] = 'am.id_agente_modulo as id_agentmodule';
+            $fields[] = 'am.custom_id as module_custom_id';
+            $fields[] = 'ta.server_name as server_name';
+        } else {
+            $fields[] = 'ts.server_name as server_name';
+            $fields[] = 'te.id_agentmodule';
+            $fields[] = 'te.server_id';
         }
 
-        $filter['limit'] = $this->values['limit'];
-        $filter['order'] = '`utimestamp` DESC';
-
-        if (isset($this->values['severity']) === true) {
-            if ((int) $this->values['severity'] === 20) {
-                $filter['criticity'] = [
-                    EVENT_CRIT_WARNING,
-                    EVENT_CRIT_CRITICAL,
-                ];
-            } else if ((int) $this->values['severity'] !== -1) {
-                $filter['criticity'] = $this->values['severity'];
-            }
-        }
-
-        if (empty($this->values['tagsId']) === false) {
-            foreach ($this->values['tagsId'] as $tag) {
-                $tag_name[$tag] = \tags_get_name($tag);
-            }
-
-            $filter['tags'] = $tag_name;
-        }
-
-        $events = \events_get_events($filter);
+        $events = \events_get_all(
+            // Fields.
+            $fields,
+            // Filter.
+            $filter,
+            // Offset.
+            0,
+            // Limit.
+            $this->values['limit'],
+            // Order.
+            $order['direction'],
+            // Sort field.
+            $order['field'],
+            // History.
+            false,
+            // SQL.
+            false,
+            // Having.
+            '',
+            // ValidatedEvents.
+            false,
+            // Recursive Groups.
+            (bool) $this->values['groupRecursion'],
+            // Already connected.
+            ($this->nodeId > 0)
+        );
 
         if ($events === false) {
             $events = [];
@@ -542,9 +653,9 @@ class EventsListWidget extends Widget
             && is_array($events) === true
             && empty($events) === false
         ) {
-            $output .= html_print_input_hidden(
+            $output .= \html_print_input_hidden(
                 'ajax_file',
-                ui_get_full_url('ajax.php', false, false, false),
+                \ui_get_full_url('ajax.php', false, false, false),
                 true
             );
 
@@ -558,15 +669,10 @@ class EventsListWidget extends Widget
 
             foreach ($events as $event) {
                 $data = [];
-                $event['evento'] = io_safe_output($event['evento']);
-                if ($event['estado'] === 0) {
-                    $img = 'images/pixel_red.png';
-                } else {
-                    $img = 'images/pixel_green.png';
-                }
+                $event['evento'] = \io_safe_output($event['evento']);
 
-                $data[0] = events_print_type_img($event['event_type'], true);
-                $agent_alias = agents_get_alias($event['id_agente']);
+                $data[0] = \events_print_type_img($event['event_type'], true);
+                $agent_alias = \agents_get_alias($event['id_agente']);
 
                 if ($agent_alias !== '') {
                     $data[1] = '<a href="'.$config['homeurl'];
@@ -577,15 +683,27 @@ class EventsListWidget extends Widget
                     $data[1] .= $agent_alias;
                     $data[1] .= '</a>';
                 } else {
-                    $data[1] = '<em>'.__('Unknown').'</em>';
+                    $data[1] = '&nbsp;';
                 }
+
+                if (isset($event['event_rep']) === true
+                    && $event['event_rep'] > 1
+                ) {
+                    $data[1] .= ' ('.$event['event_rep'].')';
+                }
+
+                // Group.
+                $data[2] = $event['group_name'];
+
+                // Tags.
+                $data[3] = $event['tags'];
 
                 $settings = json_encode(
                     [
                         'event'   => $event,
                         'page'    => 'include/ajax/events',
-                        'cellId'  => $id_cell,
-                        'ajaxUrl' => ui_get_full_url(
+                        'cellId'  => $this->cellId,
+                        'ajaxUrl' => \ui_get_full_url(
                             'ajax.php',
                             false,
                             false,
@@ -596,35 +714,40 @@ class EventsListWidget extends Widget
                 );
 
                 if ($this->publicLink === false) {
-                    $data[2] = '<a href="javascript:"onclick="dashboardShowEventDialog(\''.base64_encode($settings).'\');">';
+                    $data[4] = '<a href="javascript:"onclick="';
+                    $data[4] .= 'dashboardShowEventDialog(\'';
+                    $data[4] .= base64_encode($settings).'\');">';
                 }
 
-                $data[2] .= substr(io_safe_output($event['evento']), 0, 150);
+                $data[4] .= substr(\io_safe_output($event['evento']), 0, 150);
                 if (strlen($event['evento']) > 150) {
-                    $data[2] .= '...';
+                    $data[4] .= '...';
                 }
 
                 if ($this->publicLink === false) {
-                    $data[2] .= '<a>';
+                    $data[4] .= '<a>';
                 }
 
-                $data[3] = ui_print_timestamp($event['timestamp'], true);
+                $data[5] = \ui_print_timestamp($event['timestamp'], true);
 
                 $table->data[$i] = $data;
 
                 $table->cellstyle[$i][0] = 'background: #E8E8E8;';
-                $rowclass = get_priority_class($event['criticity']);
+                $rowclass = \events_get_criticity_class($event['criticity']);
                 $table->cellclass[$i][1] = $rowclass;
                 $table->cellclass[$i][2] = $rowclass;
                 $table->cellclass[$i][3] = $rowclass;
+                $table->cellclass[$i][4] = $rowclass;
+                $table->cellclass[$i][5] = $rowclass;
                 $i++;
             }
 
-            $output .= html_print_table($table, true);
+            $output .= \html_print_table($table, true);
             $output .= "<div id='event_details_window'></div>";
             $output .= "<div id='event_response_window'></div>";
-            $output .= "<div id='event_response_command_window' title='".__('Parameters')."'></div>";
-            $output .= ui_require_javascript_file(
+            $output .= "<div id='event_response_command_window' title='";
+            $output .= \__('Parameters')."'></div>";
+            $output .= \ui_require_javascript_file(
                 'pandora_events',
                 'include/javascript/',
                 true
@@ -632,7 +755,7 @@ class EventsListWidget extends Widget
         } else {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
-                __('There are no events matching selected search filters'),
+                \__('There are no events matching selected search filters'),
                 '',
                 true
             );
@@ -650,7 +773,7 @@ class EventsListWidget extends Widget
      */
     public static function getDescription()
     {
-        return __('List of latest events');
+        return \__('List of latest events');
     }
 
 

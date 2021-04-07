@@ -27,10 +27,18 @@
  */
 
 // Css Files.
-\ui_require_css_file('bootstrap.min');
+if ((bool) \is_metaconsole() !== true) {
+    \ui_require_css_file('bootstrap.min');
+}
+
 \ui_require_css_file('gridstack.min');
 \ui_require_css_file('gridstack-extra.min');
-\ui_require_css_file('pandora');
+if ((bool) \is_metaconsole() === true) {
+    \ui_require_css_file('meta_pandora');
+} else {
+    \ui_require_css_file('pandora');
+}
+
 \ui_require_css_file('dashboards');
 
 // Js Files.
@@ -46,7 +54,7 @@ $output = '';
 $output .= '<div id="modal-update-dashboard" style="display:none;"></div>';
 $output .= '<div id="modal-add-widget" style="display:none;"></div>';
 $output .= '<div id="modal-config-widget" style="display:none;"></div>';
-$output .= '<div id="modal-slides-dialog" style="display: none;"></div>';
+$output .= '<div id="modal-slides-dialog" style="display:none;"></div>';
 
 // Layout.
 $output .= '<div class="container-fluid">';

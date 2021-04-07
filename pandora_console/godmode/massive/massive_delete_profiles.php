@@ -1,17 +1,32 @@
 <?php
+/**
+ * View for delete profiles in Massive Operations
+ *
+ * @category   Configuration
+ * @package    Pandora FMS
+ * @subpackage Massive Operations
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 if (! check_acl($config['id_user'], 0, 'UM')) {
@@ -199,16 +214,13 @@ array_push($table->data, $data);
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-html_print_input_hidden('delete_profiles', 1);
-html_print_submit_button(__('Delete'), 'del', false, 'class="sub delete"');
-echo '</div>';
+attachActionButton('delete_profiles', 'delete', $table->width);
 
 echo '</form>';
 
 unset($table);
 
-// TODO: Change to iu_print_error system
+// TODO: Change to iu_print_error system.
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 ui_require_jquery_file('form');
@@ -224,7 +236,7 @@ $(document).ready (function () {
         var $select = $("#users_id").disable ();
         $("#users_loading").show ();
         $("option", $select).remove ();
-        console.log($("#groups_id").val());
+
         jQuery.post ("ajax.php",
             {"page" : "godmode/massive/massive_delete_profiles",
             "get_users" : 1,

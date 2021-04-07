@@ -59,11 +59,11 @@ if (is_ajax() === true) {
     if ($get_group_json === true) {
         $id_group = (int) get_parameter('id_group');
 
-        if ($id_group === 0) {
+        if ($id_group === 0 || $id_group === -1) {
             $group = [
                 'id_grupo'  => 0,
-                'nombre'    => 'All',
-                'icon'      => 'world',
+                'nombre'    => 'None',
+                'icon'      => '',
                 'parent'    => 0,
                 'disabled'  => 0,
                 'custom_id' => null,
@@ -472,7 +472,7 @@ if ($update_group) {
                 $values = [
                     'nombre'      => $name,
                     'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
-                    'parent'      => $id_parent,
+                    'parent'      => $id_parent == -1 ? 0 : $id_parent,
                     'disabled'    => !$alerts_enabled,
                     'custom_id'   => $custom_id,
                     'id_skin'     => $skin,
@@ -719,7 +719,7 @@ if ($tab == 'tree') {
 
     if (users_can_manage_group_all('AR') === false) {
         $user_groups_acl = users_get_groups(false, 'AR');
-        $groups_acl = implode(',', $user_groups_ACL);
+        $groups_acl = implode('","', $user_groups_acl);
         if (empty($groups_acl) === true) {
             return ui_print_info_message(
                 [
@@ -729,7 +729,7 @@ if ($tab == 'tree') {
             );
         }
 
-        $acl = 'AND t.id_grupo IN ('.$groups_acl.')';
+        $acl = 'AND t.nombre IN ("'.$groups_acl.'")';
     }
 
     $form = "<form method='post' action=''>";
@@ -908,7 +908,7 @@ if ($tab == 'tree') {
     }
 }
 
-if (check_acl($config['id_user'], 0, 'PM') === true) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
         echo '<div class="action-buttons w100p">';
             html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');

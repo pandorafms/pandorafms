@@ -139,6 +139,15 @@ class TreeGroupEdition extends TreeGroup
             }
         );
 
+        // Filter groups that user has permission.
+        $groups = array_filter(
+            $groups,
+            function ($group) {
+                global $config;
+                return check_acl($config['id_user'], $group['id'], 'AR');
+            }
+        );
+
         usort($groups, ['Tree', 'cmpSortNames']);
         return $groups;
     }

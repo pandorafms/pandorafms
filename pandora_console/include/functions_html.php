@@ -717,7 +717,8 @@ function html_print_select(
     $message='',
     $select_all=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $truncate_size=false
 ) {
     $output = "\n";
 
@@ -851,6 +852,18 @@ function html_print_select(
                 && in_array($value, array_keys($option_style))
             ) {
                 $output .= ' style="'.$option_style[$value].'"';
+            }
+
+            if ($truncate_size !== false) {
+                $output .= ' Title="'.$optlabel.'"';
+
+                $optlabel = ui_print_truncate_text(
+                    $optlabel,
+                    $truncate_size,
+                    false,
+                    true,
+                    false
+                );
             }
 
             if ($optlabel === '') {
@@ -1502,7 +1515,7 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT,
+    $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
     $required=false
 ) {
@@ -1517,13 +1530,7 @@ function html_print_select_from_sql(
     foreach ($result as $row) {
         $id = array_shift($row);
         $value = array_shift($row);
-        $fields[$id] = ui_print_truncate_text(
-            $value,
-            $trucate_size,
-            false,
-            true,
-            false
-        );
+        $fields[$id] = $value;
     }
 
     return html_print_select(
@@ -1550,7 +1557,8 @@ function html_print_select_from_sql(
         // Simple_multiple_options.
         false,
         // Required.
-        $required
+        $required,
+        $truncate_size
     );
 }
 

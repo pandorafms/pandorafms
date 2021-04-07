@@ -46,7 +46,7 @@ if (defined('METACONSOLE')) {
     $sec = 'gmodules';
 }
 
-if (is_management_allowed() === true) {
+if (is_management_allowed() === true || is_metaconsole()) {
     $create = (bool) get_parameter('create');
     $update = (bool) get_parameter('update');
     $delete = (bool) get_parameter('delete');
@@ -125,7 +125,7 @@ if ($delete) {
         ['id_sg' => $id]
     );
 
-    if (($result !== false) and ($result1 !== false)) {
+    if (($result !== false) && ($result1 !== false)) {
         $result = true;
     } else {
         $result = false;
@@ -187,7 +187,7 @@ if ($multiple_delete) {
     );
 }
 
-if (($id || $new) && !$delete && !$multiple_delete && is_management_allowed() === true) {
+if (($id || $new) && !$delete && !$multiple_delete && (is_management_allowed() === true || is_metaconsole())) {
     include_once 'manage_nc_groups_form.php';
     return;
 }
@@ -230,7 +230,7 @@ $table->class = 'info_table';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');
-if (is_management_allowed() === true) {
+if (is_management_allowed() === true || is_metaconsole()) {
     $table->head[1] = __('Action');
 }
 
@@ -262,15 +262,15 @@ foreach ($groups as $group) {
     }
 
     $table->cellclass[][1] = 'action_buttons';
-    if (is_management_allowed() === true) {
+    if (is_management_allowed() === true || is_metaconsole()) {
         $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+        href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
     }
 
     array_push($table->data, $data);
 }
 
-if (is_management_allowed() === false) {
+if (is_management_allowed() === false && !is_metaconsole()) {
     ui_print_warning_message(__('This node is configured with centralized mode. This page is for read only. Go to metaconsole to manage the component groups.'));
 }
 
@@ -278,7 +278,7 @@ if (isset($data)) {
     echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    if (is_management_allowed() === true) {
+    if (is_management_allowed() === true || is_metaconsole()) {
         echo "<div class='pdd_l_10px float-right mrgn_btn_15px'>";
         html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
         echo '</div>';
@@ -289,7 +289,7 @@ if (isset($data)) {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined component groups') ]);
 }
 
-if (is_management_allowed() === true) {
+if (is_management_allowed() === true || is_metaconsole()) {
     echo '<form method="post" action='.$url.'>';
     echo '<div class="float-right">';
         html_print_input_hidden('new', 1);

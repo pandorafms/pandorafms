@@ -763,7 +763,7 @@ function newsletter_wiz_modal(
     $output .= __('Do you want to be up to date?');
     $output .= '" class="invisible">';
     $output .= '<div class="register_update_manager">';
-    $output .= html_print_image('image/pandora_big_circle.png', true);
+    $output .= html_print_image('images/pandora_circle_big.png', true);
     $output .= '</div>';
 
     $output .= '<div class="newsletter_div">';

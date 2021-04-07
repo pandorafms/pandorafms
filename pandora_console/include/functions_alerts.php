@@ -173,12 +173,21 @@ function alerts_get_event_status_group($idGroup, $type='alert_fired', $query='AN
         $idAgents = array_values($agents);
     }
 
-    $result = db_get_all_rows_sql(
+    $sql = sprintf(
         'SELECT id_evento
-		FROM tevento
-		WHERE estado = 0 AND id_agente IN (0,'.implode(',', $idAgents).') '.$typeWhere.$query.'
-		ORDER BY id_evento DESC LIMIT 1'
+        FROM tevento
+        WHERE estado = 0
+            AND id_agente IN (0, %s)
+            %s
+            %s
+        ORDER BY id_evento DESC
+        LIMIT 1',
+        implode(',', $idAgents),
+        $typeWhere,
+        $query
     );
+
+    $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
         return false;
@@ -2125,8 +2134,6 @@ function get_group_alerts(
         $disabled = $filter;
     }
 
-    $filter .= ' AND talert_template_modules.disabled = 0 ';
-
     switch ($disabled) {
         case 'notfired':
             $filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -2144,8 +2151,12 @@ function get_group_alerts(
             $filter .= ' AND talert_template_modules.disabled = 0';
         break;
 
-        default:
+        case 'all':
             $filter .= '';
+        break;
+
+        default:
+            $filter .= ' AND talert_template_modules.disabled = 0 ';
         break;
     }
 
@@ -2186,8 +2197,8 @@ function get_group_alerts(
                         WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
-						FROM tagente_modulo
-						WHERE delete_pending = 0
+						FROM tagente_modulo tam
+						WHERE delete_pending = 0 AND tam.disabled = 0
 							AND id_agente IN (SELECT id_agente
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg

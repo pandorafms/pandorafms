@@ -440,17 +440,21 @@ if (!defined('METACONSOLE')) {
     $table->valign[6] = 'top';
 }
 
-$group_um = users_get_groups_UM($config['id_user']);
-
 $info1 = [];
 
 $user_is_admin = users_is_admin();
-// Is admin or has group permissions all.
-if ($user_is_admin || isset($group_um[0])) {
+
+if ($user_is_admin) {
     $info1 = get_users($order);
 } else {
-    foreach ($group_um as $group => $value) {
-        $info1 = array_merge($info1, users_get_users_by_group($group, $value));
+    $group_um = users_get_groups_UM($config['id_user']);
+    // 0 is the group 'all'.
+    if (isset($group_um[0])) {
+        $info1 = get_users($order);
+    } else {
+        foreach ($group_um as $group => $value) {
+            $info1 = array_merge($info1, users_get_users_by_group($group, $value));
+        }
     }
 }
 
@@ -591,10 +595,10 @@ foreach ($info as $user_id => $user_info) {
             $data[4] .= '<div class="text_end">';
         foreach ($user_profiles as $row) {
             if ($total_profile <= 5) {
-                $data[4] .= "<div class='left'>";
+                $data[4] .= "<div class='float-left'>";
                 $data[4] .= profile_get_name($row['id_perfil']);
                 $data[4] .= ' / </div>';
-                $data[4] .= "<div class='left pdd_l_5px'>";
+                $data[4] .= "<div class='float-left pdd_l_5px'>";
                 $data[4] .= groups_get_name($row['id_grupo'], true);
                 $data[4] .= '</div>';
 

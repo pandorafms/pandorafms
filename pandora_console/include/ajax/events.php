@@ -1865,11 +1865,12 @@ if ($get_table_response_command) {
 }
 
 if ($get_events_fired) {
+    global $config;
     $id = get_parameter('id_row');
     $idGroup = get_parameter('id_group');
     $agents = get_parameter('agents', null);
 
-    $query = ' AND id_evento > '.$id;
+    $query = ' AND id_evento >= '.$id;
 
     $type = [];
     $alert = get_parameter('alert_fired');
@@ -1889,7 +1890,10 @@ if ($get_events_fired) {
     if ($critical == 'true') {
         $resultCritical = alerts_get_event_status_group(
             $idGroup,
-            'going_up_critical',
+            [
+                'going_up_critical',
+                'going_down_critical',
+            ],
             $query,
             $agents
         );
@@ -1899,7 +1903,10 @@ if ($get_events_fired) {
     if ($warning == 'true') {
         $resultWarning = alerts_get_event_status_group(
             $idGroup,
-            'going_up_warning',
+            [
+                'going_up_warning',
+                'going_down_warning',
+            ],
             $query,
             $agents
         );

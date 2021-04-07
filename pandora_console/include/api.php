@@ -41,6 +41,7 @@ if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php') ==
 }
 
 // TESTING THE UPDATE MANAGER.
+enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
@@ -316,7 +317,7 @@ if ($correctLogin) {
 }
 
 // Logout.
-if (session_status() === PHP_SESSION_ACTIVE) {
+if (session_status() !== PHP_SESSION_DISABLED) {
     $_SESSION = [];
     // Could give a warning if no session file is created. Ignore.
     @session_destroy();

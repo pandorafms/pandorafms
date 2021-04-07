@@ -1,5 +1,7 @@
 START TRANSACTION;
 
 ALTER TABLE `tmetaconsole_setup` ADD COLUMN `info_merge` MEDIUMTEXT NOT NULL DEFAULT '';
+ALTER TABLE `tagent_custom_fields` MODIFY COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
+
 
 COMMIT;

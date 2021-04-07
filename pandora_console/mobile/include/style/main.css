@@ -1296,6 +1296,11 @@ table.tactical_bars {
   -webkit-border-radius: 15px !important;
 }
 
+.ui-header.ui-bar-a .ui-btn-icon-notext .ui-btn-inner .ui-icon {
+  margin-top: -3px;
+  margin-left: 3.5px;
+}
+
 #login_btn-container .ui-icon {
   background-color: #333 !important;
   border-radius: 15px !important;
@@ -1431,7 +1436,7 @@ div.nodata_container {
 }
 
 .ui-icon-delete {
-  margin-top: -3px !important;
+  margin-top: -3px;
 }
 
 .empty_advice {

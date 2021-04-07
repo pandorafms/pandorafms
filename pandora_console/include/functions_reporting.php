@@ -8587,7 +8587,7 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     }
                 }
             break;
@@ -8608,7 +8608,7 @@ function reporting_general($report, $content)
 
                     if ($change_min) {
                         $return['min']['value'] = $val;
-                        $return['min']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, $unit);
+                        $return['min']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$unit);
                         $return['min']['agent'] = $ag_name;
                         $return['min']['module'] = $mod_name;
                     }
@@ -8624,7 +8624,7 @@ function reporting_general($report, $content)
 
                     if ($change_max) {
                         $return['max']['value'] = $val;
-                        $return['max']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, $unit);
+                        $return['max']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$unit);
                         $return['max']['agent'] = $ag_name;
                         $return['max']['module'] = $mod_name;
                     }
@@ -8650,7 +8650,7 @@ function reporting_general($report, $content)
 
                 if ($change_min) {
                     $return['min']['value'] = $data_res[$index];
-                    $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                    $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     $return['min']['agent'] = $ag_name;
                     $return['min']['module'] = $mod_name;
                 }
@@ -8666,7 +8666,7 @@ function reporting_general($report, $content)
 
                 if ($change_max) {
                     $return['max']['value'] = $data_res[$index];
-                    $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                    $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     $return['max']['agent'] = $ag_name;
                     $return['max']['module'] = $mod_name;
                 }
@@ -8800,7 +8800,7 @@ function reporting_general($report, $content)
                                 $data['formated_value'][] = $val;
                             } else {
                                 $data['value'][] = $val;
-                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, $units[$i]);
+                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$i]);
                             }
                         }
                     }
@@ -8829,7 +8829,7 @@ function reporting_general($report, $content)
                             $data['formated_value'] = $d;
                         } else {
                             $data['value'] = $d;
-                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, $units[$i]);
+                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$i]);
                         }
                     }
                 }

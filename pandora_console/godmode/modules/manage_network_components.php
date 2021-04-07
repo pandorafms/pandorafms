@@ -568,71 +568,19 @@ if ($id || $new_component
     return;
 }
 
-$url = ui_get_url_refresh(
-    [
-        'offset'                => false,
-        'id'                    => false,
-        'create_component'      => false,
-        'update_component'      => false,
-        'delete_component'      => false,
-        'id_network_component'  => false,
-        'upd'                   => false,
-        'crt'                   => false,
-        'type'                  => false,
-        'name'                  => false,
-        'description'           => false,
-        'max'                   => false,
-        'min'                   => false,
-        'tcp_send'              => false,
-        'tcp_rcv'               => false,
-        'tcp_port'              => false,
-        'snmp_oid'              => false,
-        'snmp_community'        => false,
-        'id_module_group'       => false,
-        'module_interval'       => false,
-        'id_group'              => false,
-        'plugin_user'           => false,
-        'plugin_pass'           => false,
-        'plugin_parameter'      => false,
-        'macros'                => false,
-        'max_timeout'           => false,
-        'max_retries'           => false,
-        'id_modulo'             => false,
-        'id_plugin'             => false,
-        'history_data'          => false,
-        'dynamic_interval'      => false,
-        'dynamic_max'           => false,
-        'dynamic_min'           => false,
-        'dynamic_two_tailed'    => false,
-        'min_warning'           => false,
-        'max_warning'           => false,
-        'str_warning'           => false,
-        'min_critical'          => false,
-        'max_critical'          => false,
-        'str_critical'          => false,
-        'ff_event'              => false,
-        'id_component_type'     => false,
-        'critical_instructions' => false,
-        'warning_instructions'  => false,
-        'unknown_instructions'  => false,
-        'critical_inverse'      => false,
-        'warning_inverse'       => false,
-        'id_category'           => false,
-        'tags'                  => false,
-        'ff_event_normal'       => false,
-        'ff_event_warning'      => false,
-        'ff_event_critical'     => false,
-        'each_ff'               => false,
-        'ff_type'               => false,
-    ]
-);
-
 
 $search_id_group = (int) get_parameter('search_id_group');
 $search_string = (string) get_parameter('search_string');
-if (!empty($search_string)) {
-    $search_string = trim($search_string, '&#x20;');
-}
+
+$url = ui_get_url_refresh(
+    [
+        'offset'          => false,
+        'search_string'   => $search_string,
+        'search_id_group' => $search_id_group,
+    ],
+    true,
+    false
+);
 
 $table = new stdClass();
 $table->width = '100%';

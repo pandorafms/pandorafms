@@ -29,7 +29,10 @@
 
 // Load global vars.
 global $config;
-require_once 'include/config.php';
+require_once $config['homedir'].'/include/config.php';
+require_once $config['homedir'].'/vendor/autoload.php';
+
+use PandoraFMS\Core\Config;
 
 check_login();
 
@@ -40,6 +43,9 @@ if (! check_acl($config['id_user'], 0, 'PM')
     include 'general/noaccess.php';
     return;
 }
+
+// Load needed resources.
+ui_require_css_file('setup.multicolumn');
 
 $update_config = get_parameter('update_config', 0);
 if ($update_config == 1 && $config['history_db_enabled'] == 1) {
@@ -64,7 +70,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
         $historical_string_purge = get_parameter('historical_string_purge', 0);
 
         $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
+            'DESCRIBE tconfig',
             'affected_rows',
             $config['history_db_connection'],
             false
@@ -388,43 +394,11 @@ if ($config['history_db_enabled'] == 1) {
         );
     }
 
-    $config_history = false;
-    if ($config['history_db_connection']) {
-        $history_connect = @mysql_db_process_sql(
-            'SELECT 1 FROM tconfig',
-            'affected_rows',
-            $config['history_db_connection'],
-            false
-        );
-
-        if ($history_connect !== false) {
-            $config_history_array = mysql_db_process_sql(
-                'SELECT * FROM tconfig',
-                'affected_rows',
-                $config['history_db_connection'],
-                false
-            );
-
-            if (isset($config_history_array) && is_array($config_history_array)) {
-                foreach ($config_history_array as $key => $value) {
-                    $config_history[$value['token']] = $value['value'];
-                }
-            }
-        } else {
-            echo ui_print_error_message(
-                __('The tconfig table does not exist in the historical database')
-            );
-        }
-    }
-
-    if ($config_history === false) {
-        $config_history = [];
-        $config_history['days_purge'] = 180;
-        $config_history['days_compact'] = 120;
-        $config_history['step_compact'] = 1;
-        $config_history['event_purge'] = 180;
-        $config_history['string_purge'] = 180;
-    }
+    $config_history['days_purge'] = Config::get('days_purge', 180, true);
+    $config_history['days_compact'] = Config::get('days_compact', 120, true);
+    $config_history['step_compact'] = Config::get('step_compact', 1, true);
+    $config_history['event_purge'] = Config::get('event_purge', 180, true);
+    $config_history['string_purge'] = Config::get('string_purge', 180, true);
 
     $table_historical = new StdClass();
     $table_historical->width = '100%';
@@ -652,9 +626,33 @@ $table_other->data[14][1] = html_print_input_text(
     true
 );
 
+$table_other->data[15][0] = __('SNMP walk binary');
+$table_other->data[15][1] = html_print_input_text(
+    'snmpwalk',
+    $config['snmpwalk'],
+    '',
+    50,
+    10,
+    true
+);
+
+$tip = ui_print_help_tip(
+    __('SNMP bulk walk is not able to request V1 SNMP, this option will be used instead (by default snmpwalk, slower).'),
+    true
+);
+$table_other->data[16][0] = __('SNMP walk binary (fallback)').$tip;
+$table_other->data[16][1] = html_print_input_text(
+    'snmpwalk_fallback',
+    $config['snmpwalk_fallback'],
+    '',
+    50,
+    10,
+    true
+);
+
 echo '<form id="form_setup" method="post">';
 
-echo '<fieldset>';
+echo '<fieldset class="full-column">';
     echo '<legend>'.__('Database maintenance status').' '.ui_print_help_icon('database_maintenance_status_tab', true).'</legend>';
     html_print_table($table_status);
 echo '</fieldset>';

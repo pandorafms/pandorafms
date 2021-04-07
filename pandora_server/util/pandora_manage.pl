@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.751 PS210107";
+my $version = "7.0NG.753 PS210407";
 
 # save program name for logging
 my $progname = basename($0);
@@ -176,6 +176,7 @@ sub help_screen{
 	help_screen_line('--get_alert_actions_meta', '[<server_name> <action_name> <separator> <return_type>]', 'get all alert actions in nodes');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
+	help_screen_line('--validate_alert', '<template_name> <agent_id> <module_id> [<use_alias>]', 'Validate alert given angent, module and alert');
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
@@ -202,8 +203,6 @@ sub help_screen{
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
   	help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
-	print "\nINCIDENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
 	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
@@ -4365,21 +4364,6 @@ sub cli_add_event_comment() {
 }
 
 ##############################################################################
-# Create incident.
-# Related option: --create_incident
-##############################################################################
-
-sub cli_create_incident() {
-	my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
-	
-	my $id_group = get_group_id($dbh,$group_name);
-	exist_check($id_group,'group',$group_name);
-	
-	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
-	print_log "[INFO] Creating incident '$title'\n\n";
-}
-
-##############################################################################
 # Delete data.
 # Related option: --delete_data
 ##############################################################################
@@ -4548,6 +4532,86 @@ sub cli_validate_all_alerts() {
 		db_update ($dbh, "UPDATE tagente SET fired_count = 0");
 	}
 }
+
+##############################################################################
+# Validate all the alerts
+# Related option: --validate_alert
+##############################################################################
+
+sub cli_validate_alert() {
+		my ($template_name, $agent_id, $module_id, $use_alias) = @ARGV[2..6];
+	my $id_agent = '';
+	my $id_agentmodule = '';
+
+	my $result = 0;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_id);
+			if(!@id_agents) {
+				print (STDERR "[ERROR] Error: The agent '$agent_id' not exists.\n\n");
+		}
+
+		foreach my $id (@id_agents) {
+			if(defined($agent_id) && $agent_id ne '') {
+				$id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$agent_id);
+				
+				if($module_id ne '') {
+					$module_id = get_agent_module_id($dbh, $module_id, $id_agent);
+					if ($module_id eq -1) {
+						next;
+					}
+				}
+			}
+
+
+			my $id_alert_agent_module = '';
+			
+			if(defined($template_name) && $template_name ne '') {
+				my $id_template = get_template_id($dbh,$template_name);
+				exist_check($id_template,'template',$template_name);
+				$id_alert_agent_module = get_template_module_id($dbh,$module_id,$id_template);
+				exist_check($id_alert_agent_module,'template module',$template_name);
+			}
+
+
+			$result = pandora_validate_alert_id($id_alert_agent_module, $id, $module_id, $template_name);
+			print_log "[INFO] Validating alert for agent '$id->{'nombre'}'\n\n";
+		}
+	} else {
+		if(defined($agent_id) && $agent_id ne '') {
+			my $agent_name = get_agent_name($dbh,$agent_id);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			if($module_id ne '') {
+				my $module_name = get_module_name($dbh, $module_id);
+				exist_check($module_id,'module',$module_name);
+			}
+		}
+
+		my $id_alert_agent_module = '';
+		
+		if(defined($template_name) && $template_name ne '') {
+			my $id_template = get_template_id($dbh,$template_name);
+			exist_check($id_template,'template',$template_name);
+			$id_alert_agent_module = get_template_module_id($dbh,$module_id,$id_template);
+			exist_check($id_alert_agent_module,'template module',$template_name);
+		}
+					
+			$result = pandora_validate_alert_id($id_alert_agent_module, $id_agent, $module_id, $template_name);
+			print_log "[INFO] Validating alert for agent '$agent_id'\n\n";
+	}
+
+if($result == 0) {
+		print_log "[ERROR] Alert could not be validated\n\n";
+	}
+	else {
+			print_log "[INFO] Alert succesfully validated\n\n";
+;
+	}
+
+}
+
 
 ##############################################################################
 # Validate the alerts of a given policy
@@ -7392,10 +7456,6 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 3);
 			cli_add_event_comment();
 		}
-		elsif ($param eq '--create_incident') {
-			param_check($ltotal, 7, 1);
-			cli_create_incident();
-		}
 		elsif ($param eq '--delete_data') {
 			param_check($ltotal, 4, 2);
 			cli_delete_data($ltotal);
@@ -7525,6 +7585,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--validate_all_alerts') {
 			param_check($ltotal, 0);
 			cli_validate_all_alerts();
+		}
+		elsif ($param eq '--validate_alert') {
+			param_check($ltotal, 5,4);
+			cli_validate_alert();
 		}
 		elsif ($param eq '--validate_policy_alerts') {
 			param_check($ltotal, 1);
@@ -8437,4 +8501,59 @@ sub cli_event_in_progress() {
 	);
 
 	print "\n$result\n";
+}
+
+##############################################################################
+# Validates an alert given id alert, id module, id angent and template name.
+##############################################################################
+sub pandora_validate_alert_id($$$$) {
+	my ($id_alert_agent_module, $agent_id, $id_agent_module, $template_name) = @_;
+
+
+  my $group_id = get_agent_group($dbh, $agent_id);
+
+	my $critical_instructions = get_db_value($dbh, 'SELECT critical_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+	my $warning_instructions = get_db_value($dbh, 'SELECT warning_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+	my $unknown_instructions = get_db_value($dbh, 'SELECT unknown_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+
+	my $parameters = {
+		'times_fired' => 0,
+		'internal_counter' => 0,
+		};
+
+	my $result = db_process_update($dbh, 'talert_template_modules', $parameters,{'id' => $id_alert_agent_module});
+
+	return 0 unless $result != 0;
+
+  my $module_name = safe_output(get_db_value($dbh, 'SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agent_module));
+
+
+		# Update fired alert count on the agent
+		db_process_update($dbh, 'tagente', {'update_alert_count' => 1}, {'id_agente' => $agent_id});
+
+		my $event = 'Manual validation of alert '.$template_name.' assigned to '.$module_name.'';
+
+		pandora_event(
+			$conf,
+			$event,
+			$group_id, 
+			$agent_id,
+			0,
+			$id_alert_agent_module,
+			$id_agent_module,
+			'alert_manual_validation',
+			1,
+			$dbh,
+			0,
+			'',
+			'',
+			'',
+			'',
+			$critical_instructions,
+			$warning_instructions,
+			$unknown_instructions,
+			''
+		);
+
+    return 1;
 }

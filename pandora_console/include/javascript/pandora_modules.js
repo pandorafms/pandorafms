@@ -1173,9 +1173,9 @@ function add_macro() {
   $("#module_macros").append(
     '<tr id="module_macros-' +
       macro_count +
-      '" class="datos2"><td style=" font-weight: bold; vertical-align: top;" class="datos2">Name</td> \
+      '" class="datos2"><td class="datos2 bold_top">Name</td> \
 	<td style="" class="datos2"><input type="text" name="module_macro_names[]" value="" id="text-module_macro_names[]" size="50" maxlength="60"></td> \
-	<td style="font-weight: bold; vertical-align: top;" class="datos2">Value</td> \
+	<td class="datos2 bold_top">Value</td> \
 	<td style="" class="datos2"><input type="text" name="module_macro_values[]" value="" id="text-module_macro_values[]" size="50" maxlength="60"></td> \
 	<td style="" class="datos2"><a href="javascript: delete_macro(' +
       macro_count +
@@ -1225,7 +1225,7 @@ function get_explanation_recon_script(id, id_rt, url) {
 
   var xhr = jQuery.ajax({
     data: {
-      page: "enterprise/include/ajax/hostDevices.ajax",
+      page: "include/ajax/hostDevices.ajax",
       get_explanation: 1,
       id: id,
       id_rt: id_rt
@@ -1253,7 +1253,7 @@ function get_explanation_recon_script(id, id_rt, url) {
 
   var xhr = jQuery.ajax({
     data: {
-      page: "enterprise/include/ajax/hostDevices.ajax",
+      page: "include/ajax/hostDevices.ajax",
       get_recon_script_macros: 1,
       id: id,
       id_rt: id_rt

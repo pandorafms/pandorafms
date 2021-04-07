@@ -407,6 +407,10 @@ table.group_modules_status_box tr td span a {
   text-align: center;
 }
 
+table.widget_agent_module tbody tr td {
+  padding: 5px;
+}
+
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
 }
@@ -529,6 +533,16 @@ div#main_pure {
 
 #select_multiple_modules_filtered > div > div > * {
   flex: auto;
+}
+
+.visual-console-container-dashboard div.label strong {
+  color: inherit;
+  font-family: inherit;
+}
+
+.visual-console-container-dashboard div.label strong span {
+  color: inherit;
+  font-family: inherit;
 }
 
 /* Mobile trick */

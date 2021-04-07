@@ -25,12 +25,19 @@ function load_matrix_console()
 
     if (! $pure) {
         $title_menu = __('Matrix events');
-        $fullscreen['text'] = '<a href="index.php?extension_in_menu=eventos&sec=extensions&sec2=extensions/matrix_events&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $fullscreen['text'] = '<a href="index.php?extension_in_menu=eventos&sec=extensions&sec2=extensions/matrix_events&pure=1">'.html_print_image(
+            'images/full_screen.png',
+            true,
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $onheader = ['fullscreen' => $fullscreen];
         ui_print_page_header($title_menu, 'images/op_monitoring.png', false, '', false, $onheader);
     }
 
-    echo '<canvas id="matrix-terminal" style="display:block;"></canvas>';
+    echo '<canvas id="matrix-terminal" class="visible"></canvas>';
 
     ?>
     <script language="javascript" type="text/javascript">

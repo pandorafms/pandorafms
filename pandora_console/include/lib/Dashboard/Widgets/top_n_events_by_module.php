@@ -277,9 +277,23 @@ class TopNEventByModuleWidget extends Widget
             ],
         ];
 
+        $return_all_group = false;
+
         $selected_groups = [];
         if ($values['groupId']) {
             $selected_groups = explode(',', $values['groupId'][0]);
+
+            if (users_can_manage_group_all('RM') === true
+                || in_array(0, $selected_groups) === true
+            ) {
+                // Return all group if user has permissions
+                // or it is a currently selected group.
+                $return_all_group = true;
+            }
+        } else {
+            if (users_can_manage_group_all('RM') === true) {
+                $return_all_group = true;
+            }
         }
 
         // Groups.
@@ -290,9 +304,11 @@ class TopNEventByModuleWidget extends Widget
                 'name'           => 'groupId[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => $selected_groups,
+                'selected'       => (empty($selected_groups) === true) ? [0] : $selected_groups,
                 'return'         => true,
                 'multiple'       => true,
+                'returnAllGroup' => $return_all_group,
+                'required'       => true,
             ],
         ];
 
@@ -350,7 +366,7 @@ class TopNEventByModuleWidget extends Widget
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
 
         if (empty($this->values['groupId']) === true) {
-            $output .= '<div class="container-center">';
+            $output = '<div class="container-center">';
             $output .= \ui_print_info_message(
                 __('Please select one or more groups.'),
                 '',
@@ -402,7 +418,7 @@ class TopNEventByModuleWidget extends Widget
             $result = db_get_all_rows_sql($sql);
 
             if (empty($result) === true) {
-                $output .= '<div class="container-center">';
+                $output = '<div class="container-center">';
                 $output .= \ui_print_error_message(
                     __('There is not data to show.'),
                     '',
@@ -491,7 +507,7 @@ class TopNEventByModuleWidget extends Widget
                 break;
             }
 
-            $output .= pie_graph(
+            $output = pie_graph(
                 $data_pie,
                 $width,
                 $height,

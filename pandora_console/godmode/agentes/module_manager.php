@@ -45,7 +45,7 @@ if (!isset($policy_page)) {
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 
 echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
+echo "<tr><td class='datos bolder w20p'>";
 echo __('Search').' '.html_print_input_text(
     'search_string',
     $search_string,
@@ -63,10 +63,10 @@ if (($policy_page) || (isset($agent))) {
 }
 
 echo '</td>';
-echo "<td class='datos' style='width:10%'>";
+echo "<td class='datos w10p'>";
 html_print_submit_button(__('Filter'), 'filter', false, 'class="sub search"');
 echo '</td>';
-echo "<td class='datos' style='width:10%'></td>";
+echo "<td class='datos w10p'></td>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo.
@@ -162,7 +162,7 @@ if (($policy_page) || (isset($agent))) {
         // Create module/type combo.
         echo '<form id="create_module_type" method="post" action="'.$url.'">';
         if (!$policy_page) {
-            echo '<td class="datos" style="font-weight: bold; width:20%;">';
+            echo '<td class="datos w20p bolder">';
             echo __('Show in hierachy mode');
             if ($checked == 'true') {
                 $checked = true;
@@ -181,7 +181,7 @@ if (($policy_page) || (isset($agent))) {
             echo '</td>';
         }
 
-        echo '<td class="datos" style="font-weight: bold; width:20%;">';
+        echo '<td class="datos w20p bolder">';
         echo __('<p>Type</p>');
         html_print_select(
             $modules,
@@ -199,7 +199,7 @@ if (($policy_page) || (isset($agent))) {
         );
         html_print_input_hidden('edit_module', 1);
         echo '</td>';
-        echo '<td class="datos" style="width:10%;">';
+        echo '<td class="datos w10p">';
         echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
         echo '</td>';
         echo '</tr>';
@@ -210,9 +210,9 @@ if (($policy_page) || (isset($agent))) {
 echo '</table>';
 
 if (!$config['disable_help']) {
-    echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
+    echo '<div class="disable_help">';
     echo '<strong>';
-    echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
+    echo "<a class='color-black-grey' target='_blank' href='http://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
     echo '</strong>';
     echo '</div>';
 }
@@ -222,9 +222,9 @@ if (! isset($id_agente)) {
 }
 
 
-$multiple_delete = (bool) get_parameter('multiple_delete');
+$module_action = (string) get_parameter('module_action');
 
-if ($multiple_delete) {
+if ($module_action === 'delete') {
     $id_agent_modules_delete = (array) get_parameter('id_delete');
 
     $count_correct_delete_modules = 0;
@@ -400,19 +400,59 @@ if ($multiple_delete) {
     if ($count_correct_delete_modules == 0) {
         ui_print_error_message(
             sprintf(
-                __('There was a problem deleting %s modules, none deleted.'),
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
                 $count_modules_to_delete
             )
         );
     } else {
         if ($count_correct_delete_modules == $count_modules_to_delete) {
-            ui_print_success_message(__('All Modules deleted succesfully'));
+            ui_print_success_message(__('Operation finished successfully.'));
         } else {
             ui_print_error_message(
                 sprintf(
-                    __('There was a problem only deleted %s modules of %s total.'),
-                    count_correct_delete_modules,
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $count_correct_delete_modules,
                     $count_modules_to_delete
+                )
+            );
+        }
+    }
+} else if ($module_action === 'disable') {
+    $id_agent_modules_disable = (array) get_parameter('id_delete');
+
+    $count_correct_delete_modules = 0;
+    $updated_count = 0;
+
+    foreach ($id_agent_modules_disable as $id_agent_module_disable) {
+        $sql = sprintf(
+            'UPDATE tagente_modulo
+                SET disabled = 1
+                WHERE id_agente_modulo = %d',
+            $id_agent_module_disable
+        );
+
+        if (db_process_sql($sql)) {
+            $updated_count++;
+        }
+    }
+
+    $count_modules_to_disable = count($id_agent_modules_disable);
+    if ($updated_count === 0) {
+        ui_print_error_message(
+            sprintf(
+                __('There was a problem completing the operation. Applied to 0/%d modules.'),
+                $count_modules_to_disable
+            )
+        );
+    } else {
+        if ($updated_count == $count_modules_to_disable) {
+            ui_print_success_message(__('Operation finished successfully.'));
+        } else {
+            ui_print_error_message(
+                sprintf(
+                    __('There was a problem completing the operation. Applied to %d/%d modules.'),
+                    $updated_count,
+                    $count_modules_to_disable
                 )
             );
         }
@@ -845,6 +885,9 @@ foreach ($modules as $module) {
             'id_delete[]',
             $module['id_agente_modulo'],
             false,
+            true,
+            false,
+            '',
             true
         );
     }
@@ -856,7 +899,10 @@ foreach ($modules as $module) {
         $data[0] .= html_print_image(
             'images/icono_escuadra.png',
             true,
-            ['style' => 'padding-bottom: inherit;']
+            [
+                'style' => 'padding-bottom: inherit;',
+                'class' => 'invert_filter',
+            ]
         ).'&nbsp;&nbsp;';
     }
 
@@ -925,7 +971,7 @@ foreach ($modules as $module) {
                     $img = 'images/policies_brick.png';
                     $title = '('.__('Adopted').') '.$policyInfo['name_policy'];
                 } else {
-                    $img = 'images/policies.png';
+                    $img = 'images/policies_mc.png';
                     $title = $policyInfo['name_policy'];
                 }
             } else {
@@ -1035,6 +1081,7 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Disable module'),
                 'title' => __('Disable module'),
+                'class' => 'invert_filter',
             ]
         ).'</a>';
     }
@@ -1045,7 +1092,10 @@ foreach ($modules as $module) {
         $data[8] .= html_print_image(
             'images/copy.png',
             true,
-            ['title' => __('Duplicate')]
+            [
+                'title' => __('Duplicate'),
+                'class' => 'invert_filter',
+            ]
         );
         $data[8] .= '</a> ';
 
@@ -1054,9 +1104,12 @@ foreach ($modules as $module) {
             if ($numericModules[$type] === true) {
                 $data[8] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[8] .= html_print_image(
-                    'images/chart_curve.png',
+                    'images/chart.png',
                     true,
-                    ['title' => __('Normalize')]
+                    [
+                        'title' => __('Normalize'),
+                        'class' => 'invert_filter',
+                    ]
                 );
                 $data[8] .= '</a>';
             }
@@ -1076,9 +1129,12 @@ foreach ($modules as $module) {
             $data[8] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'].'"
 				onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
             $data[8] .= html_print_image(
-                'images/network.png',
+                'images/op_network.png',
                 true,
-                ['title' => __('Create network component')]
+                [
+                    'title' => __('Create network component'),
+                    'class' => 'invert_filter',
+                ]
             );
             $data[8] .= '</a> ';
         } else {
@@ -1098,7 +1154,10 @@ foreach ($modules as $module) {
         $data[9] .= html_print_image(
             'images/cross.png',
             true,
-            ['title' => __('Delete')]
+            [
+                'title' => __('Delete'),
+                'class' => 'invert_filter',
+            ]
         );
         $data[9] .= '</a> ';
     }
@@ -1123,12 +1182,29 @@ html_print_table($table);
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_input_hidden('multiple_delete', 1);
-    html_print_submit_button(
-        __('Delete'),
-        'multiple_delete',
+
+    html_print_input_hidden('submit_modules_action', 1);
+
+    html_print_select(
+        [
+            'disable' => 'Disable selected modules',
+            'delete'  => 'Delete selected modules',
+        ],
+        'module_action',
+        '',
+        '',
+        '',
+        0,
         false,
-        'class="sub delete"'
+        false,
+        false
+    );
+
+    html_print_submit_button(
+        __('Execute action'),
+        'submit_modules_action',
+        false,
+        'class="sub next"'
     );
     echo '</div>';
     echo '</form>';

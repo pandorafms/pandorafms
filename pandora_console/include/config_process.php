@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210107';
-$pandora_version = 'v7.0NG.751';
+$build_version = 'PC210407';
+$pandora_version = 'v7.0NG.753';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -40,18 +40,10 @@ if (!is_dir($config['homedir'])) {
 }
 
 
+
 // Help to debug problems. Override global PHP configuration
 global $develop_bypass;
-if ($develop_bypass != 1) {
-    // error_reporting(E_ALL);
-    if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
-        error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
-    } else {
-        error_reporting(E_ALL & ~E_NOTICE);
-    }
-
-    ini_set('display_errors', 0);
-} else {
+if ((int) $develop_bypass === 1) {
     // Develop mode, show all notices and errors on Console (and log it)
     if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
         error_reporting(E_ALL & ~E_DEPRECATED);
@@ -60,6 +52,10 @@ if ($develop_bypass != 1) {
     }
 
     ini_set('display_errors', 1);
+} else {
+    // Leave user decide error_level, but limit errors to be displayed only in
+    // logs.
+    ini_set('display_errors', 0);
 }
 
 // Check if mysqli is available
@@ -101,7 +97,7 @@ require_once $ownDir.'functions.php';
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
-if (!is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl']) || !is_dir($_SERVER['DOCUMENT_ROOT'].$config['homeurl_static'])) {
+if (!is_dir($config['homedir'])) {
     $url = explode('/', $_SERVER['REQUEST_URI']);
     $flag_url = 0;
     foreach ($url as $key => $value) {
@@ -172,6 +168,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 config_process_config();
 config_prepare_session();
+
+if ((bool) $config['console_log_enabled'] === true) {
+    error_reporting(E_ALL ^ E_NOTICE);
+}
 
 // Set a the system timezone default
 if ((!isset($config['timezone'])) or ($config['timezone'] == '')) {
@@ -304,7 +304,7 @@ switch ($config['dbtype']) {
 
 // ======================================================================
 // Menu display mode.
-if ($_SESSION['menu_type']) {
+if (isset($_SESSION['meny_type']) === true && $_SESSION['menu_type']) {
     $config['menu_type'] = $_SESSION['menu_type'];
 } else {
     $config['menu_type'] = 'classic';

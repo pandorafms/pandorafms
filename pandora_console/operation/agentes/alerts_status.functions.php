@@ -1,16 +1,32 @@
 <?php
+/**
+ * Alerts Status functions script
+ *
+ * @category   Functions
+ * @package    Pandora FMS
+ * @subpackage Alert Status
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 function forceExecution($id_group)
 {
     global $config;
@@ -120,14 +136,14 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
     if (defined('METACONSOLE')) {
         $table->data[0][7] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
         $table->rowspan[0][7] = 2;
-        $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
+        $data = '<form class="bg_ec" method="post" action="'.$url.'">';
     } else {
         $data = '<form method="post" action="'.$url.'">';
     }
 
     $data .= html_print_table($table, true);
     if (!defined('METACONSOLE')) {
-        $data .= "<div style='height:100%; text-align:right;'>".html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
+        $data .= "<div class='height_100p right'>".html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true).'</div>';
     }
 
     $data .= '</form>';
@@ -163,7 +179,7 @@ function printFormFilterAlertAgent($agent_view_page, $free_search, $id_agent)
         true
     );
 
-    $table_filter->data[0][0] .= '<span style="margin-left:10px;">'.html_print_input_text(
+    $table_filter->data[0][0] .= '<span class="mrgn_lft_10px">'.html_print_input_text(
         $free_search_name,
         $free_search,
         '',

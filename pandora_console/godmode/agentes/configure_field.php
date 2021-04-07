@@ -33,7 +33,7 @@ if ($id_field) {
     $name = $field['name'];
     $display_on_front = $field['display_on_front'];
     $is_password_type = $field['is_password_type'];
-    $combo_values = $field['combo_values'];
+    $combo_values = $field['combo_values'] ? $field['combo_values'] : '';
     $is_combo_enable = $config['is_combo_enable'];
     ui_print_page_header(__('Update agent custom field'), 'images/custom_field.png', false, '', true, '');
 } else {
@@ -49,20 +49,20 @@ $table->style[2] = 'font-weight: bold';
 $table->style[4] = 'font-weight: bold';
 $table->style[6] = 'font-weight: bold';
 
-echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('You cannot set the Password type until you clear the combo values and click on update button.').'</p>';
+echo "<div id='message_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('You cannot set the Password type until you clear the combo values and click on update button.').'</p>';
 echo '</div>';
 
-echo "<div id='message_set_combo'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('You cannot unset the enable combo until you clear the combo values and click on update.').'</p>';
+echo "<div id='message_set_combo'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('You cannot unset the enable combo until you clear the combo values and click on update.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_set_password'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('If you select Enabled combo the Password type will be disabled.').'</p>';
+echo "<div id='message_no_set_password'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('If you select Enabled combo the Password type will be disabled.').'</p>';
 echo '</div>';
 
-echo "<div id='message_no_set_combo'  title='".__('Agent Custom Fields Information')."' style='display:none;'>";
-echo "<p style='text-align: center;font-weight: bold;'>".__('If you select Passord type the Enabled combo will be disabled.').'</p>';
+echo "<div id='message_no_set_combo'  title='".__('Agent Custom Fields Information')."' class='invisible'>";
+echo "<p class='center bolder'>".__('If you select Passord type the Enabled combo will be disabled.').'</p>';
 echo '</div>';
 
 
@@ -116,12 +116,12 @@ $table->data[4][0] = __('Combo values').ui_print_help_tip(
     __('Set values separated by comma'),
     true
 );
-$table->data[4][1] = html_print_input_text(
+$table->data[4][1] = html_print_textarea(
     'combo_values',
+    3,
+    65,
     io_safe_output($combo_values),
     '',
-    35,
-    200,
     true
 );
 
@@ -144,7 +144,7 @@ echo '</form>';
 
 <script>
 $(document).ready (function () {
-    if($('input[type=hidden][name=update_field]').val() == 1 && $('input[type=text][name=combo_values]').val() != ''){
+    if($('input[type=hidden][name=update_field]').val() == 1 && $('#textarea_combo_values').val() != ''){
         $('input[type=checkbox][name=is_combo_enable]').prop('checked', true);
         $('#configure_field-4').show();
         $('input[type=checkbox][name=is_password_type]').change(function (e) {
@@ -155,7 +155,7 @@ $(document).ready (function () {
             e.preventDefault();
     });
     $('input[type=checkbox][name=is_combo_enable]').change(function (e) {
-        if($('input[type=text][name=combo_values]').val() != '' &&  $('input[type=checkbox][name=is_combo_enable]').prop('checked', true)){
+        if($('#textarea_combo_values').val() != '' &&  $('input[type=checkbox][name=is_combo_enable]').prop('checked', true)){
             dialog_message("#message_set_combo");
             $('input[type=checkbox][name=is_combo_enable]').prop('checked', true);
             $('#configure_field-4').show();

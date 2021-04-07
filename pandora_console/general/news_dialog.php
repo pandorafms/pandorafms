@@ -38,17 +38,17 @@ if (!empty($news)) {
 }
 
 // Prints news dialog template
-echo '<div id="news_dialog" title="" style="display: none;">';
+echo '<div id="news_dialog" class="invisible">';
 
-    echo '<div style="position:absolute; top:30px; left: 10px; text-align: left; right:0%; height:70px; min-width:560px; width: 95%; margin: 0 auto; line-height: 19px;">';
-        echo '<span style="display: block; height: 260px; overflow: auto; text-align: justify; padding: 5px 15px 4px 10px; background: #ECECEC; border-radius: 4px;" id="new_text"></span>';
-        echo '<span style="font-size: 12px; display: block; margin-top: 20px;" id="new_author"></span>';
-        echo '<span style="font-size: 12px; display: block; font-style: italic;" id="new_timestamp"></span>';
+    echo '<div class="parent_new_dialog_tmplt">';
+        echo '<span id="new_text"></span>';
+        echo '<span id="new_author"></span>';
+        echo '<span id="new_timestamp"></span>';
     echo '</div>';
 
-    echo '<div style="position:absolute; margin: 0 auto; top: 340px; right: 10px; width: 570px">';
-        echo '<div style="float: right; width: 20%;">';
-        html_print_submit_button('Ok', 'hide-news-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');
+    echo '<div id="div_btn_new_dialog">';
+        echo '<div class="float-right w20p">';
+        html_print_submit_button('Ok', 'hide-news-help', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok w100px";"');
         echo '</div>';
     echo '</div>';
 

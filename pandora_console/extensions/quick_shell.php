@@ -94,12 +94,23 @@ function quickShell()
         config_update_value('gotty_ssh_port', 8081);
     }
 
+    // Context to allow self-signed certs.
+    $context = stream_context_create(
+        [
+            'http' => [ 'method' => 'GET'],
+            'ssl'  => [
+                'verify_peer'      => false,
+                'verify_peer_name' => false,
+            ],
+        ]
+    );
+
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
 
-        $test = file_get_contents($ws_url);
+        $test = file_get_contents($ws_url, false, $context);
         if ($test === false) {
             ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
             $wiz->printForm(
@@ -197,8 +208,9 @@ function quickShell()
         return;
     }
 
-    // If rediretion is enabled, we will try to connect to http:// or https:// endpoint.
-    $test = get_headers($ws_url);
+    // If rediretion is enabled, we will try to connect using
+    // http:// or https:// endpoint.
+    $test = get_headers($ws_url, null, $context);
     if ($test === false) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();

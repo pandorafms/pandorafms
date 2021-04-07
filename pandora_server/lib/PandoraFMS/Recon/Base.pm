@@ -1713,6 +1713,8 @@ sub app_scan($) {
     $type = 'Oracle';
   } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2) {
     $type = 'DB2';
+  } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER) {
+    $type = 'MSSQL';
   } elsif ($self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
     $type = 'SAP';
   } else {
@@ -1797,6 +1799,7 @@ sub app_scan($) {
         if (   $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
           || $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
           || $self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2
+          || $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER
         ) {
 
           # Database.
@@ -1905,6 +1908,7 @@ sub scan($) {
     if (    $self->{'task_data'}->{'type'} == DISCOVERY_APP_MYSQL
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_ORACLE
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_DB2
+      ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_MICROSOFT_SQL_SERVER
       ||  $self->{'task_data'}->{'type'} == DISCOVERY_APP_SAP) {
       # Application scan.
       $self->call('message', "Scanning application ...", 6);
@@ -2112,17 +2116,17 @@ sub snmp_get_command {
   my $command = "snmpwalk -M$DEVNULL -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
   if ($self->{'snmp_version'} eq "3") {
     if ($self->{'community'}) { # Context
-      $command .= " -N $self->{'community'} ";
+      $command .= " -N \'$self->{'community'}\' ";
     }
     $command .= " -l$self->{'snmp_security_level'} ";
     if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
-      $command .= " -u$self->{'snmp_auth_user'} -a$self->{'snmp_auth_method'} -A$self->{'snmp_auth_pass'} ";
+      $command .= " -u$self->{'snmp_auth_user'} -a $self->{'snmp_auth_method'} -A \'$self->{'snmp_auth_pass'}\' ";
     }
     if ($self->{'snmp_security_level'} eq "authPriv") {
-      $command .= " -x$self->{'snmp_privacy_method'} -X$self->{'snmp_privacy_pass'} ";
+      $command .= " -x$self->{'snmp_privacy_method'} -X \'$self->{'snmp_privacy_pass'}\' ";
     }
   } else {
-    $command .= " -c$community$vlan ";
+    $command .= " -c\'$community\'$vlan ";
   }
 
   return "$command $device $oid 2>$DEVNULL";

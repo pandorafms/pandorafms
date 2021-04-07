@@ -39,6 +39,16 @@ $event_response_id = get_parameter('id_response', 0);
 
 if ($event_response_id > 0) {
     $event_response = db_get_row('tevent_response', 'id', $event_response_id);
+
+    // ACL check for event response edition.
+    if (!check_acl_restricted_all($config['id_user'], $event_response['id_group'], 'PM')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access Group Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else {
     $event_response = [];
     $event_response['name'] = '';
@@ -84,8 +94,14 @@ $data[1] = html_print_input_text(
 );
 $data[1] .= html_print_input_hidden('id_response', $event_response['id'], true);
 
+$return_all_group = false;
+
+if (users_can_manage_group_all('PM') === true) {
+    $return_all_group = true;
+}
+
 $data[2] = __('Group');
-$data[3] = html_print_select_groups(false, 'PM', true, 'id_group', $event_response['id_group'], '', '', '', true);
+$data[3] = html_print_select_groups(false, 'PM', $return_all_group, 'id_group', $event_response['id_group'], '', '', '', true);
 $table->data[0] = $data;
 
 $data = [];
@@ -143,13 +159,13 @@ $data[3] = html_print_select($types, 'type', $event_response['type'], '', '', ''
 $table->data[3] = $data;
 
 $data = [];
-$data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" style="display:none;" class="labels">'.__('URL').'</span>'.ui_print_help_icon('response_macros', true);
+$data[0] = '<span id="command_label" class="labels">'.__('Command').'</span><span id="url_label" class="labels invisible">'.__('URL').'</span>'.ui_print_help_icon('response_macros', true);
 $data[1] = html_print_textarea(
     'target',
     3,
     1,
     $event_response['target'],
-    'style="min-height:initial;"',
+    'class="mh_initial"',
     true
 );
 
@@ -171,23 +187,23 @@ if (enterprise_installed()) {
     }
 }
 
-$data[2] = '<div id="server_to_exec_label" style="display:none;" class="labels">'.__('Server to execute command').'</div>';
-$data[3] = '<div id="server_to_exec_value" style="display:none;">'.html_print_select($servers_to_exec, 'server_to_exec', $event_response['server_to_exec'], '', '', '', true).'</div>';
+$data[2] = '<div id="server_to_exec_label" class="labels invisible">'.__('Server to execute command').'</div>';
+$data[3] = '<div id="server_to_exec_value" class="invisible" >'.html_print_select($servers_to_exec, 'server_to_exec', $event_response['server_to_exec'], '', '', '', true).'</div>';
 
 $table->data[4] = $data;
 
 $data = [];
-$data[0] = '<div id="command_timeout_label" style="display:none;" class="labels">'.__('Command timeout (s)');
-$data[1] = '<div id="command_timeout_value" style="display:none;">'.html_print_input_text('command_timeout', $event_response['command_timeout'], '', 4, 5, true);
+$data[0] = '<div id="command_timeout_label" class="labels invisible">'.__('Command timeout (s)');
+$data[1] = '<div id="command_timeout_value" class="invisible">'.html_print_input_text('command_timeout', $event_response['command_timeout'], '', 4, 5, true);
 
 $table->data[5] = $data;
 if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);
     if (!defined('METACONSOLE')) {
-        echo '<div style="width:100%;text-align:right;">';
+        echo '<div class="w100p right_align">';
     } else {
-        echo '<div style="width:100%;text-align:right;">';
+        echo '<div class="w100p right">';
     }
 
     html_print_submit_button(__('Create'), 'create_response_button', false, ['class' => 'sub next']);
@@ -197,9 +213,9 @@ if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);
     if (!defined('METACONSOLE')) {
-        echo '<div style="width:100%;text-align:right;">';
+        echo '<div class="w100p right_align">';
     } else {
-        echo '<div style="width:100%;text-align:right;">';
+        echo '<div class="w100p right">';
     }
 
     html_print_submit_button(__('Update'), 'update_response_button', false, ['class' => 'sub next']);

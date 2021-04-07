@@ -8,7 +8,7 @@
 Mediante los grupos de parámetros de configuración <b>Cron desde</b> y <b>Cron hasta</b> se
 puede hacer que un módulo solo se ejecute durante ciertos periodos de tiempo. El 
 modo en el que se configura es parecido a la sintaxis de 
-<a style="font-size:14px;" href="https://es.wikipedia.org/wiki/Cron_(Unix)">cron</a>. 
+<a class="font_14px" href="https://es.wikipedia.org/wiki/Cron_(Unix)">cron</a>. 
 Tal y como aparecen en la consola de <?php echo get_product_name(); ?>, cada uno de los parámetros 
 tiene tres opciones.
 

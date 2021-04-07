@@ -25,6 +25,8 @@ if (! check_acl($config['id_user'], 0, 'RR') || enterprise_installed() === false
     return;
 }
 
+
+
 $report_r = check_acl($config['id_user'], 0, 'RR');
 $report_w = check_acl($config['id_user'], 0, 'RW');
 $report_m = check_acl($config['id_user'], 0, 'RM');
@@ -52,7 +54,14 @@ $max_graph = $config['max_graph_container'];
 
 $buttons['graph_list'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('Graph list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 $enterpriseEnable = false;
@@ -69,7 +78,14 @@ $subsection = reporting_enterprise_add_graph_template_subsection('', $buttons);
 
 $buttons['graph_container'] = [
     'active' => true,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graph container')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image(
+        'images/graph-container.png',
+        true,
+        [
+            'title' => __('Graph container'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 // Header
 ui_print_page_header(__('Graph container'), '', false, '', false, $buttons);
@@ -79,9 +95,9 @@ $container = folder_get_folders();
 $tree = folder_get_folders_tree_recursive($container);
 echo folder_togge_tree_folders($tree);
 if ($report_r && $report_w) {
-    echo "<div style='float: right;'>";
-            echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
-                html_print_submit_button(__('Create container'), 'create', false, 'class="sub next" style="margin-right:5px;margin-top: 15px;"');
+    echo "<div class='right'>";
+            echo '<form method="post" class="right" action="index.php?sec=reporting&sec2=godmode/reporting/create_container">';
+                html_print_submit_button(__('Create container'), 'create', false, 'class="sub next mrgn_right_5px mrgn_top_15px"');
             echo '</form>';
     echo '</div>';
 }
@@ -101,7 +117,7 @@ if ($report_r && $report_w) {
                 },
             success: function(data) {
                 $("#div_"+hash).remove(); 
-                $("#tgl_div_"+hash).prepend("<div id='div_"+hash+"' class='graph_conteiner_inside' style='width: 99%;padding-left: 63px; padding-top: 7px;'>"+data+"</div>");
+                $("#tgl_div_"+hash).prepend("<div id='div_"+hash+"' class='graph_conteiner_inside w99p pdd_l_36px ppd_t_7px'>"+data+"</div>");
                 
                 if($('div[class *= graph]').length == 0  && $('div[class *= bullet]').length == 0 && $('div[id *= gauge_]').length == 0){
                     $("#div_"+hash).remove();

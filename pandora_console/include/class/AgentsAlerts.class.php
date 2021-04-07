@@ -321,8 +321,8 @@ class AgentsAlerts extends HTML
                 $table2->data[0][1] .= html_print_anchor(
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$this->pure,
-                        'style'   => 'margin-left:5px;',
-                        'content' => html_print_image('images/add.png', true).'<span style="margin-left:5px;vertical-align:middle;">'.__('Create Action').'</span>',
+                        'class'   => 'mrgn_lft_5px',
+                        'content' => html_print_image('images/add.png', true).'<span class="mrgn_lft_5px vertical_middle">'.__('Create Action').'</span>',
                     ],
                     true
                 );
@@ -369,7 +369,7 @@ class AgentsAlerts extends HTML
                     [
                         'href'    => 'index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$this->pure,
                         'style'   => 'margin-left:5px;',
-                        'content' => html_print_image('images/add.png', true).'<span style="margin-left:5px;vertical-align:middle;">'.__('Create Template').'</span>',
+                        'content' => html_print_image('images/add.png', true).'<span class="mrgn_lft_5px vertical_middle">'.__('Create Template').'</span>',
                     ],
                     true
                 );
@@ -548,10 +548,7 @@ class AgentsAlerts extends HTML
             if (empty($templates_raw)) {
                 $templates_raw = [];
             }
-        }
-
-        // Is needed sort templates for show in the row.
-        sort($templates);
+        };
 
         $alerts = [];
         $ntemplates = 0;
@@ -600,20 +597,22 @@ class AgentsAlerts extends HTML
                 }
 
                 $templates[$temp['id']] = $temp['name'];
+            }
+        }
 
-                if (empty($temp['name']) === false) {
-                    $outputLine = html_print_div(
-                        [
-                            'id'      => 'line_header_'.$temp['id'],
-                            'class'   => 'rotate_text_module position_text_module',
-                            'style'   => '',
-                            'content' => '<div title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</div>',
-                        ],
-                        true
-                    );
+        foreach ($templates as $id => $name) {
+            if (empty($name) === false) {
+                $outputLine = html_print_div(
+                    [
+                        'id'      => 'line_header_'.$id,
+                        'class'   => 'rotate_text_module position_text_module',
+                        'style'   => '',
+                        'content' => '<div title="'.io_safe_output($name).'">'.ui_print_truncate_text(io_safe_output($name), 20).'</div>',
+                    ],
+                    true
+                );
 
-                    echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
-                }
+                echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
             }
         }
 
@@ -651,7 +650,7 @@ class AgentsAlerts extends HTML
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
             // Name of the agent.
-            echo '<td style="font-weight:bold;text-align: right;">'.$alias['alias'].'</td>';
+            echo '<td class="bolder" style="text-align: right" >'.$alias['alias'].'</td>';
             // Alerts of the agent.
             foreach ($templates as $tid => $tname) {
                 $anyfired = 0;
@@ -841,6 +840,7 @@ class AgentsAlerts extends HTML
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
+            'attributes'     => 'style="margin-left: 0px"',
             'arguments'      => [
                 'type'       => 'button',
                 'return'     => true,
@@ -925,7 +925,7 @@ class AgentsAlerts extends HTML
             $actionText = '';
 
             if (!empty($actions)) {
-                $actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
+                $actionText = '<div class="mrgn_lft_10px"><ul class="action_list">';
                 foreach ($actions as $action) {
                     $actionText .= '<div><span class="action_name"><li>'.$action['name'];
                     if ($action['fires_min'] != $action['fires_max']) {

@@ -70,8 +70,7 @@ function initialiceLayout(data) {
     draggable: false
   });
 
-  var positionGrid = 0; //grid[0].getBoundingClientRect();
-  // var gridHeight = positionGrid.height;
+  var positionGrid = grid.el.getBoundingClientRect();
   var gridWidth = positionGrid.width;
 
   getCellsLayout();
@@ -453,7 +452,7 @@ function initialiceLayout(data) {
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").show();
+      $("#add-widget").removeClass("invisible");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
@@ -462,7 +461,7 @@ function initialiceLayout(data) {
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").hide();
+      $("#add-widget").addClass("invisible");
     }
   });
 
@@ -782,7 +781,8 @@ function dashboardLoadNetworkMap(settings) {
       zoom_dash: settings.zoom_dash,
       auth_class: settings.auth_class,
       auth_hash: settings.auth_hash,
-      id_user: settings.id_user
+      id_user: settings.id_user,
+      ignore_acl: 1
     },
     dataType: "html",
     success: function(data) {

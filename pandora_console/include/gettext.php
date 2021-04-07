@@ -103,7 +103,7 @@ class gettext_reader {
    * @param object Reader the StreamReader object
    * @param boolean enable_cache Enable or disable caching of strings (default on)
    */
-  function gettext_reader($Reader, $enable_cache = true) {
+  function __construct($Reader, $enable_cache = true) {
   	$machine = php_uname("m");
   	
   	$enabled64Bits = false;

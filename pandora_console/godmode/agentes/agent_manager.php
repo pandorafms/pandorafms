@@ -147,6 +147,8 @@ if (is_ajax()) {
     return;
 }
 
+
+
 ui_require_javascript_file('openlayers.pandora');
 
 $new_agent = (empty($id_agente)) ? true : false;
@@ -207,11 +209,11 @@ $custom_id_div .= html_print_input_text(
 if (!$new_agent && $alias != '') {
     $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
-    $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 70%;">';
+    $table_agent_name .= '<div class="label_select_child_left w60p">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name w70p">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input class="w50p" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -219,6 +221,7 @@ if (!$new_agent && $alias != '') {
             [
                 'border' => 0,
                 'title'  => __('Agent detail'),
+                'class'  => 'invert_filter',
             ]
         );
         $table_agent_name .= '</a>';
@@ -228,7 +231,14 @@ if (!$new_agent && $alias != '') {
 
     // Delete link from here.
     if (!is_central_policies_on_node()) {
-        $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
+        $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => __('Delete agent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     }
 
     // Remote configuration available.
@@ -245,6 +255,7 @@ if (!$new_agent && $alias != '') {
                 [
                     'border' => 0,
                     'title'  => __('This agent can be remotely configured'),
+                    'class'  => 'invert_filter',
                 ]
             );
             $table_agent_name .= '</a>';
@@ -578,6 +589,7 @@ if (enterprise_installed()) {
             [
                 'title' => __('Delete remote configuration file'),
                 'style' => 'vertical-align: middle;',
+                'class' => 'invert_filter',
             ]
         ).'</a>';
         $table_adv_remote .= '</a>';
@@ -736,11 +748,11 @@ $table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('
 if ($icon_path == '') {
     $display_icons = 'none';
     // Hack to show no icon. Use any given image to fix not found image errors.
-    $path_without = 'images/spinner.png';
-    $path_default = 'images/spinner.png';
-    $path_ok = 'images/spinner.png';
-    $path_bad = 'images/spinner.png';
-    $path_warning = 'images/spinner.png';
+    $path_without = 'images/spinner.gif';
+    $path_default = 'images/spinner.gif';
+    $path_ok = 'images/spinner.gif';
+    $path_bad = 'images/spinner.gif';
+    $path_warning = 'images/spinner.gif';
 } else {
     $display_icons = '';
     $path_without = $path.$icon_path.'.default.png';
@@ -794,7 +806,7 @@ if ($config['activate_gis']) {
 if (enterprise_installed()) {
     $advanced_div = '<div class="secondary_groups_list">';
 } else {
-    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+    $advanced_div = '<div class="secondary_groups_list invisible" >';
 }
 
 // General display distribution.
@@ -913,30 +925,25 @@ foreach ($fields as $field) {
             2,
             65,
             $custom_value,
-            'style="min-height: 30px;"',
+            'class="min-height-30px',
             true
         );
     }
 
     if ($field['combo_values'] !== '') {
-        $data_field[1] = html_print_select(
-            $combo_values,
-            'customvalue_'.$field['id_field'],
-            $custom_value,
-            '',
-            __('None'),
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            false,
-            false,
-            false,
-            false,
-            '',
-            false
+        $data_field[1] = html_print_input(
+            [
+                'type'              => 'select_search',
+                'fields'            => $combo_values,
+                'name'              => 'customvalue_'.$field['id_field'],
+                'selected'          => $custom_value,
+                'nothing'           => __('None'),
+                'nothing_value'     => '',
+                'return'            => true,
+                'sort'              => false,
+                'size'              => '400px',
+                'dropdownAutoWidth' => true,
+            ]
         );
     };
 
@@ -988,18 +995,18 @@ if (enterprise_installed()) {
         );
     }
 
-    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+    echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
     echo '</div>';
 }
 
-echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help' style='padding-right:8px;'>";
+    echo "<span id='modules_not_learning_mode_context_help pdd_r_10px' '>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help' style='display: none;'>";
+    echo "<span id='modules_not_learning_mode_context_help invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');

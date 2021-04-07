@@ -28,7 +28,6 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
-ui_require_css_file('visual_maps');
 ui_require_css_file('register', 'include/styles/', true);
 
 // Connection lost alert.
@@ -43,6 +42,8 @@ echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
 
 global $vc_public_view;
+global $config;
+
 $vc_public_view = true;
 $config['public_view'] = true;
 
@@ -90,10 +91,15 @@ try {
 $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
+$bg_color = '';
+if ($config['style'] === 'pandora_black') {
+    $bg_color = 'style="background-color: #222"';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 // Floating menu - Start.
-echo '<div id="vc-controls" style="z-index:300;">';
+echo '<div id="vc-controls" class="zindex300" '.$bg_color.'>';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn white-box-content box-shadow flex-row">';
@@ -136,7 +142,7 @@ echo '</div>';
 echo '</div>';
 
 // QR code dialog.
-echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
+echo '<div class="invisible" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
 
@@ -178,6 +184,22 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 
+        //Remove spinner change VC.
+        document
+            .getElementById("visual-console-container")
+            .classList.remove("is-updating");
+
+        var div = document
+            .getElementById("visual-console-container")
+            .querySelector(".div-visual-console-spinner");
+
+        if (div !== null) {
+            var parent = div.parentElement;
+            if (parent !== null) {
+                parent.removeChild(div);
+            }
+        }
+
         // Change the background color when the fullscreen mode is enabled.
         if (prevProps
             && prevProps.backgroundColor != newProps.backgroundColor
@@ -201,17 +223,24 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
             var replacement = '$1' + newProps.id + '$2';
 
+            var regex_hash = /(hash=)[^&]+(&?)/gi;
+            var replacement_hash = '$1' + newProps.hash + '$2';
             // Tab links.
             var menuLinks = document.querySelectorAll("div#menu_tab a");
             if (menuLinks !== null) {
                 menuLinks.forEach(function (menuLink) {
                     menuLink.href = menuLink.href.replace(regex, replacement);
+                    menuLink.href = menuLink.href.replace(
+                        regex_hash,
+                        replacement_hash
+                    );
                 });
             }
 
             // Change the URL (if the browser has support).
             if ("history" in window) {
                 var href = window.location.href.replace(regex, replacement);
+                href = href.replace(regex_hash, replacement_hash);
                 window.history.replaceState({}, document.title, href);
             }
         }

@@ -60,7 +60,7 @@ class StringReader {
   var $_pos;
   var $_str;
 
-  function StringReader($str='') {
+  function __construct($str='') {
     $this->_str = $str;
     $this->_pos = 0;
 	//BUGFIX-HR: 2008-07-21 we have to detect, if we need mb_str* functions instead of normal functions !
@@ -128,7 +128,7 @@ class FileReader {
   var $_fd;
   var $_length;
 
-  function FileReader($filename) {
+  function __construct($filename) {
     if (file_exists($filename)) {
 
       $this->_length=filesize($filename);
@@ -184,8 +184,8 @@ class FileReader {
 // Preloads entire file in memory first, then creates a StringReader
 // over it (it assumes knowledge of StringReader internals)
 class CachedFileReader extends StringReader {
-  function CachedFileReader($filename) {
-	parent::StringReader(); //BUGFIX-HR: 2008-07-21 missing parent constructor call
+  function __construct($filename) {
+	  parent::__construct(); //BUGFIX-HR: 2008-07-21 missing parent constructor call
     if (file_exists($filename)) {
 
       $length=filesize($filename);

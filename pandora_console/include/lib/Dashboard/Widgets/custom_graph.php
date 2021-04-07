@@ -243,8 +243,32 @@ class CustomGraphWidget extends Widget
             $values['showLegend'] = 1;
         }
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('RM') === true) {
+            $return_all_group = true;
+        }
+
         // Custom graph.
-        $fields = \custom_graphs_get_user();
+        $fields = \custom_graphs_get_user(0, false, $return_all_group);
+
+        // If currently selected graph is not included in fields array
+        // (it belongs to a group over which user has no permissions),
+        // then add it to fields array.
+        // This is aimed to avoid overriding this value when a user
+        // with narrower permissions edits widget configuration.
+        if ($values['id_graph'] !== null
+            && array_key_exists($values['id_graph'], $fields) === false
+        ) {
+            $selected_graph = db_get_row(
+                'tgraph',
+                'id_graph',
+                $values['id_graph']
+            );
+
+            $fields[$values['id_graph']] = $selected_graph;
+        }
+
         $inputs[] = [
             'label'     => __('Graph'),
             'arguments' => [
@@ -351,11 +375,11 @@ class CustomGraphWidget extends Widget
                     );
 
                     $hackLegendHight = (30 * count($sources));
-                    if ($hackLegendHight < ($size['height'] - 10 - $hackLegendHight)) {
-                        $height = ($size['height'] - 10 - $hackLegendHight);
+                    $operation = ($size['height'] - 10 - $hackLegendHight);
+                    if ($hackLegendHight < $operation) {
+                        $height = ($size['height'] - $hackLegendHight);
                     } else {
                         $height = ($size['height'] - 10);
-                        $this->values['showLegend'] = 0;
                     }
                 } else {
                     $height = ($size['height'] - 10);
@@ -381,17 +405,22 @@ class CustomGraphWidget extends Widget
             break;
         }
 
+        // Not posible height < 0.
+        if ($height <= 0) {
+            $height = 10;
+        }
+
         $params = [
             'period'          => $this->values['period'],
             'width'           => ($size['width'] - 10),
             'height'          => $height,
             'only_image'      => false,
             'homeurl'         => $config['homeurl'],
-            'percentil'       => $percentil,
             'backgroundColor' => 'transparent',
             'menu'            => false,
             'show_legend'     => $this->values['showLegend'],
             'vconsole'        => true,
+            'dashboard'       => true,
         ];
 
         $params_combined = [

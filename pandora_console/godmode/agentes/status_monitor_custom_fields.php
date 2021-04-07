@@ -47,7 +47,7 @@ if ($default != 0) {
         'value' => $status_monitor_fields,
     ];
 
-    // update 'status_monitor_fields' in tconfig table to keep the value at update.
+    // Update 'status_monitor_fields' in tconfig table to keep the value at update.
     $result = db_process_sql_update(
         'tconfig',
         $values,
@@ -65,7 +65,7 @@ $fields_selected = explode(',', $config['status_monitor_fields']);
 
 $result_selected = [];
 
-// show list of fields selected.
+// Show list of fields selected.
 if ($fields_selected[0] != '') {
     foreach ($fields_selected as $field_selected) {
         switch ($field_selected) {
@@ -169,6 +169,7 @@ $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
@@ -177,6 +178,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 

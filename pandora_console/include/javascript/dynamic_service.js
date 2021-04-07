@@ -12,7 +12,8 @@ function updateSmartValue(event) {
     var keyPressed = event.keyCode;
     if (
       (keyPressed <= 48 && keyPressed >= 57) ||
-      (inputElement.val() < 0 || inputElement.val() > 100)
+      inputElement.val() < 0 ||
+      inputElement.val() > 100
     ) {
       event.preventDefault();
     } else {

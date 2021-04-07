@@ -196,6 +196,7 @@ class Item extends CachedModel
     {
         $decodedData = [
             'id'              => (int) $data['id'],
+            'colorStatus'     => (string) COL_UNKNOWN,
             'type'            => (int) $data['type'],
             'label'           => static::extractLabel($data),
             'labelPosition'   => static::extractLabelPosition($data),
@@ -240,6 +241,13 @@ class Item extends CachedModel
                 null
             );
         }
+
+        $decodedData['agentDisabled'] = static::parseBool(
+            $data['agentDisabled']
+        );
+        $decodedData['moduleDisabled'] = static::parseBool(
+            $data['moduleDisabled']
+        );
 
         return $decodedData;
     }
@@ -748,6 +756,7 @@ class Item extends CachedModel
      * Fetch a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
+     * @param float $ratio  Ratio resize view.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \Exception When the data cannot be retrieved from the DB.
@@ -905,7 +914,6 @@ class Item extends CachedModel
      * @return array The agent data structure stored into the DB.
      *
      * @throws \InvalidArgumentException When the input agent Id is invalid.
-     * @throws \Exception When the data cannot be retrieved from the DB.
      */
     protected static function fetchAgentDataFromDB(array $itemData): array
     {
@@ -921,7 +929,7 @@ class Item extends CachedModel
         // Can't fetch an agent with an invalid Id.
         $agentId = static::extractAgentId($itemData);
         if ($agentId === null) {
-            throw new \InvalidArgumentException('invalid agent Id');
+            $agentId = 0;
         }
 
         // Staticgraph don't need to have an agent.
@@ -929,15 +937,15 @@ class Item extends CachedModel
             return $agentData;
         }
 
-        if (\is_metaconsole() && $metaconsoleId === null) {
+        if (\is_metaconsole() === true && $metaconsoleId === null) {
             throw new \InvalidArgumentException('missing metaconsole node Id');
         }
 
         $agent = false;
 
-        if (\is_metaconsole()) {
+        if (\is_metaconsole() === true) {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tmetaconsole_agent
                 WHERE id_tagente = %s and id_tmetaconsole_setup = %s',
                 $agentId,
@@ -945,7 +953,7 @@ class Item extends CachedModel
             );
         } else {
             $sql = sprintf(
-                'SELECT nombre, alias, direccion, comentarios
+                'SELECT nombre, alias, direccion, comentarios, `disabled`
                 FROM tagente
                 WHERE id_agente = %s',
                 $agentId
@@ -955,7 +963,8 @@ class Item extends CachedModel
         $agent = \db_get_row_sql($sql);
 
         if ($agent === false) {
-            throw new \Exception('error fetching the data from the DB');
+            $agentData['agentDisabled'] = true;
+            return $agentData;
         }
 
         // The agent name should be a valid string or a null value.
@@ -963,6 +972,7 @@ class Item extends CachedModel
         $agentData['agentAlias'] = $agent['alias'];
         $agentData['agentDescription'] = $agent['comentarios'];
         $agentData['agentAddress'] = $agent['direccion'];
+        $agentData['agentDisabled'] = $agent['disabled'];
 
         return \io_safe_output($agentData);
     }
@@ -976,7 +986,6 @@ class Item extends CachedModel
      *
      * @return array The module data structure stored into the DB.
      * @throws \InvalidArgumentException When the input module Id is invalid.
-     * @throws \Exception When the data cannot be retrieved from the DB.
      */
     protected static function fetchModuleDataFromDB(array $itemData): array
     {
@@ -985,7 +994,7 @@ class Item extends CachedModel
         include_once $config['homedir'].'/include/functions_io.php';
 
         // Load side libraries.
-        if (\is_metaconsole()) {
+        if (\is_metaconsole() === true) {
             \enterprise_include_once('include/functions_metaconsole.php');
         }
 
@@ -995,7 +1004,7 @@ class Item extends CachedModel
         // Can't fetch an module with a invalid Id.
         $moduleId = static::extractModuleId($itemData);
         if ($moduleId === null) {
-            throw new \InvalidArgumentException('invalid module Id');
+            $moduleId = 0;
         }
 
         // Staticgraph don't need to have a module.
@@ -1006,14 +1015,14 @@ class Item extends CachedModel
         // We should add the metaconsole Id if we can.
         $metaconsoleId = static::extractMetaconsoleId($itemData);
 
-        if (\is_metaconsole() && $metaconsoleId === null) {
+        if (\is_metaconsole() === true && $metaconsoleId === null) {
             throw new \InvalidArgumentException('missing metaconsole node Id');
         }
 
         $moduleName = false;
 
         // Connect to node.
-        if (\is_metaconsole()
+        if (\is_metaconsole() === true
             && \metaconsole_connect(null, $metaconsoleId) !== NOERR
         ) {
             throw new \InvalidArgumentException(
@@ -1022,7 +1031,7 @@ class Item extends CachedModel
         }
 
         $sql = sprintf(
-            'SELECT nombre, descripcion
+            'SELECT nombre, descripcion, `disabled`
             FROM tagente_modulo
             WHERE id_agente_modulo = %s',
             $moduleId
@@ -1031,16 +1040,18 @@ class Item extends CachedModel
         $moduleName = \db_get_row_sql($sql);
 
         // Restore connection.
-        if (\is_metaconsole()) {
+        if (\is_metaconsole() === true) {
             \metaconsole_restore_db();
         }
 
         if ($moduleName === false) {
-            throw new \Exception('error fetching the data from the DB');
+            $agentData['moduleDisabled'] = true;
+            return $moduleData;
         }
 
         $moduleData['moduleName'] = $moduleName['nombre'];
         $moduleData['moduleDescription'] = $moduleName['descripcion'];
+        $moduleData['moduleDisabled'] = $moduleName['disabled'];
 
         return \io_safe_output($moduleData);
     }
@@ -1070,7 +1081,7 @@ class Item extends CachedModel
         error_log(obhd($_SERVER['PHP_SELF']));
         // Load side libraries.
         include_once $config['homedir'].'/include/functions_ui.php';
-        if (\is_metaconsole()) {
+        if (\is_metaconsole() === true) {
             \enterprise_include_once('include/functions_metaconsole.php');
             \enterprise_include_once('meta/include/functions_ui_meta.php');
         }
@@ -1082,7 +1093,12 @@ class Item extends CachedModel
         $baseUrl = \ui_get_full_url('index.php');
         $mobileUrl = \ui_get_full_url('mobile/index.php');
 
-        // TODO: There's a feature to get the link from the label.
+        if ((bool) $data['agentDisabled'] === true
+            || (bool) $data['moduleDisabled'] === true
+        ) {
+            return null;
+        }
+
         if (static::$useLinkedVisualConsole === true
             && $linkedVisualConsole['linkedLayoutId'] !== null
             && $linkedVisualConsole['linkedLayoutId'] > 0
@@ -1105,7 +1121,9 @@ class Item extends CachedModel
                 return null;
             }
 
-            if (empty($linkedLayoutNodeId) === true && \is_metaconsole()) {
+            if (empty($linkedLayoutNodeId) === true
+                && \is_metaconsole() === true
+            ) {
                 /*
                  * A Visual Console from this console.
                  * We are in a metaconsole.
@@ -1121,7 +1139,7 @@ class Item extends CachedModel
                     ]
                 );
             } else if (empty($linkedLayoutNodeId) === true
-                && !\is_metaconsole()
+                && \is_metaconsole() === false
             ) {
                 /*
                  * A Visual Console from this console.
@@ -1145,7 +1163,9 @@ class Item extends CachedModel
                         'pure' => (int) $config['pure'],
                     ]
                 );
-            } else if (\is_metaconsole() && \can_user_access_node()) {
+            } else if (\is_metaconsole() === true
+                && (bool) \can_user_access_node() === true
+            ) {
                 /*
                  * A Visual Console from a meta node.
                  * We are in a metaconsole.
@@ -1156,7 +1176,6 @@ class Item extends CachedModel
                         $linkedLayoutNodeId
                     );
 
-                    // TODO: Link to a public view.
                     return \ui_meta_get_node_url(
                         $node,
                         'network',
@@ -1179,7 +1198,9 @@ class Item extends CachedModel
                 // The module can be from another node.
                 $metaconsoleId = $linkedModule['metaconsoleId'];
 
-                if (empty($metaconsoleId) === true) {
+                if (is_metaconsole() === false
+                    || empty($metaconsoleId) === true
+                ) {
                     /*
                      * A module from this console.
                      */
@@ -1220,7 +1241,9 @@ class Item extends CachedModel
                     }
 
                     return $baseUrl.'?'.http_build_query($queryParams);
-                } else if (\is_metaconsole() && \can_user_access_node()) {
+                } else if (\is_metaconsole() === true
+                    && (bool) \can_user_access_node() === true
+                ) {
                     /*
                      * A module from a meta node.
                      * We are in a metaconsole.
@@ -1288,7 +1311,9 @@ class Item extends CachedModel
                 // The agent can be from another node.
                 $metaconsoleId = $linkedAgent['metaconsoleId'];
 
-                if (empty($metaconsoleId) === true) {
+                if (is_metaconsole() === false
+                    || empty($metaconsoleId) === true
+                ) {
                     /*
                      * An agent from this console.
                      * We are in a regular console.
@@ -1310,7 +1335,9 @@ class Item extends CachedModel
                             'id_agente' => $agentId,
                         ]
                     );
-                } else if (\is_metaconsole() && \can_user_access_node()) {
+                } else if (\is_metaconsole() === true
+                    && (bool) \can_user_access_node() === true
+                ) {
                     /*
                      * An agent from a meta node.
                      * We are in a metaconsole.
@@ -1324,7 +1351,7 @@ class Item extends CachedModel
                             $node,
                             'estado',
                             'operation/agentes/ver_agente',
-                            ['id_agente' => $moduleId],
+                            ['id_agente' => $agentId],
                             // No autologin from the public view.
                             !$config['public_view']
                         );
@@ -1457,6 +1484,7 @@ class Item extends CachedModel
                 'enableLink',
             ]
         );
+
         if ($enable_link !== null) {
             $result['enable_link'] = static::parseBool($enable_link);
         }
@@ -1797,7 +1825,7 @@ class Item extends CachedModel
 
                     $item = static::fromDB(['id' => $save['id']]);
                     // Update the model.
-                    if (!empty($item)) {
+                    if (empty($item) === false) {
                         $this->setData($item->toArray());
                     }
                 }
@@ -2068,8 +2096,8 @@ class Item extends CachedModel
                         break;
 
                         default:
-                            // Line not parent.
-                        break;
+                            // Lines could not be parents.
+                        continue 2;
                     }
 
                     if (isset($data['agentAlias']) === true
@@ -2242,7 +2270,7 @@ class Item extends CachedModel
      *
      * @return array Array all VCs.
      */
-    public function getAllVisualConsole(int $id):array
+    public static function getAllVisualConsole(int $id):array
     {
         // Extract all VC except own.
         $result = db_get_all_rows_filter(
@@ -2257,7 +2285,7 @@ class Item extends CachedModel
         // Extract all VC for each node.
         if (is_metaconsole() === true) {
             enterprise_include_once('include/functions_metaconsole.php');
-            $meta_servers = metaconsole_get_servers();
+            $meta_servers = (array) metaconsole_get_servers();
             foreach ($meta_servers as $server) {
                 if (metaconsole_load_external_db($server) !== NOERR) {
                     metaconsole_restore_db();
@@ -2295,7 +2323,7 @@ class Item extends CachedModel
             }
         }
 
-        if ($result === false && $result === '') {
+        if ($result === false || $result === '') {
             $result = [];
         }
 
@@ -2318,14 +2346,18 @@ class Item extends CachedModel
         if ($fields === false) {
             $fields = [];
         } else {
-            $fields = \array_reduce(
-                $fields,
-                function ($carry, $item) {
-                    $carry[$item['id']] = $item['name'];
-                    return $carry;
-                },
-                []
-            );
+            $rs = [];
+            foreach ($fields as $k => $v) {
+                if (isset($v['id']) === true && isset($v['name']) === true) {
+                    // Modern environments use id-name format.
+                    $rs[$v['id']] = $v;
+                } else {
+                    // In MC environments is key-value.
+                    $rs[$k] = $v;
+                }
+            }
+
+            $fields = $rs;
         }
 
         $getAllVisualConsoleValue = $values['linkedLayoutId'];

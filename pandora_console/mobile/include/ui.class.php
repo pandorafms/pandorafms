@@ -318,7 +318,7 @@ class Ui
             $time = get_system_time();
         }
 
-        return "<div id='footer' style='text-align: center;'>\n".sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version))."<br />\n".__('Generated at').' '.ui_print_timestamp($time, true, ['prominent' => 'timestamp'])."\n".'</div>';
+        return "<div id='footer' class=' center'>\n".sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version))."<br />\n".__('Generated at').' '.ui_print_timestamp($time, true, ['prominent' => 'timestamp'])."\n".'</div>';
     }
 
 

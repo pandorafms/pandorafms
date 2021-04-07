@@ -351,6 +351,9 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
     $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
 
+    $sub2['godmode/setup/setup&amp;section=external_tools']['text'] = __('External Tools');
+    $sub2['godmode/setup/setup&amp;section=external_tools']['refr'] = 0;
+
     if ($config['activate_gis']) {
         $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
     }
@@ -382,6 +385,7 @@ if (check_acl($config['id_user'], 0, 'PM') || check_acl($config['id_user'], 0, '
         $sub['tools/diagnostics']['text'] = __('Diagnostic info');
         $sub['tools/diagnostics']['id'] = 'Diagnostic info';
         enterprise_hook('omnishell');
+        enterprise_hook('ipam_submenu');
 
         $sub['godmode/setup/news']['text'] = __('Site news');
         $sub['godmode/setup/news']['id'] = 'Site news';

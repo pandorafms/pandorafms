@@ -67,7 +67,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
 
     enterprise_hook('inventory_menu');
 
-    if ($config['activate_netflow'] || $config['activate_nta']) {
+    if ($config['activate_netflow']) {
         $sub['network_traffic'] = [
             'text'    => __('Network'),
             'id'      => 'Network',
@@ -79,45 +79,29 @@ if (check_acl($config['id_user'], 0, 'AR')) {
         // Initialize the submenu.
         $netflow_sub = [];
 
-        if ($config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/netflow/netflow_explorer' => [
-                        'text' => __('Netflow explorer'),
-                        'id'   => 'Netflow explorer',
-                    ],
-                    'operation/netflow/nf_live_view'     => [
-                        'text' => __('Netflow Live View'),
-                        'id'   => 'Netflow Live View',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/netflow/netflow_explorer' => [
+                    'text' => __('Netflow explorer'),
+                    'id'   => 'Netflow explorer',
+                ],
+                'operation/netflow/nf_live_view'     => [
+                    'text' => __('Netflow Live View'),
+                    'id'   => 'Netflow Live View',
+                ],
+            ]
+        );
 
-        if ($config['activate_nta']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_explorer' => [
-                        'text' => __('Network explorer'),
-                        'id'   => 'Network explorer',
-                    ],
-                ]
-            );
-        }
-
-        if ($config['activate_nta'] || $config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_usage_map' => [
-                        'text' => __('Network usage map'),
-                        'id'   => 'Network usage map',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/network/network_usage_map' => [
+                    'text' => __('Network usage map'),
+                    'id'   => 'Network usage map',
+                ],
+            ]
+        );
 
         $sub['network_traffic']['sub2'] = $netflow_sub;
     }
@@ -393,8 +377,6 @@ if (check_acl($config['id_user'], 0, 'ER')
     $sub['operation/events/events']['text'] = __('View events');
     $sub['operation/events/events']['id'] = 'View events';
     $sub['operation/events/events']['pages'] = ['godmode/events/events'];
-    $sub['operation/events/event_statistics']['text'] = __('Statistics');
-    $sub['operation/events/event_statistics']['id'] = 'Statistics';
 
     // If ip doesn't is in list of allowed IP, isn't show this options.
     include_once 'include/functions_api.php';
@@ -432,11 +414,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
-
-        // Marquee.
-        $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
-        $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
-        $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
     // Sound Events.
@@ -500,9 +477,8 @@ if (check_acl($config['id_user'], 0, 'IR')
     ];
 
     $sub2 = [];
-    $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
-    $sub2[$sec2sub]['text'] = __('Statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Tickets');
+    $sub2[$sec2sub]['text'] = __('Integria IMS statistics');
+    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
 
     $sub[$sec2]['sub2'] = $sub2;
     $sec2 = $temp_sec2;

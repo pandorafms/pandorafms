@@ -257,6 +257,23 @@ class Manager
         $extradata = \get_parameter('extradata', '');
         if (empty($extradata) === false) {
             $extradata = json_decode(\io_safe_output($extradata), true);
+
+            if (isset($extradata['dashboardId']) === false) {
+                $extradata['dashboardId'] = null;
+            }
+
+            if (isset($extradata['cellId']) === false) {
+                $extradata['cellId'] = null;
+            }
+
+            if (isset($extradata['offset']) === false) {
+                $extradata['offset'] = null;
+            }
+
+            if (isset($extradata['widgetId']) === false) {
+                $extradata['widgetId'] = null;
+            }
+
             $this->dashboardId = (int) $extradata['dashboardId'];
             $this->cellId = (int) $extradata['cellId'];
             $this->offset = (int) $extradata['offset'];
@@ -1008,6 +1025,7 @@ class Manager
                     'dashboardName'  => $this->dashboardFields['name'],
                     'hash'           => self::generatePublicHash(),
                     'publicLink'     => $this->publicLink,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
         } else {
@@ -1025,8 +1043,13 @@ class Manager
                     'cells'          => $this->cells,
                     'cellModeSlides' => $this->cellModeSlides,
                     'cellId'         => ($this->cellId === 0) ? $this->cells[0]['id'] : $this->cellId,
+                    'dashboardGroup' => $this->dashboardFields['id_group'],
                 ]
             );
+        }
+
+        if (isset($config['public_dashboard']) === false) {
+            $config['public_dashboard'] = false;
         }
 
         // View.
@@ -1339,6 +1362,7 @@ class Manager
 
         $instance = $this->instanceWidget();
         $htmlInputs = $instance->getFormInputs([]);
+        $js = $instance->getFormJS();
 
         View::render(
             'dashboard/configurationWidgets',
@@ -1346,6 +1370,7 @@ class Manager
                 'dashboardId' => $this->dashboardId,
                 'cellId'      => $this->cellId,
                 'htmlInputs'  => $htmlInputs,
+                'js'          => $js,
             ]
         );
 
@@ -1445,6 +1470,23 @@ class Manager
             ]
         );
         return null;
+    }
+
+
+    /**
+     * Prints error.
+     *
+     * @param string $msg Message.
+     *
+     * @return void
+     */
+    public function error(string $msg)
+    {
+        if ((bool) \is_ajax() === true) {
+            echo json_encode(['error' => $msg]);
+        } else {
+            \ui_print_error_message($msg);
+        }
     }
 
 

@@ -123,10 +123,15 @@ function users_get_groups_for_select(
     $returnAllColumns=false,
     $id_groups=null,
     $keys_field='id_grupo',
-    $ajax_format=false
+    $ajax_format=false,
+    $check_user_can_manage_all=false
 ) {
     if ($id_groups === false) {
         $id_groups = null;
+    }
+
+    if ($check_user_can_manage_all === true && users_can_manage_group_all($privilege) === false) {
+        $returnAllGroup = false;
     }
 
     $user_groups = users_get_groups(
@@ -299,6 +304,7 @@ function users_get_groups(
     $search=''
 ) {
     static $group_cache = [];
+    $filter = '';
 
     // Added users_group_cache to avoid unnecessary proccess on massive calls...
     static $users_group_cache = [];

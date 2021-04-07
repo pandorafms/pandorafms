@@ -1494,7 +1494,7 @@ class DiscoveryTaskList extends HTML
 
                 if (is_array($data['modules'])) {
                     // Alphabetically sort.
-                    ksort($data['modules'], SORT_STRING | SORT_FLAG_CASE);
+                    ksort($data['modules'], (SORT_STRING | SORT_FLAG_CASE));
 
                     $simple_data = array_merge(
                         $simple_data,

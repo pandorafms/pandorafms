@@ -149,12 +149,12 @@ if ($id_group) {
         $table->data[2][1] .= html_print_select_groups(
             false,
             'AR',
-            true,
+            false,
             'id_parent',
             $id_parent,
             '',
-            '',
-            '',
+            __('None'),
+            -1,
             true,
             false,
             true,
@@ -174,7 +174,9 @@ if ($id_group) {
             'name'           => 'id_parent',
             'selected'       => $id_parent,
             'return'         => true,
-            'returnAllGroup' => true,
+            'returnAllGroup' => false,
+            'nothing'        => __('None'),
+            'nothing_value'  => -1,
         ]
     );
     $table->data[2][1] .= '</div>';
@@ -182,7 +184,7 @@ if ($id_group) {
 
 if ($acl_parent) {
     $table->data[2][1] .= ' <span id="parent_preview">';
-    $table->data[2][1] .= html_print_image('images/groups_small/'.groups_get_icon($id_parent).'.png', true);
+    $table->data[2][1] .= html_print_image('images/groups_small/'.( $id_parent != 0 ? groups_get_icon($id_parent) : 'without_group').'.png', true);
     $table->data[2][1] .= '</span>';
 }
 

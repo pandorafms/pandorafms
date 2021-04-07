@@ -2240,13 +2240,16 @@ function check_login($output=true)
             return false;
         }
 
-        // No exists $config. Exit inmediatly
+        // No exists $config. Exit inmediatly.
         include 'general/noaccess.php';
         exit;
     }
 
-    if ((isset($_SESSION['id_usuario'])) and ($_SESSION['id_usuario'] != '')) {
-        if (is_user($_SESSION['id_usuario'])) {
+    if ((isset($_SESSION['id_usuario'])) && ($_SESSION['id_usuario'] != '')) {
+        if (is_user($_SESSION['id_usuario'])
+            || (isset($_SESSION['merge-request-user-trick']) === true
+            && $_SESSION['merge-request-user-trick'] === $_SESSION['id_usuario'])
+        ) {
             $config['id_user'] = $_SESSION['id_usuario'];
 
             return true;
@@ -2544,7 +2547,9 @@ function get_users_acl($id_user)
 {
     static $users_acl_cache = [];
 
-    if (is_array($users_acl_cache[$id_user])) {
+    if (isset($users_acl_cache[$id_user]) === true
+        && is_array($users_acl_cache[$id_user]) === true
+    ) {
         $rowdup = $users_acl_cache[$id_user];
     } else {
         $query = sprintf(

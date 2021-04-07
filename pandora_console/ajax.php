@@ -98,9 +98,8 @@ if (isset($_GET['loginhash']) === true) {
     }
 }
 
-$auth_class = io_safe_output(
-    get_parameter('auth_class', 'PandoraFMS\Dashboard\Manager')
-);
+// Auth class example: PandoraFMS\Dashboard\Manager.
+$auth_class = io_safe_output(get_parameter('auth_class', null));
 $public_hash = get_parameter('auth_hash', false);
 $public_login = false;
 // Check user.

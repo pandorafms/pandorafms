@@ -881,7 +881,7 @@ function html_print_select(
     $output .= '</select>';
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -3010,7 +3010,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -3502,7 +3502,7 @@ function html_print_radio_button_extended(
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 

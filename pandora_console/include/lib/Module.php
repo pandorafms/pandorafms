@@ -88,7 +88,7 @@ class Module extends Entity
      * @param array   $params Search parameters (fields from tagente_modulo).
      * @param integer $limit  Limit results to N rows.
      *
-     * @return PandoraFMS\Module found or null if not found.
+     * @return array|null of PandoraFMS\Module found or null if not found.
      * @throws \Exception On error.
      */
     public static function search(

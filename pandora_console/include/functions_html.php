@@ -717,7 +717,8 @@ function html_print_select(
     $message='',
     $select_all=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $truncate_size=false
 ) {
     $output = "\n";
 
@@ -853,6 +854,18 @@ function html_print_select(
                 $output .= ' style="'.$option_style[$value].'"';
             }
 
+            if ($truncate_size !== false) {
+                $output .= ' Title="'.$optlabel.'"';
+
+                $optlabel = ui_print_truncate_text(
+                    $optlabel,
+                    $truncate_size,
+                    false,
+                    true,
+                    false
+                );
+            }
+
             if ($optlabel === '') {
                 $output .= '>None</option>';
             } else {
@@ -868,8 +881,35 @@ function html_print_select(
     $output .= '</select>';
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
+    }
+
+    if ($multiple === false) {
+        if (is_ajax()) {
+            $output .= '<script src="';
+            $output .= ui_get_full_url(
+                'include/javascript/select2.min.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" type="text/javascript"></script>';
+
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                'include/styles/select2.min.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        } else {
+            ui_require_css_file('select2.min');
+            ui_require_javascript_file('select2.min');
+        }
+
+        $output .= '<script>$("#'.$id.'").select2();</script>';
     }
 
     if ($return) {
@@ -1351,7 +1391,29 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= '<div>';
     // Agent.
-    $agents = agents_get_group_agents($data['mGroup']);
+    $agents = agents_get_group_agents(
+        // Id_group.
+        $data['mGroup'],
+        // Search.
+        false,
+        // Case.
+        'lower',
+        // NoACL.
+        false,
+        // ChildGroups.
+        false,
+        // Serialized.
+        false,
+        // Separator.
+        '|',
+        // Add_alert_bulk_op.
+        false,
+        // Force_serialized.
+        false,
+        // Meta_fields.
+        $data['mMetaFields']
+    );
+
     if ((empty($agents)) === true || $agents == -1) {
         $agents = [];
     }
@@ -1475,7 +1537,7 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT,
+    $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
     $required=false
 ) {
@@ -1490,13 +1552,7 @@ function html_print_select_from_sql(
     foreach ($result as $row) {
         $id = array_shift($row);
         $value = array_shift($row);
-        $fields[$id] = ui_print_truncate_text(
-            $value,
-            $trucate_size,
-            false,
-            true,
-            false
-        );
+        $fields[$id] = $value;
     }
 
     return html_print_select(
@@ -1523,7 +1579,8 @@ function html_print_select_from_sql(
         // Simple_multiple_options.
         false,
         // Required.
-        $required
+        $required,
+        $truncate_size
     );
 }
 
@@ -2953,7 +3010,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -3445,7 +3502,7 @@ function html_print_radio_button_extended(
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4379,8 +4436,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         return '';
     }
 
+    enterprise_include_once('include/functions_metaconsole.php');
+
     if ($config['style'] === 'pandora_black') {
-            $style = 'style="color: white"';
+        $style = 'style="color: white"';
     }
 
     $output = '';

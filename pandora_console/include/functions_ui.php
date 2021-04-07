@@ -4235,16 +4235,16 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     } else {
         if ($proxy) {
-            if (is_metaconsole() && $metaconsole_root) {
-                $fullurl .= ENTERPRISE_DIR.'/meta';
-            }
-
             $fullurl .= '/';
         } else {
             if ($add_name_php_file) {
                 $fullurl .= $_SERVER['SCRIPT_NAME'];
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
+
+                if (is_metaconsole() && $metaconsole_root) {
+                    $fullurl .= ENTERPRISE_DIR.'/meta/';
+                }
             }
         }
     }

@@ -3095,10 +3095,16 @@ sub cli_agent_update() {
 		# Add the address to the agent
 		if (defined $use_alias and $use_alias eq 'use_alias') {
 			foreach my $id (@id_agents) {
-				add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id->{'id_agente'});
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				}
 			}
 		} else {
-			add_new_address_agent ($dbh, $address_id, $id_agent);
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id_agent);
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id_agent);
+				}
 		}
 		
 		$field = 'direccion';

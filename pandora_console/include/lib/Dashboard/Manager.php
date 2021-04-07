@@ -178,6 +178,7 @@ class Manager
         'saveWidgetIntoCell',
         'imageIconDashboardAjax',
         'formSlides',
+        'callWidgetMethod',
     ];
 
 
@@ -1014,6 +1015,10 @@ class Manager
 
         // Header.
         if ($this->slides === 0) {
+            if ((bool) \is_metaconsole() === true) {
+                open_meta_frame();
+            }
+
             View::render(
                 'dashboard/header',
                 [
@@ -1098,6 +1103,13 @@ class Manager
             'dashboard/jsLayout',
             ['dashboardId' => $this->dashboardId]
         );
+
+        if ((bool) \is_metaconsole() === true
+            && $this->slides === 0
+        ) {
+            close_meta_frame();
+        }
+
         return null;
     }
 
@@ -1487,6 +1499,27 @@ class Manager
         } else {
             \ui_print_error_message($msg);
         }
+    }
+
+
+    /**
+     * Call widget method (ajax only).
+     *
+     * @param string $method Method to be invoked.
+     *
+     * @return boolean Executed or not.
+     */
+    public function callWidgetMethod(string $method):bool
+    {
+        $widget = $this->instanceWidget();
+
+        if (method_exists($widget, $method) === true) {
+            $widget->$method();
+            return true;
+        }
+
+        return false;
+
     }
 
 

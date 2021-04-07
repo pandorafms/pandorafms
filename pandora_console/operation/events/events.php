@@ -415,6 +415,11 @@ if (is_ajax()) {
                 ]
             );
             $response = ob_get_clean();
+
+            // Clean output buffer.
+            while (ob_get_level() !== 0) {
+                ob_end_clean();
+            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]

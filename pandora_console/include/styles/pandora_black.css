@@ -231,7 +231,7 @@ div#foot {
 }
 
 /* Overwrite inline styles */
-.textodialogo td {
+.textodialogo td .white_important {
   color: #fff !important;
 }
 
@@ -755,14 +755,14 @@ form ul.form_flex {
 
 #container_servicemap_legend {
   position: absolute;
-  background: #fff;
+  background: #222;
   margin-top: 10px;
   right: 2px;
   border: 1px solid #e2e2e2;
   border-radius: 5px;
   padding: 10px;
   opacity: 0.9;
-  color: #111;
+  color: #fff;
 }
 
 .notification-subtitle_black {
@@ -855,4 +855,19 @@ div#dashboard-controls {
   background-color: #222;
   border-radius: 15px;
   padding: 10px;
+}
+.serviceap_show_bg {
+  overflow: hidden;
+  border: 1px solid #e2e2e2;
+  background-color: #111;
+}
+
+.title_service_unstack,
+.title,
+.title_service_stack {
+  font-size: 11px;
+  text-align: center;
+  text-anchor: middle;
+  fill: #fff;
+  font-family: Verdana;
 }

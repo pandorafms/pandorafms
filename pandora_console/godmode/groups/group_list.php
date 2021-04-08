@@ -177,7 +177,9 @@ if (is_ajax() === true) {
 
         $agents_aux = [];
         foreach ($agents as $key => $value) {
-            if (preg_match('/'.$search.'/', io_safe_output($value)) === true) {
+            if (empty($search) === true) {
+                $agents_aux[$key] = $value;
+            } else if (preg_match('/'.$search.'/', io_safe_output($value)) === true) {
                 $agents_aux[$key] = $value;
             }
         }

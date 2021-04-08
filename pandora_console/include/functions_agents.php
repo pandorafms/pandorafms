@@ -1084,6 +1084,7 @@ function agents_common_modules($id_agent, $filter=false, $indexed=true, $get_not
  * @param string  $separator         Only in metaconsole. Separator for the serialized data. By default |.
  * @param boolean $add_alert_bulk_op //TODO documentation
  * @param boolean $force_serialized. If the agent has not id_server (typically in node) put 0 as <server_id>.
+ * @param boolean $meta_fields       If true, then id_agente is returned instead id_tagente.
  *
  * @return array An array with all agents in the group or an empty array
  */
@@ -1096,7 +1097,8 @@ function agents_get_group_agents(
     $serialized=false,
     $separator='|',
     $add_alert_bulk_op=false,
-    $force_serialized=false
+    $force_serialized=false,
+    $meta_fields=false
 ) {
     global $config;
 
@@ -1268,11 +1270,19 @@ function agents_get_group_agents(
     if (is_metaconsole()) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
-        $fields = [
-            'ta.id_tagente AS id_agente',
-            'alias',
-            'ta.id_tmetaconsole_setup AS id_server',
-        ];
+        if ($meta_fields === true) {
+            $fields = [
+                'id_agente',
+                'alias',
+                'ta.id_tmetaconsole_setup AS id_server',
+            ];
+        } else {
+            $fields = [
+                'ta.id_tagente AS id_agente',
+                'alias',
+                'ta.id_tmetaconsole_setup AS id_server',
+            ];
+        }
     } else {
         $table_name = 'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent';
 
@@ -3253,6 +3263,7 @@ function agents_get_agent_custom_field($agent_id, $custom_field_name)
  * @param boolean $selection     Show common (false) or all modules (true).
  * @param boolean $return        Return (false) or dump to output (true).
  * @param boolean $index_by_name Use module name as key.
+ * @param boolean $pure_return   Return as retrieved from DB.
  *
  * @return array With modules or null if error.
  */
@@ -3261,7 +3272,8 @@ function select_modules_for_agent_group(
     $id_agents,
     $selection,
     $return=true,
-    $index_by_name=false
+    $index_by_name=false,
+    $pure_return=false
 ) {
     global $config;
     $agents = (empty($id_agents)) ? [] : implode(',', $id_agents);
@@ -3339,6 +3351,10 @@ function select_modules_for_agent_group(
     if ($return) {
         echo json_encode($modules);
         return;
+    }
+
+    if ($pure_return === true) {
+        return $modules;
     }
 
     $modules_array = [];

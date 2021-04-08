@@ -21,13 +21,32 @@ function include_javascript_d3($return=false)
     if (!$is_include_javascript) {
         $is_include_javascript = true;
 
-        if (is_metaconsole()) {
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'../../include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'../../include/graphs/pandora.d3.js" charset="utf-8"></script>';
-        } else {
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/graphs/pandora.d3.js" charset="utf-8"></script>';
-        }
+        $output .= '<script type="text/javascript" src="';
+        $output .= ui_get_full_url(
+            'include/javascript/d3.3.5.14.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" charset="utf-8"></script>';
+
+        $output .= '<script type="text/javascript" src="';
+        $output .= ui_get_full_url(
+            'include/graphs/bullet.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" charset="utf-8"></script>';
+
+        $output .= '<script type="text/javascript" src="';
+        $output .= ui_get_full_url(
+            'include/graphs/pandora.d3.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" charset="utf-8"></script>';
     }
 
     if (!$return) {

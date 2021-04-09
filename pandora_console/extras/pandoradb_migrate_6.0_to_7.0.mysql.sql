@@ -3997,6 +3997,3 @@ SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
-
-ALTER TABLE `tmetaconsole_setup` ADD COLUMN `info_merge` MEDIUMTEXT NOT NULL DEFAULT '';
-

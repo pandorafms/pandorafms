@@ -3352,6 +3352,7 @@ div#stat-win-module-graph div.nodata_container {
 .menu_graph,
 .timestamp_graph {
   position: absolute;
+  color: #000;
 }
 
 .menu_graph {

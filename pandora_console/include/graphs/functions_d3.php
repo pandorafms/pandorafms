@@ -201,6 +201,11 @@ function d3_bullet_chart(
     $id_bullet = uniqid();
     $font = array_shift(explode('.', array_pop(explode('/', $font))));
 
+    $invert_color = '';
+    if ($config['style'] === 'pandora_black') {
+        $invert_color = 'filter: invert(100%);';
+    }
+
     $output .= '<div id="bullet_graph_'.$id_bullet.'" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
 			.bullet_graph {
@@ -216,14 +221,14 @@ function d3_bullet_chart(
 			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
 			.bullet .tick line { stroke: #666; stroke-width: .5px; }
-			.bullet .range.s0 { fill: #ddd; }
+			.bullet .range.s0 { fill: #fff; }
 			.bullet .range.s1 { fill: #ddd; }
 			.bullet .range.s2 { fill: #ccc; }
 			.bullet .measure.s0 { fill: steelblue; }
 			.bullet .measure.s1 { fill: steelblue; }
 			.bullet .title { font-size: 7pt; font-weight: bold; text-align:left; }
-			.bullet .subtitle { fill: #999; font-size: 7pt;}
-			.bullet g text { font-size:'.$font_size.'pt;}
+            .bullet .subtitle { fill: #999; font-size: 7pt;}
+			.bullet g text { font-size:'.$font_size.'pt; '.$invert_color.' }
 
 		</style>
 		<script language="javascript" type="text/javascript">
@@ -276,7 +281,7 @@ function d3_bullet_chart(
 			.attr("transform", "translate(-10, 15)");
 
 		title.append("text")
-			.attr("class", "'.$font.'")
+			.attr("class", "'.$font.' invert_filter")
 			.text(function(d) { return d.title; });
 
 		title.append("text")
@@ -293,9 +298,9 @@ function d3_bullet_chart(
 			else if (label >= 100000)
 				text = text.substring(0,3) + "K";
 			else if (label >= 1000)
-				text = text.substring(0,2) + "K";
+                text = text.substring(0,2) + "K";
 			$(this).text(text);
-		});
+        });
 		</script>';
 
     return $output;

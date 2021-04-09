@@ -659,13 +659,14 @@ form ul.form_flex {
   padding: 10px 0px 10px 0px;
 }
 
-.bullet {
-  background-color: #ddd;
+.bullet .range.s0 {
+  background-color: #222;
+  fill: #222 !important;
   border-radius: 4px;
 }
 
 .legendLabel {
-  color: black;
+  color: #fff;
 }
 
 .incident_table {
@@ -870,4 +871,8 @@ div#dashboard-controls {
   text-anchor: middle;
   fill: #fff;
   font-family: Verdana;
+}
+
+.tickLabel {
+  color: #fff;
 }

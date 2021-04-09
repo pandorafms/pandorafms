@@ -376,11 +376,11 @@ $details_box .= '
     <div class="integriaims_details_titles">'.__('Priority').'</div>
     <div class="integriaims_details_titles">'.__('Type').'</div>';
 $details_box .= '
-    <div>'.html_print_image('images/heart.png', true).'</div>
-    <div>'.html_print_image('images/builder.png', true).'</div>
-    <div>'.html_print_image('images/user_green.png', true).'</div>
+    <div>'.html_print_image('images/heart.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/builder.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/user_green.png', true, ['class' => 'invert_filter']).'</div>
     <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
-    <div>'.html_print_image('images/incidents.png', true).'</div>';
+    <div>'.html_print_image('images/incidents.png', true, ['class' => 'invert_filter']).'</div>';
 $details_box .= '
     <div>'.$status_text.'</div>
     <div>'.$resolution_text.'</div>
@@ -410,9 +410,9 @@ $people_box .= '</div>';
 // Dates box.
 $dates_box = '<div class="integriaims_details_box integriaims_details_box_three">';
 $dates_box .= '
-    <div>'.html_print_image('images/tick.png', true).'</div>
-    <div>'.html_print_image('images/update.png', true, ['width' => '21']).'</div>
-    <div>'.html_print_image('images/mul.png', true).'</div>';
+    <div>'.html_print_image('images/tick.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/update.png', true, ['width' => '21', 'class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/mul.png', true, ['class' => 'invert_filter']).'</div>';
 $dates_box .= '
     <div class="integriaims_details_titles">'.__('Created at').':</div>
     <div class="integriaims_details_titles">'.__('Updated at').':</div>

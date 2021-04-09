@@ -148,3 +148,28 @@ ul.wizard li > textarea {
 .action_button_list li {
   display: inline;
 }
+
+.searchbox ul {
+  justify-content: space-between;
+}
+
+.searchbox ul li:not(.textbox) {
+  flex-direction: row-reverse !important;
+  justify-content: flex-end !important;
+}
+
+.searchbox ul li.textbox label {
+  width: auto;
+}
+.searchbox ul li.textbox {
+  justify-content: space-evenly !important;
+  flex: 1 1 auto;
+}
+
+ul.wizard li.mrgn_0px {
+  margin: 0;
+}
+
+ul.wizard li.pdd_0px {
+  padding: 0;
+}

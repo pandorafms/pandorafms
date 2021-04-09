@@ -40,13 +40,27 @@ if (! defined('METACONSOLE')) {
 
     $buttons['fields'] = [
         'active'    => false,
-        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor&section=fields">'.html_print_image(
+            'images/custom_columns.png',
+            true,
+            [
+                'title' => __('Custom fields'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
         'operation' => true,
     ];
 
     $buttons['view'] = [
         'active'    => false,
-        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image('images/list.png', true, ['title' => __('View')]).'</a>',
+        'text'      => '<a href="index.php?sec=view&sec2=operation/agentes/status_monitor">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('View'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
         'operation' => true,
     ];
 
@@ -466,7 +480,7 @@ $table->data[0][6] = html_print_submit_button(
     __('Show'),
     'uptbutton',
     false,
-    'class="sub search" style="margin-top:0px;"',
+    'class="sub search mgn_tp_0"',
     true
 );
 
@@ -1328,7 +1342,7 @@ if (!empty($result)) {
                             $img = 'images/policies_brick.png';
                             $title = __('(Adopt) ').$policyInfo['name_policy'];
                         } else {
-                            $img = 'images/policies.png';
+                            $img = 'images/policies_mc.png';
                             $title = $policyInfo['name_policy'];
                         }
                     } else {
@@ -1382,7 +1396,7 @@ if (!empty($result)) {
         }
 
         if (in_array('data_type', $show_fields) || is_metaconsole()) {
-            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true);
+            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true, ['class' => 'invert_filter']);
             $agent_groups = is_metaconsole() ? $row['groups_in_server'] : agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
             if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
                 $show_edit_icon = true;
@@ -1412,7 +1426,7 @@ if (!empty($result)) {
         }
 
         if (in_array('module_name', $show_fields) || is_metaconsole()) {
-            $data[3] = ui_print_truncate_text($row['module_name'], 'agent_small', false, true, true);
+            $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
             if ($row['extended_info'] != '') {
                 $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
             }
@@ -1423,7 +1437,7 @@ if (!empty($result)) {
                     true,
                     [
                         'title' => $row['tags'],
-                        'style' => 'width: 20px; margin-left: 3px;',
+                        'class' => 'tag_row',
                     ]
                 );
             }
@@ -1616,20 +1630,21 @@ if (!empty($result)) {
                 $data[8] = get_module_realtime_link_graph($row);
 
                 if (!is_snapshot_data($row['datos'])) {
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart_curve.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
                 }
 
-                $data[8] .= '<a href="javascript: '.'show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
+                $data[8] .= '<a href="javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
                     'images/binary.png',
                     true,
                     [
                         'border' => '0',
                         'alt'    => '',
+                        'class'  => 'invert_filter',
                     ]
                 ).'</a>';
 
                 $data[8] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
-								style=\'display: none;\'>'.$row['module_name'].'</span>';
+								class=\'invisible\'>'.$row['module_name'].'</span>';
             }
         }
 
@@ -1767,8 +1782,8 @@ if (!empty($result)) {
                             $salida = $module_value;
                         } else {
                             $salida = '<span '."id='hidden_value_module_".$row['id_agente_modulo']."'
-								style='display: none;'>".$module_value.'</span>'.'<span '."id='value_module_".$row['id_agente_modulo']."'
-								title='".$module_value."' "."style='white-space: nowrap;'>".'<span id="value_module_text_'.$row['id_agente_modulo'].'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$row['id_agente_modulo'].")'>".html_print_image('images/rosette.png', true).'</a></span>';
+								class='invisible'>".$module_value.'</span>'.'<span '."id='value_module_".$row['id_agente_modulo']."'
+								title='".$module_value."' "."class='nowrap'>".'<span id="value_module_text_'.$row['id_agente_modulo'].'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$row['id_agente_modulo'].")'>".html_print_image('images/rosette.png', true).'</a></span>';
                         }
                     }
                 }

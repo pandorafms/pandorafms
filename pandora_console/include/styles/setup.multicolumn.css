@@ -1,0 +1,24 @@
+#form_setup {
+  display: flex;
+  flex-direction: row;
+  justify-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+fieldset {
+  background-color: #fff;
+  border: 1px solid #e2e2e2;
+  padding: 0.5em;
+  margin: 0px 1em;
+  margin-bottom: 20px;
+  position: relative;
+  border-radius: 5px;
+  flex: 1 1 700px;
+}
+
+.full-column {
+  width: 100%;
+  flex: none;
+  margin: 0 0 20px;
+}

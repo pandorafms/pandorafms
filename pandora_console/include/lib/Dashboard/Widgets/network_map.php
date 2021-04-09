@@ -203,6 +203,10 @@ class NetworkMapWidget extends Widget
             $values['networkmapId'] = $decoder['networkmaps'];
         }
 
+        if (isset($decoder['node']) === true) {
+            $values['node'] = $decoder['node'];
+        }
+
         if (isset($decoder['networkmapId']) === true) {
             $values['networkmapId'] = $decoder['networkmapId'];
         }
@@ -268,14 +272,44 @@ class NetworkMapWidget extends Widget
             $return_all_group = true;
         }
 
+        // Selected.
+        $selected = $values['networkmapId'];
+        if ((bool) is_metaconsole() === true) {
+            $selected = $values['node'].'_'.$values['networkmapId'];
+        } else {
+            $selected = $values['networkmapId'];
+        }
+
         // Map.
-        $fields = \networkmap_get_networkmaps(null, null, true, false, $return_all_group);
+        $fields = \networkmap_get_networkmaps(
+            null,
+            null,
+            true,
+            false,
+            $return_all_group
+        );
 
-        // If currently selected networkmap is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
-        if ($values['networkmapId'] !== null && !array_key_exists($values['networkmapId'], $fields)) {
-            $selected_networkmap = db_get_row('tmap', 'id', $values['networkmapId']);
+        // If currently selected networkmap is not included in fields array
+        // (it belongs to a group over which user has no permissions), then add
+        // it to fields array.
+        if ($values['networkmapId'] !== null
+            && array_key_exists($selected, $fields) === false
+        ) {
+            if ((bool) is_metaconsole() === true) {
+                metaconsole_connect(null, $values['nodeId']);
+            }
 
-            $fields[$values['networkmapId']] = $selected_networkmap;
+            $selected_networkmap = db_get_value(
+                'id',
+                'tmap',
+                $values['networkmapId']
+            );
+
+            $fields[$selected] = $selected_networkmap;
+
+            if ((bool) is_metaconsole() === true) {
+                metaconsole_restore_db();
+            }
         }
 
         $inputs[] = [
@@ -358,7 +392,18 @@ class NetworkMapWidget extends Widget
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
-        $values['networkmapId'] = \get_parameter('networkmapId', 0);
+        $nmId = \get_parameter('networkmapId', null);
+
+        if ($nmId !== null) {
+            if ((bool) is_metaconsole() === true) {
+                $mc_stuff = explode('_', $nmId);
+                $values['node'] = $mc_stuff[0];
+                $values['networkmapId'] = $mc_stuff[1];
+            } else {
+                $values['networkmapId'] = $nmId;
+            }
+        }
+
         $values['xOffset'] = \get_parameter('xOffset', 0);
         $values['yOffset'] = \get_parameter('yOffset', 0);
         $values['zoomLevel'] = (float) \get_parameter('zoomLevel', 0.5);
@@ -382,8 +427,9 @@ class NetworkMapWidget extends Widget
         $x_offset = $this->values['xOffset'];
         $y_offset = $this->values['yOffset'];
         $zoom_dash = $this->values['zoomLevel'];
+        $node = ($this->values['node'] ?? '');
 
-        $hash = md5($config['dbpass'].$id_networkmap.$config['id_user']);
+        $hash = md5($config['dbpass'].$id_networkmap.$config['id_user'].$node);
 
         $style = 'width:'.$size['width'].'px; height:'.$size['height'].'px;';
         $id = 'body_cell-'.$this->cellId;
@@ -401,6 +447,7 @@ class NetworkMapWidget extends Widget
                 'id_user'       => $config['id_user'],
                 'auth_class'    => 'PandoraFMS\Dashboard\Manager',
                 'auth_hash'     => Manager::generatePublicHash(),
+                'node'          => $node,
             ]
         );
 

@@ -84,7 +84,7 @@ function extension_uploader_extensions()
 
     echo "<form method='post' enctype='multipart/form-data'>";
     html_print_table($table);
-    echo "<div style='text-align: right; width: ".$table->width."'>";
+    echo "<div class='right' style='width: ".$table->width."'>";
     html_print_input_hidden('upload', 1);
     html_print_submit_button(__('Upload'), 'submit', false, 'class="sub add"');
     echo '</div>';

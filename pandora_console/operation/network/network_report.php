@@ -66,7 +66,7 @@ $table->class = 'databox filters';
 $table->styleTable = 'width: 100%';
 $table->data['0']['0'] = __('Data to show').'&nbsp;&nbsp;';
 $table->data['0']['0'] .= html_print_select(
-    network_get_report_actions($is_network),
+    network_get_report_actions(false),
     'action',
     $action,
     '',
@@ -97,7 +97,7 @@ $table->data['0']['1'] .= html_print_select(
 
 $table->data['0']['2'] = '';
 
-$table->data['1']['0'] = '<div style="display: flex;">';
+$table->data['1']['0'] = '<div class="flex">';
 $table->data['1']['0'] .= '<div id="end_date_container" style="'.$style_end.'">';
 $table->data['1']['0'] .= __('Start date').'&nbsp;&nbsp;';
 $table->data['1']['0'] .= html_print_input_text('date_lower', $date_lower, '', 10, 7, true);
@@ -155,25 +155,14 @@ echo '</form>';
 
 // Print the data.
 $data = [];
-if ($is_network) {
-    $data = network_matrix_get_top(
-        $top,
-        $action === 'talkers',
-        $utimestamp_lower,
-        $utimestamp_greater,
-        $main_value,
-        $order_by !== 'pkts'
-    );
-} else {
-    $data = netflow_get_top_summary(
-        $top,
-        $action,
-        $utimestamp_lower,
-        $utimestamp_greater,
-        $main_value,
-        $order_by
-    );
-}
+$data = netflow_get_top_summary(
+    $top,
+    $action,
+    $utimestamp_lower,
+    $utimestamp_greater,
+    $main_value,
+    $order_by
+);
 
 // Get the params to return the builder.
 $hidden_main_link = [
@@ -193,17 +182,16 @@ $table->styleTable = 'width: 60%';
 // Print the header.
 $table->head = [];
 $table->head['main'] = __('IP');
-if (!$is_network) {
-    $table->head['flows'] = network_print_explorer_header(
-        __('Flows'),
-        'flows',
-        $order_by,
-        array_merge(
-            $hidden_main_link,
-            ['main_value' => $main_value]
-        )
-    );
-}
+$table->head['flows'] = network_print_explorer_header(
+    __('Flows'),
+    'flows',
+    $order_by,
+    array_merge(
+        $hidden_main_link,
+        ['main_value' => $main_value]
+    )
+);
+
 
 $table->head['pkts'] = network_print_explorer_header(
     __('Packets'),
@@ -242,9 +230,7 @@ if (get_parameter('export_csv')) {
 
     // Print the header.
     echo reset($table->head).$div;
-    if (!$is_network) {
-        echo __('Flows').$div;
-    }
+    echo __('Flows').$div;
 
     echo __('Packets').$div;
     echo __('Bytes').$div;
@@ -295,20 +281,14 @@ foreach ($data as $item) {
     }
 
     $row['main'] .= '</div>';
-    if (!$is_network) {
-        $row['flows'] = format_for_graph($item['sum_flows'], 2);
-        $row['flows'] .= ' ('.$item['pct_flows'].'%)';
-    }
+    $row['flows'] = format_for_graph($item['sum_flows'], 2);
+    $row['flows'] .= ' ('.$item['pct_flows'].'%)';
 
     $row['pkts'] = format_for_graph($item['sum_pkts'], 2);
-    if (!$is_network) {
-        $row['pkts'] .= ' ('.$item['pct_pkts'].'%)';
-    }
+    $row['pkts'] .= ' ('.$item['pct_pkts'].'%)';
 
     $row['bytes'] = network_format_bytes($item['sum_bytes']);
-    if (!$is_network) {
-        $row['bytes'] .= ' ('.$item['pct_bytes'].'%)';
-    }
+    $row['bytes'] .= ' ('.$item['pct_bytes'].'%)';
 
     $table->data[] = $row;
 
@@ -332,11 +312,11 @@ foreach ($data as $item) {
 if (empty($data)) {
     ui_print_info_message(__('No data found'));
 } else {
-    echo '<div style="display: flex; margin-top: 10px;">';
+    echo '<div class="flex mrgn_top_10px">';
     html_print_table($table);
 
     // Print the graph.
-    echo '<div style="margin-top: 50px; width: 40%;">';
+    echo '<div class="mrgn_top_50px w40p">';
     echo pie_graph(
         $chart_data,
         320,

@@ -204,6 +204,90 @@ class ReportsWidget extends Widget
 
 
     /**
+     * Return report list.
+     *
+     * @return array
+     */
+    protected function getReports(): array
+    {
+        $return_all_group = false;
+
+        if ((bool) users_can_manage_group_all('RM') === true) {
+            $return_all_group = true;
+        }
+
+        // Reports.
+        $reports = \reports_get_reports(
+            false,
+            [
+                'id_report',
+                'name',
+            ],
+            $return_all_group
+        );
+
+        // If currently selected report is not included in fields array
+        // (it belongs to a group over which user has no permissions), then add
+        // it to fields array.
+        // This is aimed to avoid overriding this value when a user with
+        // narrower permissions edits widget configuration.
+        if ($this->values['reportId'] !== null
+            && in_array(
+                $this->values['reportId'],
+                array_column(
+                    $reports,
+                    'id_report'
+                )
+            ) === false
+        ) {
+            $selected_report = db_get_row(
+                'treport',
+                'id_report',
+                $this->values['reportId']
+            );
+            $reports[] = $selected_report;
+        }
+
+        $fields = array_reduce(
+            $reports,
+            function ($carry, $item) {
+                $carry[$item['id_report']] = \io_safe_output($item['name']);
+                return $carry;
+            },
+            []
+        );
+        return $fields;
+    }
+
+
+    /**
+     * Dumps report list in json to fullfill select for report.
+     *
+     * @return void
+     */
+    public function getReportList(): void
+    {
+        $node_id = \get_parameter('nodeId', $this->nodeId);
+        if (\is_metaconsole() === true && $node_id > 0) {
+            if (\metaconsole_connect(null, $node_id) !== NOERR) {
+                echo json_encode(
+                    ['error' => __('Failed to connect to node %d', $node_id) ]
+                );
+            }
+        }
+
+        echo json_encode(
+            $this->getReports(),
+            1
+        );
+
+        if (\is_metaconsole() === true && $node_id > 0) {
+            \metaconsole_restore_db();
+        }
+    }
+
+
+    /**
      * Generates inputs for form (specific).
      *
      * @return array Of inputs.
@@ -217,31 +301,7 @@ class ReportsWidget extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
-        $return_all_group = false;
-
-        if (users_can_manage_group_all('RM')) {
-            $return_all_group = true;
-        }
-
-        // Reports.
-        $reports = \reports_get_reports(false, ['id_report', 'name'], $return_all_group);
-
-        // If currently selected report is not included in fields array (it belongs to a group over which user has no permissions), then add it to fields array.
-        // This is aimed to avoid overriding this value when a user with narrower permissions edits widget configuration.
-        if ($values['reportId'] !== null && !in_array($values['reportId'], array_column($reports, 'id_report'))) {
-            $selected_report = db_get_row('treport', 'id_report', $values['reportId']);
-
-            $reports[] = $selected_report;
-        }
-
-        $fields = array_reduce(
-            $reports,
-            function ($carry, $item) {
-                $carry[$item['id_report']] = $item['name'];
-                return $carry;
-            },
-            []
-        );
+        $fields = $this->getReports();
 
         $inputs[] = [
             'label'     => __('Report'),
@@ -282,14 +342,10 @@ class ReportsWidget extends Widget
      */
     public function load()
     {
-        global $config;
-
-        $size = parent::getSize();
-
         $output = '';
         ob_start();
         if ($this->values['reportId'] !== 0) {
-            $output .= '<div style="width:90%; height:100%; display:flex; flex-direction:column;">';
+            $output .= '<div class="w90p height_100p flex flex_column">';
             $this->printReport();
             $output .= ob_get_clean();
 
@@ -394,6 +450,52 @@ class ReportsWidget extends Widget
     public static function getName()
     {
         return 'reports';
+    }
+
+
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        ob_start();
+        ?>
+            $('#node').on('change', function() { 
+                $.ajax({
+                    method: "POST",
+                    url: '<?php echo \ui_get_full_url('ajax.php'); ?>',
+                    data: {
+                        page: 'operation/dashboard/dashboard',
+                        dashboardId: '<?php echo $this->dashboardId; ?>',
+                        widgetId: '<?php echo $this->widgetId; ?>',
+                        cellId: '<?php echo $this->cellId; ?>',
+                        class: '<?php echo __CLASS__; ?>',
+                        method: 'getReportList',
+                        nodeId: $('#node').val()
+                    },
+                    dataType: 'JSON',
+                    success: function(data) {
+                        $('#reportId').empty();
+                        Object.entries(data).forEach(e => {
+                            key = e[0];
+                            value = e[1];
+                            $('#reportId').append($('<option>').val(key).text(value))
+                        });
+                        if (Object.entries(data).length == 0) {
+                            $('#reportId').append(
+                                $('<option>')
+                                    .val(-1)
+                                    .text("<?php echo __('None'); ?>")
+                            );
+                        }
+                    }
+                })
+            });
+        <?php
+        $js = ob_get_clean();
+        return $js;
     }
 
 

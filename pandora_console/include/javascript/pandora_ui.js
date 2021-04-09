@@ -87,7 +87,12 @@ function load_modal(settings) {
     div.id = "div-modal-" + uniq;
     div.style.display = "none";
 
-    document.getElementById("main").append(div);
+    if (document.getElementById("main") == null) {
+      // MC env.
+      document.getElementById("page").append(div);
+    } else {
+      document.getElementById("main").append(div);
+    }
 
     var id_modal_target = "#div-modal-" + uniq;
 
@@ -187,8 +192,7 @@ function load_modal(settings) {
         var formdata = new FormData();
         if (settings.extradata) {
           settings.extradata.forEach(function(item) {
-            if (item.value != undefined)
-              formdata.append(item.name, item.value);
+            if (item.value != undefined) formdata.append(item.name, item.value);
           });
         }
         formdata.append("page", settings.onsubmit.page);
@@ -198,33 +202,70 @@ function load_modal(settings) {
         if (Array.isArray(settings.form) === false) {
           $("#" + settings.form + " :input").each(function() {
             if (this.checkValidity() === false) {
-              $(this).attr("title", this.validationMessage);
-              $(this).tooltip({
-                tooltipClass: "uitooltip",
-                position: {
-                  my: "right bottom",
-                  at: "right top",
-                  using: function(position, feedback) {
-                    $(this).css(position);
-                    $("<div>")
-                      .addClass("arrow")
-                      .addClass(feedback.vertical)
-                      .addClass(feedback.horizontal)
-                      .appendTo(this);
+              var select2 = $(this).attr("data-select2-id");
+              if (typeof select2 !== typeof undefined && select2 !== false) {
+                $(this)
+                  .next()
+                  .attr("title", this.validationMessage);
+                $(this)
+                  .next()
+                  .tooltip({
+                    tooltipClass: "uitooltip",
+                    position: {
+                      my: "right bottom",
+                      at: "right top",
+                      using: function(position, feedback) {
+                        $(this).css(position);
+                        $("<div>")
+                          .addClass("arrow")
+                          .addClass(feedback.vertical)
+                          .addClass(feedback.horizontal)
+                          .appendTo(this);
+                      }
+                    }
+                  });
+                $(this)
+                  .next()
+                  .tooltip("open");
+
+                var element = $(this).next();
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              } else {
+                $(this).attr("title", this.validationMessage);
+                $(this).tooltip({
+                  tooltipClass: "uitooltip",
+                  position: {
+                    my: "right bottom",
+                    at: "right top",
+                    using: function(position, feedback) {
+                      $(this).css(position);
+                      $("<div>")
+                        .addClass("arrow")
+                        .addClass(feedback.vertical)
+                        .addClass(feedback.horizontal)
+                        .appendTo(this);
+                    }
                   }
-                }
-              });
-              $(this).tooltip("open");
-  
-              var element = $(this);
-              setTimeout(
-                function(element) {
-                  element.tooltip("destroy");
-                  element.removeAttr("title");
-                },
-                3000,
-                element
-              );
+                });
+                $(this).tooltip("open");
+
+                var element = $(this);
+                setTimeout(
+                  function(element) {
+                    element.tooltip("destroy");
+                    element.removeAttr("title");
+                  },
+                  3000,
+                  element
+                );
+              }
 
               flagError = true;
             }
@@ -282,8 +323,6 @@ function load_modal(settings) {
             data: formdata,
             dataType: settings.onsubmit.dataType,
             success: function(data) {
-                console.log("successsssssssssssss");
-                console.log(data);
               if (settings.ajax_callback != undefined) {
                 if (settings.idMsgCallback != undefined) {
                   settings.ajax_callback(data, settings.idMsgCallback);
@@ -304,17 +343,20 @@ function load_modal(settings) {
           document.getElementById(settings.form).submit();
         }
       }
-    }
+    };
 
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
       text: settings.modal.ok,
       click: function() {
-        if (settings.onsubmit != undefined && settings.onsubmit.onConfirmSubmit != undefined) {
-            settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
+        if (
+          settings.onsubmit != undefined &&
+          settings.onsubmit.onConfirmSubmit != undefined
+        ) {
+          settings.onsubmit.onConfirmSubmit(btnClickHandler, $(this));
         } else {
-            btnClickHandler($(this));
+          btnClickHandler($(this));
         }
       },
       error: function(data) {
@@ -377,6 +419,8 @@ function load_modal(settings) {
           //$(".ui-dialog-titlebar-close").hide();
         },
         close: function() {
+          $(this).dialog("destroy");
+
           if (id_modal_target != undefined) {
             $(id_modal_target).remove();
           }
@@ -384,14 +428,12 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-
-          $(this).dialog("destroy");
         },
         beforeClose: settings.beforeClose()
       });
     },
     error: function(data) {
-      // console.log(data);
+      console.error(data);
     }
   });
 }
@@ -401,6 +443,7 @@ function load_modal(settings) {
 // eslint-disable-next-line no-unused-vars
 function confirmDialog(settings) {
   var randomStr = uniqId();
+  var hideOkButton = "";
 
   if (settings.size == undefined) {
     settings.size = 350;
@@ -408,6 +451,10 @@ function confirmDialog(settings) {
 
   if (settings.maxHeight == undefined) {
     settings.maxHeight = 1000;
+  }
+  // You can hide the OK button.
+  if (settings.hideOkButton != undefined) {
+    hideOkButton = "invisible_important ";
   }
 
   if (typeof settings.message == "function") {
@@ -430,6 +477,7 @@ function confirmDialog(settings) {
       modal: true,
       buttons: [
         {
+          id: "cancel_btn_dialog",
           text: "Cancel",
           class:
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
@@ -442,6 +490,7 @@ function confirmDialog(settings) {
         {
           text: "Ok",
           class:
+            hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
           click: function() {
             $(this).dialog("close");

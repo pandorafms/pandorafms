@@ -164,6 +164,9 @@ class SystemGroupStatusWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
+        if (empty($this->values['groupId']) === true) {
+            $this->configurationRequired = true;
+        }
 
         $this->overflow_scrollbars = false;
     }
@@ -274,12 +277,16 @@ class SystemGroupStatusWidget extends Widget
         if ($values['groupId']) {
             $selected_groups = explode(',', $values['groupId'][0]);
 
-            if (users_can_manage_group_all('RM') || ($selected_groups[0] !== '' && in_array(0, $selected_groups) === true)) {
-                // Return all group if user has permissions or it is a currently selected group.
+            if (users_can_manage_group_all('RM') === true
+                || ($selected_groups[0] !== ''
+                && in_array(0, $selected_groups) === true)
+            ) {
+                // Return all group if user has permissions
+                // or it is a currently selected group.
                 $return_all_group = true;
             }
         } else {
-            if (users_can_manage_group_all('RM')) {
+            if (users_can_manage_group_all('RM') === true) {
                 $return_all_group = true;
             }
         }
@@ -295,6 +302,7 @@ class SystemGroupStatusWidget extends Widget
                 'return'         => true,
                 'multiple'       => true,
                 'returnAllGroup' => $return_all_group,
+                'required'       => true,
             ],
         ];
 
@@ -365,7 +373,7 @@ class SystemGroupStatusWidget extends Widget
 
         $return_all_group = false;
 
-        if (users_can_manage_group_all('AR')) {
+        if (users_can_manage_group_all('AR') === true) {
             $return_all_group = true;
         }
 
@@ -374,16 +382,18 @@ class SystemGroupStatusWidget extends Widget
         $selected_groups = explode(',', $this->values['groupId'][0]);
 
         if ($selected_groups[0] === '') {
-            return;
+            return false;
         }
 
         $all_counters = [];
 
-        if (in_array(0, $selected_groups)) {
+        if (in_array(0, $selected_groups) === true) {
             $all_groups = db_get_all_rows_sql('select id_grupo from tgrupo');
             $all_groups_id = array_column($all_groups, 'id_grupo');
 
-            $all_groups_counters = groupview_get_modules_counters($all_groups_id);
+            $all_groups_counters = groupview_get_modules_counters(
+                $all_groups_id
+            );
 
             $all_counters['g'] = 0;
             $all_counters['name'] = __('All');
@@ -507,12 +517,12 @@ class SystemGroupStatusWidget extends Widget
                 $url .= '&ag_group='.$group['g'];
 
                 if ($show_normal === true) {
-                    $outputLine = '<div style="background-color:#82b92e">';
+                    $outputLine = '<div class="bg_82B92E">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Modules in normal status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= $show_link === true ? '" href="'.$url : '';
+                    $outputLine .= ($show_link === true) ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_NORMAL.'">';
                     $outputLine .= $group['total_module_normal'];
                     $outputLine .= '</a>';
@@ -523,12 +533,12 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_warning === true) {
-                    $outputLine = '<div style="background-color:#ffd036">';
+                    $outputLine = '<div class="bg_ffd">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Modules in warning status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= $show_link === true ? '" href="'.$url : '';
+                    $outputLine .= ($show_link === true) ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_WARNING.'">';
                     $outputLine .= $group['total_module_warning'];
                     $outputLine .= '</a>';
@@ -539,13 +549,13 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_critical === true) {
-                    $outputLine = '<div style="background-color:#ff5653">';
+                    $outputLine = '<div class="bg_ff5">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="';
                     $outputLine .= __('Modules in critical status');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= $show_link === true ? '" href="'.$url : '';
+                    $outputLine .= ($show_link === true) ? '" href="'.$url : '';
                     $outputLine .= '&status='.AGENT_STATUS_CRITICAL.'">';
                     $outputLine .= $group['total_module_critical'];
                     $outputLine .= '</a>';
@@ -556,12 +566,17 @@ class SystemGroupStatusWidget extends Widget
                 }
 
                 if ($show_alert_fired === true) {
-                    $outputLine = '<div style="background-color:#ff9e39">';
+                    $url_alert = $config['homeurl'];
+                    $url_alert .= 'index.php?sec=view&';
+                    $url_alert .= 'sec2=operation/agentes/alerts_status';
+                    $url_alert .= '&ag_group='.$group['g'];
+
+                    $outputLine = '<div class="bg_ff9">';
                     $outputLine .= '<span>';
                     $outputLine .= '<a title="'.__('Alerts fired');
                     $outputLine .= '" class="group_view_data"';
                     $outputLine .= ' style="'.$style.'"';
-                    $outputLine .= $show_link === true ? '" href="'.$url : '';
+                    $outputLine .= ($show_link === true) ? '" href="'.$url_alert : '';
                     $outputLine .= '&filter=fired">';
                     $outputLine .= $group['total_module_alerts'];
                     $outputLine .= '</a>';

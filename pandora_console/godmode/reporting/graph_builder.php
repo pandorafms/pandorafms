@@ -28,6 +28,8 @@
 
 global $config;
 
+
+
 if (is_ajax()) {
     $search_agents = (bool) get_parameter('search_agents');
 
@@ -283,19 +285,48 @@ if ($edit_graph) {
     $buttons = [
         'graph_list'   => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('Graph list'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'main'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/chart.png', true, ['title' => __('Main data')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/chart.png',
+                true,
+                [
+                    'title' => __('Main data'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'graph_editor' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/builder.png', true, ['title' => __('Graph editor')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/builder.png',
+                true,
+                [
+                    'title' => __('Graph editor'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'view'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image('images/operation.png', true, ['title' => __('View graph')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/operation.png',
+                true,
+                [
+                    'title' => __('View graph'),
+                    'class' => 'invert_filter',
+
+                ]
+            ).'</a>',
         ],
     ];
 

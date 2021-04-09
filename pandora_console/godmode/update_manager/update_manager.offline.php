@@ -77,6 +77,7 @@ is not working on the metaconsole and there is no time to fix it -->
     var click_on_the_file_below_to_begin = "<?php echo __('Click on the file below to begin.'); ?>\n";
     var updating = "<?php echo __('Updating'); ?>\n";
     var package_updated_successfully = "<?php echo __('Package updated successfully.'); ?>\n";
+    var package_not_updated = "<?php echo __('Package not updated.'); ?>\n";
     var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied.'); ?>\n";
     var mr_available = "<?php echo __('Minor release available'); ?>\n";
     var package_available = "<?php echo __('New package available'); ?>\n";
@@ -101,7 +102,7 @@ is not working on the metaconsole and there is no time to fix it -->
         : "http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29";
     var text4_mr_file = "<?php echo __(' to this process'); ?>";
     text4_mr_file += "<br><br>";
-    text4_mr_file += "<a style=\"font-size:10pt;font-style:italic;\" target=\"blank\" href=\"" + docsUrl + "\">";
+    text4_mr_file += "<a class=\"font_10 itali;\" target=\"blank\" href=\"" + docsUrl + "\">";
     text4_mr_file += "<?php echo __('About minor release update'); ?>";
     text4_mr_file += "</a>";
 

@@ -364,12 +364,12 @@ else if (!$downtimes) {
     // Info message.
     echo '<div class="nf">'.__('No planned downtime').'</div>';
 
-    echo '<div class="action-buttons" style="width: 100%">';
+    echo '<div class="action-buttons w100p" >';
 
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" class="display_in" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }
@@ -493,9 +493,9 @@ else {
                     || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
                 ) {
                     // Edit.
-                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
                     // Delete.
-                    $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+                    $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
                 } else {
                     $data['edit'] = '';
                     $data['delete'] = '';
@@ -505,7 +505,7 @@ else {
                     || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
                 ) {
                     // Edit.
-                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
                     // Delete.
                     $data['delete'] = __('N/A');
                 } else {
@@ -539,7 +539,7 @@ else {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
     // CSV export button.
-    echo '<div style="display: inline;">';
+    echo '<div class="display_in">';
         html_print_button(
             __('Export to CSV'),
             'csv_export',
@@ -552,7 +552,7 @@ else {
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" class="display_in" >';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }

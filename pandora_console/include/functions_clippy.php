@@ -296,7 +296,7 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy}', '#'.$id, $code);
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
-    $return = $code.'<div id="'.$id.'" style="display: inline-block;"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
+    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
         'images/clippy_icon.png',
         true
     ).'</a></div>

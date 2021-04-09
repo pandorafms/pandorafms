@@ -165,7 +165,7 @@ if ($searchModules) {
 if ($searchPolicies) {
     $policies_tab = [
         'text'   => "<a href='index.php?search_category=policies&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
-            'images/policies.png',
+            'images/policies_mc.png',
             true,
             ['title' => __('Policies')]
         ).'</a>',

@@ -84,7 +84,7 @@ if ($id_group) {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';
@@ -167,12 +167,12 @@ if ($id_group) {
         $table->data[2][1] .= html_print_select_groups(
             false,
             'AR',
-            true,
+            false,
             'id_parent',
             $id_parent,
             '',
-            '',
-            '',
+            __('None'),
+            -1,
             true,
             false,
             true,
@@ -192,7 +192,9 @@ if ($id_group) {
             'name'           => 'id_parent',
             'selected'       => $id_parent,
             'return'         => true,
-            'returnAllGroup' => true,
+            'returnAllGroup' => false,
+            'nothing'        => __('None'),
+            'nothing_value'  => -1,
         ]
     );
     $table->data[2][1] .= '</div>';
@@ -200,7 +202,7 @@ if ($id_group) {
 
 if ($acl_parent) {
     $table->data[2][1] .= ' <span id="parent_preview">';
-    $table->data[2][1] .= html_print_image('images/groups_small/'.groups_get_icon($id_parent).'.png', true);
+    $table->data[2][1] .= html_print_image('images/groups_small/'.( $id_parent != 0 ? groups_get_icon($id_parent) : 'without_group').'.png', true);
     $table->data[2][1] .= '</span>';
 }
 
@@ -228,11 +230,11 @@ $table->data[$i][1] = html_print_input_text('description', $description, '', 60,
 $i++;
 
 $table->data[$i][0] = __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true);
-$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true);
 $i++;
 
 $table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true);
-$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
 $i++;
 
 $isFunctionSkins = enterprise_include_once('include/functions_skins.php');

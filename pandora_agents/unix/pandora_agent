@@ -592,7 +592,6 @@ BEGIN {
 		my ($self) = @_;
 
 		if ($YAML == 0) {
-			$self->set_last_error('Cannot use commands without YAML dependency, please install it.');
 			return;
 		}
 
@@ -1015,8 +1014,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.752';
-use constant AGENT_BUILD => '210125';
+use constant AGENT_VERSION => '7.0NG.753';
+use constant AGENT_BUILD => '210408';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -4030,6 +4029,14 @@ if ($Conf{'proxy_mode'}) {
 	}
 }
 
+# Advice if YAML::Tiny is allowed in this system
+eval {
+		eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');
+};
+if ($@) {
+		log_message ('error', 'Cannot use commands without YAML dependency, please install it.');
+}
+
 # Add the plugins directory to the PATH
 $ENV{'PATH'} .= ":$ConfDir/plugins";
 
@@ -4143,7 +4150,7 @@ while (1) {
 				@address_list = `ip addr show 2>$DevNull | sed -e '/127.0.0/d' -e '/\\([0-9][0-9]*\\.\\)\\{3\\}[0-9][0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/\\/.*//'`;
 			}
 			else {
-				@address_list = `ifconfig -a 2>$DevNull | sed -e '/127.0.0/d' -e '/\\([0-9][0-9]*\\.\\)\\{3\\}[0-9][0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/.*://'`;
+				@address_list = `ifconfig -a 2>$DevNull | grep -i inet | grep -v 'inet6' | grep -v '0.0.0.0' | grep -v '::/0' | awk '{print \$2}' | grep -v '127.0.0.1'`;
 			}
 
 			for (my $i = 0; $i <= $#address_list; $i++) {		

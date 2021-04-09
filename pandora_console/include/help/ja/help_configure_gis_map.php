@@ -50,7 +50,7 @@ GIS マップを設定するためには、少なくとも一つ選択されて�
 </div>
 <h2>レイヤ設定</h2>
 <p>
-それぞれのマップはエージェントを表示するための一つ以上のレイヤ<sup><span style="font-size:75%">1</span></sup>を持っています。
+それぞれのマップはエージェントを表示するための一つ以上のレイヤ<sup><span class="font_75p">1</span></sup>を持っています。
 それぞれのレイヤは、エージェントの<strong>グループ</strong>や<strong>エージェント一覧</strong>を表示することができます。
 これは、それぞれのレイヤに表示するエージェントを設定するのに便利です。
 </p>
@@ -60,4 +60,4 @@ GIS マップを設定するためには、少なくとも一つ選択されて�
 ここでは、再度、<strong>順番の変更</strong> (<?php html_print_image('images/up.png', false, ['alt' => 'move up icon']); ?>、<?php html_print_image('images/down.png', false, ['alt' => 'move down icon']); ?>)、<strong>削除</strong> (<?php html_print_image('images/cross.png', false, ['alt' => 'delete icon']); ?>)、<strong>編集</strong> (<?php html_print_image('images/config.png', false, ['alt' => 'edit icon']); ?>) ができます。
 </p>
 <hr/>
-<sup><span style="font-size:75%;">1</span></sup> <span style="font-size:85%;">デフォルトマップでは、エージェント名で一つのレイヤしか表示しない場合は、レイヤを持たない設定も可能です。</span>
+<sup><span class="font_75p">1</span></sup> <span class="font_85p">デフォルトマップでは、エージェント名で一つのレイヤしか表示しない場合は、レイヤを持たない設定も可能です。</span>

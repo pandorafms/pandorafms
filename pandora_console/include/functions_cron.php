@@ -478,7 +478,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -516,7 +519,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -567,7 +573,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -593,7 +602,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -629,7 +641,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -647,9 +662,12 @@ function cron_list_table()
                     }
 
                     $path = $args[1];
+                    $report_type = $args[3];
                     $data[2] .= '<br>- '.__('Report').": <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer";
                     $data[2] .= '&id='.$args[0]."'>".$report['name'].'</a>';
                     $data[2] .= '<br>- '.__('Path').': '.$path.'</a>';
+                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
+
                 break;
 
                 case 'cron_task_do_backup':
@@ -659,7 +677,10 @@ function cron_list_table()
                         $data[0] .= html_print_image(
                             'images/target.png',
                             true,
-                            ['title' => __('Force run')]
+                            [
+                                'title' => __('Force run'),
+                                'class' => 'invert_filter',
+                            ]
                         );
                         $data[0] .= '</a>';
                     } else {
@@ -694,7 +715,10 @@ function cron_list_table()
                     $data[7] .= html_print_image(
                         'images/config.png',
                         true,
-                        ['title' => __('Edit')]
+                        [
+                            'title' => __('Edit'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[7] .= '</a>';
                 }
@@ -705,7 +729,10 @@ function cron_list_table()
                     $data[7] .= html_print_image(
                         'images/cross.png',
                         true,
-                        ['title' => __('Delete')]
+                        [
+                            'title' => __('Delete'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[7] .= '</a>';
                 }
@@ -716,7 +743,10 @@ function cron_list_table()
                     $data[7] .= html_print_image(
                         'images/config.png',
                         true,
-                        ['title' => __('Edit')]
+                        [
+                            'title' => __('Edit'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[7] .= '</a>';
                 }
@@ -727,7 +757,10 @@ function cron_list_table()
                     $data[7] .= html_print_image(
                         'images/cross.png',
                         true,
-                        ['title' => __('Delete')]
+                        [
+                            'title' => __('Delete'),
+                            'class' => 'invert_filter',
+                        ]
                     );
                     $data[7] .= '</a>';
                 }

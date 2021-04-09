@@ -7,7 +7,7 @@
 
 <br><br>
 
-<table width="750px" style="display:inline">
+<table width="750px" class="inline_line">
 <tr>
     <td class=""> If you add a new permission, you must add the corresponding text as follows:
         <nav>

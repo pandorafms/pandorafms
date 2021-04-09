@@ -85,33 +85,7 @@ SET @insert_name = 'IPAM Recon';
 SET @insert_description = 'This script is used to automatically detect network hosts availability and name, used as Recon Custom Script in the recon task. Parameters used are:\n\n* custom_field1 = network. i.e.: 192.168.100.0/24\n* custom_field2 = associated IPAM network id. i.e.: 4. Please do not change this value, it is assigned automatically in IPAM management.\n\nSee documentation for more information.';
 SET @insert_script = '/usr/share/pandora_server/util/recon_scripts/IPAMrecon.pl';
 SET @insert_macros = '{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""}}';
-INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`)
-SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (
-	SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name
-	UNION
-	SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`,
-	@insert_type as `type`,
-	@insert_name as `name`,
-	@insert_description as `description`,
-	@insert_script as `script`,
-	@insert_macros as `macros`
-) t limit 1;
-
-ALTER TABLE `tipam_ip` ADD COLUMN `leased` tinyint(2) DEFAULT '0';
-
-ALTER TABLE `tipam_ip` ADD COLUMN `leased_expiration` bigint(20) DEFAULT '0';
-
-ALTER TABLE `tipam_ip` ADD COLUMN `mac_address` varchar(20) DEFAULT NULL;
-
-ALTER TABLE `tipam_ip` ADD COLUMN `leased_mode` tinyint(2) DEFAULT '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `monitoring` tinyint(2) default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `id_group` mediumint(8) unsigned NULL default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `lightweight_mode` tinyint(2) default '0';
-
-ALTER TABLE `tipam_network` ADD COLUMN `name_network` varchar(255) default '';
+INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`) SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name UNION SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`, @insert_type as `type`, @insert_name as `name`, @insert_description as `description`, @insert_script as `script`, @insert_macros as `macros`) t limit 1;
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
@@ -134,6 +108,21 @@ ADD COLUMN `field16` TEXT NOT NULL AFTER `field15`
 UPDATE `trecon_script` SET `description`='Specific&#x20;Pandora&#x20;FMS&#x20;Intel&#x20;DCM&#x20;Discovery&#x20;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2011&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x20;./ipmi-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;&lt;custom_field3&gt;&#x20;&lt;custom_field4&gt;&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;Network&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;Username&#x0d;&#x0a;*&#x20;custom_field3&#x20;=&#x20;Password&#x0d;&#x0a;*&#x20;custom_field4&#x20;=&#x20;Additional&#x20;parameters&#x20;i.e.:&#x20;-D&#x20;LAN_2_0' WHERE `name`='IPMI&#x20;Recon';
 
 ALTER TABLE `trecon_task` MODIFY COLUMN `review_mode` TINYINT(1) UNSIGNED DEFAULT 1;
+
+DELETE FROM `tuser_task` WHERE id = 6;
+
+UPDATE `tuser_task` SET `parameters`='a:4:{i:0;a:6:{s:11:"description";s:28:"Report pending to be created";s:5:"table";s:7:"treport";s:8:"field_id";s:9:"id_report";s:10:"field_name";s:4:"name";s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_group";}i:1;a:2:{s:11:"description";s:426:"Save to disk in path<a href="javascript:" class="tip" style="" ><img src="http://172.16.0.2/pandora_console/images/tip_help.png" data-title="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" data-use_title_for_force_title="1" class="forced_title" alt="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" /></a>";s:4:"type";s:6:"string";}i:2;a:2:{s:11:"description";s:16:"File nane prefix";s:4:"type";s:6:"string";}i:3;a:2:{s:11:"description";s:11:"Report Type";s:4:"type";s:11:"report_type";}}' WHERE `id`=3;
+
+UPDATE `tuser_task_scheduled` SET 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"PDF";s:15:"first_execution"')
+    WHERE `id_user_task` = 3;
+
+UPDATE `tuser_task_scheduled` SET 
+    `id_user_task` = 3, 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"XML";s:15:"first_execution"')
+    WHERE `id_user_task` = 6;
 
 ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 

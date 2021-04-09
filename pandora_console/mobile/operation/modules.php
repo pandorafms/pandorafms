@@ -27,6 +27,8 @@ class Modules
 
     private $free_search = '';
 
+    private $name = '';
+
     private $module_group = -1;
 
     private $tag = '';
@@ -105,6 +107,10 @@ class Modules
 
         if (isset($filters['status'])) {
             $this->status = $filters['status'];
+        }
+
+        if (isset($filters['name'])) {
+            $this->name = $filters['name'];
         }
     }
 
@@ -374,6 +380,14 @@ class Modules
             );
         }
 
+        // Search by module name.
+        if ($this->name != '') {
+            $sql_conditions .= sprintf(
+                " AND lower(tagente_modulo.nombre) LIKE lower('%%%s%%') ",
+                $this->name
+            );
+        }
+
         // Part SQL fro Status
         if ($this->status == AGENT_MODULE_STATUS_NORMAL) {
             // Normal
@@ -564,10 +578,10 @@ class Modules
                     }
                 }
 
-                $row[0] = $row[__('Module name')] = '<span class="tiny" style="margin-right: 5px;">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
+                $row[0] = $row[__('Module name')] = '<span class="tiny mrgn_right_5px">'.$image_status.'</span>'.'<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false).'</span>';
 
                 if ($this->columns['agent']) {
-                    $row[1] = $row[__('Agent name')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">'.__('Agent').' </span>'.ui_print_truncate_text($module['agent_alias'], 50, false).'</span>';
+                    $row[1] = $row[__('Agent name')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Agent').' </span>'.ui_print_truncate_text($module['agent_alias'], 50, false).'</span>';
                 }
 
                 if ($module['utimestamp'] == 0 && (($module['module_type'] < 21
@@ -629,9 +643,9 @@ class Modules
 
                 $row[__('Interval')] = ($module['module_interval'] == 0) ? human_time_description_raw($module['agent_interval'], false, 'tiny') : human_time_description_raw($module['module_interval'], false, 'tiny');
 
-                $row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">'.__('Interval.').' </span>'.$row[__('Interval')].'</span>';
+                $row[4] = $row[__('Interval')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Interval.').' </span>'.$row[__('Interval')].'</span>';
 
-                $row[6] = $row[__('Timestamp')] = '<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">'.__('Last update.').' </span>'.ui_print_timestamp($module['utimestamp'], true, ['units' => 'tiny']).'</span>';
+                $row[6] = $row[__('Timestamp')] = '<span class="data"><span class="show_collapside bolder invisible">'.__('Last update.').' </span>'.ui_print_timestamp($module['utimestamp'], true, ['units' => 'tiny']).'</span>';
                 if (is_numeric($module['datos'])) {
                     $output = format_numeric($module['datos']);
 
@@ -688,8 +702,8 @@ class Modules
                     $row[__('Data')] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
                 } else {
                     if ($system->getConfig('metaconsole')) {
-                        $row[__('Data')] = '<span style="white-space: nowrap;">';
-                        $row[__('Data')] .= '<span style="display: none;" class="show_collapside">';
+                        $row[__('Data')] = '<span class="nowrap">';
+                        $row[__('Data')] .= '<span class="show_collapside invisible">';
                         $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
                         $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
                         $row[__('Data')] .= 'href="index.php?page=module_graph&id='.$module['id_agente_modulo'];
@@ -700,8 +714,8 @@ class Modules
                         $row[__('Data')];
                     } else {
                         // Row 7.
-                        $row[__('Data')] = '<span style="white-space: nowrap;">';
-                        $row[__('Data')] .= '<span style="display: none;" class="show_collapside">';
+                        $row[__('Data')] = '<span class="nowrap">';
+                        $row[__('Data')] .= '<span class="show_collapside invisible">';
                         $row[__('Data')] .= $row[__('Status')].'&nbsp;&nbsp;</span>';
                         $row[__('Data')] .= '<a data-ajax="false" class="ui-link" ';
                         $row[__('Data')] .= 'href="index.php?page=module_graph&id=';
@@ -741,7 +755,6 @@ class Modules
         $ui = Ui::getInstance();
 
         $listModules = $this->getListModules($page);
-        // $ui->debug($listModules, true);
         if ($listModules['total'] == 0) {
             $html = '<p class="empty_advice">'.__('No modules').'</p>';
             if (!$return) {
@@ -757,12 +770,6 @@ class Modules
 
                 $ui->contentAddHtml($table->getHTML());
             } else {
-                // ~ foreach ($listModules['modules'] as $key => $module) {
-                    // ~ $listModules['modules'][$key][__('Status')] .=
-                        // ~ '<span style="display: none;" class="show_collapside">' .
-                        // ~ $listModules['modules'][$key][__('Data')] .
-                        // ~ '</span>';
-                // ~ }
                 $table = new Table();
                 $table->id = 'list_agent_Modules';
 

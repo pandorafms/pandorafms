@@ -363,6 +363,7 @@ CREATE TABLE IF NOT EXISTS `tinventory_alert`(
     `last_fired` text NOT NULL default '',
     `disable_event` tinyint(1) UNSIGNED default 0,
     `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
 	PRIMARY KEY (`id`),
     FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -864,6 +865,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) D
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -1378,6 +1380,8 @@ ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,
 	MODIFY COLUMN `field14` text NOT NULL,
 	MODIFY COLUMN `field15` text NOT NULL;
 
+ALTER TABLE `talert_actions` ADD COLUMN `create_wu_integria` TINYINT(1) default NULL;
+
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`
 -- ---------------------------------------------------------------------
@@ -1410,13 +1414,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 42);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 44);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 750);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 752);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1724,6 +1728,7 @@ ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1
 ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
+ALTER TABLE `treport_content` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -2392,6 +2397,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2495,6 +2501,7 @@ CREATE TABLE `tnotification_source_group_user` (
 -- Add alert command 'Generate notification'
 -- ----------------------------------------------------------------------
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Event&#x20;name\",\"Event&#x20;type\",\"Source\",\"Agent&#x20;name&#x20;or&#x20;_agent_\",\"Event&#x20;severity\",\"ID&#x20;extra\",\"Tags&#x20;separated&#x20;by&#x20;commas\",\"Comments\",\"\",\"\"]' WHERE `name` = "Monitoring&#x20;Event";
 
 -- ----------------------------------------------------------------------
 -- Update message references and pre-configure notifications
@@ -2513,7 +2520,7 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
-ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Add column in table `tnetflow_filter`
@@ -2526,6 +2533,20 @@ ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 -- ----------------------------------------------------------------------
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
 INSERT IGNORE INTO tuser_task VALUES (8, 'cron_task_generate_csv_log', 'a:1:{i:0;a:2:{s:11:"description";s:14:"Send to e-mail";s:4:"type";s:4:"text";}}', 'Send csv log');
+UPDATE `tuser_task` SET `parameters`='a:4:{i:0;a:6:{s:11:"description";s:28:"Report pending to be created";s:5:"table";s:7:"treport";s:8:"field_id";s:9:"id_report";s:10:"field_name";s:4:"name";s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_group";}i:1;a:2:{s:11:"description";s:426:"Save to disk in path<a href="javascript:" class="tip" style="" ><img src="http://172.16.0.2/pandora_console/images/tip_help.png" data-title="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" data-use_title_for_force_title="1" class="forced_title" alt="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" /></a>";s:4:"type";s:6:"string";}i:2;a:2:{s:11:"description";s:16:"File nane prefix";s:4:"type";s:6:"string";}i:3;a:2:{s:11:"description";s:11:"Report Type";s:4:"type";s:11:"report_type";}}' WHERE `id`=3;
+DELETE FROM `tuser_task` WHERE id = 6;
+
+-- Migrate old tasks
+UPDATE `tuser_task_scheduled` SET 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"PDF";s:15:"first_execution"')
+    WHERE `id_user_task` = 3;
+
+UPDATE `tuser_task_scheduled` SET 
+    `id_user_task` = 3, 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"XML";s:15:"first_execution"')
+    WHERE `id_user_task` = 6;
 
 -- ----------------------------------------------------------------------
 -- ADD message in table 'tnews'
@@ -2865,6 +2886,12 @@ SET @plugin_description = 'Get&#x20;the&#x20;result&#x20;of&#x20;an&#x20;arithme
 SET @plugin_id = '';
 SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
 INSERT IGNORE INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (@plugin_id,@plugin_name,@plugin_description,20,0,'/usr/share/pandora_server/util/plugin/wizard_wmi_module',NULL,NULL,NULL,NULL,0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Namespace&#x20;&#40;Optional&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"User\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"WMI&#x20;Class\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Fields&#x20;list\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Query&#x20;filter&#x20;&#40;Optional&#41;\",\"help\":\"Use&#x20;single&#x20;quotes&#x20;for&#x20;query&#x20;conditions\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"Operation\",\"help\":\"Aritmetic&#x20;operation&#x20;to&#x20;get&#x20;data.&#x20;Macros&#x20;_fN_&#x20;will&#x20;be&#x20;changed&#x20;by&#x20;fields&#x20;in&#x20;list.&#x20;Example:&#x20;&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_\",\"value\":\"\",\"hide\":\"\"}}','-host&#x20;&#039;_field1_&#039;&#x20;-namespace&#x20;&#039;_field2_&#039;&#x20;-user&#x20;&#039;_field3_&#039;&#x20;-pass&#x20;&#039;_field4_&#039;&#x20;-wmiClass&#x20;&#039;_field5_&#039;&#x20;-fieldsList&#x20;&#039;_field6_&#039;&#x20;-queryFilter&#x20;&quot;_field7_&quot;&#x20;-operation&#x20;&#039;_field8_&#039;&#x20;-wmicPath&#x20;/usr/bin/wmic');
+
+SET @plugin_name = 'Network&#x20;bandwidth&#x20;SNMP';
+SET @plugin_description = 'Retrieves&#x20;amount&#x20;of&#x20;digital&#x20;information&#x20;sent&#x20;and&#x20;received&#x20;from&#x20;device&#x20;or&#x20;filtered&#x20;&#x20;interface&#x20;index&#x20;over&#x20;a&#x20;particular&#x20;time&#x20;&#40;agent/module&#x20;interval&#41;.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin`  (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES  (@plugin_id,@plugin_name,@plugin_description,300,0,'perl&#x20;/usr/share/pandora_server/util/plugin/pandora_snmp_bandwidth.pl','','','','',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"SNMP&#x20;Version&#40;1,2c,3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Community\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Port\",\"help\":\"\",\"value\":\"161\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Interface&#x20;Index&#x20;&#40;filter&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"securityName\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"context\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"securityLevel\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"9\":{\"macro\":\"_field9_\",\"desc\":\"authProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"10\":{\"macro\":\"_field10_\",\"desc\":\"authKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"11\":{\"macro\":\"_field11_\",\"desc\":\"privProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"12\":{\"macro\":\"_field12_\",\"desc\":\"privKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"13\":{\"macro\":\"_field13_\",\"desc\":\"UniqId\",\"help\":\"This&#x20;plugin&#x20;needs&#x20;to&#x20;store&#x20;information&#x20;in&#x20;temporary&#x20;directory&#x20;to&#x20;calculate&#x20;bandwidth.&#x20;Set&#x20;here&#x20;an&#x20;unique&#x20;identifier&#x20;with&#x20;no&#x20;spaces&#x20;or&#x20;symbols.\",\"value\":\"\",\"hide\":\"\"},\"14\":{\"macro\":\"_field14_\",\"desc\":\"inUsage\",\"help\":\"Retrieve&#x20;input&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"},\"15\":{\"macro\":\"_field15_\",\"desc\":\"outUsage\",\"help\":\"Retrieve&#x20;output&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"}}','-version&#x20;&#039;_field1_&#039;&#x20;-community&#x20;&#039;_field2_&#039;&#x20;-host&#x20;&#039;_field3_&#039;&#x20;-port&#x20;&#039;_field4_&#039;&#x20;-ifIndex&#x20;&#039;_field5_&#039;&#x20;-securityName&#x20;&#039;_field6_&#039;&#x20;-context&#x20;&#039;_field7_&#039;&#x20;-securityLevel&#x20;&#039;_field8_&#039;&#x20;-authProtocol&#x20;&#039;_field9_&#039;&#x20;-authKey&#x20;&#039;_field10_&#039;&#x20;-privProtocol&#x20;&#039;_field11_&#039;&#x20;-privKey&#x20;&#039;_field12_&#039;&#x20;-uniqid&#x20;&#039;_field13_&#039;&#x20;-inUsage&#x20;&#039;_field14_&#039;&#x20;-outUsage&#x20;&#039;_field15_&#039;');
 
 SET @main_component_group_name = 'Wizard';
 SET @component_id = '';
@@ -3976,3 +4003,4 @@ SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
+

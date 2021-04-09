@@ -266,6 +266,7 @@ class AgentModuleWidget extends Widget
                 'mModules'                 => $this->values['mModules'],
                 'mShowSelectedOtherGroups' => true,
                 'mReturnAllGroup'          => $return_all_group,
+                'mMetaFields'              => ((bool) is_metaconsole()),
             ],
         ];
 
@@ -329,7 +330,7 @@ class AgentModuleWidget extends Widget
                 $name = $module;
                 $modules_by_name[$cont]['name'] = $name;
                 $modules_by_name[$cont]['id'][] = $key;
-                $cont ++;
+                $cont++;
             }
         }
 
@@ -351,7 +352,10 @@ class AgentModuleWidget extends Widget
 
             $agent_modules = db_get_all_rows_sql($sql);
 
-            $agent_modules = array_combine(array_column($agent_modules, 'id_agente_modulo'), array_column($agent_modules, 'nombre'));
+            $agent_modules = array_combine(
+                array_column($agent_modules, 'id_agente_modulo'),
+                array_column($agent_modules, 'nombre')
+            );
 
             $row['modules'] = [];
             foreach ($modules_by_name as $module) {
@@ -387,7 +391,7 @@ class AgentModuleWidget extends Widget
     ):string {
         $style = 'display:flex; width:100%; height:100%; margin: 10px;';
         $table_data = '<div style="'.$style.'">';
-        $table_data .= '<table class="widget_agent_module" cellpadding="1" cellspacing="0" border="0" style="background-color: transparent; margin: 0 auto;">';
+        $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 
         if (empty($visualData) === false) {
             $table_data .= '<th>'.__('Agents').' / '.__('Modules').'</th>';
@@ -403,11 +407,11 @@ class AgentModuleWidget extends Widget
                     false,
                     '...'
                 );
-                $table_data .= '<th style="padding: 10px;">'.$file_name.'</th>';
+                $table_data .= '<th class="pdd_10px">'.$file_name.'</th>';
             }
 
             foreach ($visualData as $row) {
-                $table_data .= "<tr style='height: 35px;'>";
+                $table_data .= "<tr class='height_35px'>";
                 switch ($row['agent_status']) {
                     case AGENT_STATUS_ALERT_FIRED:
                         $rowcolor = COL_ALERTFIRED;
@@ -448,6 +452,10 @@ class AgentModuleWidget extends Widget
                 $table_data .= "<td style='background-color: ".$rowcolor.";'>";
                 $table_data .= $file_name;
                 $table_data .= '</td>';
+
+                if ($row['modules'] === null) {
+                    $row['modules'] = [];
+                }
 
                 foreach ($row['modules'] as $module_name => $module) {
                     if ($module === null) {
@@ -591,6 +599,7 @@ class AgentModuleWidget extends Widget
     {
         global $config;
 
+        $output = '';
         if (check_acl($config['id_user'], 0, 'AR') === 0) {
             $output .= '<div class="container-center">';
             $output .= ui_print_error_message(
@@ -602,27 +611,44 @@ class AgentModuleWidget extends Widget
             return $output;
         }
 
-        // Estract info all modules selected.
+        // Extract info all modules selected.
         $target_modules = explode(',', $this->values['mModules']);
         $all_modules = Module::search(
             ['id_agente_modulo' => $target_modules]
         );
-        $reduceAllModules = array_reduce(
-            $all_modules,
-            function ($carry, $item) {
-                $carry[$item->name()] = null;
-                return $carry;
-            }
-        );
-
-        \ksort($reduceAllModules);
+        if ($all_modules !== null) {
+            $reduceAllModules = array_reduce(
+                $all_modules,
+                function ($carry, $item) {
+                    $carry[$item->name()] = null;
+                    return $carry;
+                }
+            );
+        } else {
+            $reduceAllModules = [];
+        }
 
         $visualData = [];
-        // Estract info agents selected.
+        // Extract info agents selected.
         $target_agents = explode(',', $this->values['mAgents']);
         foreach ($target_agents as $agent_id) {
             try {
-                $agent = new Agent($agent_id);
+                $id_agente = $agent_id;
+                if ((bool) is_metaconsole() === true) {
+                    $tmeta_agent = db_get_row_filter(
+                        'tmetaconsole_agent',
+                        [ 'id_agente' => $id_agente ]
+                    );
+
+                    $id_agente = $tmeta_agent['id_tagente'];
+                    $tserver = $tmeta_agent['id_tmetaconsole_setup'];
+
+                    if (metaconsole_connect(null, $tserver) !== NOERR) {
+                        continue;
+                    }
+                }
+
+                $agent = new Agent((int) $id_agente);
                 $visualData[$agent_id]['agent_status'] = $agent->lastStatus();
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
@@ -633,14 +659,27 @@ class AgentModuleWidget extends Widget
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
                 foreach ($modules as $module) {
+                    if ((bool) is_metaconsole() === true) {
+                        $reduceAllModules[$module->name()] = null;
+                    }
+
                     $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
                 }
-            } catch (Exception $e) {
-                echo 'Error: '.$e->getMessage();
+
+                if ((bool) is_metaconsole() === true) {
+                    metaconsole_restore_db();
+                }
+            } catch (\Exception $e) {
+                echo 'Error: ['.$agent_id.']'.$e->getMessage();
             }
         }
 
+        ksort($reduceAllModules);
         $allModules = array_keys($reduceAllModules);
+        if ($allModules === null) {
+            $allModules = [];
+        }
+
         $output = $this->generateViewAgentModule(
             $visualData,
             $allModules

@@ -232,6 +232,7 @@ define('DONUT_GRAPH', 17);
 define('BARS_GRAPH', 18);
 define('CLOCK', 19);
 define('COLOR_CLOUD', 20);
+define('NETWORK_LINK', 21);
 // Some styles.
 define('MIN_WIDTH', 300);
 define('MIN_HEIGHT', 120);
@@ -748,3 +749,10 @@ define('MODULE_TYPE_REMOTE_CMD_PROC', 35);
 define('MODULE_TYPE_REMOTE_CMD_STRING', 36);
 define('MODULE_TYPE_REMOTE_CMD_INC', 37);
 define('MODULE_TYPE_KEEP_ALIVE', 100);
+
+// Commands basics for external tools.
+define('COMMAND_TRACEROUTE', 1);
+define('COMMAND_PING', 2);
+define('COMMAND_SNMP', 3);
+define('COMMAND_NMAP', 4);
+define('COMMAND_DIGWHOIS', 5);

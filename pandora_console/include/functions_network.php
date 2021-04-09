@@ -22,70 +22,6 @@
 
 
 /**
- * Get the tnetwok_matrix summatory data.
- *
- * @param integer $top            Number of hosts to show.
- * @param boolean $talker         Talker (true) or listetener (false).
- * @param integer $start          Utimestamp of start time.
- * @param integer $end            Utimestamp of end time.
- * @param string  $ip_filter      Ip to filter.
- * @param boolean $order_by_bytes True by top by bytes. False by packets.
- * @param array   $host_filter    Host filter array.
- *
- * @return array With requested data.
- */
-function network_matrix_get_top(
-    $top,
-    $talker,
-    $start,
-    $end,
-    $ip_filter='',
-    $order_by_bytes=true,
-    $host_filter=[]
-) {
-    $field_to_group = ($talker === true) ? 'source' : 'destination';
-    $field_to_order = ($order_by_bytes === true) ? 'sum_bytes' : 'sum_pkts';
-    $filter_sql = '';
-    if (!empty($ip_filter)) {
-        $filter_field = ($talker === true) ? 'destination' : 'source';
-        $filter_sql = sprintf('AND %s="%s"', $filter_field, $ip_filter);
-    }
-
-    $host_filter_sql = '';
-    if (!empty($host_filter)) {
-        $host_filter_sql = sprintf(
-            ' AND %s IN ("%s")',
-            $field_to_group,
-            implode('","', $host_filter)
-        );
-    }
-
-    $sql = sprintf(
-        'SELECT SUM(bytes) sum_bytes, SUM(pkts) sum_pkts, %s host
-        FROM tnetwork_matrix
-        WHERE utimestamp > %d AND utimestamp < %d
-        %s
-        %s
-        GROUP BY %s
-        ORDER BY %s DESC
-        LIMIT %d',
-        $field_to_group,
-        $start,
-        $end,
-        $filter_sql,
-        $host_filter_sql,
-        $field_to_group,
-        $field_to_order,
-        $top
-    );
-
-    $data = db_get_all_rows_sql($sql);
-
-    return ($data !== false) ? $data : [];
-}
-
-
-/**
  * Get the possible actions on networking.
  *
  * @param boolean $network True if network. False if netflow.
@@ -129,7 +65,7 @@ function network_print_explorer_header(
     $selected,
     $hidden_data
 ) {
-    $cell = '<div style="display: flex; align-items: center;">';
+    $cell = '<div class="flex_center">';
     $cell .= $title;
     $cell .= html_print_link_with_params(
         'images/arrow-down-white.png',
@@ -166,84 +102,6 @@ function network_format_bytes($value)
         1024,
         'B'
     );
-}
-
-
-/**
- * Build netflow data structure to network map.
- *
- * @param integer $start  Time in timestamp format.
- * @param integer $end    Time in timestamp format.
- * @param integer $top    Max data to show.
- * @param boolean $talker True to get top tolkers. False for listeners.
- *
- * @return array With map structure.
- */
-function network_build_map_data($start, $end, $top, $talker)
-{
-    $data = network_matrix_get_top($top, $talker, $start, $end);
-
-    $hosts = array_map(
-        function ($elem) {
-            return $elem['host'];
-        },
-        $data
-    );
-    $inverse_hosts = array_flip($hosts);
-
-    $nodes = array_map(
-        function ($elem) {
-            return network_init_node_map($elem);
-        },
-        $hosts
-    );
-
-    $relations = [];
-    $orphan_relations = [];
-    foreach ($hosts as $host) {
-        $host_top = network_matrix_get_top(
-            $top,
-            !$talker,
-            $start,
-            $end,
-            $host,
-            true,
-            $hosts
-        );
-        foreach ($host_top as $sd) {
-            $src_index = $inverse_hosts[$host];
-            $dst_index = $inverse_hosts[$sd['host']];
-            if (isset($src_index) === false || isset($dst_index) === false) {
-                continue;
-            }
-
-            network_init_relation_map(
-                $relations,
-                $src_index,
-                $dst_index,
-                network_format_bytes($sd['sum_bytes'])
-            );
-        }
-
-        // Put the orphans on Other node.
-        if (empty($host_top)) {
-            $other_id = (end($inverse_hosts) + 1);
-            // TODOS: Add the data.
-            network_init_relation_map(
-                $orphan_relations,
-                $other_id,
-                $inverse_hosts[$host]
-            );
-        }
-    }
-
-    // Put the Others node and their relations.
-    if (empty($orphan_relations) === false) {
-        $nodes[] = network_init_node_map(__('Others'));
-        $relations = array_merge($relations, $orphan_relations);
-    }
-
-    return network_general_map_configuration($nodes, $relations);
 }
 
 

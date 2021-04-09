@@ -876,3 +876,19 @@ div#dashboard-controls {
 .tickLabel {
   color: #fff;
 }
+
+.integria_details_shadow {
+  background-color: #222;
+  border-bottom: 1px solid #e2e2e2;
+  border-left: 1px solid #e2e2e2;
+  border-top-left-radius: 5px;
+  border-right: 1px solid #e2e2e2;
+  border-top-right-radius: 5px;
+}
+
+div.integria_details_description textarea {
+  width: 100%;
+  background-color: #111;
+  color: #fff;
+  resize: vertical;
+}

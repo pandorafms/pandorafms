@@ -211,7 +211,7 @@ if (is_ajax()) {
             $agents = array_reduce(
                 $rows,
                 function ($carry, $item) {
-                    if ($carry[$item['id_tmetaconsole_setup']]  === null) {
+                    if ($carry[$item['id_tmetaconsole_setup']] === null) {
                         $carry[$item['id_tmetaconsole_setup']] = [];
                     }
 

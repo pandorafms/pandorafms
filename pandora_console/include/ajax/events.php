@@ -1381,6 +1381,12 @@ if ($get_extended_event) {
             'EW',
             $event['clean_tags'],
             $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'ER',
+            $event['clean_tags'],
+            $childrens_ids
         )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
@@ -1442,6 +1448,12 @@ if ($get_extended_event) {
             $config['id_user'],
             $event['id_grupo'],
             'EW',
+            $event['clean_tags'],
+            $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'ER',
             $event['clean_tags'],
             $childrens_ids
         )))

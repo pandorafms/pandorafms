@@ -120,6 +120,7 @@ ul.sample {
   max-width: 50%;
   flex-grow: 1;
   justify-content: space-between;
+  min-width: 300px;
 }
 
 div.target {
@@ -194,7 +195,10 @@ div#rules.show {
   opacity: 0.2;
   cursor: not-allowed;
 }
-
+.field.disabledElements {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
 .log {
   background-color: #638460;
 }

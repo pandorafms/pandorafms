@@ -58,6 +58,9 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     $sub2['operation/agentes/status_monitor']['text'] = __('Monitor detail');
     $sub2['operation/agentes/status_monitor']['refr'] = 0;
 
+    $sub2['operation/agentes/interface_view']['text'] = __('Interface view');
+    $sub2['operation/agentes/interface_view']['refr'] = 0;
+
     enterprise_hook('tag_view_submenu');
 
     $sub2['operation/agentes/alerts_status']['text'] = __('Alert detail');

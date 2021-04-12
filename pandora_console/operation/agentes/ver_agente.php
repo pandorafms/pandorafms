@@ -1231,7 +1231,30 @@ if ($tab == 'main') {
     $maintab['active'] = false;
 }
 
+// Interfaces tab.
+$agent_interfaces = agents_get_network_interfaces(
+    false,
+    ['id_agente' => $id_agente]
+);
 
+$agent_interfaces_count = count($agent_interfaces[$id_agente]['interfaces']);
+
+if ($agent_interfaces_count > 0) {
+    $interfacetab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=interface">'.html_print_image(
+        'images/link.png',
+        true,
+        [
+            'title' => __('Interfaces'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+
+    if ($tab == 'interface') {
+        $interfacetab['active'] = true;
+    } else {
+        $interfacetab['active'] = false;
+    }
+}
 
 // Alert tab.
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.html_print_image(
@@ -1512,6 +1535,7 @@ $onheader = [
     'manage'             => $managetab,
     'main'               => $maintab,
     'alert'              => $alerttab,
+    'interface'          => $interfacetab,
     'inventory'          => $inventorytab,
     'collection'         => $collectiontab,
     'gis'                => $gistab,
@@ -1628,6 +1652,10 @@ switch ($tab) {
 
     case 'data_view':
         $tab_name = '';
+    break;
+
+    case 'interface':
+        $tab_name = 'Interfaces';
     break;
 
     case 'alert':
@@ -1758,6 +1786,10 @@ switch ($tab) {
 
     case 'data_view':
         include 'datos_agente.php';
+    break;
+
+    case 'interface':
+        include 'interface_view.php';
     break;
 
     case 'alert':

@@ -8492,6 +8492,7 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
     $custom_id = $other['data'][6];
     $contact = $other['data'][7];
     $other = $other['data'][8];
+    $maxAgents = $other['data'][9];
 
     $return = db_process_sql_update(
         'tgrupo',
@@ -8505,6 +8506,7 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
             'custom_id'   => $custom_id,
             'contact'     => $contact,
             'other'       => $other,
+            'max_agents'  => $maxAgents,
         ],
         ['id_grupo' => $id_group]
     );

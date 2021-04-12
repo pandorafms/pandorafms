@@ -8411,6 +8411,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
     $values['custom_id'] = $safe_other_data[5];
     $values['contact'] = $safe_other_data[6];
     $values['other'] = $safe_other_data[7];
+    $values['max_agents'] = $safe_other_data[8];
 
     $id_group = groups_create_group($group_name, $values);
 

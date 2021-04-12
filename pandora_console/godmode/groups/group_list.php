@@ -46,7 +46,7 @@ if (is_metaconsole() === true) {
 }
 
 if (is_ajax() === true) {
-    if (check_acl($config['id_user'], 0, 'AR') === false) {
+    if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
         db_pandora_audit('ACL Violation', 'Trying to access Group Management');
         include 'general/noaccess.php';
         return;
@@ -72,7 +72,7 @@ if (is_ajax() === true) {
             return;
         }
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -114,7 +114,7 @@ if (is_ajax() === true) {
         );
         $force_serialized = (bool) get_parameter('force_serialized', false);
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -265,15 +265,9 @@ if (is_ajax() === true) {
 
 $tab = (string) get_parameter('tab', 'groups');
 
-if ($tab != 'credbox' && ! check_acl(
-    $config['id_user'],
-    0,
-    'PM'
-) && ! check_acl(
-    $config['id_user'],
-    0,
-    'AW'
-)
+if ($tab !== 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
+    && (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -281,9 +275,9 @@ if ($tab != 'credbox' && ! check_acl(
     );
     include 'general/noaccess.php';
     return;
-} else if ($tab == 'credbox'
-    && check_acl($config['id_user'], 0, 'UM') === false
-    && check_acl($config['id_user'], 0, 'PM') === false
+} else if ($tab === 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'UM') === false
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -382,7 +376,7 @@ $delete_group = (bool) get_parameter('delete_group');
 $pure = get_parameter('pure', 0);
 
 // Create group.
-if (($create_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
+if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
     $id_parent = (int) get_parameter('id_parent');
@@ -506,7 +500,7 @@ if ($update_group) {
 }
 
 // Delete group.
-if (($delete_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
+if (($delete_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $id_group = (int) get_parameter('id_group');
 
     $usedGroup = groups_check_used($id_group);

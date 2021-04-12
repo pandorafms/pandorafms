@@ -61,7 +61,7 @@ if (isset($config['console_log_enabled']) === true
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
     ini_set('log_errors', 0);
-    ini_set('error_log', 0);
+    ini_set('error_log', null);
 }
 
 // Sometimes input is badly retrieved from caller...

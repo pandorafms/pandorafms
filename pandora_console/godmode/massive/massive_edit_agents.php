@@ -506,7 +506,7 @@ $id_os = 0;
 $server_name = 0;
 $description = '';
 
-echo '<div id="form_agents" class="invisible">';
+echo '<div id="form_agents" style="display:none">';
 
 $table = new StdClass();
 $table->width = '100%';

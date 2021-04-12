@@ -114,7 +114,7 @@ function pandoraFlotPie(
 
   // Reset styles
   function resetInteractivity() {
-    legends.css("color", "#3F3F3D");
+    legends.css("color", "#fff");
   }
 
   if (water_mark) {
@@ -241,6 +241,10 @@ function pandoraFlotPieCustom(
   } else if (background_color == "black") {
     $(".legend>table").css("background-color", "black");
     $(".legend>table").css("color", "#aaa");
+  } else if (background_color == "black_theme") {
+    $(".legend>table").css("background-color", "#222");
+    $(".legend>div").css("background-color", "#222");
+    $(".legend>table").css("color", "#fff !important");
   }
 
   $(".legend").hover(function() {
@@ -258,7 +262,11 @@ function pandoraFlotPieCustom(
     if (!obj) return;
 
     var index = obj.seriesIndex;
-    legends.css("color", "#3F3F3D");
+    if (background_color == "black_theme") {
+      legends.css("color", "#fff");
+    } else {
+      legends.css("color", "#3F3F3D");
+    }
     legends.eq(index).css("color", "");
   }
 
@@ -285,6 +293,7 @@ function pandoraFlotPieCustom(
   function resetInteractivity() {
     legends.each(function() {
       // fix the widths so they don't jump around
+      console.log($(this));
       $(this).css("color", "#3F3F3D");
     });
   }
@@ -349,6 +358,11 @@ function pandoraFlotHBars(
     labels_total.push([i, labels[i]]);
   }
 
+  var ycolor = "rgb(84, 84, 84)";
+
+  if (background_color == "#222") {
+    var ycolor = "#fff";
+  }
   var options = {
     series: {
       bars: {
@@ -377,7 +391,7 @@ function pandoraFlotHBars(
     yaxis: {
       font: {
         size: font_size + 2,
-        color: "rgb(84, 84, 84)",
+        color: ycolor,
         family: font + "Font"
       },
       ticks: yFormatter
@@ -563,6 +577,7 @@ function showTooltip(x, y, color, contents) {
       "font-size": "9px",
       "border-radius": "5px",
       "background-color": "#fff",
+      color: "#111",
       "font-family": "Verdana, Arial, Helvetica, Tahoma, sans-serif",
       opacity: 0.9
     })
@@ -2363,7 +2378,7 @@ function pandoraFlotArea(
         $("#legend_" + graph_id).height()
     );
 
-    $("#timestamp_" + graph_id).css("color", legend_color);
+    $("#timestamp_" + graph_id).css("color", "#000");
     $("#timestamp_" + graph_id).css("font-size", font_size + 2 + "px");
     $("#timestamp_" + graph_id).css("font-family", font + "Font");
 

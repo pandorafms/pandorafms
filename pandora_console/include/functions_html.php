@@ -905,7 +905,12 @@ function html_print_select(
             );
             $output .= '"/>';
         } else {
-            ui_require_css_file('select2.min');
+            $select2 = 'select2.min';
+            if ($config['style'] === 'pandora_black') {
+                $select2 = 'select2_dark.min';
+            }
+
+            ui_require_css_file($select2);
             ui_require_javascript_file('select2.min');
         }
 
@@ -5089,9 +5094,14 @@ function html_print_autocomplete_users_from_integria(
 ) {
     global $config;
 
+    $user_icon = 'images/user_green.png';
+    if ($config['style'] === 'pandora_black') {
+        $user_icon = 'images/header_user.png';
+    }
+
     ob_start();
 
-    $attrs = ['style' => 'background: url(images/user_green.png) no-repeat right;'];
+    $attrs = ['style' => 'background: url('.$user_icon.') no-repeat right;'];
 
     if ($required) {
         $attrs['required'] = 'required';
@@ -5284,9 +5294,17 @@ function html_print_select_search(
     $required=false,
     $dropdownAutoWidth=false
 ) {
+    global $config;
+
     $output = '';
 
-    ui_require_css_file('select2.min');
+    $select2_css = 'select2.min';
+
+    if ($config['style'] === 'pandora_black') {
+        $select2_css = 'select2_dark.min';
+    }
+
+    ui_require_css_file($select2_css);
     ui_require_javascript_file('select2.min');
 
     if ($name === null) {

@@ -218,6 +218,9 @@ function vbar_graph(
 
     if (isset($options['x']['font']['color']) === false) {
         $options['x']['font']['color'] = '#545454';
+        if ($config['style'] === 'pandora_black') {
+            $options['x']['font']['color'] = '#fff';
+        }
     }
 
     // Show ticks.
@@ -295,6 +298,10 @@ function vbar_graph(
 
     if (isset($options['y']['font']['color']) === false) {
         $options['y']['font']['color'] = '#545454';
+
+        if ($config['style'] === 'pandora_black') {
+            $options['y']['font']['color'] = '#fff';
+        }
     }
 
     // Show ticks.
@@ -692,6 +699,7 @@ function hbar_graph(
     $val_max=null,
     $base64=false
 ) {
+    global $config;
     if ($water_mark !== false) {
         setup_watermark($water_mark, $water_mark_file, $water_mark_url);
     }
@@ -715,6 +723,10 @@ function hbar_graph(
             'return_img_base_64' => $base64,
         ];
         return generator_chart_to_pdf('hbar', $params);
+    }
+
+    if ($config['style'] === 'pandora_black') {
+        $tick_color = '#fff';
     }
 
     return flot_hcolumn_chart(

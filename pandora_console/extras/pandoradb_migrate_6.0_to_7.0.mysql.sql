@@ -811,7 +811,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`description` mediumtext,
 	`text_agent` text,
 	`text` TEXT,
-	`external_source` Text,
+	`external_source` mediumtext,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,
@@ -1741,6 +1741,7 @@ ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NUL
 ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

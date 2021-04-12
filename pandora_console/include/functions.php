@@ -2853,7 +2853,11 @@ function can_user_access_node()
 {
     global $config;
 
-    $userinfo = get_user_info($config['id_user']);
+    static $userinfo;
+
+    if ($userinfo === null) {
+        $userinfo = get_user_info($config['id_user']);
+    }
 
     if (is_metaconsole()) {
         return $userinfo['is_admin'] == 1 ? 1 : $userinfo['metaconsole_access_node'];

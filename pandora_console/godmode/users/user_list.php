@@ -260,20 +260,20 @@ if (isset($_GET['user_del'])) {
         if (defined('METACONSOLE') && isset($_GET['delete_all'])) {
             $servers = metaconsole_get_servers();
             foreach ($servers as $server) {
-                // Connect to the remote console
-                metaconsole_connect($server);
+                // Connect to the remote console.
+                if (metaconsole_connect($server) === NOERR) {
+                    // Delete the user
+                    $result = delete_user($id_user);
+                    if ($result) {
+                        db_pandora_audit(
+                            'User management',
+                            __('Deleted user %s from metaconsole', io_safe_input($id_user))
+                        );
+                    }
 
-                // Delete the user
-                $result = delete_user($id_user);
-                if ($result) {
-                    db_pandora_audit(
-                        'User management',
-                        __('Deleted user %s from metaconsole', io_safe_input($id_user))
-                    );
+                    // Restore the db connection.
+                    metaconsole_restore_db();
                 }
-
-                // Restore the db connection
-                metaconsole_restore_db();
 
                 // Log to the metaconsole too
                 if ($result) {

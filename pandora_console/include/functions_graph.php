@@ -1530,6 +1530,11 @@ function graphic_combined_module(
     }
 
     $long_index = '';
+    if ($config['style'] === 'pandora_black') {
+        $background_color = '#222';
+        $params['legend_color'] = '#fff';
+    }
+
     switch ($params_combined['stacked']) {
         default:
         case CUSTOM_GRAPH_STACKED_LINE:

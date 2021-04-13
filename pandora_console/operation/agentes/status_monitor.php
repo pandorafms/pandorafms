@@ -244,6 +244,10 @@ if ($ag_modulename != '') {
     $sql_conditions .= " AND tagente_modulo.nombre LIKE '%".$ag_modulename."%'";
 }
 
+if ($id_module) {
+    $sql_conditions .= sprintf(' AND tagente_modulo.id_agente_modulo = \'%d\'', $id_module);
+}
+
 if ($module_option !== 0) {
     if ($module_option == 1) {
         // Only enabled

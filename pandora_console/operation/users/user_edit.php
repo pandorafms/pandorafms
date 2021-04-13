@@ -376,7 +376,7 @@ if (!$meta) {
         }
     }
 
-    $home_screen .= '<div id="show_db" style="display: none; width: 605px;">';
+    $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
     $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, false, '');
     $home_screen .= '</div>';
 
@@ -683,7 +683,7 @@ if (!is_metaconsole()) {
         </div>';
 
 if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
-    // eHorus user remote login
+    // EHorus user remote login.
     $table_remote = new StdClass();
     $table_remote->data = [];
     $table_remote->width = '100%';
@@ -693,12 +693,12 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $table_remote->style['name'] = 'font-weight: bold';
 
 
-    // Title
+    // Title.
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
     $table_remote->data['ehorus_user_level_conf'] = $row;
 
-    // Enable/disable eHorus for this user
+    // Enable/disable eHorus for this user.
     $row = [];
     $row['name'] = __('eHorus user acces enabled');
     $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);

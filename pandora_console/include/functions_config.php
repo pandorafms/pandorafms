@@ -3358,6 +3358,32 @@ function config_user_set_custom_config()
         }
     }
 
+    if ((isset($userinfo['id_skin']) && $userinfo['id_skin'] !== 0)) {
+        if ((int) $userinfo['id_skin'] === 1) {
+            $config['style'] = 'pandora';
+        }
+
+        if ((int) $userinfo['id_skin'] === 2) {
+            $config['style'] = 'pandora_black';
+        }
+    }
+
+    $skin = get_parameter('skin', false);
+    $sec2_aux = get_parameter('sec2');
+
+    if ($sec2_aux != 'godmode/groups/group_list' && $skin !== false) {
+        $id_user_aux = get_parameter('id');
+        if ($id_user_aux == $config['id_user']) {
+            if ((int) $skin === 1 || (int) $skin === 0) {
+                $config['style'] = 'pandora';
+            }
+
+            if ((int) $skin === 2) {
+                $config['style'] = 'pandora_black';
+            }
+        }
+    }
+
     if (defined('METACONSOLE')) {
         $config['metaconsole_access'] = $userinfo['metaconsole_access'];
     }

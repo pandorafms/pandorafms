@@ -626,6 +626,7 @@ define('DISCOVERY_APP_SAP', 10);
 define('DISCOVERY_APP_DB2', 11);
 define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
 define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
+define('DISCOVERY_CLOUD_AWS_S3', 14);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);

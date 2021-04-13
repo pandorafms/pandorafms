@@ -247,9 +247,10 @@ if ($module eq "diskuse") {
 		$diskuse = 0;
 	}
 	else {
-		my @diskfree = split (/\s/, `snmpget -r 2 $command_line_parameters .1.3.6.1.2.1.25.2.3.1.6.$diskid`) ;
+		# hrStorageAllocationUnits
+		my @diskUsed = split (/\s/, `snmpget -r 2 $command_line_parameters .1.3.6.1.2.1.25.2.3.1.6.$diskid`) ;
 
-		$diskuse = ($disktot[-1] - $diskfree[-1]) * 100 / $disktot[-1];
+		$diskuse = ($diskUsed[-1] * 100) / $disktot[-1];
 	}
 	
 	printf("%.2f", $diskuse);

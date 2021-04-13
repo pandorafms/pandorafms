@@ -376,7 +376,9 @@ if (!$meta) {
         }
     }
 
-    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+    $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
+    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, false, '');
+    $home_screen .= '</div>';
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
     $layouts_aux = [];
@@ -388,7 +390,9 @@ if (!$meta) {
         }
     }
 
+    $home_screen .= '<div id="show_vc" style="display: none; width: 100%;">';
     $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+    $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
 
@@ -926,41 +930,65 @@ function show_data_section () {
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "inline-grid");
+
             break;
         case <?php echo "'".'Visual console'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "");
+            $("#show_vc").css("display", "inline-grid");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Event list'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Group view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Tactical view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Alert detail'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Other'."'"; ?>:
             $("#text-data_section").css("display", "");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Default'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
     }
 }

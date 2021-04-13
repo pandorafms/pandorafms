@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     7.0NG.753
-%define release     210412
+%define release     210413
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -82,7 +82,9 @@ install -m 0444 man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT%{_mandir}/man1/
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
-install -m 0644 util/pandora_server_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
+if [ ! -f $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server ] ; then
+   install -m 0644 util/pandora_server_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
+fi
 install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pandora/pandora_server.conf.new
 install -m 0640 conf/tentacle_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/tentacle/tentacle_server.conf.new
 

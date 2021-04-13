@@ -3669,22 +3669,37 @@ function events_page_responses($event, $childrens_ids=[])
         );
     }
 
-    $table_responses->data[] = $data;
+    if ((tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EM',
+        $event['clean_tags'],
+        $childrens_ids
+    )) || (tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EW',
+        $event['clean_tags'],
+        $childrens_ids
+    ))
+    ) {
+        $table_responses->data[] = $data;
 
-    // Comments.
-    $data = [];
-    $data[0] = __('Comment');
-    $data[1] = '';
-    $data[2] = html_print_button(
-        __('Add comment'),
-        'comment_button',
-        false,
-        '$(\'#link_comments\').trigger(\'click\');',
-        'class="sub next w70p"',
-        true
-    );
+        // Comments.
+        $data = [];
+        $data[0] = __('Comment');
+        $data[1] = '';
+        $data[2] = html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            '$(\'#link_comments\').trigger(\'click\');',
+            'class="sub next w70p"',
+            true
+        );
 
-    $table_responses->data[] = $data;
+        $table_responses->data[] = $data;
+    }
 
     if (tags_checks_event_acl(
         $config['id_user'],

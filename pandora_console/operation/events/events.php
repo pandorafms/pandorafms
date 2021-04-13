@@ -1608,8 +1608,20 @@ try {
 }
 
 // Event responses.
-$sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
-$event_responses = db_get_all_rows_sql($sql_event_resp);
+if (is_user_admin($config['id_user'])) {
+    $sql_event_resp = "SELECT id, name FROM tevent_response WHERE type LIKE 'command'";
+    $event_responses = db_get_all_rows_sql($sql_event_resp);
+} else {
+    $id_groups = array_keys(users_get_groups(false, 'EW'));
+    $event_responses = db_get_all_rows_filter(
+        'tevent_response',
+        [
+            'id_group' => $id_groups,
+            'type'     => 'command',
+        ]
+    );
+}
+
 
 if ($config['event_replication'] != 1) {
     if ($event_w && !$readonly) {

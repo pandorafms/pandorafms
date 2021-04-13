@@ -1381,6 +1381,12 @@ if ($get_extended_event) {
             'EW',
             $event['clean_tags'],
             $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'ER',
+            $event['clean_tags'],
+            $childrens_ids
         )))
     ) {
         $tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image(
@@ -1444,6 +1450,12 @@ if ($get_extended_event) {
             'EW',
             $event['clean_tags'],
             $childrens_ids
+        )) || (tags_checks_event_acl(
+            $config['id_user'],
+            $event['id_grupo'],
+            'ER',
+            $event['clean_tags'],
+            $childrens_ids
         )))
     ) {
         $responses = events_page_responses($event);
@@ -1465,15 +1477,21 @@ if ($get_extended_event) {
         $related = events_page_related($event, $server);
     }
 
+    $connected = true;
     if ($meta) {
-        metaconsole_connect($server);
+        if (metaconsole_connect($server) === NOERR) {
+            $connected = true;
+        } else {
+            $connected = false;
+        }
     }
 
-    $custom_fields = events_page_custom_fields($event);
+    if ($connected === true) {
+        $custom_fields = events_page_custom_fields($event);
+        $custom_data = events_page_custom_data($event);
+    }
 
-    $custom_data = events_page_custom_data($event);
-
-    if ($meta) {
+    if ($meta && $connected === true) {
         metaconsole_restore_db();
     }
 

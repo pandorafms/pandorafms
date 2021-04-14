@@ -213,11 +213,13 @@ function agents_create_agent(
     $values=false,
     $alias_as_name=false
 ) {
-    if (empty($name)) {
+    global $config;
+
+    if (empty($name) === true) {
         return false;
     }
 
-    if (empty($id_group) && (int) $id_group != 0) {
+    if (empty($id_group) === true && (int) $id_group !== 0) {
         return false;
     }
 
@@ -226,11 +228,11 @@ function agents_create_agent(
         $interval = false;
     }
 
-    if (empty($interval)) {
+    if (empty($interval) === true) {
         return false;
     }
 
-    if (! is_array($values)) {
+    if (is_array($values) === false) {
         $values = [];
     }
 
@@ -239,7 +241,7 @@ function agents_create_agent(
     $values['id_grupo'] = $id_group;
     $values['intervalo'] = $interval;
 
-    if (!empty($ip_address)) {
+    if (empty($ip_address) === false) {
             $values['direccion'] = $ip_address;
     }
 
@@ -252,12 +254,17 @@ function agents_create_agent(
             ['id_grupo' => $id_group]
         );
         // Notice this issue.
-        db_pandora_audit(
-            'Agent management',
+        events_create_event(
             sprintf(
                 'Agent cannot be created due to the maximum agent limit for group "%s"',
                 $groupName
-            )
+            ),
+            $id_group,
+            0,
+            EVENT_NEW,
+            $config['id_user'],
+            EVENTS_NEW_AGENT,
+            EVENT_CRIT_WARNING
         );
         return false;
     }
@@ -268,7 +275,7 @@ function agents_create_agent(
     }
 
     // Create address for this agent in taddress.
-    if (!empty($ip_address)) {
+    if (empty($ip_address) === false) {
         agents_add_address($id_agent, $ip_address);
     }
 

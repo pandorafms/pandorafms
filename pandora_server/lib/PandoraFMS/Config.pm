@@ -302,6 +302,7 @@ sub pandora_load_config {
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"event_server_cache_ttl"} = 10; # 7.754
 	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
@@ -1000,6 +1001,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
 			$pa_config->{'preload_windows'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_server_cache_ttl\s+([0-9]*)/i) {
+			$pa_config->{"event_server_cache_ttl"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);

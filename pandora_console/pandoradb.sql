@@ -2922,6 +2922,7 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
 	`criticity` int(4) unsigned default NULL,
 	`user_comment` text NOT NULL,
 	`id_tag` integer(10) unsigned NOT NULL default '0',
+	`tag_name` text COMMENT 'Aux value to improve alerts performance',
 	`name` text default '',
 	`group_recursion` INT(1) unsigned default 0,
 	`log_content` text,

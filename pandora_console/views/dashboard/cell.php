@@ -73,6 +73,9 @@ if ($manageDashboards !== 0) {
 
 $output .= '</div>';
 $output .= '</div>';
+if ($options['background'] === null && $config['style'] === 'pandora_black') {
+    $options['background'] = '#222';
+}
 
 if ((int) $cellData['id_widget'] !== 0) {
     $style = 'style="background-color:'.$options['background'].';"';

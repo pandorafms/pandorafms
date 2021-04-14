@@ -683,12 +683,13 @@ function flot_vcolumn_chart(array $options)
     $options['graphId'] = $graphId;
 
     // If pandora_black theme its enabled then change grid colors.
-    if ($config['style'] === 'pandora_black') {
+    /*
+        if ($config['style'] === 'pandora_black') {
         $options['grid']['backgroundColor']['colors'][0] = 'transparent';
         $options['grid']['backgroundColor']['colors'][1] = 'transparent';
         $options['y']['color'] = 'transparent';
         $options['x']['color'] = 'transparent';
-    }
+    }*/
 
     $settings = base64_encode(json_encode($options));
 

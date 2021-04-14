@@ -2646,6 +2646,8 @@ function printClockDigital1(
     svg = d3.selectAll("#clock_" + id_element + " svg");
 
   svgUnderlay.attr("id", "underlay_" + id_element);
+  svgUnderlay.attr("class", "invert_filter");
+
   svgOverlay.attr("id", "overlay_" + id_element);
 
   var digit = svg.selectAll(".digit"),

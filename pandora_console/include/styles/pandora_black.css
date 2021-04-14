@@ -665,6 +665,9 @@ form ul.form_flex {
   border-radius: 4px;
 }
 
+text {
+  color: #fff !important;
+}
 .legendLabel {
   color: #fff;
 }
@@ -720,8 +723,9 @@ form ul.form_flex {
   color: #900;
 }
 
-.cluetip-default ul {
-  text-align: left;
+.cluetip-default ul,
+.text_left {
+  text-align: left !important;
 }
 .card {
   border: 1px solid #e2e2e2;
@@ -891,4 +895,39 @@ div.integria_details_description textarea {
   background-color: #111;
   color: #fff;
   resize: vertical;
+}
+
+.grid-stack-item-content {
+  color: #fff !important;
+}
+.widget-groups-status h1 a {
+  font-size: 1.1em;
+  font-weight: bold;
+  line-height: 20px;
+  color: #fff;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  text-decoration: none;
+  text-transform: capitalize;
+}
+
+.widget_groups_status {
+  background-color: #222;
+}
+.flot-text {
+  color: #fff !important;
+}
+
+.table.group_modules_status_box tr td {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
+  letter-spacing: 0.03pt;
+  font-size: 11pt;
+  text-decoration: none;
+  color: #fff !important;
+  font-weight: bolder;
+  text-align: justify;
+  border-bottom: 0px;
+}
+.bg_222_important {
+  background-color: #222 !important;
 }

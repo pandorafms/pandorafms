@@ -1199,8 +1199,8 @@ INSERT INTO `tupdate_settings` VALUES  ('current_update', '412'), ('customer_key
 --
 -- Dumping data for table `tskin`
 --
-INSERT INTO `tskin` VALUES (1,'skin&#x20;default', 'skin_default', 'Default&#x20;skin&#x20;for&#x20;Pandora&#x20;FMS&#x20;web&#x20;console', 1);
-INSERT INTO `tskin` VALUES (2,'Legacy', 'legacy', 'Skin&#x20;of&#x20;the&#x20;visual&#x20;style&#x20;of&#x20;Pandora&#x20;FMS&#x20;4.x&#x20;and&#x20;previous&#x20;versions', 1);
+INSERT INTO `tskin` VALUES (1,'Default&#x20;theme', 'pandora.css', 'Default&#x20;skin&#x20;for&#x20;Pandora&#x20;FMS&#x20;web&#x20;console', 0);
+INSERT INTO `tskin` VALUES (2,'Black&#x20;theme', 'pandora_black.css', 'Black&#x20;theme', 0);
 
 --
 -- Dumping data for table `tcollection`

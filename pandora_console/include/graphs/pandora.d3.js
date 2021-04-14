@@ -2486,6 +2486,7 @@ function printClockAnalogic1(
     var face = svg
       .append("g")
       .attr("id", "clock-face")
+      .attr("class", "invert_filter")
       .attr(
         "transform",
         "translate(" +

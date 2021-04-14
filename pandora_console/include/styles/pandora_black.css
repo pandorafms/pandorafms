@@ -931,3 +931,18 @@ div.integria_details_description textarea {
 .bg_222_important {
   background-color: #222 !important;
 }
+
+.networkconsole {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #111;
+}
+
+.fill_222 {
+  fill: #222 !important;
+}
+.fill_fff {
+  fill: #fff !important;
+}

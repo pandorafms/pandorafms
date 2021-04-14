@@ -686,7 +686,7 @@ class TreeViewWidget extends Widget
         ];
 
         // Show the modal window of an module.
-        $output .= '<div id="module_details_window" class="invisible">';
+        $output .= '<div id="module_details_window" class="">';
         $output .= '</div>';
 
         // Script.

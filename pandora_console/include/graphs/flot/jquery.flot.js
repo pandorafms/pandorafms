@@ -247,7 +247,7 @@ Licensed under the MIT license.
             // Create the text layer container, if it doesn't exist
 
             if (this.textContainer == null) {
-                this.textContainer = $("<div class='flot-text'></div>")
+                this.textContainer = $("<div class='flot-text white_important'></div>")
                     .css({
                         position: "absolute",
                         top: 0,

@@ -247,7 +247,7 @@ function agents_create_agent(
     }
 
     // Check if group has limit or overrides the agent limit.
-    if (group_allow_more_agents($id_group, true) === false) {
+    if (group_allow_more_agents($id_group, true, 'create') === false) {
         return false;
     }
 
@@ -3880,11 +3880,15 @@ function agents_get_last_status_change($id_agent)
  *
  * @param integer $id_group      Id of the group.
  * @param boolean $generateEvent If true and the check fails, will generate an event.
+ * @param string  $action        Action for perform (only if generateEvent is true).
  *
  * @return boolean True if allow more agents.
  */
-function group_allow_more_agents(int $id_group, bool $generateEvent=false):bool
-{
+function group_allow_more_agents(
+    int $id_group,
+    bool $generateEvent=false,
+    string $action='create'
+):bool {
     global $config;
 
     $groupMaxAgents   = (int) db_get_value('max_agents', 'tgrupo', sprintf('id_grupo = %d', $id_group));
@@ -3906,7 +3910,8 @@ function group_allow_more_agents(int $id_group, bool $generateEvent=false):bool
         // Set parameters.
         $evt->evento(
             sprintf(
-                'Agent cannot be created due to the maximum agent limit for group %s',
+                'Agent cannot be %sd due to the maximum agent limit for group %s',
+                $action,
                 $groupName
             )
         );

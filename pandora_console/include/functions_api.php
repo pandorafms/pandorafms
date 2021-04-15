@@ -1480,7 +1480,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     }
 
     // Check if group allow more agents or have limit stablished.
-    if (group_allow_more_agents($idGroup) === false) {
+    if (group_allow_more_agents($idGroup, true, 'update') === false) {
         returnError('Agent cannot be updated due to the maximum agent limit for this group');
         return;
     }
@@ -1686,7 +1686,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
         returnError('The agent name already exists in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('The group does not exist.');
-    } else if (group_allow_more_agents($grupo) === false) {
+    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
         returnError('Agent cannot be created due to the maximum agent limit for this group');
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('The OS does not exist.');

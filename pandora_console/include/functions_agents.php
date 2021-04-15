@@ -247,38 +247,7 @@ function agents_create_agent(
     }
 
     // Check if group has limit or overrides the agent limit.
-    if (group_allow_more_agents($id_group) === false) {
-        // Capture the group name.
-        $groupName = db_get_value(
-            'nombre',
-            'tgrupo',
-            'id_grupo',
-            $id_group
-        );
-
-        // Generate new event.
-        $evt = new Event;
-        $evt->evento(
-            sprintf(
-                'Agent cannot be created due to the maximum agent limit for group %s',
-                $groupName
-            )
-        );
-        $evt->id_grupo($id_group);
-        $evt->id_source_event(0);
-        $evt->id_agente(0);
-        $evt->estado(EVENT_NO_VALIDATED);
-        $evt->id_agentmodule(0);
-        $evt->id_usuario($config['id_user']);
-        $evt->event_type(EVENTS_NEW_AGENT);
-        $evt->criticity(EVENT_CRIT_WARNING);
-        $evt->timestamp(date('Y-m-d H:i:s'));
-        $evt->utimestamp(time());
-        $evt->data(0);
-        $evt->source('agent_creation');
-        // Save the event.
-        $evt->save();
-
+    if (group_allow_more_agents($id_group, true) === false) {
         return false;
     }
 
@@ -3909,17 +3878,57 @@ function agents_get_last_status_change($id_agent)
 /**
  * Checks if group allow more agents due itself limitation.
  *
- * @param integer $id_group Id of the group.
+ * @param integer $id_group      Id of the group.
+ * @param boolean $generateEvent If true and the check fails, will generate an event.
  *
  * @return boolean True if allow more agents.
  */
-function group_allow_more_agents(int $id_group):bool
+function group_allow_more_agents(int $id_group, bool $generateEvent=false):bool
 {
+    global $config;
+
     $groupMaxAgents   = (int) db_get_value('max_agents', 'tgrupo', sprintf('id_grupo = %d', $id_group));
     $groupCountAgents = (int) db_get_num_rows(sprintf('SELECT nombre FROM tagente WHERE id_grupo = "%s"', $id_group));
 
     // If `max_agents` is not defined or the count of agents in the group is below of max agents allowed.
     $output = ($groupMaxAgents === 0 || $groupCountAgents < $groupMaxAgents);
+
+    if ($output === false && $generateEvent === true) {
+        // Get the group name.
+        $groupName = db_get_value(
+            'nombre',
+            'tgrupo',
+            'id_grupo',
+            $id_group
+        );
+        // New event.
+        $evt = new Event;
+        // Set parameters.
+        $evt->evento(
+            sprintf(
+                'Agent cannot be created due to the maximum agent limit for group %s',
+                $groupName
+            )
+        );
+        $evt->id_grupo($id_group);
+        $evt->id_agente(0);
+        $evt->id_agentmodule(0);
+        $evt->id_usuario($config['id_user']);
+        $evt->estado(EVENT_STATUS_NEW);
+        $evt->event_type(EVENTS_ERROR);
+        $evt->criticity(EVENT_CRIT_WARNING);
+        $evt->timestamp(date('Y-m-d H:i:s'));
+        $evt->utimestamp(time());
+        $evt->data(0);
+        $evt->source('agent_creation');
+        // Any fields are only available in meta.
+        if (is_metaconsole() === true) {
+            $evt->id_source_event(0);
+        }
+
+        // Save the event.
+        $evt->save();
+    }
 
     return $output;
 }

@@ -931,24 +931,19 @@ foreach ($fields as $field) {
     }
 
     if ($field['combo_values'] !== '') {
-        $data_field[1] = html_print_select(
-            $combo_values,
-            'customvalue_'.$field['id_field'],
-            $custom_value,
-            '',
-            __('None'),
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            false,
-            false,
-            false,
-            false,
-            '',
-            false
+        $data_field[1] = html_print_input(
+            [
+                'type'              => 'select_search',
+                'fields'            => $combo_values,
+                'name'              => 'customvalue_'.$field['id_field'],
+                'selected'          => $custom_value,
+                'nothing'           => __('None'),
+                'nothing_value'     => '',
+                'return'            => true,
+                'sort'              => false,
+                'size'              => '400px',
+                'dropdownAutoWidth' => true,
+            ]
         );
     };
 

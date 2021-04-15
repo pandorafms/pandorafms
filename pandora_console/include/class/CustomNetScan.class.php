@@ -185,6 +185,7 @@ class CustomNetScan extends Wizard
                 $this->task['id_recon_server'] = $server_id;
                 $this->task['id_group'] = $id_group;
                 $this->task['interval_sweep'] = $interval;
+                $this->task['type'] = DISCOVERY_HOSTDEVICES_CUSTOM;
 
                 if (isset($this->task['id_rt']) === false) {
                     // Create.

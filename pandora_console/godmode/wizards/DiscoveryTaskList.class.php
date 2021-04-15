@@ -1024,7 +1024,9 @@ class DiscoveryTaskList extends HTML
      */
     public function getTargetWiz($task, $script=false)
     {
-        if ($script !== false) {
+        if ($script !== false
+            || (int) $task['type'] === DISCOVERY_HOSTDEVICES_CUSTOM
+        ) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';
@@ -1491,6 +1493,9 @@ class DiscoveryTaskList extends HTML
                 $simple_data[] = $tmp;
 
                 if (is_array($data['modules'])) {
+                    // Alphabetically sort.
+                    ksort($data['modules'], (SORT_STRING | SORT_FLAG_CASE));
+
                     $simple_data = array_merge(
                         $simple_data,
                         array_reduce(

@@ -2136,7 +2136,7 @@ function html_print_input_text_extended(
         'list',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
 
     if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
         $output .= 'readonly="readonly" ';
@@ -2406,7 +2406,7 @@ function html_print_input_text(
     $function='',
     $class='',
     $onChange='',
-    $autocomplete='',
+    $autocomplete='off',
     $autofocus=false,
     $onKeyDown='',
     $formTo='',
@@ -2445,10 +2445,6 @@ function html_print_input_text(
         $attr['onkeyup'] = $onKeyUp;
     }
 
-    if ($autocomplete !== '') {
-        $attr['autocomplete'] = $autocomplete;
-    }
-
     if ($autofocus === true) {
         $attr['autofocus'] = $autofocus;
     }
@@ -2474,7 +2470,7 @@ function html_print_input_text(
         $return,
         false,
         $function,
-        'off',
+        $autocomplete,
         $disabled
     );
 }
@@ -2544,6 +2540,10 @@ function html_print_input_email(array $settings):string
                 || $settings['size'] === 0
             ) {
                 $settings['size'] = 255;
+            }
+
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -2630,6 +2630,10 @@ function html_print_input_number(array $settings):string
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
                 $settings['maxlength'] = 255;
+            }
+
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -4420,7 +4424,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
                 ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
                 ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
@@ -4602,6 +4606,28 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
                 ((isset($data['required']) === true) ? $data['required'] : false)
+            );
+        break;
+
+        case 'select_search':
+            $output .= html_print_select_search(
+                $data['fields'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['dropdownAutoWidth']) === true) ? $data['dropdownAutoWidth'] : false)
             );
         break;
 
@@ -5152,5 +5178,149 @@ function html_print_datalist(
         return $result;
     } else {
         echo $result;
+    }
+}
+
+
+/**
+ * Print or return selector with search bar.
+ *
+ * @param string  $fields                  Select fields
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
+ * @param boolean $dropdownAutoWidth       Set dropdown auto width.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_select_search(
+    $fields=[],
+    $name=null,
+    $selected='',
+    $script='',
+    $nothing='',
+    $nothing_value=0,
+    $return=false,
+    $multiple=false,
+    $sort=false,
+    $class='',
+    $disabled=false,
+    $style=false,
+    $option_style=false,
+    $size=false,
+    $simple_multiple_options=false,
+    $required=false,
+    $dropdownAutoWidth=false
+) {
+    $output = '';
+
+    ui_require_css_file('select2.min');
+    ui_require_javascript_file('select2.min');
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'select'.$idcounter[$name];
+    }
+
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+    }
+
+    $output .= html_print_select(
+        $fields,
+        $name,
+        $selected,
+        $script,
+        $nothing,
+        $nothing_value,
+        $return,
+        $multiple,
+        $sort,
+        $class,
+        $disabled,
+        $style,
+        $option_style,
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options,
+        $required
+    );
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+<script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        dropdownAutoWidth : '<?php echo $dropdownAutoWidth; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        }
+                    });
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
     }
 }

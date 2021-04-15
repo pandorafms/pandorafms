@@ -182,20 +182,9 @@ class Event extends Entity
      */
     public function save()
     {
-        global $config;
-
-        if (is_metaconsole() === false && isset($config['centralized_management']) === true
-            && (bool) $config['centralized_management'] === true
-        ) {
-            throw new \Exception(
-                'error, cannot save in centralized management environment.'
-            );
-        }
-
         $values = $this->fields;
         // Clean null fields.
         foreach ($values as $k => $v) {
-            hd('"'.$k.'" "'.$v.'"', true);
             if ($v === null) {
                 unset($values[$k]);
             }

@@ -60,18 +60,15 @@ class Event extends Entity
      */
     public function __construct(?int $event_id=null)
     {
-        $table = 'tevento';
-        if ((bool) \is_metaconsole() === true) {
-            $table = 'tmetaconsole_event';
-        }
+        $this->table = ((bool) \is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
 
         if ($event_id === 0) {
-            parent::__construct($table);
+            parent::__construct($this->table);
         } else if (is_numeric($event_id) === true) {
-            parent::__construct($table, ['id_evento' => $event_id]);
+            parent::__construct($this->table, ['id_evento' => $event_id]);
         } else {
             // Empty skel.
-            parent::__construct($table);
+            parent::__construct($this->table);
         }
 
         try {
@@ -187,7 +184,7 @@ class Event extends Entity
     {
         global $config;
 
-        if (isset($config['centralized_management']) === true
+        if (is_metaconsole() === false && isset($config['centralized_management']) === true
             && (bool) $config['centralized_management'] === true
         ) {
             throw new \Exception(
@@ -195,18 +192,27 @@ class Event extends Entity
             );
         }
 
+        $values = $this->fields;
+        // Clean null fields.
+        foreach ($values as $k => $v) {
+            hd('"'.$k.'" "'.$v.'"', true);
+            if ($v === null) {
+                unset($values[$k]);
+            }
+        }
+
         if ($this->id_evento === null) {
             // New.
             return db_process_sql_insert(
-                'tgrupo',
-                $this->fields
+                $this->table,
+                $values
             );
         } else if ($this->fields['id_evento'] > 0) {
             // Update.
             return db_process_sql_update(
-                'tgrupo',
-                $this->fields,
-                ['id_evento' => $this->fields['id_evento']]
+                $this->table,
+                $values,
+                ['id_evento' => $values['id_evento']]
             );
         }
 

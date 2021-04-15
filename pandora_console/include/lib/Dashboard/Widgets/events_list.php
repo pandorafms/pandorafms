@@ -732,7 +732,12 @@ class EventsListWidget extends Widget
 
                 $table->data[$i] = $data;
 
-                $table->cellstyle[$i][0] = 'background: #E8E8E8;';
+                $bg_color = 'background: #E8E8E8;';
+                if ($config['style'] === 'pandora_black') {
+                    $bg_color = 'background: #222;';
+                }
+
+                $table->cellstyle[$i][0] = $bg_color;
                 $rowclass = \events_get_criticity_class($event['criticity']);
                 $table->cellclass[$i][1] = $rowclass;
                 $table->cellclass[$i][2] = $rowclass;

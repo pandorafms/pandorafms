@@ -490,6 +490,8 @@ class Widget
      */
     public function getFormInputs(): array
     {
+        global $config;
+
         $inputs = [];
 
         $values = $this->values;
@@ -501,6 +503,10 @@ class Widget
 
         if (empty($values['background']) === true) {
             $values['background'] = '#ffffff';
+
+            if ($config['style'] === 'pandora_black') {
+                $values['background'] = '#222222';
+            }
         }
 
         $inputs[] = [

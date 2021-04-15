@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
@@ -47,6 +48,20 @@ class Ui
     private $dialogs = [];
 
     private $dialog = '';
+
+    /**
+     * List of extra CSS files to be loaded.
+     *
+     * @var array
+     */
+    private $cssList = [];
+
+    /**
+     * List of extra Javascript files to be loaded.
+     *
+     * @var array
+     */
+    private $jsList = [];
 
 
     public function __construct()
@@ -777,6 +792,30 @@ class Ui
         echo "		<script src='../include/javascript/pandora.js'></script>\n";
         echo "		<script src='../include/javascript/pandora_ui.js'></script>\n";
 
+        $loaded = [];
+        foreach ($this->cssList as $filename) {
+            if (in_array($filename, $loaded) === true) {
+                continue;
+            }
+
+            array_push($loaded, $filename);
+
+            $url_css = ui_get_full_url($filename, false, false, false);
+            echo '<link rel="stylesheet" href="'.$url_css.'" type="text/css" />'."\n\t";
+        }
+
+        $js_loaded = [];
+        foreach ($this->jsList as $filename) {
+            if (in_array($filename, $js_loaded) === true) {
+                continue;
+            }
+
+            array_push($js_loaded, $filename);
+
+            $url_css = ui_get_full_url($filename, false, false, false);
+            echo '<script src="'.$url_css.'" rel="text/javascript"></script>'."\n\t";
+        }
+
         echo "	</head>\n";
         echo "	<body>\n";
         echo include_javascript_dependencies_flot_graph(false, false);
@@ -854,6 +893,88 @@ class Ui
 			});
 		</script>'
         );
+    }
+
+
+    /**
+     * Add CSS file to be loaded.
+     *
+     * @param string $name Css file name, as in ui_require_css.
+     * @param string $path Path where search for css file.
+     *
+     * @return boolean True if success, False if not.
+     */
+    public function require_css(
+        string $name,
+        string $path='include/styles/'
+    ):bool {
+        $filename = $path.$name.'.css';
+        $system = System::getInstance();
+
+        if (file_exists($filename) === false
+            && file_exists($system->getConfig('homedir').'/'.$filename) === false
+            && file_exists($system->getConfig('homedir').'/'.ENTERPRISE_DIR.'/'.$filename) === false
+        ) {
+            return false;
+        }
+
+        if (in_array($filename, $this->cssList) === false) {
+            $this->cssList[] = $filename;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Add JS file to be loaded.
+     *
+     * @param string $name JAvascript file name, as in
+     *                     \ui_require_javascript_file.
+     * @param string $path Path where search for Javascript file.
+     *
+     * @return boolean True if success, False if not.
+     */
+    public function require_javascript(
+        string $name,
+        string $path='include/javascript/'
+    ):bool {
+        $filename = $path.$name.'.js';
+        $system = System::getInstance();
+
+        if (file_exists($filename) === false
+            && file_exists($system->getConfig('homedir').'/'.$filename) === false
+            && file_exists($system->getConfig('homedir').'/'.ENTERPRISE_DIR.'/'.$filename) === false
+        ) {
+            return false;
+        }
+
+        if (in_array($filename, $this->jsList) === false) {
+            $this->jsList[] = $filename;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Forces reload to retrieve with and height.
+     *
+     * @return void
+     */
+    public function retrieveViewPort()
+    {
+        ?>
+        <script type="text/javascript">
+
+        var dimensions = '&width=' + $(window).width();
+        dimensions +=  '&height=' + $(window).height();
+        window.location.href = window.location.href + dimensions;
+
+        </script>
+
+        <?php
+
     }
 
 

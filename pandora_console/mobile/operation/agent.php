@@ -425,7 +425,12 @@ class Agent
                     success: function(r) {
                         $.mobile.hidePageLoadingMsg();
                         var className = $('#list_agent_Modules').attr('class');
-                        $('#list_agent_Modules').parent().html(r);
+                        if (document.getElementById('list_agent_Modules') == null) {
+                            $($('p.empty_advice')[0]).parent().html(r);
+                            className = 'ui-responsive table-stroke ui-table ui-table-reflow';
+                        } else {
+                            $('#list_agent_Modules').parent().html(r);
+                        }
                         $('#list_agent_Modules').addClass(className);
                     },
                     error: function(r, t, e) {
@@ -468,7 +473,7 @@ class Agent
                     'id_agent'    => $this->id,
                     'all_modules' => true,
                     'status'      => -1,
-                    'name'        => $name_filter,
+                    'name'        => '%'.$name_filter.'%',
                 ];
             }
 

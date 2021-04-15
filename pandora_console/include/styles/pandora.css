@@ -5450,6 +5450,10 @@ table.info_table.policy_sub_table {
   min-width: 100px;
 }
 
+div.label_select_child_left > span {
+  width: 100% !important;
+}
+
 .label_select_child_right {
   width: 20%;
   min-width: 140px;

@@ -952,7 +952,6 @@ function show_module_detail_dialog(
   period,
   module_name
 ) {
-  console.log("empezamos");
   var params = {};
   var f = new Date();
   period = $("#period").val();

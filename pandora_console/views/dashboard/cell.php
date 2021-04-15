@@ -73,7 +73,11 @@ if ($manageDashboards !== 0) {
 
 $output .= '</div>';
 $output .= '</div>';
-if ($options['background'] === null && $config['style'] === 'pandora_black') {
+if ($config['style'] === 'pandora') {
+    $options['background'] = '#fff';
+}
+
+if ($config['style'] === 'pandora_black') {
     $options['background'] = '#222';
 }
 

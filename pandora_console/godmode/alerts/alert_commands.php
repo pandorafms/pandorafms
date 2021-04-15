@@ -28,12 +28,6 @@ if (! check_acl($config['id_user'], 0, 'LM')) {
     exit;
 }
 
-if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
-    echo "<div id='message_permissions'  title='".__('Permissions warning')."' style='display:none;'>";
-    echo "<p style='text-align: center;font-weight: bold;'>".__('Command management is limited to administrator users or user profiles with permissions over Pandora FMS management').'</p>';
-    echo '</div>';
-}
-
 if (is_metaconsole()) {
     $sec = 'advanced';
 } else {
@@ -467,6 +461,20 @@ if (is_ajax()) {
     return;
 }
 
+// This check should be after ajax. Because, ajax will be called from configure_alert_action.
+if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin(
+    $config['id_user
+']
+)
+) {
+    echo "<div id='message_permissions'  title='".__('Permissions warning')."' s
+tyle='display:none;'>";
+    echo "<p style='text-align: center;font-weight: bold; margin: 15px'>".__(
+        'Command management is limited to administrator users or user profiles with permissions PM'
+    ).'</p>';
+    echo '</div>';
+}
+
 enterprise_hook('open_meta_frame');
 
 if ($update_command) {
@@ -675,12 +683,19 @@ foreach ($commands as $command) {
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
     if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
-        $data['action'] = '<span class="inline_flex">';
-        $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
-			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
-        $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
+        if (check_acl($config['id_user'], 0, 'PM') || is_user_admin(
+            $config['id_user
+            ']
+        )
+        ) {
+                    $data['action'] = '<span class="inline_flex">';
+            $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&amp;copy_command=1&id='.$command['id'].'&pure='.$pure.'"
+            onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/copy.png', true, ['class' => 'invert_filter']).'</a>';
+
+            $data['action'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'&pure='.$pure.'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>';
-        $data['action'] .= '</span>';
+            $data['action'] .= '</span>';
+        }
     }
 
     array_push($table->data, $data);

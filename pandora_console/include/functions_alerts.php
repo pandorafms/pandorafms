@@ -448,10 +448,11 @@ function alerts_delete_alert_action($id_alert_action)
  * Clone an alert action.
  *
  * @param int Id of the original alert action
+ * @param int Agent group id if it wants to be changed when clone.
  *
  * @return mixed Id of the cloned action or false in case of fail.
  */
-function alerts_clone_alert_action($id_alert_action)
+function alerts_clone_alert_action($id_alert_action, $id_group)
 {
     $id_alert_action = safe_int($id_alert_action, 1);
     if (empty($id_alert_action)) {
@@ -462,6 +463,10 @@ function alerts_clone_alert_action($id_alert_action)
 
     if (empty($action)) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $action['id_group'] = $id_group;
     }
 
     unset($action['id']);
@@ -1130,15 +1135,20 @@ function alerts_get_alert_template_field3_recovery($id_alert_template)
  * Duplicates an alert template.
  *
  * @param int Id of an alert template.
+ * @param int Agent group id if it wants to be changed when duplicate.
  *
  * @return mixed Duplicates an alert template or false if something goes wrong.
  */
-function alerts_duplicate_alert_template($id_alert_template)
+function alerts_duplicate_alert_template($id_alert_template, $id_group)
 {
     $template = alerts_get_alert_template($id_alert_template);
 
     if ($template === false) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $template['id_group'] = $id_group;
     }
 
     $name = io_safe_input(__('Copy of').' ').$template['name'];

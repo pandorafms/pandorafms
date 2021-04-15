@@ -401,17 +401,16 @@ foreach ($templates as $template) {
 
     $data = [];
 
-    if (check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')) {
-        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
-    } else {
-        $data[0] = $template['name'];
+    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'&pure='.$pure.'">'.$template['name'].'</a>';
+    if (!check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')) {
+        $data[0] .= ui_print_help_tip(__('You cannot edit this alert template, You don\'t have the permission to edit All group.'), true);
     }
 
     $data[1] = ui_print_group_icon($template['id_group'], true);
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
     if (is_central_policies_on_node() === false
-        && check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')
+        && check_acl($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'action_buttons';
         $data[4] = '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'" class="float-left inline_line">';
@@ -427,18 +426,20 @@ foreach ($templates as $template) {
         );
         $data[4] .= '</form> ';
 
-        $data[4] .= '<form method="post" class="float-right inline_line" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $data[4] .= html_print_input_hidden('delete_template', 1, true);
-        $data[4] .= html_print_input_hidden('id', $template['id'], true);
-        $data[4] .= html_print_input_image(
-            'del',
-            'images/cross.png',
-            1,
-            '',
-            true,
-            ['title' => __('Delete')]
-        );
-        $data[4] .= '</form> ';
+        if (check_acl_restricted_all($config['id_user'], $template['id_group'], 'LM')) {
+            $data[4] .= '<form method="post" class="float-right inline_line" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+            $data[4] .= html_print_input_hidden('delete_template', 1, true);
+            $data[4] .= html_print_input_hidden('id', $template['id'], true);
+            $data[4] .= html_print_input_image(
+                'del',
+                'images/cross.png',
+                1,
+                '',
+                true,
+                ['title' => __('Delete')]
+            );
+            $data[4] .= '</form> ';
+        }
     } else {
         $data[4] = '';
     }

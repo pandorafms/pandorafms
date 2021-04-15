@@ -885,6 +885,11 @@ function html_print_select(
 		";
     }
 
+    $select2 = 'select2.min';
+    if ($config['style'] === 'pandora_black') {
+        $select2 = 'select2_dark.min';
+    }
+
     if ($multiple === false) {
         if (is_ajax()) {
             $output .= '<script src="';
@@ -898,18 +903,13 @@ function html_print_select(
 
             $output .= '<link rel="stylesheet" href="';
             $output .= ui_get_full_url(
-                'include/styles/select2.min.css',
+                'include/styles/'.$select2.'.css',
                 false,
                 false,
                 false
             );
             $output .= '"/>';
         } else {
-            $select2 = 'select2.min';
-            if ($config['style'] === 'pandora_black') {
-                $select2 = 'select2_dark.min';
-            }
-
             ui_require_css_file($select2);
             ui_require_javascript_file('select2.min');
         }

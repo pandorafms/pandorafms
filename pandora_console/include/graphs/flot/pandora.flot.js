@@ -114,7 +114,8 @@ function pandoraFlotPie(
 
   // Reset styles
   function resetInteractivity() {
-    legends.css("color", "#fff");
+    legends.css("color", "#3F3F3D");
+    legends.attr("class", "invert_filter");
   }
 
   if (water_mark) {
@@ -293,7 +294,6 @@ function pandoraFlotPieCustom(
   function resetInteractivity() {
     legends.each(function() {
       // fix the widths so they don't jump around
-      console.log($(this));
       $(this).css("color", "#3F3F3D");
     });
   }

@@ -32,6 +32,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 use PandoraFMS\Enterprise\RCMDFile as RCMDFile;
+use PandoraFMS\Event;
 
 
 /**
@@ -251,21 +252,33 @@ function agents_create_agent(
         $groupName = db_get_value(
             'nombre',
             'tgrupo',
-            ['id_grupo' => $id_group]
+            'id_grupo',
+            $id_group
         );
-        // Notice this issue.
-        events_create_event(
+
+        // Generate new event.
+        $evt = new Event;
+        $evt->evento(
             sprintf(
-                'Agent cannot be created due to the maximum agent limit for group "%s"',
+                'Agent cannot be created due to the maximum agent limit for group %s',
                 $groupName
-            ),
-            $id_group,
-            0,
-            EVENT_NEW,
-            $config['id_user'],
-            EVENTS_NEW_AGENT,
-            EVENT_CRIT_WARNING
+            )
         );
+        $evt->id_grupo($id_group);
+        $evt->id_source_event(0);
+        $evt->id_agente(0);
+        $evt->estado(EVENT_NO_VALIDATED);
+        $evt->id_agentmodule(0);
+        $evt->id_usuario($config['id_user']);
+        $evt->event_type(EVENTS_NEW_AGENT);
+        $evt->criticity(EVENT_CRIT_WARNING);
+        $evt->timestamp(date('Y-m-d H:i:s'));
+        $evt->utimestamp(time());
+        $evt->data(0);
+        $evt->source('agent_creation');
+        // Save the event.
+        $evt->save();
+
         return false;
     }
 

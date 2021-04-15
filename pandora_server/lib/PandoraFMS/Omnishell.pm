@@ -10,7 +10,7 @@ use warnings;
 
 use File::Copy;
 use Scalar::Util qw(looks_like_number);
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::PluginTools qw/init read_configuration read_file empty trim/;
 
 my $YAML = 0;
@@ -24,7 +24,7 @@ if ($@) {
   $YAML = 1;
 }
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );

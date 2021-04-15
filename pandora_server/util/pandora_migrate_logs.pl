@@ -13,7 +13,7 @@ use JSON;
 use IO::Socket::INET;
 use File::Copy;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use PandoraFMS::Config;
 use PandoraFMS::Tools;

@@ -34,7 +34,7 @@ use threads::shared;
 use JSON;
 use Encode qw/decode_utf8 encode_utf8/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Sendmail;
 
 # New in 3.2. Used to sendmail internally, without external scripts

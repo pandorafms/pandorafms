@@ -3920,7 +3920,7 @@ function group_allow_more_agents(
         $evt->id_agentmodule(0);
         $evt->id_usuario($config['id_user']);
         $evt->estado(EVENT_STATUS_NEW);
-        $evt->event_type(EVENTS_ERROR);
+        $evt->event_type(EVENTS_SYSTEM);
         $evt->criticity(EVENT_CRIT_WARNING);
         $evt->timestamp(date('Y-m-d H:i:s'));
         $evt->utimestamp(time());

@@ -90,7 +90,7 @@ execute_cmd "echo 'Starting community deployment' > $LOGFILE" "All installer act
 echo "Community installer version: $S_VERSION" >> $LOGFILE
 
 # Pre checks
-echo -en "${cyan}Loading pandoradb.sql to $DBNAME database...${reset}"
+echo -en "${cyan}Checking compatible OS... ${reset}"
 [[ $OS_RELEASE ]]
 check_cmd_status "Error not compatible OS, $OS"
 

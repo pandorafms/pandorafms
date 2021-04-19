@@ -723,6 +723,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`contact` text,
 	`other` text,
 	`password` varchar(45) default '',
+	`max_agents` int(10) unsigned NOT NULL default '0',
  	PRIMARY KEY  (`id_grupo`),
  	KEY `parent_index` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

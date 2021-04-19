@@ -1,5 +1,6 @@
 START TRANSACTION;
 
+ALTER TABLE `tgrupo` ADD COLUMN `max_agents` int(10) NOT NULL DEFAULT 0;
 ALTER TABLE `tagent_custom_fields` MODIFY COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
 ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
 ALTER TABLE `treport_content_template` MODIFY `external_source` MEDIUMTEXT;

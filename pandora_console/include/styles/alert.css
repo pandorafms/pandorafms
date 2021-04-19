@@ -129,6 +129,7 @@ div.target {
   margin-left: 3em;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 div.target.flex {
   display: block;

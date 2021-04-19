@@ -159,7 +159,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
         $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
 
-        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent]);
+        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', ';');
 
         // API method returns '0' string if success.
         $file_added = ($result_api_call === '0') ? true : false;
@@ -322,7 +322,7 @@ $table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_su
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0']);
+    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0'], false, '', '|;|');
 
     // API method returns id of new comment if success.
     $comment_added = ($result_api_call >= '0') ? true : false;

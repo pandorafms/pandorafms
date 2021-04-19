@@ -387,6 +387,7 @@ if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true))
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
     $propagate = (bool) get_parameter('propagate');
 
@@ -411,6 +412,7 @@ if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true))
                     'propagate'   => $propagate,
                     'other'       => $other,
                     'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
                 ];
 
                 $result = db_process_sql_insert('tgrupo', $values);
@@ -444,6 +446,7 @@ if ($update_group) {
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
 
     $aviable_name = true;
     if (preg_match('/script/i', $name)) {
@@ -477,6 +480,7 @@ if ($update_group) {
                     'propagate'   => $propagate,
                     'other'       => $other,
                     'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
                 ];
 
                 $result = db_process_sql_update(

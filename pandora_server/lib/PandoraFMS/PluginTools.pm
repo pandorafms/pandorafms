@@ -867,11 +867,11 @@ sub transfer_xml {
 		my $r = -1;
 		#Send using tentacle
 		if ($^O =~ /win/i) {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path"`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path'`;
 			$r = $?;
 		}
 		else {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path" 2>&1`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path' 2>&1`;
 			$r = $?;
 		}
 			

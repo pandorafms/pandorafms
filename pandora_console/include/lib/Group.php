@@ -276,7 +276,7 @@ class Group extends Entity
             // Create new group.
             $this->fields['id_grupo'] = \db_process_sql_insert(
                 '\tgrupo',
-                $updates,
+                $updates
             );
 
             if ($this->fields['id_grupo'] === false) {

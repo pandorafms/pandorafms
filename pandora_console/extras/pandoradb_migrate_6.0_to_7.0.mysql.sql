@@ -2853,6 +2853,12 @@ UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMad
 UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
 UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
 
+--
+-- Modifies tgrupo table.
+--
+
+ALTER TABLE tgrupo ADD COLUMN max_agents int(10) NOT NULL DEFAULT 0;
+
 -- ----------------------------------------------------------------------
 -- Table `tnode_relations`
 -- ----------------------------------------------------------------------

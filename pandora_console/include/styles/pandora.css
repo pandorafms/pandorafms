@@ -8500,3 +8500,6 @@ div.stat-win-spinner img {
 .font_11pt {
   font-size: 11pt;
 }
+.align-left-important {
+  text-align: left !important;
+}

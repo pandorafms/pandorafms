@@ -238,31 +238,92 @@ class Group extends Entity
      */
     public function save()
     {
-        global $config;
-
-        if (isset($config['centralized_management']) === true
-            && $config['centralized_management'] > 0
-        ) {
+        if (\is_management_allowed() !== true) {
             $msg = 'cannot be modified in a centralized management environment';
             throw new \Exception(
                 get_class($this).' error, '.$msg
             );
         }
 
-        if ($this->fields['id_grupo'] > 0) {
-            $updates = $this->fields;
-            if (is_numeric($updates['parent']) === false) {
-                $updates['parent'] = $this->parent()->id_grupo();
-            }
+        $updates = $this->fields;
 
-            return db_process_sql_update(
+        if (is_numeric($updates['parent']) === false) {
+            $updates['parent'] = $this->parent()->id_grupo();
+        }
+
+        // Clean null fields.
+        foreach ($updates as $k => $v) {
+            if ($v === null) {
+                unset($updates[$k]);
+            }
+        }
+
+        if (isset($updates['propagate']) === false) {
+            $updates['propagate'] = 0;
+        }
+
+        if (isset($updates['disabled']) === false) {
+            $updates['disabled'] = 0;
+        }
+
+        if ($this->fields['id_grupo'] > 0) {
+            return \db_process_sql_update(
                 'tgrupo',
-                $this->fields,
+                $updates,
                 ['id_grupo' => $this->fields['id_grupo']]
             );
+        } else {
+            // Create new group.
+            $this->fields['id_grupo'] = \db_process_sql_insert(
+                '\tgrupo',
+                $updates,
+            );
+
+            if ($this->fields['id_grupo'] === false) {
+                global $config;
+                $msg = __(
+                    'Failed to save group %s',
+                    $config['dbconnection']->error
+                );
+                throw new \Exception(
+                    get_class($this).' error, '.$msg
+                );
+            } else {
+                return true;
+            }
         }
 
         return false;
+    }
+
+
+    /**
+     * Delete this group.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        // Propagate parents.
+        \db_process_sql_update(
+            'tgrupo',
+            ['parent' => $this->parent()->id_grupo()],
+            ['parent' => $this->id_grupo()]
+        );
+
+        // Remove stats.
+        \db_process_sql_delete(
+            'tgroup_stat',
+            ['id_group' => $this->id_grupo()]
+        );
+
+        // Remove group.
+        \db_process_sql_delete(
+            'tgrupo',
+            ['id_grupo' => $this->id_grupo()]
+        );
+
+        unset($this->fields['id_grupo']);
     }
 
 

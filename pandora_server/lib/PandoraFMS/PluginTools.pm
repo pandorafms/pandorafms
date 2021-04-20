@@ -792,58 +792,63 @@ sub transfer_xml {
 	my $file_name;
 	my $file_path;
 
-	if (! (empty ($name))) {
-		$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
-	}
-	else {
-		# Inherit file name
-		($file_name) = $xml =~ /\s+agent_name='(.*?)'\s+.*$/m;
-		if (empty($file_name)){
-			($file_name) = $xml =~ /\s+agent_name="(.*?)"\s+.*$/m;
+	if (! -f $xml) {
+		if (! (empty ($name))) {
+			$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 		}
-		if (empty($file_name)){
-			$file_name = trim(`hostname`);
+		else {
+			# Inherit file name
+			($file_name) = $xml =~ /\s+agent_name='(.*?)'\s+.*$/m;
+			if (empty($file_name)){
+				($file_name) = $xml =~ /\s+agent_name="(.*?)"\s+.*$/m;
+			}
+			if (empty($file_name)){
+				$file_name = trim(`hostname`);
+			}
+
+			$file_name .=  "." . sprintf("%d",time()) . ".data";
 		}
 
-		$file_name .=  "." . sprintf("%d",time()) . ".data";
-	}
+		logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
 
-	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
+		$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
+		$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
+		$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
+		$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
+		$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
 
-	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
-	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
-	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
-	$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
-	$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
-
-	$file_path = $conf->{temp} . "/" . $file_name;
-	
-	#Creating XML file in temp directory
-	
-	if ( -e $file_path ) {
-		sleep (1);
-		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 		$file_path = $conf->{temp} . "/" . $file_name;
+		
+		#Creating XML file in temp directory
+		
+		if ( -e $file_path ) {
+			sleep (1);
+			$file_name = $name . "." . sprintf("%d",time()) . ".data";
+			$file_path = $conf->{temp} . "/" . $file_name;
+		}
+
+		my $r = open (my $FD, ">>", $file_path);
+
+		if (empty($r)) {
+			print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
+			return undef;
+		}
+		
+		my $bin_opts = ':raw:encoding(UTF8)';
+		
+		if ($^O eq "Windows") {
+			$bin_opts .= ':crlf';
+		}
+		
+		binmode($FD, $bin_opts);
+
+		print $FD $xml;
+
+		close ($FD);
+
+	} else {
+		$file_path = $xml;
 	}
-
-	my $r = open (my $FD, ">>", $file_path);
-
-	if (empty($r)) {
-		print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
-		return undef;
-	}
-	
-	my $bin_opts = ':raw:encoding(UTF8)';
-	
-	if ($^O eq "Windows") {
-		$bin_opts .= ':crlf';
-	}
-	
-	binmode($FD, $bin_opts);
-
-	print $FD $xml;
-
-	close ($FD);
 
 	# Reassign default values if not present
 	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});

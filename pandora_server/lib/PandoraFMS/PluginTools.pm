@@ -805,7 +805,9 @@ sub transfer_xml {
 			if (empty($file_name)){
 				$file_name = trim(`hostname`);
 			}
-
+			
+			# Tentacle server does not allow files with symbols in theirs name.
+			$file_name =~ s/[^a-zA-Z0-9_-]//g;
 			$file_name .=  "." . sprintf("%d",time()) . ".data";
 		}
 

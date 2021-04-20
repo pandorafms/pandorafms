@@ -8348,7 +8348,7 @@ span,
   float: right;
   margin-right: 100px;
 }
-.steps_vsmap {
+div.steps_vsmap {
   display: none;
   position: absolute;
   z-index: 99;

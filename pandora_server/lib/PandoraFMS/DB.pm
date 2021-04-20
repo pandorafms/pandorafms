@@ -92,6 +92,7 @@ our @EXPORT = qw(
 		get_priority_name
 		get_server_id
 		get_tag_id
+		get_tag_name
 		get_group_name
 		get_template_id
 		get_template_module_id
@@ -274,6 +275,20 @@ sub get_tag_id ($$) {
 					WHERE name = ?",
 					safe_input($tag_name));
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return the name of a tag given its id.
+########################################################################
+sub get_tag_name ($$) {
+	my ($dbh, $id) = @_;
+
+	my $rc = get_db_value(
+		$dbh, "SELECT name FROM ttag
+					WHERE id_tag = ?",
+		safe_input($id)
+	);
+	return $rc;
 }
 
 ########################################################################

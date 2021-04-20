@@ -1645,7 +1645,11 @@ function config_update_config()
                     $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
 
                     if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
-                        $integria_hostname = 'http://'.$integria_hostname;
+                        if (empty($_SERVER['HTTPS']) === false) {
+                            $integria_hostname = 'https://'.$integria_hostname;
+                        } else {
+                            $integria_hostname = 'http://'.$integria_hostname;
+                        }
                     }
 
                     if (!config_update_value('integria_hostname', $integria_hostname)) {

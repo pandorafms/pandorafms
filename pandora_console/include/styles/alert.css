@@ -1,10 +1,42 @@
+.rules div {
+  display: inline-block;
+}
+
 li#li-buttons-alert-list > div {
   margin-left: 10px;
+}
+
+ul.sample li {
+  padding-bottom: 1em;
+}
+ul.sample li:last-child {
+  padding-bottom: 0;
 }
 
 #rule-builder .rule-builder-actions li {
   display: inline;
   width: auto;
+}
+
+li#li-filters_show_action_alerts > label,
+li#li-buttons-alert-list > label,
+li#li-filters-alert-list > label {
+  width: initial;
+}
+
+form#advanced_filters_alert ul li label,
+form#general_filters_alert ul li label {
+  width: 150px;
+}
+
+#rules.flex-row label {
+  flex: 1 1 70px;
+}
+
+li#li-from-to-threshold > label:not(:first-child),
+li#li-time-from-to > label:not(:first-child) {
+  width: initial;
+  margin-right: 15px;
 }
 
 #rule-builder .rule-builder-actions li label {
@@ -21,10 +53,6 @@ ul.sample {
   flex: 1 1 300px;
 }
 
-#rules.flex-row label {
-  flex: 1 1 70px;
-}
-
 #rules.flex-row div {
   flex: 10 1 200px;
 }
@@ -39,17 +67,6 @@ span.rule-title {
   width: 100%;
 }
 
-li#li-filters_show_action_alerts > label,
-li#li-buttons-alert-list > label,
-li#li-filters-alert-list > label {
-  width: initial;
-}
-
-form#advanced_filters_alert ul li label,
-form#general_filters_alert ul li label {
-  width: 150px;
-}
-
 form#conditions_filters_alert ul li label:first-child {
   width: 300px;
 }
@@ -62,17 +79,14 @@ li#li-description textarea {
   flex: 1 1 auto;
 }
 
-li#li-from-to-threshold > label:not(:first-child),
-li#li-time-from-to > label:not(:first-child) {
-  width: initial;
-  margin-right: 15px;
-}
-
 li#li-from-to-threshold > input,
 li#li-time-from-to > input {
   margin-right: 15px;
 }
-
+.mode_table_firing table.info_table thead tr th img {
+  padding: 10px;
+  vertical-align: middle;
+}
 form#advanced_filters_alert textarea {
   flex: 1 1 auto;
   height: 5em;
@@ -106,19 +120,16 @@ ul.sample {
   max-width: 50%;
   flex-grow: 1;
   justify-content: space-between;
+  min-width: 300px;
 }
-ul.sample li {
-  padding-bottom: 1em;
-}
-ul.sample li:last-child {
-  padding-bottom: 0;
-}
+
 div.target {
   flex-grow: 1;
   flex-basis: auto;
   margin-left: 3em;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 div.target.flex {
   display: block;
@@ -140,28 +151,28 @@ div.target.flex {
   position: relative;
   top: 25%;
   display: block;
-  left: 37%;
+  margin: 0 auto;
   font-size: 3em;
   color: #aaa;
   overflow: hidden;
-  width: 6em;
   background: #fff;
   text-align: center;
-  z-index: 2;
 }
-div#rules.show::after {
+div#rules::after {
+  content: "Drop Here";
   position: relative;
-  top: 25%;
   display: block;
-  left: 37%;
+  margin: 2em auto;
   font-size: 3em;
   color: #aaa;
   overflow: hidden;
-  width: 6em;
   background: #fff;
   text-align: center;
-  z-index: 2;
 }
+div#rules.cleanup::after {
+  content: none;
+}
+
 div#rules.show {
   box-shadow: 0 0 15px -5px #424242;
   border: 1px solid #ddd;
@@ -185,7 +196,10 @@ div#rules.show {
   opacity: 0.2;
   cursor: not-allowed;
 }
-
+.field.disabledElements {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
 .log {
   background-color: #638460;
 }
@@ -207,10 +221,6 @@ div#rules.show {
 
 .nexo {
   background-color: #424242;
-}
-
-.rules div {
-  display: inline-block;
 }
 
 .inEdit {
@@ -251,11 +261,6 @@ div#rules.show {
 
 .mode_table_firing table.info_table thead tr th {
   font-weight: bolder;
-}
-
-.mode_table_firing table.info_table thead tr th img {
-  padding: 10px;
-  vertical-align: middle;
 }
 
 #rules select.click-list-elements {

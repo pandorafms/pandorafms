@@ -718,7 +718,8 @@ function html_print_select(
     $select_all=false,
     $simple_multiple_options=false,
     $required=false,
-    $truncate_size=false
+    $truncate_size=false,
+    $select2_enable=true
 ) {
     $output = "\n";
 
@@ -890,7 +891,7 @@ function html_print_select(
         $select2 = 'select2_dark.min';
     }
 
-    if ($multiple === false) {
+    if ($multiple === false && $select2_enable === true) {
         if (is_ajax()) {
             $output .= '<script src="';
             $output .= ui_get_full_url(

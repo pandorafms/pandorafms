@@ -628,6 +628,22 @@ ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fi
 ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
 ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
 
+ALTER TABLE `tevent_rule` MODIFY COLUMN `agent` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_usuario` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `evento` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `module` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `alert` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `user_comment` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_tag` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `name` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `group_recursion` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_agent` TEXT;
+
 UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
 UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
 UPDATE `tevent_rule` SET `operator_id_grupo` = "REGEX" WHERE `id_grupo` > 0;

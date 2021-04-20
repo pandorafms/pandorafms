@@ -336,7 +336,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 'icon',
                 'group_item',
             ];
-            $form_items['preview_row']['html'] = '<td align="left" colspan="2" class="right">'.'<div id="preview" class="right"></div></td>';
+            $form_items['preview_row']['html'] = '<td align="left" colspan="2">'.'<div id="preview" class="right"></div></td>';
 
             $form_items['background_color'] = [];
             $form_items['background_color']['items'] = [
@@ -357,6 +357,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 0,
                 'white',
                 true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
                 false,
                 false
             ).'</td>';
@@ -510,7 +522,29 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             $form_items['event_max_time_row'] = [];
             $form_items['event_max_time_row']['items'] = ['auto_sla_graph'];
             $form_items['event_max_time_row']['html'] = '<td align="left">'.__('Max. Time').'</td>
-				<td align="left">'.html_print_select($event_times, 'event_max_time_row', '', '', 0, 86400, true, false, false).'</td>';
+				<td align="left">'.html_print_select(
+                $event_times,
+                'event_max_time_row',
+                '',
+                '',
+                0,
+                86400,
+                true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                false
+            ).'</td>';
 
             $form_items['type_graph'] = [];
             $form_items['type_graph']['items'] = [
@@ -529,6 +563,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 0,
                 'area',
                 true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
                 false,
                 false
             ).'</td>';
@@ -800,7 +846,29 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
             $form_items['bars_graph_type'] = [];
             $form_items['bars_graph_type']['items'] = ['bars_graph'];
             $form_items['bars_graph_type']['html'] = '<td align="left">'.__('Type').'</td>
-				<td align="left">'.html_print_select($bars_graph_types, 'bars_graph_type', 'vertical', '', '', '', true).'</td>';
+				<td align="left">'.html_print_select(
+                $bars_graph_types,
+                'bars_graph_type',
+                'vertical',
+                '',
+                '',
+                '',
+                true,
+                false,
+                true,
+                '',
+                false,
+                '',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                false
+            ).'</td>';
 
             // Insert and modify before the buttons to create or update.
             if (enterprise_installed()) {
@@ -809,11 +877,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
 
             $form_items['button_update_row'] = [];
             $form_items['button_update_row']['items'] = ['datos'];
-            $form_items['button_update_row']['html'] = '<td align="left" colspan="2" class="right">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true).'</td>';
+            $form_items['button_update_row']['html'] = '<td align="left" colspan="2" style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Update'), 'update_button', false, 'update_button_palette_callback();', 'class="sub upd"', true).'</td>';
 
             $form_items['button_create_row'] = [];
             $form_items['button_create_row']['items'] = ['datos'];
-            $form_items['button_create_row']['html'] = '<td align="left" colspan="2" class="right">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true).'</td>';
+            $form_items['button_create_row']['html'] = '<td align="left" colspan="2"  style="text-align: right;">'.html_print_button(__('Cancel'), 'cancel_button', false, 'cancel_button_palette_callback();', 'class="sub cancel"', true).'<span ="margin-right:10px;">&nbsp</span>'.html_print_button(__('Create'), 'create_button', false, 'create_button_palette_callback();', 'class="sub wand"', true).'</td>';
 
             foreach ($form_items as $item => $item_options) {
                 echo '<tr id="'.$item.'"   class="'.implode(' ', (array) $item_options['items']).'">';
@@ -829,7 +897,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background)
                 </td>
             </tr>
         </tbody>
-        <tbody id="advance_options" class="invisible">
+        <tbody id="advance_options" style="display: none">
             <?php
             $form_items_advance = [];
 

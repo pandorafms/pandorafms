@@ -85,7 +85,7 @@ visual_map_editor_print_item_palette($visualConsole['id'], $background);
 if (!defined('METACONSOLE')) {
     echo '<div id="frame_view" class="frame_view_meta">';
 } else {
-    echo '<div id="frame_view" class="frame_view_node">';
+    echo '<div id="frame_view" class="frame_view_node mrgn_top_meta_35px">';
 }
 
 echo '<div id="background" class="" style="top:0px;

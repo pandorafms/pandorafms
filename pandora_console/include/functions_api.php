@@ -1682,7 +1682,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     // Check if agent exists (BUG WC-50518-2).
     if ($alias == '' && $alias_as_name === 0) {
         returnError('No agent alias specified');
-    } else if (agents_get_agent_id($server_name)) {
+    } else if (agents_get_agent_id($nombre_agente)) {
         returnError('The agent name already exists in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('The group does not exist.');

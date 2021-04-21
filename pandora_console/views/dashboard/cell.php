@@ -73,12 +73,22 @@ if ($manageDashboards !== 0) {
 
 $output .= '</div>';
 $output .= '</div>';
-if ($config['style'] === 'pandora') {
-    $options['background'] = '#fff';
-}
+if (empty($options['background']) === true) {
+    if ($config['style'] === 'pandora') {
+        $options['background'] = '#ffffff';
+    }
 
-if ($config['style'] === 'pandora_black') {
-    $options['background'] = '#222';
+    if ($config['style'] === 'pandora_black') {
+        $options['background'] = '#222222';
+    }
+} else if ($options['background'] === '#ffffff'
+    && $config['style'] === 'pandora_black'
+) {
+    $options['background'] = '#222222';
+} else if ($options['background'] === '#222222'
+    && $config['style'] === 'pandora'
+) {
+    $options['background'] = '#ffffff';
 }
 
 if ((int) $cellData['id_widget'] !== 0) {

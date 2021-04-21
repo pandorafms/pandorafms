@@ -15,6 +15,7 @@ global $config;
 
 require_once 'include/functions_reports.php';
 
+
 $linkReport = false;
 $searchReports = check_acl($config['id_user'], 0, 'RR');
 
@@ -31,16 +32,34 @@ if ($reports === false || !$searchReports) {
     $table->class = 'databox';
 
     $table->head = [];
+    $table->align = [];
+    $table->headstyle = [];
+    $table->style = [];
+
+    $table->align[2] = 'left';
+    $table->align[3] = 'left';
+    $table->align[4] = 'left';
+    $table->data = [];
+    $table->head[0] = __('Report name');
+    $table->head[1] = __('Description');
+    $table->head[2] = __('HTML');
+    $table->head[3] = __('XML');
+    $table->size[0] = '50%';
+    $table->size[1] = '20%';
+    $table->size[2] = '2%';
+    $table->headstyle[2] = 'min-width: 35px;text-align: left;';
+    $table->size[3] = '2%';
+    $table->headstyle[3] = 'min-width: 35px;text-align: left;';
+    $table->size[4] = '2%';
+    $table->headstyle[4] = 'min-width: 35px;text-align: left;';
+
+    $table->head = [];
     $table->head[0] = __('Report name');
     $table->head[1] = __('Description');
     $table->head[2] = __('HTML');
     $table->head[3] = __('XML');
     enterprise_hook('load_custom_reporting_1', [$table]);
 
-    $table->align = [];
-    $table->align[2] = 'center';
-    $table->align[3] = 'center';
-    $table->align[4] = 'center';
 
     $table->data = [];
     foreach ($reports as $report) {
@@ -54,7 +73,7 @@ if ($reports === false || !$searchReports) {
             $reportstring,
             $report['description'],
             '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">'.html_print_image('images/reporting.png', true).'</a>',
-            '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">'.html_print_image('images/database_lightning.png', true).'</a>',
+            '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">'.html_print_image('images/xml.png', true).'</a>',
         ];
         enterprise_hook('load_custom_reporting_2');
 

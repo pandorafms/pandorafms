@@ -34,7 +34,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.754";
-my $pandora_build = "210420";
+my $pandora_build = "210421";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -805,7 +805,9 @@ sub transfer_xml {
 			if (empty($file_name)){
 				$file_name = trim(`hostname`);
 			}
-
+			
+			# Tentacle server does not allow files with symbols in theirs name.
+			$file_name =~ s/[^a-zA-Z0-9_-]//g;
 			$file_name .=  "." . sprintf("%d",time()) . ".data";
 		}
 
@@ -867,11 +869,11 @@ sub transfer_xml {
 		my $r = -1;
 		#Send using tentacle
 		if ($^O =~ /win/i) {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path"`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path'`;
 			$r = $?;
 		}
 		else {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path" 2>&1`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path' 2>&1`;
 			$r = $?;
 		}
 			

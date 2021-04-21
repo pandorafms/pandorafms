@@ -47,6 +47,20 @@ class Group extends Entity
 
 
     /**
+     * Instances a new object using array definition.
+     *
+     * @param array  $data      Fields data.
+     * @param string $class_str Class name.
+     *
+     * @return object With current definition.
+     */
+    public static function build(array $data=[], string $class_str=__CLASS__)
+    {
+        return parent::build($data, $class_str);
+    }
+
+
+    /**
      * Builds a PandoraFMS\Group object from a group id.
      *
      * @param integer $id_group  Group Id.

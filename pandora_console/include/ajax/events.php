@@ -402,6 +402,8 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
+    echo '<form method="post" id="form_load_filter">';
+
     $table = new StdClass;
     $table->id = 'load_filter_form';
     $table->width = '100%';
@@ -441,13 +443,15 @@ if ($load_filter_modal) {
         __('Load filter'),
         'load_filter',
         false,
-        'class="sub upd" onclick="load_form_filter();"',
+        'class="sub upd"',
         true
     );
+    $data[1] .= html_print_input_hidden('load_filter', 1, true);
     $table->data[] = $data;
     $table->rowclass[] = '';
 
     html_print_table($table);
+    echo '</form>';
     echo '</div>';
     ?>
 <script type="text/javascript">
@@ -460,7 +464,8 @@ function show_filter() {
         width: 450
     });
 }
-//aki
+
+
 function load_form_filter() {
     jQuery.post (
         "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

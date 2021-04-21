@@ -3739,6 +3739,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     $params['use_input_id_server'] = true;
                                     $params['input_id_server_id'] = 'hidden-id_server';
                                     $params['disabled_javascript_on_blur_function'] = true;
+                                    $params['javascript_is_function_select'] = true;
                                 }
 
                                 ui_print_agent_autocomplete_input($params);

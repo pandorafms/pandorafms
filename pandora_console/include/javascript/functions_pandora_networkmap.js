@@ -879,6 +879,7 @@ function edit_node(data_node, dblClick) {
     ); // It doesn't eval the possible XSS so it's ok
     $("#dialog_node_edit").dialog("open");
     $("#open_version_dialog").dialog();
+    $("#open_version").dialog();
 
     if (node_selected.id_agent == undefined || node_selected.type == 3) {
       //Fictional node

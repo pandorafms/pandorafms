@@ -3682,16 +3682,9 @@ function graph_custom_sql_graph(
         }
     }
 
-    if ($id != null) {
-        $historical_db = db_get_value_sql(
-            'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
-        );
-    } else {
-        $historical_db = $content['historical_db'];
-    }
-
-    if ($report_content['external_source'] != '') {
-        $sql = io_safe_output($report_content['external_source']);
+    $historical_db = $content['historical_db'];
+    if ($content['external_source'] != '') {
+        $sql = io_safe_output($content['external_source']);
     } else {
         $sql = db_get_row(
             'treport_custom_sql',

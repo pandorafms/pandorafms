@@ -152,7 +152,6 @@ function menu_print_menu(&$menu)
         $first_sub_sec2 = '';
 
         foreach ($main['sub'] as $subsec2 => $sub) {
-            // hd($sub, true);
             $count_sub++;
 
             // Init some variables.

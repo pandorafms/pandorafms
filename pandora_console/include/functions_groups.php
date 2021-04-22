@@ -756,12 +756,16 @@ function groups_create_group($group_name, $rest_values)
 
     $values = array_merge($rest_values, $array_tmp);
 
-    if (!isset($values['propagate'])) {
+    if (isset($values['propagate']) === false) {
         $values['propagate'] = 0;
     }
 
-    if (!isset($values['disabled'])) {
+    if (isset($values['disabled']) === false) {
         $values['disabled'] = 0;
+    }
+
+    if (isset($values['max_agents']) === false) {
+        $values['max_agents'] = 0;
     }
 
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $group_name);

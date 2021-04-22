@@ -4023,3 +4023,15 @@ SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
+
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

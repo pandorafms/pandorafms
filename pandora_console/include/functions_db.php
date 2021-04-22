@@ -17,6 +17,8 @@
  * @subpackage DataBase
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
+
 require_once $config['homedir'].'/include/functions_extensions.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -1351,20 +1353,54 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
 {
     global $config;
 
+    $rc = false;
     switch ($config['dbtype']) {
         case 'mysql':
-        return @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
+        default:
+            $rc = @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
+        break;
 
-            break;
         case 'postgresql':
-        return @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
+            $rc = @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
+        break;
 
-            break;
         case 'oracle':
-        return oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
-
-            break;
+            $rc = oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
+        break;
     }
+
+    if ($rc !== false) {
+        if (enterprise_hook('is_metaconsole') === true
+            && (bool) $config['centralized_management'] === true
+            && $dbconnection === ''
+        ) {
+            $errors = null;
+            try {
+                // Synchronize changes to nodes if needed.
+                $sync = new Synchronizer();
+                if ($sync !== null) {
+                    if ($sync->queue($sql) === false) {
+                        // Launch events per failed query.
+                        $errors = $sync->getLatestErrors();
+                        if ($errors !== null) {
+                            $errors = join(', ', $errors);
+                        } else {
+                            $errors = '';
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                $errors = $e->getMessage();
+            }
+
+            if ($errors !== null) {
+                // TODO: Generate pandora event.
+                error_log($errors);
+            }
+        }
+    }
+
+    return $rc;
 }
 
 

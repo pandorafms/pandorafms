@@ -236,6 +236,9 @@ function vbar_graph(
     // Grid color axes x.
     if (isset($options['x']['color']) === false) {
         $options['x']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['x']['color'] = '#222';
+        }
     }
 
     if (isset($options['x']['labelWidth']) === false) {
@@ -300,7 +303,7 @@ function vbar_graph(
         $options['y']['font']['color'] = '#545454';
 
         if ($config['style'] === 'pandora_black') {
-            $options['y']['font']['color'] = '#fff';
+            $options['y']['font']['color'] = '#222';
         }
     }
 
@@ -317,6 +320,9 @@ function vbar_graph(
     // Grid color axes y.
     if (isset($options['y']['color']) === false) {
         $options['y']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['y']['color'] = '#222';
+        }
     }
 
     if (isset($options['y']['labelWidth']) === false) {
@@ -352,6 +358,9 @@ function vbar_graph(
 
     if (isset($options['grid']['color']) === false) {
         $options['grid']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['grid']['color'] = '#222';
+        }
     }
 
     if (isset($options['grid']['backgroundColor']) === false) {
@@ -361,6 +370,14 @@ function vbar_graph(
                 '#ffffff',
             ],
         ];
+        if ($config['style'] === 'pandora_black') {
+            $options['grid']['backgroundColor'] = [
+                'colors' => [
+                    '#222',
+                    '#222',
+                ],
+            ];
+        }
     }
 
     if (isset($options['grid']['margin']) === false) {

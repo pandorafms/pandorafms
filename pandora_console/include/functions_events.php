@@ -4313,6 +4313,12 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
+    $table_class = 'table_modal_alternate';
+
+    if ($config['style'] === 'pandora_black') {
+        $table_class = 'black_table_modal_alternate';
+    }
+
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4320,7 +4326,7 @@ function events_page_details($event, $server='')
     $table_details->head = [];
     $table_details->cellspacing = 0;
     $table_details->cellpadding = 0;
-    $table_details->class = 'table_modal_alternate';
+    $table_details->class = $table_class;
 
     /*
      * Useless switch.

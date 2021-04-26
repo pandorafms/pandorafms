@@ -81,6 +81,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->module_ff_type = "";
 	this->module_alert_template = "";
 	this->module_crontab = "";
+	this->module_wait_timeout = 500;
 }
 
 /** 
@@ -1721,4 +1722,19 @@ Pandora_Module::isIntensive () {
 	}
 
 	return true;
+}
+
+/** 
+ * Set the WaitForSingleObject timeout.
+ * 
+ * @param timeout Timeout in milliseconds.
+ */
+void
+Pandora_Module::setWaitTimeout (int timeout) {
+
+	if (timeout < 0) {
+		return;
+	}
+	
+	this->module_wait_timeout = timeout;
 }

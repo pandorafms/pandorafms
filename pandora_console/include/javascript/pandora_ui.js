@@ -444,6 +444,7 @@ function load_modal(settings) {
 function confirmDialog(settings) {
   var randomStr = uniqId();
   var hideOkButton = "";
+  var hideCancelButton = "";
 
   if (settings.size == undefined) {
     settings.size = 350;
@@ -455,6 +456,14 @@ function confirmDialog(settings) {
   // You can hide the OK button.
   if (settings.hideOkButton != undefined) {
     hideOkButton = "invisible_important ";
+  }
+  // You can hide the Cancel button.
+  if (settings.hideCancelButton != undefined) {
+    hideCancelButton = "invisible_important ";
+  }
+
+  if (settings.strOKButton == undefined) {
+    settings.strOKButton = "Ok";
   }
 
   if (typeof settings.message == "function") {
@@ -480,15 +489,18 @@ function confirmDialog(settings) {
           id: "cancel_btn_dialog",
           text: "Cancel",
           class:
+            hideCancelButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
           click: function() {
-            $(this).dialog("close");
-            $(this).remove();
+            if (typeof settings.notCloseOnDeny == "undefined") {
+              $(this).dialog("close");
+              $(this).remove();
+            }
             if (typeof settings.onDeny == "function") settings.onDeny();
           }
         },
         {
-          text: "Ok",
+          text: settings.strOKButton,
           class:
             hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",

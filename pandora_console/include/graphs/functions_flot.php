@@ -369,7 +369,7 @@ function menu_graph(
     }
 
     // Export buttons.
-    if ($params['show_export_csv']) {
+    if ($params['show_export_csv'] && enterprise_installed() === true) {
         $return .= "<a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl'].'images/csv_grey.png'."' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
     }
 

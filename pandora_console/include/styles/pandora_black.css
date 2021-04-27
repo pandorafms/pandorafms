@@ -54,7 +54,8 @@ table.databox,
 .white_box,
 input.sub,
 .introjs-tooltip,
-button.sub {
+button.sub,
+.bg_general {
   background-color: #222 !important;
   color: #fff;
 }
@@ -242,11 +243,20 @@ div#foot {
 
 /* events.css */
 table.table_modal_alternate tr:nth-child(odd) td {
-  background-color: #222;
+  background-color: #222 !important;
 }
 
 table.table_modal_alternate tr:nth-child(even) td {
-  background-color: #111;
+  background-color: #111 !important;
+}
+
+/* events.css */
+table.black_table_modal_alternate tr:nth-child(odd) td {
+  background-color: #222 !important;
+}
+
+table.black_table_modal_alternate tr:nth-child(even) td {
+  background-color: #111 !important;
 }
 
 /* tables.css */
@@ -944,4 +954,12 @@ div.integria_details_description textarea {
 }
 .fill_fff {
   fill: #fff !important;
+}
+.module_graph_menu_header,
+.module_graph_menu_content {
+  background-color: #222 !important;
+}
+
+.invert_filter_important {
+  filter: invert(100%) !important;
 }

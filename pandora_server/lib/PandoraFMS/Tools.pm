@@ -1733,7 +1733,7 @@ sub cron_check_interval {
 
 	my ($down, $up) = cron_get_interval($elem_cron);
 	# Check if it is not a range
-	if (!defined($up)) {
+	if (!defined($up) || $up eq $down) {
 		return ($down == $elem_curr_time) ? 1 : 0;
 	}
 

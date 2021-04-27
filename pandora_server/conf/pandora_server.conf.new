@@ -473,6 +473,9 @@ log_window 3600
 # Correlated Alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
 #event_server_cache_ttl 10
 
+# Log retrieving, items per request. (High values could make elasticsearch crash)
+#elastic_query_size 10
+
 # If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
 
 event_inhibit_alerts 0

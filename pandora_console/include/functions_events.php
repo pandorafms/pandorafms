@@ -3006,15 +3006,11 @@ function events_get_agent(
 ) {
     global $config;
 
-    if (!is_numeric($date)) {
+    if (is_numeric($date) === false) {
         $date = time_w_fixed_tz($date);
     }
 
-    if (is_metaconsole() && $events_group === false) {
-        $id_server = true;
-    }
-
-    if (empty($date)) {
+    if (empty($date) === true) {
         $date = get_system_time();
     }
 
@@ -3149,7 +3145,7 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() && $id_server) {
+    if (is_metaconsole() === true && empty($id_server) === false) {
         $sql_where .= ' AND server_id = '.$id_server;
     }
 
@@ -3166,7 +3162,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() === true && $id_server === false) ? true : false,
+            (is_metaconsole() === true && empty($id_server) === false) ? true : false,
             $history
         );
     }

@@ -3743,7 +3743,7 @@ function events_page_responses($event, $childrens_ids=[])
         ['id_group' => $id_groups]
     );
 
-    if (empty($event_responses)) {
+    if (empty($event_responses) || (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM'))) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $responses = [];

@@ -1939,7 +1939,7 @@ function html_print_extended_select_for_time(
         html_print_select(
             $units,
             $uniq_name.'_units',
-            1,
+            '60',
             ''.$script,
             $nothing,
             $nothing_value,

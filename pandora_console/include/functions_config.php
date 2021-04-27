@@ -200,8 +200,20 @@ function config_update_config()
                         $error_update[] = __('Use cert.');
                     }
 
-                    if (!config_update_value('attachment_store', (string) get_parameter('attachment_store'))) {
+                    $attachment_store = (string) get_parameter('attachment_store');
+                    if (file_exists($attachment_store) === false
+                        || is_writable($attachment_store) === false
+                    ) {
                         $error_update[] = __('Attachment store');
+                        $error_update[] .= __(
+                            "Path doesn't exists or is not writable"
+                        );
+                    } else {
+                        if (config_update_value('attachment_store', $attachment_store) === false) {
+                            $error_update[] = __(
+                                'Attachment store.'
+                            );
+                        }
                     }
 
                     if (!config_update_value('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'))) {

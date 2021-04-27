@@ -1092,8 +1092,15 @@ function events_get_all(
 
     // User comment.
     if (!empty($filter['user_comment'])) {
+        // For filter field.
         $sql_filters[] = sprintf(
             ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            io_safe_input($filter['user_comment'])
+        );
+
+        // For show comments on event details.
+        $sql_filters[] = sprintf(
+            ' OR lower(te.user_comment) like lower("%%%s%%") ',
             $filter['user_comment']
         );
     }

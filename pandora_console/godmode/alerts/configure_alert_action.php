@@ -91,6 +91,7 @@ if ($al_action !== false) {
             true
         );
     }
+
     $is_in_group = true;
 }
 
@@ -177,7 +178,7 @@ $table->data[0][1] = html_print_input_text(
     '',
     '',
     '',
-    $is_central_policies_on_node | $disabled
+    ($is_central_policies_on_node | $disabled)
 );
 
 if (io_safe_output($name) == 'Monitoring Event') {
@@ -213,7 +214,7 @@ $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     true,
     '',
-    $is_central_policies_on_node | $disabled
+    ($is_central_policies_on_node | $disabled)
 ).'</div>';
 $table->colspan[1][1] = 2;
 
@@ -247,7 +248,7 @@ $table->data[2][1] = html_print_select_from_sql(
     true,
     false,
     false,
-    $is_central_policies_on_node | $disabled
+    ($is_central_policies_on_node | $disabled)
 );
 $table->data[2][1] .= ' ';
 if ($is_central_policies_on_node === false
@@ -274,7 +275,7 @@ $table->data[3][1] = html_print_extended_select_for_time(
     false,
     true,
     '',
-    $is_central_policies_on_node | $disabled,
+    ($is_central_policies_on_node | $disabled),
     false,
     '',
     false,
@@ -306,11 +307,21 @@ $table->data[5][2] = html_print_textarea(
     true
 );
 
-$table->data[6][0] = __('Create workunit on recovery').ui_print_help_tip(
+// Selector will work only with Integria activated.
+$integriaIdName = 'integria_wu';
+$table->data[$integriaIdName][0] = __('Create workunit on recovery').ui_print_help_tip(
     __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
     true
 );
-$table->data[6][1] = html_print_checkbox_switch_extended('create_wu_integria', 1, $create_wu_integria, false, '', $disabled_attr, true);
+$table->data[$integriaIdName][1] = html_print_checkbox_switch_extended(
+    'create_wu_integria',
+    1,
+    $create_wu_integria,
+    false,
+    '',
+    $disabled_attr,
+    true
+);
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = html_print_image(
@@ -344,7 +355,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 }
 
 
-echo '<form method="post" action="'.'index.php?sec='.$sec.'&'.'sec2=godmode/alerts/alert_actions&'.'pure='.$pure.'">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
 $table_html = html_print_table($table, true);
 
 echo $table_html;
@@ -392,6 +403,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 $(document).ready (function () {
     var original_command;
     var origicommand_descriptionnal_command;
+    var integriaWorkUnitName = "<?php echo $integriaIdName; ?>";
 
     if (<?php echo (int) $id_command; ?>) {
         original_command = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_command($id_command)))); ?>";
@@ -593,6 +605,13 @@ $(document).ready (function () {
 
                 }
                 
+                // Allow create workunit if Integria IMS Ticket is selected.
+                if (data['id'] == '14') {
+                    $("#table_macros-"+integriaWorkUnitName).css('display', 'table-row');
+                } else {
+                    $("#table_macros-"+integriaWorkUnitName).css('display', 'none');
+                }
+
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
                 
                 // Change the selected group

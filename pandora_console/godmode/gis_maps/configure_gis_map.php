@@ -44,7 +44,7 @@ $sec2 = safe_url_extraclean($sec2);
 $sec = get_parameter_get('sec');
 $sec = safe_url_extraclean($sec);
 
-// Layers
+// Layers.
 $layer_ids = get_parameter('layer_ids', []);
 $layers = get_parameter('layers', []);
 $layer_list = [];
@@ -84,9 +84,10 @@ switch ($action) {
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
-        $map_levels_zoom = get_parameter('map_levels_zoom');
+        $map_levels_zoom = get_parameter('map_levels_zoom', 16);
 
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
 
 
         foreach ($map_connection_list_temp as $index => $value) {
@@ -99,14 +100,14 @@ switch ($action) {
         $map_connection_default = get_parameter('map_connection_default');
 
         $map_connection_list = [];
-        foreach ($map_connection_list_temp as $idMapConnection) {
+        foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
-            if ($map_connection_default == $idMapConnection) {
+            if ($map_connection_default == $idMapConnection['id_tmap_connection']) {
                 $default = 1;
             }
 
             $map_connection_list[] = [
-                'id_conection' => $idMapConnection,
+                'id_conection' => $idMapConnection['id_tmap_connection'],
                 'default'      => $default,
             ];
         }
@@ -124,7 +125,7 @@ switch ($action) {
             $map_levels_zoom
         );
 
-        if (empty($invalidFields) && get_parameter('map_connection_list') != '') {
+        if (empty($invalidFields)) {
             $idMap = gis_save_map(
                 $map_name,
                 $map_initial_longitude,
@@ -139,8 +140,13 @@ switch ($action) {
                 $map_connection_list,
                 $layer_list
             );
-            $mapCreatedOk = true;
-            $next_action = 'update_saved';
+            if ($idMap) {
+                $mapCreatedOk = true;
+                $next_action = 'update_saved';
+            } else {
+                $next_action = 'save_new';
+                $mapCreatedOk = false;
+            }
         } else {
             $next_action = 'save_new';
             $mapCreatedOk = false;
@@ -168,7 +174,7 @@ switch ($action) {
         $map_group_id = '';
         $map_connection_list = [];
         $layer_list = [];
-        $map_levels_zoom = 0;
+        $map_levels_zoom = 16;
     break;
 
     case 'edit_map':
@@ -188,9 +194,12 @@ switch ($action) {
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
-        $map_levels_zoom = get_parameter('map_levels_zoom');
+        $map_levels_zoom = get_parameter('map_levels_zoom', 16);
 
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
+
         foreach ($map_connection_list_temp as $index => $value) {
             $cleanValue = trim($value);
             if ($cleanValue == '') {
@@ -201,14 +210,14 @@ switch ($action) {
         $map_connection_default = get_parameter('map_connection_default');
 
         $map_connection_list = [];
-        foreach ($map_connection_list_temp as $idMapConnection) {
+        foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
-            if ($map_connection_default == $idMapConnection) {
+            if ($map_connection_default == $idMapConnection['id_tmap_connection']) {
                 $default = 1;
             }
 
             $map_connection_list[] = [
-                'id_conection' => $idMapConnection,
+                'id_conection' => $idMapConnection['id_tmap_connection'],
                 'default'      => $default,
             ];
         }
@@ -226,7 +235,7 @@ switch ($action) {
             $map_levels_zoom
         );
 
-        if (empty($invalidFields) && get_parameter('map_connection_list') != '') {
+        if (empty($invalidFields)) {
             // TODO
             gis_update_map(
                 $idMap,
@@ -263,7 +272,7 @@ switch ($action) {
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
 
 $buttons['gis_maps_list'] = [
-    'active' => true,
+    'active' => false,
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
         'images/list.png',
         true,
@@ -275,7 +284,7 @@ $buttons['gis_maps_list'] = [
 ];
 if ($idMap) {
     $buttons['view_gis'] = [
-        'active' => true,
+        'active' => false,
         'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
             'images/op_gis.png',
             true,
@@ -457,7 +466,7 @@ $table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
 		<td >
-			".html_print_select($listConnection, 'map_connection', '', '', '', '0', true)."
+			".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
 		</td>
 		<td >
 			<a href='javascript: addConnectionMap();'>".html_print_image(
@@ -504,7 +513,11 @@ $table->data[2][1] = html_print_select_groups(
 );
 
 $table->data[3][0] = __('Default zoom');
-$table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
+$table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden(
+    'map_levels_zoom',
+    $map_levels_zoom,
+    true
+);
 
 $table->data[4][0] = __('Center Latitude').':';
 $table->data[4][1] = html_print_input_text('map_initial_latitude', $map_initial_latitude, '', 8, 8, true);
@@ -571,6 +584,9 @@ $params['hidden_input_idagent_name'] = 'agent_id';
 $params['input_name'] = 'agent_alias';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'active_button_add_agent';
+$params['javascript_is_function_select'] = true;
+$params['disabled_javascript_on_blur_function'] = false;
+
 $table->data[1][1] .= ui_print_agent_autocomplete_input($params);
 
 
@@ -585,7 +601,7 @@ $table->data[1][1] .= '</td>
 				</td>
 			</tr>';
 
-// Group items
+// Group items.
 $group_select = html_print_select_groups($config['id_user'], 'AR', false, 'layer_group_id', '', '', '', 0, true);
 $params = [];
 $params['return'] = true;
@@ -597,8 +613,10 @@ $params['input_name'] = 'agent_alias_for_data';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'toggleAddGroupBtn';
 $params['selectbox_group'] = 'layer_group_id';
-// Filter by group
-$params['disabled_javascript_on_blur_function'] = true;
+$params['javascript_is_function_select'] = true;
+
+// Filter by group.
+$params['disabled_javascript_on_blur_function'] = false;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
 $add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
 

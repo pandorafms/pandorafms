@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.754";
-my $pandora_build = "210427";
+my $pandora_build = "210428";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -260,7 +260,6 @@ sub pandora_load_config {
 	$pa_config->{"webserver"} = 1; # 3.0
 	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
-	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
 	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
@@ -746,9 +745,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
-			$pa_config->{'transactional_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
 			$pa_config->{'transactional_threshold'}= clean_blank($1);

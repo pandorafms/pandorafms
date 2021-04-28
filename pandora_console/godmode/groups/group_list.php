@@ -63,7 +63,7 @@ if (is_ajax() === true) {
             $group = [
                 'id_grupo'  => 0,
                 'nombre'    => 'None',
-                'icon'      => '',
+                'icon'      => 'world',
                 'parent'    => 0,
                 'disabled'  => 0,
                 'custom_id' => null,

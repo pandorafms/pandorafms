@@ -5936,7 +5936,7 @@ sub pandora_update_agent_module_count ($$$) {
 	}; # Module counts by status.
 
 	# Retrieve and hash module status counts.
-	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_modulo<>0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
 	foreach my $row (@rows) {
 		$counts->{$row->{'estado'}} = $row->{'total'};
 		$total += $row->{'total'};

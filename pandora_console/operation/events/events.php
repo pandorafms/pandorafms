@@ -509,6 +509,7 @@ if ($loaded_filter !== false && $from_event_graph != 1) {
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
         $id_source_event = $filter['id_source_event'];
+        $server_id = $filter['server_id'];
     }
 }
 

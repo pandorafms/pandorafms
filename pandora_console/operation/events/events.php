@@ -2126,9 +2126,6 @@ function process_datatables_item(item) {
 
     /* Group name */
     if (item.id_grupo == "0") {
-        var severity_value = "<?php echo $severity; ?>";
-        const multiple = severity_value.split(",");
-        $("#severity").val(multiple);
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;

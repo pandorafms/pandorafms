@@ -128,10 +128,7 @@ $queryPublic = [
     'pure'        => 1,
 ];
 $publicUrl = ui_get_full_url(
-    'operation/dashboard/public_dashboard.php?'.http_build_query($queryPublic),
-    false,
-    false,
-    false
+    'operation/dashboard/public_dashboard.php?'.http_build_query($queryPublic)
 );
 $publiclink['text'] = '<a id="public_link" href="'.$publicUrl.'" target="_blank">';
 $publiclink['text'] .= html_print_image(

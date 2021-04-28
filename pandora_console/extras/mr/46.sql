@@ -26,4 +26,6 @@ UPDATE `talert_commands` SET `fields_descriptions` = '[\"Event&#x20;name\",\"Eve
 UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
 UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
 
+ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
+
 COMMIT;

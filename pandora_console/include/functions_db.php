@@ -2188,6 +2188,12 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
  */
 function db_get_lock($lockname, $expiration_time=86400)
 {
+    global $config;
+
+    // Temporary disable to get a valid lock if any...
+    $cache = $config['dbcache'];
+    $config['dbcache'] = false;
+
     $lock_status = db_get_value_sql(
         sprintf(
             'SELECT IS_FREE_LOCK("%s")',
@@ -2204,9 +2210,11 @@ function db_get_lock($lockname, $expiration_time=86400)
             )
         );
 
+        $config['dbcache'] = $cache;
         return $lock_status;
     }
 
+    $config['dbcache'] = $cache;
     return 0;
 }
 
@@ -2222,12 +2230,21 @@ function db_get_lock($lockname, $expiration_time=86400)
  */
 function db_release_lock($lockname)
 {
-    return db_get_value_sql(
+    global $config;
+    $cache = $config['dbcache'];
+    $config['dbcache'] = false;
+
+    $return = db_get_value_sql(
         sprintf(
             'SELECT RELEASE_LOCK("%s")',
             $lockname
         )
     );
+
+    $config['dbcache'] = $cache;
+
+    return $return;
+
 }
 
 

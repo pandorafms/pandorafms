@@ -301,6 +301,7 @@ sub pandora_load_config {
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"elastic_query_size"} = 10; # 7.754 Elements per request (ELK)
 	$pa_config->{"event_server_cache_ttl"} = 10; # 7.754
 	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
@@ -994,6 +995,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
 			$pa_config->{'log_window'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^elastic_query_size\s+([0-9]*)/i) {
+			$pa_config->{'elastic_query_size'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
 			$pa_config->{'preload_windows'}= clean_blank($1);

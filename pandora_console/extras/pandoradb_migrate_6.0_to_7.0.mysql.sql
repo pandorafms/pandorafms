@@ -1506,6 +1506,7 @@ ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
 ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`

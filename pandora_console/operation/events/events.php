@@ -509,6 +509,7 @@ if ($loaded_filter !== false && $from_event_graph != 1) {
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
         $id_source_event = $filter['id_source_event'];
+        $server_id = $filter['server_id'];
     }
 }
 
@@ -2126,9 +2127,6 @@ function process_datatables_item(item) {
 
     /* Group name */
     if (item.id_grupo == "0") {
-        var severity_value = "<?php echo $severity; ?>";
-        const multiple = severity_value.split(",");
-        $("#severity").val(multiple);
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;

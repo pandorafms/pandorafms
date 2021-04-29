@@ -257,6 +257,11 @@ if ($save_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+
+    if (is_metaconsole()) {
+        $values['server_id'] = get_parameter('server_id');
+    }
+
     $exists = (bool) db_get_value_filter(
         'id_filter',
         'tevent_filter',
@@ -304,6 +309,10 @@ if ($update_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+
+    if (is_metaconsole()) {
+        $values['server_id'] = get_parameter('server_id');
+    }
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
         $values['tag_with'] = '[]';
@@ -368,6 +377,13 @@ if ($get_filter_values) {
                 if ($event_filter['group_name'] === false) {
                     $event_filter['group_name'] = __('All');
                 }
+            }
+        }
+
+        if (is_metaconsole()) {
+            $server_name = db_get_value('server_name', 'tmetaconsole_setup', 'id', $event_filter['server_id']);
+            if ($server_name !== false) {
+                $event_filter['server_name'] = $server_name;
             }
         }
 
@@ -476,7 +492,6 @@ function load_form_filter() {
         },
         function (data) {
             jQuery.each (data, function (i, val) {
-                console.log(val);
                 if (i == 'id_name')
                     $("#hidden-id_name").val(val);
                 if (i == 'id_group'){
@@ -522,6 +537,10 @@ function load_form_filter() {
                     $("#text-user_comment").val(val);
                 if (i == 'id_source_event')
                     $("#text-id_source_event").val(val);
+                if (i == 'server_id')
+                    $("#server_id").val(val);
+                if (i == 'server_name')
+                    $("#select2-server_id-container").text(val);
                 if(i == 'date_from')
                     $("#text-date_from").val(val);
                 if(i == 'date_to')
@@ -752,7 +771,8 @@ function save_new_filter() {
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
-            "id_source_event": $("#text-id_source_event").val()
+            "id_source_event": $("#text-id_source_event").val(),
+            "server_id": $("#server_id").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -822,7 +842,8 @@ function save_update_filter() {
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
-        "id_source_event": $("#text-id_source_event").val()
+        "id_source_event": $("#text-id_source_event").val(),
+        "server_id": $("#server_id").val()
 
         },
         function (data) {

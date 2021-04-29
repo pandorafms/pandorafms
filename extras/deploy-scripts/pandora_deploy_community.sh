@@ -117,7 +117,7 @@ check_pre_pandora
 check_repo_connection
 
 # Systemd
-execute_cmd "systemctl status" "Cheking SystemD" 'This is not a SystemD enable system, if tryng to use in a docker env plese check: https://github.com/pandorafms/pandorafms/tree/develop/extras/docker/centos8'
+execute_cmd "systemctl status" "Checking SystemD" 'This is not a SystemD enable system, if tryng to use in a docker env plese check: https://github.com/pandorafms/pandorafms/tree/develop/extras/docker/centos8'
 
 # Check memomry greather or equal to 2G
 execute_cmd  "[ $(grep MemTotal /proc/meminfo | awk '{print $2}') -ge 1700000 ]" 'Checking memory (required: 2 GB)'
@@ -247,7 +247,15 @@ server_dependencies=" \
     perl-Time-HiRes \
     nfdump \
     net-snmp-utils \
-    http://www6.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/wmi-1.3.14-4.el7.art.x86_64.rpm"
+    perl(NetAddr::IP) \
+    perl(Sys::Syslog) \
+    perl(DBI) \
+    perl(XML::Simple) \
+    perl(Geo::IP) \
+    perl(IO::Socket::INET6) \
+    perl(XML::Twig) \
+    http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
+    http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
 # SDK VMware perl dependencies
@@ -475,7 +483,7 @@ net.core.optmem_max = 81920
 
 EO_KO
 
-execute_cmd "sysctl --system" "Applying Kernel optimization"
+[ -d /dev/lxd/ ] || execute_cmd "sysctl --system" "Applying Kernel optimization"
 
 # Fix pandora_server.{log,error} permissions to allow Console check them
 chown pandora:apache /var/log/pandora

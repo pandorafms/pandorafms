@@ -466,6 +466,14 @@ function confirmDialog(settings) {
     settings.strOKButton = "Ok";
   }
 
+  if (settings.strOKButton == undefined) {
+    settings.strOKButton = "Ok";
+  }
+
+  if (settings.strCancelButton == undefined) {
+    settings.strCancelButton = "Cancel";
+  }
+
   if (typeof settings.message == "function") {
     $("body").append(
       '<div id="confirm_' + randomStr + '">' + settings.message() + "</div>"
@@ -487,7 +495,7 @@ function confirmDialog(settings) {
       buttons: [
         {
           id: "cancel_btn_dialog",
-          text: "Cancel",
+          text: settings.strCancelButton,
           class:
             hideCancelButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",

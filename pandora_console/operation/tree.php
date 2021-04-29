@@ -147,12 +147,29 @@ switch ($tab) {
     break;
 }
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     if (!$strict_acl) {
-        $header_title = $header_title.' - '.$header_sub_title;
+        $header_title = $header_title.' &raquo; '.$header_sub_title;
     }
 
-    ui_print_page_header($header_title, 'images/extensions.png', false, 'tree_view', false, $tabs);
+    ui_print_standard_header(
+        $header_title,
+        'images/extensions.png',
+        false,
+        'tree_view',
+        false,
+        $tabs,
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('View'),
+            ],
+        ]
+    );
 }
 
 // ---------------------Tabs -------------------------------------------

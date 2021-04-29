@@ -34,9 +34,11 @@ check_login();
 
 if (is_ajax()) {
     $test_address = get_parameter('test_address', '');
+    $params = get_parameter('params', '');
 
     $res = send_test_email(
-        $test_address
+        $test_address,
+        $params
     );
 
     echo $res;
@@ -704,12 +706,25 @@ function show_email_test(id) {
 
 function perform_email_test () {
     var test_address = $('#text-email_test_address').val();
+    params = {
+        email_smtpServer : $('#text-email_smtpServer').val(),
+        email_smtpPort : $('#text-email_smtpPort').val(),
+        email_username : $('#text-email_username').val(),
+        email_password : $('#password-email_password').val(),
+        email_encryption : $( "#email_encryption option:selected" ).val(),
+        email_from_dir : $('#text-email_from_dir').val(),
+        email_from_name : $('#text-email_from_name').val()
+    };
 
     $.ajax({
         type: "POST",
         url: "ajax.php",
-        data: "page=godmode/setup/setup_general&test_address="+test_address,
-        dataType: "html",
+        data : {
+                    page: "godmode/setup/setup_general",
+                    test_address: test_address,
+                    params: params
+                },
+        dataType: "json",
         success: function(data) {
             if (parseInt(data) === 1) {
                 $('#email_test_sent_message').show();

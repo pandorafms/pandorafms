@@ -5960,27 +5960,57 @@ function get_data_multiplier($unit)
 /**
  * Send test email to check email setups.
  *
- * @param string $to Target email account.
+ * @param string $to     Target email account.
+ * @param array  $params Array with connection data.
+ * Available fields:
+ * 'email_smtpServer',
+ * 'email_smtpPort',
+ * 'email_username',
+ * 'email_password',
+ * 'email_encryption',
+ * 'email_from_dir',
+ * 'email_from_name',
  *
  * @return integer Status of the email send task.
  */
 function send_test_email(
-    string $to
+    string $to,
+    array $params=null
 ) {
     global $config;
+
+    $valid_params = [
+        'email_smtpServer',
+        'email_smtpPort',
+        'email_username',
+        'email_password',
+        'email_encryption',
+        'email_from_dir',
+        'email_from_name',
+    ];
+
+    if (empty($params) === true) {
+        foreach ($valid_params as $token) {
+            $params[$token] = $config[$token];
+        }
+    } else {
+        if (array_diff($valid_params, array_keys($params)) === false) {
+            return false;
+        }
+    }
 
     $result = false;
     try {
         $transport = new Swift_SmtpTransport(
-            $config['email_smtpServer'],
-            $config['email_smtpPort']
+            $params['email_smtpServer'],
+            $params['email_smtpPort']
         );
 
-        $transport->setUsername($config['email_username']);
-        $transport->setPassword($config['email_password']);
+        $transport->setUsername($params['email_username']);
+        $transport->setPassword($params['email_password']);
 
-        if ($config['email_encryption']) {
-            $transport->setEncryption($config['email_encryption']);
+        if ($params['email_encryption']) {
+            $transport->setEncryption($params['email_encryption']);
         }
 
         $mailer = new Swift_Mailer($transport);
@@ -5989,8 +6019,8 @@ function send_test_email(
 
         $message->setFrom(
             [
-                $config['email_from_dir'] => io_safe_output(
-                    $config['email_from_name']
+                $params['email_from_dir'] => io_safe_output(
+                    $params['email_from_name']
                 ),
             ]
         );

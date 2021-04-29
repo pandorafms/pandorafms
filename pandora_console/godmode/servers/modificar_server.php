@@ -386,10 +386,10 @@ function check_process (id_server) {
         parameters,
         function (data) {
             if (data['correct']) {
-                $("#check_exec_server img").attr("src", <?php echo 'images/dot_green.png'; ?>);
+                $("#check_exec_server img").attr("src", "images/dot_green.png");
             }
             else {
-                $("#check_exec_server img").attr("src", <?php echo 'images/dot_red.png'; ?>);
+                $("#check_exec_server img").attr("src", "images/dot_red.png");
                 $("#check_error_message").empty();
                 $("#check_error_message").append("<span>" + data['message'] + "</span>");
             }

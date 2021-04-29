@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * SMNP Browser view
  *
- * @category   Extensions
+ * @category   Monitoring
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 require_once $config['homedir'].'/include/functions_snmp_browser.php';
 ui_require_javascript_file('pandora_snmp_browser');
@@ -42,7 +42,6 @@ if (!check_acl($config['id_user'], 0, 'AR')) {
 
 
 
-// Header.
 $url = 'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_browser&pure='.$config['pure'];
 if ($config['pure']) {
     // Windowed.
@@ -70,13 +69,24 @@ if ($config['pure']) {
     $link['text'] .= '</a>';
 }
 
-ui_print_page_header(
+// Header.
+ui_print_standard_header(
     __('SNMP Browser'),
     'images/op_snmp.png',
     false,
     'snmp_browser_view',
     false,
-    [$link]
+    [$link],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SMNP'),
+        ],
+    ]
 );
 
 // SNMP tree container.

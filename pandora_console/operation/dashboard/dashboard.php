@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Dashboards.
  *
  * @category   Dashboards
  * @package    Pandora FMS
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 require $config['homedir'].'/vendor/autoload.php';

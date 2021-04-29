@@ -1072,7 +1072,6 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Enable module'),
                 'title' => __('Enable module'),
-                'class' => 'invert_filter_important',
             ]
         ).'</a>';
     } else {

@@ -115,12 +115,7 @@ function add_component_selection($id_network_component_type)
         '',
         '---'.__('Manual setup').'---',
         0,
-        true,
-        false,
-        true,
-        '',
-        false,
-        'width: 460px; '
+        true
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';

@@ -36,6 +36,8 @@ require_once $config['homedir'].'/vendor/autoload.php';
 // TODO: include file functions.
 require_once $config['homedir'].'/include/functions_visual_map.php';
 
+error_log('HOLA');
+
 
 /**
  * Function for return button visual console edition.

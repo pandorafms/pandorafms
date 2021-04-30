@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * User edition.
  *
- * @category   Extensions
+ * @category   Operation
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -29,6 +28,7 @@
 
 global $config;
 
+$headerTitle = __('User detail editor');
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 

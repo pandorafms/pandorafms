@@ -1,17 +1,32 @@
 <?php
+/**
+ * OS Edition
+ *
+ * @category   Server
+ * @package    Pandora FMS
+ * @subpackage Godmode
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 check_login();
@@ -45,8 +60,8 @@ if ($idOS) {
 $message = '';
 
 switch ($action) {
-    default:
     case 'new':
+    default:
         $actionHidden = 'save';
         $textButton = __('Create');
         $classButton = 'class="sub next"';
@@ -183,12 +198,31 @@ $buttons = [
 
 $buttons[$tab]['active'] = true;
 
-if (!is_metaconsole()) {
+$headerTitle = ($tab === 'builder') ? __('Edit OS') : __('List of OS');
+
+if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(__('Edit OS'), '', false, '', true, $buttons);
+    ui_print_standard_header(
+        $headerTitle,
+        '',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Edit OS'),
+            ],
+        ]
+    );
 }
 
-if (!empty($id_message)) {
+if (empty($id_message) === false) {
     switch ($id_message) {
         case 1:
             echo ui_print_success_message(__('Success creating OS'), '', true);
@@ -226,13 +260,11 @@ if (!empty($id_message)) {
 
 switch ($tab) {
     case 'list':
+    default:
         include_once $config['homedir'].'/godmode/setup/os.list.php';
-    return;
+    break;
 
-        break;
     case 'builder':
         include_once $config['homedir'].'/godmode/setup/os.builder.php';
-    return;
-
-        break;
+    break;
 }

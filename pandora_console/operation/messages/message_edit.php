@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Compose message view
  *
- * @category   Extensions
+ * @category   Workspace
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -80,13 +79,23 @@ $buttons['create_message'] = [
 ];
 
 // Header.
-ui_print_page_header(
-    __('Messages'),
+ui_print_standard_header(
+    __('Compose message'),
     'images/email_mc.png',
     false,
     '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Workspace'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Messages'),
+        ],
+    ]
 );
 
 // Read a message.

@@ -577,6 +577,14 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
             $group['parent'] = 0;
         }
 
+        if (is_array($tree[$group['parent']]) === false) {
+            $str = $tree[$group['parent']];
+            $tree[$group['parent']] = [
+                'nombre'   => $tree[$group['parent']],
+                'id_grupo' => $group['parent'],
+            ];
+        }
+
         $tree[$group['parent']]['hash_branch'] = 1;
         $tree[$group['parent']]['branch'][$key] = &$tree[$key];
     }

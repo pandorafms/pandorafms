@@ -27,6 +27,6 @@ UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.cs
 UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
 
 UPDATE `tevent_rule` SET `criticity` = NULL, `operator_criticity` = NULL WHERE `criticity` = 99;
-UPDATE `tevent_rule` SET `operator_criticity` = '==' WHERE `criticity` != 99 AND `criticity` IS NOT NULL;
+UPDATE `tevent_rule` SET `operator_criticity` = '==' WHERE `criticity` != 99 AND `criticity` IS NOT NULL AND `criticity` != '';
 
 COMMIT;

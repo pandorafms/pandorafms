@@ -26,9 +26,8 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
-
-
 
 if (is_ajax()) {
     $search_agents = (bool) get_parameter('search_agents');
@@ -340,36 +339,42 @@ if ($edit_graph) {
 
 $head = __('Graph builder');
 
-if (isset($name)) {
-    $head .= ' - '.$name;
+if (isset($name) === true) {
+    $head .= ' &raquo; '.$name;
 }
 
 // Header.
-$tab = get_parameter('tab', '');
+$tab = get_parameter('tab');
 switch ($tab) {
-    default:
-    case 'main':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            'graph_builder',
-            false,
-            $buttons
-        );
+    case 'graph_editor':
+        $headerHelp = '';
     break;
 
-    case 'graph_editor':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            '',
-            false,
-            $buttons
-        );
+    case 'main':
+    default:
+        $headerHelp = 'graph_builder';
     break;
 }
+
+// Header.
+ui_print_standard_header(
+    $head,
+    'images/chart.png',
+    false,
+    $headerHelp,
+    false,
+    [$buttons],
+    [
+        [
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom graphs'),
+        ],
+    ]
+);
 
 if ($add_graph) {
     ui_print_result_message(
@@ -418,7 +423,8 @@ if (!$delete_module) {
         $chunk1 = explode('|', $chunkdata);
         $modules = '';
         $weights = '';
-        for ($a = 0; $a < count($chunk1); $a++) {
+        $chunkCount = count($chunk1);
+        for ($a = 0; $a < $chunkCount; $a++) {
             $chunk2[$a] = [];
             $chunk2[$a] = explode(',', $chunk1[$a]);
             if (strpos($modules, $chunk2[$a][1]) == 0) {
@@ -449,5 +455,9 @@ switch ($active_tab) {
 
     case 'graph_editor':
         include_once 'godmode/reporting/graph_builder.graph_editor.php';
+    break;
+
+    default:
+        // Nothing to do.
     break;
 }

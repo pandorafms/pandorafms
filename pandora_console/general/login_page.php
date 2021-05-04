@@ -210,7 +210,7 @@ switch ($login_screen) {
     case 'login':
         if (!empty($page) && !empty($sec)) {
             foreach ($_POST as $key => $value) {
-                html_print_input_hidden(io_safe_input($key), $value);
+                html_print_input_hidden(io_safe_input($key), io_safe_input($value));
             }
         }
 

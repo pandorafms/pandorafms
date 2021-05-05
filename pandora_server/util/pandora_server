@@ -79,7 +79,7 @@ function pidof_pandora () {
 	# in a "strech" term, ps aux don't report more than COLUMNS
 	# characters and this will not work. 
 	COLUMNS=300
-	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON" | grep "$PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 }
 

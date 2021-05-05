@@ -580,7 +580,7 @@ function modules_update_agent_module(
  * @param integer $name       Module name id.
  * @param array   $values     Extra values for the module.
  * @param boolean $disableACL Disable the ACL checking, for default false.
- * @param array   $tags       Array with tag's ids or false.
+ * @param mixed   $tags       Array with tag's ids or false.
  *
  * @return New module id if the module was created. False if not.
  */
@@ -589,7 +589,7 @@ function modules_create_agent_module(
     int $name,
     array $values=[],
     bool $disableACL=false,
-    array $tags=false
+    $tags=false
 ) {
     global $config;
 

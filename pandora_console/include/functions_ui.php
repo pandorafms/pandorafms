@@ -322,7 +322,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
 			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
+			<td class="title pandora_upper pdd_t_10px text_left"><b>'.$text_title.'</b></td>
 			<td class="icon right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
@@ -333,7 +333,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output .= '</td>
 		</tr>
 		<tr>
-			<td class="black pdd_t_10px" style="color: #000">'.$text_message.'</td>
+			<td class="black pdd_t_10px invert_filter" style="color: #000">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -4370,7 +4370,7 @@ function ui_print_page_header(
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
-		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 

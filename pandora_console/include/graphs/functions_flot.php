@@ -145,6 +145,13 @@ function flot_area_graph(
         break;
     }
 
+    if ($config['style'] === 'pandora_black') {
+        $background_style = '#222';
+        $params['grid_color'] = '#fff';
+        $params['backgroundColor'] = '#222';
+        $params['legend_color'] = '#fff';
+    }
+
     // Parent layer.
     if (strpos($params['width'], '%') === false) {
         $width = 'width: '.$params['width'].'px;';
@@ -244,7 +251,7 @@ function flot_area_graph(
                      style='font-size:".$params['font_size']."pt;
                         display:none; position:absolute;
                         background:#fff; border: solid 1px #aaa;
-                        padding: 2px; z-index:1000;
+                        padding: 2px; z-index:1000; color: #000;
                 '></div>";
     $return .= "<div id='$graph_id' class='";
 
@@ -362,7 +369,7 @@ function menu_graph(
     }
 
     // Export buttons.
-    if ($params['show_export_csv']) {
+    if ($params['show_export_csv'] && enterprise_installed() === true) {
         $return .= "<a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$params['homeurl'].'images/csv_grey.png'."' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
     }
 
@@ -478,6 +485,10 @@ function flot_custom_pie_chart(
     $legend_position
 ) {
     global $config;
+    if ($config['style'] === 'pandora_black') {
+        $background_color = 'black_theme';
+    }
+
     // TODO
     // include_javascript_dependencies_flot_graph();
     $total_modules = $graph_values['total_modules'];
@@ -670,6 +681,16 @@ function flot_vcolumn_chart(array $options)
 
     // Add id to options.
     $options['graphId'] = $graphId;
+
+    // If pandora_black theme its enabled then change grid colors.
+    /*
+        if ($config['style'] === 'pandora_black') {
+        $options['grid']['backgroundColor']['colors'][0] = 'transparent';
+        $options['grid']['backgroundColor']['colors'][1] = 'transparent';
+        $options['y']['color'] = 'transparent';
+        $options['x']['color'] = 'transparent';
+    }*/
+
     $settings = base64_encode(json_encode($options));
 
     // Javascript code.

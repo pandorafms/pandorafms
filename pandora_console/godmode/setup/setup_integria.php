@@ -834,7 +834,7 @@ echo '</form>';
 
         // AJAX call to check API connection.
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: url,
             dataType: "json",
             data: data

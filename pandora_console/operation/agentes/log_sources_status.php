@@ -54,7 +54,7 @@ foreach ($logs as $log) {
 ob_start();
 
 if (!empty($table->data)) {
-    echo '<div id="log_sources_status w100p">';
+    echo '<div id="log_sources_status" class="w100p">';
     html_print_table($table);
     echo '</div>';
 } else {

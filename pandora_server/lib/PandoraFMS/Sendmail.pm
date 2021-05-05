@@ -491,11 +491,11 @@ sub sendmail {
                     || return fail("send AUTH LOGIN failed (lost connection?)");
                 socket_read()
                     || return fail("AUTH LOGIN failed: $server_reply");
-                socket_write(encode_base64($auth->{user},$CRLF))
+                socket_write(encode_base64($auth->{user}, ""), $CRLF)
                     || return fail("send LOGIN username failed (lost connection?)");
                 socket_read()
                     || return fail("LOGIN username failed: $server_reply");
-                socket_write(encode_base64($auth->{password},$CRLF))
+                socket_write(encode_base64($auth->{password}, ""), $CRLF)
                     || return fail("send LOGIN password failed (lost connection?)");
                 socket_read()
                     || return fail("LOGIN password failed: $server_reply");
@@ -504,7 +504,7 @@ sub sendmail {
                 warn "Trying AUTH PLAIN\n" if ($mailcfg{debug} > 9);
                 socket_write(
                     "AUTH PLAIN "
-                    . encode_base64(join("\0", $auth->{user}, $auth->{user}, $auth->{password}), $CRLF)
+                    . encode_base64(join("\0", $auth->{user}, $auth->{user}, $auth->{password}), ""), $CRLF
                 ) || return fail("send AUTH PLAIN failed (lost connection?)");
                 socket_read()
                     || return fail("AUTH PLAIN failed: $server_reply");
@@ -518,7 +518,7 @@ sub sendmail {
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");
                 $challenge =~ s/^\d+\s+//;
                 my $response = _hmac_md5($auth->{password}, decode_base64($challenge));
-                socket_write(encode_base64("$auth->{user} $response", $CRLF))
+                socket_write(encode_base64("$auth->{user} $response", ""), $CRLF)
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");
                 socket_read()
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");

@@ -712,6 +712,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
  * @param boolean $validatedEvents If true, evaluate validated events.
  * @param boolean $recursiveGroups If true, filtered groups and their children
  *                                 will be search.
+ * @param boolean $nodeConnected   Already connected to node (uses tevento).
  *
  * @return array Events.
  * @throws Exception On error.
@@ -727,7 +728,8 @@ function events_get_all(
     $return_sql=false,
     $having='',
     $validatedEvents=false,
-    $recursiveGroups=true
+    $recursiveGroups=true,
+    $nodeConnected=false
 ) {
     global $config;
 
@@ -1017,7 +1019,10 @@ function events_get_all(
         );
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = events_get_events_table(
+        (is_metaconsole() && $nodeConnected === false),
+        $history
+    );
     $tevento = sprintf(
         ' %s te',
         $table
@@ -1028,7 +1033,7 @@ function events_get_all(
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $tagente_table = 'tmetaconsole_agent';
         $tagente_field = 'id_tagente';
         $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
@@ -1075,7 +1080,7 @@ function events_get_all(
         );
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         // Id source event.
         if (!empty($filter['id_source_event'])) {
             $sql_filters[] = sprintf(
@@ -1087,8 +1092,15 @@ function events_get_all(
 
     // User comment.
     if (!empty($filter['user_comment'])) {
+        // For filter field.
         $sql_filters[] = sprintf(
             ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            io_safe_input($filter['user_comment'])
+        );
+
+        // For show comments on event details.
+        $sql_filters[] = sprintf(
+            ' OR lower(te.user_comment) like lower("%%%s%%") ',
             $filter['user_comment']
         );
     }
@@ -1239,7 +1251,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1265,7 +1277,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1291,7 +1303,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1312,7 +1324,7 @@ function events_get_all(
 
     // Module search.
     $agentmodule_join = 'LEFT JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $agentmodule_join = '';
     } else if (!empty($filter['module_search'])) {
         $agentmodule_join = 'INNER JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
@@ -1339,7 +1351,7 @@ function events_get_all(
     }
 
     $extra = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $extra = ', server_id';
     }
 
@@ -1405,7 +1417,7 @@ function events_get_all(
     }
 
     $server_join = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $server_join = ' LEFT JOIN tmetaconsole_setup ts
             ON ts.id = te.server_id';
         if (!empty($filter['server_id'])) {
@@ -3001,15 +3013,11 @@ function events_get_agent(
 ) {
     global $config;
 
-    if (!is_numeric($date)) {
+    if (is_numeric($date) === false) {
         $date = time_w_fixed_tz($date);
     }
 
-    if (is_metaconsole() && $events_group === false) {
-        $id_server = true;
-    }
-
-    if (empty($date)) {
+    if (empty($date) === true) {
         $date = get_system_time();
     }
 
@@ -3144,7 +3152,7 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() && $id_server) {
+    if (is_metaconsole() === true && empty($id_server) === false) {
         $sql_where .= ' AND server_id = '.$id_server;
     }
 
@@ -3161,7 +3169,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() === true && $id_server === false) ? true : false,
+            (is_metaconsole() === true && empty($id_server) === false) ? true : false,
             $history
         );
     }
@@ -3664,22 +3672,37 @@ function events_page_responses($event, $childrens_ids=[])
         );
     }
 
-    $table_responses->data[] = $data;
+    if ((tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EM',
+        $event['clean_tags'],
+        $childrens_ids
+    )) || (tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EW',
+        $event['clean_tags'],
+        $childrens_ids
+    ))
+    ) {
+        $table_responses->data[] = $data;
 
-    // Comments.
-    $data = [];
-    $data[0] = __('Comment');
-    $data[1] = '';
-    $data[2] = html_print_button(
-        __('Add comment'),
-        'comment_button',
-        false,
-        '$(\'#link_comments\').trigger(\'click\');',
-        'class="sub next w70p"',
-        true
-    );
+        // Comments.
+        $data = [];
+        $data[0] = __('Comment');
+        $data[1] = '';
+        $data[2] = html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            '$(\'#link_comments\').trigger(\'click\');',
+            'class="sub next w70p"',
+            true
+        );
 
-    $table_responses->data[] = $data;
+        $table_responses->data[] = $data;
+    }
 
     if (tags_checks_event_acl(
         $config['id_user'],
@@ -3723,7 +3746,7 @@ function events_page_responses($event, $childrens_ids=[])
         ['id_group' => $id_groups]
     );
 
-    if (empty($event_responses)) {
+    if (empty($event_responses) || (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM'))) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $responses = [];
@@ -4293,6 +4316,12 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
+    $table_class = 'table_modal_alternate';
+
+    if ($config['style'] === 'pandora_black') {
+        $table_class = 'black_table_modal_alternate';
+    }
+
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4300,7 +4329,7 @@ function events_page_details($event, $server='')
     $table_details->head = [];
     $table_details->cellspacing = 0;
     $table_details->cellpadding = 0;
-    $table_details->class = 'table_modal_alternate';
+    $table_details->class = $table_class;
 
     /*
      * Useless switch.

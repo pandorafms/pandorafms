@@ -603,7 +603,10 @@ class EventsListWidget extends Widget
             'ta.alias as agent_name',
             'tg.nombre as group_name',
         ];
-        if ((bool) \is_metaconsole() === false) {
+
+        if ((bool) \is_metaconsole() === false
+            || $this->nodeId > 0
+        ) {
             $fields[] = 'am.nombre as module_name';
             $fields[] = 'am.id_agente_modulo as id_agentmodule';
             $fields[] = 'am.custom_id as module_custom_id';
@@ -636,7 +639,9 @@ class EventsListWidget extends Widget
             // ValidatedEvents.
             false,
             // Recursive Groups.
-            (bool) $this->values['groupRecursion']
+            (bool) $this->values['groupRecursion'],
+            // Already connected.
+            ($this->nodeId > 0)
         );
 
         if ($events === false) {
@@ -727,7 +732,12 @@ class EventsListWidget extends Widget
 
                 $table->data[$i] = $data;
 
-                $table->cellstyle[$i][0] = 'background: #E8E8E8;';
+                $bg_color = 'background: #E8E8E8;';
+                if ($config['style'] === 'pandora_black') {
+                    $bg_color = 'background: #222;';
+                }
+
+                $table->cellstyle[$i][0] = $bg_color;
                 $rowclass = \events_get_criticity_class($event['criticity']);
                 $table->cellclass[$i][1] = $rowclass;
                 $table->cellclass[$i][2] = $rowclass;

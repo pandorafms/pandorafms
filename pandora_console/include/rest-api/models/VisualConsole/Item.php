@@ -1069,6 +1069,16 @@ class Item extends CachedModel
     {
         global $config;
 
+        $mobile_navigation = false;
+
+        if (isset($_SERVER['PHP_SELF']) === true
+            && (strstr($_SERVER['PHP_SELF'], 'mobile/') !== false
+            || strstr($_SERVER['HTTP_REFERER'], 'mobile/') !== false)
+        ) {
+            $mobile_navigation = true;
+        }
+
+        error_log(obhd($_SERVER['PHP_SELF']));
         // Load side libraries.
         include_once $config['homedir'].'/include/functions_ui.php';
         if (\is_metaconsole() === true) {
@@ -1081,6 +1091,7 @@ class Item extends CachedModel
         $linkedAgent = static::extractLinkedAgent($data);
 
         $baseUrl = \ui_get_full_url('index.php');
+        $mobileUrl = \ui_get_full_url('mobile/index.php');
 
         if ((bool) $data['agentDisabled'] === true
             || (bool) $data['moduleDisabled'] === true
@@ -1134,6 +1145,15 @@ class Item extends CachedModel
                  * A Visual Console from this console.
                  * We are in a regular console.
                  */
+
+                if ($mobile_navigation === true) {
+                    return $mobileUrl.'?'.http_build_query(
+                        [
+                            'page' => 'visualmap',
+                            'id'   => $vcId,
+                        ]
+                    );
+                }
 
                 return $baseUrl.'?'.http_build_query(
                     [
@@ -1209,6 +1229,15 @@ class Item extends CachedModel
                             'sec2'      => 'operation/agentes/status_monitor',
                             'id_module' => $moduleId,
                         ];
+                    }
+
+                    if ($mobile_navigation === true) {
+                        return $mobileUrl.'?'.http_build_query(
+                            [
+                                'page' => 'module_graph',
+                                'id'   => $moduleId,
+                            ]
+                        );
                     }
 
                     return $baseUrl.'?'.http_build_query($queryParams);
@@ -1289,6 +1318,15 @@ class Item extends CachedModel
                      * An agent from this console.
                      * We are in a regular console.
                      */
+
+                    if ($mobile_navigation === true) {
+                        return $mobileUrl.'?'.http_build_query(
+                            [
+                                'page' => 'agent',
+                                'id'   => $agentId,
+                            ]
+                        );
+                    }
 
                     return $baseUrl.'?'.http_build_query(
                         [

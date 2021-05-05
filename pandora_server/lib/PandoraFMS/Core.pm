@@ -297,7 +297,10 @@ sub locate_agent {
 		# Locate agent first in tmetaconsole_agent
 		return undef if (! defined ($field) || $field eq '');
 
-		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
+		my $rs = enterprise_hook('get_metaconsole_agent_from_id', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
 		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field, $relative]);
@@ -322,7 +325,10 @@ sub get_agent {
 
     return undef if (! defined ($field) || $field eq '');
 
-    my $rs = get_agent_from_alias($dbh, $field, $relative);
+    my $rs = get_agent_from_id($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_alias($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     $rs = get_agent_from_addr($dbh, $field);
@@ -376,6 +382,17 @@ sub get_agent_from_name ($$;$) {
 	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
+}
+
+##########################################################################
+# Return the agent given the agent id.
+##########################################################################
+sub get_agent_from_id ($$) {
+	my ($dbh, $id) = @_;
+	
+	return undef if (! defined ($id) || $id eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.id_agente = ?', $id);
 }
 
 ##########################################################################
@@ -1376,11 +1393,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C0%7C0%7C225';
+				$params->{"other"} = $period . '%7C1%7C0%7C225';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C0%7C1%7C225';
+				$params->{"other"} = $period . '%7C1%7C1%7C225';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -5936,7 +5953,7 @@ sub pandora_update_agent_module_count ($$$) {
 	}; # Module counts by status.
 
 	# Retrieve and hash module status counts.
-	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_modulo<>0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
 	foreach my $row (@rows) {
 		$counts->{$row->{'estado'}} = $row->{'total'};
 		$total += $row->{'total'};

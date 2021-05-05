@@ -216,6 +216,7 @@ namespace Pandora_Modules {
 		
 		string getDataOutput (Pandora_Data *data);
 		void   cleanDataList ();
+		int    module_wait_timeout;
 	public:
 		Pandora_Module                    (string name);
 		virtual ~Pandora_Module           ();
@@ -231,6 +232,7 @@ namespace Pandora_Modules {
 		int          getInterval   ();
 		int          getIntensiveInterval   ();
 		void         setTimeout    (int timeout);
+		void         setWaitTimeout (int timeout);
 		int          getTimeout    ();
 		string       getSave ();
 		bool         getAsync ();

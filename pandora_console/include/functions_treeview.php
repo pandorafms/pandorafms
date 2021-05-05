@@ -290,7 +290,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         }
 
         $last_data_str .= '&nbsp;';
-        $last_data_str .= html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px']);
+        $last_data_str .= html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px', 'class' => 'invert_filter']);
 
         $is_snapshot = is_snapshot_data($last_data['datos']);
         $is_large_image = is_text_to_black_string($last_data['datos']);
@@ -307,7 +307,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         }
 
         if ($salida !== null) {
-            $last_data_str = html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px']);
+            $last_data_str = html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px', 'class' => 'invert_filter']);
         }
 
         $last_data_str .= $salida;

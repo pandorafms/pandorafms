@@ -706,7 +706,7 @@ function modules_create_agent_module(
     }
 
     // Update module status count if the module is not created disabled.
-    if (!isset($values['disabled']) || $values['disabled'] == 0) {
+    if ((!isset($values['disabled']) || $values['disabled'] == 0) && $values['id_modulo'] > 0) {
         if ($status == 0) {
             db_process_sql(
                 'UPDATE tagente

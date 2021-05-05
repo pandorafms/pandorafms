@@ -119,6 +119,16 @@ $has_management_acl = check_acl_restricted_all($config['id_user'], $map['group_i
 
 $buttons = [];
 
+$buttons['gis_maps_list'] = [
+    'text' => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
+];
 if ($config['pure'] == 0) {
     $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
 } else {
@@ -193,7 +203,7 @@ if ($layers != false) {
             $layer['id_tmap_layer']
         );
 
-        // calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
+        // Calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
         $agentNamesByGroup = [];
         if ($layer['tgrupo_id_grupo'] >= 0) {
             $agentNamesByGroup = agents_get_group_agents(
@@ -239,7 +249,7 @@ if ($layers != false) {
             $icon_width = $icon_size[0];
             $icon_height = $icon_size[1];
 
-            // Is a group item
+            // Is a group item.
             if (!empty($groupsByAgentId[$idAgent])) {
                 $groupId = (int) $groupsByAgentId[$idAgent]['id'];
                 $groupName = $groupsByAgentId[$idAgent]['name'];

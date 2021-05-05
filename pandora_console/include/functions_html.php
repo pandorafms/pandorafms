@@ -717,7 +717,9 @@ function html_print_select(
     $message='',
     $select_all=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $truncate_size=false,
+    $select2_enable=true
 ) {
     $output = "\n";
 
@@ -853,6 +855,18 @@ function html_print_select(
                 $output .= ' style="'.$option_style[$value].'"';
             }
 
+            if ($truncate_size !== false) {
+                $output .= ' Title="'.$optlabel.'"';
+
+                $optlabel = ui_print_truncate_text(
+                    $optlabel,
+                    $truncate_size,
+                    false,
+                    true,
+                    false
+                );
+            }
+
             if ($optlabel === '') {
                 $output .= '>None</option>';
             } else {
@@ -868,8 +882,40 @@ function html_print_select(
     $output .= '</select>';
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
+    }
+
+    $select2 = 'select2.min';
+    if ($config['style'] === 'pandora_black') {
+        $select2 = 'select2_dark.min';
+    }
+
+    if ($multiple === false && $select2_enable === true) {
+        if (is_ajax()) {
+            $output .= '<script src="';
+            $output .= ui_get_full_url(
+                'include/javascript/select2.min.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" type="text/javascript"></script>';
+
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                'include/styles/'.$select2.'.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        } else {
+            ui_require_css_file($select2);
+            ui_require_javascript_file('select2.min');
+        }
+
+        $output .= '<script>$("#'.$id.'").select2();</script>';
     }
 
     if ($return) {
@@ -1351,7 +1397,29 @@ function html_print_select_multiple_modules_filtered(array $data):string
 
     $output .= '<div>';
     // Agent.
-    $agents = agents_get_group_agents($data['mGroup']);
+    $agents = agents_get_group_agents(
+        // Id_group.
+        $data['mGroup'],
+        // Search.
+        false,
+        // Case.
+        'lower',
+        // NoACL.
+        false,
+        // ChildGroups.
+        false,
+        // Serialized.
+        false,
+        // Separator.
+        '|',
+        // Add_alert_bulk_op.
+        false,
+        // Force_serialized.
+        false,
+        // Meta_fields.
+        $data['mMetaFields']
+    );
+
     if ((empty($agents)) === true || $agents == -1) {
         $agents = [];
     }
@@ -1475,7 +1543,7 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT,
+    $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
     $required=false
 ) {
@@ -1490,13 +1558,7 @@ function html_print_select_from_sql(
     foreach ($result as $row) {
         $id = array_shift($row);
         $value = array_shift($row);
-        $fields[$id] = ui_print_truncate_text(
-            $value,
-            $trucate_size,
-            false,
-            true,
-            false
-        );
+        $fields[$id] = $value;
     }
 
     return html_print_select(
@@ -1523,7 +1585,8 @@ function html_print_select_from_sql(
         // Simple_multiple_options.
         false,
         // Required.
-        $required
+        $required,
+        $truncate_size
     );
 }
 
@@ -1876,7 +1939,7 @@ function html_print_extended_select_for_time(
         html_print_select(
             $units,
             $uniq_name.'_units',
-            1,
+            '60',
             ''.$script,
             $nothing,
             $nothing_value,
@@ -2953,7 +3016,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -3445,7 +3508,7 @@ function html_print_radio_button_extended(
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4379,8 +4442,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         return '';
     }
 
+    enterprise_include_once('include/functions_metaconsole.php');
+
     if ($config['style'] === 'pandora_black') {
-            $style = 'style="color: white"';
+        $style = 'style="color: white"';
     }
 
     $output = '';
@@ -5030,9 +5095,14 @@ function html_print_autocomplete_users_from_integria(
 ) {
     global $config;
 
+    $user_icon = 'images/user_green.png';
+    if ($config['style'] === 'pandora_black') {
+        $user_icon = 'images/header_user.png';
+    }
+
     ob_start();
 
-    $attrs = ['style' => 'background: url(images/user_green.png) no-repeat right;'];
+    $attrs = ['style' => 'background: url('.$user_icon.') no-repeat right;'];
 
     if ($required) {
         $attrs['required'] = 'required';
@@ -5225,9 +5295,17 @@ function html_print_select_search(
     $required=false,
     $dropdownAutoWidth=false
 ) {
+    global $config;
+
     $output = '';
 
-    ui_require_css_file('select2.min');
+    $select2_css = 'select2.min';
+
+    if ($config['style'] === 'pandora_black') {
+        $select2_css = 'select2_dark.min';
+    }
+
+    ui_require_css_file($select2_css);
     ui_require_javascript_file('select2.min');
 
     if ($name === null) {

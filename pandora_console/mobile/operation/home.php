@@ -60,41 +60,50 @@ class Home
             'icon'      => 'groups',
         ];
 
-        if (!$system->getConfig('metaconsole')) {
-            $items['alerts'] = [
-                'name'      => __('Alerts'),
-                'filename'  => 'alerts.php',
+        if ((bool) $system->getConfig('legacy_vc', false) === false) {
+            // Show Visual consoles only if new system is enabled.
+            $items['visualmaps'] = [
+                'name'      => __('Visual consoles'),
+                'filename'  => 'visualmaps.php',
                 'menu_item' => true,
-                'icon'      => 'alerts',
-            ];
-
-            $items['agents'] = [
-                'name'      => __('Agents'),
-                'filename'  => 'agents.php',
-                'menu_item' => true,
-                'icon'      => 'agents',
-            ];
-            $items['modules'] = [
-                'name'      => __('Modules'),
-                'filename'  => 'modules.php',
-                'menu_item' => true,
-                'icon'      => 'modules',
-            ];
-
-            // Not in home.
-            $items['agent'] = [
-                'name'      => __('Agent'),
-                'filename'  => 'agent.php',
-                'menu_item' => false,
-                'icon'      => '',
-            ];
-            $items['module_graph'] = [
-                'name'      => __('Module graph'),
-                'filename'  => 'module_graph.php',
-                'menu_item' => false,
-                'icon'      => '',
+                'icon'      => 'visual_console',
             ];
         }
+
+        $items['alerts'] = [
+            'name'      => __('Alerts'),
+            'filename'  => 'alerts.php',
+            'menu_item' => true,
+            'icon'      => 'alerts',
+        ];
+
+        $items['agents'] = [
+            'name'      => __('Agents'),
+            'filename'  => 'agents.php',
+            'menu_item' => true,
+            'icon'      => 'agents',
+        ];
+
+        $items['modules'] = [
+            'name'      => __('Modules'),
+            'filename'  => 'modules.php',
+            'menu_item' => true,
+            'icon'      => 'modules',
+        ];
+
+        // Not in home.
+        $items['agent'] = [
+            'name'      => __('Agent'),
+            'filename'  => 'agent.php',
+            'menu_item' => false,
+            'icon'      => '',
+        ];
+        $items['module_graph'] = [
+            'name'      => __('Module graph'),
+            'filename'  => 'module_graph.php',
+            'menu_item' => false,
+            'icon'      => '',
+        ];
 
         $this->pagesItems = $items;
     }
@@ -154,7 +163,7 @@ class Home
             $options = [
                 'name'        => 'free_search',
                 'value'       => $this->global_search,
-                'placeholder' => __('Global search'),
+                'placeholder' => __('Agent search'),
             ];
             $ui->formAddInputSearch($options);
             $ui->endForm();

@@ -92,6 +92,7 @@ our @EXPORT = qw(
 		get_priority_name
 		get_server_id
 		get_tag_id
+		get_tag_name
 		get_group_name
 		get_template_id
 		get_template_module_id
@@ -236,8 +237,15 @@ sub get_command_id ($$) {
 ########################################################################
 sub get_agent_id ($$) {
 	my ($dbh, $agent_name) = @_;
+	my $is_meta = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token like 'metaconsole'");
+	
+	my $rc;
+	if($is_meta == 1) {
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+	} else {
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+	}
 
-	my $rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -274,6 +282,20 @@ sub get_tag_id ($$) {
 					WHERE name = ?",
 					safe_input($tag_name));
 	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return the name of a tag given its id.
+########################################################################
+sub get_tag_name ($$) {
+	my ($dbh, $id) = @_;
+
+	my $rc = get_db_value(
+		$dbh, "SELECT name FROM ttag
+					WHERE id_tag = ?",
+		safe_input($id)
+	);
+	return $rc;
 }
 
 ########################################################################

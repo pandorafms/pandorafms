@@ -130,17 +130,24 @@ function html_do_report_info($report)
 
     $date_today = date($config['date_format']);
 
+    $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
+
+    $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
     $html = '<div class="report_info" style="background: '.$background_color.'"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
+
+    $date_before = date($config['date_format'], $report['datetime']);
+    $date_before = preg_split('/[\s,]+/', io_safe_output($date_before));
+    $date_before = __($date_before[0]).' '.$date_before[1].' '.$date_before[2].' '.$date_before[3].' '.$date_before[4];
     if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
         $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
         $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
-        $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
+        $html .= '<td>'.__('Items period before').' <b>'.$date_before.'</b></td>';
     }
 
     $html .= '</tr>

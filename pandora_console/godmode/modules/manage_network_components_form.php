@@ -357,7 +357,7 @@ if (defined('METACONSOLE')) {
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_button(__('Go back'), 'go_back', false, 'history.go(-1);', 'class="sub cancel"');
+html_print_button(__('Go back'), 'go_back', false, '', 'class="sub cancel"');
 html_print_input_hidden('id_component_type', $id_component_type);
 if ($id) {
     html_print_input_hidden('update_component', 1);
@@ -376,6 +376,11 @@ ui_require_javascript_file('pandora_modules');
 ?>
 <script language="JavaScript" type="text/javascript">
 <!--
+
+$('#button-go_back').click(function () {
+    window.location.href = "<?php echo ui_get_full_url('index.php?sec=templates&sec2=godmode/modules/manage_network_components'); ?>";
+});
+
 function type_change () {
     // type 1-4 - Generic_xxxxxx
     if ((document.component.type.value > 0) && (document.component.type.value < 5)) {

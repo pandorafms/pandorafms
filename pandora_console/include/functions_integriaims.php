@@ -69,8 +69,8 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     if ($view) {
-        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket')]).'</a>';
-        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket')]).'</a>';
+        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket'), 'class' => 'invert_filter']).'</a>';
+        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket'), 'class' => 'invert_filter']).'</a>';
         // When the current page is the View page.
         if (!$active_tab) {
             $view_tab['active'] = true;

@@ -27,10 +27,18 @@
  */
 
 // Css Files.
-\ui_require_css_file('bootstrap.min');
+if ((bool) \is_metaconsole() !== true) {
+    \ui_require_css_file('bootstrap.min');
+}
+
 \ui_require_css_file('gridstack.min');
 \ui_require_css_file('gridstack-extra.min');
-\ui_require_css_file('pandora');
+if ((bool) \is_metaconsole() === true) {
+    \ui_require_css_file('meta_pandora');
+} else {
+    \ui_require_css_file('pandora');
+}
+
 \ui_require_css_file('dashboards');
 
 // Js Files.

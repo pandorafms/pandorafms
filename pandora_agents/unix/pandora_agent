@@ -592,7 +592,6 @@ BEGIN {
 		my ($self) = @_;
 
 		if ($YAML == 0) {
-			$self->set_last_error('Cannot use commands without YAML dependency, please install it.');
 			return;
 		}
 
@@ -1015,8 +1014,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.753';
-use constant AGENT_BUILD => '210407';
+use constant AGENT_VERSION => '7.0NG.754';
+use constant AGENT_BUILD => '210504';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -4028,6 +4027,14 @@ if ($Conf{'proxy_mode'}) {
 		log_message ('error', 'Proxy mode can not be launched as root');
 		exit 1;
 	}
+}
+
+# Advice if YAML::Tiny is allowed in this system
+eval {
+		eval 'require YAML::Tiny;1' or die('YAML::Tiny lib not found, commands feature won\'t be available');
+};
+if ($@) {
+		log_message ('error', 'Cannot use commands without YAML dependency, please install it.');
 }
 
 # Add the plugins directory to the PATH

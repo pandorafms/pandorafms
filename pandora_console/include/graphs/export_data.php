@@ -36,9 +36,8 @@ global $config;
 $user_language = get_user_language($config['id_user']);
 $l10n = null;
 if (file_exists('../languages/'.$user_language.'.mo') === true) {
-    $l10n = new gettext_reader(
-        new CachedFileReader('../languages/'.$user_language.'.mo')
-    );
+    $cf = new CachedFileReader('../languages/'.$user_language.'.mo');
+    $l10n = new gettext_reader($cf);
     $l10n->load_tables();
 }
 

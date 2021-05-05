@@ -49,7 +49,7 @@ my %PendingTasks :shared;
 my $Sem :shared;
 my $TaskSem :shared;
 
-# IDs from tconfig_os.
+# Some required constants, OS_X from tconfig_os.
 use constant {
   OS_OTHER => 10,
   OS_ROUTER => 17,
@@ -63,17 +63,6 @@ use constant {
   STEP_STATISTICS => 1,
   STEP_APP_SCAN => 2,
   STEP_CUSTOM_QUERIES => 3,
-  DISCOVERY_HOSTDEVICES => 0,
-  DISCOVERY_HOSTDEVICES_CUSTOM => 1,
-  DISCOVERY_CLOUD_AWS => 2,
-  DISCOVERY_APP_VMWARE => 3,
-  DISCOVERY_APP_MYSQL => 4,
-  DISCOVERY_APP_ORACLE => 5,
-  DISCOVERY_CLOUD_AWS_EC2 => 6,
-  DISCOVERY_CLOUD_AWS_RDS => 7,
-  DISCOVERY_CLOUD_AZURE_COMPUTE => 8,
-  DISCOVERY_DEPLOY_AGENTS => 9,
-  DISCOVERY_APP_SAP => 10,
   DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,

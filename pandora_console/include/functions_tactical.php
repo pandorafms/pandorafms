@@ -343,6 +343,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                     INNER JOIN tagente_modulo tam
                         ON tae.id_agente_modulo = tam.id_agente_modulo
                         AND tam.disabled = 0
+                        AND tam.id_modulo <> 0
                     GROUP BY estado',
                     $user_groups_ids
                 )
@@ -358,6 +359,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                     INNER JOIN tagente_modulo tam
                         ON tae.id_agente_modulo = tam.id_agente_modulo
                         AND tam.disabled = 0
+                        AND tam.id_modulo <> 0
                     LEFT JOIN tagent_secondary_group tasg 
                         ON ta.id_agente = tasg.id_agent
                     WHERE (ta.id_grupo IN ( %s ) OR tasg.id_group IN ( %s ))

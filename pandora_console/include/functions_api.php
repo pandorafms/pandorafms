@@ -43,11 +43,12 @@ use PandoraFMS\Enterprise\Cluster;
 /**
  * Parse the "other" parameter.
  *
- * @param  string $other
- * @param  mixed  $otherType
+ * @param  string  $other
+ * @param  mixed   $otherType
+ * @param  boolean $rawDecode Decode string in which the sequences with percent (%) signs followed by two hex digits have been replaced with literal characters.
  * @return mixed
  */
-function parseOtherParameter($other, $otherType)
+function parseOtherParameter($other, $otherType, $rawDecode)
 {
     switch ($otherType) {
         case 'url_encode':
@@ -65,12 +66,12 @@ function parseOtherParameter($other, $otherType)
                     'data' => explode($separator, $other),
                 ];
                 foreach ($returnVar['data'] as $index => $element) {
-                    $returnVar['data'][$index] = urldecode($element);
+                    $returnVar['data'][$index] = $rawDecode ? rawurldecode($element) : urldecode($element);
                 }
             } else {
                 $returnVar = [
                     'type' => 'string',
-                    'data' => urldecode($other),
+                    'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
                 ];
             }
         break;
@@ -1478,6 +1479,12 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
         return;
     }
 
+    // Check if group allow more agents or have limit stablished.
+    if (group_allow_more_agents($idGroup, true, 'update') === false) {
+        returnError('Agent cannot be updated due to the maximum agent limit for this group');
+        return;
+    }
+
     // Check selected parent
     if ($idParent != 0) {
         $parentCheck = agents_check_access_agent($idParent);
@@ -1675,10 +1682,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     // Check if agent exists (BUG WC-50518-2).
     if ($alias == '' && $alias_as_name === 0) {
         returnError('No agent alias specified');
-    } else if (agents_get_agent_id($server_name)) {
+    } else if (agents_get_agent_id($nombre_agente)) {
         returnError('The agent name already exists in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('The group does not exist.');
+    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+        returnError('Agent cannot be created due to the maximum agent limit for this group');
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('The OS does not exist.');
     } else if ($server_name === false) {
@@ -8402,6 +8411,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
     $values['custom_id'] = $safe_other_data[5];
     $values['contact'] = $safe_other_data[6];
     $values['other'] = $safe_other_data[7];
+    $values['max_agents'] = $safe_other_data[8];
 
     $id_group = groups_create_group($group_name, $values);
 
@@ -8481,7 +8491,8 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
     $disabled = $other['data'][5];
     $custom_id = $other['data'][6];
     $contact = $other['data'][7];
-    $other = $other['data'][8];
+    $otherData = $other['data'][8];
+    $maxAgents = $other['data'][9];
 
     $return = db_process_sql_update(
         'tgrupo',
@@ -8494,7 +8505,8 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
             'disabled'    => $disabled,
             'custom_id'   => $custom_id,
             'contact'     => $contact,
-            'other'       => $other,
+            'other'       => $otherData,
+            'max_agents'  => $maxAgents,
         ],
         ['id_grupo' => $id_group]
     );

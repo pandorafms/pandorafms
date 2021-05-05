@@ -55,8 +55,9 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
+$raw_decode = (bool) get_parameter('raw_decode', false);
 
-$other = parseOtherParameter($otherSerialize, $otherMode);
+$other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
     db_get_value_filter(
         'value',

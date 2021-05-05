@@ -46,7 +46,7 @@ if (is_metaconsole() === true) {
 }
 
 if (is_ajax() === true) {
-    if (check_acl($config['id_user'], 0, 'AR') === false) {
+    if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
         db_pandora_audit('ACL Violation', 'Trying to access Group Management');
         include 'general/noaccess.php';
         return;
@@ -63,7 +63,7 @@ if (is_ajax() === true) {
             $group = [
                 'id_grupo'  => 0,
                 'nombre'    => 'None',
-                'icon'      => '',
+                'icon'      => 'world',
                 'parent'    => 0,
                 'disabled'  => 0,
                 'custom_id' => null,
@@ -72,7 +72,7 @@ if (is_ajax() === true) {
             return;
         }
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -114,7 +114,7 @@ if (is_ajax() === true) {
         );
         $force_serialized = (bool) get_parameter('force_serialized', false);
 
-        if (check_acl($config['id_user'], $id_group, 'AR') === false) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -177,7 +177,9 @@ if (is_ajax() === true) {
 
         $agents_aux = [];
         foreach ($agents as $key => $value) {
-            if (preg_match('/'.$search.'/', io_safe_output($value)) === true) {
+            if (empty($search) === true) {
+                $agents_aux[$key] = $value;
+            } else if (preg_match('/'.$search.'/', io_safe_output($value)) === true) {
                 $agents_aux[$key] = $value;
             }
         }
@@ -263,15 +265,9 @@ if (is_ajax() === true) {
 
 $tab = (string) get_parameter('tab', 'groups');
 
-if ($tab != 'credbox' && ! check_acl(
-    $config['id_user'],
-    0,
-    'PM'
-) && ! check_acl(
-    $config['id_user'],
-    0,
-    'AW'
-)
+if ($tab !== 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
+    && (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -279,9 +275,9 @@ if ($tab != 'credbox' && ! check_acl(
     );
     include 'general/noaccess.php';
     return;
-} else if ($tab == 'credbox'
-    && check_acl($config['id_user'], 0, 'UM') === false
-    && check_acl($config['id_user'], 0, 'PM') === false
+} else if ($tab === 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'UM') === false
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -380,7 +376,7 @@ $delete_group = (bool) get_parameter('delete_group');
 $pure = get_parameter('pure', 0);
 
 // Create group.
-if (($create_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
+if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
     $id_parent = (int) get_parameter('id_parent');
@@ -391,6 +387,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
     $propagate = (bool) get_parameter('propagate');
 
@@ -415,6 +412,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
                     'propagate'   => $propagate,
                     'other'       => $other,
                     'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
                 ];
 
                 $result = db_process_sql_insert('tgrupo', $values);
@@ -448,6 +446,7 @@ if ($update_group) {
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
 
     $aviable_name = true;
     if (preg_match('/script/i', $name)) {
@@ -481,6 +480,7 @@ if ($update_group) {
                     'propagate'   => $propagate,
                     'other'       => $other,
                     'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
                 ];
 
                 $result = db_process_sql_update(
@@ -504,7 +504,7 @@ if ($update_group) {
 }
 
 // Delete group.
-if (($delete_group) && (check_acl($config['id_user'], 0, 'PM') === true)) {
+if (($delete_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $id_group = (int) get_parameter('id_group');
 
     $usedGroup = groups_check_used($id_group);

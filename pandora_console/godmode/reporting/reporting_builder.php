@@ -742,7 +742,7 @@ switch ($action) {
         }
 
         $own_info = get_user_info($config['id_user']);
-        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM')) {
+        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
             $return_all_group = true;
         } else {
             $return_all_group = false;

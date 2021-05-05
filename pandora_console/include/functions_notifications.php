@@ -239,7 +239,7 @@ function get_notification_source_targets(int $id_source, ?string $subtype=null)
         }
 
         $filter = sprintf(
-            ' AND ns.`subtype_blacklist` NOT LIKE "%%%s%%"',
+            ' AND (ns.`subtype_blacklist` IS NULL OR ns.`subtype_blacklist` NOT LIKE "%%%s%%") ',
             $subtype
         );
     }

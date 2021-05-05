@@ -5644,7 +5644,7 @@ function reporting_value($report, $content, $type, $pdf=false)
         );
     }
 
-    $label = (isset($content['name'])) ? $content['name'] : '';
+    $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
             $items_label,
@@ -8587,7 +8587,7 @@ function reporting_general($report, $content)
                     if (!is_numeric($data_res[$index])) {
                         $return['data'][$name_agent][$mod_name] = $data_res[$index];
                     } else {
-                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                        $return['data'][$name_agent][$mod_name] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     }
                 }
             break;
@@ -8608,7 +8608,7 @@ function reporting_general($report, $content)
 
                     if ($change_min) {
                         $return['min']['value'] = $val;
-                        $return['min']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, $unit);
+                        $return['min']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$unit);
                         $return['min']['agent'] = $ag_name;
                         $return['min']['module'] = $mod_name;
                     }
@@ -8624,7 +8624,7 @@ function reporting_general($report, $content)
 
                     if ($change_max) {
                         $return['max']['value'] = $val;
-                        $return['max']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, $unit);
+                        $return['max']['formated_value'] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$unit);
                         $return['max']['agent'] = $ag_name;
                         $return['max']['module'] = $mod_name;
                     }
@@ -8650,7 +8650,7 @@ function reporting_general($report, $content)
 
                 if ($change_min) {
                     $return['min']['value'] = $data_res[$index];
-                    $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                    $return['min']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     $return['min']['agent'] = $ag_name;
                     $return['min']['module'] = $mod_name;
                 }
@@ -8666,7 +8666,7 @@ function reporting_general($report, $content)
 
                 if ($change_max) {
                     $return['max']['value'] = $data_res[$index];
-                    $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, $unit);
+                    $return['max']['formated_value'] = format_for_graph($data_res[$index], 2, '.', ',', $divisor, ' '.$unit);
                     $return['max']['agent'] = $ag_name;
                     $return['max']['module'] = $mod_name;
                 }
@@ -8800,7 +8800,7 @@ function reporting_general($report, $content)
                                 $data['formated_value'][] = $val;
                             } else {
                                 $data['value'][] = $val;
-                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, $units[$i]);
+                                $data['formated_value'][] = format_for_graph($val, 2, '.', ',', $divisor, ' '.$units[$i]);
                             }
                         }
                     }
@@ -8829,7 +8829,7 @@ function reporting_general($report, $content)
                             $data['formated_value'] = $d;
                         } else {
                             $data['value'] = $d;
-                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, $units[$i]);
+                            $data['formated_value'] = format_for_graph($d, 2, '.', ',', $divisor, ' '.$units[$i]);
                         }
                     }
                 }
@@ -9170,6 +9170,7 @@ function reporting_simple_graph(
     $return['agent_name'] = $agent_alias;
     $return['module_name'] = $module_name;
     $return['description'] = $description;
+    $return['label'] = $label;
     $return['date'] = reporting_get_date_text(
         $report,
         $content
@@ -9211,7 +9212,8 @@ function reporting_simple_graph(
             $params = [
                 'agent_module_id'    => $content['id_agent_module'],
                 'period'             => $content['period'],
-                'title'              => $label,
+                'title'              => $title,
+                'label'              => $label,
                 'pure'               => false,
                 'date'               => $report['datetime'],
                 'only_image'         => $only_image,
@@ -10343,7 +10345,7 @@ function reporting_get_stats_alerts($data, $links=false)
     */
 
     if ($data['monitor_alerts'] > $data['total_agents'] && !enterprise_installed()) {
-        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     }
 
     $tdata[3] = html_print_image(
@@ -10500,7 +10502,7 @@ function reporting_get_stats_agents_monitors($data)
     */
 
     if ($data['total_agents'] > 500 && !enterprise_installed()) {
-        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='agentsmodal' class='publienterprise' title='".__('Enterprise version not installed')."'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     }
 
     $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
@@ -10514,7 +10516,7 @@ function reporting_get_stats_agents_monitors($data)
     */
     if ($data['total_agents']) {
         if (($data['monitor_checks'] / $data['total_agents'] > 100) && !enterprise_installed()) {
-            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         }
     }
 
@@ -12828,7 +12830,7 @@ function reporting_get_stats_servers()
         $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Ratio').': '.__('Modules by second'), 'class' => 'invert_filter']).'/sec </span>';
 
         if ($server_performance['total_remote_modules'] > 10000 && !enterprise_installed()) {
-            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise left' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+            $tdata[4] = "<div id='remotemodulesmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         } else {
             $tdata[4] = '&nbsp;';
         }
@@ -12903,7 +12905,7 @@ function reporting_get_stats_servers()
     $tdata[1] = '<span class="big_data" id="total_events">'.html_print_image('images/spinner.gif', true).'</span>';
 
     if (isset($system_events) && $system_events > 50000 && !enterprise_installed()) {
-        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+        $tdata[2] = "<div id='monitoreventsmodal' class='publienterprise left' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
     } else {
         $tdata[3] = '&nbsp;';
     }

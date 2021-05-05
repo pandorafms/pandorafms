@@ -971,7 +971,7 @@ function gis_save_map(
             ]
         );
         // Angent
-        if ((isset($layer['layer_agent_list'])) and (count($layer['layer_agent_list']) > 0)) {
+        if ((isset($layer['layer_agent_list'])) && (count($layer['layer_agent_list']) > 0)) {
             foreach ($layer['layer_agent_list'] as $agent) {
                 db_process_sql_insert(
                     'tgis_map_layer_has_tagente',
@@ -984,7 +984,7 @@ function gis_save_map(
         }
 
         // Group
-        if ((isset($layer['layer_group_list'])) and (count($layer['layer_group_list']) > 0)) {
+        if ((isset($layer['layer_group_list'])) && (count($layer['layer_group_list']) > 0)) {
             foreach ($layer['layer_group_list'] as $group) {
                 db_process_sql_insert(
                     'tgis_map_layer_groups',
@@ -1386,55 +1386,55 @@ function gis_validate_map_data(
 
     echo "<style type='text/css'>";
 
-    // validateMap
+    // ValidateMap.
     if ($map_name == '') {
         echo 'input[name=map_name] {background: #FF5050;}';
         $invalidFields['map_name'] = true;
     }
 
-    // validate zoom level
+    // Validate zoom level.
     if (($map_zoom_level == '') || ($map_zoom_level > $map_levels_zoom)) {
         echo 'input[name=map_zoom_level] {background: #FF5050;}';
         $invalidFields['map_zoom_level'] = true;
     }
 
-    // validate map_initial_longitude
+    // Validate map_initial_longitude.
     if ($map_initial_longitude == '') {
         echo 'input[name=map_initial_longitude] {background: #FF5050;}';
         $invalidFields['map_initial_longitude'] = true;
     }
 
-    // validate map_initial_latitude
+    // Validate map_initial_latitude.
     if ($map_initial_latitude == '') {
         echo 'input[name=map_initial_latitude] {background: #FF5050;}';
         $invalidFields['map_initial_latitude'] = true;
     }
 
-    // validate map_initial_altitude
+    // Validate map_initial_altitude.
     if ($map_initial_altitude == '') {
         echo 'input[name=map_initial_altitude] {background: #FF5050;}';
         $invalidFields['map_initial_altitude'] = true;
     }
 
-    // validate map_default_longitude
+    // Validate map_default_longitude.
     if ($map_default_longitude == '') {
         echo 'input[name=map_default_longitude] {background: #FF5050;}';
         $invalidFields['map_default_longitude'] = true;
     }
 
-    // validate map_default_latitude
+    // Validate map_default_latitude.
     if ($map_default_latitude == '') {
         echo 'input[name=map_default_latitude] {background: #FF5050;}';
         $invalidFields['map_default_latitude'] = true;
     }
 
-    // validate map_default_altitude
+    // Validate map_default_altitude.
     if ($map_default_altitude == '') {
         echo 'input[name=map_default_altitude] {background: #FF5050;}';
         $invalidFields['map_default_altitude'] = true;
     }
 
-    // validate map_default_altitude
+    // Validate map_default_altitude.
     if ($map_connection_list == '') {
         $invalidFields['map_connection_list'] = true;
     }

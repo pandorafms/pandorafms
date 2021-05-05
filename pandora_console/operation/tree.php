@@ -438,7 +438,7 @@ enterprise_hook('close_meta_frame');
         .hide()
         .prop("id", "module_details_window")
         .appendTo('body');
-    
+    console.log("vamos a ver");
     function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
         var params = {};
         var f = new Date();

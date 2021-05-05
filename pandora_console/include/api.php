@@ -36,6 +36,7 @@ define('DEBUG', 0);
 define('VERBOSE', 0);
 
 // TESTING THE UPDATE MANAGER.
+enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
@@ -54,8 +55,9 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
+$raw_decode = (bool) get_parameter('raw_decode', false);
 
-$other = parseOtherParameter($otherSerialize, $otherMode);
+$other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
     db_get_value_filter(
         'value',
@@ -311,7 +313,7 @@ if ($correctLogin) {
 }
 
 // Logout.
-if (session_status() === PHP_SESSION_ACTIVE) {
+if (session_status() !== PHP_SESSION_DISABLED) {
     $_SESSION = [];
     // Could give a warning if no session file is created. Ignore.
     @session_destroy();

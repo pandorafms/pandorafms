@@ -64,7 +64,13 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
+global $config;
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+
+if ($config['style'] === 'pandora_black') {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+}
+
 
 $id = get_parameter('id');
 $id_agent = db_get_value(
@@ -129,7 +135,7 @@ ui_print_message_dialog(
             };
         </script>
     </head>
-    <body class='bg_white'>
+    <body class='bg_general'>
         <?php
         // Module id.
         $id = (int) get_parameter('id', 0);

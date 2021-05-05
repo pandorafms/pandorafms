@@ -59,6 +59,7 @@ if (!$users || !$searchUsers) {
                 [
                     'alt'   => __('User'),
                     'title' => __('Standard User'),
+                    'class' => 'invert_filter',
                 ]
             ).'&nbsp;';
         }

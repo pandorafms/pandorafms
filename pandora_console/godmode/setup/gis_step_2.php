@@ -278,26 +278,26 @@ if ($mapConnectionData != null) {
     }
 }
 
-// Open Street Map Connection.
-$optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.htmlentities(
-    __('Tile Server URL'),
-    ENT_QUOTES,
-    'UTF-8'
-).':</td>'.'<td><input id="type" type="hidden" name="type" value="OSM" />'.html_print_input_text(
-    'url',
-    $mapConnectionDataUrl,
-    '',
-    45,
-    90,
-    true
-).'</td>'.'</tr>'.'</table>';
+    // Open Street Map Connection.
+    $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%"><tr class="row_0"><td>'.htmlentities(
+        __('Tile Server URL'),
+        ENT_QUOTES,
+        'UTF-8'
+    ).':</td><td><input id="type" type="hidden" name="type" value="OSM" />'.html_print_input_text(
+        'url',
+        $mapConnectionDataUrl,
+        '',
+        45,
+        90,
+        true
+    ).'</td></tr></table>';
 
     // Google Maps Connection.
     $gmaps_types['G_PHYSICAL_MAP'] = __('Google Physical');
     $gmaps_types['G_HYBRID_MAP'] = __('Google Hybrid');
     $gmaps_types['G_SATELITE_MAP'] = __('Google Satelite');
     // TODO: Use label tags for the forms.
-    $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%">'.'<tr class="row_0">'.'<td>'.__('Google Map Type').':</td>'.'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(
+    $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%"><tr class="row_0"><td>'.__('Google Map Type').':</td><td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(
         html_print_select(
             $gmaps_types,
             'gmap_type',
@@ -305,181 +305,223 @@ $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" 
             '',
             '',
             0,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
         )
-    ).'</td>'.'</tr>'.'<tr class="row_2">'.'<td>'.__('Google Maps Key').':</td>'.'</tr>'.'<tr class="row_3">'.'<td colspan="2">'.html_print_input_text(
+    ).'</td></tr><tr class="row_2"><td>'.__('Google Maps Key').':</td></tr><tr class="row_3"><td colspan="2">'.html_print_input_text(
         'gmap_key',
         $gmap_key,
         '',
         90,
         128,
         true
-    ).'</td>'.'</tr>'.'</table>';
+    ).'</td></tr></table>';
     // Image Map Connection.
-    $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('Image URL').':</td>'.'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />'.html_print_input_text(
+    $optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%"><tr class="row_0"><td>'.__('Image URL').':</td><td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />'.html_print_input_text(
         'url',
         $mapConnectionDataUrl,
         '',
         45,
         90,
         true
-    ).'</td>'.'</tr>'.'<tr class="row_1">'.'<td colspan="4"><strong>'.__('Corners of the area of the image').':</strong></td>'.'</tr>'.'<tr class="row_2">'.'<td>'.__('Left').':</td>'.'<td>'.html_print_input_text(
+    ).'</td></tr><tr class="row_1"><td colspan="4"><strong>'.__('Corners of the area of the image').':</strong></td></tr><tr class="row_2"><td>'.__('Left').':</td><td>'.html_print_input_text(
         'bb_left',
         $bb_left,
         '',
         25,
         25,
         true
-    ).'</td>'.'<td>'.__('Bottom').':</td>'.'<td>'.html_print_input_text(
+    ).'</td><td>'.__('Bottom').':</td><td>'.html_print_input_text(
         'bb_bottom',
         $bb_bottom,
         '',
         25,
         25,
         true
-    ).'</td>'.'</tr>'.'<tr class="row_3">'.'<td>'.__('Right').':</td>'.'<td>'.html_print_input_text(
+    ).'</td></tr><tr class="row_3"><td>'.__('Right').':</td><td>'.html_print_input_text(
         'bb_right',
         $bb_right,
         '',
         25,
         25,
         true
-    ).'</td>'.'<td>'.__('Top').':</td>'.'<td>'.html_print_input_text(
+    ).'</td><td>'.__('Top').':</td><td>'.html_print_input_text(
         'bb_top',
         $bb_top,
         '',
         25,
         25,
         true
-    ).'</td>'.'</tr>'.'<tr class="row_4">'.'<td colspan="4"><strong>'.__('Image Size').':</strong></td>'.'</tr>'.'<tr class="row_5">'.'<td>'.__('Width').':</td>'.'<td>'.html_print_input_text('image_width', $image_width, '', 25, 25, true).'</td>'.'<td>'.__('Height').':</td>'.'<td>'.html_print_input_text('image_height', $image_height, '', 25, 25, true).'</td>'.'</tr>'.'</table>';
+    ).'</td></tr><tr class="row_4"><td colspan="4"><strong>'.__('Image Size').':</strong></td></tr><tr class="row_5"><td>'.__('Width').':</td><td>'.html_print_input_text(
+        'image_width',
+        $image_width,
+        '',
+        25,
+        25,
+        true
+    ).'</td><td>'.__('Height').':</td><td>'.html_print_input_text(
+        'image_height',
+        $image_height,
+        '',
+        25,
+        25,
+        true
+    ).'</td></tr></table>';
 
-    // WMS Server Connection.
-    $optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">'.'<tr class="row_0">'.'<td>'.__('WMS Server URL').'</td>'.'<td>'.'<input id="type" type="hidden" name="type" value="WMS" />'.html_print_input_text('url', $mapConnectionDataUrl, '', 90, 255, true).'</td>'.'</tr>'.'<tr class="row_1">'.'<td>'.__('Layers').'</td>'.'<td>'.html_print_input_text('layers', $layers, '', 90, 255, true).'</td>'.'</tr>'.'</table>';
+        // WMS Server Connection.
+        $optionsConnectionWMSTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%"><tr class="row_0"><td>'.__('WMS Server URL').'</td><td><input id="type" type="hidden" name="type" value="WMS" />'.html_print_input_text(
+            'url',
+            $mapConnectionDataUrl,
+            '',
+            90,
+            255,
+            true
+        ).'</td></tr><tr class="row_1"><td>'.__('Layers').'</td><td>'.html_print_input_text(
+            'layers',
+            $layers,
+            '',
+            90,
+            255,
+            true
+        ).'</td></tr></table>';
 
-    if ($mapConnectionData != null) {
-        switch ($mapConnection_type) {
-            case 'OSM':
-                $optionsConnectionTypeTable = $optionsConnectionOSMTable;
-            break;
+        if ($mapConnectionData != null) {
+            switch ($mapConnection_type) {
+                case 'OSM':
+                    $optionsConnectionTypeTable = $optionsConnectionOSMTable;
+                break;
 
-            case 'Gmap':
-                $optionsConnectionTypeTable = $optionsConnectionGmapTable;
-            break;
+                case 'Gmap':
+                    $optionsConnectionTypeTable = $optionsConnectionGmapTable;
+                break;
 
-            case 'Static_Image':
-                $optionsConnectionTypeTable = $optionsConnectionImageTable;
-            break;
+                case 'Static_Image':
+                    $optionsConnectionTypeTable = $optionsConnectionImageTable;
+                break;
 
-            case 'WMS':
-                $optionsConnectionTypeTable = $optionsConnectionWMSTable;
-            break;
+                case 'WMS':
+                    $optionsConnectionTypeTable = $optionsConnectionWMSTable;
+                break;
 
-            default:
-                // Default.
-            break;
+                default:
+                    // Default.
+                break;
+            }
         }
-    }
 
-    echo "<div id='form_map_connection_type'>".$optionsConnectionTypeTable.'</div>';
+            echo "<div id='form_map_connection_type'>".$optionsConnectionTypeTable.'</div>';
 
-    echo '<h4>'.__('Preview to select the center of the map and the default position of an agent without gis data').'</h4><br>';
-    html_print_button(__('Load preview map'), 'button_refresh', false, 'refreshMapView();', 'class="sub"');
-    echo '<br /><br />';
-    echo "<div id='map' class='map_gis_step2'></div>";
+            echo '<h4>'.__('Preview to select the center of the map and the default position of an agent without gis data').'</h4><br>';
+            html_print_button(__('Load preview map'), 'button_refresh', false, 'refreshMapView();', 'class="sub next"');
+            echo '<br /><br />';
+            echo "<div id='map' class='map_gis_step2'></div>";
 
-    $table->width = '60%';
-    $table->data = [];
+            $table->width = '60%';
+            $table->data = [];
 
-    // $table->colspan[0][3] = 3;
-    $table->data[0][0] = '';
-    $table->data[0][1] = __('Map Center');
-    $table->data[0][2] = __('Default position for agents without GIS data');
+            // $table->colspan[0][3] = 3;
+            $table->data[0][0] = '';
+            $table->data[0][1] = __('Map Center');
+            $table->data[0][2] = __('Default position for agents without GIS data');
 
-    $table->data[1][0] = __('Change in the map');
-    $table->data[1][1] = html_print_radio_button_extended(
-        'radio_button',
-        1,
-        '',
-        1,
-        false,
-        'changeSetManualPosition(true, false)',
-        '',
-        true
-    );
-    $table->data[1][2] = html_print_radio_button_extended(
-        'radio_button',
-        2,
-        '',
-        0,
-        false,
-        'changeSetManualPosition(false, true)',
-        '',
-        true
-    );
+            $table->data[1][0] = __('Change in the map');
+            $table->data[1][1] = html_print_radio_button_extended(
+                'radio_button',
+                1,
+                '',
+                1,
+                false,
+                'changeSetManualPosition(true, false)',
+                '',
+                true
+            );
+            $table->data[1][2] = html_print_radio_button_extended(
+                'radio_button',
+                2,
+                '',
+                0,
+                false,
+                'changeSetManualPosition(false, true)',
+                '',
+                true
+            );
 
-    $table->data[2][0] = __('Latitude');
-    $table->data[2][1] = html_print_input_text(
-        'center_latitude',
-        $mapConnection_centerLatitude,
-        '',
-        10,
-        10,
-        true
-    );
-    $table->data[2][2] = html_print_input_text(
-        'default_latitude',
-        $mapConnection_defaultLatitude,
-        '',
-        10,
-        10,
-        true
-    );
+            $table->data[2][0] = __('Latitude');
+            $table->data[2][1] = html_print_input_text(
+                'center_latitude',
+                $mapConnection_centerLatitude,
+                '',
+                10,
+                10,
+                true
+            );
+            $table->data[2][2] = html_print_input_text(
+                'default_latitude',
+                $mapConnection_defaultLatitude,
+                '',
+                10,
+                10,
+                true
+            );
 
-    $table->data[3][0] = __('Longitude');
-    $table->data[3][1] = html_print_input_text(
-        'center_longitude',
-        $mapConnection_centerLongitude,
-        '',
-        10,
-        10,
-        true
-    );
-    $table->data[3][2] = html_print_input_text(
-        'default_longitude',
-        $mapConnection_defaultLongitude,
-        '',
-        10,
-        10,
-        true
-    );
+            $table->data[3][0] = __('Longitude');
+            $table->data[3][1] = html_print_input_text(
+                'center_longitude',
+                $mapConnection_centerLongitude,
+                '',
+                10,
+                10,
+                true
+            );
+            $table->data[3][2] = html_print_input_text(
+                'default_longitude',
+                $mapConnection_defaultLongitude,
+                '',
+                10,
+                10,
+                true
+            );
 
-    $table->data[4][0] = __('Altitude');
-    $table->data[4][1] = html_print_input_text(
-        'center_altitude',
-        $mapConnection_centerAltitude,
-        '',
-        10,
-        10,
-        true
-    );
-    $table->data[4][2] = html_print_input_text(
-        'default_altitude',
-        $mapConnection_defaultAltitude,
-        '',
-        10,
-        10,
-        true
-    );
-    html_print_table($table);
+            $table->data[4][0] = __('Altitude');
+            $table->data[4][1] = html_print_input_text(
+                'center_altitude',
+                $mapConnection_centerAltitude,
+                '',
+                10,
+                10,
+                true
+            );
+            $table->data[4][2] = html_print_input_text(
+                'default_altitude',
+                $mapConnection_defaultAltitude,
+                '',
+                10,
+                10,
+                true
+            );
+            html_print_table($table);
 
-    echo '<div class="action-buttons w90p left">';
-    html_print_submit_button(__('Save'), '', false, 'class="sub save wand"');
-    echo '</div>';
-    echo '</form>';
+            echo '<div class="action-buttons w90p float-left">';
+            html_print_submit_button(__('Save'), '', false, 'class="sub save wand"');
+            echo '</div>';
+            echo '</form>';
 
-    ui_require_javascript_file('OpenLayers/OpenLayers');
-    ui_require_javascript_file('openlayers.pandora');
-    ?>
+            ui_require_javascript_file('OpenLayers/OpenLayers');
+            ui_require_javascript_file('openlayers.pandora');
+            ?>
 <script type="text/javascript">
 var setCenter = true;
 var centerPoint = null;
@@ -649,7 +691,6 @@ function selMapConnectionType() {
             $('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();
             break;
         case 'Gmap':
-            // TODO: Validate there is a key, and use it
             $('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
             break;
         case 'Static_Image':

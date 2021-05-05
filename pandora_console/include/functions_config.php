@@ -200,8 +200,20 @@ function config_update_config()
                         $error_update[] = __('Use cert.');
                     }
 
-                    if (!config_update_value('attachment_store', (string) get_parameter('attachment_store'))) {
+                    $attachment_store = (string) get_parameter('attachment_store');
+                    if (file_exists($attachment_store) === false
+                        || is_writable($attachment_store) === false
+                    ) {
                         $error_update[] = __('Attachment store');
+                        $error_update[] .= __(
+                            "Path doesn't exists or is not writable"
+                        );
+                    } else {
+                        if (config_update_value('attachment_store', $attachment_store) === false) {
+                            $error_update[] = __(
+                                'Attachment store.'
+                            );
+                        }
                     }
 
                     if (!config_update_value('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'))) {
@@ -1645,7 +1657,11 @@ function config_update_config()
                     $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
 
                     if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
-                        $integria_hostname = 'http://'.$integria_hostname;
+                        if (empty($_SERVER['HTTPS']) === false) {
+                            $integria_hostname = 'https://'.$integria_hostname;
+                        } else {
+                            $integria_hostname = 'http://'.$integria_hostname;
+                        }
                     }
 
                     if (!config_update_value('integria_hostname', $integria_hostname)) {
@@ -3355,6 +3371,32 @@ function config_user_set_custom_config()
     if (isset($userinfo['timezone'])) {
         if ($userinfo['timezone'] != '') {
             date_default_timezone_set($userinfo['timezone']);
+        }
+    }
+
+    if ((isset($userinfo['id_skin']) && $userinfo['id_skin'] !== 0)) {
+        if ((int) $userinfo['id_skin'] === 1) {
+            $config['style'] = 'pandora';
+        }
+
+        if ((int) $userinfo['id_skin'] === 2) {
+            $config['style'] = 'pandora_black';
+        }
+    }
+
+    $skin = get_parameter('skin', false);
+    $sec2_aux = get_parameter('sec2');
+
+    if ($sec2_aux != 'godmode/groups/group_list' && $skin !== false) {
+        $id_user_aux = get_parameter('id');
+        if ($id_user_aux == $config['id_user']) {
+            if ((int) $skin === 1 || (int) $skin === 0) {
+                $config['style'] = 'pandora';
+            }
+
+            if ((int) $skin === 2) {
+                $config['style'] = 'pandora_black';
+            }
         }
     }
 

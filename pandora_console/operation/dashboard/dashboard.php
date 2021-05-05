@@ -29,9 +29,13 @@
 
 global $config;
 
-require 'vendor/autoload.php';
+require $config['homedir'].'/vendor/autoload.php';
 
 use PandoraFMS\Dashboard\Manager;
+
+if ((bool) is_metaconsole() === true) {
+    ui_require_css_file('meta_dashboards');
+}
 
 $ajaxPage = 'operation/dashboard/dashboard';
 
@@ -61,7 +65,9 @@ if (is_ajax() === true) {
             $cs->error('Unavailable method.');
         }
     } else {
-        $cs->error('Method not found. ['.$method.']');
+        if ($cs->callWidgetMethod($method) === false) {
+            $cs->error('Method not found. ['.$method.']');
+        }
     }
 } else {
     // Run.

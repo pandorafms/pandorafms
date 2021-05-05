@@ -205,7 +205,12 @@ $table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
     'w100p'
 ).'</div>';
 
-$table->data[0][2] = html_print_image('images/integria_logo_gray.png', true, ['style' => 'width: 70%; float: right;'], false);
+$integria_logo = 'images/integria_logo_gray.png';
+if ($config['style'] === 'pandora_black') {
+    $integria_logo = 'images/integria_logo.png';
+}
+
+$table->data[0][2] = html_print_image($integria_logo, true, ['style' => 'width: 70%; float: right;'], false);
 
 $table->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Type').': </p>';
 $table->data[1][0] .= '<div class="label_select_parent">'.html_print_select(

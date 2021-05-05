@@ -5,7 +5,7 @@
 # Tentacle have IANA assigned port tpc/41121 as official port.
 ##########################################################################
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # tentacle_server.pl	Tentacle Server. See https://pandorafms.com/docs/ for
 #                       protocol description.
@@ -230,6 +230,7 @@ sub print_help {
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
 	print ("\t-q\t\tQuiet. Do now print error messages.\n");
 	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
+	print ("\t-s Storage directory\n");
 	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose (display errors).\n");

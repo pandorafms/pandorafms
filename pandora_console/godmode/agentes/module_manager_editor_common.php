@@ -115,7 +115,12 @@ function add_component_selection($id_network_component_type)
         '',
         '---'.__('Manual setup').'---',
         0,
-        true
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 460px; '
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';
@@ -1357,12 +1362,11 @@ $(document).ready (function () {
         jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
-                id_tag = $(value).attr('value');
-                $("select[name='id_tag_selected[]']").append($("<option></option>").val(id_tag).html('<i>' + tag_name + '</i>'));
+                $("select[name='id_tag_selected[]']").append(value);
                 $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
-                    $("select[name='id_tag_available[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                    $("select[name='id_tag_available[]']").append(value);
                 }
             }
         });
@@ -1373,11 +1377,11 @@ $(document).ready (function () {
                 tag_name = $(value).html();
                 if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                     id_tag = $(value).attr('value');
-                    $("select[name='id_tag_available[]']").append($("<option>").val(id_tag).html('<i>' + tag_name + '</i>'));
+                    $("select[name='id_tag_available[]']").append(value);
                     $("#id_tag_selected").find("option[value='" + id_tag + "']").remove();
                     $("#id_tag_available").find("option[value='']").remove();
                     if($("#id_tag_selected option").length == 0) {
-                        $("select[name='id_tag_selected[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+                        $("select[name='id_tag_selected[]']").append(value);
                     }
                 }
         });

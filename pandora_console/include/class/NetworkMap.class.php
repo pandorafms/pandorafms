@@ -1727,7 +1727,10 @@ class NetworkMap
             $item['image_height'] = 0;
             if (empty($node['style']['image']) === false) {
                 $item['image_url'] = ui_get_full_url(
-                    $node['style']['image']
+                    $node['style']['image'],
+                    false,
+                    false,
+                    false
                 );
                 $image_size = getimagesize(
                     $config['homedir'].'/'.$node['style']['image']
@@ -2837,13 +2840,7 @@ class NetworkMap
      */
     public function loadSimpleInterface()
     {
-        $output = '<div id="open_version_dialog" class="invisible">';
-        $output .= __(
-            'In the Open version of %s can not be edited nodes or map',
-            get_product_name()
-        );
-        $output .= '</div>';
-
+        $output = '';
         $output .= '<div id="dialog_node_edit" class="invisible" title="';
         $output .= __('Edit node').'">';
         $output .= '<div class="left w100p">';
@@ -2893,6 +2890,12 @@ class NetworkMap
         $id = 'dialog_node_edit';
         if (!enterprise_installed()) {
             $id = 'open_version_dialog';
+                $output = '<div id="open_version" style="display: none" title="'.__('Warning').'">';
+                $output .= '<div class="center mrgn_top_20px w90p font_13px">'.__(
+                    'In the Open version of %s can not be edited nodes or map',
+                    get_product_name()
+                );
+                $output .= '</div></div>';
         }
 
         $output .= '<div id="'.$id.'" class="invisible" title="';
@@ -3391,7 +3394,7 @@ class NetworkMap
             && isset($this->useTooltipster)
             && $this->useTooltipster == true
         ) {
-            $output .= '<script type="text/javascript" src="'.ui_get_full_url(
+            $output = '<script type="text/javascript" src="'.ui_get_full_url(
                 'include/javascript/d3.3.5.14.js'
             ).'" charset="utf-8"></script>';
             $output .= '<script type="text/javascript" src="'.ui_get_full_url(
@@ -3443,13 +3446,35 @@ class NetworkMap
 
             $networkmap['filter']['l2_network_interfaces'] = 1;
 
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
+            $output .= '<script type="text/javascript" src="';
+            $output .= ui_get_full_url(
+                'include/javascript/d3.3.5.14.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" charset="utf-8"></script>';
+
             if (isset($this->map['__simulated']) === false) {
                 // Load context menu if manageable networkmap.
-                $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/jquery.contextMenu.js"></script>';
+                $output .= '<script type="text/javascript" src="';
+                $output .= ui_get_full_url(
+                    'include/javascript/jquery.contextMenu.js',
+                    false,
+                    false,
+                    false
+                );
+                $output .= '" charset="utf-8"></script>';
             }
 
-            $output .= '<script type="text/javascript" src="'.$config['homeurl'].'include/javascript/functions_pandora_networkmap.js"></script>';
+            $output .= '<script type="text/javascript" src="';
+            $output .= ui_get_full_url(
+                'include/javascript/functions_pandora_networkmap.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" charset="utf-8"></script>';
 
             // Open networkconsole_id div.
             $output .= '<div id="networkconsole_'.$networkmap['id'].'"';

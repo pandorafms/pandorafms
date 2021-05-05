@@ -1,56 +1,107 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// phpcs:disable Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+/**
+ * List of visual consoles, for mobile view.
+ *
+ * @category   Common Class
+ * @package    Pandora FMS
+ * @subpackage OpenSource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 ob_start();
 require_once '../include/functions_visual_map.php';
 ob_get_clean();
 // Fixed unused javascript code.
+
+/**
+ * Class to generate a list of current visual consoles defined.
+ */
 class Visualmaps
 {
 
-    private $correct_acl = false;
+    /**
+     * ACL allowed.
+     *
+     * @var boolean
+     */
+    private $allowed = false;
 
+    /**
+     * Perms needed to access this feature.
+     *
+     * @var string
+     */
     private $acl = 'VR';
 
-    private $default = true;
+    /**
+     * Default filters.
+     *
+     * @var array
+     */
+    private $defaultFilters = [];
 
-    private $default_filters = [];
-
+    /**
+     * Group.
+     *
+     * @var integer
+     */
     private $group = 0;
 
+    /**
+     * Type. Something about filtering.
+     *
+     * @var boolean
+     */
     private $type = 0;
 
-    private $list_types = null;
 
-
-    function __construct()
+    /**
+     * Builder.
+     */
+    public function __construct()
     {
         $system = System::getInstance();
 
         if ($system->checkACL($this->acl)) {
-            $this->correct_acl = true;
+            $this->allowed = true;
         } else {
-            $this->correct_acl = false;
+            $this->allowed = false;
         }
     }
 
 
+    /**
+     * Prepare filters for current view.
+     *
+     * @return void
+     */
     private function getFilters()
     {
         $system = System::getInstance();
         $user = User::getInstance();
 
-        $this->default_filters['group'] = true;
-        $this->default_filters['type'] = true;
+        $this->defaultFilters['group'] = true;
+        $this->defaultFilters['type'] = true;
 
         $this->group = (int) $system->getRequest('group', __('Group'));
         if (!$user->isInGroup($this->acl, $this->group)) {
@@ -61,7 +112,7 @@ class Visualmaps
             $this->group = 0;
         } else {
             $this->default = false;
-            $this->default_filters['group'] = false;
+            $this->defaultFilters['group'] = false;
         }
 
         $this->type = $system->getRequest('type', __('Type'));
@@ -69,14 +120,19 @@ class Visualmaps
             $this->type = '0';
         } else {
             $this->default = false;
-            $this->default_filters['type'] = false;
+            $this->defaultFilters['type'] = false;
         }
     }
 
 
+    /**
+     * Run view.
+     *
+     * @return void
+     */
     public function show()
     {
-        if (!$this->correct_acl) {
+        if (!$this->allowed) {
             $this->show_fail_acl();
         } else {
             $this->getFilters();
@@ -85,12 +141,19 @@ class Visualmaps
     }
 
 
+    /**
+     * Show a message about failed ACL access.
+     *
+     * @return void
+     */
     private function show_fail_acl()
     {
         $error['type'] = 'onStart';
         $error['title_text'] = __('You don\'t have access to this page');
         $error['content_text'] = System::getDefaultACLFailText();
-        if (class_exists('HomeEnterprise')) {
+
+        // Redirect to main page.
+        if (class_exists('HomeEnterprise') === true) {
             $home = new HomeEnterprise();
         } else {
             $home = new Home();
@@ -100,6 +163,11 @@ class Visualmaps
     }
 
 
+    /**
+     * Show visual console list header.
+     *
+     * @return void
+     */
     private function show_visualmaps()
     {
         $ui = Ui::getInstance();
@@ -124,57 +192,44 @@ class Visualmaps
     }
 
 
+    /**
+     * Show list of visual consoles.
+     *
+     * @return void
+     */
     private function listVisualmapsHtml()
     {
         $system = System::getInstance();
         $ui = Ui::getInstance();
 
-        // Create filter
-        $where = [];
-        // Order by type field
-        $where['order'] = 'type';
+        $visualmaps = visual_map_get_user_layouts();
 
-        if ($this->group != '0') {
-            $where['id_group'] = $this->group;
-        }
-
-        if ($this->type != '0') {
-            $where['type'] = $this->type;
-        }
-
-        // Only display maps of "All" group if user is administrator
-        // or has "RR" privileges, otherwise show only maps of user group
-        $id_user = $system->getConfig('id_user');
-        $own_info = get_user_info($id_user);
-        if ($own_info['is_admin'] || $system->checkACL($this->acl)) {
-            $maps = visual_map_get_user_layouts();
-        } else {
-            $maps = visual_map_get_user_layouts($id_user, false, false, false);
-        }
-
-        if (empty($maps)) {
-            $maps = [];
-        }
-
-        $list = [];
-        foreach ($maps as $map) {
-            $row = [];
-            $row[__('Name')] = '<a class="ui-link" data-ajax="false" href="index.php?page=visualmap&id='.$map['id'].'">'.io_safe_output($map['name']).'</a>';
-            // $row[__('Type')] = $map['type'];
-            $row[__('Group')] = ui_print_group_icon($map['id_group'], true, 'groups_small', '', false);
-            $list[] = $row;
-        }
-
-        if (count($maps) == 0) {
-            $ui->contentAddHtml('<p class="color_ff0">'.__('No maps defined').'</p>');
+        if (empty($visualmaps) === true) {
+            $ui->contentAddHtml('<p style="color: #ff0000;">'.__('No maps defined').'</p>');
         } else {
             $table = new Table();
+            // Without header jquery.mobile crashes.
+            $table->addHeader(['']);
             $table->id = 'list_visualmaps';
-            $table->importFromHash($list);
-            $ui->contentAddHtml($table->getHTML());
-        }
+            foreach ($visualmaps as $map) {
+                $link = '<a class="ui-link" data-ajax="false" ';
+                $link .= ' href="index.php?page=visualmap&id=';
+                $link .= $map['id'].'">'.io_safe_output($map['name']).'</a>';
 
-        $ui->contentAddLinkListener('list_visualmaps');
+                $row = $link;
+                $row .= ui_print_group_icon(
+                    $map['id_group'],
+                    true,
+                    'groups_small',
+                    '',
+                    false
+                );
+                $table->addRow([ $map['id'].' flex-center' => $row]);
+            }
+
+            $ui->contentAddHtml($table->getHTML());
+            $ui->contentAddLinkListener('list_visualmaps');
+        }
     }
 
 

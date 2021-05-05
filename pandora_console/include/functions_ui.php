@@ -322,7 +322,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
 			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
+			<td class="title pandora_upper pdd_t_10px text_left"><b>'.$text_title.'</b></td>
 			<td class="icon right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
@@ -333,7 +333,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output .= '</td>
 		</tr>
 		<tr>
-			<td class="black pdd_t_10px" style="color: #000">'.$text_message.'</td>
+			<td class="black pdd_t_10px invert_filter" style="color: #000">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -663,12 +663,17 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
         if (empty($icon)) {
             $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
         } else {
+            $class = 'bot';
+            if ($icon === 'transmit') {
+                $class .= ' invert_filter';
+            }
+
             $output .= html_print_image(
                 'images/'.$path.'/'.$icon.'.png',
                 true,
                 [
                     'style' => $style,
-                    'class' => 'bot',
+                    'class' => $class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -4365,7 +4370,7 @@ function ui_print_page_header(
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
-		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4670,6 +4675,7 @@ function ui_print_agent_autocomplete_input($parameters)
 {
     global $config;
 
+    $text_color = '';
     // Normalize and extract the data from $parameters
     // ------------------------------------------------------------------.
     $return = false;
@@ -4700,6 +4706,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $icon_agent = 'images/search_agent.png';
 
     if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
 
@@ -5203,7 +5210,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						
 						//Set icon
 						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+							.css("background","url(\"'.$icon_image.'\") right center no-repeat '.$icon_image.'");
 						return;
 					}
 					else {
@@ -5544,8 +5551,13 @@ function ui_print_agent_autocomplete_input($parameters)
     // ------------------------------------------------------------------.
     $html = '';
 
+    $text_color = '';
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
+    }
+
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right;';
+    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

@@ -879,6 +879,7 @@ function edit_node(data_node, dblClick) {
     ); // It doesn't eval the possible XSS so it's ok
     $("#dialog_node_edit").dialog("open");
     $("#open_version_dialog").dialog();
+    $("#open_version").dialog();
 
     if (node_selected.id_agent == undefined || node_selected.type == 3) {
       //Fictional node
@@ -1211,43 +1212,43 @@ function add_agent_node(agents) {
             graph.nodes.push(temp_node);
 
             /*jQuery.each(data['rel'], function(i, relation) {
-							var temp_link = {};
-							if (i == 0) {
-								var found = 0;
-								temp_link['source'] = graph.nodes[temp_node['id']];
-								jQuery.each(graph.nodes, function(j, element) {
-									if (element.id_agent == relation['id_agent_end']) {
-										found = j;
-									}
-								});
-								temp_link['target'] = graph.nodes[found];
-							}
-							else {
-								var found = 0;
-								temp_link['target'] = graph.nodes[temp_node['id']];
-								jQuery.each(graph.nodes, function(j, element) {
-									if (element.id_agent == relation['id_agent_start']) {
-										found = j;
-									}
-								});
-								temp_link['source'] = graph.nodes[found];
-							}
-							temp_link['id_db'] = String(relation['id_db']);
-							temp_link['id_agent_end'] = String(relation['id_agent_end']);
-							temp_link['id_agent_start'] = String(relation['id_agent_start']);
-							temp_link['id_module_end'] = relation['id_module_end'];
-							temp_link['id_module_start'] = relation['id_module_start'];
-							temp_link['source_in_db'] = String(relation['source_in_db']);
-							temp_link['target_in_db'] = String(relation['target_in_db']);
-							temp_link['arrow_end'] = relation['arrow_end'];
-							temp_link['arrow_start'] = relation['arrow_start'];
-							temp_link['status_end'] = relation['status_end'];
-							temp_link['status_start'] = relation['status_start'];
-							temp_link['text_end'] = relation['text_end'];
-							temp_link['text_start'] = relation['text_start'];
-							
-							graph.links.push(temp_link);
-						});*/
+              var temp_link = {};
+              if (i == 0) {
+                var found = 0;
+                temp_link['source'] = graph.nodes[temp_node['id']];
+                jQuery.each(graph.nodes, function(j, element) {
+                  if (element.id_agent == relation['id_agent_end']) {
+                    found = j;
+                  }
+                });
+                temp_link['target'] = graph.nodes[found];
+              }
+              else {
+                var found = 0;
+                temp_link['target'] = graph.nodes[temp_node['id']];
+                jQuery.each(graph.nodes, function(j, element) {
+                  if (element.id_agent == relation['id_agent_start']) {
+                    found = j;
+                  }
+                });
+                temp_link['source'] = graph.nodes[found];
+              }
+              temp_link['id_db'] = String(relation['id_db']);
+              temp_link['id_agent_end'] = String(relation['id_agent_end']);
+              temp_link['id_agent_start'] = String(relation['id_agent_start']);
+              temp_link['id_module_end'] = relation['id_module_end'];
+              temp_link['id_module_start'] = relation['id_module_start'];
+              temp_link['source_in_db'] = String(relation['source_in_db']);
+              temp_link['target_in_db'] = String(relation['target_in_db']);
+              temp_link['arrow_end'] = relation['arrow_end'];
+              temp_link['arrow_start'] = relation['arrow_start'];
+              temp_link['status_end'] = relation['status_end'];
+              temp_link['status_start'] = relation['status_start'];
+              temp_link['text_end'] = relation['text_end'];
+              temp_link['text_start'] = relation['text_start'];
+            	
+              graph.links.push(temp_link);
+            });*/
 
             draw_elements_graph();
             init_drag_and_drop();
@@ -3385,8 +3386,8 @@ function init_graph(parameter_object) {
           "stroke-opacity: 0.75; " +
           "stroke-dasharray: none; " +
           "stroke-dashoffset: 0"
-      );
-
+      )
+      .attr("class", "fill_222");
     window.layer_graph
       .append("text")
       .append("tspan")
@@ -3406,6 +3407,7 @@ function init_graph(parameter_object) {
           "stroke: none; " +
           "font-family: Verdana"
       )
+      .attr("class", "fill_fff")
       .attr(
         "x",
         networkmap_dimensions[0] + node_radius - holding_area_dimensions[0]
@@ -4072,7 +4074,7 @@ function draw_elements_graph() {
 
   node_temp
     .append("text")
-    .attr("class", "node_text")
+    .attr("class", "node_text fill_fff")
     .attr("id", "node_text_" + networkmap_id)
     .attr(
       "style",
@@ -4094,7 +4096,7 @@ function draw_elements_graph() {
     .text(function(d) {
       return ellipsize(get_node_name_ov(d), 30);
     })
-    .classed("dragable_node", true) //own dragable
+    .classed("dragable_node fill_fff", true) //own dragable
     .on("click", selected_node)
     .on("contextmenu", function(d) {
       show_menu("node", d);

@@ -43,11 +43,12 @@ use PandoraFMS\Enterprise\Cluster;
 /**
  * Parse the "other" parameter.
  *
- * @param  string $other
- * @param  mixed  $otherType
+ * @param  string  $other
+ * @param  mixed   $otherType
+ * @param  boolean $rawDecode Decode string in which the sequences with percent (%) signs followed by two hex digits have been replaced with literal characters.
  * @return mixed
  */
-function parseOtherParameter($other, $otherType)
+function parseOtherParameter($other, $otherType, $rawDecode)
 {
     switch ($otherType) {
         case 'url_encode':
@@ -65,12 +66,12 @@ function parseOtherParameter($other, $otherType)
                     'data' => explode($separator, $other),
                 ];
                 foreach ($returnVar['data'] as $index => $element) {
-                    $returnVar['data'][$index] = urldecode($element);
+                    $returnVar['data'][$index] = $rawDecode ? rawurldecode($element) : urldecode($element);
                 }
             } else {
                 $returnVar = [
                     'type' => 'string',
-                    'data' => urldecode($other),
+                    'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
                 ];
             }
         break;
@@ -375,6 +376,103 @@ function api_get_test_event_replication_db()
 
 
 // -------------------------DEFINED OPERATIONS FUNCTIONS-----------------
+
+
+/**
+ * Example: http://localhost/pandora_console/include/api.php?op=get&op2=license&user=admin&apipass=1234&pass=pandora&return_type=json
+ * Retrieve license information.
+ *
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param string $returnType Return type (string, json...).
+ *
+ * @return void
+ */
+function api_get_license($trash1, $trash2, $trash3, $returnType='json')
+{
+    global $config;
+    check_login();
+
+    if (! check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', $returnType);
+        return;
+    }
+
+    enterprise_include_once('include/functions_license.php');
+    $license = enterprise_hook('license_get_info');
+    if ($license === ENTERPRISE_NOT_HOOK) {
+        // Not an enterprise environment?
+        if (license_free()) {
+            $license = 'PANDORA_FREE';
+        }
+
+        returnData(
+            $returnType,
+            [
+                'type' => 'array',
+                'data' => ['license_mode' => $license],
+            ]
+        );
+        return;
+    }
+
+    returnData(
+        $returnType,
+        [
+            'type' => 'array',
+            'data' => $license,
+        ]
+    );
+
+}
+
+
+/**
+ * Example: http://localhost/pandora_console/include/api.php?op=get&op2=license_remaining&user=admin&apipass=1234&pass=pandora&return_type=json
+ * Retrieve license status agents or modules left.
+ *
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param null   $trash1     Not used.
+ * @param string $returnType Return type (string, json...).
+ *
+ * @return void
+ */
+function api_get_license_remaining(
+    $trash1,
+    $trash2,
+    $trash3,
+    $returnType='json'
+) {
+    enterprise_include_once('include/functions_license.php');
+    $license = enterprise_hook('license_get_info');
+    if ($license === ENTERPRISE_NOT_HOOK) {
+        if (license_free()) {
+            returnData(
+                $returnType,
+                [
+                    'type' => 'integer',
+                    'data' => PHP_INT_MAX,
+                ]
+            );
+        } else {
+            returnError('get-license', 'Failed to verify license.');
+        }
+
+        return;
+    }
+
+    returnData(
+        $returnType,
+        [
+            'type' => 'integer',
+            'data' => ($license['limit'] - $license['count_enabled']),
+        ]
+    );
+}
+
+
 function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 {
     $returnAllGroup = true;
@@ -1381,6 +1479,12 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
         return;
     }
 
+    // Check if group allow more agents or have limit stablished.
+    if (group_allow_more_agents($idGroup, true, 'update') === false) {
+        returnError('Agent cannot be updated due to the maximum agent limit for this group');
+        return;
+    }
+
     // Check selected parent
     if ($idParent != 0) {
         $parentCheck = agents_check_access_agent($idParent);
@@ -1578,10 +1682,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     // Check if agent exists (BUG WC-50518-2).
     if ($alias == '' && $alias_as_name === 0) {
         returnError('No agent alias specified');
-    } else if (agents_get_agent_id($server_name)) {
+    } else if (agents_get_agent_id($nombre_agente)) {
         returnError('The agent name already exists in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('The group does not exist.');
+    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+        returnError('Agent cannot be created due to the maximum agent limit for this group');
     } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
         returnError('The OS does not exist.');
     } else if ($server_name === false) {
@@ -6277,6 +6383,136 @@ function api_set_delete_module_template_by_names($id, $id2, $other, $trash1)
 
 
 /**
+ * Validate an alert
+ *
+ * @param  string $id1    Alert template name (eg. 'Warning condition')
+ * @param  string $trash1 Do nnot use.
+ * @param  array  $other  [1] id/name agent.
+ *                       [2] id/name module
+ *                       [3] Use agent/module alias.
+ * @param  string $trash2 Do not use
+ * @return void
+ */
+function api_set_validate_alert($id1, $trash1, $other, $trash2)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'LW')) {
+        returnError('forbidden');
+        return;
+    }
+
+    if ($id1 === '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_template cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][0] == '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_agent cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][1] == '') {
+        returnError(
+            'error_validate_alert',
+            __('Error validating alert. Id_module cannot be left blank.')
+        );
+        return;
+    }
+
+    if ($other['data'][2] == 1) {
+        $use_alias = true;
+    }
+
+    $values = [
+        'alert_name'      => $id1,
+        'id_agent'        => $other['data'][0],
+        'id_agent_module' => $other['data'][1],
+    ];
+
+    if ($use_alias === true) {
+        $id_agents = agents_get_agent_id_by_alias($values['id_agent']);
+
+        foreach ($id_agents as $id) {
+            $values['id_agent'] = $id['id_agente'];
+            $values['id_agent_module'] = db_get_value_filter(
+                'id_agente_modulo as id_module',
+                'tagente_modulo',
+                [
+                    'id_agente' => $values['id_agent'],
+                    'nombre'    => $values['id_agent_module'],
+                ]
+            );
+
+            $id_template = db_get_value_filter(
+                'id as id_template',
+                'talert_templates',
+                [
+                    'name' => $values['alert_name'],
+                ]
+            );
+
+             // Get alert id.
+            $id_alert = db_get_value_filter(
+                'id as id_alert',
+                'talert_template_modules',
+                [
+                    'id_agent_module'   => $values['id_agent_module'],
+                    'id_alert_template' => $id_template,
+                ]
+            );
+        }
+
+        $result = alerts_validate_alert_agent_module($id_alert);
+    } else {
+        $id_template = db_get_value_filter(
+            'id as id_template',
+            'talert_templates',
+            [
+                'name' => $values['alert_name'],
+            ]
+        );
+
+        // Get alert id.
+        $id_alert = db_get_value_filter(
+            'id as id_alert',
+            'talert_template_modules',
+            [
+                'id_agent_module'   => $values['id_agent_module'],
+                'id_alert_template' => $id_template,
+            ]
+        );
+
+        if ($id_alert === false) {
+            returnError(
+                'error_validate_alert',
+                __('Error validating alert. Specified alert does not exist.')
+            );
+            return;
+        }
+
+        $result = alerts_validate_alert_agent_module($id_alert);
+    }
+
+    if ($result) {
+        returnData('string', ['type' => 'string', 'data' => 'Alert succesfully validated']);
+    } else {
+        returnData('string', ['type' => 'string', 'data' => __('Error validating alert')]);
+    }
+}
+
+
+/**
  * Validate all alerts. And return a message with the result of the operation.
  *
  * @param string Don't use.
@@ -8175,6 +8411,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
     $values['custom_id'] = $safe_other_data[5];
     $values['contact'] = $safe_other_data[6];
     $values['other'] = $safe_other_data[7];
+    $values['max_agents'] = $safe_other_data[8];
 
     $id_group = groups_create_group($group_name, $values);
 
@@ -8254,7 +8491,8 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
     $disabled = $other['data'][5];
     $custom_id = $other['data'][6];
     $contact = $other['data'][7];
-    $other = $other['data'][8];
+    $otherData = $other['data'][8];
+    $maxAgents = $other['data'][9];
 
     $return = db_process_sql_update(
         'tgrupo',
@@ -8267,7 +8505,8 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
             'disabled'    => $disabled,
             'custom_id'   => $custom_id,
             'contact'     => $contact,
-            'other'       => $other,
+            'other'       => $otherData,
+            'max_agents'  => $maxAgents,
         ],
         ['id_grupo' => $id_group]
     );
@@ -12315,6 +12554,7 @@ function api_set_create_tag($id, $trash1, $other, $returnType)
 
 
 // http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=2|system|3|admin|2|1|10|0|comments||Pandora||critical_inst|warning_inst|unknown_inst|other||&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+// http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_event&id=name_event&other=textodelevento|10|2|0|admin|going_down_critical|4|&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
 function api_set_create_event($id, $trash1, $other, $returnType)
 {
     global $config;

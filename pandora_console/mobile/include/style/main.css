@@ -18,12 +18,26 @@ body {
   font-size: 10px !important;
 }
 
+.center {
+  text-align: center;
+}
+
+.invisible {
+  display: none;
+}
+
 .ui-header .ui-title {
   font-size: 14px !important;
 }
 
 .ui-btn-inner {
   font-weight: bold;
+}
+
+td.flex-center {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /*INIT----------Tactical styles-----------------------------------------*/
@@ -341,6 +355,22 @@ tr.group_view_data,
 tr.events {
   border-bottom: 6px solid #f7f7f7 !important;
   font-size: 12px !important;
+}
+
+table.event_details {
+  height: 14px;
+  color: #424242;
+}
+
+table.event_details tr th {
+  text-align: left;
+}
+
+table.event_details td:not(:first-child) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-items: start;
 }
 
 table#list_events th {
@@ -1086,6 +1116,11 @@ li.ui-btn {
   border-radius: 0px;
 }
 
+.center {
+  margin: 0 auto;
+  text-align: center;
+}
+
 /* For mobiles */
 @media screen and (max-width: 750px) {
   .ui-content > .ui-btn {
@@ -1261,6 +1296,11 @@ table.tactical_bars {
   -webkit-border-radius: 15px !important;
 }
 
+.ui-header.ui-bar-a .ui-btn-icon-notext .ui-btn-inner .ui-icon {
+  margin-top: -3px;
+  margin-left: 3.5px;
+}
+
 #login_btn-container .ui-icon {
   background-color: #333 !important;
   border-radius: 15px !important;
@@ -1341,6 +1381,17 @@ span.nobold * {
   display: block !important;
 }
 
+.status_rounded_rectangles.forced_title {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+}
+
+.ui-content .ui-listview,
+.ui-panel-inner > .ui-listview {
+  margin: 0 !important;
+}
+
 #list_Modules *,
 #list_agent_Modules *,
 #list_agents *,
@@ -1385,7 +1436,7 @@ div.nodata_container {
 }
 
 .ui-icon-delete {
-  margin-top: -3px !important;
+  margin-top: -3px;
 }
 
 .empty_advice {

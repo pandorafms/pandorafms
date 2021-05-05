@@ -27,6 +27,8 @@ class Modules
 
     private $free_search = '';
 
+    private $name = '';
+
     private $module_group = -1;
 
     private $tag = '';
@@ -105,6 +107,10 @@ class Modules
 
         if (isset($filters['status'])) {
             $this->status = $filters['status'];
+        }
+
+        if (isset($filters['name'])) {
+            $this->name = $filters['name'];
         }
     }
 
@@ -371,6 +377,14 @@ class Modules
                 $this->free_search,
                 $this->free_search,
                 $this->free_search
+            );
+        }
+
+        // Search by module name.
+        if ($this->name != '') {
+            $sql_conditions .= sprintf(
+                " AND lower(tagente_modulo.nombre) LIKE lower('%%%s%%') ",
+                $this->name
             );
         }
 

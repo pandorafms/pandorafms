@@ -1045,6 +1045,21 @@ if (get_parameter('login', 0) !== 0) {
     }
 }
 
+
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+
 // Header.
 if ($config['pure'] == 0) {
     echo '<div id="container"><div id="head">';
@@ -1078,8 +1093,6 @@ session_write_close();
 if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
-
-
 
 // Page loader / selector.
 if ($searchPage) {

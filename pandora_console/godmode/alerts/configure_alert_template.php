@@ -143,7 +143,7 @@ if ($duplicate_template) {
     // If user doesn't have the permission to access All group and source template is All group, then group is changed to the first group of user.
     if ($can_edit_all == false && a_template['id_group'] == 0) {
         $a_template['id_group'] = users_get_first_group(false, 'LM', false);
-    } 
+    }
 
     $id = alerts_duplicate_alert_template($source_id, $a_template['id_group']);
 
@@ -609,7 +609,7 @@ if ($step == 2) {
         1,
         $monday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Tue');
     $table->data[0][1] .= html_print_checkbox(
@@ -617,7 +617,7 @@ if ($step == 2) {
         1,
         $tuesday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Wed');
     $table->data[0][1] .= html_print_checkbox(
@@ -625,7 +625,7 @@ if ($step == 2) {
         1,
         $wednesday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Thu');
     $table->data[0][1] .= html_print_checkbox(
@@ -633,7 +633,7 @@ if ($step == 2) {
         1,
         $thursday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Fri');
     $table->data[0][1] .= html_print_checkbox(
@@ -641,7 +641,7 @@ if ($step == 2) {
         1,
         $friday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Sat');
     $table->data[0][1] .= html_print_checkbox(
@@ -649,7 +649,7 @@ if ($step == 2) {
         1,
         $saturday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[0][1] .= __('Sun');
     $table->data[0][1] .= html_print_checkbox(
@@ -657,7 +657,7 @@ if ($step == 2) {
         1,
         $sunday,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[0][2] = __('Use special days list');
@@ -666,7 +666,7 @@ if ($step == 2) {
         1,
         $special_day,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[1][0] = __('Time from');
@@ -687,7 +687,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[1][2] = __('Time to');
     $table->data[1][3] = html_print_input_text(
@@ -707,7 +707,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->colspan['threshold'][1] = 3;
@@ -723,7 +723,7 @@ if ($step == 2) {
         false,
         true,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[3][0] = __('Min. number of alerts');
@@ -744,7 +744,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[3][2] = __('Reset counter for non-sustained alerts');
@@ -757,7 +757,7 @@ if ($step == 2) {
         1,
         $min_alerts_reset_counter,
         true,
-        $is_central_policies_on_node | $disabled,
+        ($is_central_policies_on_node | $disabled),
         '',
         false,
         $create_template == 1 ? 'checked=checked' : ''
@@ -781,7 +781,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[4][2] = __('Disable event');
@@ -790,7 +790,7 @@ if ($step == 2) {
         1,
         $disable_event,
         true,
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[5][0] = __('Default action');
@@ -818,7 +818,7 @@ if ($step == 2) {
         true,
         false,
         false,
-        $is_central_policies_on_node | $disabled,
+        ($is_central_policies_on_node | $disabled),
         false,
         false,
         0
@@ -840,7 +840,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
     $table->data[6][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
@@ -949,7 +949,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
     $table->colspan[0][1] = 2;
 
@@ -975,7 +975,7 @@ if ($step == 2) {
             0,
             '',
             false,
-            $is_central_policies_on_node | $disabled,
+            ($is_central_policies_on_node | $disabled),
             "removeTinyMCE('textarea_field".$i."')",
             '',
             true
@@ -988,7 +988,7 @@ if ($step == 2) {
             0,
             '',
             true,
-            $is_central_policies_on_node | $disabled,
+            ($is_central_policies_on_node | $disabled),
             "addTinyMCE('textarea_field".$i."')",
             '',
             true
@@ -1004,7 +1004,7 @@ if ($step == 2) {
             'class="fields" min-height-40px',
             true,
             '',
-            $is_central_policies_on_node | $disabled
+            ($is_central_policies_on_node | $disabled)
         );
 
         // Recovery.
@@ -1016,7 +1016,7 @@ if ($step == 2) {
             0,
             '',
             false,
-            $is_central_policies_on_node | $disabled,
+            ($is_central_policies_on_node | $disabled),
             "removeTinyMCE('textarea_field".$i."_recovery')",
             '',
             true
@@ -1029,7 +1029,7 @@ if ($step == 2) {
             0,
             '',
             true,
-            $is_central_policies_on_node | $disabled,
+            ($is_central_policies_on_node | $disabled),
             "addTinyMCE('textarea_field".$i."_recovery')",
             '',
             true
@@ -1045,7 +1045,7 @@ if ($step == 2) {
             'class="fields min-height-40px"',
             true,
             '',
-            $is_central_policies_on_node | $disabled
+            ($is_central_policies_on_node | $disabled)
         );
     }
 } else {
@@ -1102,7 +1102,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
 
@@ -1134,7 +1134,7 @@ if ($step == 2) {
         false,
         true,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     ).'</div>';
 
 
@@ -1147,7 +1147,7 @@ if ($step == 2) {
         '',
         true,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     $table->data[2][0] = __('Priority');
@@ -1162,7 +1162,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        $is_central_policies_on_node | $disabled
+        ($is_central_policies_on_node | $disabled)
     );
 
     if (defined('METACONSOLE')) {

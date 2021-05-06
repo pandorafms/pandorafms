@@ -577,7 +577,7 @@ function modules_update_agent_module(
  * Creates a module in an agent.
  *
  * @param integer $id_agent   Agent id.
- * @param integer $name       Module name id.
+ * @param string  $name       Module name id.
  * @param array   $values     Extra values for the module.
  * @param boolean $disableACL Disable the ACL checking, for default false.
  * @param mixed   $tags       Array with tag's ids or false.
@@ -586,7 +586,7 @@ function modules_update_agent_module(
  */
 function modules_create_agent_module(
     int $id_agent,
-    int $name,
+    string $name,
     array $values=[],
     bool $disableACL=false,
     $tags=false

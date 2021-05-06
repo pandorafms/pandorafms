@@ -2755,7 +2755,7 @@ function alerts_ui_update_or_create_actions($update=true)
         $al_action = alerts_get_alert_action($id);
         if ($al_action !== false) {
             if ($al_action['id_group'] == 0) {
-                if (! check_acl($config['id_user'], 0, 'PM')) {
+                if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
                         'ACL Violation',
                         'Trying to access Alert Management'

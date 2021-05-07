@@ -141,6 +141,7 @@ function snmp_browser_show_add_module_massive(module_target = 'agent') {
 
     var title = '<?php echo __('Add modules'); ?>';
     var snmp_extradata = snmp_browser_create_modules(module_target);
+    snmp_extradata.push({name:"target_port", value:$("#target_port").val()});
     // Load dinamically modal form.
     load_modal({
         form: 'snmp_browser_add_module_form',

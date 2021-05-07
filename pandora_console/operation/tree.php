@@ -356,27 +356,33 @@ enterprise_hook('close_meta_frame');
                 if (data.success) {
                     $(".loading_tree").hide();
                     var foundMessage = '';
-                    switch (parameters['type']) {
-                        case 'policies':
-                            foundMessage = "<?php echo __('Policies found'); ?>";
-                            break;
-                        case 'os':
-                            foundMessage = "<?php echo __('Operating systems found'); ?>";
-                            break;
-                        case 'tag':
-                            foundMessage = "<?php echo __('Tags found'); ?>";
-                            break;
-                        case 'module_group':
-                            foundMessage = "<?php echo __('Module Groups found'); ?>";
-                            break;
-                        case 'module':
-                            foundMessage = "<?php echo __('Modules found'); ?>";
-                            break;
-                        case 'group':
-                        default:
-                            foundMessage = "<?php echo __('Groups found'); ?>";
-                            break;
+                    if (data.tree.length === 0) {
+                        foundMessage = "<?php echo __('No data found'); ?>";
+                        $("div#tree-controller-recipient").append(foundMessage);
+                    } else {
+                        switch (parameters['type']) {
+                            case 'policies':
+                                foundMessage = "<?php echo __('Policies found'); ?>";
+                                break;
+                            case 'os':
+                                foundMessage = "<?php echo __('Operating systems found'); ?>";
+                                break;
+                            case 'tag':
+                                foundMessage = "<?php echo __('Tags found'); ?>";
+                                break;
+                            case 'module_group':
+                                foundMessage = "<?php echo __('Module Groups found'); ?>";
+                                break;
+                            case 'module':
+                                foundMessage = "<?php echo __('Modules found'); ?>";
+                                break;
+                            case 'group':
+                            default:
+                                foundMessage = "<?php echo __('Groups found'); ?>";
+                                break;
+                        }
                     }
+                    
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),

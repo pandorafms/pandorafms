@@ -2462,12 +2462,20 @@ sub p_decode_json {
 	my ($pa_config, $data) = @_;
 	my $decoded_data;
 	
-	if ($JSON::VERSION > 2.90) {
-		# Initialize JSON manager.
-		my $json = JSON->new->utf8->allow_nonref;
-		$decoded_data = $json->decode($data);
-	} else {
-		$decoded_data = decode_json($data);
+	eval {
+		local $SIG{__DIE__};
+		if ($JSON::VERSION > 2.90) {
+			# Initialize JSON manager.
+			my $json = JSON->new->utf8->allow_nonref;
+			$decoded_data = $json->decode($data);
+		} else {
+			$decoded_data = decode_json($data);
+		}
+	};
+	if ($@){
+		if (defined($data)) {
+			logger($pa_config, 'Failed to decode data: '.$@, 5);
+		}
 	}
 
 	return $decoded_data;

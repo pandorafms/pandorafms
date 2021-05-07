@@ -55,7 +55,7 @@ $params = [
     agents_get_name($id_agent),
 ];
 
-$result = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents', $params, false, 'json', ',');
+$result = integria_api_call(null, null, null, null, 'get_incidents', $params, false, 'json', ',');
 
 $result = json_decode($result, true);
 

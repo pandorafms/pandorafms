@@ -32,7 +32,7 @@ if ($config['integria_enabled'] == 0) {
 }
 
 // Check connection to Integria IMS API.
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -46,10 +46,10 @@ ui_require_css_file('integriaims');
 $incident_id = (int) get_parameter('incident_id');
 // API call.
 $result_api_call_list = integria_api_call(
-    $config['integria_hostname'],
-    $config['integria_user'],
-    $config['integria_pass'],
-    $config['integria_api_pass'],
+    null,
+    null,
+    null,
+    null,
     'get_incident_details',
     [$incident_id]
 );
@@ -159,7 +159,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
         $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
 
-        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', ';');
+        $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', ';');
 
         // API method returns '0' string if success.
         $file_added = ($result_api_call === '0') ? true : false;
@@ -176,7 +176,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
 // Delete file.
 if (isset($_GET['delete_file'])) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'delete_file', [$delete_file_id]);
+    $result_api_call = integria_api_call(null, null, null, null, 'delete_file', [$delete_file_id]);
 
     $file_deleted = false;
 
@@ -193,7 +193,7 @@ if (isset($_GET['delete_file'])) {
 
 // Download file.
 if (isset($_GET['download_file'])) {
-    $file_base64 = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'download_file', [$download_file_id]);
+    $file_base64 = integria_api_call(null, null, null, null, 'download_file', [$download_file_id]);
     ob_end_clean();
 
     $decoded = base64_decode($file_base64);
@@ -219,7 +219,7 @@ if (isset($_GET['download_file'])) {
 }
 
 // Retrieve files belonging to incident and create list table.
-$result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_files', [$incident_id]);
+$result_api_call = integria_api_call(null, null, null, null, 'get_incident_files', [$incident_id]);
 
 if ($result_api_call != false && strlen($result_api_call) > 0) {
     $files = [];
@@ -322,7 +322,7 @@ $table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_su
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0'], false, '', '|;|');
+    $result_api_call = integria_api_call(null, null, null, null, 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0'], false, '', '|;|');
 
     // API method returns id of new comment if success.
     $comment_added = ($result_api_call >= '0') ? true : false;
@@ -335,7 +335,7 @@ if ($upload_comment && $array_get_incidents[6] != 7) {
 }
 
 // Retrieve comments belonging to incident and create comments table.
-$result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_workunits', [$incident_id]);
+$result_api_call = integria_api_call(null, null, null, null, 'get_incident_workunits', [$incident_id]);
 
 if ($result_api_call != false && strlen($result_api_call) > 0) {
     $comments = [];

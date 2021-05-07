@@ -1527,6 +1527,8 @@ ALTER TABLE `tusuario` MODIFY COLUMN `default_event_filter` int(10) unsigned NOT
 	ADD CONSTRAINT `fk_filter_id` FOREIGN KEY `fk_filter_id` (`id_filter`) REFERENCES `tevent_filter` (`id_filter`) ON DELETE SET NULL ON UPDATE RESTRICT,
 	DROP FOREIGN KEY `fk_id_filter`,
 	DROP INDEX `fk_id_filter`;
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_user` VARCHAR(60);
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_pass` VARCHAR(45);
 
 
 -- ---------------------------------------------------------------------

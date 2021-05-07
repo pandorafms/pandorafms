@@ -43,7 +43,7 @@ if ($config['integria_enabled'] == 0) {
 }
 
 // Check connection to Integria IMS API.
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -70,10 +70,10 @@ $delete_incident = get_parameter('delete_incident');
 if ($delete_incident) {
     // Call Integria IMS API method to delete an incident.
     $result_api_call_delete = integria_api_call(
-        $config['integria_hostname'],
-        $config['integria_user'],
-        $config['integria_pass'],
-        $config['integria_api_pass'],
+        null,
+        null,
+        null,
+        null,
         'delete_incident',
         [$delete_incident]
     );

@@ -302,11 +302,16 @@ if ($status == AGENT_MODULE_STATUS_NORMAL) {
 		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
 }
 
+$min_hours_condition = '<';
+if ($not_condition !== '') {
+    $min_hours_condition = '>';
+}
+
 if (!empty($min_hours_status)) {
     $date = new DateTime(null, new DateTimeZone($config['timezone']));
     $current_timestamp = $date->getTimestamp();
     $max_time = ($current_timestamp - ((int) $min_hours_status * 3600));
-    $sql_conditions .= sprintf(' AND tagente_estado.last_status_change < %d', $max_time);
+    $sql_conditions .= sprintf(' AND tagente_estado.last_status_change '.$min_hours_condition.' %d', $max_time);
 }
 
 // Filter by agent custom fields.
@@ -320,7 +325,7 @@ if (!empty($ag_custom_fields)) {
     }
 
     if (!empty($cf_filter)) {
-        $sql_conditions_custom_fields = ' AND tagente.id_agente IN (
+        $sql_conditions_custom_fields = ' AND tagente.id_agente '.$not_condition.' IN (
 				SELECT tagent_custom_data.id_agent
 				FROM tagent_custom_data
 				WHERE '.implode(' AND ', $cf_filter).')';
@@ -731,7 +736,7 @@ if ($not_condition !== '') {
                 'value'   => 'NOT',
             ]
         );
-        $table->data[3][1] .= __('Not condition').ui_print_help_tip(__('If this option is enabled, the events that DO NOT comply with this condition will be displayed.'), true);
+        $table->data[3][1] .= __('Not condition').ui_print_help_tip(__('If this option is checked, those that do not meet any of the conditions will be displayed.'), true);
         $table->data[3][1] .= '</div>';
 
         $table_custom_fields = new stdClass();

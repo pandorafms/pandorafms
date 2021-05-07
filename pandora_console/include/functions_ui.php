@@ -5197,7 +5197,7 @@ function ui_print_agent_autocomplete_input($parameters)
 					if (cache_'.$input_name.'[groupId] == null) {
 						cache_'.$input_name.'[groupId] = {};
 					}
-					
+
 					//Set loading
                     setInputBackground("'.$input_id.'", "'.$spinner_image.'");
 					
@@ -5273,8 +5273,6 @@ function ui_print_agent_autocomplete_input($parameters)
 								return;
 							}
 						});
-
-                        setInputBackground("'.$input_id.'", "'.$icon_image.'");
 
 					return;
 				},

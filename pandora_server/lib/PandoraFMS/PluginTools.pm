@@ -792,7 +792,8 @@ sub transfer_xml {
 	my $file_name;
 	my $file_path;
 
-	if (! -f $xml) {
+	if ($xml =~ /\n/ || ! -f $xml) {
+		# Not a file, it's content.
 		if (! (empty ($name))) {
 			$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 		}

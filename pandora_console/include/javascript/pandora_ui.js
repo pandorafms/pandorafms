@@ -466,10 +466,6 @@ function confirmDialog(settings) {
     settings.strOKButton = "Ok";
   }
 
-  if (settings.strOKButton == undefined) {
-    settings.strOKButton = "Ok";
-  }
-
   if (settings.strCancelButton == undefined) {
     settings.strCancelButton = "Cancel";
   }

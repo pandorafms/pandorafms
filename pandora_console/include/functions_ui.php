@@ -5178,6 +5178,11 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change = '';
     // Default value.
     $javascript_function_change .= '
+        function setInputBackground(inputId, image) {
+            $("#"+inputId)
+            .css("background","url(\'"+image+"\') right center no-repeat");
+        }
+
 		function set_functions_change_autocomplete_'.$input_name.'() {
 			var cache_'.$input_name.' = {};
 			
@@ -5194,8 +5199,7 @@ function ui_print_agent_autocomplete_input($parameters)
 					}
 					
 					//Set loading
-					$("#'.$input_id.'")
-						.css("background","url(\"'.$spinner_image.'\") right center no-repeat");
+                    setInputBackground("'.$input_id.'", "'.$spinner_image.'");
 					
 					//Function to call when the source
 					if ('.((int) !empty($javascript_function_action_into_source_js_call)).') {
@@ -5209,8 +5213,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						response(cache_'.$input_name.'[groupId][term]);
 						
 						//Set icon
-						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat '.$icon_image.'");
+						setInputBackground("'.$input_id.'", "'.$icon_image.'");
 						return;
 					}
 					else {
@@ -5228,7 +5231,9 @@ function ui_print_agent_autocomplete_input($parameters)
 									response(cache_'.$input_name.'[groupId][oldterm]);
 									
 									found = true;
-									
+
+									//Set icon
+                                    setInputBackground("'.$input_id.'", "'.$icon_image.'");
 									return;
 								}
 							});
@@ -5244,8 +5249,7 @@ function ui_print_agent_autocomplete_input($parameters)
 					
 					if (found) {
 						//Set icon
-						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+                        setInputBackground("'.$input_id.'", "'.$icon_image.'");
 						
 						select_item_click = 0;
 						
@@ -5263,16 +5267,15 @@ function ui_print_agent_autocomplete_input($parameters)
 								response(data);
 								
 								//Set icon
-								$("#'.$input_id.'")
-									.css("background",
-										"url(\"'.$icon_image.'\") right center no-repeat");
-								
-								select_item_click = 0;
+                                setInputBackground("'.$input_id.'", "'.$icon_image.'");
+                                select_item_click = 0;
 								
 								return;
 							}
 						});
-					
+
+                        setInputBackground("'.$input_id.'", "'.$icon_image.'");
+
 					return;
 				},
 				//---END source-----------------------------------------

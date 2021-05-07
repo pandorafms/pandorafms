@@ -139,7 +139,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
 if (!is_metaconsole()) {
     $ag_group = (int) get_parameter('ag_group', 0);
 } else {
-    $ag_group         = get_parameter('ag_group', 0);
+    $ag_group  = get_parameter('ag_group', 0);
     $ag_group_metaconsole = $ag_group;
 }
 
@@ -225,7 +225,7 @@ if (!is_metaconsole()) {
             );
         } else {
             $sql_conditions_group = sprintf(
-                ' AND (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))',
+                ' AND (tagente.id_grupo '.$not_condition.' IN (%s) OR tasg.id_group '.$not_condition.' IN (%s))',
                 $ag_group,
                 $ag_group
             );
@@ -717,6 +717,10 @@ foreach ($a as $valor) {
 
         $table->data[3][1] .= '</div>';
 
+if ($not_condition !== '') {
+    $check_not_condition = true;
+}
+
         $table->data[3][1] .= '<div class="w120px mrgn_top_20px">';
         $table->data[3][1] .= html_print_input(
             [
@@ -771,13 +775,6 @@ foreach ($a as $valor) {
 
             $table_custom_fields->data[] = $row;
         }
-
-        if ($not_condition !== '') {
-            $check_not_condition = true;
-        }
-
-
-
 
         $filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 

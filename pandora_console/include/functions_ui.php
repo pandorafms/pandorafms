@@ -5194,7 +5194,7 @@ function ui_print_agent_autocomplete_input($parameters)
 					}
 					
 					//Set loading
-                    $("#'.$input_id.'")
+					$("#'.$input_id.'")
 						.css("background","url(\"'.$spinner_image.'\") right center no-repeat");
 					
 					//Function to call when the source
@@ -5209,7 +5209,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						response(cache_'.$input_name.'[groupId][term]);
 						
 						//Set icon
-                        $("#'.$input_id.'")
+						$("#'.$input_id.'")
 							.css("background","url(\"'.$icon_image.'\") right center no-repeat '.$icon_image.'");
 						return;
 					}
@@ -5228,7 +5228,7 @@ function ui_print_agent_autocomplete_input($parameters)
 									response(cache_'.$input_name.'[groupId][oldterm]);
 									
 									found = true;
-
+									
 									return;
 								}
 							});
@@ -5237,7 +5237,6 @@ function ui_print_agent_autocomplete_input($parameters)
 								break;
 							}
 						}
-
 						*/
 					}
 					//==================================================
@@ -5245,10 +5244,11 @@ function ui_print_agent_autocomplete_input($parameters)
 					
 					if (found) {
 						//Set icon
-                        $("#'.$input_id.'")
-                        .css("background","url(\"'.$icon_image.'\") right center no-repeat");
-                    
+						$("#'.$input_id.'")
+							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+						
 						select_item_click = 0;
+      
 						return;
 					}
 					
@@ -5259,19 +5259,20 @@ function ui_print_agent_autocomplete_input($parameters)
 						dataType: "json",
 						success: function (data) {
 								cache_'.$input_name.'[groupId][term] = data; //Save the cache
+								
 								response(data);
-
-                                //Set icon
-                                setInputBackground("'.$input_id.'", "'.$icon_image.'");
-                                select_item_click = 0;
+								
+								//Set icon
+								$("#'.$input_id.'")
+									.css("background",
+										"url(\"'.$icon_image.'\") right center no-repeat");
+								
+								select_item_click = 0;
+								
 								return;
 							}
 						});
-
-                        $("#'.$input_id.'")
-                        .css("background",
-                            "url(\"'.$icon_image.'\") right center no-repeat");
-
+					
 					return;
 				},
 				//---END source-----------------------------------------

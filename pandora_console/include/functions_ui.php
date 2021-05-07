@@ -1483,7 +1483,7 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
         return false;
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $config['requirements_use_base_url'] === false) {
         $config['css'][$name] = '/../../'.$filename;
     } else {
         $config['css'][$name] = $filename;
@@ -1535,7 +1535,7 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $config['requirements_use_base_url'] === false) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;

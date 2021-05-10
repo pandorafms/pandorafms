@@ -233,8 +233,7 @@ if (defined('METACONSOLE')) {
 
 
 $disable_user = get_parameter('disable_user', false);
-
-if (isset($_GET['user_del'])) {
+if ((bool) get_parameter('user_del', false) === true) {
     // delete user
     $id_user = get_parameter('delete_user', 0);
     // Only allow delete user if is not the actual user
@@ -312,13 +311,13 @@ if (isset($_GET['user_del'])) {
         $result = false;
     }
 
-    if ($disable_user == 1) {
+    if ($disable_user === 1) {
         ui_print_result_message(
             $result,
             __('Successfully disabled'),
             __('There was a problem disabling user')
         );
-    } else {
+    } else if ($disable_user === 0) {
         ui_print_result_message(
             $result,
             __('Successfully enabled'),
@@ -562,7 +561,7 @@ foreach ($info as $user_id => $user_info) {
     $iterator++;
 
     if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || isset($group_um[0]) || (isset($user_info['edit']) && $user_info['edit'])))) {
-        $data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.$user_id.'</a>';
+        $data[0] = '<a href="#" onclick="document.forms[\'edit_user_form_'.$user_info['id_user'].'\'].submit();">'.$user_id.'</a>';
     } else {
         $data[0] = $user_id;
     }
@@ -642,19 +641,126 @@ foreach ($info as $user_id => $user_info) {
     $table->cellclass[][6] = 'action_buttons';
     $data[6] = '';
     if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
-        if (!isset($user_info['not_delete'])) {
+        // Disable / Enable user.
+        if (isset($user_info['not_delete']) === false) {
             if ($user_info['disabled'] == 0) {
-                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=1&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb.png', true, ['title' => __('Disable'), 'class' => 'invert_filter']).'</a>';
+                $toDoString = __('Disable');
+                $toDoAction = '1';
+                $toDoImage  = 'images/lightbulb.png';
             } else {
-                $data[6] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;disable_user=0&pure='.$pure.'&amp;id='.$user_info['id_user'].'">'.html_print_image('images/lightbulb_off.png', true, ['title' => __('Enable')]).'</a>';
+                $toDoString = __('Enable');
+                $toDoAction = '0';
+                $toDoImage  = 'images/lightbulb_off.png';
             }
+
+            $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+            $data[6] .= html_print_input_hidden(
+                'id',
+                $user_info['id_user'],
+                true
+            );
+            $data[6] .= html_print_input_hidden(
+                'disable_user',
+                $toDoAction,
+                true
+            );
+            $data[6] .= html_print_input_image(
+                'submit_disable_enable',
+                $toDoImage,
+                '',
+                '',
+                true,
+                [
+                    'data-title'                     => $toDoString,
+                    'data-use_title_for_force_title' => '1',
+                    'class'                          => 'forced_title no-padding',
+                ]
+            );
+            $data[6] .= '</form>';
         }
 
-        $data[6] .= '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'&amp;id='.$user_id.'">'.html_print_image('images/config.png', true, ['title' => __('Edit'), 'class' => 'invert_filter']).'</a>';
-        if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && !isset($user_info['not_delete'])) {
-            $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."'>".html_print_image('images/cross.png', true, ['class' => 'invert_filter', 'title' => __('Delete'), 'onclick' => "if (! confirm ('".__('Deleting User').' '.$user_info['id_user'].'. '.__('Are you sure?')."')) return false"]).'</a>';
-            if (defined('METACONSOLE')) {
-                $data[6] .= "<a href='index.php?sec=".$sec.'&sec2=godmode/users/user_list&user_del=1&pure='.$pure.'&delete_user='.$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, ['class' => 'invert_filter', 'title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('".__('Deleting User %s from all consoles', $user_info['id_user']).'. '.__('Are you sure?')."')) return false"]).'</a>';
+        // Edit user.
+        $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'" id="edit_user_form_'.$user_info['id_user'].'" class="inline">';
+        $data[6] .= html_print_input_hidden(
+            'id_user',
+            $user_info['id_user'],
+            true
+        );
+        $data[6] .= html_print_input_hidden(
+            'edit_user',
+            '1',
+            true
+        );
+        $data[6] .= html_print_input_image(
+            'submit_edit_user',
+            'images/config.png',
+            '',
+            'padding:0',
+            true,
+            [
+                'data-title'                     => __('Edit'),
+                'data-use_title_for_force_title' => '1',
+                'class'                          => 'forced_title no-padding',
+            ]
+        );
+        $data[6] .= '</form>';
+
+        if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && isset($user_info['not_delete']) === false) {
+            $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+            $data[6] .= html_print_input_hidden(
+                'delete_user',
+                $user_info['id_user'],
+                true
+            );
+            $data[6] .= html_print_input_hidden(
+                'user_del',
+                '1',
+                true
+            );
+            $data[6] .= html_print_input_image(
+                'submit_delete_user',
+                'images/cross.png',
+                '',
+                'padding:0',
+                true,
+                [
+                    'data-title'                     => __('Delete'),
+                    'data-use_title_for_force_title' => '1',
+                    'class'                          => 'forced_title no-padding',
+                ]
+            );
+            $data[6] .= '</form>';
+
+            if (is_metaconsole() === true) {
+                $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+                $data[6] .= html_print_input_hidden(
+                    'delete_user',
+                    $user_info['id_user'],
+                    true
+                );
+                $data[6] .= html_print_input_hidden(
+                    'user_del',
+                    '1',
+                    true
+                );
+                $data[6] .= html_print_input_hidden(
+                    'delete_all',
+                    '1',
+                    true
+                );
+                $data[6] .= html_print_input_image(
+                    'submit_delete_all',
+                    'images/cross_double.png',
+                    '',
+                    '',
+                    true,
+                    [
+                        'data-title'                     => __('Delete from all consoles'),
+                        'data-use_title_for_force_title' => '1',
+                        'class'                          => 'forced_title no-padding',
+                    ]
+                );
+                $data[6] .= '</form>';
             }
         } else {
             $data[6] .= '';

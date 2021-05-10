@@ -2765,6 +2765,8 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'lang',
         'tabindex',
         'title',
+        'data-title',
+        'data-use_title_for_force_title',
         'xml:lang',
         'onclick',
         'ondblclick',

@@ -2177,6 +2177,32 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
 
 
 /**
+ * Checks if a lock is free or not.
+ *
+ * @param string $lockname Name.
+ *
+ * @return boolean Free or not.
+ */
+function db_is_free_lock($lockname)
+{
+    global $config;
+    // Temporary disable to get a valid lock if any...
+    $cache = $config['dbcache'];
+    $config['dbcache'] = false;
+    $lock_status = db_get_value_sql(
+        sprintf(
+            'SELECT IS_FREE_LOCK("%s")',
+            $lockname
+        )
+    );
+
+    $config['dbcache'] = $cache;
+
+    return (bool) $lock_status;
+}
+
+
+/**
  * Tries to get a lock with current name.
  *
  * @param string  $lockname        Lock name.

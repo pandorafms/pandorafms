@@ -5248,7 +5248,7 @@ function ui_print_agent_autocomplete_input($parameters)
 							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
 						
 						select_item_click = 0;
-						
+      
 						return;
 					}
 					

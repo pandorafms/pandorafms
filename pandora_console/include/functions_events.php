@@ -4318,10 +4318,6 @@ function events_page_details($event, $server='')
 
     $table_class = 'table_modal_alternate';
 
-    if ($config['style'] === 'pandora_black') {
-        $table_class = 'black_table_modal_alternate';
-    }
-
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4526,7 +4522,7 @@ function events_page_details($event, $server='')
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
 
             $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true);
+            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
             $data[1] .= '</a>';
             $table_details->data[] = $data;
         }
@@ -4546,13 +4542,19 @@ function events_page_details($event, $server='')
             $data[1] .= html_print_image(
                 'images/bell.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         } else {
             $data[1] .= html_print_image(
                 'images/bell_pause.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         }
 

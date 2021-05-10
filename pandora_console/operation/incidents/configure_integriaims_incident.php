@@ -163,32 +163,30 @@ $table->colspan[3][0] = 3;
 
 $help_macros = isset($_GET['from_event']) ? ui_print_help_icon('response_macros', true) : '';
 
-if (isset($_GET['from_event'])) {
-    if ($update) {
-        $input_value_title = $incident_details[3];
-        $input_value_type = $incident_details[17];
-        $input_value_status = $incident_details[6];
-        $input_value_group = $incident_details[8];
-        $input_value_criticity = $incident_details[7];
-        $input_value_owner = $incident_details[5];
-        $input_value_content = $incident_details[4];
-    } else if (isset($_GET['from_event'])) {
-        $input_value_title = $config['cr_incident_title'];
-        $input_value_type = $config['cr_incident_type'];
-        $input_value_status = $config['cr_incident_status'];
-        $input_value_group = $config['cr_default_group'];
-        $input_value_criticity = $config['cr_default_criticity'];
-        $input_value_owner = $config['cr_default_owner'];
-        $input_value_content = $config['cr_incident_content'];
-    } else {
-        $input_value_title = '';
-        $input_value_type = '';
-        $input_value_status = '';
-        $input_value_group = '';
-        $input_value_criticity = '';
-        $input_value_owner = '';
-        $input_value_content = '';
-    }
+if ($update) {
+    $input_value_title = $incident_details[3];
+    $input_value_type = $incident_details[17];
+    $input_value_status = $incident_details[6];
+    $input_value_group = $incident_details[8];
+    $input_value_criticity = $incident_details[7];
+    $input_value_owner = $incident_details[5];
+    $input_value_content = $incident_details[4];
+} else if (isset($_GET['from_event'])) {
+    $input_value_title = $config['cr_incident_title'];
+    $input_value_type = $config['cr_incident_type'];
+    $input_value_status = $config['cr_incident_status'];
+    $input_value_group = $config['cr_default_group'];
+    $input_value_criticity = $config['cr_default_criticity'];
+    $input_value_owner = $config['cr_default_owner'];
+    $input_value_content = $config['cr_incident_content'];
+} else {
+    $input_value_title = '';
+    $input_value_type = '';
+    $input_value_status = '';
+    $input_value_group = '';
+    $input_value_criticity = '';
+    $input_value_owner = '';
+    $input_value_content = '';
 }
 
 $table->data[0][0] = '<div class="label_select"><p class="input_label">'.__('Title').':&nbsp'.$help_macros.'</p>';
@@ -290,7 +288,11 @@ $table->data[2][2] = '<div class="label_select"><p class="input_label">'.__('Own
 $table->data[2][2] .= '<div class="label_select_parent">'.html_print_autocomplete_users_from_integria(
     'owner',
     $input_value_owner,
-    true
+    true,
+    '30',
+    false,
+    false,
+    'w100p'
 ).'</div>';
 
 $table->data[3][0] = '<div class="label_select"><p class="input_label">'.__('Description').':&nbsp'.$help_macros.'</p>';

@@ -4987,10 +4987,13 @@ function html_print_input_multicheck(array $data):string
 /**
  * Print an autocomplete input filled out with Integria IMS users.
  *
- * @param string  $name    The name of ajax control, by default is "users".
- * @param string  $default The default value to show in the ajax control.
- * @param boolean $return  If it is true return a string with the output instead to echo the output.
- * @param string  $size    Size.
+ * @param string  $name     The name of ajax control, by default is "users".
+ * @param string  $default  The default value to show in the ajax control.
+ * @param boolean $return   If it is true return a string with the output instead to echo the output.
+ * @param string  $size     Size.
+ * @param boolean $disable  Disable the button (optional, button enabled by default).
+ * @param boolean $required Attribute required.
+ * @param string  $class    Text inpunt class.
  *
  * @return mixed If the $return is true, return the output as string.
  */
@@ -5000,7 +5003,8 @@ function html_print_autocomplete_users_from_integria(
     $return=false,
     $size='30',
     $disable=false,
-    $required=false
+    $required=false,
+    $class=null
 ) {
     global $config;
 
@@ -5010,6 +5014,10 @@ function html_print_autocomplete_users_from_integria(
 
     if ($required) {
         $attrs['required'] = 'required';
+    }
+
+    if (empty($class) === false) {
+        $attrs['class'] = $class;
     }
 
     html_print_input_text_extended(

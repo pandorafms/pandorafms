@@ -6481,7 +6481,7 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3)
     $data = db_get_row_sql($sql);
 
     if ($data['type_execution'] == 'periodically' && $data['executed'] == 1) {
-        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running planned downtime cannot be stopped.'));
+        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running scheduled downtime cannot be stopped.'));
         return;
     }
 
@@ -6967,7 +6967,7 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
     }
 
     if (empty($agents)) {
-        returnError('No agents to create planned downtime items');
+        returnError('No agents to create scheduled downtime items');
     } else {
         if (!empty($returned['bad_modules'])) {
             $bad_modules = __("and this modules are doesn't exists or not applicable a this agents: ").implode(', ', $returned['bad_modules']);

@@ -95,12 +95,12 @@ function planned_downtimes_update($values, $downtime_id=0, $check_dates=true)
         $name_exists = (bool) db_get_value('id', 'tplanned_downtime', 'name', $values['name']);
 
         if ($name_exists) {
-            $result['message'] = ui_print_error_message(__('Each planned downtime must have a different name'), '', true);
+            $result['message'] = ui_print_error_message(__('Each scheduled downtime must have a different name'), '', true);
 
             return $result;
         }
     } else {
-        $result['message'] = ui_print_error_message(__('Planned downtime must have a name'), '', true);
+        $result['message'] = ui_print_error_message(__('Scheduled downtime must have a name'), '', true);
 
         return $result;
     }
@@ -811,13 +811,13 @@ function planned_downtimes_created($values)
             } else {
                 return [
                     'return'  => false,
-                    'message' => __('Each planned downtime must have a different name'),
+                    'message' => __('Each scheduled downtime must have a different name'),
                 ];
             }
         } else {
             return [
                 'return'  => false,
-                'message' => __('Planned downtime must have a name'),
+                'message' => __('Scheduled downtime must have a name'),
             ];
         }
 
@@ -904,16 +904,16 @@ function delete_planned_downtimes($filter)
     $downtime_execute = db_get_row_filter('tplanned_downtime', ['id' => $filter['id_downtime']], 'execute');
 
     if ($downtime_execute) {
-        $return = __("This planned downtime are executed now. Can't delete in this moment.");
+        $return = __("This scheduled downtime are executed now. Can't delete in this moment.");
     } else {
         $delete = db_process_sql_delete(
             'tplanned_downtime',
             ['id' => $filter['id_downtime']]
         );
         if ($delete) {
-            $return = __('Deleted this planned downtime successfully.');
+            $return = __('Deleted this scheduled downtime successfully.');
         } else {
-            $return = __('Problems for deleted this planned downtime.');
+            $return = __('Problems for deleted this scheduled downtime.');
         }
     }
 

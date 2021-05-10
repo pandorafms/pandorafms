@@ -151,6 +151,7 @@ final class DBMaintainer
      */
     private function connect()
     {
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if ($this->connected === true) {
             return true;
         }
@@ -183,6 +184,17 @@ final class DBMaintainer
 
             $this->connected = true;
         }
+    }
+
+
+    /**
+     * Return dbh object.
+     *
+     * @return mysqli
+     */
+    public function getDBH()
+    {
+        return $this->dbh;
     }
 
 
@@ -319,7 +331,7 @@ final class DBMaintainer
     /**
      * Verifies tables against running db.
      *
-     * @return boolean Applied or not.
+     * @return array Of differences.
      */
     public function verifyTables()
     {

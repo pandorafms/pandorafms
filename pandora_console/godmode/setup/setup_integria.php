@@ -282,7 +282,7 @@ $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('API Hostname');
+$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
 $row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
 $table_remote->data['integria_hostname'] = $row;
 

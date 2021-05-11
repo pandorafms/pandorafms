@@ -3283,7 +3283,7 @@ function print_SLA_list($width, $action, $idItem=null)
                     echo '</tbody>';
                     ?>
                     <tbody id="sla_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="sla_list_agent_col agent_name"></td>
                             <td class="sla_list_module_col module_name"></td>
                             <?php
@@ -3326,6 +3326,9 @@ function print_SLA_list($width, $action, $idItem=null)
                                 <input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
                                 <input id="hidden-id_server" name="id_server" value="" type="hidden">
                                 <?php
+                                // Set autocomplete image.
+                                $autocompleteImage = html_print_image(($config['style'] === 'pandora_black') ? 'images/agent_mc.menu.png' : 'images/search_agent.png', true, false, true);
+                                // Params for agent autocomplete input.
                                 $params = [];
                                 $params['show_helptip'] = true;
                                 $params['input_name'] = 'agent_sla';
@@ -3335,6 +3338,8 @@ function print_SLA_list($width, $action, $idItem=null)
                                 $params['javascript_is_function_select'] = true;
                                 $params['selectbox_id'] = 'id_agent_module_sla';
                                 $params['add_none_module'] = false;
+                                $params['check_only_empty_javascript_on_blur_function'] = true;
+                                $params['icon_image'] = $autocompleteImage;
                                 if ($meta) {
                                     $params['use_input_id_server'] = true;
                                     $params['input_id_server_id'] = 'hidden-id_server';
@@ -3370,6 +3375,7 @@ function print_SLA_list($width, $action, $idItem=null)
                                     $params['javascript_is_function_select'] = true;
                                     $params['selectbox_id'] = 'id_agent_module_failover';
                                     $params['add_none_module'] = false;
+                                    $params['icon_image'] = $autocompleteImage;
                                     if ($meta) {
                                         $params['use_input_id_server'] = true;
                                         $params['input_id_server_id'] = 'hidden-id_server';
@@ -3687,7 +3693,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                     ?>
 
                     <tbody id="general_template">
-                        <tr id="row" class="datos invisible">
+                        <tr id="row" class="datos" style="display: none">
                             <td class="agent_name"></td>
                             <td class="module_name"></td>
                             <?php
@@ -3739,6 +3745,7 @@ function print_General_list($width, $action, $idItem=null, $type='general')
                                     $params['use_input_id_server'] = true;
                                     $params['input_id_server_id'] = 'hidden-id_server';
                                     $params['disabled_javascript_on_blur_function'] = true;
+                                    $params['javascript_is_function_select'] = true;
                                 }
 
                                 ui_print_agent_autocomplete_input($params);
@@ -4733,8 +4740,10 @@ function addSLARow() {
     var serviceId = $("select#id_service>option:selected").val();
     var serviceName = $("select#id_service>option:selected").text();
 
-    if (((idAgent != '') && (slaMin != '') && (slaMax != '')
-        && (slaLimit != '')) || serviceId != '') {
+    if ((((idAgent != '') && (idAgent > 0))
+        && ((idModule != '') && (idModule > 0)))
+        || serviceId != null)
+    {
             if (nameAgent != '') {
                 //Truncate nameAgent
                 var params = [];
@@ -4891,6 +4900,7 @@ function addSLARow() {
                         $("input[name=id_agent_failover]").val('');
                         $("input[name=id_server]").val('');
                         $("input[name=agent_sla]").val('');
+                        $("input[name=agent_sla]").css("background","url('<?php echo $autocompleteImage; ?>') right center no-repeat")
                         $("input[name=agent_failover]").val('');
                         $("#id_agent_module_sla").empty();
                         $("#id_agent_module_sla").attr('disabled', 'true');

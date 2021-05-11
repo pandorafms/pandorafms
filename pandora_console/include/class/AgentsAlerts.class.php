@@ -765,7 +765,7 @@ class AgentsAlerts extends HTML
 
         // Start Header form.
         $headerForm = [
-            'action'   => ui_get_full_url(),
+            'action'   => ui_get_full_url('index.php?sec=view&sec2=extensions/agents_alerts'),
             'id'       => 'form-header-filters',
             'method'   => 'POST',
             'class'    => 'modal flex flex-row',
@@ -840,6 +840,7 @@ class AgentsAlerts extends HTML
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
+            'attributes'     => 'style="margin-left: 0px"',
             'arguments'      => [
                 'type'       => 'button',
                 'return'     => true,

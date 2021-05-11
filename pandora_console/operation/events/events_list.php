@@ -132,6 +132,10 @@ if (is_ajax()) {
             $values['id_source_event'] = get_parameter('id_source_event');
         }
 
+        if (is_metaconsole()) {
+            $values['server_id'] = get_parameter('server_id');
+        }
+
         $exists = (bool) db_get_value_filter(
             'id_filter',
             'tevent_filter',
@@ -181,6 +185,10 @@ if (is_ajax()) {
 
         if (is_metaconsole()) {
             $values['id_source_event'] = get_parameter('id_source_event');
+        }
+
+        if (is_metaconsole()) {
+            $values['server_id'] = get_parameter('server_id');
         }
 
         if (io_safe_output($values['tag_with']) == '["0"]') {
@@ -1365,6 +1373,8 @@ $(document).ready( function() {
                             $("#text-user_comment").val(val);
                         if (i == 'id_source_event')
                             $("#text-id_source_event").val(val);
+                        if (i == 'server_id')
+                            $("#server_id").val(val);
                     });
                     reorder_tags_inputs();
                     // Update the info with the loaded filter
@@ -1405,9 +1415,10 @@ $(document).ready( function() {
             $("#text-id_extra").val('');
             $("#text-user_comment").val('');
             $("#text-id_source_event").val('');
-            
+            $("#server_id").val('');
+
             clear_tags_inputs();
-            
+
             // Update the view of filter load with no loaded filters message
             $('#filter_loaded_span').html($('#not_filter_loaded_text').html());
 
@@ -1483,6 +1494,8 @@ $(document).ready( function() {
                             $("#text-module_search").val(val);
                         if(i == 'id_source_event')
                             $("#text-id_source_event").val(val);
+                        if(i == 'server_id')
+                            $("#server_id").val(val);
                         }
                     });
                     reorder_tags_inputs();
@@ -1553,7 +1566,8 @@ $(document).ready( function() {
                 "source": $("#text-source").val(),
                 "id_extra": $("#text-id_extra").val(),
                 "user_comment": $("#text-user_comment").val(),
-                "id_source_event": $("#text-id_source_event").val()
+                "id_source_event": $("#text-id_source_event").val(),
+                "server_id" : $("#server_id").val()
 
             },
             function (data) {
@@ -1655,8 +1669,8 @@ $(document).ready( function() {
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
-            "id_source_event": $("#text-id_source_event").val()
-            
+            "id_source_event": $("#text-id_source_event").val(),
+            "server_id" : $("#server_id").val()
             },
             function (data) {
                 $(".info_box").hide();

@@ -130,17 +130,24 @@ function html_do_report_info($report)
 
     $date_today = date($config['date_format']);
 
+    $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
+
+    $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
     $html = '<div class="report_info" style="background: '.$background_color.'"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
+
+    $date_before = date($config['date_format'], $report['datetime']);
+    $date_before = preg_split('/[\s,]+/', io_safe_output($date_before));
+    $date_before = __($date_before[0]).' '.$date_before[1].' '.$date_before[2].' '.$date_before[3].' '.$date_before[4];
     if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
         $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
         $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
-        $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
+        $html .= '<td>'.__('Items period before').' <b>'.$date_before.'</b></td>';
     }
 
     $html .= '</tr>
@@ -849,7 +856,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->size[10] = '2%';
             $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
             $table1->size[11] = '15%';
-            $table1->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
+            $table1->data[0][11] = '<span>'.__('Scheduled Downtime').'</span>';
 
             if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
@@ -4074,7 +4081,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->size[10] = '2%';
         $table2->data[0][10] = '<img src ="'.$src.$hack_metaconsole.'images/square_light_gray.png">';
         $table2->size[11] = '15%';
-        $table2->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
+        $table2->data[0][11] = '<span>'.__('Scheduled Downtime').'</span>';
     }
 
     if ($pdf !== 0) {
@@ -5602,8 +5609,8 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     $table = new StdClass();
     $table->width = '99%';
-    $table->title = __('This SLA has been affected by the following planned downtimes').ui_print_help_tip(
-        __('If the duration of the planned downtime is less than 5 minutes it will not be represented in the graph'),
+    $table->title = __('This SLA has been affected by the following scheduled downtimes').ui_print_help_tip(
+        __('If the duration of the scheduled downtime is less than 5 minutes it will not be represented in the graph'),
         true
     );
     $table->head = [];
@@ -5641,7 +5648,7 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     if ($downtime_malformed) {
         $info_malformed = ui_print_error_message(
-            __('This item is affected by a malformed planned downtime').'. '.__('Go to the planned downtimes section to solve this').'.',
+            __('This item is affected by a malformed scheduled downtime').'. '.__('Go to the scheduled downtimes section to solve this').'.',
             '',
             true
         );

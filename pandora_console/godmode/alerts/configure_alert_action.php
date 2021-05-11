@@ -58,7 +58,7 @@ if (defined('METACONSOLE')) {
 
 if ($al_action !== false) {
     $own_info = get_user_info($config['id_user']);
-    if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
+    if ($own_info['is_admin'] || check_acl_restricted_all($config['id_user'], 0, 'LM')) {
         $own_groups = array_keys(users_get_groups($config['id_user'], 'LM'));
     } else {
         $own_groups = array_keys(users_get_groups($config['id_user'], 'LM', false));
@@ -91,8 +91,15 @@ if ($al_action !== false) {
             true
         );
     }
+
+    $is_in_group = true;
 }
 
+if (!$is_in_group && $al_action['id_group'] != 0) {
+    db_pandora_audit('ACL Violation', 'Trying to access unauthorized alert action configuration');
+    include 'general/noaccess.php';
+    exit;
+}
 
 $is_central_policies_on_node = is_central_policies_on_node();
 
@@ -102,6 +109,11 @@ if ($is_central_policies_on_node === true) {
     );
 }
 
+$disabled = !$is_in_group;
+$disabled_attr = '';
+if ($disabled) {
+    $disabled_attr = 'disabled="disabled"';
+}
 
 $name = '';
 $id_command = '';
@@ -116,15 +128,6 @@ if ($id) {
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
     $create_wu_integria = $action['create_wu_integria'];
-
-    if (!check_acl_restricted_all($config['id_user'], $action['id_group'], 'LM')) {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to access Alert Management'
-        );
-        include 'general/noaccess.php';
-        exit;
-    }
 }
 
 // Hidden div with help hint to fill with javascript.
@@ -175,7 +178,7 @@ $table->data[0][1] = html_print_input_text(
     '',
     '',
     '',
-    $is_central_policies_on_node
+    ($is_central_policies_on_node | $disabled)
 );
 
 if (io_safe_output($name) == 'Monitoring Event') {
@@ -194,7 +197,7 @@ $own_info = get_user_info($config['id_user']);
 
 $return_all_group = false;
 
-if (users_can_manage_group_all('LW') === true) {
+if (users_can_manage_group_all('LW') === true || $disabled) {
     $return_all_group = true;
 }
 
@@ -211,7 +214,7 @@ $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     true,
     '',
-    $is_central_policies_on_node
+    ($is_central_policies_on_node | $disabled)
 ).'</div>';
 $table->colspan[1][1] = 2;
 
@@ -245,11 +248,11 @@ $table->data[2][1] = html_print_select_from_sql(
     true,
     false,
     false,
-    $is_central_policies_on_node
+    ($is_central_policies_on_node | $disabled)
 );
 $table->data[2][1] .= ' ';
 if ($is_central_policies_on_node === false
-    && check_acl($config['id_user'], 0, 'PM')
+    && check_acl($config['id_user'], 0, 'PM') && !$disabled
 ) {
     $table->data[2][1] .= __('Create Command');
     $table->data[2][1] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
@@ -272,7 +275,7 @@ $table->data[3][1] = html_print_extended_select_for_time(
     false,
     true,
     '',
-    $is_central_policies_on_node,
+    ($is_central_policies_on_node | $disabled),
     false,
     '',
     false,
@@ -304,11 +307,21 @@ $table->data[5][2] = html_print_textarea(
     true
 );
 
-$table->data[6][0] = __('Create workunit on recovery').ui_print_help_tip(
+// Selector will work only with Integria activated.
+$integriaIdName = 'integria_wu';
+$table->data[$integriaIdName][0] = __('Create workunit on recovery').ui_print_help_tip(
     __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
     true
 );
-$table->data[6][1] = html_print_checkbox_switch_extended('create_wu_integria', 1, $create_wu_integria, false, '', '', true);
+$table->data[$integriaIdName][1] = html_print_checkbox_switch_extended(
+    'create_wu_integria',
+    1,
+    $create_wu_integria,
+    false,
+    '',
+    $disabled_attr,
+    true
+);
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][0] = html_print_image(
@@ -328,17 +341,21 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table->data['field'.$i][1] .= html_print_input_hidden(
         'field'.$i.'_value',
         (!empty($action['field'.$i]) || $action['field'.$i] == 0) ? $action['field'.$i] : '',
-        true
+        true,
+        '',
+        $disabled_attr
     );
     $table->data['field'.$i][2] .= html_print_input_hidden(
         'field'.$i.'_recovery_value',
         (!empty($action['field'.$i.'_recovery']) || $action['field'.$i] == 0) ? $action['field'.$i.'_recovery'] : '',
-        true
+        true,
+        '',
+        $disabled_attr
     );
 }
 
 
-echo '<form method="post" action="'.'index.php?sec='.$sec.'&'.'sec2=godmode/alerts/alert_actions&'.'pure='.$pure.'">';
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions&pure='.$pure.'">';
 $table_html = html_print_table($table, true);
 
 echo $table_html;
@@ -346,18 +363,7 @@ if ($is_central_policies_on_node === false) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);
-        if ($al_action['id_group'] == 0) {
-            // Then must have "PM" access privileges.
-            if (check_acl($config['id_user'], 0, 'PM')) {
-                html_print_input_hidden('update_action', 1);
-                html_print_submit_button(
-                    __('Update'),
-                    'create',
-                    false,
-                    'class="sub upd"'
-                );
-            }
-        } else {
+        if (!$disabled) {
             html_print_input_hidden('update_action', 1);
             html_print_submit_button(
                 __('Update'),
@@ -365,6 +371,12 @@ if ($is_central_policies_on_node === false) {
                 false,
                 'class="sub upd"'
             );
+        } else {
+            echo '<div class="action-buttons" style="width: '.$table->width.'">';
+            echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_actions">';
+            html_print_submit_button(__('Back'), 'back', false, 'class="sub upd"');
+            echo '</form>';
+            echo '</div>';
         }
     } else {
         html_print_input_hidden('create_action', 1);
@@ -391,6 +403,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 $(document).ready (function () {
     var original_command;
     var origicommand_descriptionnal_command;
+    var integriaWorkUnitName = "<?php echo $integriaIdName; ?>";
 
     if (<?php echo (int) $id_command; ?>) {
         original_command = "<?php echo str_replace("\r\n", '<br>', addslashes(io_safe_output(alerts_get_alert_command_command($id_command)))); ?>";
@@ -592,6 +605,13 @@ $(document).ready (function () {
 
                 }
                 
+                // Allow create workunit if Integria IMS Ticket is selected.
+                if (data['id'] == '14') {
+                    $("#table_macros-"+integriaWorkUnitName).css('display', 'table-row');
+                } else {
+                    $("#table_macros-"+integriaWorkUnitName).css('display', 'none');
+                }
+
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
                 
                 // Change the selected group
@@ -608,6 +628,7 @@ $(document).ready (function () {
                 for (i = 1; i <= max_fields; i++) {
                     var old_value = '';
                     var old_recovery_value = '';
+                    var disabled = '';
                     var field_row = data["fields_rows"][i];
                     var $table_macros_field = $('#table_macros-field' + i);
                     
@@ -623,6 +644,7 @@ $(document).ready (function () {
                         == ("hidden-field" + i + "_value")) {
                         
                         old_value = $("[name=field" + i + "_value]").val();
+                        disabled = $("[name=field" + i + "_value]").attr('disabled');
                     }
                     
                     if (($("[name=field" + i + "_recovery_value]").attr('id'))
@@ -689,6 +711,10 @@ $(document).ready (function () {
                             $('#help_alert_macros_hint').html());
                     }
                     
+                    if (disabled) {
+                        $("[name=field" + i + "_value]").attr('disabled','disabled');
+                        $("[name=field" + i + "_recovery_value]").attr('disabled','disabled');
+                    }
                     $table_macros_field.show();
                 }
 

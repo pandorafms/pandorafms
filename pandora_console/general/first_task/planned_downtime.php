@@ -15,14 +15,14 @@ global $config;
 check_login();
 ui_require_css_file('first_task');
 ?>
-<?php ui_print_info_message(['no_close' => true, 'message' => __('There are no planned downtime defined yet.') ]); ?>
+<?php ui_print_info_message(['no_close' => true, 'message' => __('There are no scheduled downtime defined yet.') ]); ?>
 
 <div class="new_task">
     <div class="image_task">
-        <?php echo html_print_image('images/first_task/icono_grande_visualconsole.png', true, ['title' => __('Planned Downtime')]); ?>
+        <?php echo html_print_image('images/first_task/icono_grande_visualconsole.png', true, ['title' => __('Scehduled Downtime')]); ?>
     </div>
     <div class="text_task">
-        <h3> <?php echo __('Create Planned Downtime'); ?></h3><p id="description_task"> 
+        <h3> <?php echo __('Create Scheduled Downtime'); ?></h3><p id="description_task"> 
             <?php
             echo __(
                 "%s contains a scheduled downtime management system.
@@ -34,7 +34,7 @@ ui_require_css_file('first_task');
             ?>
       </p>
         <form action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" method="post">
-            <input type="submit" class="button_task" value="<?php echo __('Create Planned Downtime'); ?>" />
+            <input type="submit" class="button_task" value="<?php echo __('Create Scheduled Downtime'); ?>" />
         </form>
     </div>
 </div>

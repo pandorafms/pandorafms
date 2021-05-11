@@ -809,7 +809,7 @@ class HostDevices extends Wizard
                                 'name'     => 'interval_manual_defined',
                                 'return'   => true,
                             ],
-                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container">'.ui_print_help_tip(
+                            'extra'     => '<div id="interval_manual_container"><div class="time_selection_container mrgn_top_20px">'.ui_print_help_tip(
                                 __('The minimum recomended interval for Recon Task is 5 minutes'),
                                 true
                             ).html_print_extended_select_for_time(
@@ -898,7 +898,7 @@ class HostDevices extends Wizard
                                 ],
                                 [
                                     'label'     => '<b>'.__('Networks (current)').':</b>'.ui_print_help_tip(
-                                        __('Plese upload a new file to overwrite this content.'),
+                                        __('Please upload a new file to overwrite this content.'),
                                         true
                                     ),
                                     'arguments' => [

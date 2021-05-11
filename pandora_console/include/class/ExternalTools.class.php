@@ -462,24 +462,18 @@ class ExternalTools extends HTML
             $ids[] = join(',', $address);
         }
 
+        // Must be an a IP at least for work.
+        if (empty($ids) === true) {
+            ui_print_message(__('The agent doesn`t have an IP yet'), 'error', true);
+            return;
+        }
+
         $ips = db_get_all_rows_sql(
             sprintf(
                 'SELECT ip FROM taddress WHERE id_a IN (%s)',
                 join(',', $ids)
             )
         );
-
-        // Must be an a IP at least for work.
-        if (empty($ips) === true) {
-            html_print_div(
-                [
-                    'class'   => 'error',
-                    'style'   => 'margin-top:5px',
-                    'content' => __('The agent hasn\'t got IP'),
-                ]
-            );
-            return;
-        }
 
         // Make the data for show in table.
         $ipsSelect = array_reduce(

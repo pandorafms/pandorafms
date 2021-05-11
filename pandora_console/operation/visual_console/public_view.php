@@ -42,6 +42,8 @@ echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
 
 global $vc_public_view;
+global $config;
+
 $vc_public_view = true;
 $config['public_view'] = true;
 
@@ -89,10 +91,15 @@ try {
 $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
+$bg_color = '';
+if ($config['style'] === 'pandora_black') {
+    $bg_color = 'style="background-color: #222"';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 // Floating menu - Start.
-echo '<div id="vc-controls" class="zindex300">';
+echo '<div id="vc-controls" class="zindex300" '.$bg_color.'>';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn white-box-content box-shadow flex-row">';

@@ -189,7 +189,7 @@ if ($aclWrite || $aclManage) {
 }
 
 $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr.'">'.html_print_image(
-    'images/operation.png',
+    'images/eye.png',
     true,
     [
         'title' => __('View'),
@@ -376,13 +376,18 @@ if ($pure === false) {
     }
 }
 
+$bg_color = '';
+if ($config['style'] === 'pandora_black') {
+    $bg_color = 'style="background-color: #222"';
+}
+
 echo '<div class="external-visual-console-container">';
 echo '<div id="visual-console-container"></div>';
 echo '</div>';
 
 if ($pure === true) {
     // Floating menu - Start.
-    echo '<div id="vc-controls" class="zindex999">';
+    echo '<div id="vc-controls" class="zindex999" '.$bg_color.'>';
 
     echo '<div id="menu_tab">';
     echo '<ul class="mn white-box-content box-shadow flex-row">';

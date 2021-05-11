@@ -1,0 +1,15 @@
+#exetution example
+
+python3 pandora-teams-cli.py -d "Agent=Server22,Module=test_module,Group=Servers,State=Critical,Data=22,Timestamp=2020-11-04 11:14:00" \
+-u https://outlook.office.com/webhook/6f819e54-9c3f-4f87-94f4-90159496ef12@b3b55021-a812-46af-a5ef-127cc662d5b7/IncomingWebhook/634dafb7fe6549c9a214dd7fa9b97416/76c50d52-8678-49c2-9279-9f7bb3bb5a07 \
+-t "Alert Tittle" \
+-D "Alert description" \
+-m "Pandora FMS Alert message" \
+-T 53e514 \
+--sub_desc "Alert subdescription" \
+--thumb "https://pandorafms.com/images/alerta_roja.png" \
+--button https://pandorafms.com \
+--button_desc "Open PandoraFMS"
+
+# Pandora FMS command definition example
+python3 /usr/share/pandora_server/util/pandora-teams/pandora-msteams-cli.py -d "_field1_" -u "_field2_" -t "_field3_" -D "_field4_" -m "_field5_" -T _field6_ --sub_desc "_field7_" --thumb "_field8_" --button http://newfork.artica.es/pandora_console/ --button_desc "Open PandoraFMS Console"

@@ -1396,7 +1396,7 @@ if (!empty($result)) {
         }
 
         if (in_array('data_type', $show_fields) || is_metaconsole()) {
-            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true);
+            $data[2] = html_print_image('images/'.modules_show_icon_type($row['module_type']), true, ['class' => 'invert_filter']);
             $agent_groups = is_metaconsole() ? $row['groups_in_server'] : agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
             if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
                 $show_edit_icon = true;
@@ -1630,7 +1630,7 @@ if (!empty($result)) {
                 $data[8] = get_module_realtime_link_graph($row);
 
                 if (!is_snapshot_data($row['datos'])) {
-                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '']).'</a>';
+                    $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
                 }
 
                 $data[8] .= '<a href="javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
@@ -1639,6 +1639,7 @@ if (!empty($result)) {
                     [
                         'border' => '0',
                         'alt'    => '',
+                        'class'  => 'invert_filter',
                     ]
                 ).'</a>';
 

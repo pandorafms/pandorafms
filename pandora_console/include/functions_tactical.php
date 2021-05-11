@@ -343,6 +343,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                     INNER JOIN tagente_modulo tam
                         ON tae.id_agente_modulo = tam.id_agente_modulo
                         AND tam.disabled = 0
+                        AND tam.id_modulo <> 0
                     GROUP BY estado',
                     $user_groups_ids
                 )
@@ -358,6 +359,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
                     INNER JOIN tagente_modulo tam
                         ON tae.id_agente_modulo = tam.id_agente_modulo
                         AND tam.disabled = 0
+                        AND tam.id_modulo <> 0
                     LEFT JOIN tagent_secondary_group tasg 
                         ON ta.id_agente = tasg.id_agent
                     WHERE (ta.id_grupo IN ( %s ) OR tasg.id_group IN ( %s ))
@@ -458,7 +460,7 @@ function tactical_monitor_alerts($group_array, $strict_user=false, $id_group_str
         $sql = "SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 			WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
-            AND tagente.disabled = 0
+            AND tagente.disabled = 0 AND tagente_modulo.disabled = 0
             AND talert_template_modules.disabled = 0
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
@@ -470,7 +472,7 @@ function tactical_monitor_alerts($group_array, $strict_user=false, $id_group_str
             "SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
 			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
-            AND tagente.disabled = 0
+            AND tagente.disabled = 0 AND tagente_modulo.disabled = 0
             AND talert_template_modules.disabled = 0
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo"
@@ -499,7 +501,8 @@ function tactical_monitor_fired_alerts($group_array, $strict_user=false, $id_gro
 		WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-			AND times_fired > 0 AND talert_template_modules.disabled = 0";
+			AND times_fired > 0 AND talert_template_modules.disabled = 0
+            AND tagente.disabled = 0 AND tagente_modulo.disabled = 0";
 
         $count = db_get_sql($sql);
         return $count;
@@ -511,7 +514,8 @@ function tactical_monitor_fired_alerts($group_array, $strict_user=false, $id_gro
 			WHERE tagente.id_grupo IN $group_clause AND tagente_modulo.id_agente = tagente.id_agente
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
-				AND times_fired > 0 AND talert_template_modules.disabled = 0"
+				AND times_fired > 0 AND talert_template_modules.disabled = 0
+                AND tagente.disabled = 0 AND tagente_modulo.disabled = 0"
         );
     }
 

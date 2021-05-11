@@ -664,7 +664,7 @@ if (defined('METACONSOLE')) {
 
         if (check_acl($config['id_user'], 0, 'RM')) {
             html_print_input_hidden('ids_items_to_delete', '');
-            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right"');
+            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px"');
         }
 
             echo '</div>';

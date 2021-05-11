@@ -427,10 +427,6 @@ snmp_threads 4
 
 transactionalserver 0
 
-# Number of threads for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
-
-transactional_threads 1
-
 # Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
 
 transactional_threshold 2

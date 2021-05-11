@@ -194,22 +194,22 @@ if ($delete_layout || $copy_layout) {
     }
 
     if ($copy_layout) {
-        // Number of inserts
+        // Number of inserts.
         $ninsert = (int) 0;
 
-        // Return from DB the source layout
+        // Return from DB the source layout.
         $layout_src = db_get_all_rows_filter(
             'tlayout',
             ['id' => $id_layout]
         );
 
-        // Name of dst
+        // Name of dst.
         $name_dst = get_parameter(
             'name_dst',
             $layout_src[0]['name'].' copy'
         );
 
-        // Create the new Console
+        // Create the new Console.
         $idGroup = $layout_src[0]['id_group'];
         $background = $layout_src[0]['background'];
         $height = $layout_src[0]['height'];
@@ -217,12 +217,15 @@ if ($delete_layout || $copy_layout) {
         $visualConsoleName = $name_dst;
 
         $values = [
-            'name'       => $visualConsoleName,
-            'id_group'   => $idGroup,
-            'background' => $background,
-            'height'     => $height,
-            'width'      => $width,
+            'name'             => $visualConsoleName,
+            'id_group'         => $idGroup,
+            'background'       => $background,
+            'height'           => $height,
+            'width'            => $width,
+            'background_color' => $layout_src[0]['background_color'],
+            'is_favourite'     => $layout_src[0]['is_favourite'],
         ];
+
         $result = db_process_sql_insert('tlayout', $values);
 
         $idNewVisualConsole = $result;
@@ -515,9 +518,9 @@ if (!$maps && !is_metaconsole()) {
 
 if ($maps) {
     if (!is_metaconsole()) {
-        echo '<div class="action-buttons w100p right">';
+        echo '<div class="action-buttons w100p right_align">';
     } else {
-        echo '<div class="w100p right_align">';
+        echo '<div class="w100p right right_align mrgn_btn_20px">';
     }
 }
 

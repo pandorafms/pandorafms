@@ -352,7 +352,25 @@ final class BarsGraph extends Item
                 false,
                 false
             );
-            $graph = base64_encode(file_get_contents($image));
+            $rc = file_get_contents($image);
+            if ($rc !== false) {
+                $graph = base64_encode($rc);
+            } else {
+                $graph = graph_nodata_image(
+                    // Width.
+                    $width,
+                    // Height.
+                    $height,
+                    // Type.
+                    'hbar',
+                    // Text.
+                    '',
+                    // Percent.
+                    false,
+                    // Base64.
+                    true
+                );
+            }
         } else {
             if ($typeGraph === 'horizontal') {
                 $graph = \hbar_graph(

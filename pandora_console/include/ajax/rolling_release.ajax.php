@@ -88,6 +88,11 @@ if (is_ajax()) {
                                 $file_dest = $config['homedir']."/extras/mr/updated/$number.sql";
 
                                 copy($file, $file_dest);
+
+                                // After successfully update, schedule history
+                                // database upgrade.
+                                enterprise_include_once('include/functions_config.php');
+                                enterprise_hook('history_db_install');
                             }
                         } else {
                             $error_file = fopen($config['homedir'].'/extras/mr/error.txt', 'w');

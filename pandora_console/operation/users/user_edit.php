@@ -32,7 +32,7 @@ global $config;
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
@@ -376,7 +376,9 @@ if (!$meta) {
         }
     }
 
-    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
+    $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
+    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, false, '');
+    $home_screen .= '</div>';
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
     $layouts_aux = [];
@@ -388,7 +390,9 @@ if (!$meta) {
         }
     }
 
+    $home_screen .= '<div id="show_vc" style="display: none; width: 100%;">';
     $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+    $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
 
@@ -644,10 +648,12 @@ foreach ($timezones as $timezone_name => $tz) {
 }
 
 if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
+
+    html_print_input_hidden('id', $id, false, false, false, 'id');
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">
@@ -926,41 +932,65 @@ function show_data_section () {
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "inline-grid");
+
             break;
         case <?php echo "'".'Visual console'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "");
+            $("#show_vc").css("display", "inline-grid");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Event list'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Group view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Tactical view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Alert detail'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Other'."'"; ?>:
             $("#text-data_section").css("display", "");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Default'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
     }
 }

@@ -805,6 +805,11 @@ select:-internal-list-box {
 .flex-nowrap {
   flex-wrap: nowrap;
 }
+
+.flex-evenly {
+  justify-content: space-evenly;
+}
+
 .flex-row-baseline {
   display: flex;
   flex-direction: row;
@@ -3347,6 +3352,7 @@ div#stat-win-module-graph div.nodata_container {
 .menu_graph,
 .timestamp_graph {
   position: absolute;
+  color: #000;
 }
 
 .menu_graph {
@@ -5444,6 +5450,10 @@ table.info_table.policy_sub_table {
   min-width: 100px;
 }
 
+div.label_select_child_left > span {
+  width: 100% !important;
+}
+
 .label_select_child_right {
   width: 20%;
   min-width: 140px;
@@ -6265,6 +6275,10 @@ form#form-filter-interfaces ul li.select-interfaces {
 
 li .select2 {
   max-width: 400px !important;
+}
+
+.select2-container {
+  min-width: 110px !important;
 }
 
 div.graph td.legendLabel {
@@ -8334,7 +8348,7 @@ span,
   float: right;
   margin-right: 100px;
 }
-.steps_vsmap {
+div.steps_vsmap {
   display: none;
   position: absolute;
   z-index: 99;
@@ -8440,4 +8454,54 @@ div.stat-win-spinner {
 div.stat-win-spinner img {
   width: 100px;
   height: 100px;
+}
+
+#table_builder_wizard tr.datos > td {
+  width: 30%;
+}
+#table_builder_wizard tr.datos > td:nth-child(3) {
+  width: 10%;
+}
+#table_builder_wizard .vertical-center {
+  text-align: center;
+}
+
+#table_builder_wizard .container-agent-arrows {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#table_builder_wizard .container-agent-arrows > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#table_builder_wizard .container-agent-arrows > div > b {
+  flex: 0;
+  margin-bottom: 20px;
+  width: 98%;
+  margin-left: 20px;
+}
+
+#table_builder_wizard .container-agent-arrows > div.vertical-center {
+  flex: 0;
+  display: block;
+  min-width: 50px;
+}
+
+.lign_right {
+  text-align: right;
+}
+.font_11pt {
+  font-size: 11pt;
+}
+
+.checkbox-random-name {
+  width: 100px !important;
+  margin-left: 20px;
 }

@@ -125,7 +125,6 @@ if ($getVisualConsole === true) {
     } catch (Throwable $e) {
         // Bad params.
         http_response_code(400);
-        hd($e);
         return;
     }
 

@@ -172,17 +172,12 @@ Pandora_Module_Exec::run () {
 	
 		string output;
 		int tickbase = GetTickCount();
-		while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
+		while ( (dwRet = WaitForSingleObject (pi.hProcess, this->module_wait_timeout)) != WAIT_ABANDONED ) {
 			PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
 			if (avail > 0) {
 				ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
 				buffer[read] = '\0';
 				output += (char *) buffer;
-			}
-
-			/* Change the output encoding */
-			if (this->native_encoding != -1){
-				changeOutputEncoding(&output);
 			}
 
 			if (dwRet == WAIT_OBJECT_0) { 
@@ -220,6 +215,10 @@ Pandora_Module_Exec::run () {
 		}
 		// Command output mode
 		else if (!output.empty()) {
+			/* Change the output encoding */
+			if (this->native_encoding != -1){
+				changeOutputEncoding(&output);
+			}
 			this->setOutput (output);
 		} else {
 			this->setOutput ("");
@@ -470,5 +469,4 @@ void Pandora_Module_Exec::changeOutputEncoding(string * string_change){
 		pandoraDebug ("Cannot find code page of encoding: %s", this->output_encoding.c_str ());
 	}
 }			
-
 

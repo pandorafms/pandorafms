@@ -565,6 +565,9 @@ CREATE TABLE IF NOT EXISTS `tskin` (
 	PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
+UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
+
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_queue`
 -- ---------------------------------------------------------------------
@@ -624,6 +627,22 @@ ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator
 ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
 ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
 ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
+
+ALTER TABLE `tevent_rule` MODIFY COLUMN `agent` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_usuario` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `evento` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `module` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `alert` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `user_comment` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_tag` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `name` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `group_recursion` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_agent` TEXT;
 
 UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
 UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
@@ -811,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`description` mediumtext,
 	`text_agent` text,
 	`text` TEXT,
-	`external_source` Text,
+	`external_source` mediumtext,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,
@@ -1487,6 +1506,7 @@ ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
 ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -1741,6 +1761,7 @@ ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NUL
 ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -2501,6 +2522,7 @@ CREATE TABLE `tnotification_source_group_user` (
 -- Add alert command 'Generate notification'
 -- ----------------------------------------------------------------------
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Event&#x20;name\",\"Event&#x20;type\",\"Source\",\"Agent&#x20;name&#x20;or&#x20;_agent_\",\"Event&#x20;severity\",\"ID&#x20;extra\",\"Tags&#x20;separated&#x20;by&#x20;commas\",\"Comments\",\"\",\"\"]' WHERE `name` = "Monitoring&#x20;Event";
 
 -- ----------------------------------------------------------------------
 -- Update message references and pre-configure notifications
@@ -2519,7 +2541,7 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
-ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Add column in table `tnetflow_filter`
@@ -2847,6 +2869,12 @@ INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id
 UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
 UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
 UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
+--
+-- Modifies tgrupo table.
+--
+
+ALTER TABLE tgrupo ADD COLUMN max_agents int(10) NOT NULL DEFAULT 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tnode_relations`

@@ -1,27 +1,38 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Agents
+ * Agents Functions.
+ *
+ * @category   Agents functions.
+ * @package    Pandora FMS
+ * @subpackage User interface.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 use PandoraFMS\Enterprise\RCMDFile as RCMDFile;
+use PandoraFMS\Event;
 
 
 /**
@@ -149,7 +160,7 @@ function agents_locate_agent(string $field)
  *
  * @param string $alias Agent alias.
  *
- * @return integer Id from the agent.
+ * @return array|boolean Agents ids or false if error.
  */
 function agents_get_agent_id_by_alias($alias)
 {
@@ -203,11 +214,13 @@ function agents_create_agent(
     $values=false,
     $alias_as_name=false
 ) {
-    if (empty($name)) {
+    global $config;
+
+    if (empty($name) === true) {
         return false;
     }
 
-    if (empty($id_group) && (int) $id_group != 0) {
+    if (empty($id_group) === true && (int) $id_group !== 0) {
         return false;
     }
 
@@ -216,11 +229,11 @@ function agents_create_agent(
         $interval = false;
     }
 
-    if (empty($interval)) {
+    if (empty($interval) === true) {
         return false;
     }
 
-    if (! is_array($values)) {
+    if (is_array($values) === false) {
         $values = [];
     }
 
@@ -229,8 +242,13 @@ function agents_create_agent(
     $values['id_grupo'] = $id_group;
     $values['intervalo'] = $interval;
 
-    if (!empty($ip_address)) {
+    if (empty($ip_address) === false) {
             $values['direccion'] = $ip_address;
+    }
+
+    // Check if group has limit or overrides the agent limit.
+    if (group_allow_more_agents($id_group, true, 'create') === false) {
+        return false;
     }
 
     $id_agent = db_process_sql_insert('tagente', $values);
@@ -239,7 +257,7 @@ function agents_create_agent(
     }
 
     // Create address for this agent in taddress.
-    if (!empty($ip_address)) {
+    if (empty($ip_address) === false) {
         agents_add_address($id_agent, $ip_address);
     }
 
@@ -1084,6 +1102,7 @@ function agents_common_modules($id_agent, $filter=false, $indexed=true, $get_not
  * @param string  $separator         Only in metaconsole. Separator for the serialized data. By default |.
  * @param boolean $add_alert_bulk_op //TODO documentation
  * @param boolean $force_serialized. If the agent has not id_server (typically in node) put 0 as <server_id>.
+ * @param boolean $meta_fields       If true, then id_agente is returned instead id_tagente.
  *
  * @return array An array with all agents in the group or an empty array
  */
@@ -1096,7 +1115,8 @@ function agents_get_group_agents(
     $serialized=false,
     $separator='|',
     $add_alert_bulk_op=false,
-    $force_serialized=false
+    $force_serialized=false,
+    $meta_fields=false
 ) {
     global $config;
 
@@ -1268,11 +1288,19 @@ function agents_get_group_agents(
     if (is_metaconsole()) {
         $table_name = 'tmetaconsole_agent ta LEFT JOIN tmetaconsole_agent_secondary_group tasg ON ta.id_agente = tasg.id_agent';
 
-        $fields = [
-            'ta.id_tagente AS id_agente',
-            'alias',
-            'ta.id_tmetaconsole_setup AS id_server',
-        ];
+        if ($meta_fields === true) {
+            $fields = [
+                'id_agente',
+                'alias',
+                'ta.id_tmetaconsole_setup AS id_server',
+            ];
+        } else {
+            $fields = [
+                'ta.id_tagente AS id_agente',
+                'alias',
+                'ta.id_tmetaconsole_setup AS id_server',
+            ];
+        }
     } else {
         $table_name = 'tagente LEFT JOIN tagent_secondary_group ON id_agente=id_agent';
 
@@ -3253,6 +3281,7 @@ function agents_get_agent_custom_field($agent_id, $custom_field_name)
  * @param boolean $selection     Show common (false) or all modules (true).
  * @param boolean $return        Return (false) or dump to output (true).
  * @param boolean $index_by_name Use module name as key.
+ * @param boolean $pure_return   Return as retrieved from DB.
  *
  * @return array With modules or null if error.
  */
@@ -3261,7 +3290,8 @@ function select_modules_for_agent_group(
     $id_agents,
     $selection,
     $return=true,
-    $index_by_name=false
+    $index_by_name=false,
+    $pure_return=false
 ) {
     global $config;
     $agents = (empty($id_agents)) ? [] : implode(',', $id_agents);
@@ -3339,6 +3369,10 @@ function select_modules_for_agent_group(
     if ($return) {
         echo json_encode($modules);
         return;
+    }
+
+    if ($pure_return === true) {
+        return $modules;
     }
 
     $modules_array = [];
@@ -3842,6 +3876,70 @@ function agents_get_last_status_change($id_agent)
 
 
 /**
+ * Checks if group allow more agents due itself limitation.
+ *
+ * @param integer $id_group      Id of the group.
+ * @param boolean $generateEvent If true and the check fails, will generate an event.
+ * @param string  $action        Action for perform (only if generateEvent is true).
+ *
+ * @return boolean True if allow more agents.
+ */
+function group_allow_more_agents(
+    int $id_group,
+    bool $generateEvent=false,
+    string $action='create'
+):bool {
+    global $config;
+
+    $groupMaxAgents   = (int) db_get_value('max_agents', 'tgrupo', sprintf('id_grupo = %d', $id_group));
+    $groupCountAgents = (int) db_get_num_rows(sprintf('SELECT nombre FROM tagente WHERE id_grupo = "%s"', $id_group));
+
+    // If `max_agents` is not defined or the count of agents in the group is below of max agents allowed.
+    $output = ($groupMaxAgents === 0 || $groupCountAgents < $groupMaxAgents);
+
+    if ($output === false && $generateEvent === true) {
+        // Get the group name.
+        $groupName = db_get_value(
+            'nombre',
+            'tgrupo',
+            'id_grupo',
+            $id_group
+        );
+        // New event.
+        $evt = new Event;
+        // Set parameters.
+        $evt->evento(
+            sprintf(
+                'Agent cannot be %sd due to the maximum agent limit for group %s',
+                $action,
+                $groupName
+            )
+        );
+        $evt->id_grupo($id_group);
+        $evt->id_agente(0);
+        $evt->id_agentmodule(0);
+        $evt->id_usuario($config['id_user']);
+        $evt->estado(EVENT_STATUS_NEW);
+        $evt->event_type(EVENTS_SYSTEM);
+        $evt->criticity(EVENT_CRIT_WARNING);
+        $evt->timestamp(date('Y-m-d H:i:s'));
+        $evt->utimestamp(time());
+        $evt->data(0);
+        $evt->source('agent_creation');
+        // Any fields are only available in meta.
+        if (is_metaconsole() === true) {
+            $evt->id_source_event(0);
+        }
+
+        // Save the event.
+        $evt->save();
+    }
+
+    return $output;
+}
+
+
+/**
  * Return the list of agents for a planned downtime
  *
  * @param integer $id_downtime   Id of planned downtime.
@@ -3850,7 +3948,7 @@ function agents_get_last_status_change($id_agent)
  *
  * @return array
  */
-function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str)
+function get_planned_downtime_agents_list($id_downtime, $filter_cond, $id_groups_str):array
 {
     $agents = [];
 

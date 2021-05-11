@@ -322,8 +322,8 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
 		class="info_box '.$id.' '.$class.' textodialogo" style="'.$force_style.'">
 		<tr>
 			<td class="icon icon_ui" rowspan="2" >'.html_print_image($icon_image, true, false, false, false, false).'</td>
-			<td class="title" class="pandora_upper pdd_t_10px"><b>'.$text_title.'</b></td>
-			<td class="icon" class="right pdd_r_3px">';
+			<td class="title pandora_upper pdd_t_10px text_left"><b>'.$text_title.'</b></td>
+			<td class="icon right pdd_r_3px">';
     if (!$no_close_bool) {
         // Use the no_meta parameter because this image is only in
         // the base console.
@@ -333,7 +333,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $output .= '</td>
 		</tr>
 		<tr>
-			<td class="black pdd_t_10px">'.$text_message.'</td>
+			<td class="black pdd_t_10px invert_filter" style="color: #000">'.$text_message.'</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -663,12 +663,17 @@ function ui_print_group_icon($id_group, $return=false, $path='groups_small', $st
         if (empty($icon)) {
             $output .= '<span title="'.groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
         } else {
+            $class = 'bot';
+            if ($icon === 'transmit') {
+                $class .= ' invert_filter';
+            }
+
             $output .= html_print_image(
                 'images/'.$path.'/'.$icon.'.png',
                 true,
                 [
                     'style' => $style,
-                    'class' => 'bot',
+                    'class' => $class,
                     'alt'   => groups_get_name($id_group, true),
                     'title' => groups_get_name($id_group, true),
                 ],
@@ -1478,7 +1483,10 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
         return false;
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole()
+        && (isset($config['requirements_use_base_url']) === false
+        || $config['requirements_use_base_url'] === false)
+    ) {
         $config['css'][$name] = '/../../'.$filename;
     } else {
         $config['css'][$name] = $filename;
@@ -1530,7 +1538,10 @@ function ui_require_javascript_file($name, $path='include/javascript/', $echo_ta
         return false;
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole()
+        && (isset($config['requirements_use_base_url']) === false
+        || $config['requirements_use_base_url'] === false)
+    ) {
         $config['js'][$name] = '../../'.$filename;
     } else {
         $config['js'][$name] = $filename;
@@ -3770,6 +3781,7 @@ function ui_print_event_priority(
  * @param string       $attributes_switch Switch attributes.
  * @param string       $toggl_attr        Main box extra attributes.
  * @param boolean|null $switch_on         Switch enabled disabled or depending on hidden_Default.
+ * @param string|null  $switch_name       Use custom switch input name or generate one.
  *
  * @return string HTML.
  */
@@ -3790,7 +3802,8 @@ function ui_toggle(
     $switch=false,
     $attributes_switch='',
     $toggl_attr='',
-    $switch_on=null
+    $switch_on=null,
+    $switch_name=null
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -3826,7 +3839,7 @@ function ui_toggle(
             $main_class = '';
         }
 
-        if (empty($container_class) === true) {
+        if ($container_class == 'white-box-content') {
             $container_class = 'white-box-content-clean';
         }
     }
@@ -3836,11 +3849,15 @@ function ui_toggle(
     $output .= '<div class="'.$header_class.'" style="cursor: pointer;" id="tgl_ctrl_'.$uniqid.'">';
     if ($reverseImg === false) {
         if ($switch === true) {
+            if (empty($switch_name) === true) {
+                $switch_name = 'box_enable_toggle'.$uniqid;
+            }
+
             $output .= html_print_div(
                 [
                     'class'   => 'float-left',
                     'content' => html_print_checkbox_switch_extended(
-                        'box_enable_toggle'.$uniqid,
+                        $switch_name,
                         1,
                         ($switch_on === null) ? (($hidden_default === true) ? 0 : 1) : $switch_on,
                         false,
@@ -3910,7 +3927,7 @@ function ui_toggle(
     $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
     $output .= '	/* <![CDATA[ */'."\n";
     $output .= "	$(document).ready (function () {\n";
-    $output .= "		$('#checkbox-box_enable_toggle".$uniqid."').click(function() {\n";
+    $output .= "		$('#checkbox-".$switch_name."').click(function() {\n";
     $output .= '            if (hide_tgl_ctrl_'.$uniqid.") {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
@@ -3925,13 +3942,13 @@ function ui_toggle(
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 0;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_a."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', true);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', true);\n";
     $output .= "			}\n";
     $output .= "			else {\n";
     $output .= '				hide_tgl_ctrl_'.$uniqid." = 1;\n";
     $output .= "				$('#tgl_div_".$uniqid."').toggle();\n";
     $output .= "				$('#image_".$uniqid."').attr({src: '".$image_b."'});\n";
-    $output .= "				$('#checkbox-box_enable_toggle".$uniqid."').prop('checked', false);\n";
+    $output .= "				$('#checkbox-".$switch_name."').prop('checked', false);\n";
     $output .= "			}\n";
     $output .= "		});\n";
     $output .= "	});\n";
@@ -3951,23 +3968,24 @@ function ui_toggle(
  * Simplified way of ui_toggle ussage.
  *
  * @param array $data Arguments:
- * 'content'
- * 'name'
- * 'title'
- * 'id'
- * 'hidden_default'
- * 'return'
- * 'toggle_class'
- * 'container_class'
- * 'main_class'
- * 'img_a'
- * 'img_b'
- * 'clean'
- * 'reverseImg'
- * 'switch'
- * 'attributes_switch'
- * 'toggl_attr'
- * 'switch_on'.
+ *  - content
+ *  - name
+ *  - title
+ *  - id
+ *  - hidden_default
+ *  - return
+ *  - toggle_class
+ *  - container_class
+ *  - main_class
+ *  - img_a
+ *  - img_b
+ *  - clean
+ *  - reverseImg
+ *  - switch
+ *  - attributes_switch
+ *  - toggl_attr
+ *  - switch_on
+ *  - switch_name.
  *
  * @return string HTML code with toggle content.
  */
@@ -3990,7 +4008,8 @@ function ui_print_toggle($data)
         (isset($data['switch']) === true) ? $data['switch'] : false,
         (isset($data['attributes_switch']) === true) ? $data['attributes_switch'] : '',
         (isset($data['toggl_attr']) === true) ? $data['toggl_attr'] : '',
-        (isset($data['switch_on']) === true) ? $data['switch_on'] : null
+        (isset($data['switch_on']) === true) ? $data['switch_on'] : null,
+        (isset($data['switch_name']) === true) ? $data['switch_name'] : null
     );
 }
 
@@ -4357,7 +4376,7 @@ function ui_print_page_header(
 
     if ($modal && !enterprise_installed()) {
         $buffer .= "
-		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise right mrgn_top-2px' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -4662,6 +4681,7 @@ function ui_print_agent_autocomplete_input($parameters)
 {
     global $config;
 
+    $text_color = '';
     // Normalize and extract the data from $parameters
     // ------------------------------------------------------------------.
     $return = false;
@@ -4692,6 +4712,7 @@ function ui_print_agent_autocomplete_input($parameters)
     $icon_agent = 'images/search_agent.png';
 
     if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
         $icon_agent = 'images/agent_mc.menu.png';
     }
 
@@ -5163,6 +5184,11 @@ function ui_print_agent_autocomplete_input($parameters)
     $javascript_function_change = '';
     // Default value.
     $javascript_function_change .= '
+        function setInputBackground(inputId, image) {
+            $("#"+inputId)
+            .css("background","url(\'"+image+"\') right center no-repeat");
+        }
+
 		function set_functions_change_autocomplete_'.$input_name.'() {
 			var cache_'.$input_name.' = {};
 			
@@ -5177,10 +5203,9 @@ function ui_print_agent_autocomplete_input($parameters)
 					if (cache_'.$input_name.'[groupId] == null) {
 						cache_'.$input_name.'[groupId] = {};
 					}
-					
+
 					//Set loading
-					$("#'.$input_id.'")
-						.css("background","url(\"'.$spinner_image.'\") right center no-repeat");
+                    setInputBackground("'.$input_id.'", "'.$spinner_image.'");
 					
 					//Function to call when the source
 					if ('.((int) !empty($javascript_function_action_into_source_js_call)).') {
@@ -5194,8 +5219,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						response(cache_'.$input_name.'[groupId][term]);
 						
 						//Set icon
-						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+						setInputBackground("'.$input_id.'", "'.$icon_image.'");
 						return;
 					}
 					else {
@@ -5213,7 +5237,9 @@ function ui_print_agent_autocomplete_input($parameters)
 									response(cache_'.$input_name.'[groupId][oldterm]);
 									
 									found = true;
-									
+
+									//Set icon
+                                    setInputBackground("'.$input_id.'", "'.$icon_image.'");
 									return;
 								}
 							});
@@ -5229,11 +5255,10 @@ function ui_print_agent_autocomplete_input($parameters)
 					
 					if (found) {
 						//Set icon
-						$("#'.$input_id.'")
-							.css("background","url(\"'.$icon_image.'\") right center no-repeat");
+                        setInputBackground("'.$input_id.'", "'.$icon_image.'");
 						
 						select_item_click = 0;
-						
+      
 						return;
 					}
 					
@@ -5248,16 +5273,13 @@ function ui_print_agent_autocomplete_input($parameters)
 								response(data);
 								
 								//Set icon
-								$("#'.$input_id.'")
-									.css("background",
-										"url(\"'.$icon_image.'\") right center no-repeat");
-								
-								select_item_click = 0;
+                                setInputBackground("'.$input_id.'", "'.$icon_image.'");
+                                select_item_click = 0;
 								
 								return;
 							}
 						});
-					
+
 					return;
 				},
 				//---END source-----------------------------------------
@@ -5436,15 +5458,23 @@ function ui_print_agent_autocomplete_input($parameters)
 				return;
 			}
 			
-			if ('.((int) $check_only_empty_javascript_on_blur_function).') {
-				return
-			}
-			
-			
 			if (select_item_click) {
+                select_item_click = 0;
+                $("#'.$input_id.'")
+                .css("background",
+                    "url(\"'.$icon_image.'\") right center no-repeat");
 				return;
-			}
-			
+			} else {
+                // Clear selectbox if item is not selected.
+                $("#'.$selectbox_id.'").empty();
+                $("#'.$selectbox_id.'").append($("<option value=0>'.__('Select an Agent first').'</option>"));
+                $("#'.$selectbox_id.'").attr("disabled", "disabled");
+                // Not allow continue on blur .
+                if ('.((int) $check_only_empty_javascript_on_blur_function).') {
+                    return
+                }
+            }
+
 			//Set loading
 			$("#'.$input_id.'")
 				.css("background",
@@ -5518,7 +5548,7 @@ function ui_print_agent_autocomplete_input($parameters)
 						if ('.((int) !empty($javascript_function_action_after_select_js_call)).') {
 							'.$javascript_function_action_after_select_js_call.'
 						}
-						
+
 						//Set icon
 						$("#'.$input_id.'")
 							.css("background",
@@ -5536,8 +5566,13 @@ function ui_print_agent_autocomplete_input($parameters)
     // ------------------------------------------------------------------.
     $html = '';
 
+    $text_color = '';
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
+    }
+
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right;';
+    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';
@@ -5703,6 +5738,12 @@ function ui_print_module_string_value(
     // without HTML entities.
     if ($is_web_content_string) {
         $value = io_safe_input($value);
+    }
+
+    $is_snapshot = is_snapshot_data($module['datos']);
+    $is_large_image = is_text_to_black_string($module['datos']);
+    if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+        $row[7] = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
     }
 
     $is_snapshot = is_snapshot_data($value);

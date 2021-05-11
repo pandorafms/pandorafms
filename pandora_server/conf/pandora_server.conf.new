@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.752
+# Version 7.0NG.754
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -470,6 +470,12 @@ log_window 3600
 # Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
 #preload_windows 0
 
+# Correlated Alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
+#event_server_cache_ttl 10
+
+# Log retrieving, items per request. (High values could make elasticsearch crash)
+#elastic_query_size 10
+
 # If set to 1, an alert will not be fired if the last event it generated is in 'in-process' status.
 
 event_inhibit_alerts 0
@@ -495,10 +501,6 @@ snmp_threads 4
 # Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
 
 transactionalserver 0
-
-# Number of threads for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
-
-transactional_threads 1
 
 # Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
 

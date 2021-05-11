@@ -159,7 +159,9 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
         $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
 
-        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent]);
+        $filename = str_replace('&#x20;', '+', $filename);
+
+        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', '|;|');
 
         // API method returns '0' string if success.
         $file_added = ($result_api_call === '0') ? true : false;
@@ -322,7 +324,7 @@ $table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_su
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0']);
+    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0'], false, '', '|;|');
 
     // API method returns id of new comment if success.
     $comment_added = ($result_api_call >= '0') ? true : false;
@@ -376,11 +378,11 @@ $details_box .= '
     <div class="integriaims_details_titles">'.__('Priority').'</div>
     <div class="integriaims_details_titles">'.__('Type').'</div>';
 $details_box .= '
-    <div>'.html_print_image('images/heart.png', true).'</div>
-    <div>'.html_print_image('images/builder.png', true).'</div>
-    <div>'.html_print_image('images/user_green.png', true).'</div>
+    <div>'.html_print_image('images/heart.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/builder.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/user_green.png', true, ['class' => 'invert_filter']).'</div>
     <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
-    <div>'.html_print_image('images/incidents.png', true).'</div>';
+    <div>'.html_print_image('images/incidents.png', true, ['class' => 'invert_filter']).'</div>';
 $details_box .= '
     <div>'.$status_text.'</div>
     <div>'.$resolution_text.'</div>
@@ -410,9 +412,9 @@ $people_box .= '</div>';
 // Dates box.
 $dates_box = '<div class="integriaims_details_box integriaims_details_box_three">';
 $dates_box .= '
-    <div>'.html_print_image('images/tick.png', true).'</div>
-    <div>'.html_print_image('images/update.png', true, ['width' => '21']).'</div>
-    <div>'.html_print_image('images/mul.png', true).'</div>';
+    <div>'.html_print_image('images/tick.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/update.png', true, ['width' => '21', 'class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/mul.png', true, ['class' => 'invert_filter']).'</div>';
 $dates_box .= '
     <div class="integriaims_details_titles">'.__('Created at').':</div>
     <div class="integriaims_details_titles">'.__('Updated at').':</div>

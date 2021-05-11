@@ -280,6 +280,11 @@ sub process_xml_data ($$$$$) {
 		$timezone_offset = 0;
 	}
 	
+	# If set by server, do not use offset.
+	if ($pa_config->{'use_xml_timestamp'} eq '0') {
+		$timezone_offset = 0;
+	}
+	
 	# Parent Agent Name
 	my $parent_id = 0; # Default value for unknown parent
 	my $parent_agent_name = $data->{'parent_agent_name'};

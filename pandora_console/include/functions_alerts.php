@@ -173,12 +173,21 @@ function alerts_get_event_status_group($idGroup, $type='alert_fired', $query='AN
         $idAgents = array_values($agents);
     }
 
-    $result = db_get_all_rows_sql(
+    $sql = sprintf(
         'SELECT id_evento
-		FROM tevento
-		WHERE estado = 0 AND id_agente IN (0,'.implode(',', $idAgents).') '.$typeWhere.$query.'
-		ORDER BY id_evento DESC LIMIT 1'
+        FROM tevento
+        WHERE estado = 0
+            AND id_agente IN (0, %s)
+            %s
+            %s
+        ORDER BY id_evento DESC
+        LIMIT 1',
+        implode(',', $idAgents),
+        $typeWhere,
+        $query
     );
+
+    $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
         return false;
@@ -439,10 +448,11 @@ function alerts_delete_alert_action($id_alert_action)
  * Clone an alert action.
  *
  * @param int Id of the original alert action
+ * @param int Agent group id if it wants to be changed when clone.
  *
  * @return mixed Id of the cloned action or false in case of fail.
  */
-function alerts_clone_alert_action($id_alert_action)
+function alerts_clone_alert_action($id_alert_action, $id_group)
 {
     $id_alert_action = safe_int($id_alert_action, 1);
     if (empty($id_alert_action)) {
@@ -453,6 +463,10 @@ function alerts_clone_alert_action($id_alert_action)
 
     if (empty($action)) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $action['id_group'] = $id_group;
     }
 
     unset($action['id']);
@@ -1121,15 +1135,20 @@ function alerts_get_alert_template_field3_recovery($id_alert_template)
  * Duplicates an alert template.
  *
  * @param int Id of an alert template.
+ * @param int Agent group id if it wants to be changed when duplicate.
  *
  * @return mixed Duplicates an alert template or false if something goes wrong.
  */
-function alerts_duplicate_alert_template($id_alert_template)
+function alerts_duplicate_alert_template($id_alert_template, $id_group)
 {
     $template = alerts_get_alert_template($id_alert_template);
 
     if ($template === false) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $template['id_group'] = $id_group;
     }
 
     $name = io_safe_input(__('Copy of').' ').$template['name'];
@@ -2125,8 +2144,6 @@ function get_group_alerts(
         $disabled = $filter;
     }
 
-    $filter .= ' AND talert_template_modules.disabled = 0 ';
-
     switch ($disabled) {
         case 'notfired':
             $filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
@@ -2144,8 +2161,12 @@ function get_group_alerts(
             $filter .= ' AND talert_template_modules.disabled = 0';
         break;
 
-        default:
+        case 'all':
             $filter .= '';
+        break;
+
+        default:
+            $filter .= ' AND talert_template_modules.disabled = 0 ';
         break;
     }
 
@@ -2186,8 +2207,8 @@ function get_group_alerts(
                         WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
-						FROM tagente_modulo
-						WHERE delete_pending = 0
+						FROM tagente_modulo tam
+						WHERE delete_pending = 0 AND tam.disabled = 0
 							AND id_agente IN (SELECT id_agente
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg
@@ -2734,7 +2755,7 @@ function alerts_ui_update_or_create_actions($update=true)
         $al_action = alerts_get_alert_action($id);
         if ($al_action !== false) {
             if ($al_action['id_group'] == 0) {
-                if (! check_acl($config['id_user'], 0, 'PM')) {
+                if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
                         'ACL Violation',
                         'Trying to access Alert Management'

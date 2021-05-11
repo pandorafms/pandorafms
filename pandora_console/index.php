@@ -148,7 +148,7 @@ if (isset($config['console_log_enabled']) && $config['console_log_enabled'] == 1
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
     ini_set('log_errors', 0);
-    ini_set('error_log', 0);
+    ini_set('error_log', null);
 }
 
 if (isset($config['error'])) {
@@ -220,7 +220,8 @@ echo '<head>'."\n";
 // This starts the page head. In the callback function,
 // $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
-
+// Avoid clickjacking.
+header('X-Frame-Options: SAMEORIGIN');
 // Enterprise main.
 enterprise_include_once('index.php');
 

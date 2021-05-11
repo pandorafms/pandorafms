@@ -77,6 +77,7 @@ is not working on the metaconsole and there is no time to fix it -->
     var click_on_the_file_below_to_begin = "<?php echo __('Click on the file below to begin.'); ?>\n";
     var updating = "<?php echo __('Updating'); ?>\n";
     var package_updated_successfully = "<?php echo __('Package updated successfully.'); ?>\n";
+    var package_not_updated = "<?php echo __('Package not updated.'); ?>\n";
     var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied.'); ?>\n";
     var mr_available = "<?php echo __('Minor release available'); ?>\n";
     var package_available = "<?php echo __('New package available'); ?>\n";
@@ -93,7 +94,7 @@ is not working on the metaconsole and there is no time to fix it -->
     var mr_available_header = "<?php echo __('There are db changes'); ?>\n";
     var text1_mr_file = "<?php echo __('There are new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
     var text2_mr_file = "<?php echo __('We recommend launching '); ?>\n";
-    var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
+    var text3_mr_file = "<?php echo __('Scheduled downtime'); ?>\n";
 
     var language = "<?php echo $config['language']; ?>";
     var docsUrl = (language === "es")

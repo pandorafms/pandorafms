@@ -1609,6 +1609,7 @@ function paint_graph_status(
     svg
       .append("g")
       .attr("transform", "translate(100, 150)")
+      .attr("class", "invert_filter")
       .call(yAxis);
 
     //legend Normal text
@@ -1623,6 +1624,7 @@ function paint_graph_status(
       .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_normal)
       .style("text-anchor", "first")
       .attr("width", 300)
@@ -1649,6 +1651,7 @@ function paint_graph_status(
       .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_warning)
       .style("text-anchor", "first");
 
@@ -1673,6 +1676,7 @@ function paint_graph_status(
       .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_critical)
       .style("text-anchor", "first");
 

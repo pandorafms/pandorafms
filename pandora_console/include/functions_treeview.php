@@ -290,7 +290,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         }
 
         $last_data_str .= '&nbsp;';
-        $last_data_str .= html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px']);
+        $last_data_str .= html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px', 'class' => 'invert_filter']);
 
         $is_snapshot = is_snapshot_data($last_data['datos']);
         $is_large_image = is_text_to_black_string($last_data['datos']);
@@ -307,7 +307,7 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
         }
 
         if ($salida !== null) {
-            $last_data_str = html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px']);
+            $last_data_str = html_print_image('images/clock2.png', true, ['title' => $last_data['timestamp'], 'width' => '18px', 'class' => 'invert_filter']);
         }
 
         $last_data_str .= $salida;
@@ -473,7 +473,7 @@ function treeview_printAlertsTable($id_module, $server_data=[], $no_head=false)
 
     if ($user_access_node && check_acl($config['id_user'], $id_group, 'LW')) {
         // Actions table
-        echo '<div class="w100p right mw300px">';
+        echo '<div class="w100p right mw300px right_align">';
         echo '<a target=_blank href="'.$console_url.'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&search=1&module_name='.$module_name.'&id_agente='.$agent_id.$url_hash.'" target="_blank">';
             html_print_submit_button(__('Go to alerts edition'), 'upd_button', false, 'class="sub search"');
         echo '</a>';

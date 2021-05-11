@@ -122,10 +122,10 @@ if ($action == 'new') {
 	src="">';
 } else {
     if (defined('METACONSOLE')) {
-        $table->data[0][2] = '<img id="imagen2"
+        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
 		src="../../images/console/background/'.$background.'">';
     } else {
-        $table->data[0][2] = '<img id="imagen2" 
+        $table->data[0][2] = '<img id="imagen2" style="width:230px;"
 		src="images/console/background/'.$background.'">';
     }
 

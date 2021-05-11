@@ -712,6 +712,7 @@ function events_update_status($id_evento, $status, $filter=null, $history=false)
  * @param boolean $validatedEvents If true, evaluate validated events.
  * @param boolean $recursiveGroups If true, filtered groups and their children
  *                                 will be search.
+ * @param boolean $nodeConnected   Already connected to node (uses tevento).
  *
  * @return array Events.
  * @throws Exception On error.
@@ -727,7 +728,8 @@ function events_get_all(
     $return_sql=false,
     $having='',
     $validatedEvents=false,
-    $recursiveGroups=true
+    $recursiveGroups=true,
+    $nodeConnected=false
 ) {
     global $config;
 
@@ -1017,7 +1019,10 @@ function events_get_all(
         );
     }
 
-    $table = events_get_events_table(is_metaconsole(), $history);
+    $table = events_get_events_table(
+        (is_metaconsole() && $nodeConnected === false),
+        $history
+    );
     $tevento = sprintf(
         ' %s te',
         $table
@@ -1028,7 +1033,7 @@ function events_get_all(
     $tagente_table = 'tagente';
     $tagente_field = 'id_agente';
     $conditionMetaconsole = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $tagente_table = 'tmetaconsole_agent';
         $tagente_field = 'id_tagente';
         $conditionMetaconsole = ' AND ta.id_tmetaconsole_setup = te.server_id ';
@@ -1075,7 +1080,7 @@ function events_get_all(
         );
     }
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         // Id source event.
         if (!empty($filter['id_source_event'])) {
             $sql_filters[] = sprintf(
@@ -1087,8 +1092,15 @@ function events_get_all(
 
     // User comment.
     if (!empty($filter['user_comment'])) {
+        // For filter field.
         $sql_filters[] = sprintf(
             ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            io_safe_input($filter['user_comment'])
+        );
+
+        // For show comments on event details.
+        $sql_filters[] = sprintf(
+            ' OR lower(te.user_comment) like lower("%%%s%%") ',
             $filter['user_comment']
         );
     }
@@ -1239,7 +1251,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1265,7 +1277,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1291,7 +1303,7 @@ function events_get_all(
             // Query_table.
             '',
             // Meta.
-            is_metaconsole(),
+            is_metaconsole() && $nodeConnected === false,
             // Childrens_ids.
             [],
             // Force_group_and_tag.
@@ -1312,7 +1324,7 @@ function events_get_all(
 
     // Module search.
     $agentmodule_join = 'LEFT JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $agentmodule_join = '';
     } else if (!empty($filter['module_search'])) {
         $agentmodule_join = 'INNER JOIN tagente_modulo am ON te.id_agentmodule = am.id_agente_modulo';
@@ -1339,7 +1351,7 @@ function events_get_all(
     }
 
     $extra = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $extra = ', server_id';
     }
 
@@ -1405,7 +1417,7 @@ function events_get_all(
     }
 
     $server_join = '';
-    if (is_metaconsole()) {
+    if (is_metaconsole() && $nodeConnected === false) {
         $server_join = ' LEFT JOIN tmetaconsole_setup ts
             ON ts.id = te.server_id';
         if (!empty($filter['server_id'])) {
@@ -3001,15 +3013,11 @@ function events_get_agent(
 ) {
     global $config;
 
-    if (!is_numeric($date)) {
+    if (is_numeric($date) === false) {
         $date = time_w_fixed_tz($date);
     }
 
-    if (is_metaconsole() && $events_group === false) {
-        $id_server = true;
-    }
-
-    if (empty($date)) {
+    if (empty($date) === true) {
         $date = get_system_time();
     }
 
@@ -3144,7 +3152,7 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() && $id_server) {
+    if (is_metaconsole() === true && empty($id_server) === false) {
         $sql_where .= ' AND server_id = '.$id_server;
     }
 
@@ -3161,7 +3169,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() && $id_server) ? true : false,
+            (is_metaconsole() === true && empty($id_server) === false) ? true : false,
             $history
         );
     }
@@ -3664,22 +3672,37 @@ function events_page_responses($event, $childrens_ids=[])
         );
     }
 
-    $table_responses->data[] = $data;
+    if ((tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EM',
+        $event['clean_tags'],
+        $childrens_ids
+    )) || (tags_checks_event_acl(
+        $config['id_user'],
+        $event['id_grupo'],
+        'EW',
+        $event['clean_tags'],
+        $childrens_ids
+    ))
+    ) {
+        $table_responses->data[] = $data;
 
-    // Comments.
-    $data = [];
-    $data[0] = __('Comment');
-    $data[1] = '';
-    $data[2] = html_print_button(
-        __('Add comment'),
-        'comment_button',
-        false,
-        '$(\'#link_comments\').trigger(\'click\');',
-        'class="sub next w70p"',
-        true
-    );
+        // Comments.
+        $data = [];
+        $data[0] = __('Comment');
+        $data[1] = '';
+        $data[2] = html_print_button(
+            __('Add comment'),
+            'comment_button',
+            false,
+            '$(\'#link_comments\').trigger(\'click\');',
+            'class="sub next w70p"',
+            true
+        );
 
-    $table_responses->data[] = $data;
+        $table_responses->data[] = $data;
+    }
 
     if (tags_checks_event_acl(
         $config['id_user'],
@@ -3723,7 +3746,7 @@ function events_page_responses($event, $childrens_ids=[])
         ['id_group' => $id_groups]
     );
 
-    if (empty($event_responses)) {
+    if (empty($event_responses) || (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM'))) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $responses = [];
@@ -4293,6 +4316,8 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
+    $table_class = 'table_modal_alternate';
+
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4300,7 +4325,7 @@ function events_page_details($event, $server='')
     $table_details->head = [];
     $table_details->cellspacing = 0;
     $table_details->cellpadding = 0;
-    $table_details->class = 'table_modal_alternate';
+    $table_details->class = $table_class;
 
     /*
      * Useless switch.
@@ -4329,7 +4354,7 @@ function events_page_details($event, $server='')
 
     if (!empty($agent)) {
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Name').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
         if (can_user_access_node() && is_metaconsole() && empty($event['server_id']) === true) {
             $data[1] = ui_print_truncate_text(
                 $agent['alias'],
@@ -4362,12 +4387,12 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('IP Address').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('IP Address').'</div>';
         $data[1] = empty($agent['direccion']) ? '<i>'.__('N/A').'</i>' : $agent['direccion'];
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('OS').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('OS').'</div>';
         $data[1] = ui_print_os_icon($agent['id_os'], true, true);
         if (!empty($agent['os_version'])) {
             $data[1] .= ' ('.$agent['os_version'].')';
@@ -4376,17 +4401,17 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Last contact').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last contact').'</div>';
         $data[1] = ($agent['ultimo_contacto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : ui_print_timestamp($agent['ultimo_contacto'], true);
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Last remote contact').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Last remote contact').'</div>';
         $data[1] = ($agent['ultimo_contacto_remoto'] == '1970-01-01 00:00:00') ? '<i>'.__('N/A').'</i>' : date_w_fixed_tz($agent['ultimo_contacto_remoto']);
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Custom fields').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Custom fields').'</div>';
         $data[1] = html_print_button(
             __('View custom fields'),
             'custom_button',
@@ -4418,13 +4443,13 @@ function events_page_details($event, $server='')
     if (!empty($module)) {
         // Module name.
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Name').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Name').'</div>';
         $data[1] = $module['nombre'];
         $table_details->data[] = $data;
 
         // Module group.
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Module group').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Module group').'</div>';
         $id_module_group = $module['id_module_group'];
         if ($id_module_group == 0) {
             $data[1] = __('No assigned');
@@ -4461,7 +4486,7 @@ function events_page_details($event, $server='')
 
         if ($acl_graph) {
             $data = [];
-            $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Graph').'</div>';
+            $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Graph').'</div>';
 
             $module_type = -1;
             if (isset($module['module_type'])) {
@@ -4497,7 +4522,7 @@ function events_page_details($event, $server='')
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
 
             $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true);
+            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
             $data[1] .= '</a>';
             $table_details->data[] = $data;
         }
@@ -4510,20 +4535,26 @@ function events_page_details($event, $server='')
 
     if ($event['id_alert_am'] != 0) {
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Source').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Source').'</div>';
         $data[1] = '<a href="'.$serverstring.'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event['id_agente'].'&amp;tab=alert'.$hashstring.'">';
         $standby = db_get_value('standby', 'talert_template_modules', 'id', $event['id_alert_am']);
         if (!$standby) {
             $data[1] .= html_print_image(
                 'images/bell.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         } else {
             $data[1] .= html_print_image(
                 'images/bell_pause.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         }
 
@@ -4542,7 +4573,7 @@ function events_page_details($event, $server='')
         $table_details->data[] = $data;
 
         $data = [];
-        $data[0] = '<div class="normal-weight mrgn_lft_20px">'.__('Priority').'</div>';
+        $data[0] = '<div class="normal_weight mrgn_lft_20px">'.__('Priority').'</div>';
 
         $priority_code = db_get_value('priority', 'talert_template_modules', 'id', $event['id_alert_am']);
         $alert_priority = get_priority_name($priority_code);
@@ -5152,7 +5183,8 @@ function events_page_comments($event, $ajax=false)
         $childrens_ids
     ))) && $config['show_events_in_local'] == false || $config['event_replication'] == false
     ) {
-        $comments_form = '<br><div id="comments_form" class="w98p">';
+        $event['evento'] = io_safe_output($event['evento']);
+        $comments_form = '<br><div id="comments_form" style="width:98%;">';
         $comments_form .= html_print_textarea(
             'comment',
             3,
@@ -5336,16 +5368,22 @@ function events_get_count_events_by_agent(
 
     $tagente = 'tagente';
     $tevento = 'tevento';
+    $field_type = 'ta.id_agente';
+    if ($dbmeta === true) {
+        $tagente = 'tmetaconsole_agent';
+        $tevento = 'tmetaconsole_event';
+        $field_type = 'ta.id_tagente';
+    }
 
     $sql = sprintf(
-        'SELECT 
+        'SELECT
           ta.id_agente,
           ta.alias as agent_name,
           count(*) as count
         FROM %s te
         %s
         INNER JOIN %s ta
-            ON te.id_agente = ta.id_agente
+            ON te.id_agente = %s
         INNER JOIN tgrupo tg
             ON (te.id_grupo = tg.id_grupo AND tg.id_grupo IN (%s))
             OR (tg.id_grupo = tasg.id_group AND tasg.id_group IN (%s))
@@ -5354,6 +5392,7 @@ function events_get_count_events_by_agent(
         $tevento,
         events_get_secondary_groups_left_join($tevento),
         $tagente,
+        $field_type,
         implode(',', $id_group),
         implode(',', $id_group),
         $datelimit,
@@ -5411,6 +5450,9 @@ function events_get_count_events_validated_by_user(
 ) {
     global $config;
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     // Group.
     $tgroup_join = '';
@@ -5433,6 +5475,7 @@ function events_get_count_events_validated_by_user(
         );
     }
 
+    $sql_filter = '';
     if (!empty($filter['id_agent'])) {
         $sql_filter .= sprintf(' AND id_agente = %d ', $filter['id_agent']);
     }
@@ -5607,6 +5650,9 @@ function events_get_count_events_by_criticity(
     global $config;
 
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     $sql_filter = '';
     $tgroup_join = '';
@@ -5794,6 +5840,9 @@ function events_get_count_events_validated(
 ) {
     global $config;
     $tevento = 'tevento';
+    if ($dbmeta === true) {
+        $tevento = 'tmetaconsole_event';
+    }
 
     // Group.
     $sql_filter = '';

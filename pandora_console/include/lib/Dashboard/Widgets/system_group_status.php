@@ -164,6 +164,9 @@ class SystemGroupStatusWidget extends Widget
 
         // This forces at least a first configuration.
         $this->configurationRequired = false;
+        if (empty($this->values['groupId']) === true) {
+            $this->configurationRequired = true;
+        }
 
         $this->overflow_scrollbars = false;
     }
@@ -299,6 +302,7 @@ class SystemGroupStatusWidget extends Widget
                 'return'         => true,
                 'multiple'       => true,
                 'returnAllGroup' => $return_all_group,
+                'required'       => true,
             ],
         ];
 
@@ -506,7 +510,7 @@ class SystemGroupStatusWidget extends Widget
             $show_link = array_key_exists($group['g'], $user_groups);
 
             if ((in_array($group['g'], $this->values['groupId'])) === true) {
-                $table->data[$i][] = '<span>'.$group['name'].'</span>';
+                $table->data[$i][] = '<span class="legendLabel">'.$group['name'].'</span>';
 
                 $url = $config['homeurl'].'index.php';
                 $url .= '?sec=estado&sec2=operation/agentes/status_monitor';

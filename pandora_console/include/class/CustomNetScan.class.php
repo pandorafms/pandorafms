@@ -185,6 +185,7 @@ class CustomNetScan extends Wizard
                 $this->task['id_recon_server'] = $server_id;
                 $this->task['id_group'] = $id_group;
                 $this->task['interval_sweep'] = $interval;
+                $this->task['type'] = DISCOVERY_HOSTDEVICES_CUSTOM;
 
                 if (isset($this->task['id_rt']) === false) {
                     // Create.
@@ -648,7 +649,7 @@ class CustomNetScan extends Wizard
             );
 
             $form['inputs'][] = [
-                'label'     => __('Explanation').'<span id="spinner_recon_script" class="invisible">'.html_print_image('images/spinner.gif', true).'</span>',
+                'label'     => __('Explanation').'<span id="spinner_recon_script" style="display: none">'.html_print_image('images/spinner.gif', true).'</span>',
                 'arguments' => [
                     'type'    => 'textarea',
                     'rows'    => 4,
@@ -656,7 +657,8 @@ class CustomNetScan extends Wizard
                     'name'    => 'explanation',
                     'value'   => $explanation,
                     'return'  => true,
-                    'class'   => 'discovery_textarea_input w388px',
+                    'class'   => 'w388px discovery_textarea_input',
+                    'style'   => 'width: 388px',
                 ],
             ];
 

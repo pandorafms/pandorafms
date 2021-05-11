@@ -200,11 +200,7 @@ $table->data[5] = $data;
 if ($event_response_id == 0) {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);
-    if (!defined('METACONSOLE')) {
         echo '<div class="w100p right_align">';
-    } else {
-        echo '<div class="w100p right">';
-    }
 
     html_print_submit_button(__('Create'), 'create_response_button', false, ['class' => 'sub next']);
     echo '</div>';
@@ -212,11 +208,7 @@ if ($event_response_id == 0) {
 } else {
     echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
     html_print_table($table);
-    if (!defined('METACONSOLE')) {
         echo '<div class="w100p right_align">';
-    } else {
-        echo '<div class="w100p right">';
-    }
 
     html_print_submit_button(__('Update'), 'update_response_button', false, ['class' => 'sub next']);
     echo '</div>';

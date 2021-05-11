@@ -1000,3 +1000,6 @@ table.databox {
 .tactical_set {
   border-color: #707070;
 }
+li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
+  border: 1px solid #707070;
+}

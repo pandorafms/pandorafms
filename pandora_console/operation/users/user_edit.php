@@ -32,7 +32,7 @@ global $config;
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
@@ -648,10 +648,12 @@ foreach ($timezones as $timezone_name => $tz) {
 }
 
 if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
+
+    html_print_input_hidden('id', $id, false, false, false, 'id');
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">

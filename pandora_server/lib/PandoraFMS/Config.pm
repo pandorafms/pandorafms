@@ -45,7 +45,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.754";
-my $pandora_build = "210510";
+my $pandora_build = "210511";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -117,9 +117,9 @@ sub pandora_init {
 			($pa_config->{"pandora_path"} = $parametro);
 		}
 	}
-	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
-		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
+	if (!defined ($pa_config->{"pandora_path"}) || $pa_config->{"pandora_path"} eq ""){
+		print "[ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
+		print "For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
 		exit;
 	}
 }

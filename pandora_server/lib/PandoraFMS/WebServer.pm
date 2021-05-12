@@ -80,8 +80,8 @@ sub run ($) {
 	
 	# Use Goliat with CURL
 	if ($pa_config->{'web_engine'} eq 'curl') {
-		require Goliat::GoliatCURL;
-		Goliat::GoliatCURL->import;
+		require PandoraFMS::Goliat::GoliatCURL;
+		PandoraFMS::Goliat::GoliatCURL->import;
 	
 		# Check for CURL binary
 		if (system ("curl -V >$DEVNULL 2>&1") >> 8 != 0) {
@@ -98,8 +98,8 @@ sub run ($) {
 	}
 	# Use LWP by default
 	else {
-		require Goliat::GoliatLWP;
-		Goliat::GoliatLWP->import;
+		require PandoraFMS::Goliat::GoliatLWP;
+		PandoraFMS::Goliat::GoliatLWP->import;
 		
 		if (! LWP::UserAgent->can('ssl_opts')) {
 			logger($pa_config, "LWP version $LWP::VERSION does not support SSL. Make sure version 6.0 or higher is installed.", 1);

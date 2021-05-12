@@ -565,7 +565,6 @@ form#modal_form_feedback input[type="email"] {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -587,7 +586,7 @@ form#modal_form_feedback ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: monospace;
+  font-family: source-code;
 }
 
 #categories_library .card_category a:hover {
@@ -915,7 +914,6 @@ div.integria_details_description textarea {
   font-weight: bold;
   line-height: 20px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   text-decoration: none;
   text-transform: capitalize;
@@ -929,7 +927,6 @@ div.integria_details_description textarea {
 }
 
 .table.group_modules_status_box tr td {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 11pt;
   text-decoration: none;
@@ -999,7 +996,4 @@ table.databox {
 .status_tactical,
 .tactical_set {
   border-color: #707070;
-}
-li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
-  border: 1px solid #707070;
 }

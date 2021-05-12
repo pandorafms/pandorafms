@@ -1,5 +1,6 @@
 * {
-  font-size: 12px;
+  font-size: 11pt;
+  line-height: 16pt;
 }
 
 #module_library_main {
@@ -251,7 +252,7 @@
   padding: 20px 20px;
   color: #383838;
   margin-bottom: 10px;
-  font-family: Courier New, monospace;
+  font-family: source-code, monospace;
 }
 
 #modal_library div.view_web {

@@ -218,7 +218,16 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         $new_module = $module;
 
         // Rewrite different values
-        $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        if ($module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_PROC
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_STRING
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_INC
+        ) {
+            $new_module['ip_target'] = $module['ip_target'];
+        } else {
+            $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        }
+
         $new_module['policy_linked'] = 0;
         $new_module['id_policy_module'] = 0;
 

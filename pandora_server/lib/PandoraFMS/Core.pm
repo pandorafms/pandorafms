@@ -1339,6 +1339,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		my $cid_data = "CID_IMAGE";
 		my $dataname = "CID_IMAGE.png";
 
+		# Decode ampersand. Used for macros with encoded names.
+		$field3 =~ s/&amp;/&/g;
+
 		if (defined($data) && $data =~ /^data:image\/png;base64, /) {
 			# macro _data_ substitution in case is image.
 			$attach_data_as_image = 1;

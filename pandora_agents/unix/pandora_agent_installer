@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.754"
-PI_BUILD="210510"
+PI_BUILD="210511"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -152,8 +152,8 @@ uninstall () {
 	fi
 
 	# Stops the agent on uninstall
-	if [ -f $PANDORA_BASE/etc/init.d/pandora_agent_daemon ]; then
-		$PANDORA_BASE/etc/init.d/pandora_agent_daemon stop 12> /dev/null
+	if [ -f /etc/init.d/pandora_agent_daemon ]; then
+		/etc/init.d/pandora_agent_daemon stop 12> /dev/null
 	else
 		echo "$PANDORA_BASE/etc/init.d/pandora_agent_daemon not found to stop agent"
 	fi

@@ -286,7 +286,11 @@ class Diagnostics extends Wizard
             $return .= '</div>';
         }
 
-        return false;
+        if ($this->pdf === true) {
+            return $return;
+        } else {
+            return false;
+        }
     }
 
 
@@ -1599,7 +1603,7 @@ class Diagnostics extends Wizard
             }
         }
 
-        return true;
+        return $result;
     }
 
 

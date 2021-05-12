@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
@@ -13947,4 +13948,70 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Email template for sending reports.
+ *
+ * @param string $subjectEmail Subject of email.
+ * @param string $bodyEmail    Body of email.
+ * @param string $scheduled    Id of schedule report.
+ * @param string $reportName   Report name.
+ * @param string $email        Serialized list of destination emails.
+ * @param array  $attachments  Attachments.
+ *
+ * @return void
+ */
+function reporting_email_template(
+    string $subjectEmail='',
+    string $bodyEmail='',
+    string $scheduled='',
+    string $reportName='',
+    string $email='',
+    array $attachments=null
+) {
+    // Subject.
+    $subject = (empty($subjectEmail) === true) ? '[Pandora] '.__('Reports') : $subjectEmail;
+    // Body.
+    if (empty($bodyEmail) === true) {
+        $body = __('Greetings').',';
+        $body .= '<p />';
+        $body .= __('Attached to this email there\'s a PDF file of the').' ';
+        $body .= $scheduled.' '.__('report');
+        $body .= ' <strong>"'.$reportName.'"</strong>';
+        $body .= '<p />';
+        $body .= __('Generated at').' '.date('Y/m/d H:i:s');
+        $body .= '<p />';
+        $body .= __('Thanks for your time.');
+        $body .= '<p />';
+        $body .= __('Best regards, Pandora FMS');
+        $body .= '<p />';
+        $body .= '<em>'.__('This is an automatically generated email from Pandora FMS, please do not reply.').'</em>';
+    } else {
+        $bodyEmail = str_replace(
+            [
+                "\r\n",
+                "\r",
+                '&#x0d;&#x0a;',
+            ],
+            "\n",
+            $bodyEmail
+        );
+
+        $body = '<p>'.implode("</p>\n<p>", explode("\n", $bodyEmail)).'</p>';
+    }
+
+    // Extract list of emails.
+    $destinationEmails = explode(',', io_safe_output($email));
+    foreach ($destinationEmails as $destination) {
+        $destination = trim($destination);
+
+        // Skip the empty 'to'.
+        if (empty($destination) === false) {
+            send_email_attachment($destination, $body, $subject, $attachments);
+        } else {
+            db_pandora_audit('ERROR:', 'Cron jobs mail, empty destination email.');
+        }
+    }
 }

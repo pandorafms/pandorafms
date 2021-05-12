@@ -68,6 +68,9 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
 }
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+if ($config['style'] === 'pandora_black') {
+    ui_require_css_file('pandora_black', 'include/styles/', true);
+}
 
 $interface_name = (string) $params['interface_name'];
 $agent_id = (int) $params['agent_id'];
@@ -190,6 +193,7 @@ $data[1] .= html_print_image(
     [
         'onclick' => "scwShow(scwID('text-start_date'),this);",
         'style'   => 'vertical-align: bottom;',
+        'class'   => 'invert_filter',
     ],
     false,
     false,
@@ -251,7 +255,8 @@ $options[2] = 'x2';
 $options[3] = 'x3';
 $options[4] = 'x4';
 $options[5] = __('Full');
-$data[1] = html_print_select(
+/*
+    $data[1] = html_print_select(
     $options,
     'zoom',
     $zoom,
@@ -261,9 +266,9 @@ $data[1] = html_print_select(
     true,
     false,
     false
-);
-$table->data[] = $data;
-$table->rowclass[] = '';
+    );
+    $table->data[] = $data;
+$table->rowclass[] = '';*/
 
 $form_table = html_print_table($table, true);
 $form_table .= '<div class="w100p right right_align">';
@@ -284,7 +289,7 @@ if (empty($server_id) === false) {
     $menu_form .= html_print_input_hidden('server', $server_id, true);
 }
 
-$menu_form .= '<div class="module_graph_menu_dropdown">';
+$menu_form .= '<div class="module_graph_menu_dropdown mrgn_top_20px">';
 $menu_form .= '<div id="module_graph_menu_header" class="module_graph_menu_header">';
 $menu_form .= html_print_image(
     'images/arrow_down_green.png',
@@ -312,13 +317,6 @@ $menu_form .= '</div>';
 $menu_form .= '</form>';
 
 echo $menu_form;
-echo '<div class="module_graph_menu_dropdown">
-        <div id="module_graph_menu_header" class="module_graph_menu_header">
-            '.html_print_image('images/arrow_down_green.png', true, ['class' => 'module_graph_menu_arrow', 'float' => 'left'], false, false, true).'
-            <span class="flex_2">'.__('Graph configuration menu').'</span></div>
-        <div class="module_graph_menu_content module_graph_menu_content_closed invisible" >'.$form_table.'</div>
-    </div>';
-echo '</form>';
 
 // Hidden div to forced title.
 html_print_div(

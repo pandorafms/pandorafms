@@ -1000,6 +1000,23 @@ table.databox {
 .tactical_set {
   border-color: #707070;
 }
+
 li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   border: 1px solid #707070;
+}
+.chartLegend {
+  width: 100%;
+  position: relative;
+  height: 30px;
+}
+
+.chartLegend table {
+  position: absolute;
+  right: 0px;
+}
+
+.graph_container {
+  width: 800px;
+  margin: 20px auto;
+  border-radius: 3px;
 }

@@ -64,7 +64,13 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
+global $config;
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+
+if ($config['style'] === 'pandora_black') {
+    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+}
+
 
 $id = get_parameter('id');
 $id_agent = db_get_value(
@@ -129,7 +135,7 @@ ui_print_message_dialog(
             };
         </script>
     </head>
-    <body class='bg_white'>
+    <body class='bg_general'>
         <?php
         // Module id.
         $id = (int) get_parameter('id', 0);
@@ -145,9 +151,32 @@ ui_print_message_dialog(
 
         // ACL.
         $all_groups = agents_get_all_groups_agent($agent_id);
-        if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
+
+        // If in metaconsole, resotre DB to check meta user acl.
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') !== true) {
             include $config['homedir'].'/general/noaccess.php';
             exit;
+        }
+
+        // Metaconsole connection to the node.
+        $server_id = (int) get_parameter('server', 0);
+        if (is_metaconsole() === true && empty($server_id) === false) {
+            $server = metaconsole_get_connection_by_id($server_id);
+            // Error connecting.
+            if (metaconsole_connect($server) !== NOERR) {
+                echo '<html>';
+                    echo '<body>';
+                ui_print_error_message(
+                    __('There was a problem connecting with the node')
+                );
+                    echo '</body>';
+                echo '</html>';
+                exit;
+            }
         }
 
         $draw_alerts = get_parameter('draw_alerts', 0);
@@ -386,7 +415,7 @@ ui_print_message_dialog(
         );
 
         $form_table = html_print_table($table, true);
-        $form_table .= '<div class="w100p right mrgn_top_15px">';
+        $form_table .= '<div class="w100p right mrgn_top_15px right_align">';
         $form_table .= html_print_submit_button(
             __('Reload'),
             'submit',

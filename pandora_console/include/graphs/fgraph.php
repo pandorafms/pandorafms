@@ -218,6 +218,9 @@ function vbar_graph(
 
     if (isset($options['x']['font']['color']) === false) {
         $options['x']['font']['color'] = '#545454';
+        if ($config['style'] === 'pandora_black') {
+            $options['x']['font']['color'] = '#fff';
+        }
     }
 
     // Show ticks.
@@ -233,6 +236,9 @@ function vbar_graph(
     // Grid color axes x.
     if (isset($options['x']['color']) === false) {
         $options['x']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['x']['color'] = '#222';
+        }
     }
 
     if (isset($options['x']['labelWidth']) === false) {
@@ -295,6 +301,10 @@ function vbar_graph(
 
     if (isset($options['y']['font']['color']) === false) {
         $options['y']['font']['color'] = '#545454';
+
+        if ($config['style'] === 'pandora_black') {
+            $options['y']['font']['color'] = '#222';
+        }
     }
 
     // Show ticks.
@@ -310,6 +320,9 @@ function vbar_graph(
     // Grid color axes y.
     if (isset($options['y']['color']) === false) {
         $options['y']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['y']['color'] = '#222';
+        }
     }
 
     if (isset($options['y']['labelWidth']) === false) {
@@ -345,6 +358,9 @@ function vbar_graph(
 
     if (isset($options['grid']['color']) === false) {
         $options['grid']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['grid']['color'] = '#222';
+        }
     }
 
     if (isset($options['grid']['backgroundColor']) === false) {
@@ -354,6 +370,14 @@ function vbar_graph(
                 '#ffffff',
             ],
         ];
+        if ($config['style'] === 'pandora_black') {
+            $options['grid']['backgroundColor'] = [
+                'colors' => [
+                    '#222',
+                    '#222',
+                ],
+            ];
+        }
     }
 
     if (isset($options['grid']['margin']) === false) {
@@ -692,6 +716,7 @@ function hbar_graph(
     $val_max=null,
     $base64=false
 ) {
+    global $config;
     if ($water_mark !== false) {
         setup_watermark($water_mark, $water_mark_file, $water_mark_url);
     }
@@ -715,6 +740,10 @@ function hbar_graph(
             'return_img_base_64' => $base64,
         ];
         return generator_chart_to_pdf('hbar', $params);
+    }
+
+    if ($config['style'] === 'pandora_black') {
+        $tick_color = '#fff';
     }
 
     return flot_hcolumn_chart(

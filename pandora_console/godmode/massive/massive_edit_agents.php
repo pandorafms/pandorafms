@@ -506,7 +506,7 @@ $id_os = 0;
 $server_name = 0;
 $description = '';
 
-echo '<div id="form_agents" class="invisible">';
+echo '<div id="form_agents" style="display:none">';
 
 $table = new StdClass();
 $table->width = '100%';
@@ -819,24 +819,17 @@ foreach ($fields as $field) {
     }
 
     if ($field['combo_values'] !== '') {
-        $data[1] = html_print_select(
-            $combo_values,
-            'customvalue_'.$field['id_field'],
-            $custom_value,
-            '',
-            __('No change'),
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            false,
-            false,
-            false,
-            false,
-            '',
-            false
+        $data[1] = html_print_input(
+            [
+                'type'          => 'select_search',
+                'fields'        => $combo_values,
+                'name'          => 'customvalue_'.$field['id_field'],
+                'selected'      => $custom_value,
+                'nothing'       => __('No change'),
+                'nothing_value' => '',
+                'return'        => true,
+                'sort'          => false,
+            ]
         );
     };
 

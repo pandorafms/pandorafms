@@ -142,7 +142,9 @@ $publiclink['text'] .= html_print_image(
 $publiclink['text'] .= '</a>';
 
 // Refresh selector time dashboards.
-if ($config['public_dashboard'] === true) {
+if (isset($config['public_dashboard']) === true
+    && (bool) $config['public_dashboard'] === true
+) {
     $urlRefresh = $publicUrl;
 } else {
     $queryRefresh = [
@@ -213,7 +215,9 @@ $newWidget['text'] .= html_print_image(
 );
 $newWidget['text'] .= '</a>';
 
-if ($config['public_dashboard'] === true) {
+if (isset($config['public_dashboard']) === true
+    && (bool) $config['public_dashboard'] === true
+) {
     $buttons = [
         'combo_refresh_one_dashboard' => $comboRefresh,
         'combo_refresh_countdown'     => $comboRefreshCountdown,
@@ -270,14 +274,22 @@ if ($config['public_dashboard'] === true) {
 }
 
 if ($publicLink === false) {
-    ui_print_page_header(
-        $dashboardName,
-        '',
-        false,
-        '',
-        false,
-        $buttons
-    );
+    if ((bool) is_metaconsole() === true) {
+        ui_meta_print_header(
+            __('Dashboards').' » '.__('List'),
+            false,
+            $buttons
+        );
+    } else {
+        ui_print_page_header(
+            $dashboardName,
+            '',
+            false,
+            '',
+            false,
+            $buttons
+        );
+    }
 } else {
     $output = '<div id="dashboard-controls">';
     foreach ($buttons as $key => $value) {

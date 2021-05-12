@@ -931,24 +931,19 @@ foreach ($fields as $field) {
     }
 
     if ($field['combo_values'] !== '') {
-        $data_field[1] = html_print_select(
-            $combo_values,
-            'customvalue_'.$field['id_field'],
-            $custom_value,
-            '',
-            __('None'),
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            false,
-            false,
-            false,
-            false,
-            '',
-            false
+        $data_field[1] = html_print_input(
+            [
+                'type'              => 'select_search',
+                'fields'            => $combo_values,
+                'name'              => 'customvalue_'.$field['id_field'],
+                'selected'          => $custom_value,
+                'nothing'           => __('None'),
+                'nothing_value'     => '',
+                'return'            => true,
+                'sort'              => false,
+                'size'              => '400px',
+                'dropdownAutoWidth' => true,
+            ]
         );
     };
 
@@ -1009,9 +1004,9 @@ echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'"
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help pdd_r_10px' '>";
+    echo "<span id='modules_not_learning_mode_context_help' class='pdd_r_10px'>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help invisible'>";
+    echo "<span id='modules_not_learning_mode_context_help' class='invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');

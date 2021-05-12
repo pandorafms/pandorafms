@@ -742,7 +742,7 @@ switch ($action) {
         }
 
         $own_info = get_user_info($config['id_user']);
-        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM')) {
+        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
             $return_all_group = true;
         } else {
             $return_all_group = false;
@@ -1211,7 +1211,7 @@ switch ($action) {
         switch ($activeTab) {
             case 'main':
                 $reportName = '';
-                $idGroupReport = 0;
+                $idGroupReport = null;
                 // All groups.
                 $description = '';
                 $resultOperationDB = null;
@@ -1718,14 +1718,6 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
-                            case 'nt_top_n':
-                                $values['period'] = get_parameter('period');
-                                $values['top_n_value'] = get_parameter(
-                                    'quantity'
-                                );
-                                $good_format = true;
-                            break;
-
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2093,7 +2085,6 @@ switch ($action) {
                             case 'projection_graph':
                             case 'prediction_date':
                             case 'simple_baseline_graph':
-                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2376,14 +2367,6 @@ switch ($action) {
                                 $values['visual_format'] = get_parameter(
                                     'visual_format'
                                 );
-                                $good_format = true;
-                            break;
-
-                            case 'nt_top_n':
-                                $values['top_n_value'] = get_parameter(
-                                    'quantity'
-                                );
-                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 
@@ -2727,7 +2710,6 @@ switch ($action) {
                             case 'projection_graph':
                             case 'prediction_date':
                             case 'simple_baseline_graph':
-                            case 'nt_top_n':
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

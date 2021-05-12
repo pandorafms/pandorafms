@@ -14,21 +14,21 @@ class Widget
      *
      * @var integer
      */
-    private $dashboardId;
+    protected $dashboardId;
 
     /**
      * Cell ID.
      *
      * @var integer
      */
-    private $cellId;
+    protected $cellId;
 
     /**
      * Widget Id.
      *
      * @var integer
      */
-    private $widgetId;
+    protected $widgetId;
 
     /**
      * Values widget.
@@ -36,6 +36,20 @@ class Widget
      * @var array
      */
     private $values;
+
+    /**
+     * Target node Id.
+     *
+     * @var integer
+     */
+    protected $nodeId;
+
+    /**
+     * Should we show select node in metaconsole environments?
+     *
+     * @var boolean
+     */
+    private $showSelectNodeMeta;
 
 
     /**
@@ -56,10 +70,14 @@ class Widget
             $this->cellId = $cellId;
             $this->dashboardId = $dashboardId;
             $this->fields = $this->get();
+            $this->className = $this->fields['class_name'];
 
             $cellClass = new Cell($this->cellId, $this->dashboardId);
             $this->dataCell = $cellClass->get();
             $this->values = $this->decoders($this->getOptionsWidget());
+            if (isset($this->values['node']) === true) {
+                $this->nodeId = $this->values['node'];
+            }
         }
 
         return $this;
@@ -73,8 +91,6 @@ class Widget
      */
     public function get()
     {
-        global $config;
-
         $sql = sprintf(
             'SELECT *
             FROM twidget
@@ -99,8 +115,6 @@ class Widget
      */
     public function getOptionsWidget():array
     {
-        global $config;
-
         $result = [];
         if (empty($this->dataCell['options']) === false) {
             $result = \json_decode($this->dataCell['options'], true);
@@ -419,6 +433,24 @@ class Widget
 
         $output = '';
 
+        if ((bool) \is_metaconsole() === true) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            if ($this->nodeId > 0) {
+                if (\metaconsole_connect(null, $this->nodeId) !== NOERR) {
+                    $output .= '<div class="container-center">';
+                    $output .= \ui_print_info_message(
+                        __('Failed to connect to node %d', $this->nodeId),
+                        '',
+                        true
+                    );
+                    $output .= '</div>';
+                    return $output;
+                }
+
+                $config['metaconsole'] = false;
+            }
+        }
+
         if ($this->configurationRequired === true) {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
@@ -440,6 +472,13 @@ class Widget
             $output .= $this->load();
         }
 
+        if ((bool) \is_metaconsole() === true) {
+            if ($this->nodeId > 0) {
+                \metaconsole_restore_db();
+                $config['metaconsole'] = true;
+            }
+        }
+
         return $output;
     }
 
@@ -451,6 +490,8 @@ class Widget
      */
     public function getFormInputs(): array
     {
+        global $config;
+
         $inputs = [];
 
         $values = $this->values;
@@ -462,6 +503,10 @@ class Widget
 
         if (empty($values['background']) === true) {
             $values['background'] = '#ffffff';
+
+            if ($config['style'] === 'pandora_black') {
+                $values['background'] = '#222222';
+            }
         }
 
         $inputs[] = [
@@ -510,6 +555,38 @@ class Widget
             ],
         ];
 
+        if ((bool) \is_metaconsole() === true
+            && $this->shouldSelectNode() === true
+        ) {
+            \enterprise_include_once('include/functions_metaconsole.php');
+            $servers = \metaconsole_get_servers();
+            if (is_array($servers) === true) {
+                $servers = array_reduce(
+                    $servers,
+                    function ($carry, $item) {
+                        $carry[$item['id']] = $item['server_name'];
+                        return $carry;
+                    }
+                );
+            } else {
+                $servers = [];
+            }
+
+            $inputs[] = [
+                'label'     => __('Node'),
+                'arguments' => [
+                    'wrapper'       => 'div',
+                    'name'          => 'node',
+                    'type'          => 'select',
+                    'fields'        => $servers,
+                    'selected'      => $values['node'],
+                    'nothing'       => __('This metaconsole'),
+                    'nothing_value' => -1,
+                    'return'        => true,
+                ],
+            ];
+        }
+
         return $inputs;
     }
 
@@ -524,6 +601,13 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+        if ((bool) \is_metaconsole() === true) {
+            if ($this->shouldSelectNode() === true) {
+                $values['node'] = \get_parameter('node', null);
+            } else {
+                $values['node'] = \get_parameter('metaconsoleId', null);
+            }
+        }
 
         return $values;
 
@@ -551,6 +635,10 @@ class Widget
 
         if (isset($decoder['background']) === true) {
             $values['background'] = $decoder['background'];
+        }
+
+        if (isset($decoder['node']) === true) {
+            $values['node'] = $decoder['node'];
         }
 
         return $values;
@@ -588,6 +676,78 @@ class Widget
         ];
 
         return $result;
+    }
+
+
+    /**
+     * Should select for nodes been shown while in metaconsole environment?
+     *
+     * @return boolean
+     */
+    protected function shouldSelectNode():bool
+    {
+        if ($this->showSelectNodeMeta !== null) {
+            return (bool) $this->showSelectNodeMeta;
+        }
+
+        switch ($this->className) {
+            case 'EventsListWidget':
+            case 'ReportsWidget':
+            case 'MapsMadeByUser':
+            case 'AlertsFiredWidget':
+                $this->showSelectNodeMeta = true;
+            break;
+
+            default:
+                $this->showSelectNodeMeta = false;
+            break;
+        }
+
+        return (bool) $this->showSelectNodeMeta;
+    }
+
+
+    /**
+     * Get description should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getDescription()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Load should be implemented for each child.
+     *
+     * @return string
+     */
+    public function load()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Get name should be implemented for each child.
+     *
+     * @return string
+     */
+    public static function getName()
+    {
+        return '**NOT DEFINED**';
+    }
+
+
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        return '';
     }
 
 

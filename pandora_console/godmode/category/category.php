@@ -175,7 +175,7 @@ if (!empty($result)) {
 }
 
 // Form to add new categories or search categories
-echo "<div class='w100p right'>";
+echo "<div class='w100p right_align'>";
 if (defined('METACONSOLE')) {
     echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
 } else {

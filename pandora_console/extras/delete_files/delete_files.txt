@@ -83,3 +83,7 @@ pandora_console/enterprise/godmode/agentes/module_manager_editor_web.php
 pandora_console/enterprise/include/ajax/web_server_module_debug.php
 pandora_console/enterprise/include/class/WebServerModuleDebug.class.php
 pandora_console/enterprise/include/styles/WebServerModuleDebug.css
+include/lib/WSManager.php
+include/lib/WebSocketServer.php
+include/lib/WebSocketUser.php
+operation/network/network_explorer.php

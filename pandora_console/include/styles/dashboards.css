@@ -76,7 +76,7 @@ h1 {
 
 .grid-stack-item-content {
   color: #2c3e50;
-  /*text-align: center;*/
+  text-align: center;
   background-color: #ffffff;
   border-radius: 5px;
   -webkit-box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);
@@ -533,4 +533,25 @@ div#main_pure {
 
 #select_multiple_modules_filtered > div > div > * {
   flex: auto;
+}
+
+.visual-console-container-dashboard div.label strong {
+  color: inherit;
+  font-family: inherit;
+}
+
+.visual-console-container-dashboard div.label strong span {
+  color: inherit;
+  font-family: inherit;
+}
+
+/* Mobile trick */
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content {
+  overflow: visible;
+  overflow-x: visible;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content div.label > p {
+  margin: 0;
 }

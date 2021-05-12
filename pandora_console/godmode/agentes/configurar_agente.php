@@ -37,6 +37,8 @@ require_once $config['homedir'].'/include/functions_cron.php';
 ui_require_javascript_file('encode_decode_base64');
 ui_require_css_file('agent_manager');
 
+use PandoraFMS\Event;
+
 check_login();
 
 // Get tab parameter to check ACL in each tabs.
@@ -229,6 +231,9 @@ if ($create_agent) {
     if ($alias == '') {
         $agent_creation_error = __('No agent alias specified');
         $agent_created_ok = 0;
+    } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+        $agent_creation_error = __('Agent cannot be created due to the maximum agent limit for this group');
+        $agent_created_ok = 0;
     } else {
         if ($alias_as_name) {
             $sql = 'SELECT nombre FROM tagente WHERE nombre = "'.$alias.'"';
@@ -400,7 +405,7 @@ if ($id_agente) {
 
     // Module tab.
     $moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/module.png',
+        'images/gm_modules.png',
         true,
         [
             'title' => __('Modules'),
@@ -416,7 +421,7 @@ if ($id_agente) {
 
     // Alert tab.
     $alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.html_print_image(
-        'images/bell.png',
+        'images/gm_alerts.png',
         true,
         [
             'title' => __('Alerts'),
@@ -1034,6 +1039,8 @@ if ($update_agent) {
 
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
+    } else if (group_allow_more_agents($grupo, true, 'update') === false) {
+        ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
     } else if ($exists_ip) {
         ui_print_error_message(__('Duplicate main IP address'));
     } else {

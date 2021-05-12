@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.752
-%define release     210318
+%define version     7.0NG.754
+%define release     210510
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -122,7 +122,12 @@ systemctl enable pandora_server.service
 
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 chmod 750 /etc/cron.hourly/pandora_db
-cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server
+
+if [ -d /etc/logrotate.d ] ; then
+   if [ ! -f /etc/logrotate.d/pandora_server ] ; then
+      cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server
+   fi
+fi
 
 if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora

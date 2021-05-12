@@ -3272,12 +3272,6 @@ function visual_map_get_status_element($layoutData)
         }
     }
 
-    $module_value = db_get_sql(
-        'SELECT datos
-        FROM tagente_estado
-        WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
-    );
-
     // Linked to other layout ?? - Only if not module defined
     if (!empty($layoutData['id_layout_linked'])) {
         if (!empty($layoutData['linked_layout_node_id'])) {
@@ -3379,6 +3373,11 @@ function visual_map_get_status_element($layoutData)
             case PERCENTILE_BUBBLE:
             case CIRCULAR_PROGRESS_BAR:
             case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                $module_value = db_get_sql(
+                    'SELECT datos
+                    FROM tagente_estado
+                    WHERE id_agente_modulo = '.$layoutData['id_agente_modulo']
+                );
 
                 if (empty($module_value) || $module_value == '') {
                     return VISUAL_MAP_STATUS_UNKNOWN;
@@ -3907,9 +3906,19 @@ function visual_map_get_layout_status($layout_id, $status_data=[], $depth=0)
         return VISUAL_MAP_STATUS_UNKNOWN;
     }
 
-    $layout_items = db_get_all_rows_filter(
-        'tlayout_data',
-        ['id_layout' => $layout_id]
+    $layout_items = db_get_all_rows_sql(
+        sprintf(
+            'SELECT tld.*
+            FROM tlayout_data tld
+            LEFT JOIN tagente ta
+                ON ta.id_agente=tld.id_agent
+            LEFT JOIN tagente_modulo tam
+                ON tam.id_agente_modulo = tld.id_agente_modulo
+            WHERE tld.id_layout = %d
+                AND (ta.disabled = 0 OR ta.disabled is null)
+                AND (tam.disabled = 0 OR tam.disabled is null)',
+            $layout_id
+        )
     );
 
     if ($layout_items === false) {

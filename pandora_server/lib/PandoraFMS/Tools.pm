@@ -86,6 +86,7 @@ our @EXPORT = qw(
 	DISCOVERY_APP_ORACLE
 	DISCOVERY_CLOUD_AWS_EC2
 	DISCOVERY_CLOUD_AWS_RDS
+	DISCOVERY_CLOUD_AWS_S3
 	DISCOVERY_CLOUD_AZURE_COMPUTE
 	DISCOVERY_DEPLOY_AGENTS
 	DISCOVERY_APP_SAP
@@ -220,6 +221,7 @@ use constant DISCOVERY_APP_SAP => 10;
 use constant DISCOVERY_APP_DB2 => 11;
 use constant DISCOVERY_APP_MICROSOFT_SQL_SERVER => 12;
 use constant DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE => 13;
+use constant DISCOVERY_CLOUD_AWS_S3 => 14;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
@@ -1731,7 +1733,7 @@ sub cron_check_interval {
 
 	my ($down, $up) = cron_get_interval($elem_cron);
 	# Check if it is not a range
-	if (!defined($up)) {
+	if (!defined($up) || $up eq $down) {
 		return ($down == $elem_curr_time) ? 1 : 0;
 	}
 

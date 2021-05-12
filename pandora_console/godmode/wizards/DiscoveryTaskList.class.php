@@ -515,19 +515,21 @@ class DiscoveryTaskList extends HTML
             }
 
             // Task name.
-            $table->headstyle[1] .= 'min-width: 150px; width: 300px;';
+            $table->headstyle[1] .= 'min-width: 170px; width: 300px;';
+            // Server Name.
+            $table->headstyle[2] .= 'min-width: 130px; width: 400px;';
             // Name.
-            $table->headstyle[4] .= 'min-width: 100px; width: 400px;';
+            $table->headstyle[4] .= 'min-width: 100px; width: 350px;';
             // Status.
-            $table->headstyle[5] .= 'min-width: 50px; width: 100px;';
+            $table->headstyle[5] .= 'min-width: 70px; width: 190px;';
             // Task type.
-            $table->headstyle[6] .= 'min-width: 200px; width: 200px;';
+            $table->headstyle[6] .= 'min-width: 190px; width: 200px;';
             // Progress.
-            $table->headstyle[7] .= 'min-width: 50px; width: 150px;';
+            $table->headstyle[7] .= 'min-width: 60px; width: 150px;';
             // Updated at.
             $table->headstyle[8] .= 'min-width: 50px; width: 150px;';
             // Operations.
-            $table->headstyle[9] .= 'min-width: 150px; width: 150px;';
+            $table->headstyle[9] .= 'min-width: 150px; width: 250px;';
 
             if (check_acl($config['id_user'], 0, 'AW')) {
                 $table->head[0] = __('Force');
@@ -711,6 +713,19 @@ class DiscoveryTaskList extends HTML
                         $data[6] .= __('Discovery.Cloud.Aws.RDS');
                     break;
 
+                    case DISCOVERY_CLOUD_AWS_S3:
+                        // Discovery Cloud S3.
+                        $data[6] = html_print_image(
+                            'images/op_network.png',
+                            true,
+                            [
+                                'title' => __('Discovery Cloud S3'),
+                                'class' => 'invert_filter',
+                            ]
+                        ).'&nbsp;&nbsp;';
+                        $data[6] .= __('Discovery.Cloud.Aws.S3');
+                    break;
+
                     case DISCOVERY_APP_MYSQL:
                         // Discovery Applications MySQL.
                         $data[6] = html_print_image(
@@ -850,7 +865,7 @@ class DiscoveryTaskList extends HTML
 
                         $data[9] .= '<a href="#" onclick="progress_task_list('.$task['id_rt'].',\''.$task['name'].'\')">';
                         $data[9] .= html_print_image(
-                            'images/eye.png',
+                            'images/operation.png',
                             true,
                             [
                                 'title' => __('View summary'),
@@ -866,6 +881,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_APP_DB2
                         && $task['type'] != DISCOVERY_APP_SAP
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
+                        && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
                         if (check_acl($config['id_user'], 0, 'MR')) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
@@ -1022,7 +1038,9 @@ class DiscoveryTaskList extends HTML
      */
     public function getTargetWiz($task, $script=false)
     {
-        if ($script !== false) {
+        if ($script !== false
+            || (int) $task['type'] === DISCOVERY_HOSTDEVICES_CUSTOM
+        ) {
             switch ($script['type']) {
                 case DISCOVERY_SCRIPT_APP_VMWARE:
                 return 'wiz=app&mode=vmware&page=0';
@@ -1041,6 +1059,9 @@ class DiscoveryTaskList extends HTML
 
                         case DISCOVERY_CLOUD_AZURE_COMPUTE:
                         return 'wiz=cloud&mode=azure&ki='.$task['auth_strings'].'&sub=compute&page=0';
+
+                        case DISCOVERY_CLOUD_AWS_S3:
+                        return 'wiz=cloud&mode=amazonws&ki='.$task['auth_strings'].'&sub=s3&page=0';
 
                         default:
                         return 'wiz=cloud';
@@ -1489,6 +1510,9 @@ class DiscoveryTaskList extends HTML
                 $simple_data[] = $tmp;
 
                 if (is_array($data['modules'])) {
+                    // Alphabetically sort.
+                    ksort($data['modules'], (SORT_STRING | SORT_FLAG_CASE));
+
                     $simple_data = array_merge(
                         $simple_data,
                         array_reduce(

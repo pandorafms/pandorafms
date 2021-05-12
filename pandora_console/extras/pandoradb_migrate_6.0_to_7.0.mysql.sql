@@ -565,6 +565,9 @@ CREATE TABLE IF NOT EXISTS `tskin` (
 	PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
+UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
+
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_queue`
 -- ---------------------------------------------------------------------
@@ -624,6 +627,22 @@ ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator
 ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
 ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
 ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
+
+ALTER TABLE `tevent_rule` MODIFY COLUMN `agent` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_usuario` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `evento` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `module` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `alert` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `user_comment` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_tag` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `name` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `group_recursion` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_agent` TEXT;
 
 UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
 UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
@@ -811,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`description` mediumtext,
 	`text_agent` text,
 	`text` TEXT,
-	`external_source` Text,
+	`external_source` mediumtext,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,
@@ -1487,6 +1506,7 @@ ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
 ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -1741,6 +1761,7 @@ ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NUL
 ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -2501,6 +2522,7 @@ CREATE TABLE `tnotification_source_group_user` (
 -- Add alert command 'Generate notification'
 -- ----------------------------------------------------------------------
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Event&#x20;name\",\"Event&#x20;type\",\"Source\",\"Agent&#x20;name&#x20;or&#x20;_agent_\",\"Event&#x20;severity\",\"ID&#x20;extra\",\"Tags&#x20;separated&#x20;by&#x20;commas\",\"Comments\",\"\",\"\"]' WHERE `name` = "Monitoring&#x20;Event";
 
 -- ----------------------------------------------------------------------
 -- Update message references and pre-configure notifications
@@ -2519,7 +2541,7 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
-ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Add column in table `tnetflow_filter`
@@ -2848,6 +2870,12 @@ UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMad
 UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
 UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
 
+--
+-- Modifies tgrupo table.
+--
+
+ALTER TABLE tgrupo ADD COLUMN max_agents int(10) NOT NULL DEFAULT 0;
+
 -- ----------------------------------------------------------------------
 -- Table `tnode_relations`
 -- ----------------------------------------------------------------------
@@ -2879,6 +2907,12 @@ SET @plugin_description = 'Get&#x20;the&#x20;result&#x20;of&#x20;an&#x20;arithme
 SET @plugin_id = '';
 SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
 INSERT IGNORE INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (@plugin_id,@plugin_name,@plugin_description,20,0,'/usr/share/pandora_server/util/plugin/wizard_wmi_module',NULL,NULL,NULL,NULL,0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Namespace&#x20;&#40;Optional&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"User\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"WMI&#x20;Class\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Fields&#x20;list\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Query&#x20;filter&#x20;&#40;Optional&#41;\",\"help\":\"Use&#x20;single&#x20;quotes&#x20;for&#x20;query&#x20;conditions\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"Operation\",\"help\":\"Aritmetic&#x20;operation&#x20;to&#x20;get&#x20;data.&#x20;Macros&#x20;_fN_&#x20;will&#x20;be&#x20;changed&#x20;by&#x20;fields&#x20;in&#x20;list.&#x20;Example:&#x20;&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_\",\"value\":\"\",\"hide\":\"\"}}','-host&#x20;&#039;_field1_&#039;&#x20;-namespace&#x20;&#039;_field2_&#039;&#x20;-user&#x20;&#039;_field3_&#039;&#x20;-pass&#x20;&#039;_field4_&#039;&#x20;-wmiClass&#x20;&#039;_field5_&#039;&#x20;-fieldsList&#x20;&#039;_field6_&#039;&#x20;-queryFilter&#x20;&quot;_field7_&quot;&#x20;-operation&#x20;&#039;_field8_&#039;&#x20;-wmicPath&#x20;/usr/bin/wmic');
+
+SET @plugin_name = 'Network&#x20;bandwidth&#x20;SNMP';
+SET @plugin_description = 'Retrieves&#x20;amount&#x20;of&#x20;digital&#x20;information&#x20;sent&#x20;and&#x20;received&#x20;from&#x20;device&#x20;or&#x20;filtered&#x20;&#x20;interface&#x20;index&#x20;over&#x20;a&#x20;particular&#x20;time&#x20;&#40;agent/module&#x20;interval&#41;.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin`  (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES  (@plugin_id,@plugin_name,@plugin_description,300,0,'perl&#x20;/usr/share/pandora_server/util/plugin/pandora_snmp_bandwidth.pl','','','','',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"SNMP&#x20;Version&#40;1,2c,3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Community\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Port\",\"help\":\"\",\"value\":\"161\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Interface&#x20;Index&#x20;&#40;filter&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"securityName\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"context\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"securityLevel\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"9\":{\"macro\":\"_field9_\",\"desc\":\"authProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"10\":{\"macro\":\"_field10_\",\"desc\":\"authKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"11\":{\"macro\":\"_field11_\",\"desc\":\"privProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"12\":{\"macro\":\"_field12_\",\"desc\":\"privKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"13\":{\"macro\":\"_field13_\",\"desc\":\"UniqId\",\"help\":\"This&#x20;plugin&#x20;needs&#x20;to&#x20;store&#x20;information&#x20;in&#x20;temporary&#x20;directory&#x20;to&#x20;calculate&#x20;bandwidth.&#x20;Set&#x20;here&#x20;an&#x20;unique&#x20;identifier&#x20;with&#x20;no&#x20;spaces&#x20;or&#x20;symbols.\",\"value\":\"\",\"hide\":\"\"},\"14\":{\"macro\":\"_field14_\",\"desc\":\"inUsage\",\"help\":\"Retrieve&#x20;input&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"},\"15\":{\"macro\":\"_field15_\",\"desc\":\"outUsage\",\"help\":\"Retrieve&#x20;output&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"}}','-version&#x20;&#039;_field1_&#039;&#x20;-community&#x20;&#039;_field2_&#039;&#x20;-host&#x20;&#039;_field3_&#039;&#x20;-port&#x20;&#039;_field4_&#039;&#x20;-ifIndex&#x20;&#039;_field5_&#039;&#x20;-securityName&#x20;&#039;_field6_&#039;&#x20;-context&#x20;&#039;_field7_&#039;&#x20;-securityLevel&#x20;&#039;_field8_&#039;&#x20;-authProtocol&#x20;&#039;_field9_&#039;&#x20;-authKey&#x20;&#039;_field10_&#039;&#x20;-privProtocol&#x20;&#039;_field11_&#039;&#x20;-privKey&#x20;&#039;_field12_&#039;&#x20;-uniqid&#x20;&#039;_field13_&#039;&#x20;-inUsage&#x20;&#039;_field14_&#039;&#x20;-outUsage&#x20;&#039;_field15_&#039;');
 
 SET @main_component_group_name = 'Wizard';
 SET @component_id = '';

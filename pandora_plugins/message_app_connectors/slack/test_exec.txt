@@ -1,0 +1,14 @@
+#exetution example
+
+python3 pandora-slack-cli.py -d "Agent=Server22,Module=test_module,Group=Servers,State=Critical,Data=22,Timestamp=2020-11-04 11:14:00" \
+-t xoxb-1506287138481-1518221486533-V3QVzyBbS6lQnTKdfrdwCqYI \
+-c "varios" \
+-e ":red_circle:" \
+-T "PandoraFMS alert" \
+-D "El agente x esta en estado critico" \
+-F "Pandora FMS" \
+--api_conf "user=admin,pass=pandora,api_pass=pandora,api_url=http://192.168.80.43/pandora_console/include/api.php" \
+--module_graph "module_id=62, interval=3600" --tmp_dir /tmp 
+
+# Pandora FMS command definition example
+python3 /usr/share/pandora_server/util/pandora-slack/pandora-slack-cli.py -d "_field1_" -t _field2_ -c "_field3_" -e "_field4_" -T "_field5_" -D "_field6_" -F "Pandora FMS" --api_conf "_field7_" --module_graph "_field8_" --tmp_dir /tmp 

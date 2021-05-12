@@ -536,6 +536,9 @@ class TreeViewWidget extends Widget
 
         // Css Files.
         \ui_require_css_file('tree', 'include/styles/', true);
+        if ($config['style'] == 'pandora_black') {
+            \ui_require_css_file('pandora_black', 'include/styles/', true);
+        }
 
         // Javascript Files.
         \ui_include_time_picker();
@@ -587,6 +590,33 @@ class TreeViewWidget extends Widget
             true
         );
 
+        switch ($tab) {
+            case 'policies':
+                $foundMessage = __('Policies found');
+            break;
+
+            case 'os':
+                $foundMessage = __('Operating systems found');
+            break;
+
+            case 'tag':
+                $foundMessage = __('Tags found');
+            break;
+
+            case 'module_group':
+                $foundMessage = __('Module Groups found');
+            break;
+
+            case 'module':
+                $foundMessage = __('Modules found');
+            break;
+
+            case 'group':
+            default:
+                $foundMessage = __('Groups found');
+            break;
+        }
+
         $settings = [
             'page'         => 'include/ajax/tree.ajax',
             'id_user'      => $config['id_user'],
@@ -607,7 +637,7 @@ class TreeViewWidget extends Widget
             'userLanguage' => get_user_language(),
             'translate'    => [
                 'emptyMessage'  => __('No data found'),
-                'foundMessage'  => 'not',
+                'foundMessage'  => $foundMessage,
                 'total'         => [
                     'agents'  => __('Total agents'),
                     'modules' => __('Total modules'),
@@ -656,7 +686,7 @@ class TreeViewWidget extends Widget
         ];
 
         // Show the modal window of an module.
-        $output .= '<div id="module_details_window" class="invisible">';
+        $output .= '<div id="module_details_window" class="">';
         $output .= '</div>';
 
         // Script.

@@ -797,11 +797,10 @@ export default class VisualConsole {
   public render(prevProps: VisualConsoleProps | null = null): void {
     if (prevProps) {
       if (prevProps.backgroundURL !== this.props.backgroundURL) {
-        if (this.props.backgroundURL)
-          this.containerRef.style.backgroundImage =
-            this.props.backgroundURL !== null
-              ? `url(${this.props.backgroundURL})`
-              : "";
+        this.containerRef.style.backgroundImage =
+          this.props.backgroundURL !== null
+            ? `url(${this.props.backgroundURL})`
+            : "";
       }
       if (this.props.backgroundColor != null)
         if (prevProps.backgroundColor !== this.props.backgroundColor) {

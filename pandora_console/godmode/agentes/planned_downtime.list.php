@@ -44,7 +44,7 @@ if ($migrate_malformed) {
 
     if ($migration_result['status'] == false) {
         ui_print_error_message(
-            __('An error occurred while migrating the malformed planned downtimes').'. '.__('Please run the migration again or contact with the administrator')
+            __('An error occurred while migrating the malformed scheduled downtimes').'. '.__('Please run the migration again or contact with the administrator')
         );
         echo '<br>';
     }
@@ -80,7 +80,7 @@ if ($stop_downtime) {
     $result = planned_downtimes_stop($downtime);
 
     if ($result === false) {
-        ui_print_error_message(__('An error occurred stopping the planned downtime'));
+        ui_print_error_message(__('An error occurred stopping the scheduled downtime'));
     } else {
         echo $result['message'];
     }
@@ -103,7 +103,7 @@ if ($delete_downtime) {
 
     // The downtime shouldn't be running!!
     if ($downtime['executed']) {
-        ui_print_error_message(__('This planned downtime is running'));
+        ui_print_error_message(__('This scheduled downtime is running'));
     } else {
         $result = db_process_sql_delete('tplanned_downtime', ['id' => $id_downtime]);
 
@@ -362,7 +362,7 @@ else if (!$downtimes) {
     echo '</form>';
 
     // Info message.
-    echo '<div class="nf">'.__('No planned downtime').'</div>';
+    echo '<div class="nf">'.__('No scheduled downtime').'</div>';
 
     echo '<div class="action-buttons w100p" >';
 
@@ -572,13 +572,13 @@ $(document).ready (function () {
     $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
     $("a#delete_downtime").click(function (e) {
-        if (!confirm("<?php echo __('WARNING: If you delete this planned downtime, it will not be taken into account in future SLA reports'); ?>")) {
+        if (!confirm("<?php echo __('WARNING: If you delete this scheduled downtime, it will not be taken into account in future SLA reports'); ?>")) {
             e.preventDefault();
         }
     });
 
     if (<?php echo json_encode($malformed_downtimes_exist); ?> && <?php echo json_encode($migrate_malformed == false); ?>) {
-        if (confirm("<?php echo __('WARNING: There are malformed planned downtimes').'.\n'.__('Do you want to migrate automatically the malformed items?'); ?>")) {
+        if (confirm("<?php echo __('WARNING: There are malformed scheduled downtimes').'.\n'.__('Do you want to migrate automatically the malformed items?'); ?>")) {
             window.location.href = "index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
         }
     }

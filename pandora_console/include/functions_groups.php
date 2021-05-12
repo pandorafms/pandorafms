@@ -577,6 +577,14 @@ function groups_get_groups_tree_recursive($groups, $trash=0, $trash2=0)
             $group['parent'] = 0;
         }
 
+        if (is_array($tree[$group['parent']]) === false) {
+            $str = $tree[$group['parent']];
+            $tree[$group['parent']] = [
+                'nombre'   => $tree[$group['parent']],
+                'id_grupo' => $group['parent'],
+            ];
+        }
+
         $tree[$group['parent']]['hash_branch'] = 1;
         $tree[$group['parent']]['branch'][$key] = &$tree[$key];
     }
@@ -756,12 +764,16 @@ function groups_create_group($group_name, $rest_values)
 
     $values = array_merge($rest_values, $array_tmp);
 
-    if (!isset($values['propagate'])) {
+    if (isset($values['propagate']) === false) {
         $values['propagate'] = 0;
     }
 
-    if (!isset($values['disabled'])) {
+    if (isset($values['disabled']) === false) {
         $values['disabled'] = 0;
+    }
+
+    if (isset($values['max_agents']) === false) {
+        $values['max_agents'] = 0;
     }
 
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $group_name);

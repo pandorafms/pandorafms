@@ -130,17 +130,24 @@ function html_do_report_info($report)
 
     $date_today = date($config['date_format']);
 
+    $date_today = preg_split('/[\s,]+/', io_safe_output($date_today));
+
+    $date_today = __($date_today[0]).' '.$date_today[1].' '.$date_today[2].' '.$date_today[3].' '.$date_today[4];
     $html = '<div class="report_info" style="background: '.$background_color.'"><table>
             <tr>
                 <td><b>'.__('Generated').': </b></td><td>'.$date_today.'</td>
             </tr>
             <tr>
                 <td><b>'.__('Report date').': </b></td>';
+
+    $date_before = date($config['date_format'], $report['datetime']);
+    $date_before = preg_split('/[\s,]+/', io_safe_output($date_before));
+    $date_before = __($date_before[0]).' '.$date_before[1].' '.$date_before[2].' '.$date_before[3].' '.$date_before[4];
     if (is_numeric($report['datetime']) && is_numeric($report['period']) && ($report['period'] != 0)) {
         $html .= '<td>'.__('From').' <b>'.date($config['date_format'], ($report['datetime'] - $report['period'])).'</b></td>';
         $html .= '<td>'.__('to').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
     } else {
-        $html .= '<td>'.__('Items period before').' <b>'.date($config['date_format'], $report['datetime']).'</b></td>';
+        $html .= '<td>'.__('Items period before').' <b>'.$date_before.'</b></td>';
     }
 
     $html .= '</tr>
@@ -401,10 +408,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'SLA_monthly':
                 reporting_enterprise_html_SLA_monthly($table, $item, $mini);
-            break;
-
-            case 'nt_top_n':
-                reporting_html_nt_top_n($table, $item, $mini);
             break;
 
             case 'SLA_weekly':
@@ -853,7 +856,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table1->size[10] = '2%';
             $table1->data[0][10] = '<img src ="'.$src.'images/square_light_gray.png">';
             $table1->size[11] = '15%';
-            $table1->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
+            $table1->data[0][11] = '<span>'.__('Scheduled Downtime').'</span>';
 
             if ($pdf === 0) {
                 $table->colspan['legend']['cell'] = 2;
@@ -4078,7 +4081,7 @@ function reporting_html_availability_graph($table, $item, $pdf=0)
         $table2->size[10] = '2%';
         $table2->data[0][10] = '<img src ="'.$src.$hack_metaconsole.'images/square_light_gray.png">';
         $table2->size[11] = '15%';
-        $table2->data[0][11] = '<span>'.__('Planned Downtime').'</span>';
+        $table2->data[0][11] = '<span>'.__('Scheduled Downtime').'</span>';
     }
 
     if ($pdf !== 0) {
@@ -5018,25 +5021,25 @@ function reporting_get_agents_by_status($data, $graph_width=250, $graph_height=1
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_critical.png', true, ['title' => __('Agents critical')]);
-    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span class='red_color font_12pt bolder'>".format_numeric($data['agent_critical']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='".$links['agents_critical']."'><b><span class='red_color font_12pt bolder big_data'>".format_numeric($data['agent_critical']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_warning.png', true, ['title' => __('Agents warning')]);
-    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span class='yellow_color font_12pt bolder'>".format_numeric($data['agent_warning']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='".$links['agents_warning']."'><b><span class='yellow_color font_12pt bolder big_data'>".format_numeric($data['agent_warning']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_ok.png', true, ['title' => __('Agents ok')]);
-    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder'>".format_numeric($data['agent_ok']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='".$links['agents_ok']."'><b><span class='green_color font_12pt bolder big_data'>".format_numeric($data['agent_ok']).'</span></b></a>';
 
     $agent_data[2] = html_print_image('images/agent_unknown.png', true, ['title' => __('Agents unknown')]);
-    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder'>".format_numeric($data['agent_unknown']).'</span></b></a>';
+    $agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='".$links['agents_unknown']."'><b><span class='grey_color font_12pt bolder big_data'>".format_numeric($data['agent_unknown']).'</span></b></a>';
 
     $table_agent->data[] = $agent_data;
 
     $agent_data = [];
     $agent_data[0] = html_print_image('images/agent_notinit.png', true, ['title' => __('Agents not init')]);
-    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder'>".format_numeric($data['agent_not_init']).'</span></b></a>';
+    $agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='".$links['agents_not_init']."'><b><span class='blue_color_ligther font_12pt bolder big_data'>".format_numeric($data['agent_not_init']).'</span></b></a>';
 
     $agent_data[2] = '';
     $agent_data[3] = '';
@@ -5591,65 +5594,6 @@ function reporting_get_event_histogram_meta($width)
 }
 
 
-/**
- * Print network traffic data into top n tables
- * (one for received data and another for sent)
- *
- * @param stdClass Table class to paint the report
- * @param array Associative array with info about
- * @param bool Unused
- */
-function reporting_html_nt_top_n($table, $item, $mini)
-{
-    // Prepare the table
-    $table_top = new stdClass();
-    $table_top->cellpadding = 0;
-    $table_top->cellspacing = 0;
-    $table_top->width = '100%';
-    $table_top->class = 'databox data';
-    $table_top->cellpadding = 0;
-    $table_top->cellspacing = 0;
-    $table_top->width = '100%';
-    $table_top->class = 'databox data';
-    $table_top->head['host'] = __('Agent');
-    $table_top->head['bytes'] = __('Kilobytes');
-    $table_top->head['pkts'] = __('Packages');
-
-    // Build the table for sent packages
-    if (empty($item['data']['send'])) {
-        $table->data['send_title'] = '<h3>'.__('No network traffic sent data').'</h3>';
-    } else {
-        foreach ($item['data']['send'] as $s_item) {
-            $table_top->data[] = [
-                'host'  => $s_item['host'],
-                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
-                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
-            ];
-        }
-
-        $table->data['send_title'] = '<h3>'.__('Network traffic sent').'</h3>';
-        $table->data['send'] = html_print_table($table_top, true);
-    }
-
-    // Reset the table and build the table for received packages
-    $table_top->data = [];
-    if (empty($item['data']['send'])) {
-        $table->data['recv_title'] = '<h3>'.__('No network traffic received data').'</h3>';
-    } else {
-        foreach ($item['data']['recv'] as $s_item) {
-            $table_top->data[] = [
-                'host'  => $s_item['host'],
-                'bytes' => remove_right_zeros(number_format(($s_item['sum_bytes'] / 1024), $config['graph_precision'])),
-                'pkts'  => remove_right_zeros(number_format($s_item['sum_pkts'], $config['graph_precision'])),
-            ];
-        }
-
-        $table->data['recv_title'] = '<h3>'.__('Network traffic received').'</h3>';
-        $table->data['recv'] = html_print_table($table_top, true);
-    }
-}
-
-
 function reporting_html_planned_downtimes_table($planned_downtimes)
 {
     global $config;
@@ -5665,8 +5609,8 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     $table = new StdClass();
     $table->width = '99%';
-    $table->title = __('This SLA has been affected by the following planned downtimes').ui_print_help_tip(
-        __('If the duration of the planned downtime is less than 5 minutes it will not be represented in the graph'),
+    $table->title = __('This SLA has been affected by the following scheduled downtimes').ui_print_help_tip(
+        __('If the duration of the scheduled downtime is less than 5 minutes it will not be represented in the graph'),
         true
     );
     $table->head = [];
@@ -5704,7 +5648,7 @@ function reporting_html_planned_downtimes_table($planned_downtimes)
 
     if ($downtime_malformed) {
         $info_malformed = ui_print_error_message(
-            __('This item is affected by a malformed planned downtime').'. '.__('Go to the planned downtimes section to solve this').'.',
+            __('This item is affected by a malformed scheduled downtime').'. '.__('Go to the scheduled downtimes section to solve this').'.',
             '',
             true
         );

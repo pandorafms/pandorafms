@@ -548,10 +548,7 @@ class AgentsAlerts extends HTML
             if (empty($templates_raw)) {
                 $templates_raw = [];
             }
-        }
-
-        // Is needed sort templates for show in the row.
-        sort($templates);
+        };
 
         $alerts = [];
         $ntemplates = 0;
@@ -600,20 +597,22 @@ class AgentsAlerts extends HTML
                 }
 
                 $templates[$temp['id']] = $temp['name'];
+            }
+        }
 
-                if (empty($temp['name']) === false) {
-                    $outputLine = html_print_div(
-                        [
-                            'id'      => 'line_header_'.$temp['id'],
-                            'class'   => 'rotate_text_module position_text_module',
-                            'style'   => '',
-                            'content' => '<div title="'.io_safe_output($temp['name']).'">'.ui_print_truncate_text(io_safe_output($temp['name']), 20).'</div>',
-                        ],
-                        true
-                    );
+        foreach ($templates as $id => $name) {
+            if (empty($name) === false) {
+                $outputLine = html_print_div(
+                    [
+                        'id'      => 'line_header_'.$id,
+                        'class'   => 'rotate_text_module position_text_module',
+                        'style'   => '',
+                        'content' => '<div title="'.io_safe_output($name).'">'.ui_print_truncate_text(io_safe_output($name), 20).'</div>',
+                    ],
+                    true
+                );
 
-                    echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
-                }
+                echo sprintf('<th class="th_class_module_r header_table_caption_cell" style="width:%s">%s</th>', $thSize, $outputLine);
             }
         }
 
@@ -651,7 +650,7 @@ class AgentsAlerts extends HTML
             $alias = db_get_row('tagente', 'id_agente', $agent['id_agente']);
             echo '<tr>';
             // Name of the agent.
-            echo '<td class="bolder right">'.$alias['alias'].'</td>';
+            echo '<td class="bolder" style="text-align: right" >'.$alias['alias'].'</td>';
             // Alerts of the agent.
             foreach ($templates as $tid => $tname) {
                 $anyfired = 0;
@@ -766,7 +765,7 @@ class AgentsAlerts extends HTML
 
         // Start Header form.
         $headerForm = [
-            'action'   => ui_get_full_url(),
+            'action'   => ui_get_full_url('index.php?sec=view&sec2=extensions/agents_alerts'),
             'id'       => 'form-header-filters',
             'method'   => 'POST',
             'class'    => 'modal flex flex-row',
@@ -841,6 +840,7 @@ class AgentsAlerts extends HTML
             'label'          => __('Full screen'),
             'id'             => 'img-full-screen',
             'surround_start' => '<div id="full_screen_refresh_box">',
+            'attributes'     => 'style="margin-left: 0px"',
             'arguments'      => [
                 'type'       => 'button',
                 'return'     => true,

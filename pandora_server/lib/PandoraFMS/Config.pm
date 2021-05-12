@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.752";
-my $pandora_build = "210318";
+my $pandora_version = "7.0NG.754";
+my $pandora_build = "210510";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -117,9 +117,9 @@ sub pandora_init {
 			($pa_config->{"pandora_path"} = $parametro);
 		}
 	}
-	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
-		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
+	if (!defined ($pa_config->{"pandora_path"}) || $pa_config->{"pandora_path"} eq ""){
+		print "[ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
+		print "For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
 		exit;
 	}
 }
@@ -260,7 +260,6 @@ sub pandora_load_config {
 	$pa_config->{"webserver"} = 1; # 3.0
 	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
-	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
 	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
@@ -302,6 +301,8 @@ sub pandora_load_config {
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"elastic_query_size"} = 10; # 7.754 Elements per request (ELK)
+	$pa_config->{"event_server_cache_ttl"} = 10; # 7.754
 	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
@@ -510,10 +511,6 @@ sub pandora_load_config {
 	$pa_config->{"warmup_event_on"} = 0; # 6.1
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
-
-	# Logstash
-	$pa_config->{"logstash_host"} = '';
-	$pa_config->{"logstash_port"} = 0;
 
 	$pa_config->{"wuxserver"} = 1; # 7.0
 	$pa_config->{"wux_host"} = undef; # 7.0
@@ -749,9 +746,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
-			$pa_config->{'transactional_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
 			$pa_config->{'transactional_threshold'}= clean_blank($1);
@@ -1002,8 +996,14 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
 			$pa_config->{'log_window'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^elastic_query_size\s+([0-9]*)/i) {
+			$pa_config->{'elastic_query_size'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
 			$pa_config->{'preload_windows'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_server_cache_ttl\s+([0-9]*)/i) {
+			$pa_config->{"event_server_cache_ttl"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
@@ -1189,13 +1189,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mssql_driver\s+(.*)/i) {
 			$pa_config->{'mssql_driver'}= clean_blank($1);
-		}
-
-		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {
-			$pa_config->{'logstash_host'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^logstash_port\s+([0-9]*)/i) {
-			$pa_config->{'logstash_port'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^wuxserver\s+([0-1]*)/i) {
 			$pa_config->{"wuxserver"} = clean_blank($1);

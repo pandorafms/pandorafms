@@ -183,7 +183,6 @@ switch ($action) {
         }
     return;
 
-        break;
     case 'login':
         if ($user->login() && $user->isLogged()) {
             if (file_exists('../enterprise/load_enterprise.php')) {
@@ -279,9 +278,6 @@ switch ($action) {
                     $page = 'events';
                 break;
 
-                case 'Group view':
-                break;
-
                 case 'Alert detail':
                     $page = 'alerts';
                 break;
@@ -294,6 +290,11 @@ switch ($action) {
                     $page = 'visualmap';
                     $id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
                     $_GET['id'] = $id_map;
+                break;
+
+                case 'Group view':
+                default:
+                    // No content.
                 break;
             }
         }
@@ -348,6 +349,17 @@ switch ($action) {
             case 'agent':
                 $agent = new Agent();
                 $agent->show();
+            break;
+
+            case 'visualmaps':
+                // Show a list of VC.
+                $vc_list = new Visualmaps();
+                $vc_list->show();
+            break;
+
+            case 'visualmap':
+                $vc = new Visualmap();
+                $vc->show();
             break;
         }
     break;

@@ -242,14 +242,6 @@ $table->data[$i++][1] = html_print_checkbox_switch_extended(
     true
 );
 
-$table->data[$i][0] = __('Enable Network Traffic Analyzer');
-$table->data[$i++][1] = html_print_switch(
-    [
-        'name'  => 'activate_nta',
-        'value' => $config['activate_nta'],
-    ]
-);
-
 
 $zone_name = [
     'Africa'     => __('Africa'),
@@ -428,7 +420,7 @@ $table->data[$i++][1] = html_print_select(
 $config['past_planned_downtimes'] = isset(
     $config['past_planned_downtimes']
 ) ? $config['past_planned_downtimes'] : 1;
-$table->data[$i][0] = __('Allow create planned downtimes in the past');
+$table->data[$i][0] = __('Allow create scheduled downtimes in the past');
 $table->data[$i++][1] = html_print_checkbox_switch(
     'past_planned_downtimes',
     1,

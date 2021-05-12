@@ -8500,3 +8500,8 @@ div.stat-win-spinner img {
 .font_11pt {
   font-size: 11pt;
 }
+
+.checkbox-random-name {
+  width: 100px !important;
+  margin-left: 20px;
+}

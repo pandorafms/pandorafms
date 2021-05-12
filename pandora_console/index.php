@@ -220,7 +220,8 @@ echo '<head>'."\n";
 // This starts the page head. In the callback function,
 // $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
-
+// Avoid clickjacking.
+header('X-Frame-Options: SAMEORIGIN');
 // Enterprise main.
 enterprise_include_once('index.php');
 

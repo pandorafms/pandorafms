@@ -2263,6 +2263,11 @@ CREATE TABLE IF NOT EXISTS  `talert_snmp_action` (
 	`al_field13` text NOT NULL,
 	`al_field14` text NOT NULL,
 	`al_field15` text NOT NULL,
+	`al_field16` text NOT NULL,
+	`al_field17` text NOT NULL,
+	`al_field18` text NOT NULL,
+	`al_field19` text NOT NULL,
+	`al_field20` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -435,7 +435,6 @@ li#li-image-item label img {
 .discovery.modal * {
   font-weight: normal;
   color: #343434;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .discovery.modal select {
@@ -713,6 +712,5 @@ div.module-graph .gauge_d3_class {
 .visual-console-item .analogic-clock .second-hand {
   animation: rotate-second 60s infinite linear;
 }
-
 
 /*# sourceMappingURL=vc.main.css.map*/

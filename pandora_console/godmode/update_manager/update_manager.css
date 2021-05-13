@@ -2,7 +2,6 @@
   background-color: #373a3d;
   background-image: -moz-linear-gradient(center top, #373a3d, #313437);
   border-radius: 3px;
-  font-family: "PT Sans Narrow", sans-serif;
   margin: 0px;
   padding: 30px;
 }
@@ -24,7 +23,6 @@
 #drop_file table td,
 #drop_file table label {
   color: #707070;
-  font-family: "PT Sans Narrow", sans-serif;
   font-size: 16px;
   font-weight: bold;
   margin-top: 0;
@@ -153,7 +151,6 @@
 
 div#box_online * {
   font-size: 16pt;
-  font-family: "Open Sans", sans-serif;
 }
 
 #box_online .content {
@@ -200,7 +197,6 @@ a.update_manager_button {
   font-size: 16px;
   border-radius: 4px;
   text-decoration: none;
-  font-family: "Open Sans", sans-serif;
 }
 
 a.update_manager_button:after {

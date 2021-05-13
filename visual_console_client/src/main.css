@@ -321,13 +321,6 @@ p.error-p-validate {
   color: #ffffff;
 }
 
-/*
-@font-face {
-  font-family: Alarm Clock;
-  src: url(alarm-clock.ttf);
-}
-*/
-
 /* Digital clock */
 
 .visual-console-item .digital-clock {
@@ -435,7 +428,6 @@ li#li-image-item label img {
 .discovery.modal * {
   font-weight: normal;
   color: #343434;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .discovery.modal select {

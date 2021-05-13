@@ -12,6 +12,7 @@
 # Includes list
 use strict;
 use LWP::Simple;
+use LWP::UserAgent;
 use MIME::Base64;
 use lib '/usr/lib/perl5';
 use PandoraFMS::Tools;
@@ -255,15 +256,15 @@ sub tool_api_main () {
 		}
 		
 		if ($event_name eq "") {
-			print "[ERROR] Missing id agent! Read help info:\n\n";
+			print "[ERROR] Missing event name! Read help info:\n\n";
 			help_screen ();
 		}
 		if ($id_group eq "") {
 			print "[ERROR] Missing event group! Read help info:\n\n";
 			help_screen ();
 		}
-		if ($id_agent eq "" && $agent_name eq "") {
-			print "[ERROR] Missing id agent! and agent_name Read help info:\n\n";
+		if ($id_agent eq "") {
+			print "[ERROR] Missing id agent! Read help info:\n\n";
 			help_screen ();
 		}
 		
@@ -323,23 +324,24 @@ sub tool_api_main () {
 	else {
 		#-----------DEBUG----------------------------
 		#print($call_api . "\n\n\n");
-		
-		my $content = get($call_api);
-		
+		# Support HTTPS without hostname verification.
+		my $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
+		my $content = $ua->get($call_api);
+
 		#-----------DEBUG----------------------------
 		#print($content . "\n\n\n");
-		
+
 		if ($option eq '-create_event') {
 			if ($content eq undef) {
 				print "[ERROR] Not respond or bad syntax. Read help info:\n\n";
 				help_screen();
 			}
 			else {
-				print "Event ID: $content";
+				print "Event ID: ".$content->{'_content'};
 			}
 		}
 		elsif ($option eq '-validate_event') {
-			print "[RESULT] $content";
+			print "[RESULT] ".$content->{'_content'};
 		}
 	}
 	

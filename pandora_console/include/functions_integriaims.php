@@ -211,7 +211,7 @@ function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api
     }
 
     // Build URL for API request.
-    $url = $api_hostname.'/integria/include/api.php';
+    $url = $api_hostname.'/include/api.php';
 
     // ob_start();
     // $out = fopen('php://output', 'w');

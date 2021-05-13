@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.754 PS210504";
+my $version = "7.0NG.754 Build 210513";
 
 # Pandora server configuration
 my %conf;
@@ -548,7 +548,7 @@ sub pandora_compactdb ($$$) {
 sub pandora_init_pdb ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n");
+	log_message ('', "Pandora FMS DB Tool v$version\n\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at official web\n\n");
 	

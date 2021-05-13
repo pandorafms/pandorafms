@@ -64,6 +64,10 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
+if ($config['style'] === 'pandora_black') {
+    ui_require_css_file('pandora_black', 'include/styles/', true);
+}
+
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -92,6 +96,10 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
             include_javascript_dependencies_flot_graph();
         ?>
     </head>
+    <?php
+    if ($config['style'] === 'pandora_black') {
+    }
+    ?>
     <body bgcolor="#ffffff" class='bg_white'>
         <?php
         if (!check_acl($config['id_user'], 0, 'AR')) {

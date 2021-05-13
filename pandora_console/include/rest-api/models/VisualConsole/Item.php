@@ -1078,7 +1078,6 @@ class Item extends CachedModel
             $mobile_navigation = true;
         }
 
-        error_log(obhd($_SERVER['PHP_SELF']));
         // Load side libraries.
         include_once $config['homedir'].'/include/functions_ui.php';
         if (\is_metaconsole() === true) {

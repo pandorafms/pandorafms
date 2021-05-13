@@ -196,5 +196,5 @@ if (!empty($downtimes)) {
         echo chr(13);
     }
 } else {
-    echo '<div class="nf">'.__('No planned downtime').'</div>';
+    echo '<div class="nf">'.__('No scheduled downtime').'</div>';
 }

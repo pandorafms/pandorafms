@@ -290,7 +290,7 @@ $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('API Hostname');
+$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
 $row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
 $table_remote->data['integria_hostname'] = $row;
 
@@ -337,22 +337,20 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('alert_macros', true);
+);
 $table_alert_settings->data['custom_response_incident_title'] = $row;
 
 // Alert incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'incident_content',
+    7,
+    25,
     $config['incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('alert_macros', true);
+    true
+);
 $table_alert_settings->data['custom_response_incident_content'] = $row;
 
 // Alert default group.
@@ -460,22 +458,21 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('response_macros', true);
+);
 $table_cr_settings->data['custom_response_incident_title'] = $row;
 
 // Custom response incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'cr_incident_content',
+    7,
+    25,
     $config['cr_incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('response_macros', true);
+    true
+);
+
 $table_cr_settings->data['custom_response_incident_content'] = $row;
 
 // Custom response default group.
@@ -607,7 +604,7 @@ if ($has_connection != false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Alert default values').'</legend>';
+    echo '<legend>'.__('Alert default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_alert_settings);
 
@@ -617,7 +614,7 @@ if ($has_connection != false) {
     // Form custom response default settings.
     echo '<div id="form_custom_response_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Event custom response default values').'</legend>';
+    echo '<legend>'.__('Event custom response default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_cr_settings);
 

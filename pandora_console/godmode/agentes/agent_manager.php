@@ -1004,9 +1004,9 @@ echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'"
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help pdd_r_10px' '>";
+    echo "<span id='modules_not_learning_mode_context_help' class='pdd_r_10px'>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help invisible'>";
+    echo "<span id='modules_not_learning_mode_context_help' class='invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');

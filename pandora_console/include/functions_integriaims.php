@@ -79,22 +79,10 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     $onheader = [];
-
-    if (check_acl($config['id_user'], 0, 'IR') && $view) {
-        $onheader['view'] = $view_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'PM')) {
-        $onheader['configure'] = $setup_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'IR')) {
-        $onheader['list'] = $list_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $onheader['create'] = $create_tab;
-    }
+    $onheader['view'] = $view_tab;
+    $onheader['configure'] = $setup_tab;
+    $onheader['list'] = $list_tab;
+    $onheader['create'] = $create_tab;
 
     return $onheader;
 }

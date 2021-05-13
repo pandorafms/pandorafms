@@ -267,18 +267,14 @@ if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, '
 
         $own_info = get_user_info($config['id_user']);
         if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-            $own_groups = array_keys(users_get_groups($config['id_user'], 'IR'));
+            $own_groups = array_keys(users_get_groups($config['id_user'], 'MR'));
         } else {
-            $own_groups = array_keys(users_get_groups($config['id_user'], 'IR', false));
+            $own_groups = array_keys(users_get_groups($config['id_user'], 'MR', false));
         }
 
         foreach ($gisMaps as $gisMap) {
             $is_in_group = in_array($gisMap['group_id'], $own_groups);
             if (!$is_in_group) {
-                continue;
-            }
-
-            if (! check_acl($config['id_user'], $gisMap['group_id'], 'IR')) {
                 continue;
             }
 
@@ -459,30 +455,25 @@ $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 
 // Incidents.
-if (check_acl($config['id_user'], 0, 'IR')
-    || check_acl($config['id_user'], 0, 'IW')
-    || check_acl($config['id_user'], 0, 'IM')
-) {
-    $temp_sec2 = $sec2;
-    $sec2 = 'incident';
-    $sec2sub = 'operation/incidents/incident_statistics';
-    $sub[$sec2]['text'] = __('Incidents');
-    $sub[$sec2]['id'] = 'Incidents';
-    $sub[$sec2]['type'] = 'direct';
-    $sub[$sec2]['subtype'] = 'nolink';
-    $sub[$sec2]['refr'] = 0;
-    $sub[$sec2]['subsecs'] = [
-        'operation/incidents/incident_detail',
-        'operation/integria_incidents',
-    ];
+$temp_sec2 = $sec2;
+$sec2 = 'incident';
+$sec2sub = 'operation/incidents/incident_statistics';
+$sub[$sec2]['text'] = __('Incidents');
+$sub[$sec2]['id'] = 'Incidents';
+$sub[$sec2]['type'] = 'direct';
+$sub[$sec2]['subtype'] = 'nolink';
+$sub[$sec2]['refr'] = 0;
+$sub[$sec2]['subsecs'] = [
+    'operation/incidents/incident_detail',
+    'operation/integria_incidents',
+];
 
-    $sub2 = [];
-    $sub2[$sec2sub]['text'] = __('Integria IMS statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
+$sub2 = [];
+$sub2[$sec2sub]['text'] = __('Integria IMS statistics');
+$sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
 
-    $sub[$sec2]['sub2'] = $sub2;
-    $sec2 = $temp_sec2;
-}
+$sub[$sec2]['sub2'] = $sub2;
+$sec2 = $temp_sec2;
 
 
 // Messages.

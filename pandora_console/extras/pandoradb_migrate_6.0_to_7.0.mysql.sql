@@ -4027,3 +4027,6 @@ DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
 
+ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_management`;

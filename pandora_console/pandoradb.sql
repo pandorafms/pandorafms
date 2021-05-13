@@ -1049,9 +1049,6 @@ CREATE TABLE IF NOT EXISTS `torigen` (
 CREATE TABLE IF NOT EXISTS `tperfil` (
 	`id_perfil` int(10) unsigned NOT NULL auto_increment,
 	`name` TEXT NOT NULL,
-	`incident_edit` tinyint(1) NOT NULL DEFAULT 0,
-	`incident_view` tinyint(1) NOT NULL DEFAULT 0,
-	`incident_management` tinyint(1) NOT NULL DEFAULT 0,
 	`agent_view` tinyint(1) NOT NULL DEFAULT 0,
 	`agent_edit` tinyint(1) NOT NULL DEFAULT 0,
 	`alert_edit` tinyint(1) NOT NULL DEFAULT 0,

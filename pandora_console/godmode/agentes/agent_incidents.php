@@ -39,7 +39,7 @@ $offset = (int) get_parameter('offset', 0);
 
 // See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = (int) get_parameter('id_agente');
-$groups = users_get_groups($config['id_user'], 'IR');
+$groups = users_get_groups($config['id_user'], 'AR');
 $filter = ' AND id_agent = '.$id_agent;
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=incident&id_agente='.$id_agent;
 

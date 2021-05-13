@@ -16,13 +16,6 @@ global $config;
 
 check_login();
 
-if (!(check_acl($config['id_user'], 0, 'IW') && check_acl($config['id_user'], 0, 'IR'))) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
 require_once $config['homedir'].'/include/functions_integriaims.php';
 
 $update = (isset($_GET['incident_id']) === true);

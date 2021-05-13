@@ -18,13 +18,6 @@ require_once 'include/functions_integriaims.php';
 
 check_login();
 
-if (!check_acl($config['id_user'], 0, 'IR')) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
     ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
@@ -124,10 +117,7 @@ $table_files->head[1] = __('Timestamp');
 $table_files->head[2] = __('Description');
 $table_files->head[3] = __('User');
 $table_files->head[4] = __('Size');
-
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $table_files->head[5] = __('Delete');
-}
+$table_files->head[5] = __('Delete');
 
 $table_files->data = [];
 
@@ -240,11 +230,10 @@ foreach ($files as $key => $value) {
     $table_files->data[$i][2] = $value[12];
     $table_files->data[$i][3] = $value[8];
     $table_files->data[$i][4] = $value[13];
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
-                                    onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
-    }
+    $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
+                                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+    $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+
 
     $table_files->data[$i][5] .= '</a>';
 
@@ -267,9 +256,7 @@ $table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submi
 
 $upload_file_form = '<div class="w100p">';
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
-}
+$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
 
 $upload_file_form .= '<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
 
@@ -361,9 +348,8 @@ if (!empty($comments)) {
 
 $upload_comment_form = '<div class="w100p">';
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';
-}
+$upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';
+
 
 $upload_comment_form .= '<h4>'.__('Comments').'</h4>'.$comment_table.'</div>';
 

@@ -486,7 +486,7 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
         $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
+    $groups = users_get_groups($user_in_db, 'AR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -11358,9 +11358,6 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
         [
             'id_perfil',
             'name',
-            'incident_view as IR',
-            'incident_edit as IW',
-            'incident_management as IM',
             'agent_view as AR',
             'agent_edit as AW',
             'agent_disable as AD',
@@ -11413,29 +11410,26 @@ function api_set_create_user_profile_info($thrash1, $thrash2, $other, $returnTyp
 
     $values = [
         'name'                => (string) $other['data'][0],
-        'incident_view'       => (bool) $other['data'][1] ? 1 : 0,
-        'incident_edit'       => (bool) $other['data'][2] ? 1 : 0,
-        'incident_management' => (bool) $other['data'][3] ? 1 : 0,
-        'agent_view'          => (bool) $other['data'][4] ? 1 : 0,
-        'agent_edit'          => (bool) $other['data'][5] ? 1 : 0,
-        'agent_disable'       => (bool) $other['data'][6] ? 1 : 0,
-        'alert_edit'          => (bool) $other['data'][7] ? 1 : 0,
-        'alert_management'    => (bool) $other['data'][8] ? 1 : 0,
-        'user_management'     => (bool) $other['data'][9] ? 1 : 0,
-        'db_management'       => (bool) $other['data'][10] ? 1 : 0,
-        'event_view'          => (bool) $other['data'][11] ? 1 : 0,
-        'event_edit'          => (bool) $other['data'][12] ? 1 : 0,
-        'event_management'    => (bool) $other['data'][13] ? 1 : 0,
-        'report_view'         => (bool) $other['data'][14] ? 1 : 0,
-        'report_edit'         => (bool) $other['data'][15] ? 1 : 0,
-        'report_management'   => (bool) $other['data'][16] ? 1 : 0,
-        'map_view'            => (bool) $other['data'][17] ? 1 : 0,
-        'map_edit'            => (bool) $other['data'][18] ? 1 : 0,
-        'map_management'      => (bool) $other['data'][19] ? 1 : 0,
-        'vconsole_view'       => (bool) $other['data'][20] ? 1 : 0,
-        'vconsole_edit'       => (bool) $other['data'][21] ? 1 : 0,
-        'vconsole_management' => (bool) $other['data'][22] ? 1 : 0,
-        'pandora_management'  => (bool) $other['data'][23] ? 1 : 0,
+        'agent_view'          => (bool) $other['data'][1] ? 1 : 0,
+        'agent_edit'          => (bool) $other['data'][2] ? 1 : 0,
+        'agent_disable'       => (bool) $other['data'][3] ? 1 : 0,
+        'alert_edit'          => (bool) $other['data'][4] ? 1 : 0,
+        'alert_management'    => (bool) $other['data'][5] ? 1 : 0,
+        'user_management'     => (bool) $other['data'][6] ? 1 : 0,
+        'db_management'       => (bool) $other['data'][7] ? 1 : 0,
+        'event_view'          => (bool) $other['data'][8] ? 1 : 0,
+        'event_edit'          => (bool) $other['data'][9] ? 1 : 0,
+        'event_management'    => (bool) $other['data'][10] ? 1 : 0,
+        'report_view'         => (bool) $other['data'][11] ? 1 : 0,
+        'report_edit'         => (bool) $other['data'][12] ? 1 : 0,
+        'report_management'   => (bool) $other['data'][13] ? 1 : 0,
+        'map_view'            => (bool) $other['data'][14] ? 1 : 0,
+        'map_edit'            => (bool) $other['data'][15] ? 1 : 0,
+        'map_management'      => (bool) $other['data'][16] ? 1 : 0,
+        'vconsole_view'       => (bool) $other['data'][17] ? 1 : 0,
+        'vconsole_edit'       => (bool) $other['data'][18] ? 1 : 0,
+        'vconsole_management' => (bool) $other['data'][19] ? 1 : 0,
+        'pandora_management'  => (bool) $other['data'][20] ? 1 : 0,
     ];
 
     $return = db_process_sql_insert('tperfil', $values);
@@ -11475,29 +11469,26 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
 
     $values = [
         'name'                => $other['data'][0] == '' ? $profile['name'] : (string) $other['data'][0],
-        'incident_view'       => $other['data'][1] == '' ? $profile['incident_view'] : (bool) $other['data'][1] ? 1 : 0,
-        'incident_edit'       => $other['data'][2] == '' ? $profile['incident_edit'] : (bool) $other['data'][2] ? 1 : 0,
-        'incident_management' => $other['data'][3] == '' ? $profile['incident_management'] : (bool) $other['data'][3] ? 1 : 0,
-        'agent_view'          => $other['data'][4] == '' ? $profile['agent_view'] : (bool) $other['data'][4] ? 1 : 0,
-        'agent_edit'          => $other['data'][5] == '' ? $profile['agent_edit'] : (bool) $other['data'][5] ? 1 : 0,
-        'agent_disable'       => $other['data'][6] == '' ? $profile['agent_disable'] : (bool) $other['data'][6] ? 1 : 0,
-        'alert_edit'          => $other['data'][7] == '' ? $profile['alert_edit'] : (bool) $other['data'][7] ? 1 : 0,
-        'alert_management'    => $other['data'][8] == '' ? $profile['alert_management'] : (bool) $other['data'][8] ? 1 : 0,
-        'user_management'     => $other['data'][9] == '' ? $profile['user_management'] : (bool) $other['data'][9] ? 1 : 0,
-        'db_management'       => $other['data'][10] == '' ? $profile['db_management'] : (bool) $other['data'][10] ? 1 : 0,
-        'event_view'          => $other['data'][11] == '' ? $profile['event_view'] : (bool) $other['data'][11] ? 1 : 0,
-        'event_edit'          => $other['data'][12] == '' ? $profile['event_edit'] : (bool) $other['data'][12] ? 1 : 0,
-        'event_management'    => $other['data'][13] == '' ? $profile['event_management'] : (bool) $other['data'][13] ? 1 : 0,
-        'report_view'         => $other['data'][14] == '' ? $profile['report_view'] : (bool) $other['data'][14] ? 1 : 0,
-        'report_edit'         => $other['data'][15] == '' ? $profile['report_edit'] : (bool) $other['data'][15] ? 1 : 0,
-        'report_management'   => $other['data'][16] == '' ? $profile['report_management'] : (bool) $other['data'][16] ? 1 : 0,
-        'map_view'            => $other['data'][17] == '' ? $profile['map_view'] : (bool) $other['data'][17] ? 1 : 0,
-        'map_edit'            => $other['data'][18] == '' ? $profile['map_edit'] : (bool) $other['data'][18] ? 1 : 0,
-        'map_management'      => $other['data'][19] == '' ? $profile['map_management'] : (bool) $other['data'][19] ? 1 : 0,
-        'vconsole_view'       => $other['data'][20] == '' ? $profile['vconsole_view'] : (bool) $other['data'][20] ? 1 : 0,
-        'vconsole_edit'       => $other['data'][21] == '' ? $profile['vconsole_edit'] : (bool) $other['data'][21] ? 1 : 0,
-        'vconsole_management' => $other['data'][22] == '' ? $profile['vconsole_management'] : (bool) $other['data'][22] ? 1 : 0,
-        'pandora_management'  => $other['data'][23] == '' ? $profile['pandora_management'] : (bool) $other['data'][23] ? 1 : 0,
+        'agent_view'          => $other['data'][1] == '' ? $profile['agent_view'] : (bool) $other['data'][1] ? 1 : 0,
+        'agent_edit'          => $other['data'][2] == '' ? $profile['agent_edit'] : (bool) $other['data'][2] ? 1 : 0,
+        'agent_disable'       => $other['data'][3] == '' ? $profile['agent_disable'] : (bool) $other['data'][3] ? 1 : 0,
+        'alert_edit'          => $other['data'][4] == '' ? $profile['alert_edit'] : (bool) $other['data'][4] ? 1 : 0,
+        'alert_management'    => $other['data'][5] == '' ? $profile['alert_management'] : (bool) $other['data'][5] ? 1 : 0,
+        'user_management'     => $other['data'][6] == '' ? $profile['user_management'] : (bool) $other['data'][6] ? 1 : 0,
+        'db_management'       => $other['data'][7] == '' ? $profile['db_management'] : (bool) $other['data'][7] ? 1 : 0,
+        'event_view'          => $other['data'][8] == '' ? $profile['event_view'] : (bool) $other['data'][8] ? 1 : 0,
+        'event_edit'          => $other['data'][9] == '' ? $profile['event_edit'] : (bool) $other['data'][9] ? 1 : 0,
+        'event_management'    => $other['data'][10] == '' ? $profile['event_management'] : (bool) $other['data'][10] ? 1 : 0,
+        'report_view'         => $other['data'][11] == '' ? $profile['report_view'] : (bool) $other['data'][11] ? 1 : 0,
+        'report_edit'         => $other['data'][12] == '' ? $profile['report_edit'] : (bool) $other['data'][12] ? 1 : 0,
+        'report_management'   => $other['data'][13] == '' ? $profile['report_management'] : (bool) $other['data'][13] ? 1 : 0,
+        'map_view'            => $other['data'][14] == '' ? $profile['map_view'] : (bool) $other['data'][14] ? 1 : 0,
+        'map_edit'            => $other['data'][15] == '' ? $profile['map_edit'] : (bool) $other['data'][15] ? 1 : 0,
+        'map_management'      => $other['data'][16] == '' ? $profile['map_management'] : (bool) $other['data'][16] ? 1 : 0,
+        'vconsole_view'       => $other['data'][17] == '' ? $profile['vconsole_view'] : (bool) $other['data'][17] ? 1 : 0,
+        'vconsole_edit'       => $other['data'][18] == '' ? $profile['vconsole_edit'] : (bool) $other['data'][18] ? 1 : 0,
+        'vconsole_management' => $other['data'][19] == '' ? $profile['vconsole_management'] : (bool) $other['data'][19] ? 1 : 0,
+        'pandora_management'  => $other['data'][20] == '' ? $profile['pandora_management'] : (bool) $other['data'][20] ? 1 : 0,
     ];
 
     $return = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
@@ -11541,101 +11532,6 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
         returnError('The user profile could not be deleted');
     } else {
         returnData($returnType, ['type' => 'array', 'data' => 1]);
-    }
-}
-
-
-/**
- * Create new incident in Pandora.
- *
- * @param $thrash1 Don't use.
- * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <title>;<description>;
- *              <origin>;<priority>;<state>;<group> in this order and separator char
- *              (after text ; ) and separator (pass in param othermode as
- *              othermode=url_encode_separator_<separator>)
- *              example:
- *
- *              api.php?op=set&op2=new_incident&other=titulo|descripcion%20texto|Logfiles|2|10|12&other_mode=url_encode_separator_|
- *
- * @param $thrash3 Don't use.
- */
-function api_set_new_incident($thrash1, $thrash2, $other, $thrash3)
-{
-    global $config;
-
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    if (!check_acl($config['id_user'], 0, 'IW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    $title = $other['data'][0];
-    $description = $other['data'][1];
-    $origin = $other['data'][2];
-    $priority = $other['data'][3];
-    $id_creator = 'API';
-    $state = $other['data'][4];
-    $group = $other['data'][5];
-
-    $values = [
-        'inicio'        => 'NOW()',
-        'actualizacion' => 'NOW()',
-        'titulo'        => $title,
-        'descripcion'   => $description,
-        'id_usuario'    => 'API',
-        'origen'        => $origin,
-        'estado'        => $state,
-        'prioridad'     => $priority,
-        'id_grupo'      => $group,
-        'id_creator'    => $id_creator,
-    ];
-    $idIncident = db_process_sql_insert('tincidencia', $values);
-
-    if ($idIncident === false) {
-        returnError('A new incident could not be created.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $idIncident]);
-    }
-}
-
-
-/**
- * Add note into a incident.
- *
- * @param $id string Username author of note.
- * @param $id2 integer ID of incident.
- * @param $other string Note.
- * @param $thrash2 Don't use.
- */
-function api_set_new_note_incident($id, $id2, $other, $thrash2)
-{
-    global $config;
-
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    if (!check_acl($config['id_user'], 0, 'IW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    $values = [
-        'id_usuario'  => $id,
-        'id_incident' => $id2,
-        'nota'        => $other['data'],
-    ];
-
-    $idNote = db_process_sql_insert('tnota', $values);
-
-    if ($idNote === false) {
-        returnError('A new incident could not be created+.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $idNote]);
     }
 }
 

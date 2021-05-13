@@ -19,7 +19,8 @@ enterprise_include('operation/reporting/custom_reporting.php');
 
 $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0, 'AR');
 $searchUsers = $searchPolicies = check_acl($config['id_user'], 0, 'AR');
-$searchMaps = $searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'IR');
+$searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'RR');
+$searchMaps = check_acl($config['id_user'], 0, 'VR');
 $searchMain = true;
 $searchHelps = true;
 

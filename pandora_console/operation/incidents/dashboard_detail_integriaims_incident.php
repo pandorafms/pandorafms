@@ -149,7 +149,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
         $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
 
-        $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', ';');
+        $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', '|;|');
 
         // API method returns '0' string if success.
         $file_added = ($result_api_call === '0') ? true : false;

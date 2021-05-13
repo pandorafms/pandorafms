@@ -1015,7 +1015,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.754';
-use constant AGENT_BUILD => '210512';
+use constant AGENT_BUILD => '210513';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1229,7 +1229,8 @@ use constant MAX_LOOP_COUNTER => 1000000000;
 # Print usage information and exit.
 ################################################################################
 sub print_usage () {
-	print "\nUsage: $0 <Pandora home>\n\n";
+	print "Pandora FMS Agent for Linux v" . AGENT_VERSION . " Build " . AGENT_BUILD . "\n\n";
+	print "Usage: $0 <Pandora home>\n\n";
 	print "\tPandora home is the directory where pandora_agent.conf is located,\n";
 	print "\tby default /etc/pandora.\n\n";
 	exit 1;

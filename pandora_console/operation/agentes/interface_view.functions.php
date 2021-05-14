@@ -153,6 +153,15 @@ function print_filters($sec)
         ).'">';
 
         $filters .= html_print_table($table, true);
+
+        $filters .= "<div class='height_100p right'>".html_print_submit_button(
+            __('Show'),
+            'uptbutton',
+            false,
+            'class="sub search mgn_tp_0"',
+            true
+        ).'</div>';
+
         $filters .= '</form>';
     }
 

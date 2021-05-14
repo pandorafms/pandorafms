@@ -802,7 +802,8 @@ sub main() {
 
 			db_do ($DBH,
 				"UPDATE tserver SET status = -1
-				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
+				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive
+				AND status != 0"
 			);
 
 			# Set the master server

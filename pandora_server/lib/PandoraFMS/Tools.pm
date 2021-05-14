@@ -164,6 +164,7 @@ our @EXPORT = qw(
 	ui_get_full_url
 	p_encode_json
 	p_decode_json
+	get_server_name
 );
 
 # ID of the different servers
@@ -2146,7 +2147,12 @@ sub start_server_thread {
 	# Signal the threads to run.
 	$THRRUN = 1;
 
-	my $thr = threads->create($fn, @{$args});
+	my $thr = threads->create({'exit' => 'thread_only'}, sub {
+		local $SIG{'KILL'} = sub  {
+			exit 0;
+		};
+		$fn->(@_)
+	}, @{$args});
 	push(@ServerThreads, $thr);
 }
 
@@ -2173,7 +2179,7 @@ sub stop_server_threads {
 	$THRRUN = 0;
 
 	foreach my $thr (@ServerThreads) {
-			$thr->join();
+		$thr->kill('KILL');
 	}
 
 	@ServerThreads = ();
@@ -2481,6 +2487,40 @@ sub p_decode_json {
 	return $decoded_data;
 }
 
+################################################################################
+# String name for server type.
+################################################################################
+sub get_server_name {
+	my ($server_type) = @_;
+
+	if (!is_numeric($server_type)) {
+		return 'UNKNOWN';
+	}
+
+	return "DATASERVER" if ($server_type eq DATASERVER);
+	return "NETWORKSERVER" if ($server_type eq NETWORKSERVER);
+	return "SNMPCONSOLE" if ($server_type eq SNMPCONSOLE);
+	return "DISCOVERYSERVER" if ($server_type eq DISCOVERYSERVER);
+	return "PLUGINSERVER" if ($server_type eq PLUGINSERVER);
+	return "PREDICTIONSERVER" if ($server_type eq PREDICTIONSERVER);
+	return "WMISERVER" if ($server_type eq WMISERVER);
+	return "EXPORTSERVER" if ($server_type eq EXPORTSERVER);
+	return "INVENTORYSERVER" if ($server_type eq INVENTORYSERVER);
+	return "WEBSERVER" if ($server_type eq WEBSERVER);
+	return "EVENTSERVER" if ($server_type eq EVENTSERVER);
+	return "ICMPSERVER" if ($server_type eq ICMPSERVER);
+	return "SNMPSERVER" if ($server_type eq SNMPSERVER);
+	return "SATELLITESERVER" if ($server_type eq SATELLITESERVER);
+	return "TRANSACTIONALSERVER" if ($server_type eq TRANSACTIONALSERVER);
+	return "MFSERVER" if ($server_type eq MFSERVER);
+	return "SYNCSERVER" if ($server_type eq SYNCSERVER);
+	return "WUXSERVER" if ($server_type eq WUXSERVER);
+	return "SYSLOGSERVER" if ($server_type eq SYSLOGSERVER);
+	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
+	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
+
+	return "UNKNOWN";
+}
 
 1;
 __END__

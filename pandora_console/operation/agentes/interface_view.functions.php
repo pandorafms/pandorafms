@@ -106,14 +106,6 @@ function print_filters($sec)
             'min-width: 180px; max-width: 200px;'
         );
 
-        $table->data[2][4] = html_print_submit_button(
-            __('Show'),
-            'uptbutton',
-            false,
-            'class="sub search mgn_tp_0"',
-            true
-        );
-
         $filters = '<form method="post" action="'.ui_get_url_refresh(
             [
                 'selected_agents'     => $selected_agents,
@@ -123,6 +115,15 @@ function print_filters($sec)
         ).'">';
 
         $filters .= html_print_table($table, true);
+
+        $filters .= "<div class='height_100p right'>".html_print_submit_button(
+            __('Show'),
+            'uptbutton',
+            false,
+            'class="sub search mgn_tp_0"',
+            true
+        ).'</div>';
+
         $filters .= '</form>';
     } else {
         $table->style[0] = 'font-weight: bold;';
@@ -143,14 +144,6 @@ function print_filters($sec)
             'min-width: 180px; max-width: 200px;'
         );
 
-        $table->data[1][1] = html_print_submit_button(
-            __('Show'),
-            'uptbutton',
-            false,
-            'class="sub search mgn_tp_0"',
-            true
-        );
-
         $filters = '<form method="post" action="'.ui_get_url_refresh(
             [
                 'selected_agents'     => $selected_agents,
@@ -169,6 +162,7 @@ function print_filters($sec)
         __('Interface filter'),
         'ui_toggle_if_filter'
     );
+
     unset($table);
 }
 

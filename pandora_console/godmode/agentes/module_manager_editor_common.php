@@ -1574,10 +1574,6 @@ $(document).ready (function () {
     });
 
     disabled_two_tailed(disabledBecauseInPolicy);
-    $('#checkbox-dynamic_two_tailed').change (function() {
-        disabled_two_tailed(disabledBecauseInPolicy);
-    });
-
 
     //Dynamic_options_advance;
     $('.hide_dinamic').hide();
@@ -1646,15 +1642,10 @@ function disabled_status (disabledBecauseInPolicy) {
 }
 
 function disabled_two_tailed (disabledBecauseInPolicy) {
-    if($('#checkbox-dynamic_two_tailed').prop('checked')){
-        $('#text-dynamic_max').prop('readonly', false);
-        $('#text-dynamic_max').removeClass('readonly');
-    }
-    else{
-        if (disabledBecauseInPolicy == 0){
-            $('#text-dynamic_max').prop('readonly', true);
-            $('#text-dynamic_max').addClass('readonly');
-        }
+    if (disabledBecauseInPolicy == 1){
+            $('#text-dynamic_max')
+                .prop('readonly', true)
+                .addClass('readonly');
     }
 }
 

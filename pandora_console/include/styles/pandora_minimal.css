@@ -92,7 +92,6 @@ Exclude css from visual styles
 }
 
 * {
-  font-family: "lato";
   font-size: 8.5pt;
   color: #303030;
   -moz-osx-font-smoothing: grayscale;

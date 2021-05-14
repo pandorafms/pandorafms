@@ -108,7 +108,6 @@
 
 * {
   font-size: 8.5pt;
-  color: #303030;
   -moz-osx-font-smoothing: grayscale;
   line-height: 16pt;
 }
@@ -234,10 +233,6 @@ ul {
   list-style-type: none;
   padding-left: 0;
   margin-left: 0;
-}
-code,
-pre {
-  font-family: source-code, courier, serif;
 }
 
 fieldset {
@@ -950,6 +945,7 @@ input.sub {
   padding-left: 15px;
   border: 1px solid #888;
   cursor: pointer;
+  font-family: inherit;
 }
 
 button.sub:hover,
@@ -2546,6 +2542,7 @@ select {
   -webkit-border-radius: 3px;
   border-radius: 3px;
   font-size: 10pt;
+  font-family: inherit;
 }
 
 /* plugins */
@@ -2578,7 +2575,6 @@ span#plugin_description {
 .visual_font_size_4pt span em {
   font-size: 4pt;
   line-height: 4pt;
-  font-family: inherit;
 }
 .visual_font_size_6pt,
 .visual_font_size_6pt > em,
@@ -2591,7 +2587,6 @@ span#plugin_description {
 .visual_font_size_6pt span em {
   font-size: 6pt;
   line-height: 6pt;
-  font-family: inherit;
 }
 .visual_font_size_8pt,
 .visual_font_size_8pt > em,
@@ -2604,7 +2599,6 @@ span#plugin_description {
 .visual_font_size_8pt span em {
   font-size: 8pt;
   line-height: 8pt;
-  font-family: inherit;
 }
 .visual_font_size_10pt,
 .visual_font_size_10pt > em,
@@ -2617,7 +2611,6 @@ span#plugin_description {
 .visual_font_size_10pt span em {
   font-size: 10pt;
   line-height: 10pt;
-  font-family: inherit;
 }
 .visual_font_size_12pt,
 .visual_font_size_12pt > em,
@@ -2630,7 +2623,6 @@ span#plugin_description {
 .visual_font_size_12pt span em {
   font-size: 12pt;
   line-height: 12pt;
-  font-family: inherit;
 }
 .visual_font_size_14pt,
 .visual_font_size_14pt > em,
@@ -2643,7 +2635,6 @@ span#plugin_description {
 .visual_font_size_14pt span em {
   font-size: 14pt;
   line-height: 14pt;
-  font-family: inherit;
 }
 .visual_font_size_18pt,
 .visual_font_size_18pt > em,
@@ -2656,7 +2647,6 @@ span#plugin_description {
 .visual_font_size_18pt span em {
   font-size: 18pt;
   line-height: 18pt;
-  font-family: inherit;
 }
 
 .visual_font_size_24pt,
@@ -2670,7 +2660,6 @@ span#plugin_description {
 .visual_font_size_24pt span em {
   font-size: 24pt;
   line-height: 24pt;
-  font-family: inherit;
 }
 .visual_font_size_28pt,
 .visual_font_size_28pt > em,
@@ -2683,7 +2672,6 @@ span#plugin_description {
 .visual_font_size_28pt span em {
   font-size: 28pt;
   line-height: 28pt;
-  font-family: inherit;
 }
 .visual_font_size_36pt,
 .visual_font_size_36pt > em,
@@ -2696,7 +2684,6 @@ span#plugin_description {
 .visual_font_size_36pt span em {
   font-size: 36pt;
   line-height: 36pt;
-  font-family: inherit;
 }
 .visual_font_size_48pt,
 .visual_font_size_48pt > em,
@@ -2709,7 +2696,6 @@ span#plugin_description {
 .visual_font_size_48pt span em {
   font-size: 48pt;
   line-height: 48pt;
-  font-family: inherit;
 }
 .visual_font_size_60pt,
 .visual_font_size_60pt > em,
@@ -2722,7 +2708,6 @@ span#plugin_description {
 .visual_font_size_60pt span em {
   font-size: 60pt;
   line-height: 60pt;
-  font-family: inherit;
 }
 .visual_font_size_72pt,
 .visual_font_size_72pt > em,
@@ -2735,7 +2720,6 @@ span#plugin_description {
 .visual_font_size_72pt span em {
   font-size: 72pt;
   line-height: 72pt;
-  font-family: inherit;
 }
 
 .visual_font_size_84pt,
@@ -2749,7 +2733,6 @@ span#plugin_description {
 .visual_font_size_84pt span em {
   font-size: 84pt;
   line-height: 84pt;
-  font-family: inherit;
 }
 
 .visual_font_size_96pt,
@@ -2763,7 +2746,6 @@ span#plugin_description {
 .visual_font_size_96pt span em {
   font-size: 96pt;
   line-height: 96pt;
-  font-family: inherit;
 }
 
 .visual_font_size_116pt,
@@ -2777,7 +2759,6 @@ span#plugin_description {
 .visual_font_size_116pt span em {
   font-size: 116pt;
   line-height: 116pt;
-  font-family: inherit;
 }
 
 .visual_font_size_128pt,
@@ -2791,7 +2772,6 @@ span#plugin_description {
 .visual_font_size_128pt span em {
   font-size: 128pt;
   line-height: 128pt;
-  font-family: inherit;
 }
 
 .visual_font_size_140pt,
@@ -2805,7 +2785,6 @@ span#plugin_description {
 .visual_font_size_140pt span em {
   font-size: 140pt;
   line-height: 140pt;
-  font-family: inherit;
 }
 
 .visual_font_size_154pt,
@@ -2819,7 +2798,6 @@ span#plugin_description {
 .visual_font_size_154pt span em {
   font-size: 154pt;
   line-height: 154pt;
-  font-family: inherit;
 }
 
 .visual_font_size_196pt,
@@ -2833,7 +2811,6 @@ span#plugin_description {
 .visual_font_size_196pt span em {
   font-size: 196pt;
   line-height: 196pt;
-  font-family: inherit;
 }
 
 .resize_visual_font_size_8pt,
@@ -3581,7 +3558,6 @@ div.simple_value > span.text > p,
 div.simple_value > span.text > p > span > strong,
 div.simple_value > span.text > p > strong,
 div.simple_value > a > span.text p {
-  font-family: source-code;
   white-space: pre;
 }
 
@@ -5975,7 +5951,6 @@ form#modal_form_feedback ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: source-code;
 }
 /*
  * ---------------------------------------------------------------------
@@ -8201,7 +8176,6 @@ div.steps_vsmap {
   padding: 10px;
   font-size: 14px;
   line-height: 16px;
-  font-family: source-code, mono, monospace;
   text-align: left;
 }
 .tactical_left_column {

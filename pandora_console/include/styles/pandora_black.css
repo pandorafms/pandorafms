@@ -586,7 +586,6 @@ form#modal_form_feedback ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: source-code;
 }
 
 #categories_library .card_category a:hover {
@@ -883,7 +882,6 @@ div#dashboard-controls {
   text-align: center;
   text-anchor: middle;
   fill: #fff;
-  font-family: Verdana;
 }
 
 .tickLabel {
@@ -996,4 +994,15 @@ table.databox {
 .status_tactical,
 .tactical_set {
   border-color: #707070;
+}
+
+.header_title {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #fff;
+}
+.header_subtitle {
+  font-size: 10pt;
+  color: #a0a0a0;
+  font-weight: 300;
 }

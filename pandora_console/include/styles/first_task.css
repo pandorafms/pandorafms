@@ -1,6 +1,5 @@
 .new_task p,
 .new_task div {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: lighter;
 }
 .new_task {

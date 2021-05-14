@@ -101,9 +101,7 @@ img:-moz-broken {
   width: 24px;
   height: 24px;
 }
-font[face="mceinline"] {
-  font-family: inherit !important;
-}
+
 *[contentEditable]:focus {
   outline: 0;
 }

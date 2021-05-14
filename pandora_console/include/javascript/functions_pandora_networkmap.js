@@ -3404,8 +3404,7 @@ function init_graph(parameter_object) {
           "text-anchor: start; " +
           "fill: #000000; " +
           "fill-opacity: 1; " +
-          "stroke: none; " +
-          "font-family: Verdana"
+          "stroke: none; "
       )
       .attr("class", "fill_fff")
       .attr(

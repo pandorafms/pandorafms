@@ -209,7 +209,6 @@ function d3_bullet_chart(
     $output .= '<div id="bullet_graph_'.$id_bullet.'" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
 			.bullet_graph {
-				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				margin: auto;
 				padding-top: 40px;
 				position: relative;

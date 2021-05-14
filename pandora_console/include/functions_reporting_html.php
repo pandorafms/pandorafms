@@ -247,7 +247,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         }
 
         $table->colspan['description_row']['description'] = 3;
-
+        hd($item['type']);
         switch ($item['type']) {
             case 'availability':
             default:
@@ -375,6 +375,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
             case 'agent_module':
                 reporting_html_agent_module($table, $item);
+            break;
+
+            case 'agents_inventory':
+                reporting_html_agents_inventory($table, $item);
             break;
 
             case 'inventory':
@@ -1421,6 +1425,63 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
 
             return $pdf_export;
         }
+    }
+}
+
+
+/**
+ * Print in html agents inventory
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   Print pdf true or false.
+ *
+ * @return html
+ */
+function reporting_html_agents_inventory($table, $item, $pdf=0)
+{
+    hd('agents inventory');
+    hd($item);
+
+    global $config;
+
+    if (empty($item['data']) === false) {
+        $table_data = new stdClass();
+        $table_data->width = '100%';
+        $table_data->headstyle = [];
+        $table_data->headstyle[0] = 'text-align: left;';
+        $table_data->style = [];
+        $table_data->style[0] = 'text-align: left;';
+        $table_data->head = [
+            __('Name'),
+            __('Date'),
+            __('Data'),
+            __('Status'),
+        ];
+
+        $table_data->data = [];
+        $table_data->data[1][0] = $item['data']['agent_name'];
+        $table_data->data[1][0] .= ' / ';
+        $table_data->data[1][0] .= $item['data']['module_name'];
+
+        $table_data->data[1][1] = date(
+            'Y-m-d H:i:s',
+            $item['data']['utimestamp']
+        );
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['last_value']['cell'] = 3;
+        $table->cellstyle['last_value']['cell'] = 'text-align: center;';
+        $table->data['last_value']['cell'] = html_print_table(
+            $table_data,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table_data,
+            true
+        );
     }
 }
 

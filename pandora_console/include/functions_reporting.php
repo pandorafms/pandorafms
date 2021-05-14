@@ -734,6 +734,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'agents_inventory':
+                $report['contents'][] = reporting_agents_inventory(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'inventory':
                 $report['contents'][] = reporting_inventory(
                     $report,
@@ -2253,6 +2260,12 @@ function reporting_event_report_module(
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+function reporting_agents_inventory($report, $content)
+{
+    hd($content);
 }
 
 

@@ -848,6 +848,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Group event report'),
     ];
 
+    $types['agents_inventory'] = [
+        'optgroup' => __('Inventory'),
+        'name'     => __('Agents inventory'),
+    ];
+
     if ($config['enterprise_installed']) {
         $types['inventory'] = [
             'optgroup' => __('Inventory'),

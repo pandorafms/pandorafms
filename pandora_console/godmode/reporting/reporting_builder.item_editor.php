@@ -3020,6 +3020,144 @@ $class = 'databox filters';
             <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
+        <tr id="row_os" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('OS');
+                ?>
+            </td>
+            <td>
+            <?php
+            html_print_select_from_sql(
+                'SELECT id_os, name FROM tconfig_os',
+                'id_os',
+                $id_os,
+                '',
+                '',
+                '0'
+            );
+            ?>
+                </td>
+        </tr>
+
+        <tr id="row_custom_field"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Custom field');
+                ?>
+            </td>
+            <td  >
+                <?php
+                echo html_print_input_text(
+                    'label',
+                    $label,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent status');
+                ?>
+            </td>
+            <td>
+                <?php
+                $fields = [];
+                    $fields[AGENT_STATUS_NORMAL] = __('Normal');
+                    $fields[AGENT_STATUS_WARNING] = __('Warning');
+                    $fields[AGENT_STATUS_CRITICAL] = __('Critical');
+                    $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
+                    $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
+                    $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+                    html_print_select(
+                        $fields,
+                        'users_groups[]',
+                        [],
+                        '',
+                        false,
+                        '',
+                        false,
+                        false,
+                        false,
+                        '',
+                        false,
+                        'min-width: 180px'
+                    );
+                    ?>
+            </td>
+        </tr>
+        
+        <tr id="row_agent_version" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent version');
+                ?>
+            </td>
+            <td  >
+                <?php
+                echo html_print_input_text(
+                    'agent_version',
+                    '',
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_remote_conf" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Agent has remote configuration').ui_print_help_tip(
+                __('Filter by agents by remote configuration enabled or disabled.'),
+                true
+            );
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('agent_remote_conf', 1, false); ?></td>
+        </tr>
+
+        <tr id="row_module_free_search" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Module search');
+                ?>
+            </td>
+            <td>
+                <?php
+                echo html_print_input_text(
+                    'module_search',
+                    '',
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -5223,6 +5361,12 @@ function chooseType() {
     $("#row_users").hide();
     $("#row_profiles_group").hide();
     $("#row_select_by_group").hide();
+    $("#row_os").hide();
+    $("#row_custom_field").hide();
+    $("#row_agent_status").hide();
+    $("#row_agent_version").hide();
+    $("#row_agent_remote_conf").hide();
+    $("#row_module_free_search").hide();
 
 
     // SLA list default state.
@@ -5761,6 +5905,17 @@ function chooseType() {
                 );
             });
             $("#row_historical_db_check").hide();
+
+            break;
+
+        case 'agents_inventory':
+            $("#row_group").show();
+            $("#row_os").show();
+            $("#row_custom_field").show();
+            $("#row_status").show();
+            $("#row_agent_version").show();
+            $("#row_agent_remote_conf").show();
+            $("#row_module_free_search").show();
 
             break;
 

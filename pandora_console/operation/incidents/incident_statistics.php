@@ -18,10 +18,6 @@ require_once $config['homedir'].'/include/functions_graph.php';
 
 check_login();
 
-db_pandora_audit('ACL Violation', 'Trying to access Incident section');
-require 'general/noaccess.php';
-exit;
-
 ui_print_page_header(__('Incidents').' &raquo; '.__('Statistics'), 'images/book_edit.png', false, '', false, '');
 
 if (!$config['integria_enabled']) {

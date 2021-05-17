@@ -578,7 +578,6 @@ function showTooltip(x, y, color, contents) {
       "border-radius": "5px",
       "background-color": "#fff",
       color: "#111",
-      "font-family": "Verdana, Arial, Helvetica, Tahoma, sans-serif",
       opacity: 0.9
     })
     .appendTo("body")

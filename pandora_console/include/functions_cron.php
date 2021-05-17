@@ -552,11 +552,24 @@ function cron_list_table()
                         continue;
                     }
 
-                    $agents_id = $args[1];
-                    $id_group = $args[2];
+                    if (empty($args[0]) === false || (string) $args[1] !== '0') {
+                        $agents_id = $args[1];
+                    } else {
+                        if (empty($args[2]) === false) {
+                            $agents_id = sprintf(
+                                '(%s) %s',
+                                __('regex'),
+                                $args[2]
+                            );
+                        } else {
+                            $agents_id = __('None');
+                        }
+                    }
+
+                    $id_group = $args[3];
                     $report_per_agent = $args[0];
-                    $report_name = $args[3];
-                    $email = $args[4];
+                    $report_name = $args[4];
+                    $email = $args[5];
                     $data[2] .= '<br>- '.__('Template').': ';
                     $data[2] .= '<a href="'.ui_get_full_url('index.php?sec=reporting&sec2=enterprise/godmode/reporting/reporting_builder.template&action=edit&id_template='.$args[0]).'">';
                     $data[2] .= $template['name'].'</a>';

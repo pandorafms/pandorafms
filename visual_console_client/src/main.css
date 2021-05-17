@@ -337,12 +337,10 @@ p.error-p-validate {
 }
 
 .visual-console-item .digital-clock > span.time {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 25px;
 }
 

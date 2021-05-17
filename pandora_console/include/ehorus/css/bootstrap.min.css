@@ -103,7 +103,6 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
   font-size: 1em;
 }
 button,
@@ -261,7 +260,6 @@ th {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: "Glyphicons Halflings";
   font-style: normal;
   font-weight: 400;
   line-height: 1;
@@ -1515,12 +1513,6 @@ address {
   margin-bottom: 20px;
   font-style: normal;
   line-height: 1.42857143;
-}
-code,
-kbd,
-pre,
-samp {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 code {
   padding: 2px 4px;
@@ -6742,7 +6734,6 @@ button.close {
 .carousel-control .icon-prev {
   width: 20px;
   height: 20px;
-  font-family: serif;
   line-height: 1;
 }
 .carousel-control .icon-prev:before {

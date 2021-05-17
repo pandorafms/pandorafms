@@ -31,8 +31,6 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
 }
 *,
 ::after,
@@ -168,8 +166,6 @@ code,
 kbd,
 pre,
 samp {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
   font-size: 1em;
 }
 pre {
@@ -8928,10 +8924,6 @@ button.bg-dark:hover {
   .mx-xl-auto {
     margin-left: auto !important;
   }
-}
-.text-monospace {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace !important;
 }
 .text-justify {
   text-align: justify !important;

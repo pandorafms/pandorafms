@@ -235,9 +235,6 @@ function groups_combine_acl($acl_group_a, $acl_group_b)
     }
 
     $acl_list = [
-        'incident_view'       => 1,
-        'incident_edit'       => 1,
-        'incident_management' => 1,
         'agent_view'          => 1,
         'agent_edit'          => 1,
         'agent_disable'       => 1,

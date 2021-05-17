@@ -127,7 +127,8 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
     $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
 
-
+    $upd_info['integria_user_level_user'] = get_parameter('integria_user_level_user');
+    $upd_info['integria_user_level_pass'] = get_parameter('integria_user_level_pass');
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -731,10 +732,55 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
-    echo '<div class="ehorus_user_conf">';
-
+    echo '<div class="ehorus_user_conf user_edit_fourth_row">';
     html_print_table($table_remote);
      echo '</div>';
+}
+
+if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
+    // Integria IMS user remote login.
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'integria-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+    // Integria IMS user level authentication.
+    // Title
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
+    $table_remote->data['integria_user_level_conf'] = $row;
+
+    // Integria IMS user.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
+    $table_remote->data['integria_user_level_user'] = $row;
+
+    // Integria IMS pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
+    $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-integria', false, 'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')', 'class="sub next"', true);
+    $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
+    $table_remote->data['integria_test'] = $row;
+
+    echo '<div class="integria_user_conf">';
+    html_print_table($table_remote);
+    echo '</div>';
 }
 
 
@@ -1274,6 +1320,77 @@ function ehorus_connection_test(host, port) {
             else {
                 changeTestMessage(errorThrown);
             }
+            showMessage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
+
+function integria_connection_test(api_hostname, api_pass) {
+        var user = $('input#text-integria_user_level_user').val();
+        var pass = $('input#password-integria_user_level_pass').val();
+
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('#test-integria-spinner').hide();
+        }
+        var showLoadingImage = function () {
+            $('#test-integria-spinner').show();
+        }
+        var hideSuccessImage = function () {
+            $('#test-integria-success').hide();
+        }
+        var showSuccessImage = function () {
+            $('#test-integria-success').show();
+        }
+        var hideFailureImage = function () {
+            $('#test-integria-failure').hide();
+        }
+        var showFailureImage = function () {
+            $('#test-integria-failure').show();
+        }
+        var hideMessage = function () {
+            $('#test-integria-message').hide();
+        }
+        var showMessage = function () {
+            $('#test-integria-message').show();
+        }
+        var changeTestMessage = function (message) {
+            $('#test-integria-message').text(message);
+        }
+        
+        hideSuccessImage();
+        hideFailureImage();
+        hideMessage();
+        showLoadingImage();
+
+        $.ajax({
+            url: "ajax.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: 'godmode/setup/setup_integria',
+                operation: 'check_api_access',
+                integria_user: user,
+                integria_pass: pass,
+                api_hostname: api_hostname,
+                api_pass: api_pass,
+            }
+        })
+        .done(function(data, textStatus, xhr) {
+            if (data.login == '1') {
+                showSuccessImage();
+            } else {
+                showFailureImage();
+                showMessage();
+            }
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
             showMessage();
         })
         .always(function(xhr, textStatus) {

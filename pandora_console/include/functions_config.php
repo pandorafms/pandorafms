@@ -1642,6 +1642,10 @@ function config_update_config()
                 break;
 
                 case 'integria':
+                    if (!config_update_value('integria_user_level_conf', (int) get_parameter('integria_user_level_conf', 0))) {
+                        $error_update[] = __('Integria user login');
+                    }
+
                     if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
                         $error_update[] = __('Enable Integria IMS');
                     }
@@ -3244,6 +3248,10 @@ function config_process_config()
     }
 
     // Integria.
+    if (!isset($config['integria_user_level_conf'])) {
+        config_update_value('integria_user_level_conf', 0);
+    }
+
     if (!isset($config['integria_enabled'])) {
         config_update_value('integria_enabled', 0);
     }

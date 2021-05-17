@@ -15,7 +15,7 @@ global $config;
 
 require_once 'include/functions_custom_graphs.php';
 
-$searchGraphs = check_acl($config['id_user'], 0, 'IR');
+$searchGraphs = check_acl($config['id_user'], 0, 'RR');
 
 if ($graphs === false || !$searchGraphs) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";

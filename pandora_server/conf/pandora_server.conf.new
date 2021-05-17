@@ -67,6 +67,18 @@ dbhost 127.0.0.1
 # Default value depends on the dbengine (mysql: 3306)
 #dbport 3306
 
+# dbssl: Enable (1) or disable (0) SSL for the database connection.
+
+dbssl 0
+
+# dbsslcafile: Path to a file in PEM format that contains a list of trusted SSL certificate authorities.
+
+# dbsslcafile
+
+# dbsslcapath: Path to a directory that contains trusted SSL certificate authority certificates in PEM format.
+
+# dbsslcapath
+
 # By default, parent agent will not be updated
 
 #update_parent 0

@@ -3275,6 +3275,7 @@ function ui_print_datatable(array $parameters)
         $pagination_options = [
             [
                 $parameters['default_pagination'],
+                5,
                 10,
                 25,
                 100,
@@ -3285,6 +3286,7 @@ function ui_print_datatable(array $parameters)
             ],
             [
                 $parameters['default_pagination'],
+                5,
                 10,
                 25,
                 100,

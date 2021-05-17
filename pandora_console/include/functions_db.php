@@ -2186,9 +2186,19 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
 function db_is_free_lock($lockname)
 {
     global $config;
+
+    $restore = false;
     // Temporary disable to get a valid lock if any...
-    $cache = $config['dbcache'];
-    $config['dbcache'] = false;
+    if (isset($config['dbcache']) === false) {
+        // Set.
+        $config['dbcache'] = false;
+    } else {
+        // Set and keep.
+        $cache = $config['dbcache'];
+        $config['dbcache'] = false;
+        $restore = true;
+    }
+
     $lock_status = db_get_value_sql(
         sprintf(
             'SELECT IS_FREE_LOCK("%s")',
@@ -2196,7 +2206,13 @@ function db_is_free_lock($lockname)
         )
     );
 
-    $config['dbcache'] = $cache;
+    if ($restore === true) {
+        // Restore.
+        $config['dbcache'] = $cache;
+    } else {
+        // Remove.
+        unset($config['dbcache']);
+    }
 
     return (bool) $lock_status;
 }

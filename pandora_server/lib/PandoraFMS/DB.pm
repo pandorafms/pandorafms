@@ -1558,7 +1558,7 @@ sub set_ssl_opts($) {
 	}
 
 	# Enable SSL.
-	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=0;mysql_ssl_verify_server_cert=1";
+	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1;mysql_ssl_verify_server_cert=1";
 
 	# Set additional SSL options.
 	if (defined($pa_config->{'dbsslcapath'}) && $pa_config->{'dbsslcapath'} ne "") {

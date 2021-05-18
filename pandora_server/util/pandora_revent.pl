@@ -33,13 +33,13 @@ sub help_screen{
 \t$0 -p <path_to_consoleAPI> -u <credentials> -create_event <options> 
 
 Where options:\n
-	-u <credentials>			: API credentials separated by comma: <api_pass>,<user>,<pass>
-	-name <event_name>			: Free text
-	-group <id_group>			: Group ID (use 0 for 'all') 
-	-agent					    : Agent ID
+	-u <credentials>		: API credentials separated by comma: <api_pass>,<user>,<pass>
+	-name <event_name>	: Free text
+	-group <id_group>		: Group ID (use 0 for 'all') 
 	
 Optional parameters:
-	
+
+	[-agent <id_agent]	: Agent ID
 	[-status <status>]			: 0 New, 1 Validated, 2 In process
 	[-user <id_user>]			: User comment (use in combination with -comment option)
 	[-type <event_type>]		: unknown, alert_fired, alert_recovered, alert_ceased

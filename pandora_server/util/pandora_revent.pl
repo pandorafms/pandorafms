@@ -3,7 +3,7 @@
 ########################################################################
 # Pandora FMS - Remote Event Tool (via WEB API) 
 ########################################################################
-# Copyright (c) 2013-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -62,7 +62,7 @@ Optional parameters:
 	[-owner_user <owner event>]	: Use the login name, not the descriptive
 	[-source <source>]			: (By default 'Pandora')
 	[-tag <tags>]				: Tag (must exist in the system to be imported)
-	[-custom_data <custom_data>]: Custom data should be a base 64 encoded JSON document example -custom_data \'{\"test1\" : 1, \"test2\": 2}\'
+	[-custom_data <custom_data>]: Custom data has to be in JSON format. Example: -custom_data \'{\"test1\" : \"t1\", \"test2\": \"2\"}\'
 	[-id_extra <id extra>]      : Id extra
 	[-agent_name <Agent name>]  : Agent name, Not to be confused with the alias.
 	[-force_create_agent<0 o 1>]: Force the creation of agent through an event this will create when it is 1.
@@ -191,7 +191,7 @@ sub tool_api_main () {
 				$id_group = $ARGV[$i + 1];
 			}
 			if ($line eq '-name') {
-				$event_name = $ARGV[$i + 1];
+				$event_name = join('%23', split("#", $ARGV[$i + 1]));
 			}
 			if ($line eq '-type') {
 				$event_type = $ARGV[$i + 1];
@@ -263,10 +263,6 @@ sub tool_api_main () {
 			print "[ERROR] Missing event group! Read help info:\n\n";
 			help_screen ();
 		}
-		if ($id_agent eq "") {
-			print "[ERROR] Missing id agent! Read help info:\n\n";
-			help_screen ();
-		}
 		
 		$data_event = $event_name .
 			"|" . $id_group .
@@ -322,26 +318,20 @@ sub tool_api_main () {
 		exit;
  	}
 	else {
-		#-----------DEBUG----------------------------
-		#print($call_api . "\n\n\n");
-		# Support HTTPS without hostname verification.
 		my $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0 });
 		my $content = $ua->get($call_api);
-
-		#-----------DEBUG----------------------------
-		#print($content . "\n\n\n");
-
+		
 		if ($option eq '-create_event') {
 			if ($content eq undef) {
 				print "[ERROR] Not respond or bad syntax. Read help info:\n\n";
 				help_screen();
 			}
 			else {
-				print "Event ID: ".$content->{'_content'};
+				print "Event ID: $content->{'_content'}";
 			}
 		}
 		elsif ($option eq '-validate_event') {
-			print "[RESULT] ".$content->{'_content'};
+			print "[RESULT] $content";
 		}
 	}
 	

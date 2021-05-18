@@ -121,7 +121,7 @@ sub tool_api_main () {
 	my $db_user;
 	my $db_pass;
 	my @db_info;
-	my $id_agent;
+	my $id_agent = '0';
 	my $id_user = '';
 	my $status = '';
 	my $id_agent_module = '';
@@ -186,6 +186,11 @@ sub tool_api_main () {
 			
 			if ($line eq '-agent') {
 				$id_agent = $ARGV[$i + 1];
+				# If not defined, send 0 for API.
+				if ($id_agent eq undef) {
+					$id_agent = '0';
+				}
+
 			}
 			if ($line eq '-group') {
 				$id_group = $ARGV[$i + 1];

@@ -13,8 +13,6 @@
 // GNU General Public License for more details.
 global $config;
 
-$totalHelps = check_acl($config['id_user'], 0, 'IR');
-
 if ($helps === false || !$searchHelps) {
     echo "<br><div class='nf'>".__('Zero results found.').sprintf(
         __('You can find more help in the <a class="underline" href="%s">wiki</a>'),

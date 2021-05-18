@@ -43,7 +43,7 @@ if (is_ajax()) {
     if ($get_integria_ticket_custom_types) {
         $ticket_type_id = get_parameter('ticket_type_id');
 
-        $api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_fields', $ticket_type_id, false, 'json');
+        $api_call = integria_api_call(null, null, null, null, 'get_incident_fields', $ticket_type_id, false, 'json');
 
         echo $api_call;
         return;

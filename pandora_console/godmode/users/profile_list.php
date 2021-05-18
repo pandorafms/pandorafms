@@ -122,11 +122,6 @@ if ($delete_profile === true) {
 if ($create_profile === true || $update_profile === true) {
     $name = get_parameter('name');
 
-    // Incidents.
-    $incident_view = (bool) get_parameter('incident_view');
-    $incident_edit = (bool) get_parameter('incident_edit');
-    $incident_management = (bool) get_parameter('incident_management');
-
     // Agents.
     $agent_view = (bool) get_parameter('agent_view');
     $agent_edit = (bool) get_parameter('agent_edit');
@@ -167,9 +162,6 @@ if ($create_profile === true || $update_profile === true) {
 
     $values = [
         'name'                => $name,
-        'incident_view'       => $incident_view,
-        'incident_edit'       => $incident_edit,
-        'incident_management' => $incident_management,
         'agent_view'          => $agent_view,
         'agent_edit'          => $agent_edit,
         'agent_disable'       => $agent_disable,
@@ -198,10 +190,7 @@ if ($update_profile === true) {
     if (empty($name) === false) {
         $ret = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
         if ($ret !== false) {
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -249,10 +238,7 @@ if ($create_profile === true) {
 
         if ($ret !== false) {
             ui_print_success_message(__('Successfully created'));
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -312,9 +298,6 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['IR'] = 'IR';
-$table->head['IW'] = 'IW';
-$table->head['IM'] = 'IM';
 $table->head['AR'] = 'AR';
 $table->head['AW'] = 'AW';
 $table->head['AD'] = 'AD';
@@ -342,9 +325,6 @@ if ($is_management_allowed === true) {
 $table->align = array_fill(1, 11, 'center');
 
 $table->size['profiles'] = '200px';
-$table->size['IR'] = '10px';
-$table->size['IW'] = '10px';
-$table->size['IM'] = '10px';
 $table->size['AR'] = '10px';
 $table->size['AW'] = '10px';
 $table->size['AD'] = '10px';
@@ -384,17 +364,7 @@ $img = html_print_image(
 );
 
 foreach ($profiles as $profile) {
-    if ($is_management_allowed === true) {
-        $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">';
-        $data['profiles'] .= $profile['name'];
-        $data['profiles'] .= '</a>';
-    } else {
-        $data['profiles'] = $profile['name'];
-    }
-
-    $data['IR'] = (empty($profile['incident_view']) === false) ? $img : '';
-    $data['IW'] = (empty($profile['incident_edit']) === false) ? $img : '';
-    $data['IM'] = (empty($profile['incident_management']) === false) ? $img : '';
+    $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
     $data['AR'] = (empty($profile['agent_view']) === false) ? $img : '';
     $data['AW'] = (empty($profile['agent_edit']) === false) ? $img : '';
     $data['AD'] = (empty($profile['agent_disable']) === false) ? $img : '';
@@ -415,11 +385,18 @@ foreach ($profiles as $profile) {
     $data['VW'] = (empty($profile['vconsole_edit']) === false) ? $img : '';
     $data['VM'] = (empty($profile['vconsole_management']) === false) ? $img : '';
     $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
-    if ($is_management_allowed === true) {
-        $table->cellclass[]['operations'] = 'action_buttons';
-        $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">';
-        $data['operations'] .= html_print_image(
-            'images/config.png',
+    $table->cellclass[]['operations'] = 'action_buttons';
+    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
+        'images/config.png',
+        true,
+        [
+            'title' => __('Edit'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
+    if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
+        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+            'images/cross.png',
             true,
             [
                 'title' => __('Edit'),

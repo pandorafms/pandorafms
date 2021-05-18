@@ -2284,9 +2284,6 @@ function check_login($output=true)
  * Check access privileges to resources
  *
  * Access can be:
- * IR - Incident/report Read
- * IW - Incident/report Write
- * IM - Incident/report Management
  * AR - Agent Read
  * AW - Agent Write
  * LW - Alert Write
@@ -2377,9 +2374,6 @@ function check_acl_one_of_groups($id_user, $groups, $access, $cache=true)
  * Check access privileges to resources (write or management is not allowed for 'all' group )
  *
  * Access can be:
- * IR - Incident/report Read
- * IW - Incident/report Write
- * IM - Incident/report Management
  * AR - Agent Read
  * AW - Agent Write
  * LW - Alert Write
@@ -2448,18 +2442,6 @@ function check_acl_restricted_all($id_user, $id_group, $access, $onlyOneGroup=fa
 function get_acl_column($access)
 {
     switch ($access) {
-        case 'IR':
-        return 'incident_view';
-
-            break;
-        case 'IW':
-        return 'incident_edit';
-
-            break;
-        case 'IM':
-        return 'incident_management';
-
-            break;
         case 'AR':
         return 'agent_view';
 
@@ -2557,10 +2539,7 @@ function get_users_acl($id_user)
         $rowdup = $users_acl_cache[$id_user];
     } else {
         $query = sprintf(
-            "SELECT sum(tperfil.incident_view) as incident_view,
-						sum(tperfil.incident_edit) as incident_edit,
-						sum(tperfil.incident_management) as incident_management,
-						sum(tperfil.agent_view) as agent_view,
+            "SELECT sum(tperfil.agent_view) as agent_view,
 						sum(tperfil.agent_edit) as agent_edit,
 						sum(tperfil.alert_edit) as alert_edit,
 						sum(tperfil.alert_management) as alert_management,

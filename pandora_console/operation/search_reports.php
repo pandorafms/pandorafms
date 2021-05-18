@@ -19,9 +19,7 @@ require_once 'include/functions_reports.php';
 $linkReport = false;
 $searchReports = check_acl($config['id_user'], 0, 'RR');
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $linkReport = true;
-}
+$linkReport = true;
 
 if ($reports === false || !$searchReports) {
         echo "<br><div class='nf'>".__('Zero results found')."</div>\n";

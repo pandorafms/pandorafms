@@ -1,40 +1,55 @@
 <?php
+/**
+ * Category.
+ *
+ * @category   Category
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
-// Check login and ACLs
+// Check login and ACLs.
 check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+if (!check_acl($config['id_user'], 0, 'PM') && !is_user_admin($config['id_user'])) {
     db_pandora_audit('ACL Violation', 'Trying to access Categories Management');
     include 'general/noaccess.php';
     return;
 }
 
-// Include functions code
+// Include functions code.
 require_once $config['homedir'].'/include/functions_categories.php';
 
-// Get parameters
+// Get parameters.
 $delete = (int) get_parameter('delete_category', 0);
 $search = (int) get_parameter('search_category', 0);
 $category_name = (string) get_parameter('category_name', '');
 $tab = (string) get_parameter('tab', 'list');
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $buttons = [
         'list' => [
             'active' => false,
@@ -66,34 +81,42 @@ if (defined('METACONSOLE')) {
 
 $buttons[$tab]['active'] = true;
 
-// Header
-if (defined('METACONSOLE')) {
+// Header.
+if (is_metaconsole() === true) {
     ui_meta_print_header(__('Categories configuration'), __('List'), $buttons);
 } else {
     ui_print_page_header(__('Categories configuration'), 'images/gm_modules.png', false, '', true, $buttons);
 }
 
 
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All profiles information is read only. Go to metaconsole to manage it.')
+    );
+}
+
 // Two actions can performed in this page: search and delete categories
-// Delete action: This will delete a category
-if ($delete != 0) {
+// Delete action: This will delete a category.
+if ($is_management_allowed === true && $delete != 0) {
     $return_delete = categories_delete_category($delete);
     if (!$return_delete) {
-        db_pandora_audit('Category management', "Fail try to delete category #$delete");
+        db_pandora_audit('Category management', 'Fail try to delete category #'.$delete);
         ui_print_error_message(__('Error deleting category'));
     } else {
-        db_pandora_audit('Category management', "Delete category #$delete");
+        db_pandora_audit('Category management', 'Delete category #'.$delete);
         ui_print_success_message(__('Successfully deleted category'));
     }
 }
 
-// statements for pagination
+// Statements for pagination.
 $url = ui_get_url_refresh();
 $total_categories = categories_get_category_count();
 
 $filter['offset'] = (int) get_parameter('offset');
 $filter['limit'] = (int) $config['block_size'];
-// Search action: This will filter the display category view
+// Search action: This will filter the display category view.
 $result = false;
 
 $result = db_get_all_rows_filter(
@@ -104,12 +127,12 @@ $result = db_get_all_rows_filter(
     ]
 );
 
-// Display categories previously filtered or not
+// Display categories previously filtered or not.
 $rowPair = true;
 $iterator = 0;
 
-if (!empty($result)) {
-    // Prepare pagination
+if (empty($result) === false) {
+    // Prepare pagination.
     ui_pagination($total_categories, $url);
 
     $table = new stdClass();
@@ -123,7 +146,9 @@ if (!empty($result)) {
     $table->style[0] = 'font-weight: bold; text-align:left';
     $table->style[1] = 'text-align:center; width: 100px;';
     $table->head[0] = __('Category name');
-    $table->head[1] = __('Actions');
+    if ($is_management_allowed === true) {
+        $table->head[1] = __('Actions');
+    }
 
     foreach ($result as $category) {
         if ($rowPair) {
@@ -137,7 +162,7 @@ if (!empty($result)) {
 
         $data = [];
 
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole() === true) {
             $data[0] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
             $data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
                 'images/config.png',
@@ -150,18 +175,25 @@ if (!empty($result)) {
                 ['title' => 'Delete']
             ).'</a>';
         } else {
-            $data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
-            $table->cellclass[][1] = 'action_buttons';
-            $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
-                'images/config.png',
-                true,
-                ['title' => 'Edit']
-            ).'</a>';
-            $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
-                'images/cross.png',
-                true,
-                ['title' => 'Delete']
-            ).'</a>';
+            if ($is_management_allowed === true) {
+                $data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".$category['name'].'</a>';
+            } else {
+                $data[0] = $category['name'];
+            }
+
+            if ($is_management_allowed === true) {
+                $table->cellclass[][1] = 'action_buttons';
+                $data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category['id'].'&pure='.(int) $config['pure']."'>".html_print_image(
+                    'images/config.png',
+                    true,
+                    ['title' => 'Edit']
+                ).'</a>';
+                $data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category['id'].'&pure='.(int) $config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    ['title' => 'Delete']
+                ).'</a>';
+            }
         }
 
         array_push($table->data, $data);
@@ -170,21 +202,23 @@ if (!empty($result)) {
     html_print_table($table);
     ui_pagination($total_categories, $url, $offset, 0, false, 'offset', true, 'pagination-bottom');
 } else {
-    // No categories available or selected
+    // No categories available or selected.
     ui_print_info_message(['no_close' => true, 'message' => __('No categories found') ]);
 }
 
-// Form to add new categories or search categories
-echo "<div class='w100p right_align'>";
-if (defined('METACONSOLE')) {
-    echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
-} else {
-    echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
-}
+if ($is_management_allowed === true) {
+    // Form to add new categories or search categories.
+    echo "<div class='w100p right_align'>";
+    if (is_metaconsole() === true) {
+        echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
+    } else {
+        echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int) $config['pure'].'">';
+    }
 
     html_print_input_hidden('create_category', '1', true);
     html_print_submit_button(__('Create category'), 'create_button', false, 'class="sub next"');
     echo '</form>';
-echo '</div>';
+    echo '</div>';
 
-enterprise_hook('close_meta_frame');
+    enterprise_hook('close_meta_frame');
+}

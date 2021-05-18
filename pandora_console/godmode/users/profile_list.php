@@ -100,8 +100,16 @@ $create_profile = (bool) get_parameter('create_profile');
 $update_profile = (bool) get_parameter('update_profile');
 $id_profile = (int) get_parameter('id');
 
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. All profiles information is read only. Go to metaconsole to manage it.')
+    );
+}
+
 // Profile deletion.
-if ($delete_profile === true) {
+if ($is_management_allowed === true && $delete_profile === true) {
     // Delete profile.
     $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
     $ret = profile_delete_profile_and_clean_users($id_profile);
@@ -119,7 +127,7 @@ if ($delete_profile === true) {
 }
 
 // Store the variables when create or update.
-if ($create_profile === true || $update_profile === true) {
+if ($is_management_allowed === true && ($create_profile === true || $update_profile === true)) {
     $name = get_parameter('name');
 
     // Agents.
@@ -186,7 +194,7 @@ if ($create_profile === true || $update_profile === true) {
 }
 
 // Update profile.
-if ($update_profile === true) {
+if ($is_management_allowed === true && $update_profile === true) {
     if (empty($name) === false) {
         $ret = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
         if ($ret !== false) {
@@ -232,7 +240,7 @@ if ($update_profile === true) {
 }
 
 // Create profile.
-if ($create_profile === true) {
+if ($is_management_allowed === true && $create_profile === true) {
     if (empty($name) === false) {
         $ret = db_process_sql_insert('tperfil', $values);
 
@@ -275,14 +283,6 @@ if ($create_profile === true) {
     }
 
     $id_profile = 0;
-}
-
-$is_management_allowed = true;
-if (is_management_allowed() === false) {
-    $is_management_allowed = false;
-    ui_print_warning_message(
-        __('This node is configured with centralized mode. All users information is read only. Go to metaconsole to manage it.')
-    );
 }
 
 $table = new stdClass();
@@ -364,7 +364,14 @@ $img = html_print_image(
 );
 
 foreach ($profiles as $profile) {
-    $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
+    if ($is_management_allowed === true) {
+        $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">';
+        $data['profiles'] .= $profile['name'];
+        $data['profiles'] .= '</a>';
+    } else {
+        $data['profiles'] = $profile['name'];
+    }
+
     $data['AR'] = (empty($profile['agent_view']) === false) ? $img : '';
     $data['AW'] = (empty($profile['agent_edit']) === false) ? $img : '';
     $data['AD'] = (empty($profile['agent_disable']) === false) ? $img : '';
@@ -386,29 +393,23 @@ foreach ($profiles as $profile) {
     $data['VM'] = (empty($profile['vconsole_management']) === false) ? $img : '';
     $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
     $table->cellclass[]['operations'] = 'action_buttons';
-    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
-        'images/config.png',
-        true,
-        [
-            'title' => __('Edit'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-    if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-            'images/cross.png',
+    if ($is_management_allowed === true) {
+        $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
+            'images/config.png',
             true,
             [
                 'title' => __('Edit'),
                 'class' => 'invert_filter',
             ]
-        );
-        $data['operations'] .= '</a>';
+        ).'</a>';
         if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
             $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                 'images/cross.png',
                 true,
-                ['class' => 'invert_filter']
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>';
         }
     }

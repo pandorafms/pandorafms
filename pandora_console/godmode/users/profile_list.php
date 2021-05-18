@@ -94,7 +94,6 @@ if (is_metaconsole() === false) {
     $sec = 'advanced';
 }
 
-
 $delete_profile = (bool) get_parameter('delete_profile');
 $create_profile = (bool) get_parameter('create_profile');
 $update_profile = (bool) get_parameter('update_profile');

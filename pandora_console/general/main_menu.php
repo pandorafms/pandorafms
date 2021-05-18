@@ -88,7 +88,6 @@ if (check_acl($config['id_user'], 0, 'AW')
     || check_acl($config['id_user'], 0, 'LM')
     || check_acl($config['id_user'], 0, 'UM')
     || check_acl($config['id_user'], 0, 'LW')
-    || check_acl($config['id_user'], 0, 'IW')
     || check_acl($config['id_user'], 0, 'EW')
     || check_acl($config['id_user'], 0, 'DW')
 ) {

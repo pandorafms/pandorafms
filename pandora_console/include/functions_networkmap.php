@@ -1500,7 +1500,7 @@ function networkmap_delete_relations($id_map)
 
 function get_networkmaps($id)
 {
-    $groups = array_keys(users_get_groups(null, 'IW'));
+    $groups = array_keys(users_get_groups(null, 'MW'));
 
     $filter = [];
     $filter['id_group'] = $groups;

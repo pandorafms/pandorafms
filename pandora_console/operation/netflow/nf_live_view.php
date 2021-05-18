@@ -370,7 +370,7 @@ if (is_metaconsole()) {
     ).'</td>';
     $own_info = get_user_info($config['id_user']);
     echo '<td><span id="filter_group_color"><b>'.__('Group').'</b></span></td>';
-    echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'IW', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
+    echo "<td colspan='2'>".html_print_select_groups($config['id_user'], 'AR', $own_info['is_admin'], 'assign_group', $filter['id_group'], '', '', -1, true, false, false).'</td>';
     echo '</tr>';
 
     $advanced_toggle = '<table class="w100p">';

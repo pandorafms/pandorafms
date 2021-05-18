@@ -27,10 +27,26 @@ ob_clean();
 // * q
 // * id_group
 $search_agents = (bool) get_parameter('search_agents');
+$get_agents_interfaces = (bool) get_parameter('get_agents_interfaces');
+$id_agents = get_parameter('id_agents', []);
 $get_agents_group = (bool) get_parameter('get_agents_group', false);
 $force_local = (bool) get_parameter('force_local', false);
 if (https_is_running()) {
     header('Content-type: application/json');
+}
+
+if ($get_agents_interfaces) {
+    $agents_interfaces = agents_get_network_interfaces($id_agents);
+
+    // Include alias per agent.
+    foreach ($agents_interfaces as $key => $value) {
+        $agent_alias = agents_get_alias($key);
+        $agents_interfaces[$key]['agent_alias'] = $agent_alias;
+    }
+
+    echo json_encode($agents_interfaces);
+
+    return;
 }
 
 if ($get_agents_group) {

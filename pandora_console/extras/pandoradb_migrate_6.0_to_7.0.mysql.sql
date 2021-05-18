@@ -1334,6 +1334,11 @@ ALTER TABLE talert_snmp_action ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field16` TEXT NOT NULL AFTER `al_field15`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field17` TEXT NOT NULL AFTER `al_field16`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field18` TEXT NOT NULL AFTER `al_field17`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field19` TEXT NOT NULL AFTER `al_field18`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field20` TEXT NOT NULL AFTER `al_field19`;
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`
@@ -1527,6 +1532,8 @@ ALTER TABLE `tusuario` MODIFY COLUMN `default_event_filter` int(10) unsigned NOT
 	ADD CONSTRAINT `fk_filter_id` FOREIGN KEY `fk_filter_id` (`id_filter`) REFERENCES `tevent_filter` (`id_filter`) ON DELETE SET NULL ON UPDATE RESTRICT,
 	DROP FOREIGN KEY `fk_id_filter`,
 	DROP INDEX `fk_id_filter`;
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_user` VARCHAR(60);
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_pass` VARCHAR(45);
 
 
 -- ---------------------------------------------------------------------
@@ -4025,3 +4032,6 @@ DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
 
+ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_management`;

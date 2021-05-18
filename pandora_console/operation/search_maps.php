@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 
-$searchMaps = check_acl($config['id_user'], 0, 'IR');
+$searchMaps = check_acl($config['id_user'], 0, 'VR');
 
 if ($maps === false || !$searchMaps) {
         echo "<br><div class='nf'>".__('Zero results found')."</div>\n";

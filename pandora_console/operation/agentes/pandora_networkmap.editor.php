@@ -390,7 +390,7 @@ if ($not_found) {
         'circo'          => 'circular',
         'neato'          => 'spring1',
         'fdp'            => 'spring2',
-        'radial_dinamic' => 'radial dinamic',
+        'radial_dinamic' => 'radial dynamic',
     ];
 
     $table->data[7][0] = __('Method generation networkmap');

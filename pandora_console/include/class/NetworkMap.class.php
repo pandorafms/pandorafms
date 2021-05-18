@@ -3207,7 +3207,7 @@ class NetworkMap
         $table->data[0][0] = __('Group');
         $table->data[0][1] = html_print_select_groups(
             false,
-            'IW',
+            'AR',
             false,
             'group_for_show_agents',
             -1,

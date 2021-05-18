@@ -20,15 +20,6 @@ require_once $config['homedir'].'/include/functions_html.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'IW')) {
-    db_pandora_audit(
-        'ACL Violation',
-        'Trying to access event viewer'
-    );
-    include 'general/noaccess.php';
-    return;
-}
-
 // id report
 $id = (int) get_parameter('id');
 

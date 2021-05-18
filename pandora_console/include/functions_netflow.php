@@ -120,7 +120,7 @@ function netflow_check_filter_group($id_sg)
     $id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);
     $own_info = get_user_info($config['id_user']);
     // Get group list that user has access.
-    $groups_user = users_get_groups($config['id_user'], 'IW', $own_info['is_admin'], true);
+    $groups_user = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
     $groups_id = [];
     $has_permission = false;
 

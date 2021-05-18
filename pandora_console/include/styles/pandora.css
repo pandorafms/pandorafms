@@ -123,6 +123,7 @@ body {
   flex-direction: column;
   min-height: 100%;
   font-weight: 400;
+  font-family: "lato";
 }
 
 input,

@@ -1151,7 +1151,9 @@ function dashboardLoadVC(settings) {
     300 * 1000,
     handleUpdate,
     beforeUpdate,
-    settings.size
+    settings.size,
+    settings.id_user,
+    settings.hash
   );
 }
 

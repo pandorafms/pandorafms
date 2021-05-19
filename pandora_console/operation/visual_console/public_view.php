@@ -182,8 +182,6 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var props = <?php echo (string) $visualConsole; ?>;
     var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
-    var hash = "<?php echo get_parameter('hash', ''); ?>";
-    var id_user = "<?php echo get_parameter('id_user', ''); ?>";
 
     var controls = document.getElementById('vc-controls');
     autoHideElement(controls, 1000);
@@ -266,7 +264,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         items,
         baseUrl,
         <?php echo ($refr * 1000); ?>,
-        handleUpdate
+        handleUpdate,
+        // BeforeUpdate.
+        null,
+        // Size.
+        null,
+        // User id.
+        "<?php echo get_parameter('id_user', ''); ?>",
+        // Hash.
+        "<?php echo get_parameter('hash', ''); ?>"
     );
 
     var controls = document.getElementById('vc-controls');

@@ -1,5 +1,5 @@
 // TODO: Add Artica ST header.
-/* globals jQuery, VisualConsole, AsyncTaskManager */
+/* globals jQuery, VisualConsole, AsyncTaskManager, hash, id_user */
 
 /*
  * *********************
@@ -720,7 +720,9 @@ function loadVisualConsoleData(baseUrl, vcId, size, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsole: 1,
-        visualConsoleId: vcId
+        visualConsoleId: vcId,
+        id_user: id_user,
+        auth_hash: hash
       },
       "json"
     )
@@ -735,7 +737,9 @@ function loadVisualConsoleData(baseUrl, vcId, size, callback) {
         page: "include/rest-api/index",
         getVisualConsoleItems: 1,
         size: size,
-        visualConsoleId: vcId
+        visualConsoleId: vcId,
+        id_user: id_user,
+        auth_hash: hash
       },
       "json"
     )

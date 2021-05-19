@@ -31,18 +31,18 @@ require 'vendor/autoload.php';
 
 define('AJAX', true);
 
-if (!defined('__PAN_XHPROF__')) {
+if (defined('__PAN_XHPROF__') === false) {
     define('__PAN_XHPROF__', 0);
 }
 
 if (__PAN_XHPROF__ === 1) {
-    if (function_exists('tideways_xhprof_enable')) {
+    if (function_exists('tideways_xhprof_enable') === true) {
         tideways_xhprof_enable();
     }
 }
 
-if ((! file_exists('include/config.php'))
-    || (! is_readable('include/config.php'))
+if (file_exists('include/config.php') === false
+    || is_readable('include/config.php') === false
 ) {
     exit;
 }
@@ -57,11 +57,11 @@ require_once 'include/auth/mysql.php';
 if (isset($config['console_log_enabled']) === true
     && $config['console_log_enabled'] == 1
 ) {
-    ini_set('log_errors', 1);
+    ini_set('log_errors', true);
     ini_set('error_log', $config['homedir'].'/log/console.log');
 } else {
-    ini_set('log_errors', 0);
-    ini_set('error_log', null);
+    ini_set('log_errors', false);
+    ini_set('error_log', '');
 }
 
 // Sometimes input is badly retrieved from caller...
@@ -98,9 +98,11 @@ if (isset($_GET['loginhash']) === true) {
     }
 }
 
+// Another auth class example: PandoraFMS\Dashboard\Manager.
 $auth_class = io_safe_output(
-    get_parameter('auth_class', 'PandoraFMS\Dashboard\Manager')
+    get_parameter('auth_class', 'PandoraFMS\User')
 );
+
 $public_hash = get_parameter('auth_hash', false);
 $public_login = false;
 // Check user.
@@ -124,7 +126,7 @@ if (class_exists($auth_class) === false || $public_hash === false) {
 ob_start();
 
 // Enterprise support.
-if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php')) {
+if (file_exists(ENTERPRISE_DIR.'/load_enterprise.php') === true) {
     include_once ENTERPRISE_DIR.'/load_enterprise.php';
 }
 
@@ -142,12 +144,12 @@ if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
     );
 }
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     // Backward compatibility.
     define('METACONSOLE', true);
 }
 
-if (file_exists($page)) {
+if (file_exists($page) === true) {
     include_once $page;
 } else {
     echo '<br /><b class="error">Sorry! I can\'t find the page '.$page.'!</b>';
@@ -172,7 +174,7 @@ if (isset($config['force_instant_logout']) === true
     header_remove('Set-Cookie');
     setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
 
-    if ($config['auth'] == 'saml') {
+    if ($config['auth'] === 'saml') {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';
         $as = new SimpleSAML_Auth_Simple('PandoraFMS');
         $as->logout();

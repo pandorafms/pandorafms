@@ -33,40 +33,41 @@ sub help_screen{
 \t$0 -p <path_to_consoleAPI> -u <credentials> -create_event <options> 
 
 Where options:\n
-	-u <credentials>		: API credentials separated by comma: <api_pass>,<user>,<pass>
-	-name <event_name>	: Free text
-	-group <id_group>		: Group ID (use 0 for 'all') 
+	-u <credentials>   : API credentials separated by comma: <api_pass>,<user>,<pass>
+	-name <event_name> : Free text (surrounded by single-quotes, for security reasons)
+	-group <id_group>  : Group ID (use 0 for 'all') 
 	
 Optional parameters:
 
-	[-agent <id_agent]	: Agent ID
-	[-status <status>]			: 0 New, 1 Validated, 2 In process
-	[-user <id_user>]			: User comment (use in combination with -comment option)
-	[-type <event_type>]		: unknown, alert_fired, alert_recovered, alert_ceased
+	[-agent <id_agent] : Agent ID
+	[-status <status>] : 0 New, 1 Validated, 2 In process
+	[-user <id_user>] : User comment (use in combination with -comment option)
+	[-type <event_type>] : unknown, alert_fired, alert_recovered, alert_ceased
 								  alert_manual_validation, system, error, new_agent
 								  configuration_change, going_unknown, going_down_critical,
 								  going_down_warning, going_up_normal
-	[-severity <severity>] 		: 0 Maintance,
+	[-severity <severity>] : 0 Maintance,
 								  1 Informative,
 								  2 Normal,
 								  3 Warning,
 								  4 Crit,
 								  5 Minor,
 								  6 Major
-	[-am <id_agent_module>]		: ID Agent Module linked to event
-	[-alert <id_alert_am>]		: ID Alert Module linked to event
+	[-am <id_agent_module>] : ID Agent Module linked to event
+	[-alert <id_alert_am>] : ID Alert Module linked to event
 	[-c_instructions <critical_instructions>]
 	[-w_instructions <warning_instructions>]
 	[-u_instructions <unknown_instructions>]
-	[-user_comment <comment>]
-	[-owner_user <owner event>]	: Use the login name, not the descriptive
-	[-source <source>]			: (By default 'Pandora')
-	[-tag <tags>]				: Tag (must exist in the system to be imported)
+	[-user_comment <comment>] : Free text  (surrounded by single-quotes, for security reasons) 
+	[-owner_user <owner event>] : Use the login name, not the descriptive
+	[-source <source>] : (By default 'Pandora')
+	[-tag <tags>] : Tag (must exist in the system to be imported)
 	[-custom_data <custom_data>]: Custom data has to be in JSON format. Example: -custom_data \'{\"test1\" : \"t1\", \"test2\": \"2\"}\'
-	[-id_extra <id extra>]      : Id extra
-	[-agent_name <Agent name>]  : Agent name, Not to be confused with the alias.
-	[-force_create_agent<0 o 1>]: Force the creation of agent through an event this will create when it is 1.
-	[-server_id <server_id>]	: The pandora node server_id\n\n";
+	[-id_extra <id extra>] : Id extra
+	[-agent_name <Agent name>] : Agent name, Not to be confused with the alias.
+	[-force_create_agent<0 o 1>] : Force the creation of agent through an event this will create when it is 1.
+	[-separator '<char/s>'] : If you use the vertical bar `|` in the event name, you must set other character for send the info. This must be surrounded by single-quotes
+	[-server_id <server_id>] : The pandora node server_id\n\n";
 	
 	print "Example of event generation:\n\n";
 	
@@ -142,6 +143,7 @@ sub tool_api_main () {
 	my $call_api;
 	my $custom_data = "";
 	my $server_id = 0;
+	my $separator = '|';
 	
 	#~ help or api path (required)
 	if ($ARGV[0] eq '-h') {
@@ -256,6 +258,9 @@ sub tool_api_main () {
 			if ($line eq '-server_id') {
 				$server_id = $ARGV[$i + 1];
 			}
+			if ($line eq '-separator') {
+				$separator = $ARGV[$i + 1];
+			}
 			
 			$i++;
 		}
@@ -270,32 +275,32 @@ sub tool_api_main () {
 		}
 		
 		$data_event = $event_name .
-			"|" . $id_group .
-			"|" . $id_agent .
-			"|" . $status .
-			"|" . $id_user .
-			"|" . $event_type .
-			"|" . $severity .
-			"|" . $id_agent_module .
-			"|" . $id_alert_am . 
-			"|" . $critical_instructions .
-			"|" . $warning_instructions .
-			"|" . $unknown_instructions .
-			"|" . $user_comment .
-			"|" . $owner_user .
-			"|" . $source .
-			"|" . $tags .
-			"|" . $custom_data .
-			"|" . $server_id .
-			"|" . $id_extra .
-			"|" . $agent_name .
-			"|" . $force_create_agent;
+			$separator . $id_group .
+			$separator . $id_agent .
+			$separator . $status .
+			$separator . $id_user .
+			$separator . $event_type .
+			$separator . $severity .
+			$separator . $id_agent_module .
+			$separator . $id_alert_am . 
+			$separator . $critical_instructions .
+			$separator . $warning_instructions .
+			$separator . $unknown_instructions .
+			$separator . $user_comment .
+			$separator . $owner_user .
+			$separator . $source .
+			$separator . $tags .
+			$separator . $custom_data .
+			$separator . $server_id .
+			$separator . $id_extra .
+			$separator . $agent_name .
+			$separator . $force_create_agent;
 
 		$call_api = $api_path . '?' .
 			'op=set&' .
 			'op2=create_event&' .
 			'other=' . $data_event .'&' .
-			'other_mode=url_encode_separator_|&' .
+			'other_mode=url_encode_separator_'.$separator.'&' .
 			'apipass=' . $api_pass . '&' .
 			'user=' . $db_user . '&' .
 			'pass=' . $db_pass;

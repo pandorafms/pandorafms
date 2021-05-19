@@ -198,7 +198,8 @@ sub tool_api_main () {
 				$id_group = $ARGV[$i + 1];
 			}
 			if ($line eq '-name') {
-				$event_name = join('%23', split("#", $ARGV[$i + 1]));
+				$event_name = $ARGV[$i + 1];
+				$event_name =~ s/#/%23/g;
 			}
 			if ($line eq '-type') {
 				$event_type = $ARGV[$i + 1];

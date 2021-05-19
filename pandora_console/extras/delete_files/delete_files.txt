@@ -82,3 +82,11 @@ include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php
 operation/network/network_explorer.php
+enterprise/meta/advanced/synchronizing.php
+enterprise/meta/advanced/synchronizing.os.php
+enterprise/meta/advanced/synchronizing.module_groups.php
+enterprise/meta/advanced/synchronizing.component.php
+enterprise/meta/advanced/synchronizing.alert.php
+enterprise/meta/advanced/synchronizing.user.php
+enterprise/meta/advanced/synchronizing.tag.php
+enterprise/meta/advanced/synchronizing.group.php

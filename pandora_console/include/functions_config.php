@@ -2243,7 +2243,7 @@ function config_process_config()
     if (!isset($config['fontpath'])) {
         config_update_value(
             'fontpath',
-            'opensans.ttf'
+            'lato.ttf'
         );
     }
 
@@ -3108,7 +3108,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'opensans.ttf');
+        config_update_value('custom_report_front_font', 'lato.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {

@@ -215,7 +215,7 @@ function d3_bullet_chart(
 				width: 100%;
 			}
 
-			.bullet { font: 7px sans-serif; }
+			.bullet { font: 7px lato; }
 			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
 			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }

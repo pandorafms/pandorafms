@@ -4460,6 +4460,7 @@ div#dialog_messages table th:last-child {
 /* jQuery dialog */
 .no-close .ui-dialog-titlebar-close {
   display: none;
+  font-size: 9pt;
 }
 /* jQuery dialog */
 
@@ -5913,6 +5914,7 @@ table.table_modal_alternate tr td:first-child {
 
 .flot-text {
   width: 100%;
+  font-family: inherit !important;
 }
 
 /*Font header feedback*/
@@ -8284,4 +8286,10 @@ div.stat-win-spinner img {
 .checkbox-random-name {
   width: 100px !important;
   margin-left: 20px;
+}
+.legendLabel {
+  font-family: inherit !important;
+}
+.lato {
+  font-family: "lato" !important;
 }

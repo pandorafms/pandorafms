@@ -827,7 +827,7 @@ function grafico_modulo_sparse($params)
 
     $params['grid_color'] = '#C1C1C1';
     $params['legend_color'] = '#636363';
-    $params['font'] = $config['fontpath'];
+    $params['font'] = 'lato';
     $params['font_size']  = $config['font_size'];
     $params['short_data'] = $config['short_module_graph_data'];
 
@@ -1330,7 +1330,7 @@ function graphic_combined_module(
     $params['grid_color']   = '#C1C1C1';
     $params['legend_color'] = '#636363';
 
-    $params['font'] = $config['fontpath'];
+    $params['font'] = 'lato';
     $params['font_size'] = $config['font_size'];
 
     $params['short_data'] = $config['short_module_graph_data'];

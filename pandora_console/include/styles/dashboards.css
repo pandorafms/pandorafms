@@ -407,6 +407,7 @@ table.widget_agent_module tbody tr td {
 
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
+  font-family: inherit !important;
 }
 
 li#search_input_widget {

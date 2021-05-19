@@ -57,7 +57,7 @@ input.sub,
 button.sub,
 .bg_general {
   background-color: #222 !important;
-  color: #fff;
+  color: #fff !important;
 }
 
 input[readonly] {
@@ -244,10 +244,12 @@ div#foot {
 /* events.css */
 table.table_modal_alternate tr:nth-child(odd) td {
   background-color: #222 !important;
+  color: #fff;
 }
 
 table.table_modal_alternate tr:nth-child(even) td {
   background-color: #111 !important;
+  color: #fff;
 }
 
 /* events.css */
@@ -1024,4 +1026,8 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   font-size: 10pt;
   color: #a0a0a0;
   font-weight: 300;
+}
+.new_task p,
+.new_task div {
+  font-weight: initial;
 }

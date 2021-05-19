@@ -385,14 +385,14 @@ function pandoraFlotHBars(
       color: tick_color,
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: font_size,
-      axisLabelFontFamily: font + "Font",
+      axisLabelFontFamily: "lato",
       tickFormatter: xFormatter
     },
     yaxis: {
       font: {
         size: font_size + 2,
         color: ycolor,
-        family: font + "Font"
+        family: "lato"
       },
       ticks: yFormatter
     },
@@ -627,7 +627,7 @@ function pandoraFlotVBars(settings) {
       return ticksformatter[Math.round(v)];
     };
   }
-
+  font.family = "lato";
   var options = {
     series: {
       bars: {
@@ -807,7 +807,7 @@ function pandoraFlotSlicebar(
         tickLength: 0,
         font: {
           size: font_size + 2,
-          family: font + "Font"
+          family: font
         }
       }
     ],
@@ -2020,7 +2020,7 @@ function pandoraFlotArea(
       font: {
         size: font_size + 2,
         color: legend_color,
-        family: font + "Font"
+        family: "lato"
       }
     },
     xaxes: [
@@ -2035,7 +2035,7 @@ function pandoraFlotArea(
       font: {
         size: font_size + 2,
         color: legend_color,
-        family: font + "Font",
+        family: "lato",
         variant: "small-caps"
       }
     },
@@ -2109,7 +2109,7 @@ function pandoraFlotArea(
         font: {
           size: font_size + 2,
           color: legend_color,
-          family: font + "Font"
+          family: "lato"
         }
       },
       xaxes: [
@@ -2124,7 +2124,7 @@ function pandoraFlotArea(
         font: {
           size: font_size + 2,
           color: legend_color,
-          family: font + "Font"
+          family: "lato"
         }
       },
       yaxes: [
@@ -2208,7 +2208,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: font + "Font"
+              family: "lato"
             }
           },
           xaxes: [
@@ -2225,7 +2225,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: font + "Font"
+              family: "lato"
             }
           },
           yaxes: [
@@ -2255,7 +2255,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: font + "Font"
+              family: "lato"
             }
           },
           xaxes: [
@@ -2272,7 +2272,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: font + "Font"
+              family: "lato"
             }
           },
           yaxes: [
@@ -2379,7 +2379,7 @@ function pandoraFlotArea(
 
     $("#timestamp_" + graph_id).css("color", "#000");
     $("#timestamp_" + graph_id).css("font-size", font_size + 2 + "px");
-    $("#timestamp_" + graph_id).css("font-family", font + "Font");
+    $("#timestamp_" + graph_id).css("font-family", font);
 
     if (timesize + timenewpos > canvaslimit) {
       $("#timestamp_" + graph_id).css("left", timenewpos - timesize);
@@ -2462,7 +2462,7 @@ function pandoraFlotArea(
         .css("font-size", font_size + 2 + "px");
       $("#legend_" + graph_id + " .legendLabel")
         .eq(i)
-        .css("font-family", font + "Font");
+        .css("font-family", font);
 
       i++;
     }
@@ -2637,10 +2637,7 @@ function pandoraFlotArea(
       "font-size",
       font_size + 2 + "px"
     );
-    $("#legend_" + graph_id + " .legendLabel").css(
-      "font-family",
-      font + "Font"
-    );
+    $("#legend_" + graph_id + " .legendLabel").css("font-family", font);
 
     plot.clearCrosshair();
     overview.clearCrosshair();
@@ -2669,12 +2666,12 @@ function pandoraFlotArea(
     var style =
       "color:" +
       legend_color +
-      "; font-family:" +
-      font +
+      "; font-family: " +
+      "lato" +
       "Font; font-size:" +
       (parseInt(font_size) + 2) +
       "px;";
-    return '<span style="' + style + '">' + legend[v] + "</span>";
+    return '<span style="' + style + '" class="lato">' + legend[v] + "</span>";
   }
 
   $("#overview_" + graph_id).css("display", "none");

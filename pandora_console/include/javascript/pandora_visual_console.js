@@ -76,7 +76,7 @@ function createVisualConsole(
                 "[API]",
                 error.message
               );
-              done();
+              abortable.abort();
               return;
             }
 

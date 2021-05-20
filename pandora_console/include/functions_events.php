@@ -3152,10 +3152,6 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() === true && empty($id_server) === false) {
-        $sql_where .= ' AND server_id = '.$id_server;
-    }
-
     if ($show_summary_group) {
         return events_get_events_grouped(
             $sql_where,
@@ -3169,7 +3165,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() === true && empty($id_server) === false) ? true : false,
+            (is_metaconsole() === true && (int) $id_server === 0) ? true : false,
             $history
         );
     }

@@ -1627,7 +1627,7 @@ function mysql_db_process_sql_update_multiple($table, $values, $only_query)
         }
 
         $query .= sprintf(' ELSE `%s` END', $field);
-        $query .= sprintf(' WHERE `%s` IN (%s)', $field, implode(',', $update));
+        $query .= sprintf(' WHERE `%s` IN (%s)', $field, '"'.implode('","', $update).'"');
 
         if ($only_query === true) {
             $res[] = $query;

@@ -246,6 +246,8 @@ $page = $sec2;
 // Reference variable for old time sake.
 $sec = get_parameter_get('sec');
 $sec = safe_url_extraclean($sec);
+// CSRF Validation.
+$validatedCSRF = validate_csrf_code();
 
 $process_login = false;
 
@@ -319,7 +321,7 @@ if (! isset($config['id_user'])) {
                         // Code.
                         $code = (string) get_parameter_post('auth_code');
 
-                        if (!empty($code)) {
+                        if (empty($code) === false) {
                             $result = validate_double_auth_code($nick, $code);
 
                             if ($result === true) {
@@ -331,7 +333,7 @@ if (! isset($config['id_user'])) {
                                 // Error message.
                                 $config['auth_error'] = __('Invalid code');
 
-                                if (!isset($_SESSION['prepared_login_da']['attempts'])) {
+                                if (isset($_SESSION['prepared_login_da']['attempts']) === false) {
                                     $_SESSION['prepared_login_da']['attempts'] = 0;
                                 }
 
@@ -469,6 +471,18 @@ if (! isset($config['id_user'])) {
                     break;
                 }
             }
+        }
+
+        // CSRF Validation not pass in login.
+        if ($validatedCSRF === false) {
+            $process_error_message = __(
+                '%s cannot verify the origin of the request. Try again, please.',
+                get_product_name()
+            );
+
+            include_once 'general/login_page.php';
+            // Finish the execution.
+            exit('</html>');
         }
 
         if (($nick_in_db !== false) && $expired_pass) {
@@ -747,16 +761,17 @@ if (! isset($config['id_user'])) {
             enterprise_include_once('include/functions_reset_pass.php');
         }
 
-        $correct_pass_change = (boolean) get_parameter('correct_pass_change', 0);
-        $reset = (boolean) get_parameter('reset', 0);
-        $first = (boolean) get_parameter('first', 0);
-        $reset_hash = get_parameter('reset_hash', '');
+        // Boolean parameters.
+        $correct_pass_change = (boolean) get_parameter('correct_pass_change', false);
+        $reset               = (boolean) get_parameter('reset', false);
+        $first               = (boolean) get_parameter('first', false);
+        // Strings.
+        $reset_hash          = get_parameter('reset_hash');
+        $pass1               = get_parameter_post('pass1');
+        $pass2               = get_parameter_post('pass2');
+        $id_user             = get_parameter_post('id_user');
 
-        $pass1 = get_parameter_post('pass1');
-        $pass2 = get_parameter_post('pass2');
-        $id_user = get_parameter_post('id_user');
-
-        if ($reset_hash != '') {
+        if (empty($reset_hash) === false) {
             $hash_data = explode(':::', $reset_hash);
             $id_user = $hash_data[0];
             $codified_hash = $hash_data[1];
@@ -764,45 +779,61 @@ if (! isset($config['id_user'])) {
             $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
         }
 
-        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user) && $db_reset_pass_entry) {
-            delete_reset_pass_entry($id_user);
+        if ($correct_pass_change === true
+            && empty($pass1) === false
+            && empty($pass2) === false
+            && empty($id_user) === false
+            && $db_reset_pass_entry !== false
+        ) {
+            // The CSRF does not be validated.
+            if ($validatedCSRF === false) {
+                $process_error_message = __(
+                    '%s cannot verify the origin of the request. Try again, please.',
+                    get_product_name()
+                );
 
-            $correct_reset_pass_process = '';
-            $process_error_message = '';
+                include_once 'general/login_page.php';
+                // Finish the execution.
+                exit('</html>');
+            } else {
+                delete_reset_pass_entry($id_user);
+                $correct_reset_pass_process = '';
+                $process_error_message = '';
 
-            if ($pass1 == $pass2) {
-                $res = update_user_password($id_user, $pass1);
-                if ($res) {
-                    db_process_sql_insert(
-                        'tsesion',
-                        [
-                            'id_sesion'   => '',
-                            'id_usuario'  => $id_user,
-                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                            'accion'      => 'Reset&#x20;change',
-                            'descripcion' => 'Successful reset password process ',
-                            'fecha'       => date('Y-m-d H:i:s'),
-                            'utimestamp'  => time(),
-                        ]
-                    );
+                if ($pass1 === $pass2) {
+                    $res = update_user_password($id_user, $pass1);
+                    if ($res) {
+                        db_process_sql_insert(
+                            'tsesion',
+                            [
+                                'id_sesion'   => '',
+                                'id_usuario'  => $id_user,
+                                'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                'accion'      => 'Reset&#x20;change',
+                                'descripcion' => 'Successful reset password process ',
+                                'fecha'       => date('Y-m-d H:i:s'),
+                                'utimestamp'  => time(),
+                            ]
+                        );
 
-                    $correct_reset_pass_process = __('Password changed successfully');
+                        $correct_reset_pass_process = __('Password changed successfully');
 
-                    register_pass_change_try($id_user, 1);
+                        register_pass_change_try($id_user, 1);
+                    } else {
+                        register_pass_change_try($id_user, 0);
+
+                        $process_error_message = __('Failed to change password');
+                    }
                 } else {
                     register_pass_change_try($id_user, 0);
 
-                    $process_error_message = __('Failed to change password');
+                    $process_error_message = __('Passwords must be the same');
                 }
-            } else {
-                register_pass_change_try($id_user, 0);
 
-                $process_error_message = __('Passwords must be the same');
+                include_once 'general/login_page.php';
             }
-
-            include_once 'general/login_page.php';
         } else {
-            if ($reset_hash != '') {
+            if (empty($reset_hash) === false) {
                 $process_error_message = '';
 
                 if ($db_reset_pass_entry) {
@@ -819,23 +850,35 @@ if (! isset($config['id_user'])) {
                     include_once 'general/login_page.php';
                 }
             } else {
-                if (!$reset) {
+                if ($reset === false) {
                     include_once 'general/login_page.php';
                 } else {
-                    $user_reset_pass = get_parameter('user_reset_pass', '');
+                    $user_reset_pass = get_parameter('user_reset_pass');
                     $error = '';
                     $mail = '';
                     $show_error = false;
 
-                    if (!$first) {
-                        if ($user_reset_pass == '') {
+                    if ($first === false) {
+                        // The CSRF does not be validated.
+                        if ($validatedCSRF === false) {
+                            $process_error_message = __(
+                                '%s cannot verify the origin of the request. Try again, please.',
+                                get_product_name()
+                            );
+
+                            include_once 'general/login_page.php';
+                            // Finish the execution.
+                            exit('</html>');
+                        }
+
+                        if (empty($user_reset_pass) === true) {
                             $reset = false;
                             $error = __('Id user cannot be empty');
                             $show_error = true;
                         } else {
                             $check_user = check_user_id($user_reset_pass);
 
-                            if (!$check_user) {
+                            if ($check_user === false) {
                                 $reset = false;
                                 register_pass_change_try($user_reset_pass, 0);
                                 $error = __('Error in reset password request');
@@ -868,9 +911,9 @@ if (! isset($config['id_user'])) {
                         $body .= '<p />';
                         $body .= '<em>'.__('Please do not reply to this email.').'</em>';
 
-                        $result = send_email_to_user($mail, $body, $subject);
+                        $result = (bool) send_email_to_user($mail, $body, $subject);
 
-                        if (!$result) {
+                        if ($result === false) {
                             $process_error_message = __('Error at sending the email');
                         } else {
                             send_token_to_db($user_reset_pass, $cod_hash);

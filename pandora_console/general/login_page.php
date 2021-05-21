@@ -334,6 +334,9 @@ if ($config['enterprise_installed']) {
     }
 }
 
+// CSRF validation.
+html_print_csrf_hidden();
+
     echo '</form></div>';
     echo '<div class="login_data">';
         echo '<div class ="text_banner_login">';

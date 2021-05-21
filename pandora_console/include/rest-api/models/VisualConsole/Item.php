@@ -1071,9 +1071,8 @@ class Item extends CachedModel
 
         $mobile_navigation = false;
 
-        if (isset($_SERVER['PHP_SELF']) === true
-            && (strstr($_SERVER['PHP_SELF'], 'mobile/') !== false
-            || strstr($_SERVER['HTTP_REFERER'], 'mobile/') !== false)
+        if (strstr(($_SERVER['PHP_SELF'] ?? ''), 'mobile/') !== false
+            || strstr(($_SERVER['HTTP_REFERER'] ?? ''), 'mobile/') !== false
         ) {
             $mobile_navigation = true;
         }

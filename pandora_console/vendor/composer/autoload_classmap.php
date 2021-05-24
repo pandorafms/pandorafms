@@ -321,6 +321,7 @@ return array(
     'PandoraFMS\\Module' => $baseDir . '/include/lib/Module.php',
     'PandoraFMS\\ModuleStatus' => $baseDir . '/include/lib/ModuleStatus.php',
     'PandoraFMS\\ModuleType' => $baseDir . '/include/lib/ModuleType.php',
+    'PandoraFMS\\PublicLogin' => $baseDir . '/include/lib/PublicLogin.php',
     'PandoraFMS\\User' => $baseDir . '/include/lib/User.php',
     'PandoraFMS\\View' => $baseDir . '/include/lib/View.php',
     'PandoraFMS\\Websockets\\WSManager' => $baseDir . '/include/lib/Websockets/WSManager.php',

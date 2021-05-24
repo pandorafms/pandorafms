@@ -403,6 +403,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'PandoraFMS\\Module' => __DIR__ . '/../..' . '/include/lib/Module.php',
         'PandoraFMS\\ModuleStatus' => __DIR__ . '/../..' . '/include/lib/ModuleStatus.php',
         'PandoraFMS\\ModuleType' => __DIR__ . '/../..' . '/include/lib/ModuleType.php',
+        'PandoraFMS\\PublicLogin' => __DIR__ . '/../..' . '/include/lib/PublicLogin.php',
         'PandoraFMS\\User' => __DIR__ . '/../..' . '/include/lib/User.php',
         'PandoraFMS\\View' => __DIR__ . '/../..' . '/include/lib/View.php',
         'PandoraFMS\\Websockets\\WSManager' => __DIR__ . '/../..' . '/include/lib/Websockets/WSManager.php',

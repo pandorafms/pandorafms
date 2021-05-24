@@ -153,7 +153,7 @@ if (is_ajax()) {
             // Case.
             'lower',
             // NoACL.
-            true,
+            false,
             // ChildGroups.
             $recursion,
             // Serialized.

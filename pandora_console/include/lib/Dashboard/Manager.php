@@ -5,11 +5,12 @@ namespace PandoraFMS\Dashboard;
 
 use PandoraFMS\View;
 use PandoraFMS\Dashboard\Cell;
+use PandoraFMS\PublicLogin;
 
 /**
  * Dashboard manager.
  */
-class Manager
+class Manager implements PublicLogin
 {
 
     /**

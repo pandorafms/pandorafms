@@ -44,7 +44,7 @@ require_once $config['homedir'].'/include/functions_ui.php';
 // Check access.
 check_login();
 
-
+enterprise_include_once('/include/class/CommandCenter.class.php');
 
 $event_a = check_acl($config['id_user'], 0, 'ER');
 $event_w = check_acl($config['id_user'], 0, 'EW');
@@ -940,6 +940,16 @@ if ($pure) {
         }
     </script>
     <?php
+}
+
+if (isset($config['merge_process_events']) === true
+    && empty($config['merge_process_events']) === false
+) {
+    ui_require_javascript_file(
+        'pandora_command_center',
+        ENTERPRISE_DIR.'/include/javascript/'
+    );
+    echo CommandCenterController::displayEventsProgress();
 }
 
 // Error div for ajax messages.

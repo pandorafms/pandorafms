@@ -235,7 +235,7 @@ function pandoraFlotPieCustom(
   if (background_color == "transparent") {
     $(".legend>table").css("background-color", "");
     $(".legend>div").css("background-color", "");
-    $(".legend>table").css("color", "#aaa");
+    $(".legend>table").css("color", "#000");
   } else if (background_color == "white") {
     $(".legend>table").css("background-color", "white");
     $(".legend>table").css("color", "black");
@@ -627,7 +627,9 @@ function pandoraFlotVBars(settings) {
       return ticksformatter[Math.round(v)];
     };
   }
-  font.family = "lato";
+  settings.x.font.family = "lato";
+  settings.y.font.family = "lato";
+
   var options = {
     series: {
       bars: {

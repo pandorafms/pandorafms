@@ -1031,3 +1031,7 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
 .new_task div {
   font-weight: initial;
 }
+
+.flot-base {
+  background-color: #222;
+}

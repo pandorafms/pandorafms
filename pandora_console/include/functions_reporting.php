@@ -4902,7 +4902,7 @@ function reporting_sql_graph(
                 $width,
                 $height,
                 $content['type'],
-                true,
+                $only_image,
                 ui_get_full_url(false, false, false, false),
                 $ttl,
                 $content['top_n_value']

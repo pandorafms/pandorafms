@@ -5910,6 +5910,7 @@ table.table_modal_alternate tr td:first-child {
 
 .bars-graph-rotate .flot-text .flot-x-axis div .break_word {
   word-break: break-word;
+  font-family: "lato" !important;
 }
 
 .flot-text {

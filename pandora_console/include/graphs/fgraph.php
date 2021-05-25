@@ -263,7 +263,7 @@ function vbar_graph(
     if (isset($options['y']['title']['fontFamily']) === false) {
         $options['y']['title']['fontFamily'] = preg_replace(
             '/.ttf/',
-            'Font, Arial',
+            'Font',
             $config['fontpath']
         );
     }

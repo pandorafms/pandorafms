@@ -629,7 +629,7 @@ function pandoraFlotVBars(settings) {
   }
   settings.x.font.family = "lato";
   settings.y.font.family = "lato";
-
+  settings.y.title.fontFamily = "lato";
   var options = {
     series: {
       bars: {
@@ -753,12 +753,14 @@ function pandoraFlotSlicebar(
   }
 
   font_size = parseInt(font_size);
-  if (font != undefined)
-    font = font
-      .split("/")
-      .pop()
-      .split(".")
-      .shift();
+  if (font != undefined) console.log(font);
+  font = font
+    .split("/")
+    .pop()
+    .split(".")
+    .shift();
+  console.log(font);
+
   // Check possible adapt_keys on classes
   check_adaptions(graph_id);
 

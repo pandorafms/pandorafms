@@ -448,7 +448,7 @@ document.writeln(
    'margin:        2px 1px;' +
    'font-weight:   bold;' +
    'font-size:     10pt;' +
-   'font-family:   fixedSys;}' +
+   'font-family:   lato;}' +
    'td.scwWeekNumberHead,' +
    'td.scwWeek                 {padding:       0px;' +
    'text-align:    center;' +
@@ -598,8 +598,8 @@ var scwTargetEle,
 Date.prototype.scwFormat =
    function (scwFormat) {
       var charCount = 0,
-      codeChar = '',
-      result = '';
+         codeChar = '',
+         result = '';
 
       for (var i = 0; i <= scwFormat.length; i++) {
          if (i < scwFormat.length && scwFormat.charAt(i) == codeChar) {// If we haven't hit the end of the string and
@@ -659,7 +659,7 @@ String.prototype.scwPadLeft =
 Function.prototype.runsAfterSCW =
    function () {
       var func = this,
-      args = new Array(arguments.length);
+         args = new Array(arguments.length);
 
       for (var i = 0; i < args.length; ++i) { args[i] = arguments[i]; }
 
@@ -787,9 +787,9 @@ function scwShow(scwEle, scwSourceEle) {
    else {
       function scwInputFormat() {
          var scwArrSeed = new Array(),
-         scwArrInput = scwDateValue.
-            split(new RegExp('[\\' + scwArrDelimiters.
-               join('\\') + ']+', 'g'));
+            scwArrInput = scwDateValue.
+               split(new RegExp('[\\' + scwArrDelimiters.
+                  join('\\') + ']+', 'g'));
 
          // "Escape" all the user defined date delimiters above -
          // several delimiters will need it and it does no harm for
@@ -1177,7 +1177,7 @@ function scwBeginDrag(event) {
 
       if (scwID('scwIframe')) {
          scwID('scwIframe').style.left =
-         (scwEvt.clientX - deltaX) + 'px';
+            (scwEvt.clientX - deltaX) + 'px';
          scwID('scwIframe').style.top =
             (scwEvt.clientY - deltaY) + 'px';
       }
@@ -1356,19 +1356,19 @@ function scwShowMonth(scwBias) {// Set the selectable Month and Year
       function scwSetOutput(scwOutputDate) {
          if (typeof scwTargetEle.value == 'undefined') {
             scwTriggerEle.scwTextNode.
-            replaceData(0, scwTriggerEle.scwLength,
-               scwOutputDate.scwFormat(scwDateOutputFormat));
+               replaceData(0, scwTriggerEle.scwLength,
+                  scwOutputDate.scwFormat(scwDateOutputFormat));
          }
          else {
             scwTargetEle.value =
-            scwOutputDate.scwFormat(scwDateOutputFormat);
+               scwOutputDate.scwFormat(scwDateOutputFormat);
          }
          scwHide();
       }
 
       function scwCellOutput(scwEvt) {
          var scwEle = scwEventTrigger(scwEvt),
-         scwOutputDate = new Date(scwStartDate);
+            scwOutputDate = new Date(scwStartDate);
 
          if (scwEle.nodeType == 3) scwEle = scwEle.parentNode;
 
@@ -1496,7 +1496,7 @@ function scwShowMonth(scwBias) {// Set the selectable Month and Year
                var scwCols = scwRows.childNodes[j];
                if (scwCols.nodeType == 1 && scwCols.tagName == 'TD') {
                   scwRows.childNodes[j].innerHTML =
-                  scwShowDate.getDate();
+                     scwShowDate.getDate();
                   var scwCell = scwRows.childNodes[j],
                      scwDisabled =
                         ((scwOutOfRangeDisable &&
@@ -1604,7 +1604,7 @@ function scwShowMonth(scwBias) {// Set the selectable Month and Year
 
                      if (scwID('scwIFrame')) {
                         scwRows.childNodes[j].onmouseover =
-                        scwChangeClass;
+                           scwChangeClass;
                         scwRows.childNodes[j].onmouseout =
                            scwChangeClass;
                      }

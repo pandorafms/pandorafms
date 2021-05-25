@@ -2,6 +2,10 @@
   display: inline-block;
 }
 
+#rules {
+  display: block;
+}
+
 li#li-buttons-alert-list > div {
   margin-left: 10px;
 }
@@ -131,11 +135,14 @@ div.target {
   width: 100%;
 }
 div.target.flex {
-  display: block;
   border: 2px dashed #ddd;
   margin-left: 0em;
   margin-top: 10px;
   padding: 1em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: fit-content;
 }
 
 .fields,
@@ -188,6 +195,8 @@ div#rules.show {
   font-weight: 600;
   background-color: #333;
   word-break: break-all;
+  height: fit-content;
+  min-height: 2.3em;
 }
 
 .field.opacityElements {
@@ -211,6 +220,11 @@ div#rules.show {
 
 .variable {
   background-color: #82b92e;
+}
+
+.variable:empty::before {
+  content: "empty";
+  font-style: italic;
 }
 
 .modifier {

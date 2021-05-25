@@ -1837,6 +1837,7 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
+    $id_meta = 0;
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
@@ -1928,7 +1929,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        false,
+        $id_meta,
         $filter_event_filter_exclude
     );
 
@@ -2176,10 +2177,6 @@ function reporting_event_report_module(
         );
     }
 
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
-    }
-
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -2241,7 +2238,7 @@ function reporting_event_report_module(
         $return['data'] = array_reverse($data);
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -3242,10 +3239,6 @@ function reporting_event_report_agent(
         );
     }
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
@@ -3292,8 +3285,13 @@ function reporting_event_report_agent(
         $filter_event_type,
         $filter_event_status,
         $filter_event_filter_search,
-        $filter_event_filter_exclude
+        $filter_event_filter_exclude,
+        $id_server
     );
+
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
 
     reporting_set_conf_charts(
         $width,
@@ -9580,12 +9578,21 @@ function reporting_get_module_detailed_event(
  * It construct a table object with all the grouped events happened in an agent
  * during a period of time.
  *
- * @param mixed Agent id(s) to get the report from.
- * @param int Period of time (in seconds) to get the report.
- * @param int Beginning date (unixtime) of the report
- * @param bool Flag to return or echo the report table (echo by default).
+ * @param mixed   $id_agents                   Agent id(s) to get the report from.
+ * @param integer $period                      Period of time (in seconds) to get the report.
+ * @param integer $date                        Beginning date (unixtime) of the report.
+ * @param boolean $return                      Flag to return or echo the report table (echo by default).
+ * @param boolean $only_data                   Only data.
+ * @param boolean $history                     History.
+ * @param boolean $show_summary_group          Show summary group.
+ * @param boolean $filter_event_severity       Filter.
+ * @param boolean $filter_event_type           Filter.
+ * @param boolean $filter_event_status         Filter.
+ * @param boolean $filter_event_filter_search  Filter.
+ * @param boolean $filter_event_filter_exclude Filter.
+ * @param integer $id_server                   Id server.
  *
- * @return A table object (XHTML)
+ * @return array table object (XHTML)
  */
 function reporting_get_agents_detailed_event(
     $id_agents,
@@ -9599,7 +9606,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $filter_event_filter_exclude=false
+    $filter_event_filter_exclude=false,
+    $id_server=0
 ) {
     global $config;
 
@@ -9634,7 +9642,7 @@ function reporting_get_agents_detailed_event(
             false,
             false,
             false,
-            false,
+            $id_server,
             $filter_event_filter_exclude
         );
 

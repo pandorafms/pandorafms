@@ -12818,8 +12818,10 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         $error_msg = '';
         if ($other['data'][2] != '') {
+            // Id agent assignment. If come from pandora_revent, id_agent can be 0.
             $id_agent = $other['data'][2];
-            if (is_metaconsole()) {
+            // To the next if is metaconsole and id_agent is not none.
+            if (is_metaconsole() === true && $id_agent > 0) {
                 // On metaconsole, connect with the node to check the permissions
                 if (empty($values['server_id'])) {
                     $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
@@ -12842,7 +12844,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
             $values['id_agente'] = $id_agent;
 
-            if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AR')) {
+            if ((int) $id_agent > 0 && util_api_check_agent_and_print_error($id_agent, 'string', 'AR') === false) {
                 if (is_metaconsole()) {
                     metaconsole_restore_db();
                 }

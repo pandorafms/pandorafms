@@ -11,4 +11,14 @@ ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field18` TEXT NOT NULL AFTER `al
 ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field19` TEXT NOT NULL AFTER `al_field18`;
 ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field20` TEXT NOT NULL AFTER `al_field19`;
 
+SET @st_oum755 = (SELECT IF(
+    (SELECT COUNT(*) FROM tconfig WHERE token LIKE 'meta_custom_logo' AND value like 'logo_pandora_metaconsola.png') > 0,
+    "UPDATE `tconfig` set value = 'pandoraFMS_metaconsole_full.svg' WHERE token LIKE 'meta_custom_logo'",
+	"SELECT 1"
+));
+
+PREPARE pr_oum755 FROM @st_oum755;
+EXECUTE pr_oum755;
+DEALLOCATE PREPARE pr_oum755;
+
 COMMIT;

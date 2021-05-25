@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
@@ -1836,6 +1837,7 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
+    $id_meta = 0;
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
@@ -1927,7 +1929,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        false,
+        $id_meta,
         $filter_event_filter_exclude
     );
 
@@ -2175,10 +2177,6 @@ function reporting_event_report_module(
         );
     }
 
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
-    }
-
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -2240,7 +2238,7 @@ function reporting_event_report_module(
         $return['data'] = array_reverse($data);
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -3241,10 +3239,6 @@ function reporting_event_report_agent(
         );
     }
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
@@ -3291,8 +3285,13 @@ function reporting_event_report_agent(
         $filter_event_type,
         $filter_event_status,
         $filter_event_filter_search,
-        $filter_event_filter_exclude
+        $filter_event_filter_exclude,
+        $id_server
     );
+
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
 
     reporting_set_conf_charts(
         $width,
@@ -9579,12 +9578,21 @@ function reporting_get_module_detailed_event(
  * It construct a table object with all the grouped events happened in an agent
  * during a period of time.
  *
- * @param mixed Agent id(s) to get the report from.
- * @param int Period of time (in seconds) to get the report.
- * @param int Beginning date (unixtime) of the report
- * @param bool Flag to return or echo the report table (echo by default).
+ * @param mixed   $id_agents                   Agent id(s) to get the report from.
+ * @param integer $period                      Period of time (in seconds) to get the report.
+ * @param integer $date                        Beginning date (unixtime) of the report.
+ * @param boolean $return                      Flag to return or echo the report table (echo by default).
+ * @param boolean $only_data                   Only data.
+ * @param boolean $history                     History.
+ * @param boolean $show_summary_group          Show summary group.
+ * @param boolean $filter_event_severity       Filter.
+ * @param boolean $filter_event_type           Filter.
+ * @param boolean $filter_event_status         Filter.
+ * @param boolean $filter_event_filter_search  Filter.
+ * @param boolean $filter_event_filter_exclude Filter.
+ * @param integer $id_server                   Id server.
  *
- * @return A table object (XHTML)
+ * @return array table object (XHTML)
  */
 function reporting_get_agents_detailed_event(
     $id_agents,
@@ -9598,7 +9606,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $filter_event_filter_exclude=false
+    $filter_event_filter_exclude=false,
+    $id_server=0
 ) {
     global $config;
 
@@ -9633,7 +9642,7 @@ function reporting_get_agents_detailed_event(
             false,
             false,
             false,
-            false,
+            $id_server,
             $filter_event_filter_exclude
         );
 
@@ -13947,4 +13956,70 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Email template for sending reports.
+ *
+ * @param string $subjectEmail Subject of email.
+ * @param string $bodyEmail    Body of email.
+ * @param string $scheduled    Id of schedule report.
+ * @param string $reportName   Report name.
+ * @param string $email        Serialized list of destination emails.
+ * @param array  $attachments  Attachments.
+ *
+ * @return void
+ */
+function reporting_email_template(
+    string $subjectEmail='',
+    string $bodyEmail='',
+    string $scheduled='',
+    string $reportName='',
+    string $email='',
+    array $attachments=null
+) {
+    // Subject.
+    $subject = (empty($subjectEmail) === true) ? '[Pandora] '.__('Reports') : $subjectEmail;
+    // Body.
+    if (empty($bodyEmail) === true) {
+        $body = __('Greetings').',';
+        $body .= '<p />';
+        $body .= __('Attached to this email there\'s a PDF file of the').' ';
+        $body .= $scheduled.' '.__('report');
+        $body .= ' <strong>"'.$reportName.'"</strong>';
+        $body .= '<p />';
+        $body .= __('Generated at').' '.date('Y/m/d H:i:s');
+        $body .= '<p />';
+        $body .= __('Thanks for your time.');
+        $body .= '<p />';
+        $body .= __('Best regards, Pandora FMS');
+        $body .= '<p />';
+        $body .= '<em>'.__('This is an automatically generated email from Pandora FMS, please do not reply.').'</em>';
+    } else {
+        $bodyEmail = str_replace(
+            [
+                "\r\n",
+                "\r",
+                '&#x0d;&#x0a;',
+            ],
+            "\n",
+            $bodyEmail
+        );
+
+        $body = '<p>'.implode("</p>\n<p>", explode("\n", $bodyEmail)).'</p>';
+    }
+
+    // Extract list of emails.
+    $destinationEmails = explode(',', io_safe_output($email));
+    foreach ($destinationEmails as $destination) {
+        $destination = trim($destination);
+
+        // Skip the empty 'to'.
+        if (empty($destination) === false) {
+            send_email_attachment($destination, $body, $subject, $attachments);
+        } else {
+            db_pandora_audit('ERROR:', 'Cron jobs mail, empty destination email.');
+        }
+    }
 }

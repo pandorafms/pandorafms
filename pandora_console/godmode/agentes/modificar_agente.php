@@ -771,9 +771,9 @@ if ($agents !== false) {
 
         if ($in_planned_downtime) {
             ui_print_help_tip(
-                __('Agent in planned downtime'),
+                __('Agent in scheduled downtime'),
                 false,
-                $config['image']['minireloj_16']
+                'images/minireloj-16.png'
             );
 
             echo '</em>';

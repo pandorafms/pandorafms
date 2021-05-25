@@ -590,3 +590,32 @@ function io_output_password($password)
 
     return io_safe_output($plaintext);
 }
+
+
+/**
+ * Clean html tags symbols for prevent use JS
+ *
+ * @param string $string String for safe.
+ *
+ * @return string
+ */
+function io_safe_html_tags(string $string)
+{
+    // Must have safe output for work properly.
+    $string = io_safe_output($string);
+    if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+        $output = strstr($string, '<', true);
+        $tmpOutput = strstr($string, '<');
+        $output .= strstr(substr($tmpOutput, 1), '>', true);
+        $tmpOutput = strstr($string, '>');
+        $output .= substr($tmpOutput, 1);
+        // If the string still contains tags symbols.
+        if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+            $output = io_safe_html_tags($output);
+        }
+    } else {
+        $output = $string;
+    }
+
+    return $output;
+}

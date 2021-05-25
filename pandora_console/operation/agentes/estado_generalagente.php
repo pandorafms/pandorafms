@@ -137,7 +137,7 @@ if ($agent['disabled']) {
 
 if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     $agent_name .= '<em>&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';
@@ -145,7 +145,7 @@ if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     || ($in_planned_downtime && !$agent['quiet'])
 ) {
     $agent_name .= '&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';

@@ -701,7 +701,7 @@ if (!empty($table->data)) {
         );
     }
 
-    echo '<div id="alerts_list w100p">';
+    echo '<div id="alerts_list" class="w100p">';
     html_print_table($table);
     echo '</div>';
 

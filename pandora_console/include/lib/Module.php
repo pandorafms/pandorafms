@@ -706,6 +706,13 @@ class Module extends Entity
         $updates = $this->fields;
         $updates['id_tipo_modulo'] = $this->moduleType()->id_tipo();
 
+        // In the case of the webserver modules, debug_content special characters must be handled.
+        if ($updates['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
+            && $updates['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING
+        ) {
+            $updates['debug_content'] = io_safe_input($updates['debug_content']);
+        }
+
         if ($this->fields['id_agente_modulo'] > 0) {
             // Update.
             $rs = \db_process_sql_update(

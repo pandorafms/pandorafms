@@ -469,4 +469,3 @@ if (is_central_policies_on_node() === false) {
 }
 
 enterprise_hook('close_meta_frame');
-?>

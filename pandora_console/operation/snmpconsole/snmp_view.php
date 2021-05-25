@@ -133,10 +133,10 @@ if ($config['pure']) {
 
 
 // OPERATIONS
-// Delete SNMP Trap entry Event (only incident management access).
+// Delete SNMP Trap entry Event.
 if (isset($_GET['delete'])) {
     $id_trap = (int) get_parameter_get('delete', 0);
-    if ($id_trap > 0 && check_acl($config['id_user'], 0, 'IM')) {
+    if ($id_trap > 0) {
         if ($group_by) {
             $sql_ids_traps = 'SELECT id_trap, source FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = '.$id_trap.')
 			AND source IN (SELECT source FROM ttrap WHERE id_trap = '.$id_trap.')';
@@ -156,42 +156,30 @@ if (isset($_GET['delete'])) {
                 __('Could not be deleted')
             );
         }
-    } else {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to delete SNMP event ID #'.$id_trap
-        );
     }
 }
 
-// Check Event (only incident write access).
+// Check Event.
 if (isset($_GET['check'])) {
     $id_trap = (int) get_parameter_get('check', 0);
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $values = [
-            'status'     => 1,
-            'id_usuario' => $config['id_user'],
-        ];
-        $result = db_process_sql_update('ttrap', $values, ['id_trap' => $id_trap]);
-        enterprise_hook('snmp_update_forwarded_modules', [$id_trap]);
+    $values = [
+        'status'     => 1,
+        'id_usuario' => $config['id_user'],
+    ];
+    $result = db_process_sql_update('ttrap', $values, ['id_trap' => $id_trap]);
+    enterprise_hook('snmp_update_forwarded_modules', [$id_trap]);
 
-        ui_print_result_message(
-            $result,
-            __('Successfully updated'),
-            __('Could not be updated')
-        );
-    } else {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to checkout SNMP Trap ID'.$id_trap
-        );
-    }
+    ui_print_result_message(
+        $result,
+        __('Successfully updated'),
+        __('Could not be updated')
+    );
 }
 
 // Mass-process DELETE.
 if (isset($_POST['deletebt'])) {
     $trap_ids = get_parameter_post('snmptrapid', []);
-    if (is_array($trap_ids) && check_acl($config['id_user'], 0, 'IW')) {
+    if (is_array($trap_ids)) {
         if ($group_by) {
             foreach ($trap_ids as $key => $value) {
                 $sql_ids_traps = 'SELECT id_trap, source FROM ttrap WHERE oid IN (SELECT oid FROM ttrap WHERE id_trap = '.$value.')
@@ -210,28 +198,18 @@ if (isset($_POST['deletebt'])) {
                 enterprise_hook('snmp_update_forwarded_modules', [$forward_info]);
             }
         }
-    } else {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to mass-delete SNMP Trap ID'
-        );
     }
 }
 
 // Mass-process UPDATE.
 if (isset($_POST['updatebt'])) {
     $trap_ids = get_parameter_post('snmptrapid', []);
-    if (is_array($trap_ids) && check_acl($config['id_user'], 0, 'IW')) {
+    if (is_array($trap_ids)) {
         foreach ($trap_ids as $id_trap) {
             $sql = sprintf("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config['id_user'], $id_trap);
             db_process_sql($sql);
             enterprise_hook('snmp_update_forwarded_modules', [$id_trap]);
         }
-    } else {
-        db_pandora_audit(
-            'ACL Violation',
-            'Trying to mass-delete SNMP Trap ID'
-        );
     }
 }
 
@@ -1045,7 +1023,7 @@ if ($traps !== false) {
         // Actions.
         $data[8] = '';
 
-        if (empty($trap['status']) && check_acl($config['id_user'], 0, 'IW')) {
+        if (empty($trap['status'])) {
             $data[8] .= '<a href="'.$urlPagination.'&check='.$trap['id_trap'].'">'.html_print_image('images/ok.png', true, ['border' => '0', 'title' => __('Validate')]).'</a> ';
         }
 
@@ -1065,17 +1043,15 @@ if ($traps !== false) {
         } else {
             $agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
 
-            if ((check_acl($config['id_user'], $agent_trap_group, 'IM'))) {
-                $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
-                    'images/cross.png',
-                    true,
-                    [
-                        'border' => '0',
-                        'title'  => __('Delete'),
-                        'class'  => 'invert_filter',
-                    ]
-                ).'</a> ';
-            }
+            $data[8] .= '<a href="'.$urlPagination.'&delete='.$trap['id_trap'].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                'images/cross.png',
+                true,
+                [
+                    'border' => '0',
+                    'title'  => __('Delete'),
+                    'class'  => 'invert_filter',
+                ]
+            ).'</a> ';
         }
 
         $data[8] .= '<a href="javascript: toggleVisibleExtendedInfo('.$trap['id_trap'].');">'.html_print_image(
@@ -1237,14 +1213,11 @@ if ($idx == 0) {
 unset($table);
 
 echo '<div class="w98p right">';
-if (check_acl($config['id_user'], 0, 'IW')) {
-    html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
-}
 
-if (check_acl($config['id_user'], 0, 'IM')) {
-    echo '&nbsp;';
-    html_print_submit_button(__('Delete'), 'deletebt', false, 'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"');
-}
+html_print_submit_button(__('Validate'), 'updatebt', false, 'class="sub ok"');
+
+echo '&nbsp;';
+html_print_submit_button(__('Delete'), 'deletebt', false, 'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"');
 
 echo '</div></form>';
 

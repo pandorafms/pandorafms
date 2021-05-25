@@ -94,7 +94,7 @@ is not working on the metaconsole and there is no time to fix it -->
     var mr_available_header = "<?php echo __('There are db changes'); ?>\n";
     var text1_mr_file = "<?php echo __('There are new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
     var text2_mr_file = "<?php echo __('We recommend launching '); ?>\n";
-    var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
+    var text3_mr_file = "<?php echo __('Scheduled downtime'); ?>\n";
 
     var language = "<?php echo $config['language']; ?>";
     var docsUrl = (language === "es")

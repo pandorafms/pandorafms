@@ -834,9 +834,9 @@ foreach ($agents as $agent) {
 
     if ($in_planned_downtime) {
         $data[0] .= ui_print_help_tip(
-            __('Agent in planned downtime'),
+            __('Agent in scheduled downtime'),
             true,
-            $config['image']['minireloj_16']
+            'images/minireloj-16.png'
         );
         $data[0] .= '</em>';
     }

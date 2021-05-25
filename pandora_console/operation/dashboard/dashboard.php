@@ -70,6 +70,14 @@ if (is_ajax() === true) {
         }
     }
 } else {
+    if ((bool) is_metaconsole() === true) {
+        echo '<div class="meta_container_dashboard">';
+    }
+
     // Run.
     $cs->run();
+
+    if ((bool) is_metaconsole() === true) {
+        echo '</div>';
+    }
 }

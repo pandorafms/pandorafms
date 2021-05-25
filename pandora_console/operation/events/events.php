@@ -949,7 +949,9 @@ if (isset($config['merge_process_events']) === true
         'pandora_command_center',
         ENTERPRISE_DIR.'/include/javascript/'
     );
+    echo '<div class="view_events_merge_process_events">';
     echo CommandCenterController::displayEventsProgress();
+    echo '</div>';
 }
 
 // Error div for ajax messages.

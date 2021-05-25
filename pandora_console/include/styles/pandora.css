@@ -8506,3 +8506,23 @@ div.stat-win-spinner img {
   width: 100px !important;
   margin-left: 20px;
 }
+
+div.view_events_merge_process_events {
+  margin-bottom: 20px;
+}
+
+div.view_events_merge_process_events div.merge_process_events_title {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+
+div.view_events_merge_process_events div.merge_process_events_title img {
+  margin-left: 10px;
+  margin-top: 2px;
+}
+
+div.view_events_merge_process_events .merge_process_events_item {
+  height: 10px;
+}

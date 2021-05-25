@@ -1035,3 +1035,16 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
 .flot-base {
   background-color: #222;
 }
+li > input[type="number"],
+li > input[type="text"]:not(.search_input),
+li > input[type="email"],
+li > input[type="password"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-weight: inherit;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}

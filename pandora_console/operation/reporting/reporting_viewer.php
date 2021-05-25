@@ -125,7 +125,7 @@ if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
 $options['view'] = [
     'active' => true,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View report'),

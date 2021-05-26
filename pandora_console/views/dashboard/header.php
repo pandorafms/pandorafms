@@ -189,7 +189,7 @@ $combo_dashboard['text'] .= html_print_select(
     true,
     false,
     true,
-    '',
+    'select-dashboard-width',
     false,
     ''
 );

@@ -7612,6 +7612,305 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
 
 
 /**
+ * Edit planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_edit&apipass=1234&user=admin&pass=pandora&id=2&other=testing2|test2|2021/05/10|2021/06/12|19:03:03|19:55:00|0|0|0|0|0|0|0|0|1|31|quiet|once|weekly&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The second index contains a list of module names.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_edit($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    $values = [];
+    if (!empty($other['data'][0])) {
+        $values['name'] = io_safe_input($other['data'][0]);
+    }
+
+    if (!empty($other['data'][1])) {
+        $values['description'] = io_safe_input($other['data'][1]);
+    }
+
+    if (!empty($other['data'][2]) && !empty($other['data'][4])) {
+        $date_from = strtotime(html_entity_decode($other['data'][2].' '.$other['data'][4]));
+        $values['date_from'] = io_safe_input($date_from);
+    }
+
+    if (!empty($other['data'][4])) {
+        $values['periodically_time_from'] = io_safe_input($other['data'][4]);
+    }
+
+    if (!empty($other['data'][3]) && !empty($other['data'][5])) {
+        $date_to = strtotime(html_entity_decode($other['data'][3].' '.$other['data'][5]));
+        $values['date_to'] = io_safe_input($date_to);
+    }
+
+    if (!empty($other['data'][5])) {
+        $values['periodically_time_to'] = io_safe_input($other['data'][5]);
+    }
+
+    if ($other['data'][6] != '') {
+        $values['id_group'] = io_safe_input($other['data'][6]);
+    }
+
+    if ($other['data'][7] != '') {
+        $values['monday'] = io_safe_input($other['data'][7]);
+    }
+
+    if ($other['data'][8] != '') {
+        $values['tuesday'] = io_safe_input($other['data'][8]);
+    }
+
+    if ($other['data'][9] != '') {
+        $values['wednesday'] = io_safe_input($other['data'][9]);
+    }
+
+    if ($other['data'][10] != '') {
+        $values['thursday'] = io_safe_input($other['data'][10]);
+    }
+
+    if ($other['data'][11] != '') {
+        $values['friday'] = io_safe_input($other['data'][11]);
+    }
+
+    if ($other['data'][12] != '') {
+        $values['saturday'] = io_safe_input($other['data'][12]);
+    }
+
+    if ($other['data'][13] != '') {
+        $values['sunday'] = io_safe_input($other['data'][13]);
+    }
+
+    if (!empty($other['data'][14])) {
+        $values['periodically_day_from'] = io_safe_input($other['data'][14]);
+    }
+
+    if (!empty($other['data'][15])) {
+        $values['periodically_day_to'] = io_safe_input($other['data'][15]);
+    }
+
+    if (!empty($other['data'][16])) {
+        $values['type_downtime'] = io_safe_input($other['data'][16]);
+    }
+
+    if (!empty($other['data'][17])) {
+        $values['type_execution'] = io_safe_input($other['data'][17]);
+    }
+
+    if (!empty($other['data'][18])) {
+        $values['type_periodicity'] = io_safe_input($other['data'][18]);
+    }
+
+    $res = db_process_sql_update('tplanned_downtime', $values, ['id' => $id]);
+
+    if ($res === false) {
+        returnError('Planned downtime could not be updated');
+    } else {
+        returnData(
+            'string',
+            [
+                'type' => 'string',
+                'data' => __('Planned downtime updated'),
+            ]
+        );
+    }
+}
+
+
+/**
+ * Delete agents in planned Downtime.
+ * e.g.: pi.php?op=set&op2=planned_downtimes_delete_agents&apipass=1234&user=admin&pass=pandora&id=4&other=1;2;3&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    if (!empty($other['data'][0])) {
+        $agents = io_safe_input($other['data']);
+        $agents = explode(';', $agents);
+        $results = false;
+        foreach ($agents as $agent) {
+            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
+                $result = db_process_sql_delete('tplanned_downtime_agents', ['id_agent' => $agent]);
+                db_process_sql_delete('tplanned_downtime_modules', ['id_agent' => $agent]);
+
+                if ($result == false) {
+                    returnError(" Agent $agent could not be deleted.");
+                } else {
+                    $results = true;
+                }
+            } else {
+                returnError(" Agent $agent is not in planned downtime.");
+            }
+        }
+
+        if ($results) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __(' Agents deleted'),
+                ]
+            );
+        }
+    }
+}
+
+
+/**
+ * Add agents planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_add_agents&apipass=1234&user=admin&pass=pandora&id=4&other=1;2;3&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    if (!empty($other['data'][0])) {
+        $agents = io_safe_input($other['data']);
+        $agents = explode(';', $agents);
+        $results = false;
+        foreach ($agents as $agent) {
+            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
+                $res = db_process_sql_insert(
+                    'tplanned_downtime_agents',
+                    [
+                        'id_agent'          => $agent,
+                        'id_downtime'       => $id,
+                        'all_modules'       => 0,
+                        'manually_disabled' => 0,
+                    ]
+                );
+                if ($res) {
+                    $results = true;
+                }
+            } else {
+                returnError(" Agent $agent is already at the planned downtime.");
+            }
+        }
+
+        if ($results) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __(' Agents added'),
+                ]
+            );
+        }
+    }
+}
+
+
+/**
  * Update data module in policy. And return id from new module.
  *
  * @param string            $id    Id of the target policy module.

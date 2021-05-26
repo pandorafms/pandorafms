@@ -1,5 +1,5 @@
 div#page {
-  width: 90% !important;
+  width: auto;
   margin: 0 auto;
 }
 
@@ -21,4 +21,12 @@ div#page {
   position: absolute;
   right: 50px;
   top: 20px;
+}
+
+.select-dashboard-width {
+  width: 110%;
+}
+
+#menu_tab li.nomn form#form-select-dashboard {
+  margin-top: 0px !important;
 }

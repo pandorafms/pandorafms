@@ -1951,6 +1951,10 @@ class AgentWizard extends HTML
                     || $candidate['execution_type'] === EXECUTION_TYPE_NETWORK
                 ) {
                     if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                        if (substr($candidate['value'], 0, 1) !== '.') {
+                            $candidate['value'] = '.'.$candidate['value'];
+                        }
+
                         $tmp->module_interval(300);
                         $tmp->id_modulo(MODULE_DATA);
                         $tmp->updateConfigurationData(

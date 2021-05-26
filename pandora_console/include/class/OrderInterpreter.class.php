@@ -424,7 +424,7 @@ class OrderInterpreter extends Wizard
             }
 
             if ($iterator === 0) {
-                echo __('No results found');
+                echo __('Press enter to search');
             }
 
             echo '</div>';

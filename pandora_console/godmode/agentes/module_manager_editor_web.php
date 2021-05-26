@@ -108,7 +108,8 @@ if ((bool) $adopt === false) {
         65,
         $plugin_parameter,
         $disabledTextBecauseInPolicy,
-        true
+        true,
+        'resizev'
     );
 } else {
     $data[1] = html_print_textarea(

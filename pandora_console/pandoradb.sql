@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,5) default NULL,
+	`datos` double(50,5) default NULL,
 	`utimestamp` bigint(20) default '0',
 	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,5) default NULL,
+	`datos` double(50,5) default NULL,
 	`utimestamp` int(20) unsigned default '0',
 	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -681,7 +681,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3275,7 +3275,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3328,7 +3328,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),

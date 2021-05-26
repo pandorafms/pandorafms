@@ -2086,7 +2086,7 @@ class AgentWizard extends HTML
                         $tmp->id_modulo(MODULE_PLUGIN);
 
                         if ($this->wizardSection === 'snmp_interfaces_explorer'
-                            && empty($candidate['macros']) === true
+                            && empty($candidate['macros']) === false
                         ) {
                             // Use definition provided.
                             $tmp->id_plugin($candidate['id_plugin']);

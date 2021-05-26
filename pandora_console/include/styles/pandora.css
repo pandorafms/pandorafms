@@ -8523,6 +8523,17 @@ div.view_events_merge_process_events div.merge_process_events_title img {
   margin-top: 2px;
 }
 
-div.view_events_merge_process_events .merge_process_events_item {
+div.view_events_merge_process_events div.merge_process_events {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+div.view_events_merge_process_events
+  div.merge_process_events
+  div.merge_process_events_item {
+  width: 85%;
   height: 10px;
+  margin: 5px 0px;
 }

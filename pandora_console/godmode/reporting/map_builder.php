@@ -118,7 +118,7 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
 
 if ($is_metaconsole === false) {
     ui_print_standard_header(
-        __('Visual Favourite List'),
+        __('Visual Console List'),
         'images/op_reporting.png',
         false,
         '',

@@ -488,7 +488,7 @@ class AgentsAlerts extends HTML
 
         $nagents = count(agents_get_agents($filter_count));
 
-        if ($agents == false) {
+        if ($agents === false || empty($agents_with_alerts) === true) {
             ui_print_info_message(
                 [
                     'no_close' => true,

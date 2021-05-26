@@ -736,7 +736,7 @@ if ($not_condition !== '') {
                 'value'   => 'NOT',
             ]
         );
-        $table->data[3][1] .= __('Not condition').ui_print_help_tip(__('If this option is checked, those that do not meet any of the conditions will be displayed.'), true);
+        $table->data[3][1] .= __('Not condition').ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
         $table->data[3][1] .= '</div>';
 
         $table_custom_fields = new stdClass();

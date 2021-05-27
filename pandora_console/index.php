@@ -1124,8 +1124,8 @@ if ($searchPage) {
             include 'general/noaccess.php';
         } else {
             $sec = $main_sec;
-            if (file_exists($page)) {
-                if (! extensions_is_extension($page)) {
+            if (file_exists($page) === true) {
+                if (extensions_is_extension($page) === false) {
                     include_once $page;
                 } else {
                     if ($sec[0] == 'g') {
@@ -1141,7 +1141,7 @@ if ($searchPage) {
     } else {
         // Home screen chosen by the user.
         $home_page = '';
-        if (isset($config['id_user'])) {
+        if (isset($config['id_user']) === true) {
             $user_info = users_get_user_by_id($config['id_user']);
             $home_page = io_safe_output($user_info['section']);
             $home_url = $user_info['data_section'];
@@ -1175,7 +1175,8 @@ if ($searchPage) {
                 break;
 
                 case 'Dashboard':
-                    $str = 'sec=reporting&sec2=operation/dashboard/dashboard&dashboardId='.$home_url.'&d_from_main_page=1';
+                    $_GET['specialSec2'] = sprintf('operation/dashboard/dashboard&dashboardId=%s', $home_url);
+                    $str = sprintf('sec=reporting&sec2=%s&d_from_main_page=1', $_GET['specialSec2']);
                     parse_str($str, $res);
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
@@ -1211,7 +1212,7 @@ if ($searchPage) {
                 break;
             }
 
-            if (isset($_GET['sec2'])) {
+            if (isset($_GET['sec2']) === true) {
                 $file = $_GET['sec2'].'.php';
                 // Make file path absolute to prevent accessing remote files.
                 $file = __DIR__.'/'.$file;
@@ -1220,7 +1221,7 @@ if ($searchPage) {
                 $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
 
                 // Third condition is aimed to prevent from traversal attack.
-                if (!file_exists($file)
+                if (file_exists($file) === false
                     || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
                         [

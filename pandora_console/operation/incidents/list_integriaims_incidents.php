@@ -275,7 +275,7 @@ foreach ($incidents_paginated as $key => $value) {
 
     $table->data[$i][0] = '#'.$array_get_incidents[$key][0];
     $table->data[$i][1] = '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
-    $table->data[$i][1] .= $array_get_incidents[$key][3];
+    $table->data[$i][1] .= ui_print_truncate_text($array_get_incidents[$key][3], 160, false);
     $table->data[$i][1] .= '</a>';
     $table->data[$i][2] = $group_incident[$array_get_incidents[$key][8]];
     $table->data[$i][3] = $status_incident[$array_get_incidents[$key][6]].' / '.$resolution_incident[$array_get_incidents[$key][12]];

@@ -1048,3 +1048,12 @@ li > input[type="password"] {
   box-sizing: border-box;
   margin-bottom: 4px;
 }
+
+a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+input.search_input {
+  background-image: url("../../images/input_zoom.disabled.png");
+}

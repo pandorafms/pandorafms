@@ -279,8 +279,10 @@ class Tree
 
     protected function getTagJoin()
     {
-        return 'INNER JOIN ttag_module ttm
-			ON tam.id_agente_modulo = ttm.id_agente_modulo';
+        return 'INNER JOIN tagente_modulo tam 
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN ttag_module ttm
+			        ON tam.id_agente_modulo = ttm.id_agente_modulo';
     }
 
 
@@ -931,11 +933,16 @@ class Tree
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
         $module_status_inner = '';
-        $module_status_filter = $this->getModuleStatusFilterFromTestado();
-        if (!empty($module_status_filter)) {
-            $module_status_inner = '
-				INNER JOIN tagente_estado tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo';
+        $module_search_inner = '';
+        $module_search_filter = '';
+        if (!empty($this->filter['searchModule'])) {
+            $module_search_inner = '
+                INNER JOIN tagente_modulo tam
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo';
+            $module_search_filter = "AND tam.disabled = 0
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM
@@ -944,13 +951,11 @@ class Tree
 					FROM tagente ta
 					LEFT JOIN tagent_secondary_group tasg
 						ON ta.id_agente = tasg.id_agent
-					INNER JOIN tagente_modulo tam
-						ON ta.id_agente = tam.id_agente
 					$inner_inside
 					$module_status_inner
 					$group_inner
+                    $module_search_inner
 					WHERE ta.disabled = 0
-						AND tam.disabled = 0
 						%s
 						$agent_search_filter
 						$agent_status_filter
@@ -973,6 +978,7 @@ class Tree
 			$inner
 			GROUP BY g
 			ORDER BY $order_by_final";
+            hd($sql, true);
         return $sql;
     }
 
@@ -1020,7 +1026,7 @@ class Tree
         $agent_search_filter = $this->getAgentSearchFilter();
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
-        $module_status_filter = $this->getModuleStatusFilterFromTestado($this->filter['statusModule']);
+        $module_status_filter = $this->getModuleStatusFilter();
 
         $condition = $this->L2condition;
         $condition_inside = $this->L2conditionInside;

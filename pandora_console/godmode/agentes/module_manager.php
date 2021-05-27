@@ -1,22 +1,38 @@
 <?php
+/**
+ * Module Manager main script.
+ *
+ * @category   Module
+ * @package    Pandora FMS
+ * @subpackage Agent Configuration
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack
-if (isset($id_agente)) {
-    $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-} else {
-    $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module';
-}
+// You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack.
+$url_id_agente = (isset($id_agente) === true) ? '&id_agente='.$id_agente : '';
+
+$url = sprintf(
+    'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module%s',
+    $url_id_agente
+);
 
 enterprise_include('godmode/agentes/module_manager.php');
 $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
@@ -56,7 +72,7 @@ echo __('Search').' '.html_print_input_text(
 );
 html_print_input_hidden('search', 1);
 // Search string filter form.
-if (($policy_page) || (isset($agent))) {
+if (($policy_page !== false) || (isset($agent) === true)) {
     echo '<form id="" method="post" action="">';
 } else {
     echo '<form id="create_module_type" method="post" action="'.$url.'">';
@@ -73,25 +89,31 @@ echo '</form>';
 $network_available = db_get_sql(
     'SELECT count(*)
 	FROM tserver
-	WHERE server_type = 1'
+	WHERE server_type = '.SERVER_TYPE_NETWORK
 );
 // POSTGRESQL AND ORACLE COMPATIBLE.
 $wmi_available = db_get_sql(
     'SELECT count(*)
 	FROM tserver
-	WHERE server_type = 6'
+	WHERE server_type = '.SERVER_TYPE_WMI
 );
 // POSTGRESQL AND ORACLE COMPATIBLE.
 $plugin_available = db_get_sql(
     'SELECT count(*)
 	FROM tserver
-	WHERE server_type = 4'
+	WHERE server_type = '.SERVER_TYPE_PLUGIN
 );
 // POSTGRESQL AND ORACLE COMPATIBLE.
 $prediction_available = db_get_sql(
     'SELECT count(*)
 	FROM tserver
-	WHERE server_type = 5'
+	WHERE server_type = '.SERVER_TYPE_PREDICTION
+);
+// POSTGRESQL AND ORACLE COMPATIBLE.
+$web_available = db_get_sql(
+    'SELECT count(*)
+FROM tserver
+WHERE server_type = '.SERVER_TYPE_WEB
 );
 // POSTGRESQL AND ORACLE COMPATIBLE.
 // Development mode to use all servers.
@@ -120,6 +142,10 @@ if ($wmi_available) {
 
 if ($prediction_available) {
     $modules['predictionserver'] = __('Create a new prediction server module');
+}
+
+if ($web_available) {
+    $modules['webserver'] = __('Create a new web Server module');
 }
 
 if (enterprise_installed()) {
@@ -298,6 +324,7 @@ if ($module_action === 'delete') {
         switch ($config['dbtype']) {
             case 'mysql':
             case 'postgresql':
+            default:
                 $result = db_process_sql_delete(
                     'tagente_estado',
                     ['id_agente_modulo' => $id_agent_module_del]
@@ -388,10 +415,8 @@ if ($module_action === 'delete') {
             }
         }
 
-
         // Check for errors.
-        if ($error != 0) {
-        } else {
+        if ((int) $error == 0) {
             $count_correct_delete_modules++;
         }
     }
@@ -489,6 +514,7 @@ switch ($sortField) {
                 switch ($config['dbtype']) {
                     case 'mysql':
                     case 'postgresql':
+                    default:
                         $order[] = [
                             'field' => 'tagente_modulo.nombre',
                             'order' => 'ASC',
@@ -509,6 +535,7 @@ switch ($sortField) {
                 switch ($config['dbtype']) {
                     case 'mysql':
                     case 'postgresql':
+                    default:
                         $order[] = [
                             'field' => 'tagente_modulo.nombre',
                             'order' => 'DESC',
@@ -522,6 +549,10 @@ switch ($sortField) {
                         ];
                     break;
                 }
+            break;
+
+            default:
+                // Do none.
             break;
         }
     break;
@@ -543,6 +574,10 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+                // Do none.
+            break;
         }
     break;
 
@@ -562,6 +597,10 @@ switch ($sortField) {
                     'field' => 'id_tipo_modulo',
                     'order' => 'DESC',
                 ];
+            break;
+
+            default:
+                // Do none.
             break;
         }
     break;
@@ -583,6 +622,10 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+                // Do none.
+            break;
         }
     break;
 
@@ -598,6 +641,7 @@ switch ($sortField) {
         switch ($config['dbtype']) {
             case 'mysql':
             case 'postgresql':
+            default:
                 $order[] = [
                     'field' => 'nombre',
                     'order' => 'ASC',
@@ -622,7 +666,7 @@ if (!empty($order)) {
 
 $first = true;
 foreach ($order as $ord) {
-    if ($first) {
+    if ($first === true) {
         $first = false;
     } else {
         $order_sql .= ',';
@@ -635,31 +679,35 @@ foreach ($order as $ord) {
 $limit = (int) $config['block_size'];
 $offset = (int) get_parameter('offset');
 
-$params = ($checked) ? 'tagente_modulo.*, tmodule_group.*' : implode(
-    ',',
-    [
-        'tagente_modulo.id_agente_modulo',
-        'id_tipo_modulo',
-        'descripcion',
-        'nombre',
-        'max',
-        'min',
-        'module_interval',
-        'id_modulo',
-        'id_module_group',
-        'disabled',
-        'max_warning',
-        'min_warning',
-        'str_warning',
-        'max_critical',
-        'min_critical',
-        'str_critical',
-        'quiet',
-        'critical_inverse',
-        'warning_inverse',
-        'id_policy_module',
-    ]
-);
+if ((bool) $checked === true) {
+    $params = 'tagente_modulo.*, tmodule_group.*';
+} else {
+    $params = implode(
+        ',',
+        [
+            'tagente_modulo.id_agente_modulo',
+            'id_tipo_modulo',
+            'descripcion',
+            'nombre',
+            'max',
+            'min',
+            'module_interval',
+            'id_modulo',
+            'id_module_group',
+            'disabled',
+            'max_warning',
+            'min_warning',
+            'str_warning',
+            'max_critical',
+            'min_critical',
+            'str_critical',
+            'quiet',
+            'critical_inverse',
+            'warning_inverse',
+            'id_policy_module',
+        ]
+    );
+}
 
 $where = sprintf('delete_pending = 0 AND id_agente = %s', $id_agente);
 
@@ -686,7 +734,11 @@ if (isset($config['paginate_module'])) {
 
 if ($paginate_module) {
     if (!isset($limit_sql)) {
-        $limit_sql = " LIMIT $offset, $limit ";
+        $limit_sql = sprintf(
+            'LIMIT %s, %s',
+            $offset,
+            $limit
+        );
     }
 } else {
     $limit_sql = '';
@@ -732,7 +784,13 @@ if ($modules === false) {
 }
 
 // Prepare pagination.
-$url = '?'.'sec=gagente&'.'tab=module&'.'sec2=godmode/agentes/configurar_agente&'.'id_agente='.$id_agente.'&'.'sort_field='.$sortField.'&'.'&sort='.$sort.'&'.'search_string='.urlencode($search_string);
+$url = sprintf(
+    '?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=%s&sort_field=%s&sort=%s&search_string=%s',
+    $id_agente,
+    $sortField,
+    $sort,
+    urlencode($search_string)
+);
 
 if ($paginate_module) {
     ui_pagination($total_modules, $url);
@@ -1072,6 +1130,7 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Enable module'),
                 'title' => __('Enable module'),
+                'class' => 'invert_filter_important',
             ]
         ).'</a>';
     } else {

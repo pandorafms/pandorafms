@@ -297,7 +297,10 @@ sub locate_agent {
 		# Locate agent first in tmetaconsole_agent
 		return undef if (! defined ($field) || $field eq '');
 
-		my $rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
+		my $rs = enterprise_hook('get_metaconsole_agent_from_id', [$dbh, $field]);
+		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+		$rs = enterprise_hook('get_metaconsole_agent_from_alias', [$dbh, $field, $relative]);
 		return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
 		$rs = enterprise_hook('get_metaconsole_agent_from_addr', [$dbh, $field, $relative]);
@@ -322,7 +325,10 @@ sub get_agent {
 
     return undef if (! defined ($field) || $field eq '');
 
-    my $rs = get_agent_from_alias($dbh, $field, $relative);
+    my $rs = get_agent_from_id($dbh, $field);
+    return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
+
+    $rs = get_agent_from_alias($dbh, $field, $relative);
     return $rs if defined($rs) && (ref($rs)); # defined and not a scalar
 
     $rs = get_agent_from_addr($dbh, $field);
@@ -376,6 +382,17 @@ sub get_agent_from_name ($$;$) {
 	}
 	
 	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
+}
+
+##########################################################################
+# Return the agent given the agent id.
+##########################################################################
+sub get_agent_from_id ($$) {
+	my ($dbh, $id) = @_;
+	
+	return undef if (! defined ($id) || $id eq '');
+	
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.id_agente = ?', $id);
 }
 
 ##########################################################################
@@ -1321,6 +1338,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		my $cid_data = "CID_IMAGE";
 		my $dataname = "CID_IMAGE.png";
+
+		# Decode ampersand. Used for macros with encoded names.
+		$field3 =~ s/&amp;/&/g;
 
 		if (defined($data) && $data =~ /^data:image\/png;base64, /) {
 			# macro _data_ substitution in case is image.
@@ -4011,6 +4031,12 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'al_field13'} = subst_alert_macros ($alert->{'al_field13'}, \%macros);
 		$alert->{'al_field14'} = subst_alert_macros ($alert->{'al_field14'}, \%macros);
 		$alert->{'al_field15'} = subst_alert_macros ($alert->{'al_field15'}, \%macros);
+		$alert->{'al_field16'} = subst_alert_macros ($alert->{'al_field16'}, \%macros);
+		$alert->{'al_field17'} = subst_alert_macros ($alert->{'al_field17'}, \%macros);
+		$alert->{'al_field18'} = subst_alert_macros ($alert->{'al_field18'}, \%macros);
+		$alert->{'al_field19'} = subst_alert_macros ($alert->{'al_field19'}, \%macros);
+		$alert->{'al_field20'} = subst_alert_macros ($alert->{'al_field20'}, \%macros);
+		
 
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
@@ -4050,6 +4076,14 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'field13' => $alert->{'al_field13'},
 				'field14' => $alert->{'al_field14'},
 				'field15' => $alert->{'al_field15'},
+				'field16' => $alert->{'al_field16'},
+				'field17' => $alert->{'al_field17'},
+				'field18' => $alert->{'al_field18'},
+				'field19' => $alert->{'al_field19'},
+				'field20' => $alert->{'al_field20'},
+
+				
+
 				'description' => $alert->{'description'},
 				'times_fired' => $times_fired,
 				'time_threshold' => 0,
@@ -4135,6 +4169,12 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'field13' => $other_alert->{'al_field13'},
 					'field14' => $other_alert->{'al_field14'},
 					'field15' => $other_alert->{'al_field15'},
+					'field16' => $other_alert->{'al_field16'},
+					'field17' => $other_alert->{'al_field17'},
+					'field18' => $other_alert->{'al_field18'},
+					'field19' => $other_alert->{'al_field19'},
+					'field20' => $other_alert->{'al_field20'},
+					
 					'description' => '',
 					'times_fired' => $times_fired,
 					'time_threshold' => 0,
@@ -4612,11 +4652,17 @@ sub get_module_status ($$$) {
 			}
 			# (-inf, critical_min), [critical_max, +inf)
 			else {
-				return 1 if ($data < $critical_min || $data >= $critical_max);
-				return 1 if ($data <= $critical_max && $critical_max < $critical_min);
+				if ($critical_min == 0) {
+					return 1 if ($data > $critical_max);
+				}elsif ($critical_max == 0) {
+					return 1 if ($data <= $critical_min);
+				} else {
+					return 1 if ($data < $critical_min || $data >= $critical_max);
+					return 1 if ($data <= $critical_max && $critical_max < $critical_min);
+				}
 			}
 		}
-	
+
 		# Warning
 		if ($warning_min ne $warning_max) {
 			# [warning_min, warning_max)
@@ -4626,8 +4672,14 @@ sub get_module_status ($$$) {
 			}
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
-				return 2 if ($data < $warning_min || $data >= $warning_max);
-				return 2 if ($data <= $warning_max && $warning_max < $warning_min);
+				if ($warning_min == 0) {
+					return 1 if ($data > $warning_max);
+				}elsif ($warning_max == 0) {
+					return 1 if ($data <= $warning_min);
+				} else {
+					return 2 if ($data < $warning_min || $data >= $warning_max);
+					return 2 if ($data <= $warning_max && $warning_max < $warning_min);
+				}
 			}
 		}
 	}
@@ -5936,7 +5988,7 @@ sub pandora_update_agent_module_count ($$$) {
 	}; # Module counts by status.
 
 	# Retrieve and hash module status counts.
-	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
+	my @rows = get_db_rows ($dbh, 'SELECT estado, COUNT(*) AS total FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_modulo<>0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=?GROUP BY estado', $agent_id);
 	foreach my $row (@rows) {
 		$counts->{$row->{'estado'}} = $row->{'total'};
 		$total += $row->{'total'};

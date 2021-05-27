@@ -1092,8 +1092,15 @@ function events_get_all(
 
     // User comment.
     if (!empty($filter['user_comment'])) {
+        // For filter field.
         $sql_filters[] = sprintf(
             ' AND lower(te.user_comment) like lower("%%%s%%") ',
+            io_safe_input($filter['user_comment'])
+        );
+
+        // For show comments on event details.
+        $sql_filters[] = sprintf(
+            ' OR lower(te.user_comment) like lower("%%%s%%") ',
             $filter['user_comment']
         );
     }
@@ -3006,15 +3013,11 @@ function events_get_agent(
 ) {
     global $config;
 
-    if (!is_numeric($date)) {
+    if (is_numeric($date) === false) {
         $date = time_w_fixed_tz($date);
     }
 
-    if (is_metaconsole() && $events_group === false) {
-        $id_server = true;
-    }
-
-    if (empty($date)) {
+    if (empty($date) === true) {
         $date = get_system_time();
     }
 
@@ -3149,10 +3152,6 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() && $id_server) {
-        $sql_where .= ' AND server_id = '.$id_server;
-    }
-
     if ($show_summary_group) {
         return events_get_events_grouped(
             $sql_where,
@@ -3166,7 +3165,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() === true && $id_server === false) ? true : false,
+            (is_metaconsole() === true && (int) $id_server === 0) ? true : false,
             $history
         );
     }
@@ -3743,7 +3742,7 @@ function events_page_responses($event, $childrens_ids=[])
         ['id_group' => $id_groups]
     );
 
-    if (empty($event_responses)) {
+    if (empty($event_responses) || (!check_acl($config['id_user'], 0, 'EW') && !check_acl($config['id_user'], 0, 'EM'))) {
         $data[1] = '<i>'.__('N/A').'</i>';
     } else {
         $responses = [];
@@ -3789,7 +3788,7 @@ function events_page_responses($event, $childrens_ids=[])
 				$('.params_rows').remove();
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"left height_30px\" colspan=\"2\">'+description+'</td></tr>');
+					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"height_30px\" colspan=\"2\">'+description+'</td></tr>');
 				
 				if (params.length == 1 && params[0] == '') {
 					return;
@@ -4313,6 +4312,8 @@ function events_page_details($event, $server='')
         $serverstring = '';
     }
 
+    $table_class = 'table_modal_alternate';
+
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4320,7 +4321,7 @@ function events_page_details($event, $server='')
     $table_details->head = [];
     $table_details->cellspacing = 0;
     $table_details->cellpadding = 0;
-    $table_details->class = 'table_modal_alternate';
+    $table_details->class = $table_class;
 
     /*
      * Useless switch.
@@ -4517,7 +4518,7 @@ function events_page_details($event, $server='')
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
 
             $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true);
+            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
             $data[1] .= '</a>';
             $table_details->data[] = $data;
         }
@@ -4537,13 +4538,19 @@ function events_page_details($event, $server='')
             $data[1] .= html_print_image(
                 'images/bell.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         } else {
             $data[1] .= html_print_image(
                 'images/bell_pause.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         }
 

@@ -682,6 +682,22 @@ switch ($moduletype) {
         include 'module_manager_editor_wmi.php';
     break;
 
+    case 'webserver':
+    case MODULE_WEB:
+        $moduletype = MODULE_WEB;
+        // Remove content of $ip_target when it is ip_agent because
+        // it is used as HTTP auth (server) ....ONLY IN NEW MODULE!!!
+        if (empty($id_agent_module)
+            && ($ip_target === agents_get_address($id_agente))
+        ) {
+            $ip_target = '';
+        }
+
+        $categories = [9];
+        include 'module_manager_editor_common.php';
+        include 'module_manager_editor_web.php';
+    break;
+
     // WARNING: type 7 is reserved on enterprise.
     default:
         if (enterprise_include(

@@ -2163,6 +2163,11 @@ div.loading {
 div.loading img {
   float: right;
 }
+
+textarea.resizev {
+  resize: vertical;
+}
+
 /* Tablesorter jQuery pager */
 div.pager {
   margin-left: 10px;
@@ -4877,7 +4882,8 @@ input:checked + .p-slider:before {
 
 .user_edit_first_row,
 .user_edit_second_row,
-.user_edit_third_row {
+.user_edit_third_row,
+.user_edit_fourth_row {
   margin-bottom: 20px;
 }
 
@@ -8500,6 +8506,12 @@ div.stat-win-spinner img {
 .font_11pt {
   font-size: 11pt;
 }
+
+.checkbox-random-name {
+  width: 100px !important;
+  margin-left: 20px;
+}
+
 .align-left-important {
   text-align: left !important;
 }

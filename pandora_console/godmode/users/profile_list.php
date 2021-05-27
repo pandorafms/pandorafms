@@ -107,11 +107,6 @@ if ($delete_profile) {
 if ($create_profile || $update_profile) {
     $name = get_parameter('name');
 
-    // Incidents
-    $incident_view = (bool) get_parameter('incident_view');
-    $incident_edit = (bool) get_parameter('incident_edit');
-    $incident_management = (bool) get_parameter('incident_management');
-
     // Agents
     $agent_view = (bool) get_parameter('agent_view');
     $agent_edit = (bool) get_parameter('agent_edit');
@@ -152,9 +147,6 @@ if ($create_profile || $update_profile) {
 
     $values = [
         'name'                => $name,
-        'incident_view'       => $incident_view,
-        'incident_edit'       => $incident_edit,
-        'incident_management' => $incident_management,
         'agent_view'          => $agent_view,
         'agent_edit'          => $agent_edit,
         'agent_disable'       => $agent_disable,
@@ -183,10 +175,7 @@ if ($update_profile) {
     if ($name) {
         $ret = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
         if ($ret !== false) {
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -234,10 +223,7 @@ if ($create_profile) {
 
         if ($ret !== false) {
             ui_print_success_message(__('Successfully created'));
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -289,9 +275,6 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['IR'] = 'IR';
-$table->head['IW'] = 'IW';
-$table->head['IM'] = 'IM';
 $table->head['AR'] = 'AR';
 $table->head['AW'] = 'AW';
 $table->head['AD'] = 'AD';
@@ -317,9 +300,6 @@ $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
 $table->align = array_fill(1, 11, 'center');
 
 $table->size['profiles'] = '200px';
-$table->size['IR'] = '10px';
-$table->size['IW'] = '10px';
-$table->size['IM'] = '10px';
 $table->size['AR'] = '10px';
 $table->size['AW'] = '10px';
 $table->size['AD'] = '10px';
@@ -358,9 +338,6 @@ $img = html_print_image(
 
 foreach ($profiles as $profile) {
     $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
-    $data['IR'] = ($profile['incident_view'] ? $img : '');
-    $data['IW'] = ($profile['incident_edit'] ? $img : '');
-    $data['IM'] = ($profile['incident_management'] ? $img : '');
     $data['AR'] = ($profile['agent_view'] ? $img : '');
     $data['AW'] = ($profile['agent_edit'] ? $img : '');
     $data['AD'] = ($profile['agent_disable'] ? $img : '');

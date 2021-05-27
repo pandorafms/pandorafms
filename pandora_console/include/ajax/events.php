@@ -257,6 +257,11 @@ if ($save_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+
+    if (is_metaconsole()) {
+        $values['server_id'] = get_parameter('server_id');
+    }
+
     $exists = (bool) db_get_value_filter(
         'id_filter',
         'tevent_filter',
@@ -304,6 +309,10 @@ if ($update_event_filter) {
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
+
+    if (is_metaconsole()) {
+        $values['server_id'] = get_parameter('server_id');
+    }
 
     if (io_safe_output($values['tag_with']) == '["0"]') {
         $values['tag_with'] = '[]';
@@ -371,6 +380,13 @@ if ($get_filter_values) {
             }
         }
 
+        if (is_metaconsole()) {
+            $server_name = db_get_value('server_name', 'tmetaconsole_setup', 'id', $event_filter['server_id']);
+            if ($server_name !== false) {
+                $event_filter['server_name'] = $server_name;
+            }
+        }
+
         $event_filter['module_search'] = io_safe_output(db_get_value_filter('nombre', 'tagente_modulo', ['id_agente_modulo' => $event_filter['id_agent_module']]));
     }
 
@@ -402,6 +418,8 @@ if ($load_filter_modal) {
     );
 
     echo '<div id="load-filter-select" class="load-filter-modal">';
+    echo '<form method="post" id="form_load_filter">';
+
     $table = new StdClass;
     $table->id = 'load_filter_form';
     $table->width = '100%';
@@ -441,13 +459,15 @@ if ($load_filter_modal) {
         __('Load filter'),
         'load_filter',
         false,
-        'class="sub upd" onclick="load_form_filter();"',
+        'class="sub upd"',
         true
     );
+    $data[1] .= html_print_input_hidden('load_filter', 1, true);
     $table->data[] = $data;
     $table->rowclass[] = '';
 
     html_print_table($table);
+    echo '</form>';
     echo '</div>';
     ?>
 <script type="text/javascript">
@@ -460,7 +480,8 @@ function show_filter() {
         width: 450
     });
 }
-//aki
+
+
 function load_form_filter() {
     jQuery.post (
         "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -471,7 +492,6 @@ function load_form_filter() {
         },
         function (data) {
             jQuery.each (data, function (i, val) {
-                console.log(val);
                 if (i == 'id_name')
                     $("#hidden-id_name").val(val);
                 if (i == 'id_group'){
@@ -517,6 +537,10 @@ function load_form_filter() {
                     $("#text-user_comment").val(val);
                 if (i == 'id_source_event')
                     $("#text-id_source_event").val(val);
+                if (i == 'server_id')
+                    $("#server_id").val(val);
+                if (i == 'server_name')
+                    $("#select2-server_id-container").text(val);
                 if(i == 'date_from')
                     $("#text-date_from").val(val);
                 if(i == 'date_to')
@@ -747,7 +771,8 @@ function save_new_filter() {
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
-            "id_source_event": $("#text-id_source_event").val()
+            "id_source_event": $("#text-id_source_event").val(),
+            "server_id": $("#server_id").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -817,7 +842,8 @@ function save_update_filter() {
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
-        "id_source_event": $("#text-id_source_event").val()
+        "id_source_event": $("#text-id_source_event").val(),
+        "server_id": $("#server_id").val()
 
         },
         function (data) {

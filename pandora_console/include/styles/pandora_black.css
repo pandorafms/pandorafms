@@ -54,7 +54,8 @@ table.databox,
 .white_box,
 input.sub,
 .introjs-tooltip,
-button.sub {
+button.sub,
+.bg_general {
   background-color: #222 !important;
   color: #fff;
 }
@@ -242,11 +243,20 @@ div#foot {
 
 /* events.css */
 table.table_modal_alternate tr:nth-child(odd) td {
-  background-color: #222;
+  background-color: #222 !important;
 }
 
 table.table_modal_alternate tr:nth-child(even) td {
-  background-color: #111;
+  background-color: #111 !important;
+}
+
+/* events.css */
+table.black_table_modal_alternate tr:nth-child(odd) td {
+  background-color: #222 !important;
+}
+
+table.black_table_modal_alternate tr:nth-child(even) td {
+  background-color: #111 !important;
 }
 
 /* tables.css */
@@ -377,7 +387,6 @@ table#diagnostic_info tbody td div {
   color: #fff;
 }
 
-.ui-widget-content.ui-autocomplete,
 .ui-widget-content.ui-autocomplete a {
   color: #333;
 }
@@ -431,6 +440,7 @@ ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header
 
 .notification-item {
   background: #222;
+  border: none;
 }
 
 pre,
@@ -512,13 +522,13 @@ div#form_activate_licence #code {
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 0px 5px 5px 10px;
-  border-color: #e2e2e2;
   border-style: solid;
   border-width: 1px;
   width: 100%;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
+  border-color: #707070;
 }
 
 div.data_container:not(:hover) {
@@ -649,7 +659,6 @@ form ul.form_flex {
   justify-content: center;
   height: 100%;
   width: 100%;
-  background-color: #222;
 }
 
 .container-layout {
@@ -945,4 +954,68 @@ div.integria_details_description textarea {
 }
 .fill_fff {
   fill: #fff !important;
+}
+.module_graph_menu_header,
+.module_graph_menu_content {
+  background-color: #222 !important;
+}
+
+.invert_filter_important {
+  filter: invert(100%) !important;
+}
+fieldset {
+  border-color: #707070;
+}
+
+input,
+textarea,
+select,
+.selection {
+  border-color: #707070;
+}
+
+.white_box,
+.white-box-content {
+  border: 1px solid #707070;
+}
+
+.white_table_graph_header {
+  border: 1px solid #707070;
+}
+
+table.databox {
+  border-color: #707070;
+}
+
+.info_table > tbody > tr {
+  border-bottom: 1px solid #303030;
+}
+
+.status_tactical {
+  border-color: #707070;
+}
+
+.status_tactical,
+.tactical_set {
+  border-color: #707070;
+}
+
+li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
+  border: 1px solid #707070;
+}
+.chartLegend {
+  width: 100%;
+  position: relative;
+  height: 30px;
+}
+
+.chartLegend table {
+  position: absolute;
+  right: 0px;
+}
+
+.graph_container {
+  width: 800px;
+  margin: 20px auto;
+  border-radius: 3px;
 }

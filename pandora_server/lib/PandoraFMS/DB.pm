@@ -237,8 +237,15 @@ sub get_command_id ($$) {
 ########################################################################
 sub get_agent_id ($$) {
 	my ($dbh, $agent_name) = @_;
+	my $is_meta = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token like 'metaconsole'");
+	
+	my $rc;
+	if($is_meta == 1) {
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+	} else {
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+	}
 
-	my $rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
 	return defined ($rc) ? $rc : -1;
 }
 

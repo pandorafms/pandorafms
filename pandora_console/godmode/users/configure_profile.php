@@ -85,11 +85,6 @@ if ($id_profile || $new_profile) {
         // Name
         $name = '';
 
-        // Incidents
-        $incident_view = 0;
-        $incident_edit = 0;
-        $incident_management = 0;
-
         // Agents
         $agent_view = 0;
         $agent_edit = 0;
@@ -148,11 +143,6 @@ if ($id_profile || $new_profile) {
         // Name
         $name = $profile['name'];
 
-        // Incidents
-        $incident_view = (bool) $profile['incident_view'];
-        $incident_edit = (bool) $profile['incident_edit'];
-        $incident_management = (bool) $profile['incident_management'];
-
         // Agents
         $agent_view = (bool) $profile['agent_view'];
         $agent_edit = (bool) $profile['agent_edit'];
@@ -197,7 +187,7 @@ if ($id_profile || $new_profile) {
         );
         enterprise_include_once('include/functions_audit.php');
 
-        $info = 'Name: '.$name.' Incident view: '.$incident_view.' Incident edit: '.$incident_edit.' Incident management: '.$incident_management.' Agent view: '.$agent_view.' Agent edit: '.$agent_edit.' Agent disable: '.$agent_disable.' Alert edit: '.$alert_edit.' Alert management: '.$alert_management.' User management: '.$user_management.' DB management: '.$db_management.' Event view: '.$event_view.' Event edit: '.$event_edit.' Event management: '.$event_management.' Report view: '.$report_view.' Report edit: '.$report_edit.' Report management: '.$report_management.' Network map view: '.$map_view.' Network map edit: '.$map_edit.' Network map management: '.$map_management.' Visual console view: '.$vconsole_view.' Visual console edit: '.$vconsole_edit.' Visual console management: '.$vconsole_management.' '.get_product_name().' Management: '.$pandora_management;
+        $info = 'Name: '.$name.' Agent view: '.$agent_view.' Agent edit: '.$agent_edit.' Agent disable: '.$agent_disable.' Alert edit: '.$alert_edit.' Alert management: '.$alert_management.' User management: '.$user_management.' DB management: '.$db_management.' Event view: '.$event_view.' Event edit: '.$event_edit.' Event management: '.$event_management.' Report view: '.$report_view.' Report edit: '.$report_edit.' Report management: '.$report_management.' Network map view: '.$map_view.' Network map edit: '.$map_edit.' Network map management: '.$map_management.' Visual console view: '.$vconsole_view.' Visual console edit: '.$vconsole_edit.' Visual console management: '.$vconsole_management.' '.get_product_name().' Management: '.$pandora_management;
 
         enterprise_hook('audit_pandora_enterprise', [$id_audit, $info]);
 
@@ -317,21 +307,6 @@ if ($id_profile || $new_profile) {
     $row['name'] = __('Manage visual console');
     $row['input'] = html_print_checkbox('vconsole_management', 1, $vconsole_management, true, false, 'autoclick_profile_users(\'vconsole_management\', \'vconsole_view\', \'vconsole_edit\')');
     $table->data['VM'] = $row;
-    $table->data[] = '<hr>';
-
-    // Incidents
-    $row = [];
-    $row['name'] = __('View incidents');
-    $row['input'] = html_print_checkbox('incident_view', 1, $incident_view, true);
-    $table->data['IR'] = $row;
-    $row = [];
-    $row['name'] = __('Edit incidents');
-    $row['input'] = html_print_checkbox('incident_edit', 1, $incident_edit, true, false, 'autoclick_profile_users(\'incident_edit\', \'incident_view\', \'false\')');
-    $table->data['IW'] = $row;
-    $row = [];
-    $row['name'] = __('Manage incidents');
-    $row['input'] = html_print_checkbox('incident_management', 1, $incident_management, true, false, 'autoclick_profile_users(\'incident_management\', \'incident_view\', \'incident_edit\');');
-    $table->data['IM'] = $row;
     $table->data[] = '<hr>';
 
     $disable_option = 'javascript: return false;';

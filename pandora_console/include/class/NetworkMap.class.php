@@ -2840,13 +2840,7 @@ class NetworkMap
      */
     public function loadSimpleInterface()
     {
-        $output = '<div id="open_version_dialog" class="invisible">';
-        $output .= __(
-            'In the Open version of %s can not be edited nodes or map',
-            get_product_name()
-        );
-        $output .= '</div>';
-
+        $output = '';
         $output .= '<div id="dialog_node_edit" class="invisible" title="';
         $output .= __('Edit node').'">';
         $output .= '<div class="left w100p">';
@@ -2896,6 +2890,12 @@ class NetworkMap
         $id = 'dialog_node_edit';
         if (!enterprise_installed()) {
             $id = 'open_version_dialog';
+                $output = '<div id="open_version" style="display: none" title="'.__('Warning').'">';
+                $output .= '<div class="center mrgn_top_20px w90p font_13px">'.__(
+                    'In the Open version of %s can not be edited nodes or map',
+                    get_product_name()
+                );
+                $output .= '</div></div>';
         }
 
         $output .= '<div id="'.$id.'" class="invisible" title="';
@@ -3207,7 +3207,7 @@ class NetworkMap
         $table->data[0][0] = __('Group');
         $table->data[0][1] = html_print_select_groups(
             false,
-            'IW',
+            'AR',
             false,
             'group_for_show_agents',
             -1,

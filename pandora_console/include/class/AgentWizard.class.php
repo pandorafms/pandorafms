@@ -2085,7 +2085,13 @@ class AgentWizard extends HTML
                         $tmp->ip_target($this->targetIp);
                         $tmp->id_modulo(MODULE_PLUGIN);
 
-                        if (empty($candidate['macros']) === true) {
+                        if ($this->wizardSection === 'snmp_interfaces_explorer'
+                            && empty($candidate['macros']) === false
+                        ) {
+                            // Use definition provided.
+                            $tmp->id_plugin($candidate['id_plugin']);
+                            $tmp->macros(base64_decode($candidate['macros']));
+                        } else {
                             $fieldsPlugin = db_get_value_sql(
                                 sprintf(
                                     'SELECT macros FROM tplugin WHERE id=%d',
@@ -2115,10 +2121,6 @@ class AgentWizard extends HTML
 
                             $tmp->id_plugin($infoMacros['server_plugin']);
                             $tmp->macros(json_encode($fieldsPlugin));
-                        } else {
-                            // Use definition provided.
-                            $tmp->id_plugin($candidate['id_plugin']);
-                            $tmp->macros(base64_decode($candidate['macros']));
                         }
                     }
                 }
@@ -4308,15 +4310,6 @@ class AgentWizard extends HTML
                 $data[6] .= html_print_input_hidden(
                     'module-scan_type-'.$uniqueId,
                     $module['scan_type'],
-                    true,
-                    $md5IdBlock,
-                    'form="form-create-modules"'
-                );
-
-                // Execution type module.
-                $data[6] .= html_print_input_hidden(
-                    'module-execution_type-'.$uniqueId,
-                    $module['execution_type'],
                     true,
                     $md5IdBlock,
                     'form="form-create-modules"'

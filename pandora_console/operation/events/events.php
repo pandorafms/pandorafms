@@ -446,21 +446,35 @@ if (is_ajax()) {
  * Load user default form.
  */
 
-$user_filter = db_get_row_sql(
-    sprintf(
-        'SELECT f.id_filter, f.id_name
-         FROM tevent_filter f
-         INNER JOIN tusuario u
-             ON u.default_event_filter=f.id_filter
-         WHERE u.id_user = "%s" ',
-        $config['id_user']
-    )
-);
+$load_filter_id = (int) get_parameter('filter_id', 0);
+
+if ($load_filter_id === 0) {
+    // Load user filter.
+    $loaded_filter = db_get_row_sql(
+        sprintf(
+            'SELECT f.id_filter, f.id_name
+             FROM tevent_filter f
+             INNER JOIN tusuario u
+                 ON u.default_event_filter=f.id_filter
+             WHERE u.id_user = "%s" ',
+            $config['id_user']
+        )
+    );
+} else {
+    // Load filter selected by user.
+    $loaded_filter['id_filter'] = $load_filter_id;
+    $loaded_filter['id_name'] = db_get_value(
+        'id_name',
+        'tevent_filter',
+        'id_filter',
+        $load_filter_id
+    );
+}
 
 // Do not load the user filter if we come from the 24h event graph.
 $from_event_graph = get_parameter('filter[from_event_graph]', $filter['from_event_graph']);
-if ($user_filter !== false && $from_event_graph != 1) {
-    $filter = events_get_event_filter($user_filter['id_filter']);
+if ($loaded_filter !== false && $from_event_graph != 1) {
+    $filter = events_get_event_filter($loaded_filter['id_filter']);
     if ($filter !== false) {
         $id_group = $filter['id_group'];
         $event_type = $filter['event_type'];
@@ -495,6 +509,7 @@ if ($user_filter !== false && $from_event_graph != 1) {
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
         $id_source_event = $filter['id_source_event'];
+        $server_id = $filter['server_id'];
     }
 }
 
@@ -1057,7 +1072,7 @@ if (empty($severity) && $severity !== '0') {
 $data = html_print_select(
     get_priorities(),
     'severity',
-    $severity,
+    explode(',', $severity),
     '',
     __('All'),
     -1,
@@ -1138,6 +1153,23 @@ $params['hidden_input_idagent_name'] = 'id_agent';
 $params['hidden_input_idagent_value'] = $id_agent;
 $params['size'] = '';
 
+if ($id_agent !== null) {
+    if (is_metaconsole()) {
+        $metaconsole_agent = db_get_row_sql(
+            sprintf(
+                'SELECT alias, server_name
+                 FROM tmetaconsole_agent
+                 WHERE id_tagente = "%d" ',
+                $id_agent
+            )
+        );
+
+        $params['value'] = $metaconsole_agent['alias'].' ('.$metaconsole_agent['server_name'].')';
+    } else {
+        $params['value'] = agents_get_alias($id_agent);
+    }
+}
+
 $data = ui_print_agent_autocomplete_input($params);
 $in = '<div class="filter_input"><label>'.__('Agent search').'</label>';
 $in .= $data.'</div>';
@@ -1212,6 +1244,11 @@ $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
 if (is_metaconsole()) {
+    if (empty($id_source_event) === true) {
+        $id_source_event = '';
+    }
+
+    $input_id_source_event = (empty($id_source_event) === true) ? '' : $id_source_event;
     $data = html_print_input_text(
         'id_source_event',
         $id_source_event,
@@ -1225,6 +1262,9 @@ if (is_metaconsole()) {
     $adv_inputs[] = $in;
 }
 
+if ($date_from === '0000-00-00') {
+    $date_from = '';
+}
 
 // Date from.
 $data = html_print_input_text(
@@ -1251,31 +1291,13 @@ $in = '<div class="filter_input">';
 $in .= '<div class="filter_input_little"><label>'.__('Date from').'</label>';
 $in .= $data.'</div>';
 
-// Time from.
-$data = html_print_input_text(
-    'time_from',
-    $time_from,
-    '',
-    false,
-    10,
-    true,
-    // Disabled.
-    false,
-    // Required.
-    false,
-    // Function.
-    '',
-    // Class.
-    '',
-    // OnChange.
-    '',
-    // Autocomplete.
-    'off'
-);
-$in .= '<div class="filter_input_little"><label>'.__('Time from').'</label>';
+$data = '';
 $in .= $data.'</div>';
-$in .= '</div>';
 $adv_inputs[] = $in;
+
+if ($date_to === '0000-00-00') {
+    $date_to = '';
+}
 
 // Date to.
 $data = html_print_input_text(
@@ -1302,32 +1324,9 @@ $in = '<div class="filter_input">';
 $in .= '<div class="filter_input_little"><label>'.__('Date to').'</label>';
 $in .= $data.'</div>';
 
-// Time to.
-$data = html_print_input_text(
-    'time_to',
-    $time_to,
-    '',
-    false,
-    10,
-    true,
-    // Disabled.
-    false,
-    // Required.
-    false,
-    // Function.
-    '',
-    // Class.
-    '',
-    // OnChange.
-    '',
-    // Autocomplete.
-    'off'
-);
-$in .= '<div class="filter_input_little"><label>'.__('Time to').'</label>';
+$data = '';
 $in .= $data.'</div>';
-$in .= '</div>';
 $adv_inputs[] = $in;
-
 
 // Tags.
 if (is_metaconsole()) {
@@ -1472,8 +1471,8 @@ try {
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Current filter').'</div>';
     $active_filters_div .= '<div id="current_filter" class="content">';
-    if ($user_filter !== false) {
-        $active_filters_div .= io_safe_output($user_filter['id_name']);
+    if ($loaded_filter !== false) {
+        $active_filters_div .= io_safe_output($loaded_filter['id_name']);
     } else {
         $active_filters_div .= __('Not set.');
     }
@@ -2128,9 +2127,6 @@ function process_datatables_item(item) {
 
     /* Group name */
     if (item.id_grupo == "0") {
-        var severity_value = "<?php echo $severity; ?>";
-        const multiple = severity_value.split(",");
-        $("#severity").val(multiple);
         item.id_grupo = "<?php echo __('All'); ?>";
     } else {
         item.id_grupo = item.group_name;

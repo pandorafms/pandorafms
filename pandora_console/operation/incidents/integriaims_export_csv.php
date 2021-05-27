@@ -20,14 +20,6 @@ require_once '../../include/functions_integriaims.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 0, 'IW') && ! check_acl($config['id_user'], 0, 'IM')) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
-
 // API calls.
 $status_incident = integriaims_get_details('status');
 $group_incident = integriaims_get_details('group');

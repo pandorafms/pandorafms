@@ -200,8 +200,20 @@ function config_update_config()
                         $error_update[] = __('Use cert.');
                     }
 
-                    if (!config_update_value('attachment_store', (string) get_parameter('attachment_store'))) {
+                    $attachment_store = (string) get_parameter('attachment_store');
+                    if (file_exists($attachment_store) === false
+                        || is_writable($attachment_store) === false
+                    ) {
                         $error_update[] = __('Attachment store');
+                        $error_update[] .= __(
+                            "Path doesn't exists or is not writable"
+                        );
+                    } else {
+                        if (config_update_value('attachment_store', $attachment_store) === false) {
+                            $error_update[] = __(
+                                'Attachment store.'
+                            );
+                        }
                     }
 
                     if (!config_update_value('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'))) {
@@ -307,7 +319,7 @@ function config_update_config()
                     }
 
                     if (!config_update_value('past_planned_downtimes', get_parameter('past_planned_downtimes'))) {
-                        $error_update[] = __('Allow create planned downtimes in the past');
+                        $error_update[] = __('Allow create scheduled downtimes in the past');
                     }
 
                     if (!config_update_value('limit_parameters_massive', get_parameter('limit_parameters_massive'))) {
@@ -1020,6 +1032,14 @@ function config_update_config()
                         $error_update[] = __('Custom subtitle header');
                     }
 
+                    if (!config_update_value('meta_custom_title_header', (string) get_parameter('meta_custom_title_header'))) {
+                        $error_update[] = __('Meta custom title header');
+                    }
+
+                    if (!config_update_value('meta_custom_subtitle_header', (string) get_parameter('meta_custom_subtitle_header'))) {
+                        $error_update[] = __('Meta custom subtitle header');
+                    }
+
                     if (!config_update_value('custom_title1_login', (string) get_parameter('custom_title1_login'))) {
                         $error_update[] = __('Custom title1 login');
                     }
@@ -1046,10 +1066,6 @@ function config_update_config()
 
                     if (!config_update_value('rb_copyright_notice', (string) get_parameter('rb_copyright_notice'))) {
                         $error_update[] = __('Copyright notice');
-                    }
-
-                    if (!config_update_value('meta_custom_logo', (string) get_parameter('meta_custom_logo'))) {
-                        $error_update[] = __('Custom logo metaconsole');
                     }
 
                     if (!config_update_value('meta_custom_logo_white_bg', (string) get_parameter('meta_custom_logo_white_bg'))) {
@@ -1630,6 +1646,10 @@ function config_update_config()
                 break;
 
                 case 'integria':
+                    if (!config_update_value('integria_user_level_conf', (int) get_parameter('integria_user_level_conf', 0))) {
+                        $error_update[] = __('Integria user login');
+                    }
+
                     if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
                         $error_update[] = __('Enable Integria IMS');
                     }
@@ -2275,6 +2295,20 @@ function config_process_config()
         config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
     }
 
+    if (is_metaconsole()) {
+        if (!isset($config['meta_custom_logo'])) {
+            config_update_value('meta_custom_logo', 'pandoraFMS_metaconsole_full.svg');
+        }
+
+        if (!isset($config['meta_custom_logo_collapsed'])) {
+            config_update_value('meta_custom_logo_collapsed', 'pandoraFMS_metaconsole_collapse.svg');
+        }
+
+        if (!isset($config['meta_menu_type'])) {
+            config_update_value('meta_menu_type', 'classic');
+        }
+    }
+
     if (!isset($config['custom_logo_white_bg'])) {
         config_update_value('custom_logo_white_bg', 'pandora_logo_head_white_bg.png');
     }
@@ -2311,6 +2345,14 @@ function config_process_config()
         config_update_value('custom_subtitle_header', __('the Flexible Monitoring System'));
     }
 
+    if (!isset($config['meta_custom_title_header'])) {
+        config_update_value('meta_custom_title_header', __('PandoraFMS Metaconsole'));
+    }
+
+    if (!isset($config['meta_custom_subtitle_header'])) {
+        config_update_value('meta_custom_subtitle_header', __('Centralized operation console'));
+    }
+
     if (!isset($config['custom_title1_login'])) {
         config_update_value('custom_title1_login', __('PANDORA FMS'));
     }
@@ -2341,10 +2383,6 @@ function config_process_config()
 
     if (!isset($config['meta_custom_support_url'])) {
         config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
-    }
-
-    if (!isset($config['meta_custom_logo'])) {
-        config_update_value('meta_custom_logo', 'logo_pandora_metaconsola.png');
     }
 
     if (!isset($config['meta_custom_logo_white_bg'])) {
@@ -3232,6 +3270,10 @@ function config_process_config()
     }
 
     // Integria.
+    if (!isset($config['integria_user_level_conf'])) {
+        config_update_value('integria_user_level_conf', 0);
+    }
+
     if (!isset($config['integria_enabled'])) {
         config_update_value('integria_enabled', 0);
     }

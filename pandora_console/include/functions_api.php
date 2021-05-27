@@ -1,16 +1,33 @@
 <?php
 
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Functions for API.
+ *
+ * @category   Functions.
+ * @package    Pandora FMS
+ * @subpackage API.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 // Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
@@ -486,7 +503,7 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
         $returnAllColumns = ( $other['data'][2] == '1' ? true : false);
     }
 
-    $groups = users_get_groups($user_in_db, 'IR', $returnAllGroup, $returnAllColumns);
+    $groups = users_get_groups($user_in_db, 'AR', $returnAllGroup, $returnAllColumns);
 
     $data_groups = [];
     foreach ($groups as $id => $group) {
@@ -1615,6 +1632,302 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
 
 
 /**
+ * Update an agent by indicating a pair of field - value separated by comma.
+ *
+ * @param integer $id_agent        Id (or alias) agent to upadate.
+ * @param boolean $use_agent_alias Use alias instead of id.
+ * @param array   $params          Pair of parameter/value separated by comma. Available fields are:
+ *  'alias',
+ * 'direccion',
+ * 'id_parent',
+ * 'id_grupo',
+ * 'cascade_protection',
+ * 'cascade_protection_module',
+ * 'intervalo',
+ * 'id_os',
+ * 'server_name',
+ * 'custom_id',
+ * 'modo',
+ * 'disabled',
+ * 'comentarios'
+ *
+ * eg . http://127.0.0.1/pandora_console/include/api.php?op=set&op2=update_agent_field&id=pandora&other=id_os,1|alias,pandora|direccion,192.168.10.16|id_parent,1cascade_protection,1|cascade_protection_module,1|intervalo,5||modo|3|&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
+ */
+function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
+{
+    global $config;
+    $return = false;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+     // Check the agent.
+    if ((bool) $use_agent_alias === true) {
+        $agents_by_alias = agents_get_agent_id_by_alias($id_agent);
+        if (empty($agents_by_alias) === false) {
+            foreach ($agents_by_alias as $agent) {
+                if (agents_check_access_agent($agent['id_agente'], 'AW') === true) {
+                    $agents[] = $agent['id_agente'];
+                }
+            }
+
+            if (empty($agents) === true) {
+                returnError('forbidden', 'string');
+                return;
+            }
+        } else {
+            returnError('Alias does not match any agent.');
+            return;
+        }
+    } else {
+        if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AW')) {
+            return;
+        }
+
+        $agents[] = $id_agent;
+    }
+
+     // Serialize the data for update.
+    if ($params['type'] === 'array') {
+        // Keys available to change.
+        $available_fields = [
+            'alias',
+            'direccion',
+            'id_parent',
+            'id_grupo',
+            'cascade_protection',
+            'cascade_protection_module',
+            'intervalo',
+            'id_os',
+            'server_name',
+            'custom_id',
+            'modo',
+            'disabled',
+            'comentarios',
+        ];
+
+        foreach ($params['data'] as $key_value) {
+            list($key, $value) = explode(',', $key_value, 2);
+            if (in_array($key, $available_fields) === true) {
+                $fields[$key] = $value;
+            }
+        }
+    }
+
+    if (empty($fields) === true) {
+        returnError('Selected field not available. Please, select one the fields avove');
+        return;
+    }
+
+    // Check fields.
+    foreach ($fields as $field => $data) {
+        switch ($field) {
+            case 'alias':
+                if (empty($data)) {
+                    returnError('No agent alias specified');
+                    return;
+                }
+            break;
+
+            case 'id_grupo':
+                if (db_get_value_sql('SELECT  FROM tgrupo WHERE id_grupo = '.$data) === false) {
+                    returnError('The group doesn`t exist.');
+                    return;
+                }
+            break;
+
+            case 'id_os':
+                if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$data) === false) {
+                    returnError('The OS doesn`t exist.');
+                    return;
+                }
+            break;
+
+            case 'server_name':
+                $server_name = db_get_value_sql('SELECT name FROM tserver WHERE BINARY name LIKE "'.$data.'"');
+                if ($server_name === false) {
+                        returnError('The server doesn`t exist.');
+                     return;
+                }
+            break;
+
+            case 'cascade_protection':
+                if ($data == 1) {
+                    if (($field['id_parent'] != 0) && (db_get_value_sql(
+                        'SELECT id_agente_modulo
+                            FROM tagente_modulo
+                            WHERE id_agente = '.$fields['id_parent'].' AND id_agente_modulo = '.$fields['cascade_protection_module']
+                    ) === false)
+                    ) {
+                            returnError('Cascade protection is not applied because it is not a parent module');
+                    }
+                } else {
+                    unset($fields['cascade_protection']);
+                }
+            break;
+
+            case 'id_grupo':
+                // Check ACL group.
+                if (!check_acl($config['id_user'], $data, 'AW')) {
+                    returnError('forbidden', 'string');
+                    return;
+                }
+
+                if ($data == 0) {
+                    $agent_update_error = 'The agent could not be modified. For security reasons, use a group other than 0.';
+                    returnError($agent_update_error);
+                    return;
+                }
+            break;
+
+            case 'id_parent':
+                $parentCheck = agents_check_access_agent($data);
+                if (is_null($parentCheck) === true) {
+                    returnError('The parent agent does not exist.');
+                    return;
+                }
+
+                if ($parentCheck === false) {
+                    returnError('The user cannot access to parent agent.');
+                    return;
+                }
+            break;
+
+            default:
+                // Default empty.
+            break;
+        }
+    }
+
+        // Var applied in case there is more than one agent.
+        $return = false;
+        $applied = 0;
+    foreach ($agents as $agent) {
+        $values_old = db_get_row_filter(
+            'tagente',
+            ['id_agente' => $agent],
+            [
+                'id_grupo',
+                'disabled',
+            ]
+        );
+
+        $tpolicy_group_old = db_get_all_rows_sql(
+            'SELECT id_policy FROM tpolicy_groups
+                WHERE id_group = '.$values_old['id_grupo']
+        );
+
+        $return = db_process_sql_update(
+            'tagente',
+            $fields,
+            ['id_agente' => $agent]
+        );
+
+        if ((count($agents) > 1) && $return !== 0) {
+            $applied += 1;
+        }
+
+        if ($return && !isset($field['direccion'])) {
+            // register ip for this agent in 'taddress'.
+            agents_add_address($agent, $field['direccion']);
+        }
+
+        if ($return) {
+            // Update config file
+            if (isset($field['disabled']) && $values_old['disabled'] != $field['disabled']) {
+                enterprise_hook(
+                    'config_agents_update_config_token',
+                    [
+                        $agent,
+                        'standby',
+                        $field['disabled'],
+                    ]
+                );
+            }
+
+            if ($tpolicy_group_old) {
+                foreach ($tpolicy_group_old as $key => $value) {
+                    $tpolicy_agents_old = db_get_sql(
+                        'SELECT * FROM tpolicy_agents 
+                        WHERE id_policy = '.$value['id_policy'].' AND id_agent = '.$agent
+                    );
+
+                    if ($tpolicy_agents_old) {
+                        $result2 = db_process_sql_update(
+                            'tpolicy_agents',
+                            ['pending_delete' => 1],
+                            [
+                                'id_agent'  => $agent,
+                                'id_policy' => $value['id_policy'],
+                            ]
+                        );
+                    }
+                }
+            }
+
+            $tpolicy_group = db_get_all_rows_sql(
+                'SELECT id_policy FROM tpolicy_groups 
+                WHERE id_group = '.$field['id_grupo']
+            );
+
+            if ($tpolicy_group) {
+                foreach ($tpolicy_group as $key => $value) {
+                    $tpolicy_agents = db_get_sql(
+                        'SELECT * FROM tpolicy_agents 
+                        WHERE id_policy = '.$value['id_policy'].' AND id_agent ='.$agent
+                    );
+
+                    if (!$tpolicy_agents) {
+                        db_process_sql_insert(
+                            'tpolicy_agents',
+                            [
+                                'id_policy' => $value['id_policy'],
+                                'id_agent'  => $agent,
+                            ]
+                        );
+                    } else {
+                        $result3 = db_process_sql_update(
+                            'tpolicy_agents',
+                            ['pending_delete' => 0],
+                            [
+                                'id_agent'  => $agent,
+                                'id_policy' => $value['id_policy'],
+                            ]
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    if (count($agents) > 1) {
+        returnData(
+            'string',
+            [
+                'type' => 'string',
+                'data' => __('Updated %d/%d agents', $applied, count($agents)),
+            ]
+        );
+    } else {
+        returnData(
+            'string',
+            [
+                'type' => 'string',
+                'data' => __('Agent updated.'),
+            ]
+        );
+    }
+
+}
+
+
+/**
  * Create a new agent, and print the id for new agent.
  *
  * @param $thrash1 Don't use.
@@ -1682,7 +1995,7 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3)
     // Check if agent exists (BUG WC-50518-2).
     if ($alias == '' && $alias_as_name === 0) {
         returnError('No agent alias specified');
-    } else if (agents_get_agent_id($server_name)) {
+    } else if (agents_get_agent_id($nombre_agente)) {
         returnError('The agent name already exists in DB.');
     } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
         returnError('The group does not exist.');
@@ -2004,13 +2317,13 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
 
         foreach ($servers as $server) {
             if (metaconsole_connect($server) == NOERR) {
-                if ($other['data'][0] === '1') {
+                if ($agent_by_alias) {
                     $idAgent = agents_get_agent_id_by_alias($id);
                 } else {
                     $idAgent[0] = agents_get_agent_id($id, true);
                 }
 
-                if (!empty($idAgent)) {
+                if (empty($idAgent) === false) {
                     $result = agents_delete_agent($idAgent[0], true);
                 }
 
@@ -2121,9 +2434,9 @@ function api_get_all_agents($thrash1, $thrash2, $other, $returnType)
             }
 
             $ag_groups = implode(',', (array) $ag_groups);
-        }
 
-        $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
+            $where .= ' AND (id_grupo IN ('.$ag_groups.') OR id_group IN ('.$ag_groups.'))';
+        }
     }
 
     if (isset($other['data'][3])) {
@@ -6717,7 +7030,7 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3)
     $data = db_get_row_sql($sql);
 
     if ($data['type_execution'] == 'periodically' && $data['executed'] == 1) {
-        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running planned downtime cannot be stopped.'));
+        returnError('error_stop_downtime', __('Error stopping downtime. Periodical and running scheduled downtime cannot be stopped.'));
         return;
     }
 
@@ -7203,7 +7516,7 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
     }
 
     if (empty($agents)) {
-        returnError('No agents to create planned downtime items');
+        returnError('No agents to create scheduled downtime items');
     } else {
         if (!empty($returned['bad_modules'])) {
             $bad_modules = __("and this modules are doesn't exists or not applicable a this agents: ").implode(', ', $returned['bad_modules']);
@@ -7224,6 +7537,305 @@ function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3)
                 'data' => 'Successfully created items '.$bad_agent.' '.$bad_modules.' '.$agents_no_exists,
             ]
         );
+    }
+}
+
+
+/**
+ * Edit planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_edit&apipass=1234&user=admin&pass=pandora&id=2&other=testing2|test2|2021/05/10|2021/06/12|19:03:03|19:55:00|0|0|0|0|0|0|0|0|1|31|quiet|once|weekly&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The second index contains a list of module names.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_edit($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    $values = [];
+    if (!empty($other['data'][0])) {
+        $values['name'] = io_safe_input($other['data'][0]);
+    }
+
+    if (!empty($other['data'][1])) {
+        $values['description'] = io_safe_input($other['data'][1]);
+    }
+
+    if (!empty($other['data'][2]) && !empty($other['data'][4])) {
+        $date_from = strtotime(html_entity_decode($other['data'][2].' '.$other['data'][4]));
+        $values['date_from'] = io_safe_input($date_from);
+    }
+
+    if (!empty($other['data'][4])) {
+        $values['periodically_time_from'] = io_safe_input($other['data'][4]);
+    }
+
+    if (!empty($other['data'][3]) && !empty($other['data'][5])) {
+        $date_to = strtotime(html_entity_decode($other['data'][3].' '.$other['data'][5]));
+        $values['date_to'] = io_safe_input($date_to);
+    }
+
+    if (!empty($other['data'][5])) {
+        $values['periodically_time_to'] = io_safe_input($other['data'][5]);
+    }
+
+    if ($other['data'][6] != '') {
+        $values['id_group'] = io_safe_input($other['data'][6]);
+    }
+
+    if ($other['data'][7] != '') {
+        $values['monday'] = io_safe_input($other['data'][7]);
+    }
+
+    if ($other['data'][8] != '') {
+        $values['tuesday'] = io_safe_input($other['data'][8]);
+    }
+
+    if ($other['data'][9] != '') {
+        $values['wednesday'] = io_safe_input($other['data'][9]);
+    }
+
+    if ($other['data'][10] != '') {
+        $values['thursday'] = io_safe_input($other['data'][10]);
+    }
+
+    if ($other['data'][11] != '') {
+        $values['friday'] = io_safe_input($other['data'][11]);
+    }
+
+    if ($other['data'][12] != '') {
+        $values['saturday'] = io_safe_input($other['data'][12]);
+    }
+
+    if ($other['data'][13] != '') {
+        $values['sunday'] = io_safe_input($other['data'][13]);
+    }
+
+    if (!empty($other['data'][14])) {
+        $values['periodically_day_from'] = io_safe_input($other['data'][14]);
+    }
+
+    if (!empty($other['data'][15])) {
+        $values['periodically_day_to'] = io_safe_input($other['data'][15]);
+    }
+
+    if (!empty($other['data'][16])) {
+        $values['type_downtime'] = io_safe_input($other['data'][16]);
+    }
+
+    if (!empty($other['data'][17])) {
+        $values['type_execution'] = io_safe_input($other['data'][17]);
+    }
+
+    if (!empty($other['data'][18])) {
+        $values['type_periodicity'] = io_safe_input($other['data'][18]);
+    }
+
+    $res = db_process_sql_update('tplanned_downtime', $values, ['id' => $id]);
+
+    if ($res === false) {
+        returnError('Planned downtime could not be updated');
+    } else {
+        returnData(
+            'string',
+            [
+                'type' => 'string',
+                'data' => __('Planned downtime updated'),
+            ]
+        );
+    }
+}
+
+
+/**
+ * Delete agents in planned Downtime.
+ * e.g.: pi.php?op=set&op2=planned_downtimes_delete_agents&apipass=1234&user=admin&pass=pandora&id=4&other=1;2;3&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_delete_agents($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    if (!empty($other['data'][0])) {
+        $agents = io_safe_input($other['data']);
+        $agents = explode(';', $agents);
+        $results = false;
+        foreach ($agents as $agent) {
+            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents WHERE id_agent = %d AND id_downtime = %d', $agent, $id)) !== false) {
+                $result = db_process_sql_delete('tplanned_downtime_agents', ['id_agent' => $agent]);
+                db_process_sql_delete('tplanned_downtime_modules', ['id_agent' => $agent]);
+
+                if ($result == false) {
+                    returnError(" Agent $agent could not be deleted.");
+                } else {
+                    $results = true;
+                }
+            } else {
+                returnError(" Agent $agent is not in planned downtime.");
+            }
+        }
+
+        if ($results) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __(' Agents deleted'),
+                ]
+            );
+        }
+    }
+}
+
+
+/**
+ * Add agents planned Downtime.
+ * e.g.: api.php?op=set&op2=planned_downtimes_add_agents&apipass=1234&user=admin&pass=pandora&id=4&other=1;2;3&other_mode=url_encode_separator_|
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array                     $other
+ * The first index contains a list of agent Ids.
+ * The list separator is the character ';'.
+ * @param $thrash3 Don't use.
+ */
+function api_set_planned_downtimes_add_agents($id, $thrash1, $other, $thrash3)
+{
+    global $config;
+
+    if (defined('METACONSOLE')) {
+        return;
+    }
+
+    if (!check_acl($config['id_user'], 0, 'PM')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    if ($id == '') {
+        returnError(
+            'id cannot be left blank.'
+        );
+        return;
+    }
+
+    if (db_get_value('id', 'tplanned_downtime', 'id', $id) === false) {
+        returnError(
+            'id does not exist'
+        );
+        return;
+    }
+
+    if ($other['data'] == '') {
+        returnError(
+            'data cannot be left blank.'
+        );
+        return;
+    }
+
+    if (!empty($other['data'][0])) {
+        $agents = io_safe_input($other['data']);
+        $agents = explode(';', $agents);
+        $results = false;
+        foreach ($agents as $agent) {
+            if (db_get_value_sql(sprintf('SELECT id from tplanned_downtime_agents tpd WHERE tpd.id_agent = %d AND id_downtime = %d', $agent, $id)) === false) {
+                $res = db_process_sql_insert(
+                    'tplanned_downtime_agents',
+                    [
+                        'id_agent'          => $agent,
+                        'id_downtime'       => $id,
+                        'all_modules'       => 0,
+                        'manually_disabled' => 0,
+                    ]
+                );
+                if ($res) {
+                    $results = true;
+                }
+            } else {
+                returnError(" Agent $agent is already at the planned downtime.");
+            }
+        }
+
+        if ($results) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => __(' Agents added'),
+                ]
+            );
+        }
     }
 }
 
@@ -8412,6 +9024,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
     $values['contact'] = $safe_other_data[6];
     $values['other'] = $safe_other_data[7];
     $values['max_agents'] = $safe_other_data[8];
+    $values['password'] = $safe_other_data[9];
 
     $id_group = groups_create_group($group_name, $values);
 
@@ -11248,10 +11861,10 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
         return;
     }
 
-    $group = $other['data'][0];
+    $group = (int) $other['data'][0];
     $profile = $other['data'][1];
 
-    if (db_get_value('id_grupo', 'tgrupo', 'id_grupo', $group) === false) {
+    if ($group !== 0 && db_get_value('id_grupo', 'tgrupo', 'id_grupo', $group) === false) {
         returnError('There is not any group with the ID provided.');
         return;
     }
@@ -11358,9 +11971,6 @@ function api_get_user_profiles_info($thrash1, $thrash2, $thrash3, $returnType)
         [
             'id_perfil',
             'name',
-            'incident_view as IR',
-            'incident_edit as IW',
-            'incident_management as IM',
             'agent_view as AR',
             'agent_edit as AW',
             'agent_disable as AD',
@@ -11413,29 +12023,26 @@ function api_set_create_user_profile_info($thrash1, $thrash2, $other, $returnTyp
 
     $values = [
         'name'                => (string) $other['data'][0],
-        'incident_view'       => (bool) $other['data'][1] ? 1 : 0,
-        'incident_edit'       => (bool) $other['data'][2] ? 1 : 0,
-        'incident_management' => (bool) $other['data'][3] ? 1 : 0,
-        'agent_view'          => (bool) $other['data'][4] ? 1 : 0,
-        'agent_edit'          => (bool) $other['data'][5] ? 1 : 0,
-        'agent_disable'       => (bool) $other['data'][6] ? 1 : 0,
-        'alert_edit'          => (bool) $other['data'][7] ? 1 : 0,
-        'alert_management'    => (bool) $other['data'][8] ? 1 : 0,
-        'user_management'     => (bool) $other['data'][9] ? 1 : 0,
-        'db_management'       => (bool) $other['data'][10] ? 1 : 0,
-        'event_view'          => (bool) $other['data'][11] ? 1 : 0,
-        'event_edit'          => (bool) $other['data'][12] ? 1 : 0,
-        'event_management'    => (bool) $other['data'][13] ? 1 : 0,
-        'report_view'         => (bool) $other['data'][14] ? 1 : 0,
-        'report_edit'         => (bool) $other['data'][15] ? 1 : 0,
-        'report_management'   => (bool) $other['data'][16] ? 1 : 0,
-        'map_view'            => (bool) $other['data'][17] ? 1 : 0,
-        'map_edit'            => (bool) $other['data'][18] ? 1 : 0,
-        'map_management'      => (bool) $other['data'][19] ? 1 : 0,
-        'vconsole_view'       => (bool) $other['data'][20] ? 1 : 0,
-        'vconsole_edit'       => (bool) $other['data'][21] ? 1 : 0,
-        'vconsole_management' => (bool) $other['data'][22] ? 1 : 0,
-        'pandora_management'  => (bool) $other['data'][23] ? 1 : 0,
+        'agent_view'          => (bool) $other['data'][1] ? 1 : 0,
+        'agent_edit'          => (bool) $other['data'][2] ? 1 : 0,
+        'agent_disable'       => (bool) $other['data'][3] ? 1 : 0,
+        'alert_edit'          => (bool) $other['data'][4] ? 1 : 0,
+        'alert_management'    => (bool) $other['data'][5] ? 1 : 0,
+        'user_management'     => (bool) $other['data'][6] ? 1 : 0,
+        'db_management'       => (bool) $other['data'][7] ? 1 : 0,
+        'event_view'          => (bool) $other['data'][8] ? 1 : 0,
+        'event_edit'          => (bool) $other['data'][9] ? 1 : 0,
+        'event_management'    => (bool) $other['data'][10] ? 1 : 0,
+        'report_view'         => (bool) $other['data'][11] ? 1 : 0,
+        'report_edit'         => (bool) $other['data'][12] ? 1 : 0,
+        'report_management'   => (bool) $other['data'][13] ? 1 : 0,
+        'map_view'            => (bool) $other['data'][14] ? 1 : 0,
+        'map_edit'            => (bool) $other['data'][15] ? 1 : 0,
+        'map_management'      => (bool) $other['data'][16] ? 1 : 0,
+        'vconsole_view'       => (bool) $other['data'][17] ? 1 : 0,
+        'vconsole_edit'       => (bool) $other['data'][18] ? 1 : 0,
+        'vconsole_management' => (bool) $other['data'][19] ? 1 : 0,
+        'pandora_management'  => (bool) $other['data'][20] ? 1 : 0,
     ];
 
     $return = db_process_sql_insert('tperfil', $values);
@@ -11475,29 +12082,26 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
 
     $values = [
         'name'                => $other['data'][0] == '' ? $profile['name'] : (string) $other['data'][0],
-        'incident_view'       => $other['data'][1] == '' ? $profile['incident_view'] : (bool) $other['data'][1] ? 1 : 0,
-        'incident_edit'       => $other['data'][2] == '' ? $profile['incident_edit'] : (bool) $other['data'][2] ? 1 : 0,
-        'incident_management' => $other['data'][3] == '' ? $profile['incident_management'] : (bool) $other['data'][3] ? 1 : 0,
-        'agent_view'          => $other['data'][4] == '' ? $profile['agent_view'] : (bool) $other['data'][4] ? 1 : 0,
-        'agent_edit'          => $other['data'][5] == '' ? $profile['agent_edit'] : (bool) $other['data'][5] ? 1 : 0,
-        'agent_disable'       => $other['data'][6] == '' ? $profile['agent_disable'] : (bool) $other['data'][6] ? 1 : 0,
-        'alert_edit'          => $other['data'][7] == '' ? $profile['alert_edit'] : (bool) $other['data'][7] ? 1 : 0,
-        'alert_management'    => $other['data'][8] == '' ? $profile['alert_management'] : (bool) $other['data'][8] ? 1 : 0,
-        'user_management'     => $other['data'][9] == '' ? $profile['user_management'] : (bool) $other['data'][9] ? 1 : 0,
-        'db_management'       => $other['data'][10] == '' ? $profile['db_management'] : (bool) $other['data'][10] ? 1 : 0,
-        'event_view'          => $other['data'][11] == '' ? $profile['event_view'] : (bool) $other['data'][11] ? 1 : 0,
-        'event_edit'          => $other['data'][12] == '' ? $profile['event_edit'] : (bool) $other['data'][12] ? 1 : 0,
-        'event_management'    => $other['data'][13] == '' ? $profile['event_management'] : (bool) $other['data'][13] ? 1 : 0,
-        'report_view'         => $other['data'][14] == '' ? $profile['report_view'] : (bool) $other['data'][14] ? 1 : 0,
-        'report_edit'         => $other['data'][15] == '' ? $profile['report_edit'] : (bool) $other['data'][15] ? 1 : 0,
-        'report_management'   => $other['data'][16] == '' ? $profile['report_management'] : (bool) $other['data'][16] ? 1 : 0,
-        'map_view'            => $other['data'][17] == '' ? $profile['map_view'] : (bool) $other['data'][17] ? 1 : 0,
-        'map_edit'            => $other['data'][18] == '' ? $profile['map_edit'] : (bool) $other['data'][18] ? 1 : 0,
-        'map_management'      => $other['data'][19] == '' ? $profile['map_management'] : (bool) $other['data'][19] ? 1 : 0,
-        'vconsole_view'       => $other['data'][20] == '' ? $profile['vconsole_view'] : (bool) $other['data'][20] ? 1 : 0,
-        'vconsole_edit'       => $other['data'][21] == '' ? $profile['vconsole_edit'] : (bool) $other['data'][21] ? 1 : 0,
-        'vconsole_management' => $other['data'][22] == '' ? $profile['vconsole_management'] : (bool) $other['data'][22] ? 1 : 0,
-        'pandora_management'  => $other['data'][23] == '' ? $profile['pandora_management'] : (bool) $other['data'][23] ? 1 : 0,
+        'agent_view'          => $other['data'][1] == '' ? $profile['agent_view'] : (bool) $other['data'][1] ? 1 : 0,
+        'agent_edit'          => $other['data'][2] == '' ? $profile['agent_edit'] : (bool) $other['data'][2] ? 1 : 0,
+        'agent_disable'       => $other['data'][3] == '' ? $profile['agent_disable'] : (bool) $other['data'][3] ? 1 : 0,
+        'alert_edit'          => $other['data'][4] == '' ? $profile['alert_edit'] : (bool) $other['data'][4] ? 1 : 0,
+        'alert_management'    => $other['data'][5] == '' ? $profile['alert_management'] : (bool) $other['data'][5] ? 1 : 0,
+        'user_management'     => $other['data'][6] == '' ? $profile['user_management'] : (bool) $other['data'][6] ? 1 : 0,
+        'db_management'       => $other['data'][7] == '' ? $profile['db_management'] : (bool) $other['data'][7] ? 1 : 0,
+        'event_view'          => $other['data'][8] == '' ? $profile['event_view'] : (bool) $other['data'][8] ? 1 : 0,
+        'event_edit'          => $other['data'][9] == '' ? $profile['event_edit'] : (bool) $other['data'][9] ? 1 : 0,
+        'event_management'    => $other['data'][10] == '' ? $profile['event_management'] : (bool) $other['data'][10] ? 1 : 0,
+        'report_view'         => $other['data'][11] == '' ? $profile['report_view'] : (bool) $other['data'][11] ? 1 : 0,
+        'report_edit'         => $other['data'][12] == '' ? $profile['report_edit'] : (bool) $other['data'][12] ? 1 : 0,
+        'report_management'   => $other['data'][13] == '' ? $profile['report_management'] : (bool) $other['data'][13] ? 1 : 0,
+        'map_view'            => $other['data'][14] == '' ? $profile['map_view'] : (bool) $other['data'][14] ? 1 : 0,
+        'map_edit'            => $other['data'][15] == '' ? $profile['map_edit'] : (bool) $other['data'][15] ? 1 : 0,
+        'map_management'      => $other['data'][16] == '' ? $profile['map_management'] : (bool) $other['data'][16] ? 1 : 0,
+        'vconsole_view'       => $other['data'][17] == '' ? $profile['vconsole_view'] : (bool) $other['data'][17] ? 1 : 0,
+        'vconsole_edit'       => $other['data'][18] == '' ? $profile['vconsole_edit'] : (bool) $other['data'][18] ? 1 : 0,
+        'vconsole_management' => $other['data'][19] == '' ? $profile['vconsole_management'] : (bool) $other['data'][19] ? 1 : 0,
+        'pandora_management'  => $other['data'][20] == '' ? $profile['pandora_management'] : (bool) $other['data'][20] ? 1 : 0,
     ];
 
     $return = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
@@ -11541,101 +12145,6 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
         returnError('The user profile could not be deleted');
     } else {
         returnData($returnType, ['type' => 'array', 'data' => 1]);
-    }
-}
-
-
-/**
- * Create new incident in Pandora.
- *
- * @param $thrash1 Don't use.
- * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <title>;<description>;
- *              <origin>;<priority>;<state>;<group> in this order and separator char
- *              (after text ; ) and separator (pass in param othermode as
- *              othermode=url_encode_separator_<separator>)
- *              example:
- *
- *              api.php?op=set&op2=new_incident&other=titulo|descripcion%20texto|Logfiles|2|10|12&other_mode=url_encode_separator_|
- *
- * @param $thrash3 Don't use.
- */
-function api_set_new_incident($thrash1, $thrash2, $other, $thrash3)
-{
-    global $config;
-
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    if (!check_acl($config['id_user'], 0, 'IW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    $title = $other['data'][0];
-    $description = $other['data'][1];
-    $origin = $other['data'][2];
-    $priority = $other['data'][3];
-    $id_creator = 'API';
-    $state = $other['data'][4];
-    $group = $other['data'][5];
-
-    $values = [
-        'inicio'        => 'NOW()',
-        'actualizacion' => 'NOW()',
-        'titulo'        => $title,
-        'descripcion'   => $description,
-        'id_usuario'    => 'API',
-        'origen'        => $origin,
-        'estado'        => $state,
-        'prioridad'     => $priority,
-        'id_grupo'      => $group,
-        'id_creator'    => $id_creator,
-    ];
-    $idIncident = db_process_sql_insert('tincidencia', $values);
-
-    if ($idIncident === false) {
-        returnError('A new incident could not be created.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $idIncident]);
-    }
-}
-
-
-/**
- * Add note into a incident.
- *
- * @param $id string Username author of note.
- * @param $id2 integer ID of incident.
- * @param $other string Note.
- * @param $thrash2 Don't use.
- */
-function api_set_new_note_incident($id, $id2, $other, $thrash2)
-{
-    global $config;
-
-    if (defined('METACONSOLE')) {
-        return;
-    }
-
-    if (!check_acl($config['id_user'], 0, 'IW')) {
-        returnError('forbidden', 'string');
-        return;
-    }
-
-    $values = [
-        'id_usuario'  => $id,
-        'id_incident' => $id2,
-        'nota'        => $other['data'],
-    ];
-
-    $idNote = db_process_sql_insert('tnota', $values);
-
-    if ($idNote === false) {
-        returnError('A new incident could not be created+.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $idNote]);
     }
 }
 
@@ -12608,8 +13117,10 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         $error_msg = '';
         if ($other['data'][2] != '') {
+            // Id agent assignment. If come from pandora_revent, id_agent can be 0.
             $id_agent = $other['data'][2];
-            if (is_metaconsole()) {
+            // To the next if is metaconsole and id_agent is not none.
+            if (is_metaconsole() === true && $id_agent > 0) {
                 // On metaconsole, connect with the node to check the permissions
                 if (empty($values['server_id'])) {
                     $agent_cache = db_get_row('tmetaconsole_agent', 'id_tagente', $id_agent);
@@ -12632,7 +13143,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
             $values['id_agente'] = $id_agent;
 
-            if (!util_api_check_agent_and_print_error($id_agent, 'string', 'AR')) {
+            if ((int) $id_agent > 0 && util_api_check_agent_and_print_error($id_agent, 'string', 'AR') === false) {
                 if (is_metaconsole()) {
                     metaconsole_restore_db();
                 }

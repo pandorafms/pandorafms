@@ -196,7 +196,7 @@ if ($view_graph) {
     }
 
     $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View graph'),

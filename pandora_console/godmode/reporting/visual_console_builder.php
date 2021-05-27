@@ -14,6 +14,8 @@
 global $config;
 global $statusProcessInDB;
 
+use PandoraFMS\User;
+
 check_login();
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
@@ -753,8 +755,8 @@ if (!defined('METACONSOLE')) {
     $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$idVisualConsole.'&refr='.$view_refresh;
 }
 
-// Hash for auto-auth in public link
-$hash = md5($config['dbpass'].$idVisualConsole.$config['id_user']);
+// Hash for auto-auth in public link.
+$hash = User::generatePublicHash();
 
 $buttons = [];
 

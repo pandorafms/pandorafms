@@ -742,7 +742,7 @@ switch ($action) {
         }
 
         $own_info = get_user_info($config['id_user']);
-        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM')) {
+        if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'RM') || check_acl($config['id_user'], 0, 'RR')) {
             $return_all_group = true;
         } else {
             $return_all_group = false;
@@ -3209,7 +3209,7 @@ if ($enterpriseEnable) {
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View report'),

@@ -16,6 +16,10 @@
 require_once '../../include/config.php';
 
 $legacy = (bool) get_parameter('legacy', $config['legacy_vc']);
+if (is_metaconsole() === true) {
+    $config['requirements_use_base_url'] = true;
+}
+
 if ($legacy === false) {
     include_once $config['homedir'].'/operation/visual_console/public_view.php';
 } else {

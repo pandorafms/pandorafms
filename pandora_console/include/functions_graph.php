@@ -2978,9 +2978,9 @@ function grafico_incidente_prioridad()
 {
     global $config;
 
-    $integria_ticket_count_by_priority_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
+    $integria_ticket_count_by_priority_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
 
-    $integria_priorities_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', '', false, 'json');
+    $integria_priorities_map_json = integria_api_call(null, null, null, null, 'get_incident_priorities', '', false, 'json');
 
     $integria_ticket_count_by_priority = json_decode($integria_ticket_count_by_priority_json, true);
     $integria_priorities_map = json_decode($integria_priorities_map_json, true);
@@ -3023,9 +3023,9 @@ function graph_incidents_status()
 {
     global $config;
 
-    $integria_ticket_count_by_status_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['estado', 30], false, '', '|;|');
+    $integria_ticket_count_by_status_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['estado', 30], false, '', '|;|');
 
-    $integria_status_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', '', false, 'json');
+    $integria_status_map_json = integria_api_call(null, null, null, null, 'get_incidents_status', '', false, 'json');
 
     $integria_ticket_count_by_status = json_decode($integria_ticket_count_by_status_json, true);
     $integria_status_map = json_decode($integria_status_map_json, true);
@@ -3068,9 +3068,9 @@ function graphic_incident_group()
 {
     global $config;
 
-    $integria_ticket_count_by_group_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
+    $integria_ticket_count_by_group_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
 
-    $integria_group_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', '', false, 'json');
+    $integria_group_map_json = integria_api_call(null, null, null, null, 'get_groups', '', false, 'json');
 
     $integria_ticket_count_by_group = json_decode($integria_ticket_count_by_group_json, true);
     $integria_group_map = json_decode($integria_group_map_json, true);
@@ -3114,7 +3114,7 @@ function graphic_incident_user()
 {
     global $config;
 
-    $integria_ticket_count_by_user_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
+    $integria_ticket_count_by_user_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
 
     $integria_ticket_count_by_user = json_decode($integria_ticket_count_by_user_json, true);
 
@@ -3682,16 +3682,9 @@ function graph_custom_sql_graph(
         }
     }
 
-    if ($id != null) {
-        $historical_db = db_get_value_sql(
-            'SELECT historical_db from treport_content where id_rc ='.$content['id_rc']
-        );
-    } else {
-        $historical_db = $content['historical_db'];
-    }
-
-    if ($report_content['external_source'] != '') {
-        $sql = io_safe_output($report_content['external_source']);
+    $historical_db = $content['historical_db'];
+    if ($content['external_source'] != '') {
+        $sql = io_safe_output($content['external_source']);
     } else {
         $sql = db_get_row(
             'treport_custom_sql',

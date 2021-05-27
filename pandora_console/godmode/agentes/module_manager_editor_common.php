@@ -115,7 +115,12 @@ function add_component_selection($id_network_component_type)
         '',
         '---'.__('Manual setup').'---',
         0,
-        true
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 460px; '
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';
@@ -1569,10 +1574,6 @@ $(document).ready (function () {
     });
 
     disabled_two_tailed(disabledBecauseInPolicy);
-    $('#checkbox-dynamic_two_tailed').change (function() {
-        disabled_two_tailed(disabledBecauseInPolicy);
-    });
-
 
     //Dynamic_options_advance;
     $('.hide_dinamic').hide();
@@ -1641,15 +1642,10 @@ function disabled_status (disabledBecauseInPolicy) {
 }
 
 function disabled_two_tailed (disabledBecauseInPolicy) {
-    if($('#checkbox-dynamic_two_tailed').prop('checked')){
-        $('#text-dynamic_max').prop('readonly', false);
-        $('#text-dynamic_max').removeClass('readonly');
-    }
-    else{
-        if (disabledBecauseInPolicy == 0){
-            $('#text-dynamic_max').prop('readonly', true);
-            $('#text-dynamic_max').addClass('readonly');
-        }
+    if (disabledBecauseInPolicy == 1){
+            $('#text-dynamic_max')
+                .prop('readonly', true)
+                .addClass('readonly');
     }
 }
 

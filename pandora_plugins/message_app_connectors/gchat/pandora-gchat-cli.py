@@ -88,9 +88,9 @@ def sendMessage(url, message):
         header = {'Content-Type': 'application/json; charset: UTF-8'}
         response = requests.post(url, headers=header, data=message)
 
-        print(f"Mesage sent succefuly: {response.status_code}")
+        print(f"Message sent successfully: {response.status_code}")
     except:
-        print("Error requested api url. Skiping graph generation")
+        print("Error requested api url. skipping graph generation")
         return None
     return response
 

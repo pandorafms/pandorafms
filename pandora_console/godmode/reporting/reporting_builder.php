@@ -2486,7 +2486,7 @@ switch ($action) {
                             0
                         );
                         $values['exception_condition'] = (int) get_parameter(
-                            'radiobutton_exception_condition',
+                            'exception_condition',
                             0
                         );
                         $values['exception_condition_value'] = get_parameter(

@@ -21,7 +21,7 @@ parser.add_argument('--author_icon_url', help='Alert custom author icon url ', d
 parser.add_argument('--thumb', help='Custom thumbnail url', default='')
 parser.add_argument('--api_conf', help='Api configuration parameters in coma separate keypairs. EX "user=admin,pass=pandora,api_pass=1234,api_url=http://test.artica.es/pandora_console/include/api.php"')
 parser.add_argument('--module_graph', help='Uses pandora API to generate a module graph and attach it to the alert needs module_id and interval parameters in coma separate keypairs. EX "module_id=55,interval=3600"')
-parser.add_argument('--tmp_dir', help='Temporary path to store grph images', default='/tmp')
+parser.add_argument('--tmp_dir', help='Temporary path to store graph images', default='/tmp')
 
 
 args = parser.parse_args()
@@ -50,15 +50,15 @@ def parse_api_conf(cConf):
         apid = parse_dic(cConf)
         
         if apid.get("user") is None:
-            print ("Error no user defined in api_conf keypairs, skiping graph generation.")
+            print ("Error no user defined in api_conf keypairs, skipping graph generation.")
             return
         
         if apid.get("pass") is None:
-            print ("Error no password defined in api_conf keypairs, skiping graph generation.")
+            print ("Error no password defined in api_conf keypairs, skipping graph generation.")
             return
 
         if apid.get("api_pass") is None:
-            print ("Error no Api pass defined in api_conf keypairs, skiping graph generation.")
+            print ("Error no Api pass defined in api_conf keypairs, skipping graph generation.")
             return
 
         if apid.get("api_url") is None:
@@ -78,7 +78,7 @@ def parse_graph_conf(cGraph):
     # Parse Api config
         graphd = parse_dic(cGraph)
         if graphd.get("module_id") is None:
-            print ("error no module_id defined in module_graph keypairs, skiping graph generation.")
+            print ("error no module_id defined in module_graph keypairs, skipping graph generation.")
             return
         
         if graphd.get("interval") is None:
@@ -91,19 +91,19 @@ def parse_graph_conf(cGraph):
 def get_graph_by_moduleid (baseUrl,pUser, pPass, apiPass, moduleId, graphInterval) : 
     sep="url_encode_separator_%7C"
     try:
-        url = f"{baseUrl}?op=get&op2=module_graph&id={moduleId}&other={graphInterval}%7C1&other_mode={sep}C&apipass={apiPass}&api=1&user={pUser}&pass={pPass}"
+        url = f"{baseUrl}?op=get&op2=module_graph&id={moduleId}&other={graphInterval}%7C1&other_mode={sep}&apipass={apiPass}&api=1&user={pUser}&pass={pPass}"
         graph = requests.get(url)
         if graph.status_code != 200:
-            print (f"Error requested api url, status code: {graph.status_code}. Skiping graph generation")
+            print (f"Error requested api url, status code: {graph.status_code}. skipping graph generation")
             return None
         if graph.text == "auth error":
-            print (f"Error requested Pandora api url, status code: {graph.text}. Skiping graph generation")
+            print (f"Error requested Pandora api url, status code: {graph.text}. skipping graph generation")
             return None
         if graph.text == "Id does not exist in database.":
-            print (f"Error requested Pandora api url, status code: {graph.text}. Skiping graph generation")
+            print (f"Error requested Pandora api url, status code: {graph.text}. skipping graph generation")
             return None
     except:
-        print("Error requested api url. Skiping graph generation")
+        print("Error requested api url. skipping graph generation")
         return None
 
     return graph

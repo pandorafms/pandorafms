@@ -2163,6 +2163,11 @@ div.loading {
 div.loading img {
   float: right;
 }
+
+textarea.resizev {
+  resize: vertical;
+}
+
 /* Tablesorter jQuery pager */
 div.pager {
   margin-left: 10px;

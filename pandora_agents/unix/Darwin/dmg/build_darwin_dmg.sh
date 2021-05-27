@@ -17,7 +17,7 @@ function get_notarization_info() {
 if [ "$CI_PROJECT_DIR" != "" ]; then
 	LOCALINST="$CODEHOME/pandora_agents/unix/Darwin/dmg"
 else
-	LOCALINST="/root/code/pandorafms/pandora_agents/unix/Darwin/dmg"
+	LOCALINST="/opt/code/pandorafms/pandora_agents/unix/Darwin/dmg"
 fi
 
 # DMG package name
@@ -38,7 +38,7 @@ fi
 if [ "$#" -ge 3 ]; then
 	BUILD_PATH="$3"
 else
-	BUILD_PATH="/root/code/pandorafms/pandora_agents/unix/Darwin/dmg"
+	BUILD_PATH="/opt/code/pandorafms/pandora_agents/unix/Darwin/dmg"
 fi
 
 BUILD_DMG="$BUILD_PATH/build"
@@ -46,6 +46,7 @@ BUILD_TMP="$BUILD_PATH/buildtmp"
 APPLE_USER="kevin.rojas@pandorafms.com"
 APPLE_PASS="@keychain:signing"
 APPLE_DEVNAME="Developer ID Installer: Artica Soluciones Tecnologicas SL"
+APPLE_DEVAPP="Developer ID Application: Artica Soluciones Tecnologicas SL"
 APPLE_DEVID="Q35RP2Y7WU"
 
 FULLNAME="$DMGNAME-$VERSION.dmg"
@@ -96,23 +97,29 @@ NOTARIZE=$(xcrun altool --notarize-app \
 	--asc-provider "$APPLE_DEVID" \
 	--username "$APPLE_USER" \
 	--password "$APPLE_PASS" \
- 	--file "$BUILD_TMP/pandorafms_agent.pkg" 2>&1)
+	--file "$BUILD_TMP/pandorafms_agent.pkg" 2>&1)
+
+if [ $(echo $NOTARIZE |grep -c UUID) -ne 1 ]
+then
+	printf "Unable to send the package to notarization. Exiting..."
+	error
+fi
 
 RUUID=$(echo $NOTARIZE | awk '{print $NF}')
 
-printf "\nPkg sent for notarization (Request UUID= $RUUID ). This may take a few minutes...\n"
+printf "\PKG sent for notarization (Request UUID= $RUUID ). This may take a few minutes...\n"
 
 # In order to staple the pkg, notarization must be approved!
 STATUS=1
 while [ $STATUS -eq 1 ]; do
 	get_notarization_info "$RUUID"
-	printf "Pkg not yet notarized by Apple. Trying again in 60 seconds...\n"
+	printf "PKG not yet notarized by Apple. Trying again in 60 seconds...\n"
 	sleep 60
 done
 
 if [ $MESSAGE -eq 1 ]
 then
-	echo "Package notarized. Stapling pkg..."
+	echo "Package notarized. Stapling PKG..."
 	xcrun stapler staple "$BUILD_TMP/pandorafms_agent.pkg" || error
 fi
 
@@ -137,8 +144,8 @@ SetFile -a C "$BUILD_DMG/$FULLNAME" || error
 
 # Sign DMG. Not needed, but does not harm
 printf "Signing DMG file...\n"
-codesign --timestamp --options=runtime --sign "$APPLE_DEVNAME ($APPLE_DEVID)" \
-	"$BUILD_DMG/$FULLNAME"
+codesign --timestamp --options=runtime --sign "$APPLE_DEVAPP ($APPLE_DEVID)" \
+	"$BUILD_DMG/$FULLNAME" || error
 
 # Copy and clean folder
 rm -Rf $BUILD_TMP

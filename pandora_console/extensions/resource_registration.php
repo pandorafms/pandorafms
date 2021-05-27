@@ -1096,13 +1096,8 @@ function resource_registration_extension_main()
     }
 
     $xml = simplexml_load_file($_FILES['resource_upload']['tmp_name'], null, LIBXML_NOCDATA);
-    if ($xml === false) {
-        ui_print_error_message(
-            __('Error uploading resource. Check if the selected file is a valid resource template in .ptr format')
-        );
-    } else {
-        process_upload_xml($xml);
-    }
+
+    process_upload_xml($xml);
 }
 
 

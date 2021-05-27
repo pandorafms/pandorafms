@@ -35,6 +35,8 @@ if (isset($config['homedir'])) {
     include_once $config['homedir'].'/include/functions_groups.php';
     include_once $config['homedir'].'/include/functions_users.php';
     include_once $config['homedir'].'/include/functions_html.php';
+    // For standard breadcrumbs.
+    ui_require_css_file('discovery');
 }
 
 
@@ -4299,6 +4301,99 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     }
 
     return $fullurl.$url;
+}
+
+
+/**
+ * Generates the Pandora 75x Standard views header.
+ * This function should be the standard for
+ * generating the headers of all PFMS views.
+ *
+ * @param string  $title       The title of this view.
+ * @param string  $icon        Icon for show.
+ * @param boolean $return      If true, the string with the formed header is returned.
+ * @param string  $help        String for attach at end a link for help.
+ * @param boolean $godmode     If false, it will created like operation mode.
+ * @param array   $options     Tabs allowed
+ * @param array   $breadcrumbs Breadcrumbs with the walk.
+ *
+ *  EXAMPLE:
+ *  ```
+ *   $buttons['option_1'] = [
+ *     'active' => false,
+ *     'text'   => '<a href="'.$url.'">'.html_print_image(
+ *         'images/wand.png',
+ *         true,
+ *         [ 'title' => __('Option 1 for show'), 'class' => 'invert_filter' ]
+ *     ).'</a>',
+ *    ];
+ *
+ *    ui_print_standard_header(
+ *      __('Favorites'),
+ *      'images/op_reporting.png',
+ *      false,
+ *      '',
+ *      true,
+ *      $buttons,
+ *      [
+ *         [ 'link'  => '', 'label' => __('Topology maps') ],
+ *         [ 'link'  => '', 'label' => __('Visual console') ],
+ *      ]
+ *  );
+ *  ```
+ *
+ * @return string If apply
+ */
+function ui_print_standard_header(
+    string $title,
+    string $icon='',
+    bool $return=false,
+    string $help='',
+    bool $godmode=false,
+    array $options=[],
+    array $breadcrumbs=[]
+) {
+    // Create the breadcrumb.
+    $headerInformation = new HTML();
+    $headerInformation->setBreadcrum([]);
+    // Prepare the breadcrumbs.
+    $countBreadcrumbs = count($breadcrumbs);
+    $countUnitBreadcrumb = 0;
+    $applyBreadcrumbs = [];
+    foreach ($breadcrumbs as $unitBreadcrumb) {
+        // Count new breadcrumb.
+        $countUnitBreadcrumb++;
+        // Apply selected if is the last.
+        $unitBreadcrumb['selected'] = ($countBreadcrumbs === $countUnitBreadcrumb);
+        // Apply for another breadcrumb.
+        $applyBreadcrumbs[] = $unitBreadcrumb;
+    }
+
+    // Attach breadcrumbs.
+    $headerInformation->prepareBreadcrum(
+        $applyBreadcrumbs,
+        true
+    );
+    // Create the header.
+    $output = ui_print_page_header(
+        $title,
+        $icon,
+        true,
+        $help,
+        $godmode,
+        $options,
+        false,
+        '',
+        GENERIC_SIZE_TEXT,
+        '',
+        $headerInformation->printHeader(true)
+    );
+
+    if ($return !== true) {
+        echo $output;
+    } else {
+        return $output;
+    }
 }
 
 

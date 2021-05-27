@@ -95,7 +95,7 @@ if ($id_group) {
 }
 
 // Header
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     agents_meta_print_header();
     $sec = 'advanced';
 } else {
@@ -105,13 +105,24 @@ if (defined('METACONSOLE')) {
         $title_in_header = __('Create group');
     }
 
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         $title_in_header,
         'images/group.png',
         false,
         '',
-        true,
-        ''
+        false,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage agents group'),
+            ],
+        ]
     );
     $sec = 'gagente';
 }

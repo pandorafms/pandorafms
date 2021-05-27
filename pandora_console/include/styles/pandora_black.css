@@ -55,7 +55,9 @@ table.databox,
 input.sub,
 .introjs-tooltip,
 button.sub,
-.bg_general {
+.bg_general,
+table.agent_info_table thead > tr:first-child th,
+table.agent_info_table tr {
   background-color: #222 !important;
   color: #fff !important;
 }
@@ -245,20 +247,28 @@ div#foot {
 table.table_modal_alternate tr:nth-child(odd) td {
   background-color: #222 !important;
   color: #fff;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 table.table_modal_alternate tr:nth-child(even) td {
   background-color: #111 !important;
   color: #fff;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 /* events.css */
 table.black_table_modal_alternate tr:nth-child(odd) td {
   background-color: #222 !important;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 table.black_table_modal_alternate tr:nth-child(even) td {
   background-color: #111 !important;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 /* tables.css */
@@ -1051,9 +1061,16 @@ li > input[type="password"] {
 
 a:hover {
   text-decoration: underline;
-  color: #fff;
+  color: #9b9b9b;
+  font-weight: bold;
 }
 
 input.search_input {
   background-image: url("../../images/input_zoom.disabled.png");
+}
+
+.agents_modules_table,
+.agents_modules_table td,
+.agents_modules_table th {
+  border: 1px solid #707070;
 }

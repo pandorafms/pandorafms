@@ -208,6 +208,7 @@ a {
 a:hover {
   color: #373737;
   text-decoration: underline;
+  font-weight: bold;
 }
 :focus {
   outline-color: #82b92e;

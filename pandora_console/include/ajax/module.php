@@ -1140,7 +1140,7 @@ if (check_login()) {
 
             // Adds tag context information.
             if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
-                $data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/tag_red.png', true, ['id' => 'tag-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
+                $data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/tag_red.png', true, ['id' => 'tag-details-'.$module['id_agente_modulo'], 'class' => 'img_help invert_filter']).'</a> ';
             }
 
             // Adds relations context information.

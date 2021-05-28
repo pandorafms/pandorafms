@@ -1074,3 +1074,7 @@ input.search_input {
 .agents_modules_table th {
   border: 1px solid #707070;
 }
+
+.white-table-graph-content {
+  width: auto;
+}

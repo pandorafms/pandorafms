@@ -1257,7 +1257,14 @@ if ($create_alert || $update_alert) {
             foreach ($other_actions as $action) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
-                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a> </td>';
+                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a> </td>';
                 $data[1] .= '</tr>';
             }
         }
@@ -1278,7 +1285,34 @@ if ($create_alert || $update_alert) {
         }
 
         if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
-                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter', 'alt' => __('Delete')]).'</a>';
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/copy.png',
+                    true,
+                    [
+                        'alt'   => __('Duplicate'),
+                        'title' => __('Duplicate'),
+                    ]
+                ).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Update'),
+                    ]
+                ).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image(
+                    'images/add.png',
+                    true,
+                    [
+                        'title' => __('Add action'),
+                    ]
+                ).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a>';
 
 
                 $data[9] = html_print_checkbox_extended(
@@ -1409,7 +1443,7 @@ if ($create_alert || $update_alert) {
 
                     echo '<div class="right mrgn_lft_10px;">';
                     html_print_input_hidden('multiple_delete', 1);
-                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
+                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete mrgn_btn_10px"');
                     echo '</div>';
                     echo '</form>';
                 }

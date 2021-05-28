@@ -1027,6 +1027,14 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   border-radius: 3px;
 }
 
+table.alternate tr:nth-child(2n + 1) td {
+  background-color: #222;
+}
+
+table.alternate tr:nth-child(2n) td {
+  background-color: #111;
+}
+
 .header_title {
   font-weight: 600;
   font-size: 10.5pt;

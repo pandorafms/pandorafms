@@ -2011,6 +2011,11 @@ div.loading {
 div.loading img {
   float: right;
 }
+
+textarea.resizev {
+  resize: vertical;
+}
+
 /* Tablesorter jQuery pager */
 div.pager {
   margin-left: 10px;
@@ -8289,6 +8294,12 @@ div.stat-win-spinner img {
   width: 100px !important;
   margin-left: 20px;
 }
+
+.btn_update_online_open {
+  float: right;
+  margin-bottom: 20px;
+}
+
 .legendLabel {
   font-family: inherit !important;
 }

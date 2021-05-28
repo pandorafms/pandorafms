@@ -1019,7 +1019,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(50,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
@@ -1072,7 +1072,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(50,5) default NULL;
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`);
 ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
@@ -1556,7 +1556,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
 -- ---------------------------------------------------------------------
-ALTER TABLE tagente_datos MODIFY `datos` double(22,5);
+ALTER TABLE tagente_datos MODIFY `datos` double(50,5);
 ALTER TABLE `tagente_datos` DROP INDEX `data_index1`, ADD INDEX `data_index1` (`id_agente_modulo`, `utimestamp`);
 
 -- ---------------------------------------------------------------------
@@ -1567,7 +1567,7 @@ ALTER TABLE `tagente_datos_string` MODIFY COLUMN `datos` mediumtext NOT NULL, DR
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos_inc`
 -- ---------------------------------------------------------------------
-ALTER TABLE tagente_datos_inc MODIFY `datos` double(22,5);
+ALTER TABLE tagente_datos_inc MODIFY `datos` double(50,5);
 
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
@@ -2341,7 +2341,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 -- ---------------------------------------------------------------------
 -- Table `tevento`
 -- ---------------------------------------------------------------------
-ALTER TABLE `tevento` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 

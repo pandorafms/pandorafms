@@ -176,16 +176,24 @@ if (is_metaconsole()) {
     // Print header
     ui_meta_print_header(__('Reporting'), '', $options);
 } else {
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         reporting_get_name($id_report),
         'images/op_reporting.png',
         false,
         '',
         false,
         $options,
-        false,
-        '',
-        55
+        [
+            [
+                'link'  => '',
+                'label' => __('Reporting'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Custom reports'),
+            ],
+        ]
     );
 }
 

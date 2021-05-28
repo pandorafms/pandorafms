@@ -1,6 +1,6 @@
 <?php
 /**
- * Message Edition.
+ * Compose message view
  *
  * @category   Workspace
  * @package    Pandora FMS
@@ -82,13 +82,23 @@ $buttons['create_message'] = [
 ];
 
 // Header.
-ui_print_page_header(
-    __('Messages'),
+ui_print_standard_header(
+    __('Compose message'),
     'images/email_mc.png',
     false,
     '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Workspace'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Messages'),
+        ],
+    ]
 );
 
 // Read a message.

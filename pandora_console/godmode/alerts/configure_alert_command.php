@@ -105,6 +105,7 @@ if ($update_command) {
             $alert['command'] = $command;
             $alert['description'] = $description;
             $alert['id_group'] = $id_group;
+            $alert['fields_hidden'] = io_json_mb_encode($fields_hidden);
         }
     }
 

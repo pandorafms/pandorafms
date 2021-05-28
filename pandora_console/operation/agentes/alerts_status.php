@@ -188,12 +188,25 @@ if ($idAgent != 0) {
 
     $print_agent = true;
 
-    if (!is_metaconsole()) {
-        ui_print_page_header(
+    if (is_metaconsole() === false) {
+        // Header.
+        ui_print_standard_header(
             __('Alert detail'),
             'images/op_alerts.png',
             false,
-            ''
+            '',
+            false,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
         );
     } else {
         ui_meta_print_header(__('Alerts view'));

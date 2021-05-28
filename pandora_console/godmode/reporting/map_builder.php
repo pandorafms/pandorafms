@@ -1,16 +1,32 @@
 <?php
+/**
+ * Map builder console.
+ *
+ * @category   Topology maps
+ * @package    Pandora FMS
+ * @subpackage Visual consoles
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
@@ -32,9 +48,7 @@ if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
     exit;
 }
 
-
-
-if (!$is_metaconsole) {
+if ($is_metaconsole === false) {
     $url_visual_console                 = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
     $url_visual_console_favorite        = 'index.php?sec=network&sec2=godmode/reporting/visual_console_favorite';
     $url_visual_console_template        = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template';
@@ -102,14 +116,24 @@ if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     ];
 }
 
-if (!$is_metaconsole) {
-    ui_print_page_header(
-        __('Reporting').' &raquo; '.__('Visual Console'),
+if ($is_metaconsole === false) {
+    ui_print_standard_header(
+        __('Visual Console List'),
         'images/op_reporting.png',
         false,
         '',
-        false,
-        $buttons
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
     );
 } else {
     ui_meta_print_header(

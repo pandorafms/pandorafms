@@ -33,13 +33,26 @@ $snmp_type = (int) get_parameter('snmp_type', 0);
 $snmp_value = (string) get_parameter('snmp_value', '');
 $generate_trap = (bool) get_parameter('generate_trap', 0);
 
-ui_print_page_header(
+// Header.
+ui_print_standard_header(
     __('SNMP Trap generator'),
     'images/op_snmp.png',
     false,
     'snmp_trap_generator_view',
-    false
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SMNP'),
+        ],
+    ]
 );
+
 
 if ($generate_trap) {
     $result = true;

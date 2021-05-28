@@ -1,15 +1,32 @@
 <?php
-// ______                 __                     _______ _______ _______
-// |   __ \.---.-.-----.--|  |.-----.----.---.-. |    ___|   |   |     __|
-// |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
-// |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
-//
-// ============================================================================
-// Copyright (c) 2007-2021 Artica Soluciones Tecnologicas, http://www.artica.es
-// This code is NOT free software. This code is NOT licenced under GPL2 licence
-// You cannnot redistribute it without written permission of copyright holder.
-// ============================================================================
-// Load global variables
+/**
+ * Network map.
+ *
+ * @category   View
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 // Check user credentials.
@@ -645,12 +662,24 @@ switch ($tab) {
             <?php
         }
 
-        ui_print_page_header(
-            __('Networkmap'),
+        // Header.
+        ui_print_standard_header(
+            __('List of network maps'),
             'images/op_network.png',
             false,
             '',
-            false
+            false,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Topology maps'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Networkmap'),
+                ],
+            ]
         );
 
         echo $result_txt;

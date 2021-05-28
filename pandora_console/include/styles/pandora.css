@@ -8512,6 +8512,11 @@ div.stat-win-spinner img {
   margin-left: 20px;
 }
 
+.btn_update_online_open {
+  float: right;
+  margin-bottom: 20px;
+}
+
 .align-left-important {
   text-align: left !important;
 }

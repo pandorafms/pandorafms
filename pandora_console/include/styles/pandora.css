@@ -8516,3 +8516,7 @@ div.stat-win-spinner img {
   float: right;
   margin-bottom: 20px;
 }
+
+.align-left-important {
+  text-align: left !important;
+}

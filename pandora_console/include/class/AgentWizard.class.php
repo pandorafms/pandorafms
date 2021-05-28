@@ -1582,6 +1582,10 @@ class AgentWizard extends HTML
                 if ($candidate['execution_type'] === 0
                     || $candidate['execution_type'] === EXECUTION_TYPE_NETWORK
                 ) {
+                    if (substr($candidate['value'], 0, 1) !== '.') {
+                        $candidate['value'] = '.'.$candidate['value'];
+                    }
+
                     if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
                         $values['id_module'] = MODULE_DATA;
                         $values['module_interval'] = 1;
@@ -1947,6 +1951,10 @@ class AgentWizard extends HTML
                     || $candidate['execution_type'] === EXECUTION_TYPE_NETWORK
                 ) {
                     if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                        if (substr($candidate['value'], 0, 1) !== '.') {
+                            $candidate['value'] = '.'.$candidate['value'];
+                        }
+
                         $tmp->module_interval(300);
                         $tmp->id_modulo(MODULE_DATA);
                         $tmp->updateConfigurationData(

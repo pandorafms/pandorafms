@@ -28,6 +28,7 @@
 
 global $config;
 
+$headerTitle = __('User detail editor');
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 

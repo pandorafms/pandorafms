@@ -8542,3 +8542,8 @@ div.view_events_merge_process_events
   height: 10px;
   margin: 5px 0px;
 }
+
+.btn_update_online_open {
+  float: right;
+  margin-bottom: 20px;
+}

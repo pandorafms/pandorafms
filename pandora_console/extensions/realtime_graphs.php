@@ -53,13 +53,24 @@ function pandora_realtime_graphs()
 
     $hide_header = get_parameter('hide_header', 0);
     if ($hide_header === 0) {
-        ui_print_page_header(
+        // Header.
+        ui_print_standard_header(
             __('Realtime graphs'),
             'images/extensions.png',
             false,
             'real_time_view',
             false,
-            $onheader
+            $onheader,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
         );
     }
 

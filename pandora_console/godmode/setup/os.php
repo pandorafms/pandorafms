@@ -205,9 +205,28 @@ if ($is_management_allowed === true) {
 
 $buttons[$tab]['active'] = true;
 
+$headerTitle = ($tab === 'builder') ? __('Edit OS') : __('List of OS');
+
 if (is_metaconsole() === false) {
     // Header.
-    ui_print_page_header(__('Edit OS'), '', false, '', true, $buttons);
+    ui_print_standard_header(
+        $headerTitle,
+        '',
+        false,
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Servers'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Edit OS'),
+            ],
+        ]
+    );
 }
 
 if (empty($id_message) === false) {
@@ -248,6 +267,7 @@ if (empty($id_message) === false) {
 
 switch ($tab) {
     case 'list':
+    default:
         include_once $config['homedir'].'/godmode/setup/os.list.php';
     break;
 

@@ -333,6 +333,7 @@ $title = __('Groups defined in %s', get_product_name());
 switch ($tab) {
     case 'tree':
         $buttons['tree']['active'] = true;
+        $title .= sprintf(' &raquo; %s', __('Tree view'));
     break;
 
     case 'credbox':
@@ -343,23 +344,38 @@ switch ($tab) {
     case 'groups':
     default:
         $buttons['groups']['active'] = true;
+        $title .= sprintf(' &raquo; %s', __('Table view'));
     break;
 }
 
 // Header.
 if (is_metaconsole() === true) {
     agents_meta_print_header();
-    echo '<div class="notify">';
-    echo __('Edit or delete groups can cause problems with synchronization');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'notify',
+            'content' => __('Edit or delete groups can cause problems with synchronization'),
+        ]
+    );
 } else {
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         $title,
         'images/group.png',
         false,
         '',
-        true,
-        $buttons
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage agents group'),
+            ],
+        ]
     );
 }
 
@@ -482,7 +498,7 @@ if ($is_management_allowed === true && $update_group === true) {
                 $values = [
                     'nombre'      => $name,
                     'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
-                    'parent'      => $id_parent == -1 ? 0 : $id_parent,
+                    'parent'      => ($id_parent == -1) ? 0 : $id_parent,
                     'disabled'    => !$alerts_enabled,
                     'custom_id'   => $custom_id,
                     'id_skin'     => $skin,

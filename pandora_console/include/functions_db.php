@@ -407,7 +407,7 @@ function db_get_value_filter($field, $table, $filter, $where_join='AND', $search
  *
  * @param string SQL select statement to execute.
  *
- * @return the first value of the first row of a table result from query.
+ * @return mixed the first value of the first row of a table result from query.
  */
 function db_get_value_sql($sql, $dbconnection=false)
 {

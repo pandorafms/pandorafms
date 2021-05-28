@@ -8512,37 +8512,6 @@ div.stat-win-spinner img {
   margin-left: 20px;
 }
 
-div.view_events_merge_process_events {
-  margin-bottom: 20px;
-}
-
-div.view_events_merge_process_events div.merge_process_events_title {
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  align-content: center;
-}
-
-div.view_events_merge_process_events div.merge_process_events_title img {
-  margin-left: 10px;
-  margin-top: 2px;
-}
-
-div.view_events_merge_process_events div.merge_process_events {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-div.view_events_merge_process_events
-  div.merge_process_events
-  div.merge_process_events_item {
-  width: 85%;
-  height: 10px;
-  margin: 5px 0px;
-}
-
 .btn_update_online_open {
   float: right;
   margin-bottom: 20px;

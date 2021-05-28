@@ -942,16 +942,23 @@ if ($pure) {
     <?php
 }
 
-if (isset($config['merge_process_events']) === true
-    && empty($config['merge_process_events']) === false
-) {
-    ui_require_javascript_file(
-        'pandora_command_center',
-        ENTERPRISE_DIR.'/include/javascript/'
-    );
-    echo '<div class="view_events_merge_process_events">';
-    echo CommandCenterController::displayEventsProgress();
-    echo '</div>';
+if (enterprise_installed() === true) {
+    if (isset($config['merge_process_events']) === true
+        && empty($config['merge_process_events']) === false
+    ) {
+        ui_require_css_file('command_center', ENTERPRISE_DIR.'/include/styles/');
+
+        ui_require_javascript_file(
+            'pandora_command_center',
+            ENTERPRISE_DIR.'/include/javascript/'
+        );
+        echo '<div class="view_events_merge_process_events">';
+        echo CommandCenterController::displayEventsProgress();
+        echo '</div>';
+
+        $tittle_error = __('Errors');
+        echo '<div id="dialog-error-node-'.$config['metaconsole_node_id'].'" title="'.$tittle_error.'"></div>';
+    }
 }
 
 // Error div for ajax messages.

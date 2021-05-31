@@ -2284,26 +2284,27 @@ function reporting_agents_inventory($report, $content)
     $es_agent_module_search_filter = $external_source['agent_module_search_filter'];
     $es_agent_group_filter = $external_source['agent_group_filter'];
     $es_users_groups = $external_source['users_groups'];
-
+    $es_agent_remote_conf = $external_source['agent_remote_conf'];
+    hd($es_agent_group_filter);
     $search_sql = '';
 
-    if ($es_custom_fields != 0) {
+    if ($es_custom_fields != '') {
         $search_sql .= ' AND id_os = '.$es_custom_fields;
     }
 
-    if ($es_os_filter != 0) {
+    if ($es_os_filter != '') {
         $search_sql .= ' AND id_os = '.$es_os_filter;
     }
 
-    if ($es_agent_status_filter != 0) {
+    if ($es_agent_status_filter != '') {
         $search_sql .= ' AND tae.estado = '.$es_agent_status_filter;
     }
 
-    if ($es_agent_version_filter != 0) {
-        $search_sql .= ' AND tagente.agent_version = '.$es_agent_version_filter;
+    if ($es_agent_version_filter != '') {
+        $search_sql .= ' AND tagente.agent_version = "'.$es_agent_version_filter.'"';
     }
 
-    if ($es_agent_module_search_filter != 0) {
+    if ($es_agent_module_search_filter != '') {
         $search_sql .= ' AND tam.nombre = '.$es_agent_module_search_filter;
     }
 
@@ -2311,8 +2312,13 @@ function reporting_agents_inventory($report, $content)
         $search_sql .= ' AND tagente.id_grupo = '.$es_agent_group_filter;
     }
 
-    $user_groups_to_sql = implode(',', array_keys(users_get_groups()));
+    hd($es_agent_remote);
+    if ($es_agent_remote_conf != '') {
+        $search_sql .= ' AND tagente.remote = '.$es_agent_remote_conf;
+    }
 
+    $user_groups_to_sql = implode(',', array_keys(users_get_groups()));
+    hd($search_sql);
     $sql = sprintf(
         'SELECT DISTINCT(tagente.id_agente) AS id_agente,
         tagente.id_os,

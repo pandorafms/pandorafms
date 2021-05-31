@@ -740,12 +740,9 @@ switch ($action) {
                 break;
 
                 case 'agents_inventory':
-
-
-
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
-                    // hd($es);
+
                     $date = $es['date'];
                     $selected_agent_group_filter = $es['agent_group_filter'];
                     $selected_agents_inventory_display_options = $es['agents_inventory_display_options'];
@@ -754,6 +751,7 @@ switch ($action) {
                     $selected_agent_status_filter = $es['agent_status_filter'];
                     $selected_agent_module_search_filter = $es['agent_module_search_filter'];
                     $selected_agent_version_filter = $es['agent_version_filter'];
+                    $selected_agent_remote = $es['agent_remote_conf'];
 
                     $idAgent = $es['id_agents'];
                     $idAgentModule = $inventory_modules;
@@ -3201,7 +3199,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-
+<?php hd($selected_agent_remote); ?>
         <tr id="row_agent_remote_conf" class="datos">
             <td class="bolder">
             <?php
@@ -3211,7 +3209,7 @@ $class = 'databox filters';
             );
             ?>
             </td>
-            <td><?php html_print_checkbox_switch('agent_remote_conf', 1, false); ?></td>
+            <td><?php html_print_checkbox_switch('agent_remote_conf', 1, $selected_agent_remote); ?></td>
         </tr>
 
         <tr id="row_module_free_search" class="datos">

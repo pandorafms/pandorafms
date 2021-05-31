@@ -2108,6 +2108,7 @@ switch ($action) {
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
 
                                 $values['external_source'] = json_encode($es);
                             break;
@@ -2745,6 +2746,7 @@ switch ($action) {
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
                                 $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
 
                                 $values['external_source'] = json_encode($es);
                             break;

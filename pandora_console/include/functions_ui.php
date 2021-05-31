@@ -27,6 +27,8 @@
  */
 
 // Begin.
+global $config;
+
 // Check to avoid error when load this library in error screen situations.
 if (isset($config['homedir'])) {
     include_once $config['homedir'].'/include/functions_agents.php';
@@ -35,8 +37,6 @@ if (isset($config['homedir'])) {
     include_once $config['homedir'].'/include/functions_groups.php';
     include_once $config['homedir'].'/include/functions_users.php';
     include_once $config['homedir'].'/include/functions_html.php';
-    // For standard breadcrumbs.
-    ui_require_css_file('discovery');
 }
 
 
@@ -4353,6 +4353,8 @@ function ui_print_standard_header(
     array $options=[],
     array $breadcrumbs=[]
 ) {
+    // For standard breadcrumbs.
+    ui_require_css_file('discovery');
     // Create the breadcrumb.
     $headerInformation = new HTML();
     $headerInformation->setBreadcrum([]);

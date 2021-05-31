@@ -8300,6 +8300,10 @@ div.stat-win-spinner img {
   margin-bottom: 20px;
 }
 
+.align-left-important {
+  text-align: left !important;
+}
+
 .legendLabel {
   font-family: inherit !important;
 }

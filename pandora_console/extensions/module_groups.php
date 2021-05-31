@@ -196,6 +196,7 @@ function mainModuleGroups()
                     ON ta.id_agente = tam.id_agente
                 WHERE ta.disabled = 0
                     AND tam.disabled = 0
+                    AND tam.id_modulo <> 0
                     AND tam.delete_pending = 0
                     AND ta.id_grupo IN (%s)
                 GROUP BY tam.id_agente_modulo

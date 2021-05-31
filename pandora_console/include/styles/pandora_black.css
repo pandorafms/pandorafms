@@ -1108,6 +1108,15 @@ a.pandora_pagination,
   border-bottom: 2px solid #707070;
 }
 
-.info_table tr th {
-  border-bottom: 1px solid #707070;
+.info_table tr th,
+.databox.data > tbody > tr > td {
+  border-bottom: 1px solid #707070 !important;
+}
+
+.databox.data > tbody > tr > td:first-child {
+  border-left: 1px solid #707070 !important;
+}
+
+.databox.data > tbody > tr > td:last-child {
+  border-right: 1px solid #707070 !important;
 }

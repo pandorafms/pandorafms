@@ -12887,7 +12887,7 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules')]);
+        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';

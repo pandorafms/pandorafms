@@ -363,7 +363,7 @@ ui_print_standard_header(
     false,
     $headerHelp,
     false,
-    [$buttons],
+    $buttons,
     [
         [
             'link'  => '',

@@ -948,6 +948,7 @@ input.sub {
   border: 1px solid #888;
   cursor: pointer;
   font-family: inherit;
+  font-size: 10pt;
 }
 
 button.sub:hover,

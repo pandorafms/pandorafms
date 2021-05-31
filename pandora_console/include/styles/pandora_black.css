@@ -1095,7 +1095,8 @@ ul.subsubmenu li {
 
 a.pandora_pagination,
 .filter_summary > div,
-.border_bt {
+.border_bt,
+.pagination .page_number {
   border: 1px solid #707070 !important;
 }
 

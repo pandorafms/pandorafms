@@ -294,7 +294,6 @@ a.pandora_pagination.current:hover {
 .dt-button.buttons-csv.buttons-html5 {
   background-image: url(../../images/csv_mc.png);
   background-position: center center;
-  background-color: #fff;
   background-repeat: no-repeat;
   color: #000;
   border: none;

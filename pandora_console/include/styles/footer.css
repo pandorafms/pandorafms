@@ -10,13 +10,10 @@ a.footer span {
 }
 
 div#foot {
-  padding-top: 10px;
-  padding-bottom: 10px;
   text-align: center;
   background: #343434;
   clear: both;
   width: auto;
-  height: auto;
   margin-top: auto;
   box-sizing: border-box;
 }

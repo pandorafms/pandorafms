@@ -652,7 +652,8 @@ form ul.form_flex {
   background: #222 !important;
 }
 
-.invert_filter {
+.invert_filter,
+.labels {
   filter: invert(100%);
 }
 
@@ -1085,4 +1086,28 @@ input.search_input {
 
 .white-table-graph-content {
   width: auto;
+}
+ul.subsubmenu li {
+  border-color: #707070 !important;
+  border-style: solid;
+  border-width: 1px;
+}
+
+a.pandora_pagination,
+.filter_summary > div,
+.border_bt {
+  border: 1px solid #707070 !important;
+}
+
+.dt-button.buttons-csv.buttons-html5 {
+  filter: invert(100%);
+  background-color: transparent;
+}
+
+.info_table.events > tbody > tr > td {
+  border-bottom: 2px solid #707070;
+}
+
+.info_table tr th {
+  border-bottom: 1px solid #707070;
 }

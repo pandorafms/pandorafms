@@ -1622,12 +1622,12 @@ function mysql_db_process_sql_update_multiple($table, $values, $only_query)
     foreach ($values as $field => $update) {
         $query = sprintf('UPDATE `%s` SET', $table);
         $query .= sprintf(' `%s` = CASE `%s`', $field, $field);
-        foreach ($update as $set => $where) {
+        foreach ($update as $where => $set) {
             $query .= sprintf(' WHEN "%s" THEN  "%s"', $where, $set);
         }
 
         $query .= sprintf(' ELSE `%s` END', $field);
-        $query .= sprintf(' WHERE `%s` IN (%s)', $field, '"'.implode('","', $update).'"');
+        $query .= sprintf(' WHERE `%s` IN (%s)', $field, '"'.implode('","', array_keys($update)).'"');
 
         if ($only_query === true) {
             $res[] = $query;

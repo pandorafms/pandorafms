@@ -267,7 +267,6 @@ if (empty($id_message) === false) {
 
 switch ($tab) {
     case 'list':
-    default:
         include_once $config['homedir'].'/godmode/setup/os.list.php';
     break;
 

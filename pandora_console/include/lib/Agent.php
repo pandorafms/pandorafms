@@ -588,6 +588,13 @@ class Agent extends Entity
             $this->fields['id_agente']
         );
 
+        // Delete modules.
+        if ($this->modules !== null) {
+            foreach ($this->modules as $module) {
+                $module->delete();
+            }
+        }
+
         unset($this->fields);
         unset($this->modules);
     }

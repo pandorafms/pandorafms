@@ -36,6 +36,7 @@ include_javascript_d3();
 
 global $config;
 
+
 function prepend_table_simple($row, $id=false)
 {
     global $table_simple;
@@ -598,8 +599,12 @@ if ($moduletype == MODULE_DATA) {
     $table_advanced->colspan[1][1] = 2;
     $interval_factor = 1;
     if (isset($id_agente)) {
-        $agent_interval = agents_get_interval($id_agente);
-        $interval_factor = ($interval / $agent_interval);
+        $agent_interval = (float) agents_get_interval($id_agente);
+        if ($agent_interval > 0) {
+            $interval = (float) $interval;
+            $interval_factor = ($interval / $agent_interval);
+        }
+
         $table_advanced->data[1][1] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') ';
     } else {
         $table_advanced->data[1][1] = sprintf(__('Agent interval x %s'), $interval_factor);

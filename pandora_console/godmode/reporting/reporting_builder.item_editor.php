@@ -744,6 +744,7 @@ switch ($action) {
                     $es = json_decode($item['external_source'], true);
 
                     $date = $es['date'];
+                    $selected_agent_server_filter = $es['agent_server_filter'];
                     $selected_agent_group_filter = $es['agent_group_filter'];
                     $selected_agents_inventory_display_options = $es['agents_inventory_display_options'];
                     $selected_agent_os_filter = $es['agent_os_filter'];
@@ -3077,6 +3078,38 @@ $class = 'databox filters';
             ?>
             </td>
         </tr>
+
+        <?php
+        $server_fields = [];
+            $server_fields[0] = __('All');
+
+            $servers = metaconsole_get_servers();
+
+        foreach ($servers as $key => $server) {
+            $server_fields[$key] = $server['server_name'];
+        }
+
+            $server_filter_markup = '
+            <tr id="row_agent_server_filter" class="datos">
+                <td class="bolder">'.__('Server').'</td><td>'.html_print_select(
+                $server_fields,
+                'agent_server_filter',
+                $selected_agent_server_filter,
+                '',
+                false,
+                '',
+                true,
+                false,
+                false,
+                '',
+                false,
+                'min-width: 180px'
+            ).'</td></tr>';
+
+            if (is_metaconsole()) {
+                echo $server_filter_markup;
+            }
+            ?>
 
         <tr id="row_agent_group_filter" class="datos">
             <td class="bolder">
@@ -5440,6 +5473,7 @@ function chooseType() {
     $("#row_profiles_group").hide();
     $("#row_select_by_group").hide();
     $("#row_agents_inventory_display_options").hide();
+    $("#row_agent_server_filter").hide();
     $("#row_agent_group_filter").hide();
     $("#row_os").hide();
     $("#row_custom_field").hide();
@@ -5990,6 +6024,7 @@ function chooseType() {
 
         case 'agents_inventory':
             $("#row_agents_inventory_display_options").show();
+            $("#row_agent_server_filter").show();
             $("#row_agent_group_filter").show();
             $("#row_group").show();
             $("#row_os").show();

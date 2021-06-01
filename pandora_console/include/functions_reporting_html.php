@@ -1573,8 +1573,6 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
         }
     }
 
-    hd('======', true);
-    hd($pdf, true);
     if ($pdf === 0) {
         $table->colspan['permissions']['cell'] = 3;
         $table->cellstyle['permissions']['cell'] = 'text-align: center;';
@@ -5925,8 +5923,6 @@ function reporting_html_permissions($table, $item, $pdf=0)
         }
     }
 
-    // hd("lllllp", true);
-    // hd($pdf, true);
     if ($pdf === 0) {
         $table->colspan['permissions']['cell'] = 3;
         $table->cellstyle['permissions']['cell'] = 'text-align: center;';

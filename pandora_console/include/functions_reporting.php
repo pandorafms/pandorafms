@@ -2266,7 +2266,7 @@ function reporting_event_report_module(
 function reporting_agents_inventory($report, $content)
 {
     global $config;
-    hd($content);
+
     $return['name'] = $content['name'];
     $return['type'] = 'agents_inventory';
     $return['title'] = $content['name'];
@@ -2283,8 +2283,13 @@ function reporting_agents_inventory($report, $content)
     $es_agent_version_filter = $external_source['agent_version_filter'];
     $es_agent_module_search_filter = $external_source['agent_module_search_filter'];
     $es_agent_group_filter = $external_source['agent_group_filter'];
+    $es_agent_server_filter = $external_source['agent_server_filter'];
     $es_users_groups = $external_source['users_groups'];
     $es_agent_remote_conf = $external_source['agent_remote_conf'];
+
+    if ($es_agents_inventory_display_options === '') {
+        $es_agents_inventory_display_options = [];
+    }
 
     $search_sql = '';
 
@@ -2357,6 +2362,13 @@ function reporting_agents_inventory($report, $content)
     foreach ($servers_ids as $server_id) {
         if (is_metaconsole()) {
             $server = metaconsole_get_connection_by_id($server_id);
+
+            if ((int) $es_agent_server_filter !== 0
+                && (int) $es_agent_server_filter !== (int) $server_id
+            ) {
+                continue;
+            }
+
             metaconsole_connect($server);
         }
 

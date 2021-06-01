@@ -2101,6 +2101,7 @@ switch ($action) {
                             break;
 
                             case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');
@@ -2739,6 +2740,7 @@ switch ($action) {
                             break;
 
                             case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');

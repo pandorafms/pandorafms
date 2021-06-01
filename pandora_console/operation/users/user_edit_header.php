@@ -113,17 +113,23 @@ if (is_metaconsole()) {
         $tab_name = 'User Notifications';
     }
 
-    ui_print_page_header(
-        __('User detail editor'),
+    // Header.
+    ui_print_standard_header(
+        $headerTitle,
         'images/user.png',
         false,
         $helpers,
         false,
         $buttons,
-        false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        __('Workspace').ui_print_breadcrums($tab_name)
+        [
+            [
+                'link'  => '',
+                'label' => __('Workspace'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Edit user'),
+            ],
+        ]
     );
 }

@@ -1277,6 +1277,7 @@ if ($config['pure'] == 0) {
     // Container div.
     echo '</div>';
     echo '<div id="both"></div>';
+    echo '</div>';
 
     echo '<div id="foot">';
     include 'general/footer.php';

@@ -8511,3 +8511,12 @@ div.stat-win-spinner img {
   width: 100px !important;
   margin-left: 20px;
 }
+
+.btn_update_online_open {
+  float: right;
+  margin-bottom: 20px;
+}
+
+.align-left-important {
+  text-align: left !important;
+}

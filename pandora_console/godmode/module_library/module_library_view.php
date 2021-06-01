@@ -58,12 +58,27 @@ $buttons['view'] = [
 
 
 $tab = get_parameter('tab', 'view');
-if ($tab != 'search_module') {
+if ($tab !== 'search_module') {
     $buttons[$tab]['active'] = true;
 }
 
-ui_print_page_header(__('Module Library').' &raquo; '.__('View'), '', false, 'module_library', true, $buttons);
+$headerTitle = ($tab === 'categories') ? __('Categories') : __('Main view');
 
+// Header.
+ui_print_standard_header(
+    $headerTitle,
+    '',
+    false,
+    'module_library',
+    true,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Module library'),
+        ],
+    ]
+);
 
 // Styles.
 ui_require_css_file('module_library');

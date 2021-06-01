@@ -33,6 +33,7 @@ global $config;
 require_once $config['homedir'].'/include/functions_notifications.php';
 
 // Load the header.
+$headerTitle = __('User notifications');
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
 if (get_parameter('change_label', 0)) {

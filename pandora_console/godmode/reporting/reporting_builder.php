@@ -567,17 +567,24 @@ switch ($action) {
             // Print header.
             ui_meta_print_header(__('Reporting'), '', $buttons);
         } else {
-            // Page header for normal console.
-            ui_print_page_header(
-                __('Custom reporting'),
+            // Header.
+            ui_print_standard_header(
+                __('List of reports'),
                 'images/op_reporting.png',
                 false,
                 '',
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
 
@@ -2486,7 +2493,7 @@ switch ($action) {
                             0
                         );
                         $values['exception_condition'] = (int) get_parameter(
-                            'radiobutton_exception_condition',
+                            'exception_condition',
                             0
                         );
                         $values['exception_condition_value'] = get_parameter(
@@ -3145,17 +3152,24 @@ switch ($action) {
                 // Print header.
                 ui_meta_print_header(__('Reporting'), '', $buttons);
             } else {
-                // Page header for normal console.
-                ui_print_page_header(
+                // Header.
+                ui_print_standard_header(
                     $subsection,
                     'images/op_reporting.png',
                     false,
                     '',
                     false,
                     $buttons,
-                    false,
-                    '',
-                    60
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Reporting'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('Custom reports'),
+                        ],
+                    ]
                 );
             }
 
@@ -3251,17 +3265,25 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 } else {
     $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
-    if ($action !== 'update' && !is_metaconsole()) {
-        ui_print_page_header(
+    if ($action !== 'update' && is_metaconsole() === false) {
+        // Header.
+        ui_print_standard_header(
             $textReportName,
             'images/op_reporting.png',
             false,
             $tab_builder,
             false,
             $buttons,
-            false,
-            '',
-            60
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Reporting'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Custom reports'),
+                ],
+            ]
         );
     }
 }
@@ -3291,17 +3313,25 @@ if ($resultOperationDB !== null) {
         $activeTab = 'list_items';
         $buttons[$activeTab]['active'] = true;
 
-        if (!is_metaconsole()) {
-            ui_print_page_header(
+        if (is_metaconsole() === false) {
+            // Header.
+            ui_print_standard_header(
                 $textReportName,
                 'images/op_reporting.png',
                 false,
                 $helpers,
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
     }

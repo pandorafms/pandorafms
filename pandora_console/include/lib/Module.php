@@ -228,8 +228,10 @@ class Module extends Entity
                 throw $e;
             }
 
-            if ($this->nombre() === 'delete_pending') {
-                return null;
+            if ($this->nombre() === 'delete_pending'
+                || $this->nombre() === 'pendingdelete'
+            ) {
+                throw new \Exception('Object is pending to be deleted', 1);
             }
 
             if ($link_agent === true) {

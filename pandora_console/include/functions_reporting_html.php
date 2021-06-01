@@ -1541,6 +1541,26 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
                 $column_value = ui_print_module_status((int) $data_field_value, true);
             } else if ($data_field_key === 'id_grupo') {
                 $column_value = ui_print_group_icon((int) $data_field_value, true);
+            } else if ($data_field_key === 'custom_fields') {
+                $custom_fields_value = [];
+
+                if (is_array($data_field_value)) {
+                    foreach ($data_field_value as $value) {
+                        $custom_fields_value[] = $value['name'].': '.$value['description'];
+                    }
+                }
+
+                $column_value = implode(' / ', $custom_fields_value);
+            } else if ($data_field_key === 'secondary_groups') {
+                $custom_fields_value = [];
+
+                if (is_array($data_field_value)) {
+                    foreach ($data_field_value as $value) {
+                        $custom_fields_value[] = ui_print_group_icon((int) $value['id_group'], true);
+                    }
+                }
+
+                $column_value = implode(' / ', $custom_fields_value);
             }
 
             $row[] = $column_value;
@@ -1553,6 +1573,8 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
         }
     }
 
+    hd('======', true);
+    hd($pdf, true);
     if ($pdf === 0) {
         $table->colspan['permissions']['cell'] = 3;
         $table->cellstyle['permissions']['cell'] = 'text-align: center;';
@@ -5903,6 +5925,8 @@ function reporting_html_permissions($table, $item, $pdf=0)
         }
     }
 
+    // hd("lllllp", true);
+    // hd($pdf, true);
     if ($pdf === 0) {
         $table->colspan['permissions']['cell'] = 3;
         $table->cellstyle['permissions']['cell'] = 'text-align: center;';

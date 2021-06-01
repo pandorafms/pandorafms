@@ -2266,7 +2266,7 @@ function reporting_event_report_module(
 function reporting_agents_inventory($report, $content)
 {
     global $config;
-
+    hd($content);
     $return['name'] = $content['name'];
     $return['type'] = 'agents_inventory';
     $return['title'] = $content['name'];
@@ -2285,7 +2285,7 @@ function reporting_agents_inventory($report, $content)
     $es_agent_group_filter = $external_source['agent_group_filter'];
     $es_users_groups = $external_source['users_groups'];
     $es_agent_remote_conf = $external_source['agent_remote_conf'];
-    hd($es_agent_group_filter);
+
     $search_sql = '';
 
     if ($es_custom_fields != '') {
@@ -2301,24 +2301,23 @@ function reporting_agents_inventory($report, $content)
     }
 
     if ($es_agent_version_filter != '') {
-        $search_sql .= ' AND tagente.agent_version = "'.$es_agent_version_filter.'"';
+        $search_sql .= ' AND tagente.agent_version LIKE "%'.$es_agent_version_filter.'%"';
     }
 
     if ($es_agent_module_search_filter != '') {
-        $search_sql .= ' AND tam.nombre = '.$es_agent_module_search_filter;
+        $search_sql .= ' AND tam.nombre LIKE "%'.$es_agent_module_search_filter.'%"';
     }
 
     if ($es_agent_group_filter != 0) {
         $search_sql .= ' AND tagente.id_grupo = '.$es_agent_group_filter;
     }
 
-    hd($es_agent_remote);
-    if ($es_agent_remote_conf != '') {
+    if ($es_agent_remote_conf != 0) {
         $search_sql .= ' AND tagente.remote = '.$es_agent_remote_conf;
     }
 
     $user_groups_to_sql = implode(',', array_keys(users_get_groups()));
-    hd($search_sql);
+
     $sql = sprintf(
         'SELECT DISTINCT(tagente.id_agente) AS id_agente,
         tagente.id_os,
@@ -2347,49 +2346,68 @@ function reporting_agents_inventory($report, $content)
         $search_sql
     );
 
-    $agents = db_get_all_rows_sql($sql);
-
-    foreach ($agents as $key => $value) {
-        if (array_search('secondary_groups', $es_agents_inventory_display_options) !== false) {
-            $sql_agent_sec_group = sprintf(
-                'SELECT id_group
-                FROM tagent_secondary_group
-                WHERE id_agent = %d',
-                $value['id_agente']
-            );
-
-            $agent_secondary_groups = [];
-            $agent_secondary_groups = db_get_all_rows_sql($sql_agent_sec_group);
-
-            $agents[$key]['secondary_groups'] = $agent_secondary_groups;
-        }
-
-        if (array_search('custom_fields', $es_agents_inventory_display_options) !== false) {
-            $sql_agent_custom_fields = sprintf(
-                'SELECT tacd.description, tacf.name
-                FROM tagent_custom_data tacd INNER JOIN tagent_custom_fields tacf
-                ON tacd.id_field = tacf.id_field
-                WHERE tacd.description != "" AND tacd.id_agent = %d',
-                $value['id_agente']
-            );
-
-            $agent_custom_fields = [];
-            $agent_custom_fields = db_get_all_rows_sql($sql_agent_custom_fields);
-
-            $agents[$key]['custom_fields'] = $agent_custom_fields;
-        }
+    if (is_metaconsole()) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    } else {
+        $servers_ids = [0];
     }
 
-    foreach ($agents as $key => $value) {
-        foreach ($value as $agent_val_key => $agent_val) {
-            // Exclude from data to be displayed in report those fields that were not selected to be displayed by user.
-            if (array_search($agent_val_key, $es_agents_inventory_display_options) === false) {
-                unset($agents[$key][$agent_val_key]);
+    $return['data'] = [];
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_by_id($server_id);
+            metaconsole_connect($server);
+        }
+
+        $agents = db_get_all_rows_sql($sql);
+
+        foreach ($agents as $key => $value) {
+            if (array_search('secondary_groups', $es_agents_inventory_display_options) !== false) {
+                $sql_agent_sec_group = sprintf(
+                    'SELECT id_group
+                    FROM tagent_secondary_group
+                    WHERE id_agent = %d',
+                    $value['id_agente']
+                );
+
+                $agent_secondary_groups = [];
+                $agent_secondary_groups = db_get_all_rows_sql($sql_agent_sec_group);
+
+                $agents[$key]['secondary_groups'] = $agent_secondary_groups;
+            }
+
+            if (array_search('custom_fields', $es_agents_inventory_display_options) !== false) {
+                $sql_agent_custom_fields = sprintf(
+                    'SELECT tacd.description, tacf.name
+                    FROM tagent_custom_data tacd INNER JOIN tagent_custom_fields tacf
+                    ON tacd.id_field = tacf.id_field
+                    WHERE tacd.description != "" AND tacd.id_agent = %d',
+                    $value['id_agente']
+                );
+
+                $agent_custom_fields = [];
+                $agent_custom_fields = db_get_all_rows_sql($sql_agent_custom_fields);
+
+                $agents[$key]['custom_fields'] = $agent_custom_fields;
             }
         }
-    }
 
-    $return['data'] = $agents;
+        foreach ($agents as $key => $value) {
+            foreach ($value as $agent_val_key => $agent_val) {
+                // Exclude from data to be displayed in report those fields that were not selected to be displayed by user.
+                if (array_search($agent_val_key, $es_agents_inventory_display_options) === false) {
+                    unset($agents[$key][$agent_val_key]);
+                }
+            }
+        }
+
+        $return['data'] = array_merge($return['data'], $agents);
+
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+    }
 
     return reporting_check_structure_content($return);
 }

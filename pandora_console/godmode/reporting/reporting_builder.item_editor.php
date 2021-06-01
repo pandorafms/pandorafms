@@ -3199,7 +3199,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-<?php hd($selected_agent_remote); ?>
+
         <tr id="row_agent_remote_conf" class="datos">
             <td class="bolder">
             <?php

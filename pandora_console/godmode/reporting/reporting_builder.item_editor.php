@@ -3141,11 +3141,13 @@ $class = 'databox filters';
             <?php
             html_print_select_from_sql(
                 'SELECT id_os, name FROM tconfig_os',
-                'agent_os_filter',
+                'agent_os_filter[]',
                 $selected_agent_os_filter,
                 '',
-                '',
-                '0'
+                'All',
+                '0',
+                false,
+                true
             );
             ?>
                 </td>
@@ -3193,13 +3195,13 @@ $class = 'databox filters';
 
                     html_print_select(
                         $fields,
-                        'agent_status_filter',
+                        'agent_status_filter[]',
                         $selected_agent_status_filter,
                         '',
                         false,
                         '',
                         false,
-                        false,
+                        true,
                         false,
                         '',
                         false,

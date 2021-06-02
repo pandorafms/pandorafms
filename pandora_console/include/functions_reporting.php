@@ -2298,11 +2298,7 @@ function reporting_agents_inventory($report, $content)
     }
 
     if ($es_os_filter != '') {
-        $search_sql .= ' AND id_os = '.$es_os_filter;
-    }
-
-    if ($es_agent_status_filter != '') {
-        $search_sql .= ' AND tae.estado = '.$es_agent_status_filter;
+        $search_sql .= ' AND id_os IN ('.implode(',', $es_os_filter).')';
     }
 
     if ($es_agent_version_filter != '') {
@@ -2327,7 +2323,6 @@ function reporting_agents_inventory($report, $content)
         'SELECT DISTINCT(tagente.id_agente) AS id_agente,
         tagente.id_os,
         tagente.direccion,
-        tae.estado,
         tagente.agent_version,
         tagente.alias,
         tagente.id_grupo,
@@ -2338,12 +2333,6 @@ function reporting_agents_inventory($report, $content)
             ON tagente.id_agente = tasg.id_agent
         INNER JOIN tagente_modulo tam
             ON tam.id_agente = tagente.id_agente
-        INNER JOIN (
-            SELECT * 
-                FROM (SELECT id_agente, estado FROM tagente_estado ORDER BY `utimestamp` DESC) tagente_estado
-                GROUP BY `id_agente`
-        ) tae
-            ON tae.id_agente = tagente.id_agente
         WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
             %s',
         $user_groups_to_sql,
@@ -2402,6 +2391,15 @@ function reporting_agents_inventory($report, $content)
                 $agent_custom_fields = db_get_all_rows_sql($sql_agent_custom_fields);
 
                 $agents[$key]['custom_fields'] = $agent_custom_fields;
+            }
+
+            if (array_search('estado', $es_agents_inventory_display_options) !== false) {
+                if (in_array(agents_get_status($value['id_agente']), $es_agent_status_filter)) {
+                    $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                } else {
+                    // Agent does not match status filter.
+                    unset($agents[$key]);
+                }
             }
         }
 

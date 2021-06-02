@@ -1535,12 +1535,19 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
         foreach ($data as $data_field_key => $data_field_value) {
             $column_value = $data_field_value;
 
+            $show_link = $pdf === 0 ? true : false;
+
+            // Necessary transformations of data prior to represent it.
             if ($data_field_key === 'id_os') {
                 $column_value = get_os_name((int) $data_field_value);
+            } else if ($data_field_key === 'remote' && $pdf === 0) {
+                $column_value = ((int) $data_field_value === 1) ? __('Yes') : __('No');
+            } else if ($data_field_key === 'url_address' && $pdf === 0) {
+                $column_value = ui_print_truncate_text($data_field_value, 10);
             } else if ($data_field_key === 'estado') {
                 $column_value = ($pdf === 0) ? ui_print_module_status((int) $data_field_value, true) : modules_get_modules_status((int) $data_field_value);
             } else if ($data_field_key === 'id_grupo') {
-                $column_value = ui_print_group_icon((int) $data_field_value, true);
+                $column_value = ui_print_group_icon((int) $data_field_value, true, 'groups_small', '', $show_link);
             } else if ($data_field_key === 'custom_fields') {
                 $custom_fields_value = [];
 
@@ -1556,7 +1563,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
 
                 if (is_array($data_field_value)) {
                     foreach ($data_field_value as $value) {
-                        $custom_fields_value[] = ui_print_group_icon((int) $value['id_group'], true);
+                        $custom_fields_value[] = ui_print_group_icon((int) $value['id_group'], true, 'groups_small', '', $show_link);
                     }
                 }
 

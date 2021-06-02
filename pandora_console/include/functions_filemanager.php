@@ -981,12 +981,12 @@ function filemanager_safe_directory(
     $directory = io_safe_output($directory);
     $forbiddenAttempting = false;
 
-    if (preg_match('/(\.){1,2}/', $directory) !== false) {
+    if ((bool) preg_match('/(\.){1,2}/', $directory) !== false) {
         $directory = preg_replace('/(\.){1,2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
         $forbiddenAttempting = true;
     }
 
-    if (preg_match('/(/\/\)+/', $directory) !== false) {
+    if ((bool) preg_match('/(/\/\)+/', $directory) !== false) {
         $directory = preg_replace('/(/\/\)+/', '/', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
         $forbiddenAttempting = true;
     }

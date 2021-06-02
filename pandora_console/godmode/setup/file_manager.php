@@ -47,20 +47,12 @@ if (isset($config['filemanager']['message']) === true) {
     $config['filemanager']['message'] = null;
 }
 
-$directory = (string) get_parameter('directory', '/');
-$directory = str_replace('\\', '/', $directory);
-
-// A miminal security check to avoid directory traversal.
-if (preg_match('/\.\./', $directory)) {
+$directory = (string) get_parameter('directory');
+if (empty($directory) === true) {
     $directory = 'images';
-}
-
-if (preg_match('/^\//', $directory)) {
-    $directory = 'images';
-}
-
-if (preg_match('/^manager/', $directory)) {
-    $directory = 'images';
+} else {
+    $directory = str_replace('\\', '/', $directory);
+    $directory = filemanager_safe_directory($directory, 'images');
 }
 
 // Add custom directories here.

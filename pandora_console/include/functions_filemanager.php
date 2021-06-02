@@ -171,8 +171,8 @@ function upload_file($upload_file_or_zip, $default_real_directory)
         if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
             $filename       = $_FILES['file']['name'];
             $filesize       = $_FILES['file']['size'];
-            $real_directory = io_safe_output((string) get_parameter('real_directory'));
-            $directory      = io_safe_output((string) get_parameter('directory'));
+            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $directory      = filemanager_safe_directory((string) get_parameter('directory'));
             $umask          = io_safe_output((string) get_parameter('umask'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
@@ -208,10 +208,8 @@ function upload_file($upload_file_or_zip, $default_real_directory)
         if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
             $filename       = $_FILES['file']['name'];
             $filesize       = $_FILES['file']['size'];
-            $real_directory = (string) get_parameter('real_directory');
-            $real_directory = io_safe_output($real_directory);
-            $directory      = (string) get_parameter('directory');
-            $directory      = io_safe_output($directory);
+            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $directory      = filemanager_safe_directory((string) get_parameter('directory'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
                 // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
@@ -283,17 +281,15 @@ function create_text_file($default_real_directory)
     $filename = io_safe_output(get_parameter('name_file'));
 
     if (empty($filename) === false) {
-        $real_directory = (string) get_parameter('real_directory');
-        $real_directory = io_safe_output($real_directory);
-        $directory      = (string) get_parameter('directory');
-        $directory      = io_safe_output($directory);
+        $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+        $directory      = filemanager_safe_directory((string) get_parameter('directory'));
         $umask          = (string) get_parameter('umask');
 
         if (strpos($real_directory, $default_real_directory) !== 0) {
             // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
             ui_print_error_message(__('Security error'));
         } else {
-            if ($directory == '') {
+            if (empty($directory) === true) {
                 $nombre_archivo = $real_directory.'/'.$filename;
             } else {
                 $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
@@ -332,20 +328,16 @@ if ($create_dir === true) {
     $config['filemanager']['correct_create_dir'] = 0;
     $config['filemanager']['message'] = null;
 
-    $directory = (string) get_parameter('directory', '/');
-    $directory = io_safe_output($directory);
+    $directory = filemanager_safe_directory((string) get_parameter('directory', '/'));
     $hash      = (string) get_parameter('hash');
     $testHash  = md5($directory.$config['dbpass']);
 
     if ($hash !== $testHash) {
          ui_print_error_message(__('Security error.'));
     } else {
-        $dirname = (string) get_parameter('dirname');
+        $dirname = filemanager_safe_directory((string) get_parameter('dirname'));
 
         if (empty($dirname) === false) {
-            $dirname = io_safe_output($dirname);
-            // For security reasons, level up is avoid.
-            $dirname = str_replace('../', '', $dirname);
             // Create directory.
             @mkdir(
                 $homedir_filemanager.'/'.$directory.'/'.$dirname
@@ -970,4 +962,38 @@ function filemanager_list_dir($dirpath)
     closedir($dir);
 
     return array_merge($dirs, $files);
+}
+
+
+/**
+ * A miminal security check to avoid directory traversal.
+ *
+ * @param string $directory      String with the complete directory.
+ * @param string $safedDirectory String with a safe name directory.
+ *
+ * @return string Safe directory
+ */
+function filemanager_safe_directory(
+    string $directory,
+    string $safedDirectory=''
+) {
+    // Safe output.
+    $directory = io_safe_output($directory);
+    $forbiddenAttempting = false;
+
+    if (preg_match('/(\.){1,2}/', $directory) !== false) {
+        $directory = preg_replace('/(\.){1,2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+        $forbiddenAttempting = true;
+    }
+
+    if (preg_match('/(/\/\)+/', $directory) !== false) {
+        $directory = preg_replace('/(/\/\)+/', '/', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+        $forbiddenAttempting = true;
+    }
+
+    if ($forbiddenAttempting === true) {
+        db_pandora_audit('File manager', 'Attempting to use a forbidden file or directory name');
+    }
+
+    return $directory;
 }

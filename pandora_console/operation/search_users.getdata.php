@@ -232,7 +232,12 @@ if ($searchUsers) {
             // Get group IDs.
             $user_groups = array_keys($user_groups);
 
-            if (!check_acl_one_of_groups($config['id_user'], $user_groups, 'UM') && $config['id_user'] != $user['id_user']) {
+            if (check_acl_one_of_groups($config['id_user'], $user_groups, 'UM') === false
+                && $config['id_user'] != $user['id_user']
+                || (users_is_admin($config['id_user']) === false
+                && users_is_admin($user['id_user']) === true)
+                || $config['id_user'] === $user['id_user']
+            ) {
                 unset($users[$key]);
             } else {
                 $users_id[] = $user['id_user'];

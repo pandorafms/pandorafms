@@ -524,10 +524,13 @@ function io_json_mb_encode($string, $encode_options=0)
     $v = json_encode($string, $encode_options);
     $v = preg_replace_callback(
         "/\\\\u([0-9a-zA-Z]{4})/",
-        create_function(
-            '$matches',
-            'return mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16");'
-        ),
+        function ($matches) {
+            return mb_convert_encoding(
+                pack('H*', $matches[1]),
+                'UTF-8',
+                'UTF-16'
+            );
+        },
         $v
     );
     $v = preg_replace('/\\\\\//', '/', $v);

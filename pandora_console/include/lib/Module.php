@@ -317,6 +317,30 @@ class Module extends Entity
 
 
     /**
+     * Get/set for disable field, this method also takes in mind the status of
+     * assigned agent (if any).
+     *
+     * @param boolean|null $disabled Used in set operations.
+     *
+     * @return boolean|null Return disabled status for this module or null if
+     *                      set operation.
+     */
+    public function disabled(?bool $disabled=null)
+    {
+        if ($disabled === null) {
+            if ($this->agent() !== null) {
+                return ((bool) $this->fields['disabled'] || (bool) $this->agent()->disabled());
+            }
+
+            return ((bool) $this->fields['disabled']);
+        }
+
+        $this->fields['disabled'] = $disabled;
+        return null;
+    }
+
+
+    /**
      * Dynamically call methods in this object.
      *
      * @param string $methodName Name of target method or attribute.
@@ -394,9 +418,7 @@ class Module extends Entity
             }
         }
 
-        throw new \Exception(
-            get_class($this).' error, method '.$methodName.' does not exist'
-        );
+        return parent::__call($methodName, $params);
     }
 
 

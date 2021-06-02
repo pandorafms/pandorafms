@@ -1137,9 +1137,15 @@ if ($searchPage) {
             include 'general/noaccess.php';
         } else {
             $sec = $main_sec;
-            if (file_exists($page)) {
-                if (! extensions_is_extension($page)) {
-                    include_once $page;
+            if (file_exists($page) === true) {
+                if ((bool) extensions_is_extension($page) === false) {
+                    try {
+                        include_once $page;
+                    } catch (Exception $e) {
+                        ui_print_error_message(
+                            $e->getMessage().' in '.$e->getFile().':'.$e->getLine()
+                        );
+                    }
                 } else {
                     if ($sec[0] == 'g') {
                         extensions_call_godmode_function(basename($page));

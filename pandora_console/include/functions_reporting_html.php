@@ -1538,7 +1538,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
             if ($data_field_key === 'id_os') {
                 $column_value = get_os_name((int) $data_field_value);
             } else if ($data_field_key === 'estado') {
-                $column_value = ui_print_module_status((int) $data_field_value, true);
+                $column_value = ($pdf === 0) ? ui_print_module_status((int) $data_field_value, true) : modules_get_modules_status((int) $data_field_value);
             } else if ($data_field_key === 'id_grupo') {
                 $column_value = ui_print_group_icon((int) $data_field_value, true);
             } else if ($data_field_key === 'custom_fields') {

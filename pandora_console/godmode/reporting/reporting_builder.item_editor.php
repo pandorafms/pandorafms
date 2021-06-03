@@ -3139,6 +3139,10 @@ $class = 'databox filters';
             </td>
             <td>
             <?php
+            if ($selected_agent_os_filter === null) {
+                $selected_agent_os_filter = 0;
+            }
+
             html_print_select_from_sql(
                 'SELECT id_os, name FROM tconfig_os',
                 'agent_os_filter[]',
@@ -3193,6 +3197,10 @@ $class = 'databox filters';
                     $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
                     $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
+                if ($selected_agent_status_filter === null) {
+                    $selected_agent_status_filter = -1;
+                }
+
                     html_print_select(
                         $fields,
                         'agent_status_filter[]',
@@ -3239,7 +3247,7 @@ $class = 'databox filters';
             <td class="bolder">
             <?php
             echo __('Agent has remote configuration').ui_print_help_tip(
-                __('Filter by agents by remote configuration enabled or disabled.'),
+                __('Filter agents by remote configuration enabled.'),
                 true
             );
             ?>

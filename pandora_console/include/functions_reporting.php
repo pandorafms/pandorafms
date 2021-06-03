@@ -2310,7 +2310,7 @@ function reporting_agents_inventory($report, $content)
     }
 
     if ($es_agent_group_filter != 0) {
-        $search_sql .= ' AND tagente.id_grupo = '.$es_agent_group_filter;
+        $search_sql .= ' AND (tagente.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
     }
 
     if ($es_agent_remote_conf != 0) {
@@ -2331,7 +2331,7 @@ function reporting_agents_inventory($report, $content)
         tagente.remote
         FROM tagente LEFT JOIN tagent_secondary_group tasg
             ON tagente.id_agente = tasg.id_agent
-        INNER JOIN tagente_modulo tam
+        LEFT JOIN tagente_modulo tam
             ON tam.id_agente = tagente.id_agente
         WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
             %s',
@@ -2346,7 +2346,7 @@ function reporting_agents_inventory($report, $content)
         $servers_ids = [0];
     }
 
-    $return['data'] = [];
+    $return_data = [];
 
     foreach ($servers_ids as $server_id) {
         if (is_metaconsole()) {
@@ -2412,12 +2412,22 @@ function reporting_agents_inventory($report, $content)
             }
         }
 
-        $return['data'] = array_merge($return['data'], $agents);
+        $return_data[$server_id] = $agents;
 
         if (is_metaconsole()) {
             metaconsole_restore_db();
         }
     }
+
+    $all_data = [];
+
+    foreach ($return_data as $server_agents) {
+        foreach ($server_agents as $agent) {
+            $all_data[] = $agent;
+        }
+    }
+
+    $return['data'] = $all_data;
 
     return reporting_check_structure_content($return);
 }

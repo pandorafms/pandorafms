@@ -2394,11 +2394,19 @@ function reporting_agents_inventory($report, $content)
             }
 
             if (array_search('estado', $es_agents_inventory_display_options) !== false) {
-                if (in_array('-1', $es_agent_status_filter) === true || in_array(agents_get_status($value['id_agente']), $es_agent_status_filter)) {
-                    $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                if (in_array(6, $es_agent_status_filter)) {
+                    if (agents_get_status($value['id_agente']) === 0) {
+                        unset($agents[$key]);
+                    } else {
+                        $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                    }
                 } else {
-                    // Agent does not match status filter.
-                    unset($agents[$key]);
+                    if (in_array('-1', $es_agent_status_filter) === true || in_array(agents_get_status($value['id_agente']), $es_agent_status_filter)) {
+                        $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                    } else {
+                        // Agent does not match status filter.
+                        unset($agents[$key]);
+                    }
                 }
             }
         }

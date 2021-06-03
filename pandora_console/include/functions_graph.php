@@ -829,10 +829,17 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
+    $font_size = $config['font_size'];
+
+    // If is metaconsole set 10pt size value.
+    if (is_metaconsole()) {
+        $font_size = '10';
+    }
+
     $params['grid_color'] = '#C1C1C1';
     $params['legend_color'] = '#636363';
     $params['font'] = 'lato';
-    $params['font_size']  = $config['font_size'];
+    $params['font_size']  = $font_size;
     $params['short_data'] = $config['short_module_graph_data'];
 
     if ($params['only_image']) {

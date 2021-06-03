@@ -180,7 +180,13 @@ $table->colspan['staticgraph_modulegraph'][1] = '3';
 $table->data['staticgraph_modulegraph'][1] = __('Width').': '.html_print_input_text('width', 0, '', 5, 5, true);
 $table->data['staticgraph_modulegraph'][1] .= '&nbsp;&nbsp;&nbsp;'.__('Height').': '.html_print_input_text('height', 0, '', 5, 5, true);
 
-$fontf = ['lato' => 'Lato'];
+$fontf = [
+    'Roboto'       => 'Roboto',
+    'lato'         => 'Lato',
+    'opensans'     => 'Open Sans',
+    'nunito'       => 'Nunito',
+    'leaguegothic' => 'League Gothic',
+];
 
 $fonts = [
     '4pt'   => '4pt',

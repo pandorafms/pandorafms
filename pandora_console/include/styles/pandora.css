@@ -106,6 +106,26 @@
   font-family: "source-code";
 }
 
+@font-face {
+  font-family: "leaguegothic";
+  src: url("../../fonts/leaguegothic.woff") format("woff");
+}
+@font-face {
+  font-family: "roboto";
+  src: url("../../fonts/roboto.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "opensans";
+  src: url("../../fonts/opensans.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Nunito-Regular"), url(../../fonts/nunito.woff) format("woff");
+}
+
 * {
   font-size: 9pt;
   -moz-osx-font-smoothing: grayscale;

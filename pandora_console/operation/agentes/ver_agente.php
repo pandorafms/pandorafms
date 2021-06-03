@@ -1325,7 +1325,14 @@ $agent_interfaces = agents_get_network_interfaces(
     ['id_agente' => $id_agente]
 );
 
-$agent_interfaces_count = count($agent_interfaces[$id_agente]['interfaces']);
+if (is_array($agent_interfaces[$id_agente]['interfaces']) !== true
+    || is_object($agent_interfaces[$id_agente]['interfaces']) !== true
+) {
+    $agent_interfaces_count = 0;
+} else {
+    $agent_interfaces_count = count($agent_interfaces[$id_agente]['interfaces']);
+}
+
 
 if ($agent_interfaces_count > 0) {
     $interfacetab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=interface">'.html_print_image(

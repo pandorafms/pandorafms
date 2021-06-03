@@ -23,6 +23,7 @@
 
 .visual-console-item * {
   overflow: visible;
+  font-family: inherit;
 }
 
 .visual-console-item.is-editing {

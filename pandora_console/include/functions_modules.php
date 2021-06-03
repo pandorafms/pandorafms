@@ -2406,12 +2406,14 @@ function modules_get_agentmodule_data(
     $module_name = modules_get_agentmodule_name($id_agent_module);
     $agent_id = modules_get_agentmodule_agent($id_agent_module);
     $agent_name = modules_get_agentmodule_agent_name($id_agent_module);
+    $agent_alias = modules_get_agentmodule_agent_alias($id_agent_module);
     $module_type = modules_get_agentmodule_type($id_agent_module);
 
     foreach ($values as $key => $data) {
         $values[$key]['module_name'] = $module_name;
         $values[$key]['agent_id'] = $agent_id;
         $values[$key]['agent_name'] = $agent_name;
+        $values[$key]['agent_alias'] = $agent_alias;
         $values[$key]['module_type'] = $module_type;
     }
 
@@ -2429,6 +2431,7 @@ function modules_get_agentmodule_data(
                 'module_name' => $values[$key]['module_name'],
                 'agent_id'    => $values[$key]['agent_id'],
                 'agent_name'  => $values[$key]['agent_name'],
+                'agent_alias' => $values[$key]['agent_alias'],
                 'module_type' => $values[$key]['module_type'],
             ];
         }

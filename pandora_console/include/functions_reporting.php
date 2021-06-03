@@ -9060,8 +9060,8 @@ function reporting_custom_graph(
         case 'data':
             $data = [];
             foreach ($modules as $key => $value) {
-                $data[$value] = modules_get_agentmodule_data(
-                    $value,
+                $data[$value['module']] = modules_get_agentmodule_data(
+                    $value['module'],
                     $content['period'],
                     $report['datetime']
                 );
@@ -10557,7 +10557,13 @@ function reporting_get_stats_users($data)
 
     $tdata = [];
     $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
-    $tdata[1] = count(get_users());
+    $user_groups = users_get_strict_mode_groups($config['id_user'], false);
+    if (array_key_exists(0, $user_groups)) {
+        $users = users_get_user_users($config['id_user'], 'AR', true);
+    } else {
+        $users = users_get_user_users($config['id_user'], 'AR', false);
+    }
+    $tdata[1] = count($users);
     $tdata[1] = '<a class="big_data" href="'.$urls['defined_users'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '&nbsp;';

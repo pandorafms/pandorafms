@@ -230,7 +230,7 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    if (!is_central_policies_on_node()) {
+    if (is_management_allowed() === true) {
         $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
             'images/cross.png',
             true,

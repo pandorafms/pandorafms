@@ -845,7 +845,7 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 html_print_input_hidden('id_agente', $id_agente);
 
-if (is_central_policies_on_node() === false) {
+if (is_management_allowed() === true) {
     attachActionButton('update_agents', 'update', $table->width);
 }
 

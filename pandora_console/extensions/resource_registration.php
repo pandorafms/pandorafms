@@ -1047,8 +1047,8 @@ function process_upload_xml($xml)
 
     // Extract policies.
     if ($hook_enterprise === true) {
-        $centralized_management = !is_central_policies_on_node();
-        if ($centralized_management) {
+        $centralized_management = is_management_allowed();
+        if ($centralized_management === true) {
             process_upload_xml_policy($xml, $group_filter);
         }
     }
@@ -1080,9 +1080,10 @@ function resource_registration_extension_main()
         return;
     }
 
-    $centralized_management = !is_central_policies_on_node();
-    if (!$centralized_management) {
-        ui_print_warning_message(__('This node is configured with centralized mode. Go to metaconsole to create a policy.'));
+    if (is_management_allowed() === false) {
+        ui_print_warning_message(
+            __('This node is configured with centralized mode. Go to metaconsole to create a policy.')
+        );
     }
 
     echo '<div class=notify>';
@@ -1091,7 +1092,7 @@ function resource_registration_extension_main()
 
     echo '<br /><br />';
 
-    // Upload form
+    // Upload form.
     echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
         echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
             echo '<tr>';
@@ -1105,7 +1106,7 @@ function resource_registration_extension_main()
         echo '</table>';
     echo '</form>';
 
-    if (!isset($_FILES['resource_upload']['tmp_name'])) {
+    if (isset($_FILES['resource_upload']['tmp_name']) === false) {
         return;
     }
 

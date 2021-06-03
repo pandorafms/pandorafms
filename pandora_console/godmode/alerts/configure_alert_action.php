@@ -101,9 +101,9 @@ if (!$is_in_group && $al_action['id_group'] != 0) {
     exit;
 }
 
-$is_central_policies_on_node = is_central_policies_on_node();
+$is_management_allowed = is_management_allowed();
 
-if ($is_central_policies_on_node === true) {
+if ($is_management_allowed === false) {
     ui_print_warning_message(
         __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
     );
@@ -178,7 +178,7 @@ $table->data[0][1] = html_print_input_text(
     '',
     '',
     '',
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 );
 
 if (io_safe_output($name) == 'Monitoring Event') {
@@ -214,7 +214,7 @@ $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     true,
     '',
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 ).'</div>';
 $table->colspan[1][1] = 2;
 
@@ -248,10 +248,10 @@ $table->data[2][1] = html_print_select_from_sql(
     true,
     false,
     false,
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 );
 $table->data[2][1] .= ' ';
-if ($is_central_policies_on_node === false
+if ($is_management_allowed === true
     && check_acl($config['id_user'], 0, 'PM') && !$disabled
 ) {
     $table->data[2][1] .= __('Create Command');
@@ -275,7 +275,7 @@ $table->data[3][1] = html_print_extended_select_for_time(
     false,
     true,
     '',
-    ($is_central_policies_on_node | $disabled),
+    (!$is_management_allowed | $disabled),
     false,
     '',
     false,
@@ -359,7 +359,7 @@ echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/ale
 $table_html = html_print_table($table, true);
 
 echo $table_html;
-if ($is_central_policies_on_node === false) {
+if ($is_management_allowed === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);

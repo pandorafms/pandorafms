@@ -1726,8 +1726,9 @@ function has_metaconsole()
 
 
 /**
- * @brief Check if there is management operations are allowed in current context
- * (node // meta)
+ * Check if there is management operations are allowed in current context
+ *
+ * @param string $hkey Hash ke.
  *
  * @return boolean
  */
@@ -1750,19 +1751,6 @@ function is_central_policies()
 {
     global $config;
     return is_metaconsole() && $config['centralized_management'];
-}
-
-
-/**
- * @brief Check if there is centralized management in node environment. Usefull
- *             to reduce the policy functionallity on nodes.
- *
- * @return boolean
- */
-function is_central_policies_on_node()
-{
-    global $config;
-    return (!is_metaconsole()) && $config['centralized_management'];
 }
 
 

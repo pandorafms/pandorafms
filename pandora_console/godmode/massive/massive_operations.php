@@ -333,7 +333,7 @@ $agentstab = [
             echo '</div>';
         }
 
-        if ($tab == 'massive_policies' && is_central_policies_on_node()) {
+        if ($tab == 'massive_policies' && is_management_allowed() === false) {
             ui_print_warning_message(__('This node is configured with centralized mode. All policies information is read only. Go to metaconsole to manage it.'));
             return;
         }
@@ -393,7 +393,7 @@ $agentstab = [
 </script>
 
 <?php
-if (is_central_policies_on_node() && $option == 'delete_agents') {
+if (is_management_allowed() === false && $option == 'delete_agents') {
     ui_print_warning_message(__('This node is configured with centralized mode. To delete an agent go to metaconsole.'));
 }
 

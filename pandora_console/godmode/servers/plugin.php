@@ -283,11 +283,12 @@ $sec = 'gservers';
 if (($create != '') || ($view != '')) {
     enterprise_hook('open_meta_frame');
 
+    $management_allowed = is_management_allowed();
+
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
-        $management_allowed = is_management_allowed();
-        if (!$management_allowed) {
+        if ($management_allowed === false) {
             ui_print_warning_message(__('To manage plugin you must activate centralized management'));
         }
     } else {
@@ -309,8 +310,7 @@ if (($create != '') || ($view != '')) {
             );
         }
 
-        $management_allowed = !is_central_policies_on_node();
-        if (!$management_allowed) {
+        if ($management_allowed === false) {
             ui_print_warning_message(
                 __(
                     'This console is not manager of this environment,
@@ -661,8 +661,8 @@ if (($create != '') || ($view != '')) {
             true
         );
 
-        $management_allowed = !is_central_policies_on_node();
-        if (!$management_allowed) {
+        $management_allowed = is_management_allowed();
+        if ($management_allowed === false) {
             ui_print_warning_message(
                 __(
                     'This console is not manager of this environment,

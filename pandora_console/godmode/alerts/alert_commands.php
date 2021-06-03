@@ -48,7 +48,7 @@ if (is_ajax()) {
         $id = (int) get_parameter('id', 0);
         $get_recovery_fields = (int) get_parameter('get_recovery_fields', 1);
 
-        $is_central_policies_on_node = is_central_policies_on_node();
+        $is_management_allowed = !is_management_allowed();
 
         // If command ID is not provided, check for action id.
         if ($id == 0) {
@@ -144,7 +144,7 @@ if (is_ajax()) {
                         0,
                         '',
                         false,
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         "removeTinyMCE('textarea_field".$i."_value')",
                         '',
                         true
@@ -156,7 +156,7 @@ if (is_ajax()) {
                         0,
                         '',
                         true,
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         "addTinyMCE('textarea_field".$i."_value')",
                         '',
                         true
@@ -171,7 +171,7 @@ if (is_ajax()) {
                         'class="fields"',
                         true,
                         '',
-                        $is_central_policies_on_node
+                        $is_management_allowed
                     );
 
                     $editor_type_chkbx = '<div id="command_div"><b><small>';
@@ -181,7 +181,7 @@ if (is_ajax()) {
                         0,
                         '',
                         false,
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         "removeTinyMCE('textarea_field".$i."_recovery_value')",
                         '',
                         true
@@ -193,7 +193,7 @@ if (is_ajax()) {
                         0,
                         '',
                         true,
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         "addTinyMCE('textarea_field".$i."_recovery_value')",
                         '',
                         true
@@ -208,7 +208,7 @@ if (is_ajax()) {
                         'class="fields_recovery"',
                         true,
                         '',
-                        $is_central_policies_on_node
+                        $is_management_allowed
                     );
                 } else if (preg_match('/^_content_type_$/i', $field_value)) {
                     $editor_type_chkbx = '<div id="command_div"><b><small>';
@@ -222,7 +222,7 @@ if (is_ajax()) {
                         'text/plain',
                         '',
                         '',
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         '',
                         '',
                         true
@@ -234,7 +234,7 @@ if (is_ajax()) {
                         'text/html',
                         '',
                         'text/html',
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         '',
                         '',
                         true
@@ -253,7 +253,7 @@ if (is_ajax()) {
                         'text/plain',
                         '',
                         '',
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         '',
                         '',
                         true
@@ -265,7 +265,7 @@ if (is_ajax()) {
                         'text/html',
                         '',
                         'text/html',
-                        $is_central_policies_on_node,
+                        $is_management_allowed,
                         '',
                         '',
                         true
@@ -301,7 +301,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
 
                         $rfield .= html_print_select(
@@ -315,7 +315,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
 
                         $ffield .= html_print_input_text('field'.$i.'_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
@@ -329,7 +329,7 @@ if (is_ajax()) {
                             'style="min-height:40px; '.$style.'" class="fields"',
                             true,
                             '',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
 
 
@@ -341,7 +341,7 @@ if (is_ajax()) {
                             'style="min-height:40px; '.$style.'" class="fields_recovery',
                             true,
                             '',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
                 } else {
                     $fields_value_select = [];
@@ -375,7 +375,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
                         $rfield = html_print_select(
                             $fields_value_select,
@@ -388,7 +388,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields_recovery',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
                     } else {
                         $ffield = html_print_textarea(
@@ -399,7 +399,7 @@ if (is_ajax()) {
                             'style="'.$style.'" class="fields min-height-40px"',
                             true,
                             '',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
                         $rfield = html_print_textarea(
                             'field'.$i.'_recovery_value',
@@ -409,7 +409,7 @@ if (is_ajax()) {
                             'style="'.$style.'" class="fields_recovery min-height-40px',
                             true,
                             '',
-                            $is_central_policies_on_node
+                            $is_management_allowed
                         );
                     }
                 }
@@ -422,7 +422,7 @@ if (is_ajax()) {
                     'style="'.$style.'" class="fields min-height-40px"',
                     true,
                     '',
-                    $is_central_policies_on_node
+                    $is_management_allowed
                 );
                 $rfield = html_print_textarea(
                     'field'.$i.'_recovery_value',
@@ -432,7 +432,7 @@ if (is_ajax()) {
                     'style="'.$style.'" class="fields_recovery min-height-40px"',
                     true,
                     '',
-                    $is_central_policies_on_node
+                    $is_management_allowed
                 );
             }
 
@@ -610,9 +610,8 @@ if ($copy_command) {
     }
 }
 
-$is_central_policies_on_node = is_central_policies_on_node();
-
-if ($is_central_policies_on_node === true) {
+$is_management_allowed = is_management_allowed();
+if ($is_management_allowed === false) {
     ui_print_warning_message(
         __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
     );
@@ -682,7 +681,7 @@ foreach ($commands as $command) {
     $table->cellclass[]['action'] = 'action_buttons';
 
     // (IMPORTANT, DO NOT CHANGE!) only users with permissions over "All" group have access to edition of commands belonging to "All" group.
-    if ($is_central_policies_on_node === false && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
+    if ($is_management_allowed === true && !$command['internal'] && check_acl_restricted_all($config['id_user'], $command['id_group'], 'LM')) {
         if (check_acl($config['id_user'], 0, 'PM') || is_user_admin(
             $config['id_user
             ']
@@ -714,7 +713,7 @@ if (isset($data) === true && count($table->data) > 0) {
     );
 }
 
-if ($is_central_policies_on_node === false && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
+if ($is_management_allowed === true && check_acl_restricted_all($config['id_user'], $command['id_group'], 'PM')) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_command&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

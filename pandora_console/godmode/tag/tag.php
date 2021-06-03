@@ -169,9 +169,8 @@ if ($delete !== 0) {
     }
 }
 
-$is_management_allowed = true;
-if (is_management_allowed() === false) {
-    $is_management_allowed = false;
+$is_management_allowed = is_management_allowed();
+if ($is_management_allowed === false) {
     ui_print_warning_message(
         __('This node is configured with centralized mode. All tags information is read only. Go to metaconsole to manage it.')
     );

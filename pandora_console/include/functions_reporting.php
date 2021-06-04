@@ -10748,6 +10748,7 @@ function reporting_get_stats_users($data)
     } else {
         $users = users_get_user_users($config['id_user'], 'AR', false);
     }
+
     $tdata[1] = count($users);
     $tdata[1] = '<a class="big_data" href="'.$urls['defined_users'].'">'.$tdata[1].'</a>';
 

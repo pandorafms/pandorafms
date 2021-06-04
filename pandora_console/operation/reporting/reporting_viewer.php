@@ -96,7 +96,10 @@ if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
     $options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
         'images/op_reporting.png',
         true,
-        ['title' => __('Main data')]
+        [
+            'title' => __('Main data'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     $options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(

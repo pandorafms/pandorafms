@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Actual View script for Visual Consoles.
  *
- * @category   Extensions
+ * @category   Operation
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 // Login check.
@@ -93,14 +93,14 @@ try {
 
 $visualConsoleData = $visualConsole->toArray();
 $groupId = $visualConsoleData['groupId'];
-$visualConsoleName = $visualConsoleData['name'];
+$visualConsoleName = io_safe_input(strip_tags(io_safe_output($visualConsoleData['name'])));
 
 // ACL.
-$aclRead = check_acl_restricted_all($config['id_user'], $groupId, 'VR');
-$aclWrite = check_acl_restricted_all($config['id_user'], $groupId, 'VW');
-$aclManage = check_acl_restricted_all($config['id_user'], $groupId, 'VM');
+$aclRead   = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VR');
+$aclWrite  = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VW');
+$aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM');
 
-if (!$aclRead && !$aclWrite && !$aclManage) {
+if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access visual console without group access'
@@ -121,9 +121,9 @@ $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode
     ]
 ).'</a>';
 
-if ($aclWrite || $aclManage) {
+if ($aclWrite === true || $aclManage === true) {
     $action = get_parameterBetweenListValues(
-        is_metaconsole() ? 'action2' : 'action',
+        (is_metaconsole() === true) ? 'action2' : 'action',
         [
             'new',
             'save',
@@ -167,7 +167,7 @@ if ($aclWrite || $aclManage) {
         ]
     ).'</a>';
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $options['wizard_services']['text'] = '<a href="'.$baseUrl.'&tab=wizard_services&id_visual_console='.$visualConsoleId.'">'.html_print_image(
             'images/wand_services.png',
             true,
@@ -380,7 +380,7 @@ if ($pure === false) {
         echo '</div>';
         echo '</div>';
 
-        if ($aclWrite || $aclManage) {
+        if ($aclWrite === true || $aclManage === true) {
             echo html_print_checkbox_switch('edit-mode', 1, false, true);
         }
 
@@ -406,7 +406,7 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$visualConsoleId.'&refr='.$refr;
     } else {
         $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
@@ -419,7 +419,7 @@ if ($pure === true) {
 
     // Countdown.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         echo '<div class="vc-refr-meta">';
     } else {
         echo '<div class="vc-refr">';
@@ -444,11 +444,13 @@ if ($pure === true) {
 
     // Console name.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
-        echo '<div class="vc-title-meta">'.$visualConsoleName.'</div>';
-    } else {
-        echo '<div class="vc-title">'.$visualConsoleName.'</div>';
-    }
+
+    html_print_div(
+        [
+            'class'   => (is_metaconsole() === true) ? 'vc-title-meta' : 'vc-title',
+            'content' => $visualConsoleName,
+        ]
+    );
 
     echo '</li>';
 
@@ -501,7 +503,7 @@ ui_require_css_file('form');
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
-    var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
+    var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
     var controls = document.getElementById('vc-controls');
     autoHideElement(controls, 1000);

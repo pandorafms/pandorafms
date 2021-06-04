@@ -2107,6 +2107,20 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2729,6 +2743,20 @@ switch ($action) {
                                 $es['users_groups'] = get_parameter('users_groups', 0);
                                 $es['select_by_group'] = get_parameter('select_by_group', 0);
                                 $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
                                 $values['external_source'] = json_encode($es);
                             break;
 

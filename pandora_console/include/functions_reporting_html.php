@@ -377,6 +377,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_agent_module($table, $item);
             break;
 
+            case 'agents_inventory':
+                reporting_html_agents_inventory($table, $item);
+            break;
+
             case 'inventory':
                 reporting_html_inventory($table, $item);
             break;
@@ -1421,6 +1425,173 @@ function reporting_html_event_report_module($table, $item, $pdf=0)
 
             return $pdf_export;
         }
+    }
+}
+
+
+/**
+ * Print in html agents inventory
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   Print pdf true or false.
+ *
+ * @return html
+ */
+function reporting_html_agents_inventory($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->class = 'databox data';
+    $table1->cellpadding = 1;
+    $table1->cellspacing = 1;
+    $table1->styleTable = 'overflow: wrap; table-layout: fixed;';
+
+    $table1->style[0] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[1] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[2] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[3] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[4] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[5] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[6] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[7] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[8] = 'text-align: left;vertical-align: top; min-width: 100px';
+    $table1->style[9] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[10] = 'text-align: left;vertical-align: top;min-width: 100px;';
+    $table1->style[11] = 'text-align: left;vertical-align: top; min-width: 100px';
+
+    $table1->head = [];
+
+    foreach ($item['data'][0] as $field_key => $field_value) {
+        switch ($field_key) {
+            case 'alias':
+                $table1->head[] = __('Alias');
+            break;
+
+            case 'direccion':
+                $table1->head[] = __('IP Address');
+            break;
+
+            case 'id_os':
+                $table1->head[] = __('OS');
+            break;
+
+            case 'id_grupo':
+                $table1->head[] = __('Group');
+            break;
+
+            case 'comentarios':
+                $table1->head[] = __('Description');
+            break;
+
+            case 'secondary_groups':
+                $table1->head[] = __('Sec. groups');
+            break;
+
+            case 'url_address':
+                $table1->head[] = __('URL');
+            break;
+
+            case 'custom_fields':
+                $table1->head[] = __('Custom fields');
+            break;
+
+            case 'estado':
+                $table1->head[] = __('Status');
+            break;
+
+            case 'agent_version':
+                $table1->head[] = __('Version');
+            break;
+
+            case 'remote':
+                $table1->head[] = __('Remote conf.');
+            break;
+        }
+    }
+
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->headstyle[3] = 'text-align: left';
+    $table1->headstyle[4] = 'text-align: left';
+    $table1->headstyle[5] = 'text-align: left';
+    $table1->headstyle[6] = 'text-align: left';
+    $table1->headstyle[7] = 'text-align: left';
+    $table1->headstyle[8] = 'text-align: left';
+    $table1->headstyle[9] = 'text-align: left';
+    $table1->headstyle[10] = 'text-align: left';
+    $table1->headstyle[11] = 'text-align: left';
+
+    $table1->data = [];
+
+    foreach ($item['data'] as $data) {
+        $row = [];
+
+        foreach ($data as $data_field_key => $data_field_value) {
+            $column_value = $data_field_value;
+
+            $show_link = $pdf === 0 ? true : false;
+
+            // Necessary transformations of data prior to represent it.
+            if ($data_field_key === 'id_os') {
+                $column_value = get_os_name((int) $data_field_value);
+            } else if ($data_field_key === 'remote' && $pdf === 0) {
+                $column_value = ((int) $data_field_value === 1) ? __('Yes') : __('No');
+            } else if ($data_field_key === 'url_address' && $pdf === 0) {
+                $column_value = ui_print_truncate_text($data_field_value, 10);
+            } else if ($data_field_key === 'estado') {
+                $column_value = ($pdf === 0) ? ui_print_module_status((int) $data_field_value, true) : modules_get_modules_status((int) $data_field_value);
+            } else if ($data_field_key === 'id_grupo') {
+                $column_value = ui_print_group_icon((int) $data_field_value, true, 'groups_small', '', $show_link);
+            } else if ($data_field_key === 'custom_fields') {
+                $custom_fields_value = [];
+
+                if (is_array($data_field_value)) {
+                    foreach ($data_field_value as $value) {
+                        $custom_fields_value[] = $value['name'].': '.$value['description'];
+                    }
+                }
+
+                $column_value = implode(' / ', $custom_fields_value);
+            } else if ($data_field_key === 'secondary_groups') {
+                $custom_fields_value = [];
+
+                if (is_array($data_field_value)) {
+                    foreach ($data_field_value as $value) {
+                        $custom_fields_value[] = ui_print_group_icon((int) $value['id_group'], true, 'groups_small', '', $show_link);
+                    }
+                }
+
+                $column_value = implode(' / ', $custom_fields_value);
+            }
+
+            $row[] = $column_value;
+        }
+
+        $table1->data[] = $row;
+
+        if ($pdf !== 0) {
+            $table1->data[] = '<br />';
+        }
+    }
+
+    if ($pdf === 0) {
+        $table->colspan['permissions']['cell'] = 3;
+        $table->cellstyle['permissions']['cell'] = 'text-align: center;';
+        $table->data['permissions']['cell'] = html_print_table(
+            $table1,
+            true
+        );
+    } else {
+        return html_print_table(
+            $table1,
+            true
+        );
     }
 }
 

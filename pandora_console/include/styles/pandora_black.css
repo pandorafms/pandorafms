@@ -56,7 +56,8 @@ input.sub,
 .introjs-tooltip,
 button.sub,
 .bg_general,
-table.agent_info_table thead > tr:first-child th,
+.show_result_interpreter,
+div#rules::after table.agent_info_table thead > tr:first-child th,
 table.agent_info_table tr {
   background-color: #222 !important;
   color: #fff !important;
@@ -234,7 +235,8 @@ div#foot {
 }
 
 /* Overwrite inline styles */
-.textodialogo td .white_important {
+.textodialogo td .white_important,
+.multi-select-container {
   color: #fff !important;
 }
 
@@ -894,6 +896,8 @@ div#dashboard-controls {
   text-align: center;
   text-anchor: middle;
   fill: #fff;
+  font-family: Verdana;
+  color: #fff;
 }
 
 .tickLabel {
@@ -1120,4 +1124,19 @@ a.pandora_pagination,
 
 .databox.data > tbody > tr > td:last-child {
   border-right: 1px solid #707070 !important;
+}
+
+.results-found {
+  background-color: #111;
+  color: #fff;
+}
+
+#graph_container {
+  background-color: #111 !important;
+  color: #fff;
+}
+
+#elasticsearch_editor,
+#elasticsearch_view {
+  filter: invert(100%);
 }

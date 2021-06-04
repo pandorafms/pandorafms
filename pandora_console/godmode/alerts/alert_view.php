@@ -224,31 +224,31 @@ $table_days->data[0] = array_fill(0, 7, html_print_image('images/blade.png', tru
 
 $days = [];
 if ($template['monday']) {
-    $table_days->data[0][0] = html_print_image('images/tick.png', true);
+    $table_days->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['tuesday']) {
-    $table_days->data[0][1] = html_print_image('images/tick.png', true);
+    $table_days->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['wednesday']) {
-    $table_days->data[0][2] = html_print_image('images/tick.png', true);
+    $table_days->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['thursday']) {
-    $table_days->data[0][3] = html_print_image('images/tick.png', true);
+    $table_days->data[0][3] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['friday']) {
-    $table_days->data[0][4] = html_print_image('images/tick.png', true);
+    $table_days->data[0][4] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['saturday']) {
-    $table_days->data[0][5] = html_print_image('images/tick.png', true);
+    $table_days->data[0][5] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['sunday']) {
-    $table_days->data[0][6] = html_print_image('images/tick.png', true);
+    $table_days->data[0][6] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 $data[0] = html_print_table($table_days, true);
@@ -265,7 +265,7 @@ $table_time->styleTable = 'padding: 1px; margin: 0px; text-align: center; height
 // $data[0] = __('Time from') . ' / ' . __('Time to');
 if ($template['time_from'] == $template['time_to']) {
     $table_time->head[0] = '00:00:00<br>-<br>23:59:59';
-    $table_time->data[0][0] = html_print_image('images/tick.png', true);
+    $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 } else {
     $from_array = explode(':', $template['time_from']);
     $from = ($from_array[0] * SECONDS_1HOUR + $from_array[1] * SECONDS_1MINUTE + $from_array[2]);
@@ -278,7 +278,7 @@ if ($template['time_from'] == $template['time_to']) {
         }
 
         $table_time->head[1] = $template['time_from'].'<br>-<br>'.$template['time_to'];
-        $table_time->data[0][1] = html_print_image('images/tick.png', true);
+        $table_time->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 
         if ($template['time_to'] != '23:59:59') {
             $table_time->head[2] = $template['time_to'].'<br>-<br>23:59:59';
@@ -287,15 +287,15 @@ if ($template['time_from'] == $template['time_to']) {
     } else {
         if ($template['time_to'] != '00:00:00') {
             $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_to'];
-            $table_time->data[0][0] = html_print_image('images/tick.png', true);
+            $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         }
 
         $table_time->head[1] = $template['time_to'].'<br>-<br>'.$template['time_from'];
-        $table_time->data[0][1] = html_print_image('images/blade.png', true);
+        $table_time->data[0][1] = html_print_image('images/blade.png', true, ['class' => 'invert_filter']);
 
         if ($template['time_from'] != '23:59:59') {
             $table_time->head[2] = $template['time_from'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/tick.png', true);
+            $table_time->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         }
     }
 
@@ -354,7 +354,7 @@ $table->style[0] = 'font-weight: bold; text-align: left;';
 if (count($actions) == 1 && isset($actions[0])) {
     $table->head[1] = __('Every time that the alert is fired');
     $table->data[0][0] = $actions[0]['name'];
-    $table->data[0][1] = html_print_image('images/tick.png', true);
+    $table->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
@@ -364,7 +364,7 @@ if (count($actions) == 1 && isset($actions[0])) {
 
         foreach ($action['escalation'] as $k => $v) {
             if ($v > 0) {
-                $table->data[$kaction][$k] = html_print_image('images/tick.png', true);
+                $table->data[$kaction][$k] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
             } else {
                 $table->data[$kaction][$k] = html_print_image('images/blade.png', true);
             }

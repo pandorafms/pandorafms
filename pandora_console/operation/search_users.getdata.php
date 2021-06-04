@@ -221,7 +221,23 @@ if ($searchUsers) {
         // Check ACLs
         $users_id = [];
         foreach ($users as $key => $user) {
-            if (!check_acl($config['id_user'], users_get_groups($user['id_user']), 'UM') && $config['id_user'] != $user['id_user']) {
+            $user_can_manage_all = users_can_manage_group_all('UM');
+
+            $user_groups = users_get_groups(
+                $user['id_user'],
+                'AR',
+                $user_can_manage_all
+            );
+
+            // Get group IDs.
+            $user_groups = array_keys($user_groups);
+
+            if (check_acl_one_of_groups($config['id_user'], $user_groups, 'UM') === false
+                && $config['id_user'] != $user['id_user']
+                || (users_is_admin($config['id_user']) === false
+                && users_is_admin($user['id_user']) === true)
+                || $config['id_user'] === $user['id_user']
+            ) {
                 unset($users[$key]);
             } else {
                 $users_id[] = $user['id_user'];
@@ -229,33 +245,9 @@ if ($searchUsers) {
         }
 
         if ($only_count) {
+            $totalUsers = count($users);
             unset($users);
         }
-
-        switch ($config['dbtype']) {
-            case 'mysql':
-            case 'postgresql':
-                $sql = "SELECT COUNT(id_user) AS count FROM tusuario
-					WHERE id_user LIKE '%".$stringSearchSQL."%' OR
-						fullname LIKE '%".$stringSearchSQL."%' OR
-						firstname LIKE '%".$stringSearchSQL."%' OR
-						lastname LIKE '%".$stringSearchSQL."%' OR
-						middlename LIKE '%".$stringSearchSQL."%' OR
-						email LIKE '%".$stringSearchSQL."%'";
-            break;
-
-            case 'oracle':
-                $sql = "SELECT COUNT(id_user) AS count FROM tusuario
-					WHERE upper(id_user) LIKE '%".strtolower($stringSearchSQL)."%' OR
-						upper(fullname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-						upper(firstname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-						upper(lastname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-						upper(middlename) LIKE '%".strtolower($stringSearchSQL)."%' OR
-						upper(email LIKE) '%".strtolower($stringSearchSQL)."%'";
-            break;
-        }
-
-        $totalUsers = db_get_value_sql($sql);
     } else {
         $totalUsers = 0;
     }

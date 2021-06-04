@@ -48,7 +48,11 @@ if (is_ajax()) {
         $id = (int) get_parameter('id', 0);
         $get_recovery_fields = (int) get_parameter('get_recovery_fields', 1);
 
-        $is_management_allowed = !is_management_allowed();
+        // Snmp alerts are not in the metaconsole so they cannot be centralized.
+        $is_management_allowed = false;
+        if ($get_recovery_fields !== 0) {
+            $is_management_allowed = !is_management_allowed();
+        }
 
         // If command ID is not provided, check for action id.
         if ($id == 0) {

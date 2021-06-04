@@ -62,6 +62,20 @@ $show_sort_options = [];
 $show_sort_options[1] = __('Ascending');
 $show_sort_options[2] = __('Descending');
 
+// Agents inventory display options.
+$agents_inventory_display_options = [];
+$agents_inventory_display_options['alias'] = __('Alias');
+$agents_inventory_display_options['direccion'] = __('IP');
+$agents_inventory_display_options['id_os'] = __('OS');
+$agents_inventory_display_options['id_grupo'] = __('Group');
+$agents_inventory_display_options['secondary_groups'] = __('Secondary groups');
+$agents_inventory_display_options['comentarios'] = __('Description');
+$agents_inventory_display_options['url_address'] = __('URL');
+$agents_inventory_display_options['custom_fields'] = __('Custom fields');
+$agents_inventory_display_options['estado'] = __('Status');
+$agents_inventory_display_options['agent_version'] = __('Version');
+$agents_inventory_display_options['remote'] = __('Remote configuration');
+
 enterprise_include('/godmode/reporting/reporting_builder.item_editor.php');
 require_once $config['homedir'].'/include/functions_agents.php';
 if (enterprise_include_once('include/functions_metaconsole.php')) {
@@ -723,6 +737,25 @@ switch ($action) {
                     $group = $item['id_group'];
                     $modulegroup = $item['id_module_group'];
                     $idAgentModule = $module;
+                break;
+
+                case 'agents_inventory':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+
+                    $date = $es['date'];
+                    $selected_agent_server_filter = $es['agent_server_filter'];
+                    $selected_agent_group_filter = $es['agent_group_filter'];
+                    $selected_agents_inventory_display_options = $es['agents_inventory_display_options'];
+                    $selected_agent_os_filter = $es['agent_os_filter'];
+                    $selected_agent_custom_field_filter = $es['agent_custom_field_filter'];
+                    $selected_agent_status_filter = $es['agent_status_filter'];
+                    $selected_agent_module_search_filter = $es['agent_module_search_filter'];
+                    $selected_agent_version_filter = $es['agent_version_filter'];
+                    $selected_agent_remote = $es['agent_remote_conf'];
+
+                    $idAgent = $es['id_agents'];
+                    $idAgentModule = $inventory_modules;
                 break;
 
                 case 'inventory':
@@ -3020,6 +3053,232 @@ $class = 'databox filters';
             <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
         </tr>
 
+        <tr id="row_agents_inventory_display_options" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Display options');
+                ?>
+            </td>
+            <td>
+            <?php
+            html_print_select(
+                $agents_inventory_display_options,
+                'agents_inventory_display_options[]',
+                $selected_agents_inventory_display_options,
+                '',
+                '',
+                '',
+                false,
+                true,
+                true,
+                '',
+                false,
+                'width:200px'
+            );
+            ?>
+            </td>
+        </tr>
+
+        <?php
+        $server_fields = [];
+            $server_fields[0] = __('All');
+
+            $servers = metaconsole_get_servers();
+
+        foreach ($servers as $key => $server) {
+            $server_fields[$key] = $server['server_name'];
+        }
+
+            $server_filter_markup = '
+            <tr id="row_agent_server_filter" class="datos">
+                <td class="bolder">'.__('Server').'</td><td>'.html_print_select(
+                $server_fields,
+                'agent_server_filter',
+                $selected_agent_server_filter,
+                '',
+                false,
+                '',
+                true,
+                false,
+                false,
+                '',
+                false,
+                'min-width: 180px'
+            ).'</td></tr>';
+
+            if (is_metaconsole()) {
+                echo $server_filter_markup;
+            }
+            ?>
+
+        <tr id="row_agent_group_filter" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent group filter');
+                ?>
+            </td>
+            <td>
+            <?php
+            html_print_select_groups(
+                $config['id_user'],
+                'RW',
+                true,
+                'agent_group_filter',
+                $selected_agent_group_filter,
+                ''
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_os" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent OS filter');
+                ?>
+            </td>
+            <td>
+            <?php
+            if ($selected_agent_os_filter === null) {
+                $selected_agent_os_filter = 0;
+            }
+
+            html_print_select_from_sql(
+                'SELECT id_os, name FROM tconfig_os',
+                'agent_os_filter[]',
+                $selected_agent_os_filter,
+                '',
+                __('All'),
+                '0',
+                false,
+                true
+            );
+            ?>
+                </td>
+        </tr>
+
+        <tr id="row_custom_field"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent custom field filter');
+                ?>
+            </td>
+            <td  >
+                <?php
+                echo html_print_input_text(
+                    'agent_custom_field_filter',
+                    $selected_agent_custom_field_filter,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent status filter');
+                ?>
+            </td>
+            <td>
+                <?php
+                $fields = [];
+                    $fields[AGENT_STATUS_NORMAL] = __('Normal');
+                    $fields[AGENT_STATUS_WARNING] = __('Warning');
+                    $fields[AGENT_STATUS_CRITICAL] = __('Critical');
+                    $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
+                    $fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
+                    $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+                if ($selected_agent_status_filter === null) {
+                    $selected_agent_status_filter = -1;
+                }
+
+                    html_print_select(
+                        $fields,
+                        'agent_status_filter[]',
+                        $selected_agent_status_filter,
+                        '',
+                        __('All'),
+                        '-1',
+                        false,
+                        true,
+                        false,
+                        '',
+                        false,
+                        'min-width: 180px'
+                    );
+                    ?>
+            </td>
+        </tr>
+        
+        <tr id="row_agent_version" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent version filter');
+                ?>
+            </td>
+            <td  >
+                <?php
+                echo html_print_input_text(
+                    'agent_version_filter',
+                    $selected_agent_version_filter,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_remote_conf" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Agent has remote configuration').ui_print_help_tip(
+                __('Filter agents by remote configuration enabled.'),
+                true
+            );
+            ?>
+            </td>
+            <td><?php html_print_checkbox_switch('agent_remote_conf', 1, $selected_agent_remote); ?></td>
+        </tr>
+
+        <tr id="row_module_free_search" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Agent module filter');
+                ?>
+            </td>
+            <td>
+                <?php
+                echo html_print_input_text(
+                    'agent_module_search_filter',
+                    $selected_agent_module_search_filter,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'fullwidth'
+                );
+                ?>
+            </td>
+        </tr>
+
     </tbody>
 </table>
 
@@ -5223,6 +5482,15 @@ function chooseType() {
     $("#row_users").hide();
     $("#row_profiles_group").hide();
     $("#row_select_by_group").hide();
+    $("#row_agents_inventory_display_options").hide();
+    $("#row_agent_server_filter").hide();
+    $("#row_agent_group_filter").hide();
+    $("#row_os").hide();
+    $("#row_custom_field").hide();
+    $("#row_agent_status").hide();
+    $("#row_agent_version").hide();
+    $("#row_agent_remote_conf").hide();
+    $("#row_module_free_search").hide();
 
 
     // SLA list default state.
@@ -5761,6 +6029,20 @@ function chooseType() {
                 );
             });
             $("#row_historical_db_check").hide();
+
+            break;
+
+        case 'agents_inventory':
+            $("#row_agents_inventory_display_options").show();
+            $("#row_agent_server_filter").show();
+            $("#row_agent_group_filter").show();
+            $("#row_group").show();
+            $("#row_os").show();
+            $("#row_custom_field").show();
+            $("#row_agent_status").show();
+            $("#row_agent_version").show();
+            $("#row_agent_remote_conf").show();
+            $("#row_module_free_search").show();
 
             break;
 

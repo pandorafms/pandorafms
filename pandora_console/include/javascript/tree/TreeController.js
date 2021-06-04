@@ -644,7 +644,7 @@ var TreeController = {
                 $content.append($statusImage);
               }
               var image_tooltip =
-                '<span><img src="' +
+                '<span><img class="invert_filter" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
                 'images/help.png" class="img_help" title="' +
                 element.name +
@@ -653,7 +653,7 @@ var TreeController = {
                 '"/></span> ';
 
               var $serviceDetailImage = $(
-                '<img src="' +
+                '<img class="invert_filter" src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
                   'images/tree_service_map.png" /> '
               );

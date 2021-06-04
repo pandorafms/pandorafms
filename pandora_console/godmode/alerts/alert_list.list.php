@@ -810,7 +810,8 @@ foreach ($simple_alerts as $alert) {
             'images/lightbulb_off.png',
             1,
             'padding:0px',
-            true
+            true,
+            ['class' => 'invert_filter']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -879,7 +880,10 @@ foreach ($simple_alerts as $alert) {
                 $data[4] .= html_print_image(
                     'images/add.disabled.png',
                     true,
-                    ['title' => __('Add action')]
+                    [
+                        'title' => __('Add action'),
+                        'class' => 'invert_filter',
+                    ]
                 );
             } else {
                 if ((int) $alert['id_policy_alerts'] === 0) {

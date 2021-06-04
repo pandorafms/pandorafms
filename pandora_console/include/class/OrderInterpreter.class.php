@@ -397,7 +397,7 @@ class OrderInterpreter extends Wizard
                     if ($iterator <= 9 && $this->canShowItem($enterprise, $this->pages_menu[$key]['url'])) {
                         echo '<li class="list_found" name="'.$iterator.'" id="'.$iterator.'">';
                         echo '
-                        Go to &nbsp;
+                        <span class="invert_filter"> Go to </span> &nbsp;
                         <img src="'.$this->pages_menu[$key]['icon'].'">';
                         echo '&nbsp;
                         <a href="'.$this->pages_menu[$key]['url'].'">
@@ -419,12 +419,12 @@ class OrderInterpreter extends Wizard
             echo $this->loadJS();
             echo '</ul>';
             if ($iterator > 10) {
-                echo '<div class="more_results">
-                  + '.$more_results.' '.__('results found').'</div>';
+                echo '<div class="more_results"><span class="invert_filter">
+                  + '.$more_results.' '.__('results found').'</span></div>';
             }
 
             if ($iterator === 0) {
-                echo __('Press enter to search');
+                echo '<span class="invert_filter">'.__('Press enter to search').'</span>';
             }
 
             echo '</div>';

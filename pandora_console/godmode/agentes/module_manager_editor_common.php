@@ -1,17 +1,32 @@
 <?php
+/**
+ * Common editor fields.
+ *
+ * @category   Module manager
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
@@ -19,7 +34,9 @@ require_once $config['homedir'].'/include/graphs/functions_d3.php';
 include_javascript_d3();
 
 
-global $config;function prepend_table_simple($row, $id=false)
+global $config;
+
+function prepend_table_simple($row, $id=false)
 {
     global $table_simple;
 
@@ -1574,10 +1591,6 @@ $(document).ready (function () {
     });
 
     disabled_two_tailed(disabledBecauseInPolicy);
-    $('#checkbox-dynamic_two_tailed').change (function() {
-        disabled_two_tailed(disabledBecauseInPolicy);
-    });
-
 
     //Dynamic_options_advance;
     $('.hide_dinamic').hide();
@@ -1646,15 +1659,10 @@ function disabled_status (disabledBecauseInPolicy) {
 }
 
 function disabled_two_tailed (disabledBecauseInPolicy) {
-    if($('#checkbox-dynamic_two_tailed').prop('checked')){
-        $('#text-dynamic_max').prop('readonly', false);
-        $('#text-dynamic_max').removeClass('readonly');
-    }
-    else{
-        if (disabledBecauseInPolicy == 0){
-            $('#text-dynamic_max').prop('readonly', true);
-            $('#text-dynamic_max').addClass('readonly');
-        }
+    if (disabledBecauseInPolicy == 1){
+            $('#text-dynamic_max')
+                .prop('readonly', true)
+                .addClass('readonly');
     }
 }
 

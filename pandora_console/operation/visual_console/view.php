@@ -198,7 +198,7 @@ $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual
 ).'</a>';
 $options['view']['active'] = true;
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     if (!$config['pure']) {
         $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
             'images/full_screen.png',
@@ -208,13 +208,25 @@ if (!is_metaconsole()) {
                 'class' => 'invert_filter',
             ]
         ).'</a>';
-        ui_print_page_header(
+
+        // Header.
+        ui_print_standard_header(
             $visualConsoleName,
             'images/visual_console.png',
             false,
             'visual_console_view',
             false,
-            $options
+            $options,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Topology maps'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Visual console'),
+                ],
+            ]
         );
     }
 
@@ -465,7 +477,7 @@ if ($pure === true) {
 
 // Check groups can access user.
 $aclUserGroups = [];
-if (!users_can_manage_group_all('AR')) {
+if (users_can_manage_group_all('AR') === false) {
     $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
 }
 

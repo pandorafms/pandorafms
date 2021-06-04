@@ -1,10 +1,10 @@
 <?php
 /**
- * Integria incidents management.
+ * Public access interface to provide access using hash and id_user.
  *
- * @category   Ajax library.
+ * @category   Interfaces
  * @package    Pandora FMS
- * @subpackage Modules.
+ * @subpackage Login
  * @version    1.0.0
  * @license    See below
  *
@@ -26,35 +26,36 @@
  * ============================================================================
  */
 
-if (check_login()) {
-    global $config;
+// Begin.
+namespace PandoraFMS;
 
-    include_once $config['homedir'].'/include/functions_integriaims.php';
+interface PublicLogin
+{
 
-    $get_users = get_parameter('get_users');
-    $search_term = get_parameter('search_term', '');
 
-    if ($get_users) {
-        $integria_users_csv = integria_api_call(null, null, null, null, 'get_users', []);
+    /**
+     * Generates a hash to authenticate in public views.
+     *
+     * @param string|null $other_secret If you need to authenticate using a
+     * varable string, use this 'other_secret' to customize the hash.
+     *
+     * @return string Returns a hash with the authenticaction.
+     */
+    public static function generatePublicHash(?string $other_secret=''):string;
 
-        $csv_array = explode("\n", $integria_users_csv);
 
-        foreach ($csv_array as $csv_line) {
-            if (!empty($csv_line)) {
-                $integria_users_values[$csv_line] = $csv_line;
-            }
-        }
+    /**
+     * Validates a hash to authenticate in public view.
+     *
+     * @param string $hash         Hash to be checked.
+     * @param string $other_secret Any custom string needed for you.
+     *
+     * @return boolean Returns true if hash is valid.
+     */
+    public static function validatePublicHash(
+        string $hash,
+        string $other_secret=''
+    ):bool;
 
-        $integria_users_filtered_values = array_filter(
-            $integria_users_values,
-            function ($item) use ($search_term) {
-                if (strpos($item, $search_term) !== false) {
-                    return true;
-                }
-            }
-        );
 
-        echo json_encode($integria_users_filtered_values);
-        return;
-    }
 }

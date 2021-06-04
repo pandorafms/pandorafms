@@ -82,3 +82,4 @@ include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php
 operation/network/network_explorer.php
+operation/vsual_console/pure_ajax.php

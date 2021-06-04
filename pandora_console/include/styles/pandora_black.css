@@ -1019,3 +1019,11 @@ li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   margin: 20px auto;
   border-radius: 3px;
 }
+
+table.alternate tr:nth-child(2n + 1) td {
+  background-color: #222;
+}
+
+table.alternate tr:nth-child(2n) td {
+  background-color: #111;
+}

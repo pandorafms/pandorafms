@@ -254,6 +254,8 @@ server_dependencies=" \
     perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
+    expect \
+	openssh-clients \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"

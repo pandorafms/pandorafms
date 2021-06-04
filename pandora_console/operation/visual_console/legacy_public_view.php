@@ -15,7 +15,11 @@
 // The session is configured and started inside the config process.
 require_once '../../include/config.php';
 
-// Set root on homedir, as defined in setup
+require_once $config['homedir'].'/vendor/autoload.php';
+
+use PandoraFMS\User;
+
+// Set root on homedir, as defined in setup.
 chdir($config['homedir']);
 
 ob_start();
@@ -61,10 +65,13 @@ $id_layout = (int) get_parameter('id_layout');
 $graph_javascript = (bool) get_parameter('graph_javascript');
 $config['id_user'] = get_parameter('id_user');
 
-$myhash = md5($config['dbpass'].$id_layout.$config['id_user']);
-
-// Check input hash
-if ($myhash != $hash) {
+// Check input hash.
+if (User::validatePublicHash($hash) !== true) {
+    db_pandora_audit(
+        'Invalid public visual console',
+        'Trying to access public visual console'
+    );
+    include 'general/noaccess.php';
     exit;
 }
 

@@ -81,8 +81,8 @@ $statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/
 ).'</a>';
 
 // Header
-ui_print_page_header(
-    __('SNMP Console'),
+ui_print_standard_header(
+    __('SNMP Statistics'),
     'images/op_snmp.png',
     false,
     '',
@@ -91,6 +91,16 @@ ui_print_page_header(
         $fullscreen,
         $list,
         $statistics,
+    ],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SNMP'),
+        ],
     ]
 );
 

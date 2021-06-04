@@ -192,15 +192,15 @@ if (check_login()) {
     echo "
 
 </div>
-<div class='right height_30px'>
-</div>
+<div class='btn_update_online_open height_30px'>
+
 <div class='modalokbutton cerrar'>
 <span class='modalokbuttontext'>OK</span>
 </div>";
     if ($open) {
         echo "<div class='modalgobutton gopandora'>
 <span class='modalgobuttontext'>About Enterprise</span>
-</div>";
+</div></div>";
     }
 }
 

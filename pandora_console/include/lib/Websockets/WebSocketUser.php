@@ -147,8 +147,8 @@ class WebSocketUser
     /**
      * Initializes a websocket user.
      *
-     * @param string $id     Id of the new user.
-     * @param Socket $socket Socket where communication is stablished.
+     * @param string  $id     Id of the new user.
+     * @param \Socket $socket Socket where communication is stablished.
      */
     public function __construct($id, $socket)
     {

@@ -4306,10 +4306,14 @@ function html_print_sort_arrows($params, $order_tag, $up='up', $down='down')
 
 /**
  * Print an input hidden with a new csrf token generated
+ *
+ * @param boolean $return If it is true return a string with the output instead to echo the output.
+ *
+ * @return void
  */
-function html_print_csrf_hidden()
+function html_print_csrf_hidden(bool $return=false)
 {
-    html_print_input_hidden('csrf_code', generate_csrf_code());
+    return html_print_input_hidden('csrf_code', generate_csrf_code(), $return);
 }
 
 

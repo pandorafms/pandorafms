@@ -488,7 +488,7 @@ class AgentsAlerts extends HTML
 
         $nagents = count(agents_get_agents($filter_count));
 
-        if ($agents == false) {
+        if ($agents === false || empty($agents_with_alerts) === true) {
             ui_print_info_message(
                 [
                     'no_close' => true,
@@ -729,37 +729,24 @@ class AgentsAlerts extends HTML
     public function loadHeader()
     {
         if ($this->pure == 0) {
-            // Breadcrums.
-            $this->setBreadcrum([]);
-
-            $this->prepareBreadcrum(
-                [
-                    [
-                        'link'     => '',
-                        'label'    => __('Monitoring'),
-                        'selected' => false,
-                    ],
-                    [
-                        'link'     => '',
-                        'label'    => __('Views'),
-                        'selected' => true,
-                    ],
-                ],
-                true
-            );
-
-            ui_print_page_header(
+            // Header.
+            ui_print_standard_header(
                 __('Agents/Alerts'),
                 '',
                 false,
                 '',
-                true,
-                '',
                 false,
-                '',
-                GENERIC_SIZE_TEXT,
-                '',
-                $this->printHeader(true)
+                [],
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Monitoring'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Views'),
+                    ],
+                ]
             );
         }
 

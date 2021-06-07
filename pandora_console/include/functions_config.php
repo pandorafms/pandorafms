@@ -3255,11 +3255,7 @@ function config_process_config()
         config_update_value('ehorus_req_timeout', 5);
     }
 
-    if (is_metaconsole()) {
-        if (!isset($config['metaconsole_deploy_collection'])) {
-            config_update_value('metaconsole_deploy_collection', 0);
-        }
-
+    if (is_metaconsole() === true) {
         if (!isset($config['metaconsole_deploy_inventory_plugin'])) {
             config_update_value('metaconsole_deploy_inventory_plugin', 0);
         }

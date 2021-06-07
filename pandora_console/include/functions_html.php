@@ -1331,8 +1331,14 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'include/javascript/',
             true
         );
+        ui_require_css_file(
+            'multiselect_filtered',
+            'include/styles/',
+            true
+        );
     } else {
         ui_require_javascript_file('multiselect_filtered');
+        ui_require_css_file('multiselect_filtered');
     }
 
     $uniqId = $data['uniqId'];

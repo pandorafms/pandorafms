@@ -11,4 +11,6 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+SOURCE './procedures/updateSnmpAlerts.sql';
+
 COMMIT;

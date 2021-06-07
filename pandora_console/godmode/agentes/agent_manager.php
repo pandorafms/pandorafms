@@ -392,9 +392,9 @@ $table_os .= '</span></div></div></div>';
 
 // Network server.
 $servers = servers_get_names();
-if (!array_key_exists($server_name, $servers)) {
-    $server_Name = 0;
-    // Set the agent have not server.
+// Set the agent have not server.
+if (array_key_exists($server_name, $servers) === false) {
+    $server_name = 0;
 }
 
 $table_server = '<div class="label_select"><p class="input_label">'.__('Server').'</p>';

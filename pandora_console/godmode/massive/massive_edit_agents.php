@@ -845,11 +845,9 @@ echo '<h3 class="error invisible" id="message"> </h3>';
 
 html_print_input_hidden('id_agente', $id_agente);
 
-if (is_management_allowed() === true) {
-    attachActionButton('update_agents', 'update', $table->width);
-}
+attachActionButton('update_agents', 'update', $table->width);
 
-// Shown and hide div
+// Shown and hide div.
 echo '</div></form>';
 
 ui_require_jquery_file('form');

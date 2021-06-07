@@ -178,7 +178,7 @@ function vbar_graph(
     if (isset($options['x']['title']['fontFamily']) === false) {
         $options['x']['title']['fontFamily'] = preg_replace(
             '/.ttf/',
-            'Font, Arial',
+            'Font, lato',
             $config['fontpath']
         );
     }

@@ -55,7 +55,9 @@ table.databox,
 input.sub,
 .introjs-tooltip,
 button.sub,
-.bg_general {
+.bg_general,
+.show_result_interpreter,
+div#rules::after {
   background-color: #222 !important;
   color: #fff;
 }
@@ -232,7 +234,8 @@ div#foot {
 }
 
 /* Overwrite inline styles */
-.textodialogo td .white_important {
+.textodialogo td .white_important,
+.multi-select-container {
   color: #fff !important;
 }
 
@@ -884,6 +887,7 @@ div#dashboard-controls {
   text-anchor: middle;
   fill: #fff;
   font-family: Verdana;
+  color: #fff;
 }
 
 .tickLabel {
@@ -1026,4 +1030,19 @@ table.alternate tr:nth-child(2n + 1) td {
 
 table.alternate tr:nth-child(2n) td {
   background-color: #111;
+}
+
+.results-found {
+  background-color: #111;
+  color: #fff;
+}
+
+#graph_container {
+  background-color: #111 !important;
+  color: #fff;
+}
+
+#elasticsearch_editor,
+#elasticsearch_view {
+  filter: invert(100%);
 }

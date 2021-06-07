@@ -644,7 +644,7 @@ function filemanager_file_explorer(
         }
 
         if (($prev_dir_str != '') && ($father != $relative_directory)) {
-            $table->data[0][0] = html_print_image('images/go_previous.png', true);
+            $table->data[0][0] = html_print_image('images/go_previous.png', true, ['class' => 'invert_filter']);
             $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['dbpass']).'">';
             $table->data[0][1] .= __('Parent directory');
             $table->data[0][1] .= '</a>';
@@ -660,26 +660,26 @@ function filemanager_file_explorer(
 
             switch ($fileinfo['mime']) {
                 case MIME_DIR:
-                    $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory')]);
+                    $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_IMAGE:
-                    $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image')]);
+                    $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_ZIP:
-                    $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file')]);
+                    $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_TEXT:
-                    $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                    $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_UNKNOWN:
                     if ($fileinfo['size'] == 0) {
                         if ((strstr($fileinfo['name'], '.txt') !== false) || (strstr($fileinfo['name'], '.conf') !== false) || (strstr($fileinfo['name'], '.sql') !== false) || (strstr($fileinfo['name'], '.pl') !== false)) {
                             $fileinfo['mime'] = MIME_TEXT;
-                            $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                            $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file'), 'class' => 'invert_filter']);
                         } else {
                             // unknow
                             $data[0] = '';
@@ -691,7 +691,7 @@ function filemanager_file_explorer(
                 break;
 
                 default:
-                    $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown')]);
+                    $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown'), 'class' => 'invert_filter']);
                 break;
             }
 
@@ -759,7 +759,7 @@ function filemanager_file_explorer(
                         && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
                         $hash = md5($fileinfo['realpath'].$config['dbpass']);
-                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
                     }
                 }
             }
@@ -768,7 +768,7 @@ function filemanager_file_explorer(
                 $filename = base64_encode($fileinfo['name']);
                 $hash = md5($filename.$config['dbpass']);
                 $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
-                $data[4] .= html_print_image('images/file.png', true);
+                $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
             }
 
@@ -870,7 +870,7 @@ function filemanager_file_explorer(
             echo '</div>';
         } else {
             echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
-            echo "<image src='images/info.png' />".__('The directory is read-only');
+            echo "<image class='invert_filter' src='images/info.png' />".__('The directory is read-only');
             echo '</div>';
         }
     }

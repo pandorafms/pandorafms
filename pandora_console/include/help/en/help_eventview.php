@@ -10,7 +10,7 @@
 
 <div class="pdd_l_30px w150px float-left line_17px">
     <h3>Validate</h3>
-    <?php html_print_image('images/tick.png', false, ['title' => 'Validated event', 'alt' => 'Validated event', 'width' => '10', 'height' => '10']); ?> - Validated event<br>
+    <?php html_print_image('images/tick.png', false, ['class' => 'invert_filter', 'title' => 'Validated event', 'alt' => 'Validated event', 'width' => '10', 'height' => '10']); ?> - Validated event<br>
         <div class="w10px height_10px inline"></div> - Event not validated
 </div>
 

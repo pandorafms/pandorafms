@@ -753,13 +753,11 @@ function pandoraFlotSlicebar(
   }
 
   font_size = parseInt(font_size);
-  if (font != undefined) console.log(font);
   font = font
     .split("/")
     .pop()
     .split(".")
     .shift();
-  console.log(font);
 
   // Check possible adapt_keys on classes
   check_adaptions(graph_id);

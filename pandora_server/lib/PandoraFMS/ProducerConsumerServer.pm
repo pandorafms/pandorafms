@@ -23,6 +23,7 @@ use warnings;
 use threads;
 use threads::shared;
 use Thread::Semaphore;
+use Time::HiRes qw(usleep);
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -141,7 +142,7 @@ sub data_producer ($$$$$) {
 			$self->setQueueSize (scalar @{$task_queue});
 
 			threads->yield;
-			sleep ($pa_config->{'server_threshold'});
+			usleep (int(1e6 * $self->getPeriod()));
 		}
 	};
 	

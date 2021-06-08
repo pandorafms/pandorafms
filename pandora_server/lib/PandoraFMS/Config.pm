@@ -332,6 +332,8 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_warning"} = 25; # 7.0
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
 	$pa_config->{"mssql_driver"} = undef; # 745 
+	$pa_config->{"snmpconsole_lock"} = 0; # 755.
+	$pa_config->{"snmpconsole_period"} = 0; # 755.
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
@@ -674,6 +676,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmpconsole_threads\s+(\d+)/i) { 
 			$pa_config->{'snmpconsole_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmpconsole_lock\s+([0-1])/i) { 
+			$pa_config->{'snmpconsole_lock'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmpconsole_threshold\s+(\d+(?:\.\d+){0,1})/i) { 
+			$pa_config->{'snmpconsole_threshold'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^translate_variable_bindings\s+([0-1])/i) { 
 			$pa_config->{'translate_variable_bindings'}= clean_blank($1); 

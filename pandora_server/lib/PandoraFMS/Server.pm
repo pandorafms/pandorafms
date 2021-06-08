@@ -46,12 +46,16 @@ sub new ($$$;$) {
 		_num_threads => 1,
 		_threads => [],
 		_queue_size => 0,
-		_errstr => ''
+		_errstr => '',
+		_period => 0
 	};
 	
 	# Share variables that may be set from different threads
 	share ($self->{'_queue_size'});
 	share ($self->{'_errstr'});
+
+	# Set the default period.
+	$self->{'_period'} = $self->{'_pa_config'}->{'server_threshold'};
 		
 	bless $self, $class;
 	return $self;
@@ -183,6 +187,24 @@ sub getErrStr ($) {
 	my $self = shift;
 	
 	return $self->{'_errstr'};
+}
+
+########################################################################################
+# Get period.
+########################################################################################
+sub getPeriod ($) {
+	my $self = shift;
+	
+	return $self->{'_period'};
+}
+
+########################################################################################
+# Set period.
+########################################################################################
+sub setPeriod ($$) {
+	my ($self, $period) = @_;
+	
+	$self->{'_period'} = $period;
 }
 
 ########################################################################################

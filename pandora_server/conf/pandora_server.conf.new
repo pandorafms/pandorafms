@@ -90,6 +90,12 @@ snmpconsole 0
 
 snmpconsole_threads 1
 
+# If set to 1, traps from the same source will never be processed in parallel. 0 by default.
+#snmpconsole_lock 0
+
+# Time between consecutive reads of the SNMP log file in seconds. Defaults to server_threshold.
+#snmpconsole_threshold 5
+
 # Attempt to translate variable bindings when processing SNMP traps. 1 enabled, 0 disabled. 0 by default. (ENTERPRISE ONLY).
 
 translate_variable_bindings 0

@@ -64,6 +64,18 @@ cp -R ../../../../pandora_agents/unix/Darwin/pandora_agent.conf files/pandorafms
 mkdir -p $BUILD_DMG
 mkdir -p $BUILD_TMP
 
+# Make sure the scripts have execution privileges
+chmod +x "./scripts/preinstall"
+chmod +x "./scripts/postinstall"
+chmod +x "./files/pandorafms/inst_utilities/get_group.scpt"
+chmod +x "./files/pandorafms/inst_utilities/get_remotecfg.scpt"
+chmod +x "./files/pandorafms/inst_utilities/get_serverip.scpt"
+chmod +x "./files/pandorafms/inst_utilities/print_conf.pl"
+chmod +x "./files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/MacOS/uninstall.sh"
+chmod +x "./files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/Resources/ask_root"
+chmod +x "./files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/Resources/confirm_uninstall"
+chmod +x "./files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/Resources/uninstall"
+
 # Build pandorafms agent component
 pkgbuild --root files/pandorafms/ \
 	--identifier com.pandorafms.pandorafms_src \
@@ -97,7 +109,7 @@ NOTARIZE=$(xcrun altool --notarize-app \
 	--asc-provider "$APPLE_DEVID" \
 	--username "$APPLE_USER" \
 	--password "$APPLE_PASS" \
-	--file "$BUILD_TMP/pandorafms_agent.pkg" 2>&1)
+	--file "$BUILD_TMP/pandorafms_agent.pkg")
 
 if [ $(echo $NOTARIZE |grep -c UUID) -ne 1 ]
 then
@@ -107,7 +119,7 @@ fi
 
 RUUID=$(echo $NOTARIZE | awk '{print $NF}')
 
-printf "\PKG sent for notarization (Request UUID= $RUUID ). This may take a few minutes...\n"
+printf "PKG sent for notarization (Request UUID=$RUUID). This may take a few minutes...\n"
 
 # In order to staple the pkg, notarization must be approved!
 STATUS=1

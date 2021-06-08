@@ -129,6 +129,7 @@
 * {
   font-size: 9pt;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 16pt;
 }
 
 html {

@@ -1141,7 +1141,10 @@ a.pandora_pagination,
   border-right: 1px solid #707070 !important;
 }
 
-.results-found {
+.results-found,
+#result_items.agents_modules_table,
+.show_result_interpreter,
+#menu_tab li.nomn_high {
   background-color: #111 !important;
   color: #fff;
 }
@@ -1154,4 +1157,9 @@ a.pandora_pagination,
 #elasticsearch_editor,
 #elasticsearch_view {
   filter: invert(100%);
+}
+
+#header_table {
+  padding-right: 35px;
+  background-color: #222;
 }

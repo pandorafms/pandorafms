@@ -22,6 +22,7 @@ div#foot a,
 div#foot span {
   font-size: 8pt;
   color: #9ca4a6;
+  line-height: 12pt;
 }
 
 div#foot small span {

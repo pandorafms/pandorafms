@@ -396,6 +396,8 @@ if (is_ajax()) {
                                 $tmp->data,
                                 $config['graph_precision']
                             );
+                        } else {
+                            $tmp->data = ui_print_truncate_text($tmp->data, 10);
                         }
 
                         $tmp->instructions = events_get_instructions($item);

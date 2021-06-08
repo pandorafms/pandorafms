@@ -196,7 +196,6 @@ div#rules.show {
   background-color: #333;
   word-break: break-all;
   height: fit-content;
-  min-height: 2.3em;
 }
 
 .field.opacityElements {

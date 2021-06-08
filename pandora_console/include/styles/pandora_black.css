@@ -37,8 +37,8 @@ select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
 .selection {
-  background-color: #111;
-  color: #fff;
+  background-color: #111 !important;
+  color: #fff !important;
 }
 
 div#head,
@@ -896,7 +896,6 @@ div#dashboard-controls {
   text-align: center;
   text-anchor: middle;
   fill: #fff;
-  font-family: Verdana;
   color: #fff;
 }
 
@@ -977,6 +976,8 @@ div.integria_details_description textarea {
 }
 fieldset {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 input,
@@ -989,31 +990,45 @@ select,
 .white_box,
 .white-box-content {
   border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .white_table_graph_header {
   border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 table.databox {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .info_table > tbody > tr {
   border-bottom: 1px solid #303030;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .status_tactical {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .status_tactical,
 .tactical_set {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
   border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 .chartLegend {
   width: 100%;
@@ -1119,15 +1134,15 @@ a.pandora_pagination,
 }
 
 .databox.data > tbody > tr > td:first-child {
-  border-left: 1px solid #707070 !important;
+  border-left: 1px solid;
 }
-
-.databox.data > tbody > tr > td:last-child {
+.databox.data > tbody > tr > td:last-child,
+.header_table_inner {
   border-right: 1px solid #707070 !important;
 }
 
 .results-found {
-  background-color: #111;
+  background-color: #111 !important;
   color: #fff;
 }
 

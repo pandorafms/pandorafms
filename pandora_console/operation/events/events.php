@@ -391,10 +391,12 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric(
-                            $tmp->data,
-                            $config['graph_precision']
-                        );
+                        if (is_numeric($tmp->data) === true) {
+                            $tmp->data = format_numeric(
+                                $tmp->data,
+                                $config['graph_precision']
+                            );
+                        }
 
                         $tmp->instructions = events_get_instructions($item);
 

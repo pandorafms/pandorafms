@@ -8331,3 +8331,6 @@ div.stat-win-spinner img {
 .lato {
   font-family: "lato" !important;
 }
+.line_heigth_initial {
+  line-height: initial;
+}

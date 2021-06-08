@@ -3433,6 +3433,7 @@ div.div_groups_status {
   min-width: 30px;
   min-height: 50px;
   max-height: 53px;
+  text-align: center;
 }
 
 #menu_tab_frame_view_bc #menu_tab li.nomn,

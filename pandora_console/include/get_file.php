@@ -35,7 +35,7 @@ $file = base64_decode(urldecode($file_raw));
 
 $hash = get_parameter('hash', null);
 
-if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) || !isset($_SERVER['HTTP_REFERER'])) {
+if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_unique_identifier']) || !isset($_SERVER['HTTP_REFERER'])) {
     echo "<h3 style='".$styleError."'>".__('Security error. Please contact the administrator.').'</h3>';
 } else {
     $downloadable_file = '';

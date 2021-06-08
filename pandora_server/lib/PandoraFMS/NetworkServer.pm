@@ -480,7 +480,7 @@ sub exec_network_module ($$$$) {
 	}
 
 	# Use the agent address by default
-	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
+	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto'|| $ip_target eq '_address_') {
 		$ip_target = $agent_row->{'direccion'};
 	}
 

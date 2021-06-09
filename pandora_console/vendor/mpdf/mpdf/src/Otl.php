@@ -3205,7 +3205,7 @@ class Otl
 	{
 
 		// If current glyph is a mark with a defined width, any XAdvance is considered to REPLACE the character Advance Width
-		// Test case <div >&#x1004;&#x103a;&#x1039;&#x1000;&#x1039;&#x1000;&#x103b;&#x103c;&#x103d;&#x1031;&#x102d;</div>
+		// Test case <div style="font-family:myanmartext">&#x1004;&#x103a;&#x1039;&#x1000;&#x1039;&#x1000;&#x103b;&#x103c;&#x103d;&#x1031;&#x102d;</div>
 		if (strpos($this->GlyphClassMarks, $this->OTLdata[$basepos]['hex']) !== false) {
 			$cw = round($this->mpdf->_getCharWidth($this->mpdf->CurrentFont['cw'], $this->OTLdata[$basepos]['uni']) * $this->mpdf->CurrentFont['unitsPerEm'] / 1000); // convert back to font design units
 		} else {
@@ -3216,7 +3216,7 @@ class Otl
 
 		if (isset($Value['XAdvance']) && ($Value['XAdvance'] - $cw) != 0) {
 			// However DON'T REPLACE the character Advance Width if Advance Width is negative
-			// Test case <div>&#x440;&#x443;&#x301;&#x441;&#x441;&#x43a;&#x438;&#x439;</div>
+			// Test case <div style="font-family: dejavusansmono">&#x440;&#x443;&#x301;&#x441;&#x441;&#x43a;&#x438;&#x439;</div>
 			if ($Value['XAdvance'] < 0) {
 				$cw = 0;
 			}
@@ -6161,7 +6161,7 @@ class Otl
 	{
 		echo '<div style="padding-left: ' . ($level * 2) . 'em;">';
 		echo $GPOSSUB . ' LookupID #' . $lookupID . ' Subtable#' . $subtable . ' Type: ' . $Type . ' Format: ' . $Format . '<br />';
-		echo '<div >';
+		echo '<div style="font-family:monospace">';
 		echo 'Glyph position: ' . $ptr . ' Current Glyph: ' . $currGlyph . '<br />';
 
 		for ($i = 0; $i < count($this->OTLdata); $i++) {

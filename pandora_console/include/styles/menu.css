@@ -58,6 +58,7 @@
   margin-left: 0px;
   width: 100%;
   color: #b9b9b9;
+  font-family: "lato", "Open Sans", sans-serif;
   font-size: 9.4pt;
 }
 
@@ -232,6 +233,7 @@ li.sub_subMenu.selected {
   text-align: center;
   color: white;
   padding-top: 1px;
+  font-family: sans-serif;
 }
 
 ul {
@@ -403,6 +405,13 @@ ul li {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.operation div,
+.operation a,
+.godmode div,
+.godmode a {
+  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .menu_full_classic,

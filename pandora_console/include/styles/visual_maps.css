@@ -422,10 +422,12 @@ div#cont {
 
 div.label strong {
   color: inherit;
+  font-family: inherit;
 }
 
 div.label strong span {
   color: inherit;
+  font-family: inherit;
 }
 
 /*.termframe{

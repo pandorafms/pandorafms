@@ -5086,7 +5086,7 @@ function reporting_sql_graph(
                 $width,
                 $height,
                 $content['type'],
-                $only_image,
+                true,
                 ui_get_full_url(false, false, false, false),
                 $ttl,
                 $content['top_n_value']
@@ -10607,11 +10607,11 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
     $tdata = [];
     $tdata[0] = html_print_image('images/module_critical.png', true, ['title' => __('Monitor critical')], false, false, false, true);
     $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
-    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_image('images/module_warning.png', true, ['title' => __('Monitor warning')], false, false, false, true);
     $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
-    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
@@ -10622,14 +10622,14 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
 
     $tdata[2] = html_print_image('images/module_unknown.png', true, ['title' => __('Monitor unknown')], false, false, false, true);
     $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
-    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_image('images/module_notinit.png', true, ['title' => __('Monitor not init')], false, false, false, true);
     $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
-    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '';
     $table_mbs->rowclass[] = '';
@@ -13079,7 +13079,7 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'class' => 'invert_filter']);
+        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules')]);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';

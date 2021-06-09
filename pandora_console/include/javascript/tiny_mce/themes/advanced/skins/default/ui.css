@@ -106,6 +106,7 @@
 }
 .defaultSkin .mceStatusbar {
   background: #f0f0ee;
+  font-family: "MS Sans Serif", sans-serif, Verdana, Arial;
   font-size: 9pt;
   line-height: 16px;
   overflow: visible;
@@ -184,6 +185,7 @@
   display: block;
   font-size: 10px;
   padding: 4px 6px 0 22px;
+  font-family: Tahoma, Verdana, Arial, Helvetica;
 }
 .defaultSkin .mceButtonDisabled .mceButtonLabel {
   color: #888;
@@ -210,6 +212,7 @@
   border: 1px solid #ccc;
   border-right: 0;
   background: #fff;
+  font-family: Tahoma, Verdana, Arial, Helvetica;
   font-size: 11px;
   height: 20px;
   line-height: 20px;
@@ -251,6 +254,7 @@
   height: 22px;
 }
 .defaultSkin select.mceNativeListBox {
+  font-family: "MS Sans Serif", sans-serif, Verdana, Arial;
   font-size: 7pt;
   background: #f0f0ee;
   border: 1px solid gray;
@@ -334,6 +338,7 @@
   width: 100%;
   height: auto;
   text-align: center;
+  font-family: Tahoma, Verdana, Arial, Helvetica;
   font-size: 11px;
   line-height: 20px;
   border: 1px solid #fff;
@@ -391,6 +396,7 @@
 .defaultSkin .mceMenu .mceText {
   position: relative;
   display: block;
+  font-family: Tahoma, Verdana, Arial, Helvetica;
   color: #000;
   cursor: default;
   margin: 0;
@@ -400,6 +406,9 @@
 .defaultSkin .mceMenu span.mceText,
 .defaultSkin .mceMenu .mcePreview {
   font-size: 11px;
+}
+.defaultSkin .mceMenu pre.mceText {
+  font-family: Monospace;
 }
 .defaultSkin .mceMenu .mceIcon {
   position: absolute;
@@ -484,6 +493,9 @@
 }
 .defaultSkin .mce_address span.mceText {
   font-style: italic;
+}
+.defaultSkin .mce_pre span.mceText {
+  font-family: monospace;
 }
 .defaultSkin .mce_h1 span.mceText {
   font-weight: bolder;

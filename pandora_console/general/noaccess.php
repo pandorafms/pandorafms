@@ -29,6 +29,7 @@
 }
 .modalheadertex{
     color:#000;
+    font-family:Nunito;
     line-height: 40px;
     font-size: 23pt;
     margin-bottom:30px;
@@ -65,6 +66,7 @@
 }
 .modalokbuttontex{
     color:#82b92e;
+    font-family:Nunito;
     font-size:13pt;
 }
 .modalgobutto{
@@ -78,6 +80,7 @@
 }
 .modalgobuttontex{
 color:#82b92e;
+font-family:Nunito;
 font-size:10pt;
 }
 

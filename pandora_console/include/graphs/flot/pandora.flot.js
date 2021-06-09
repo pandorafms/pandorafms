@@ -235,7 +235,7 @@ function pandoraFlotPieCustom(
   if (background_color == "transparent") {
     $(".legend>table").css("background-color", "");
     $(".legend>div").css("background-color", "");
-    $(".legend>table").css("color", "#000");
+    $(".legend>table").css("color", "#aaa");
   } else if (background_color == "white") {
     $(".legend>table").css("background-color", "white");
     $(".legend>table").css("color", "black");
@@ -385,14 +385,14 @@ function pandoraFlotHBars(
       color: tick_color,
       axisLabelUseCanvas: true,
       axisLabelFontSizePixels: font_size,
-      axisLabelFontFamily: "lato",
+      axisLabelFontFamily: font + "Font",
       tickFormatter: xFormatter
     },
     yaxis: {
       font: {
         size: font_size + 2,
         color: ycolor,
-        family: "lato"
+        family: font + "Font"
       },
       ticks: yFormatter
     },
@@ -578,6 +578,7 @@ function showTooltip(x, y, color, contents) {
       "border-radius": "5px",
       "background-color": "#fff",
       color: "#111",
+      "font-family": "Verdana, Arial, Helvetica, Tahoma, sans-serif",
       opacity: 0.9
     })
     .appendTo("body")
@@ -627,9 +628,7 @@ function pandoraFlotVBars(settings) {
       return ticksformatter[Math.round(v)];
     };
   }
-  settings.x.font.family = "lato";
-  settings.y.font.family = "lato";
-  settings.y.title.fontFamily = "lato";
+
   var options = {
     series: {
       bars: {
@@ -753,12 +752,12 @@ function pandoraFlotSlicebar(
   }
 
   font_size = parseInt(font_size);
-  font = font
-    .split("/")
-    .pop()
-    .split(".")
-    .shift();
-
+  if (font != undefined)
+    font = font
+      .split("/")
+      .pop()
+      .split(".")
+      .shift();
   // Check possible adapt_keys on classes
   check_adaptions(graph_id);
 
@@ -809,7 +808,7 @@ function pandoraFlotSlicebar(
         tickLength: 0,
         font: {
           size: font_size + 2,
-          family: font
+          family: font + "Font"
         }
       }
     ],
@@ -2022,7 +2021,7 @@ function pandoraFlotArea(
       font: {
         size: font_size + 2,
         color: legend_color,
-        family: "lato"
+        family: font + "Font"
       }
     },
     xaxes: [
@@ -2037,7 +2036,7 @@ function pandoraFlotArea(
       font: {
         size: font_size + 2,
         color: legend_color,
-        family: "lato",
+        family: font + "Font",
         variant: "small-caps"
       }
     },
@@ -2111,7 +2110,7 @@ function pandoraFlotArea(
         font: {
           size: font_size + 2,
           color: legend_color,
-          family: "lato"
+          family: font + "Font"
         }
       },
       xaxes: [
@@ -2126,7 +2125,7 @@ function pandoraFlotArea(
         font: {
           size: font_size + 2,
           color: legend_color,
-          family: "lato"
+          family: font + "Font"
         }
       },
       yaxes: [
@@ -2210,7 +2209,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: "lato"
+              family: font + "Font"
             }
           },
           xaxes: [
@@ -2227,7 +2226,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: "lato"
+              family: font + "Font"
             }
           },
           yaxes: [
@@ -2257,7 +2256,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: "lato"
+              family: font + "Font"
             }
           },
           xaxes: [
@@ -2274,7 +2273,7 @@ function pandoraFlotArea(
             font: {
               size: font_size + 2,
               color: legend_color,
-              family: "lato"
+              family: font + "Font"
             }
           },
           yaxes: [
@@ -2381,7 +2380,7 @@ function pandoraFlotArea(
 
     $("#timestamp_" + graph_id).css("color", "#000");
     $("#timestamp_" + graph_id).css("font-size", font_size + 2 + "px");
-    $("#timestamp_" + graph_id).css("font-family", font);
+    $("#timestamp_" + graph_id).css("font-family", font + "Font");
 
     if (timesize + timenewpos > canvaslimit) {
       $("#timestamp_" + graph_id).css("left", timenewpos - timesize);
@@ -2464,7 +2463,7 @@ function pandoraFlotArea(
         .css("font-size", font_size + 2 + "px");
       $("#legend_" + graph_id + " .legendLabel")
         .eq(i)
-        .css("font-family", font);
+        .css("font-family", font + "Font");
 
       i++;
     }
@@ -2639,7 +2638,10 @@ function pandoraFlotArea(
       "font-size",
       font_size + 2 + "px"
     );
-    $("#legend_" + graph_id + " .legendLabel").css("font-family", font);
+    $("#legend_" + graph_id + " .legendLabel").css(
+      "font-family",
+      font + "Font"
+    );
 
     plot.clearCrosshair();
     overview.clearCrosshair();
@@ -2668,12 +2670,12 @@ function pandoraFlotArea(
     var style =
       "color:" +
       legend_color +
-      "; font-family: " +
-      "lato" +
+      "; font-family:" +
+      font +
       "Font; font-size:" +
       (parseInt(font_size) + 2) +
       "px;";
-    return '<span style="' + style + '" class="lato">' + legend[v] + "</span>";
+    return '<span style="' + style + '">' + legend[v] + "</span>";
   }
 
   $("#overview_" + graph_id).css("display", "none");

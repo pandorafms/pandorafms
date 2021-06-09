@@ -1,9 +1,10 @@
 text.text-tooltip {
-  font-weight: 700;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: bold;
 }
 
 div#bullets_modules span {
-  font-weight: 700;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 
 table#agent_interface_info .noresizevc.graph {
@@ -15,7 +16,7 @@ div.agent_details_agent_alias {
 }
 
 div.agent_details_agent_alias * {
-  font-weight: 700;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 
 #module_list {

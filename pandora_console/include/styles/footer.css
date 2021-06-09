@@ -10,19 +10,22 @@ a.footer span {
 }
 
 div#foot {
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-align: center;
   background: #343434;
   clear: both;
   width: auto;
+  height: 38px;
   margin-top: auto;
   box-sizing: border-box;
 }
 
 div#foot a,
 div#foot span {
+  font-family: "Open Sans", sans-serif;
   font-size: 8pt;
   color: #9ca4a6;
-  line-height: 14pt;
 }
 
 div#foot small span {

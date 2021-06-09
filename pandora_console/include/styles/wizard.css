@@ -41,6 +41,7 @@ ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
+  font-family: monospace;
 }
 
 .wizard .hidden {

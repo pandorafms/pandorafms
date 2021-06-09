@@ -9,6 +9,7 @@
 #ColorPickerDiv td.color {
   cursor: pointer;
   font-size: xx-small;
+  font-family: "Arial", "Microsoft Sans Serif";
 }
 #ColorPickerDiv td.color label {
   cursor: pointer;

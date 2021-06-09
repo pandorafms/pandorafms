@@ -872,7 +872,7 @@ class ModuleTemplates extends HTML
         ui_pagination($countModuleTemplates, $this->baseUrl, $this->offset);
         // Create the table with Module Block list.
         $table = new StdClasS();
-        $table->class = 'databox data ';
+        $table->class = 'databox data';
         $table->width = '75%';
         $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
         $table->rowid = [];
@@ -881,7 +881,7 @@ class ModuleTemplates extends HTML
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = '100%';
-        $table->class = 'info_table border_bt';
+        $table->class = 'info_table';
 
         $table->head = [];
         $table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
@@ -1189,7 +1189,7 @@ class ModuleTemplates extends HTML
                         $blockTitle .= '</div></div>';
 
                         $table = new StdClasS();
-                        $table->class = 'databox data border_bt';
+                        $table->class = 'databox data';
                         $table->width = '75%';
                         $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;';
                         $table->rowid = [];
@@ -1198,7 +1198,7 @@ class ModuleTemplates extends HTML
                         $table->cellpadding = 0;
                         $table->cellspacing = 0;
                         $table->width = '100%';
-                        $table->class = 'info_table border_bt';
+                        $table->class = 'info_table';
 
                         $table->head = [];
                         $table->head[0] = __('Module Name');

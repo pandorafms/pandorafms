@@ -43,6 +43,7 @@ if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php') ==
 // TESTING THE UPDATE MANAGER.
 enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
+enterprise_include_once('include/functions_metaconsole.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
@@ -108,6 +109,13 @@ if (isInACL($ipOrigin)) {
 
             config_prepare_session();
             session_write_close();
+        } else if (enterprise_hook(
+            'metaconsole_validate_origin',
+            [get_parameter('server_auth')]
+        ) === true
+        ) {
+            // Allow direct node -> metaconsole connection.
+            $correctLogin = true;
         } else {
             $no_login_msg = 'Incorrect user credentials';
         }

@@ -20906,9 +20906,6 @@ ace.define(
     text-align: left;\
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\
     }\
-    .ace_editor div {\
-    font-family: monospace !important;\
-    }\
     .ace_scroller {\
     position: absolute;\
     overflow: hidden;\

@@ -209,14 +209,13 @@ function d3_bullet_chart(
     $output .= '<div id="bullet_graph_'.$id_bullet.'" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
 			.bullet_graph {
-				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				margin: auto;
 				padding-top: 40px;
 				position: relative;
 				width: 100%;
 			}
 
-			.bullet { font: 7px sans-serif; }
+			.bullet { font: 7px lato; }
 			.bullet .marker.s0 { stroke: #e63c52; stroke-width: 2px; }
 			.bullet .marker.s1 { stroke: #f3b200; stroke-width: 2px; }
 			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }

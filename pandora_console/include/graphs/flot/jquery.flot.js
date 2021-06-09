@@ -531,7 +531,7 @@ Licensed under the MIT license.
                     show: null, // null = auto-detect, true = always, false = never
                     position: "bottom", // or "top"
                     mode: null, // null or "time"
-                    font: null, // null (derived from CSS in placeholder) or object like { size: 11, lineHeight: 13, style: "italic", weight: "bold", family: "sans-serif", variant: "small-caps" }
+                    font: null, // null (derived from CSS in placeholder) or object like { size: 11, lineHeight: 13, style: "italic", weight: "bold", family: "lato", variant: "small-caps" }
                     color: null, // base color, labels, ticks
                     tickColor: null, // possibly different color of ticks, e.g. "rgba(0,0,0,0.15)"
                     transform: null, // null or f: number -> number to transform axis

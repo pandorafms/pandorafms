@@ -233,7 +233,7 @@ if (check_login()) {
             false
         );
         $formtable->data[0][2] = '';
-        $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh.png', true, ['style' => 'vertical-align: middle;', 'border' => '0' ]).'</a>';
+        $formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(".$module_id.', '.$agentId.', "'.$server_name.'", 0, -1,"'.modules_get_agentmodule_name($module_id)."\")'>".html_print_image('images/refresh.png', true, ['style' => 'vertical-align: middle;', 'border' => '0', 'class' => 'invert_filter' ]).'</a>';
         $formtable->rowspan[0][3] = 2;
         $formtable->cellstyle[0][3] = 'vertical-align: middle;';
 
@@ -1051,7 +1051,7 @@ if (check_login()) {
                     if ($module['flag'] == 0) {
                         $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;flag=1&amp;refr=60">'.html_print_image('images/target.png', true, ['border' => '0', 'title' => __('Force'), 'class' => 'invert_filter' ]).'</a>';
                     } else {
-                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh')]).'</a>';
+                        $data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['border' => '0', 'title' => __('Refresh'), 'class' => 'invert_filter']).'</a>';
                     }
                 }
             } else {
@@ -1140,7 +1140,7 @@ if (check_login()) {
 
             // Adds tag context information.
             if (tags_get_modules_tag_count($module['id_agente_modulo']) > 0) {
-                $data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/tag_red.png', true, ['id' => 'tag-details-'.$module['id_agente_modulo'], 'class' => 'img_help']).'</a> ';
+                $data[3] .= ' <a class="tag_details" href="ajax.php?page=operation/agentes/estado_monitores&get_tag_tooltip=1&id_agente_modulo='.$module['id_agente_modulo'].'">'.html_print_image('images/tag_red.png', true, ['id' => 'tag-details-'.$module['id_agente_modulo'], 'class' => 'img_help invert_filter']).'</a> ';
             }
 
             // Adds relations context information.

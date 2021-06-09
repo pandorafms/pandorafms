@@ -17,7 +17,7 @@
 */
 
 h1 {
-  font: bold 1em Arial, Sans-serif;
+  font: bold 1em;
   font-size: 18px;
   color: #ffffff;
   text-align: center;
@@ -133,13 +133,11 @@ span.arr {
   margin-left: 5px;
   padding: 2px 1px 6px 15px;
   display: block;
-  font-family: verdana, arial, sans;
   font-size: 8.5pt;
 }
 
 body,
 td {
-  font-family: Sans, Arial, sans;
   font-size: 9pt;
   line-height: 15px;
 }
@@ -195,7 +193,6 @@ div.installation_step {
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
   color: #82b92e;
-  font-family: Sans, Arial, sans;
 }
 .btn_install_next:hover .btn_install_next_text {
   transition-property: background-color, color;
@@ -241,7 +238,6 @@ div.installation_step {
   color: #fff;
   font-size: 12pt;
   text-align: center;
-  font-family: Sans, Arial, sans;
 }
 
 .popup-inner {

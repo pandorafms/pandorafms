@@ -534,10 +534,6 @@ div#form_activate_licence #code {
   border-color: #707070;
 }
 
-div.data_container:not(:hover) {
-  box-shadow: 2px 2px 10px #80ba27;
-}
-
 input[type="submit"].submit-next:hover,
 button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
 input[type="button"].submit-next:hover {

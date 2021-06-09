@@ -18,20 +18,24 @@
 }
 
 #welcome_form label {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
 }
 .content_position {
   display: flex;
   margin-top: 5px;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
 }
 
 .learn_content_indented {
   text-indent: 1.5em;
+  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
 }
 
 #lbl_learn {
+  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
 }
 

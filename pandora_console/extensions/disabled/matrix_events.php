@@ -103,7 +103,7 @@ function load_matrix_console()
                     context.fillRect(0, 0, width, height);
                     
                     context.fillStyle = "#0F0"; // Green text
-                    context.font = font_size + "px lato";
+                    context.font = font_size + "px arial";
                     // Looping over drops
                     for (var i = 0; i < drops.length; i++) {
                         if (drops[i] == -1) {

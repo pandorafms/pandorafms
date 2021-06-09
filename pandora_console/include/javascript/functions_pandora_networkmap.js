@@ -2562,12 +2562,12 @@ function restart_map() {
     "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
   dialog_confirm_text =
     dialog_confirm_text +
-    "<div style='width:75%; float:left;'><h3><strong style='font-size:13pt;'>" +
+    "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" +
     warning_message +
     "</strong></h3>";
   dialog_confirm_text =
     dialog_confirm_text +
-    "<p style='font-size:12pt;'>" +
+    "<p style='font-family:Verdana; font-size:12pt;'>" +
     message_to_confirm +
     "</p></div>";
   dialog_confirm_text = dialog_confirm_text + "</div>";
@@ -3404,7 +3404,8 @@ function init_graph(parameter_object) {
           "text-anchor: start; " +
           "fill: #000000; " +
           "fill-opacity: 1; " +
-          "stroke: none; "
+          "stroke: none; " +
+          "font-family: Verdana"
       )
       .attr("class", "fill_fff")
       .attr(
@@ -4090,7 +4091,7 @@ function draw_elements_graph() {
       "style",
       "font-size: " +
         font_size +
-        "px !important; text-align:center; text-anchor:middle; fill:#000000"
+        "px !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000"
     )
     .text(function(d) {
       return ellipsize(get_node_name_ov(d), 30);

@@ -616,6 +616,36 @@ $table_font->style[0] = 'font-weight: bold;';
 $table_font->size[0] = '50%';
 $table_font->data = [];
 
+$table_font->data[$row][0] = __('Graphs font family');
+
+// Load font families.
+$fonts = [];
+$dirFonts = scandir(_MPDF_TTFONTPATH);
+foreach ($dirFonts as $entryDir) {
+    if (strstr($entryDir, '.ttf') !== false) {
+        $explode = explode('-', $entryDir);
+        if (count($explode) === 1) {
+            $fonts[$entryDir] = substr($entryDir, 0, (strlen($entryDir) - 4));
+        }
+
+        if ($explode[1] === 'Regular.ttf') {
+            $fonts[$explode[0].'.ttf'] = $explode[0];
+        }
+    }
+}
+
+$table_font->data[$row][1] = html_print_select(
+    $fonts,
+    'fontpath',
+    io_safe_output($config['fontpath']),
+    '',
+    '',
+    0,
+    true
+);
+
+$row++;
+
 $table_font->data[$row][0] = __('Graphs font size');
 
 $font_size_array = [
@@ -1119,6 +1149,20 @@ $table_report->data[$row][0] = __('HTML font size for SLA (em)');
 $table_report->data[$row][1] = "<input type ='number' value=".$config['font_size_item_report']." name='font_size_item_report' min='1' max='9' step='0.1'>";
 
 $row++;
+
+$table_report->data[$row][0] = __('PDF font family');
+$table_report->data[$row][1] = html_print_select(
+    $fonts,
+    'custom_report_front_font',
+    $config['custom_report_front_font'],
+    false,
+    __('Default'),
+    '',
+    true
+);
+
+$row++;
+
 
 $table_report->data[$row][0] = __('Graph image height for HTML reports');
 $table_report->data[$row][1] = html_print_input_text('graph_image_height', $config['graph_image_height'], '', 20, 20, true);

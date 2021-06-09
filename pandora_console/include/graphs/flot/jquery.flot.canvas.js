@@ -18,7 +18,7 @@ every element of the plot to be rendered directly to canvas.
 The plugin supports these options:
 
 {
-	canvas: boolean
+    canvas: boolean
 }
 
 The "canvas" option controls whether full canvas drawing is enabled, making it
@@ -27,7 +27,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
 
 */
 
-(function ($) {
+(function($) {
 
 	var options = {
 		canvas: true
@@ -49,13 +49,13 @@ browser, but needs to redraw with canvas text when exporting as an image.
 
 		if (render == null) {
 			getTextInfo = Canvas.prototype.getTextInfo,
-				addText = Canvas.prototype.addText,
-				render = Canvas.prototype.render;
+			addText = Canvas.prototype.addText,
+			render = Canvas.prototype.render;
 		}
 
 		// Finishes rendering the canvas, including overlaid text
 
-		Canvas.prototype.render = function () {
+		Canvas.prototype.render = function() {
 
 			if (!plot.getOptions().canvas) {
 				return render.call(this);
@@ -144,7 +144,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
 		//     y: Y coordinate at which to draw the text.
 		// }
 
-		Canvas.prototype.getTextInfo = function (layer, text, font, angle, width) {
+		Canvas.prototype.getTextInfo = function(layer, text, font, angle, width) {
 
 			if (!plot.getOptions().canvas) {
 				return getTextInfo.call(this, layer, text, font, angle, width);
@@ -263,7 +263,7 @@ browser, but needs to redraw with canvas text when exporting as an image.
 
 		// Adds a text string to the canvas text overlay.
 
-		Canvas.prototype.addText = function (layer, x, y, text, font, angle, width, halign, valign) {
+		Canvas.prototype.addText = function(layer, x, y, text, font, angle, width, halign, valign) {
 
 			if (!plot.getOptions().canvas) {
 				return addText.call(this, layer, x, y, text, font, angle, width, halign, valign);

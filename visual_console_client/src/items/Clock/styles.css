@@ -1,3 +1,8 @@
+@font-face {
+  font-family: Alarm Clock;
+  src: url(./alarm-clock.ttf);
+}
+
 /* Digital clock */
 
 .visual-console-item .digital-clock {
@@ -18,6 +23,7 @@
 }
 
 .visual-console-item .digital-clock > span.time {
+  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 

@@ -421,7 +421,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_configure_mail',
-                'class'         => 'hole flex-row w98p '.$li_configure_mail_class,
+                'class'         => 'hole flex-row w100p '.$li_configure_mail_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -455,7 +455,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_create_agent',
-                'class'         => 'learn_content_indented flex-row w98p '.$li_create_agent_class,
+                'class'         => 'learn_content_indented flex-row w100p '.$li_create_agent_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -480,7 +480,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row w98p '.$li_create_module_class,
+                'class'         => 'learn_content_indented flex-row w100p '.$li_create_module_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -505,7 +505,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'hole learn_content_indented flex-row w98p '.$li_create_alert_class,
+                'class'         => 'hole learn_content_indented flex-row w100p '.$li_create_alert_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -530,7 +530,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_discover',
-                'class'         => 'hole flex-row w98p '.$li_create_discovery_class,
+                'class'         => 'hole flex-row w100p '.$li_create_discovery_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -558,7 +558,7 @@ class WelcomeWindow extends Wizard
             $inputs[] = [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
-                'class'         => 'hole flex-row w98p',
+                'class'         => 'hole flex-row w100p',
                 'direct'        => 1,
                 'block_content' => [
                     [

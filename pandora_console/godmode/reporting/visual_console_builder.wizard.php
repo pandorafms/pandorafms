@@ -211,6 +211,26 @@ $fonts = [
     '196pt' => '196pt',
 ];
 
+/*
+    $fontf = array('andale mono,times' => 'Andale Mono',
+    'arial,helvetica,sans-serif' => 'Arial',
+    'arial black,avant garde' => 'Arial Black',
+    'comic sans ms,sans-serif' => 'Comic Sans MS',
+    'courier new,courier' => 'Courier New',
+    'georgia,palatino' => 'Georgia',
+    'helvetica,impact' => 'Helvetica',
+    'impact,chicago' => 'Impact',
+    'symbol' => 'Symbol',
+    'tahoma,arial,helvetica,sans-serif' => 'Tahoma',
+    'terminal,monaco' => 'Terminal',
+    'times new roman,times' => 'Times New Roman',
+    'trebuchet ms,geneva' => 'Trebuchet MS',
+    'verdana,geneva' => 'Verdana',
+    'Webdings' => 'Webdings',
+    'Wingdings'  => 'Wingdings'
+    );
+*/
+
 $table->rowstyle['all_9'] = 'display: none;';
 $table->data['all_9'][0] = __('Font');
 $table->colspan['all_9'][1] = '3';

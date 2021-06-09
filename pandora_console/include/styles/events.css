@@ -212,7 +212,7 @@ table.table_modal_alternate tr td {
 
 table.table_modal_alternate tr td:first-child {
   width: 35%;
-  font-weight: 600;
+  font-weight: bold;
   padding-left: 20px;
 }
 

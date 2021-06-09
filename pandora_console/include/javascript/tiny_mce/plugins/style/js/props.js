@@ -1,7 +1,13 @@
 tinyMCEPopup.requireLangPack();
 
-var defaultFonts = "" +
-	"lato";
+var defaultFonts = "" + 
+	"Arial, Helvetica, sans-serif=Arial, Helvetica, sans-serif;" + 
+	"Times New Roman, Times, serif=Times New Roman, Times, serif;" + 
+	"Courier New, Courier, mono=Courier New, Courier, mono;" + 
+	"Times New Roman, Times, serif=Times New Roman, Times, serif;" + 
+	"Georgia, Times New Roman, Times, serif=Georgia, Times New Roman, Times, serif;" + 
+	"Verdana, Arial, Helvetica, sans-serif=Verdana, Arial, Helvetica, sans-serif;" + 
+	"Geneva, Arial, Helvetica, sans-serif=Geneva, Arial, Helvetica, sans-serif";
 
 var defaultSizes = "9;10;12;14;16;18;24;xx-small;x-small;small;medium;large;x-large;xx-large;smaller;larger";
 var defaultMeasurement = "+pixels=px;points=pt;inches=in;centimetres=cm;millimetres=mm;picas=pc;ems=em;exs=ex;%";
@@ -24,7 +30,7 @@ var defaultListType = "disc;circle;square;decimal;lower-roman;upper-roman;lower-
 function aggregateStyles(allStyles) {
 	var mergedStyles = {};
 
-	tinymce.each(allStyles, function (style) {
+	tinymce.each(allStyles, function(style) {
 		if (style !== '') {
 			var parsedStyles = tinyMCEPopup.editor.dom.parseStyle(style);
 			for (var name in parsedStyles) {
@@ -34,7 +40,7 @@ function aggregateStyles(allStyles) {
 					}
 					else if (name === 'text-decoration') {
 						if (mergedStyles[name].indexOf(parsedStyles[name]) === -1) {
-							mergedStyles[name] = mergedStyles[name] + ' ' + parsedStyles[name];
+							mergedStyles[name] = mergedStyles[name] +' '+ parsedStyles[name];
 						}
 					}
 				}
@@ -42,7 +48,7 @@ function aggregateStyles(allStyles) {
 		}
 	});
 
-	return mergedStyles;
+  return mergedStyles;
 }
 
 var applyActionIsInsert;
@@ -57,15 +63,15 @@ function init(ed) {
 	applyActionIsInsert = ed.getParam("edit_css_style_insert_span", false);
 	document.getElementById('toggle_insert_span').checked = applyActionIsInsert;
 
-	h = getBrowserHTML('background_image_browser', 'background_image', 'image', 'advimage');
+	h = getBrowserHTML('background_image_browser','background_image','image','advimage');
 	document.getElementById("background_image_browser").innerHTML = h;
 
-	document.getElementById('text_color_pickcontainer').innerHTML = getColorPickerHTML('text_color_pick', 'text_color');
-	document.getElementById('background_color_pickcontainer').innerHTML = getColorPickerHTML('background_color_pick', 'background_color');
-	document.getElementById('border_color_top_pickcontainer').innerHTML = getColorPickerHTML('border_color_top_pick', 'border_color_top');
-	document.getElementById('border_color_right_pickcontainer').innerHTML = getColorPickerHTML('border_color_right_pick', 'border_color_right');
-	document.getElementById('border_color_bottom_pickcontainer').innerHTML = getColorPickerHTML('border_color_bottom_pick', 'border_color_bottom');
-	document.getElementById('border_color_left_pickcontainer').innerHTML = getColorPickerHTML('border_color_left_pick', 'border_color_left');
+	document.getElementById('text_color_pickcontainer').innerHTML = getColorPickerHTML('text_color_pick','text_color');
+	document.getElementById('background_color_pickcontainer').innerHTML = getColorPickerHTML('background_color_pick','background_color');
+	document.getElementById('border_color_top_pickcontainer').innerHTML = getColorPickerHTML('border_color_top_pick','border_color_top');
+	document.getElementById('border_color_right_pickcontainer').innerHTML = getColorPickerHTML('border_color_right_pick','border_color_right');
+	document.getElementById('border_color_bottom_pickcontainer').innerHTML = getColorPickerHTML('border_color_bottom_pick','border_color_bottom');
+	document.getElementById('border_color_left_pickcontainer').innerHTML = getColorPickerHTML('border_color_left_pick','border_color_left');
 
 	fillSelect(0, 'text_font', 'style_font', defaultFonts, ';', true);
 	fillSelect(0, 'text_size', 'style_font_size', defaultSizes, ';', true);
@@ -266,7 +272,7 @@ function setupFormData() {
 		f.positioning_clip_right.value = f.positioning_clip_bottom.value = f.positioning_clip_left.value;
 	}
 
-	//	setupBox(f, ce, '', 'border', 'Color');
+//	setupBox(f, ce, '', 'border', 'Color');
 }
 
 function getMeasurement(s) {
@@ -301,7 +307,7 @@ function setValue(f, n, v) {
 }
 
 function setupBox(f, ce, fp, pr, sf, b) {
-	if (typeof (b) == "undefined")
+	if (typeof(b) == "undefined")
 		b = ['Top', 'Right', 'Bottom', 'Left'];
 
 	if (isSame(ce, pr, sf, b)) {
@@ -353,10 +359,10 @@ function setupBox(f, ce, fp, pr, sf, b) {
 function isSame(e, pr, sf, b) {
 	var a = [], i, x;
 
-	if (typeof (b) == "undefined")
+	if (typeof(b) == "undefined")
 		b = ['Top', 'Right', 'Bottom', 'Left'];
 
-	if (typeof (sf) == "undefined" || sf == null)
+	if (typeof(sf) == "undefined" || sf == null)
 		sf = "";
 
 	a[0] = e.style[pr + b[0] + sf];
@@ -364,11 +370,11 @@ function isSame(e, pr, sf, b) {
 	a[2] = e.style[pr + b[2] + sf];
 	a[3] = e.style[pr + b[3] + sf];
 
-	for (i = 0; i < a.length; i++) {
+	for (i=0; i<a.length; i++) {
 		if (a[i] == null)
 			return false;
 
-		for (x = 0; x < a.length; x++) {
+		for (x=0; x<a.length; x++) {
 			if (a[x] != a[i])
 				return false;
 		}
@@ -380,11 +386,11 @@ function isSame(e, pr, sf, b) {
 function hasEqualValues(a) {
 	var i, x;
 
-	for (i = 0; i < a.length; i++) {
+	for (i=0; i<a.length; i++) {
 		if (a[i] == null)
 			return false;
 
-		for (x = 0; x < a.length; x++) {
+		for (x=0; x<a.length; x++) {
 			if (a[x] != a[i])
 				return false;
 		}
@@ -394,7 +400,7 @@ function hasEqualValues(a) {
 }
 
 function toggleApplyAction() {
-	applyActionIsInsert = !applyActionIsInsert;
+	applyActionIsInsert = ! applyActionIsInsert;
 }
 
 function applyAction() {
@@ -501,7 +507,7 @@ function generateCSS() {
 		ce.style.paddingBottom = f.box_padding_bottom.value + (isNum(f.box_padding_bottom.value) ? f.box_padding_bottom_measurement.value : "");
 		ce.style.paddingLeft = f.box_padding_left.value + (isNum(f.box_padding_left.value) ? f.box_padding_left_measurement.value : "");
 	} else
-		ce.style.padding = f.box_padding_top.value + (isNum(f.box_padding_top.value) ? f.box_padding_top_measurement.value : "");
+		ce.style.padding = f.box_padding_top.value + (isNum(f.box_padding_top.value) ? f.box_padding_top_measurement.value : "");		
 
 	if (!f.box_margin_same.checked) {
 		ce.style.marginTop = f.box_margin_top.value + (isNum(f.box_margin_top.value) ? f.box_margin_top_measurement.value : "");
@@ -509,7 +515,7 @@ function generateCSS() {
 		ce.style.marginBottom = f.box_margin_bottom.value + (isNum(f.box_margin_bottom.value) ? f.box_margin_bottom_measurement.value : "");
 		ce.style.marginLeft = f.box_margin_left.value + (isNum(f.box_margin_left.value) ? f.box_margin_left_measurement.value : "");
 	} else
-		ce.style.margin = f.box_margin_top.value + (isNum(f.box_margin_top.value) ? f.box_margin_top_measurement.value : "");
+		ce.style.margin = f.box_margin_top.value + (isNum(f.box_margin_top.value) ? f.box_margin_top_measurement.value : "");		
 
 	// Build border styles
 
@@ -602,8 +608,8 @@ function isNum(s) {
 function showDisabledControls() {
 	var f = document.forms, i, a;
 
-	for (i = 0; i < f.length; i++) {
-		for (a = 0; a < f[i].elements.length; a++) {
+	for (i=0; i<f.length; i++) {
+		for (a=0; a<f[i].elements.length; a++) {
 			if (f[i].elements[a].disabled)
 				tinyMCEPopup.editor.dom.addClass(f[i].elements[a], "disabled");
 			else
@@ -616,13 +622,13 @@ function fillSelect(f, s, param, dval, sep, em) {
 	var i, ar, p, se;
 
 	f = document.forms[f];
-	sep = typeof (sep) == "undefined" ? ";" : sep;
+	sep = typeof(sep) == "undefined" ? ";" : sep;
 
 	if (em)
 		addSelectValue(f, s, "", "");
 
 	ar = tinyMCEPopup.getParam(param, dval).split(sep);
-	for (i = 0; i < ar.length; i++) {
+	for (i=0; i<ar.length; i++) {
 		se = false;
 
 		if (ar[i].charAt(0) == '+') {
@@ -687,12 +693,12 @@ function synch(fr, to) {
 		selectByValue(f, to + "_measurement", f.elements[fr + "_measurement"].value);
 }
 
-function updateTextDecorations() {
+function updateTextDecorations(){
 	var el = document.forms[0].elements;
 
 	var textDecorations = ["text_underline", "text_overline", "text_linethrough", "text_blink"];
 	var noneChecked = el["text_none"].checked;
-	tinymce.each(textDecorations, function (id) {
+	tinymce.each(textDecorations, function(id) {
 		el[id].disabled = noneChecked;
 		if (noneChecked) {
 			el[id].checked = false;

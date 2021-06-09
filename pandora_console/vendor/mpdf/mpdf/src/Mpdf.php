@@ -14705,7 +14705,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			if ($this->printers_info) {
 				$hd = date('Y-m-d H:i') . '  Page ' . $this->page . ' of {nb}';
 				$this->SetTColor($this->colorConverter->convert(0, $this->PDFAXwarnings));
-				$this->SetFont('lato', '', 7.5, true, true);
+				$this->SetFont('arial', '', 7.5, true, true);
 				$this->x = $this->page_box['outer_width_LR'] + 1.5;
 				$this->y = 1;
 				$this->Cell($headerpgwidth, $this->FontSize, $hd, 0, 0, 'L', 0, '', 0, 0, 0, 'M');

@@ -74,6 +74,7 @@ def parse_graph_conf(cGraph):
 
 def get_graph_by_moduleid (baseUrl,pUser, pPass, apiPass, moduleId, graphInterval, sep="url_encode_separator_%7C") : 
     """Call Pandorafms api to get graph"""
+
     try:
         url = f"{baseUrl}?op=get&op2=module_graph&id={moduleId}&other={graphInterval}%7C1&other_mode={sep}&apipass={apiPass}&api=1&user={pUser}&pass={pPass}"
         graph = requests.get(url)
@@ -85,6 +86,9 @@ def get_graph_by_moduleid (baseUrl,pUser, pPass, apiPass, moduleId, graphInterva
             return None
         if graph.text == "Id does not exist in database.":
             print (f"Error requested Pandora api url, status code: {graph.text}. Skiping graph generation")
+            return None
+        if graph.text == "The user has not enough permissions for perform this action.":
+            print (f"Error requested Pandora api url, status code: {graph.text} Skiping graph generation")
             return None
         
     except:

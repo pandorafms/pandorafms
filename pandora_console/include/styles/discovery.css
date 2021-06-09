@@ -31,8 +31,6 @@ li.discovery > a label {
 }
 
 div.data_container > label {
-  font-family: "lato", "Open Sans", sans-serif;
-  font-weight: lighter;
 }
 
 div.data_container {
@@ -66,9 +64,8 @@ h1.wizard a:hover {
   color: #fff;
 }
 #text_wizard {
-  font-weight: bolder;
   text-decoration: none;
-  font-size: 24px;
+  font-size: 16pt;
 }
 div.arrow_box {
   display: inline-block;
@@ -144,7 +141,6 @@ div.arrow_box:before {
 .breadcrumb_link {
   color: #848484;
   font-size: 10pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   text-decoration: none;
 }
 
@@ -170,11 +166,9 @@ span.breadcrumb_link {
 
 form.discovery * {
   font-size: 10pt;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 form.discovery .label_select b {
-  font-family: "lato", "Open Sans", sans-serif;
   font-weight: bolder;
 }
 
@@ -218,8 +212,6 @@ li > input[type="email"],
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
-  font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-bottom: 4px;
@@ -288,7 +280,6 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   background: transparent;
   color: #fff;
   font-weight: bold;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
 }

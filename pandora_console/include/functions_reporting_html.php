@@ -2409,7 +2409,7 @@ function reporting_html_historical_data($table, $item, $pdf=0)
             } else {
                 // Command line snapshot.
                 if (is_text_to_black_string($data[__('Data')])) {
-                    $table1->style[1] = 'text-align: left; font-family: monospace, mono';
+                    $table1->style[1] = 'text-align: left;';
                     $row = [
                         $data[__('Date')],
                         '<pre>'.$data[__('Data')].'</pre>',
@@ -2494,7 +2494,6 @@ function reporting_html_database_serialized($table, $item, $pdf=0)
                     }
                 } else if (is_text_to_black_string($data_unserialized[$key])) {
                     $table1->style[1] = 'white-space: pre-wrap;';
-                    $table1->style[1] .= 'font-family: monospace, mono; ';
                     $table1->style[1] .= 'text-align: left';
                     $data_unserialized[$key] = '<pre>'.$data_value.'</pre>';
                 }

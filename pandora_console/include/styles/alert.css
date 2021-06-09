@@ -62,7 +62,6 @@ ul.sample {
 }
 
 span.rule-title {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
   font-size: 2em;
   text-align: center;
@@ -193,12 +192,10 @@ div#rules.show {
   padding-right: 1em;
   margin: 0 0.5em 0.5em 0px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
   background-color: #333;
   word-break: break-all;
   height: fit-content;
-  min-height: 2.3em;
 }
 
 .field.opacityElements {
@@ -282,7 +279,6 @@ div#rules.show {
   background-color: #424242;
   border: 0px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
 }
 #rules select.click-list-elements.fields-elements-log {

@@ -161,6 +161,11 @@ sub data_consumer ($$) {
 	else {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -N';
 	}
+
+	#Check ip_taget macro
+	if ($module->{'ip_target'} eq '_address_') {
+		$module->{'ip_target'} = get_db_value($dbh, "SELECT direccion FROM tagente WHERE id_agente=?", $module->{'id_agente'});
+	}
 	
 	# Use a custom namespace
 	my $namespace = $module->{'tcp_send'};

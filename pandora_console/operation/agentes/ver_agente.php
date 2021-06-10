@@ -1222,15 +1222,9 @@ $agent = db_get_row('tagente', 'id_agente', $id_agente);
 // Get group for this id_agente.
 $id_grupo = $agent['id_grupo'];
 
-$is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-if ($is_extra === ENTERPRISE_NOT_HOOK) {
-    $is_extra = false;
-}
-
 $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
-if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente) && !$is_extra) {
+if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente)) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access (read) to agent '.agents_get_name($id_agente)
@@ -1283,7 +1277,7 @@ $tab = get_parameter('tab', 'main');
 // Manage tab.
 $managetab = [];
 
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra) {
+if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     $managetab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.html_print_image(
         'images/setup.png',
         true,

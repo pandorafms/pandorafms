@@ -34,68 +34,89 @@
  * - GENERAL STYLES 												-
  * ---------------------------------------------------------------------
  */
-/* latin-ext */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
+  font-family: "lato";
+  src: url("../fonts/Lato-Regular.woff") format("woff");
   font-weight: 400;
-  src: local("Open Sans Regular"), local("OpenSans-Regular"),
-    url(../fonts/mem8YaGs126MiZpBA-UFW50bbck.woff2) format("woff2");
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-/* latin */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
+  font-family: "lato";
+  src: url("../fonts/Lato-Light.woff") format("woff");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-Thin.woff") format("woff");
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-Bold.woff") format("woff");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-Black.woff") format("woff");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "lato";
+  src: url("../fonts/Lato-Italic.woff") format("woff");
   font-weight: 400;
-  src: local("Open Sans Regular"), local("OpenSans-Regular"),
-    url(../fonts/mem8YaGs126MiZpBA-UFVZ0b.woff2) format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
-    U+FEFF, U+FFFD;
+  font-style: italic;
 }
-/* latin-ext */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
-  font-weight: 600;
-  src: local("Open Sans SemiBold"), local("OpenSans-SemiBold"),
-    url(../fonts/mem5YaGs126MiZpBA-UNirkOXOhpOqc.woff2) format("woff2");
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  font-family: "lato";
+  src: url("../fonts/Lato-LightItalic.woff") format("woff");
+  font-weight: 300;
+  font-style: italic;
 }
-/* latin */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
-  font-weight: 600;
-  src: local("Open Sans SemiBold"), local("OpenSans-SemiBold"),
-    url(../fonts/mem5YaGs126MiZpBA-UNirkOUuhp.woff2) format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
-    U+FEFF, U+FFFD;
+  font-family: "lato";
+  src: url("../fonts/Lato-ThinItalic.woff") format("woff");
+  font-weight: 100;
+  font-style: italic;
 }
-/* latin-ext */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
+  font-family: "lato";
+  src: url("../fonts/Lato-BoldItalic.woff") format("woff");
   font-weight: 700;
-  src: local("Open Sans Bold"), local("OpenSans-Bold"),
-    url(../fonts/mem5YaGs126MiZpBA-UN7rgOXOhpOqc.woff2) format("woff2");
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  font-style: italic;
 }
-/* latin */
+
 @font-face {
-  font-family: "Open Sans";
-  font-style: normal;
-  font-weight: 700;
-  src: local("Open Sans Bold"), local("OpenSans-Bold"),
-    url(../fonts/mem5YaGs126MiZpBA-UN7rgOUuhp.woff2) format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
-    U+FEFF, U+FFFD;
+  font-family: "lato";
+  src: url("../fonts/Lato-BlackItalic.woff") format("woff");
+  font-weight: 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "source-code";
+  src: url("../fonts/SourceCodePro.woff") format("woff");
+}
+
+@font-face {
+  font-family: "leaguegothic";
+  src: url("../../fonts/leaguegothic.woff") format("woff");
+}
+@font-face {
+  font-family: "roboto";
+  src: url("../../fonts/roboto.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "opensans";
+  src: url("../../fonts/opensans.woff2") format("woff2");
 }
 @font-face {
   font-family: "Nunito";
@@ -103,61 +124,53 @@
   font-weight: 400;
   src: local("Nunito-Regular"), url(../../fonts/nunito.woff) format("woff");
 }
-@font-face {
-  font-family: "lato-thin";
-  src: url("../../fonts/Lato-Hairline.ttf");
-}
-@font-face {
-  font-family: "lato-bolder";
-  src: url("../../fonts/Lato-Light.ttf");
-}
-@font-face {
-  font-family: "lato-boldest";
-  src: url("../../fonts/Lato-Regular.ttf");
-}
+
 * {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
-  letter-spacing: 0.03pt;
-  font-size: 8pt;
-  box-sizing: border-box;
+  font-size: 9pt;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 16pt;
 }
-svg * {
-  font-size: 11pt;
-}
+
 html {
   height: 100%;
 }
+
 body {
   background-color: #fff;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  font-weight: 400;
+  font-family: "lato";
 }
+
 input,
 textarea {
+  padding: 5px;
   border: 1px solid #ddd;
 }
+
 textarea {
-  padding: 5px;
   min-height: 100px;
   width: 99%;
 }
+
 input {
-  padding: 2px 3px 4px 3px;
   vertical-align: middle;
 }
 
 input[type="checkbox"] {
   display: inline;
 }
+
 select {
   padding: 2px 3px 3px 3px;
   vertical-align: middle;
   border: 1px solid #ddd;
 }
+
 input.button {
-  font-family: Arial, Sans-serif;
   border: 4px solid #ccc;
   background: #fff;
   padding: 2px 3px;
@@ -175,7 +188,6 @@ h3,
 h4 {
   font-weight: bold;
   font-size: 1em;
-  font-family: Arial, Sans-serif;
   text-transform: uppercase;
   color: #3f3f3f;
   padding-bottom: 4px;
@@ -215,6 +227,7 @@ a {
 a:hover {
   color: #373737;
   text-decoration: underline;
+  font-weight: bold;
 }
 :focus {
   outline-color: #82b92e;
@@ -242,10 +255,7 @@ ul {
   padding-left: 0;
   margin-left: 0;
 }
-code,
-pre {
-  font-family: courier, serif;
-}
+
 fieldset {
   background-color: #fff;
   border: 1px solid #e2e2e2;
@@ -254,25 +264,30 @@ fieldset {
   position: relative;
   border-radius: 5px;
 }
+
 fieldset legend {
   font-size: 1.1em;
   font-weight: bold;
   line-height: 20px;
   color: #3f3f3f;
 }
+
 td input[type="checkbox"] {
   padding: 10px;
   margin-top: 2px;
   display: table-cell;
 }
+
 input[type="image"] {
   border: 0px;
   background-color: transparent;
 }
+
 table,
 img {
   border: 0px;
 }
+
 table pre {
   white-space: pre-wrap;
 }
@@ -319,143 +334,6 @@ select:-internal-list-box {
   border: none;
 }
 
-/* --- Font ttf --- */
-@font-face {
-  font-family: "DejaVuSerif-BoldFont";
-  src: url("../fonts/DejaVuSerif-Bold.ttf") format("truetype");
-}
-
-.DejaVuSerif-Bold {
-  font-family: DejaVuSerif-BoldFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerif-BoldItalicFont";
-  src: url("../fonts/DejaVuSerif-BoldItalic.ttf") format("truetype");
-}
-
-.DejaVuSerif-BoldItalic {
-  font-family: DejaVuSerif-BoldItalicFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerif-ItalicFont";
-  src: url("../fonts/DejaVuSerif-Italic.ttf") format("truetype");
-}
-
-.DejaVuSerif-Italic {
-  font-family: DejaVuSerif-ItalicFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerifFont";
-  src: url("../fonts/DejaVuSerif.ttf") format("truetype");
-}
-
-.DejaVuSerif {
-  font-family: DejaVuSerifFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerifCondensed-BoldFont";
-  src: url("../fonts/DejaVuSerifCondensed-Bold.ttf") format("truetype");
-}
-
-.DejaVuSerifCondensed-Bold {
-  font-family: DejaVuSerifCondensed-BoldFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerifCondensed-BoldItalicFont";
-  src: url("../fonts/DejaVuSerifCondensed-BoldItalic.ttf") format("truetype");
-}
-
-.DejaVuSerifCondensed-BoldItalic {
-  font-family: DejaVuSerifCondensed-BoldItalicFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerifCondensed-ItalicFont";
-  src: url("../fonts/DejaVuSerifCondensed-Italic.ttf") format("truetype");
-}
-
-.DejaVuSerifCondensed-Italic {
-  font-family: DejaVuSerifCondensed-ItalicFont, sans-serif;
-}
-
-@font-face {
-  font-family: "DejaVuSerifCondensedFont";
-  src: url("../fonts/DejaVuSerifCondensed.ttf") format("truetype");
-}
-
-.DejaVuSerifCondensed {
-  font-family: DejaVuSerifCondensedFont, sans-serif;
-}
-
-@font-face {
-  font-family: "FreeSansFont";
-  src: url("../fonts/FreeSans.ttf") format("truetype");
-}
-
-.FreeSans {
-  font-family: FreeSansFont, sans-serif;
-}
-
-@font-face {
-  font-family: "FreeSansBoldFont";
-  src: url("../fonts/FreeSans-Bold.ttf") format("truetype");
-}
-
-.FreeSansBold {
-  font-family: FreeSansBoldFont, sans-serif;
-}
-
-@font-face {
-  font-family: "smallfontFont";
-  src: url("../fonts/smallfont.ttf") format("truetype");
-}
-
-.smallfont {
-  font-family: smallfontFont, sans-serif;
-}
-
-@font-face {
-  font-family: "unicodeFont";
-  src: url("../fonts/unicode.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "opensansFont";
-  src: url("../../fonts/opensans.woff2") format("woff2");
-}
-
-.opensansfont {
-  font-family: opensansFont, sans-serif;
-}
-
-@font-face {
-  font-family: "roboto";
-  src: url("../../fonts/roboto.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "opensans";
-  src: url("../../fonts/opensans.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "lato";
-  src: url("../../fonts/lato.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "leaguegothic";
-  src: url("../../fonts/leaguegothic.woff") format("woff");
-}
-.unicode {
-  font-family: unicodeFont, sans-serif;
-}
-
 /*
  * ---------------------------------------------------------------------
  * - GLOBAL STYLES                           									-
@@ -478,9 +356,6 @@ select:-internal-list-box {
 }
 .w10px {
   width: 10px;
-}
-.w16px {
-  width: 16px;
 }
 .w18px {
   width: 18px;
@@ -1075,11 +950,8 @@ p.center {
 /* --- Botones --- */
 button.sub,
 input.sub {
-  font-weight: normal;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  font-size: 1.2em;
+  font-weight: 500;
+  border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;
   background-position: 92% 10px;
@@ -1087,10 +959,10 @@ input.sub {
   padding-bottom: 10px;
   padding-top: 10px;
   padding-left: 15px;
-  margin-left: 10px;
   border: 1px solid #888;
-  font-family: "lato", "Open Sans", sans-serif;
   cursor: pointer;
+  font-family: inherit;
+  font-size: 10pt;
 }
 
 button.sub:hover,
@@ -1178,7 +1050,6 @@ div#main_help {
   padding-bottom: 15px;
 }
 div#parent_div {
-  font-family: verdana, arial;
   font-size: 11px;
   text-align: left;
   background-color: #fff;
@@ -1202,13 +1073,11 @@ div#main_help div.databox h1 {
   padding-bottom: 0px;
   margin-bottom: 0px;
   font-weight: bold;
-  font-family: sans-serif, verdana;
 }
 
 div#main_help div.databox h3,
 div#main_help div.databox h2 {
   color: #6eb432;
-  font-family: sans-serif, verdana;
 }
 
 div#main_help div.databox h3 {
@@ -1512,10 +1381,7 @@ ul.mn {
   font-size: 10pt;
   font-weight: bold;
 }
-a.mn,
-.gr {
-  font-family: Arial, Verdana, sans-serif, Helvetica;
-}
+
 div.nf {
   background: url(../../images/info.png) no-repeat scroll 0 50% transparent;
   margin-left: 7px;
@@ -1578,18 +1444,17 @@ div.title_line {
 }
 
 .breadcrumbs_container {
-  padding-left: 2.5em;
+  padding-left: 2em;
   padding-top: 4px;
   text-indent: 0.25em;
   color: #848484;
   font-size: 10pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
+  font-weight: 500;
 }
 
 .breadcrumb_active {
   color: #82b92e;
   font-size: 10pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
 }
 /* End - Breadcrum */
 
@@ -1715,9 +1580,10 @@ div#agent_wizard_subtabs {
 
 #menu_tab_left li.view {
   margin-left: 0px;
-  padding-left: 10px;
+  padding-left: 14px;
   padding-bottom: 4px;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 #menu_tab_left li.view img.bottom {
@@ -1728,8 +1594,7 @@ div#agent_wizard_subtabs {
 #menu_tab_left li a,
 #menu_tab_left li span {
   color: #343434;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
-  font-size: 18pt;
+  font-size: 13pt;
   line-height: 18pt;
 }
 
@@ -2045,13 +1910,11 @@ div#main_pure {
 /* big_data is used in tactical and logon_ok */
 .big_data {
   text-decoration: none;
-  font-family: "lato", "Open Sans", sans-serif;
   font-size: 2em;
 }
 
 .med_data {
   text-decoration: none;
-  font-family: "lato", "Open Sans", sans-serif;
   font-size: 1.5em;
 }
 
@@ -2360,12 +2223,13 @@ div#pandora_logo_header {
 .header_title {
   font-weight: 600;
   font-size: 10.5pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
+  color: #303030;
 }
 
 .header_subtitle {
   font-size: 10pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
+  color: #606060;
+  font-weight: 300;
 }
 
 .header_left {
@@ -2476,6 +2340,7 @@ div#events_list {
   margin-left: 0px;
   margin-right: 0px;
   vertical-align: middle;
+  line-height: normal;
 }
 
 /* TABLAS */
@@ -2551,7 +2416,7 @@ td.cellBig {
 }
 
 .info_box .title * {
-  font-size: 10pt;
+  font-size: 12pt;
   font-weight: bolder;
 }
 
@@ -2571,7 +2436,6 @@ td.cellBig {
 tr.group_view_data,
 .group_view_data {
   color: #3f3f3f;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 tr.group_view_crit,
@@ -2700,8 +2564,8 @@ select {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-size: 10pt;
+  font-family: inherit;
 }
 
 /* plugins */
@@ -2723,10 +2587,6 @@ span#plugin_description {
   background-color: #ededed;
 }
 
-.tinyMCEBody span strong {
-  font-family: inherit;
-}
-
 .visual_font_size_4pt,
 .visual_font_size_4pt > em,
 .visual_font_size_4pt > strong,
@@ -2738,7 +2598,6 @@ span#plugin_description {
 .visual_font_size_4pt span em {
   font-size: 4pt;
   line-height: 4pt;
-  font-family: inherit;
 }
 .visual_font_size_6pt,
 .visual_font_size_6pt > em,
@@ -2751,7 +2610,6 @@ span#plugin_description {
 .visual_font_size_6pt span em {
   font-size: 6pt;
   line-height: 6pt;
-  font-family: inherit;
 }
 .visual_font_size_8pt,
 .visual_font_size_8pt > em,
@@ -2764,7 +2622,6 @@ span#plugin_description {
 .visual_font_size_8pt span em {
   font-size: 8pt;
   line-height: 8pt;
-  font-family: inherit;
 }
 .visual_font_size_10pt,
 .visual_font_size_10pt > em,
@@ -2777,7 +2634,6 @@ span#plugin_description {
 .visual_font_size_10pt span em {
   font-size: 10pt;
   line-height: 10pt;
-  font-family: inherit;
 }
 .visual_font_size_12pt,
 .visual_font_size_12pt > em,
@@ -2790,7 +2646,6 @@ span#plugin_description {
 .visual_font_size_12pt span em {
   font-size: 12pt;
   line-height: 12pt;
-  font-family: inherit;
 }
 .visual_font_size_14pt,
 .visual_font_size_14pt > em,
@@ -2803,7 +2658,6 @@ span#plugin_description {
 .visual_font_size_14pt span em {
   font-size: 14pt;
   line-height: 14pt;
-  font-family: inherit;
 }
 .visual_font_size_18pt,
 .visual_font_size_18pt > em,
@@ -2816,7 +2670,6 @@ span#plugin_description {
 .visual_font_size_18pt span em {
   font-size: 18pt;
   line-height: 18pt;
-  font-family: inherit;
 }
 
 .visual_font_size_24pt,
@@ -2830,7 +2683,6 @@ span#plugin_description {
 .visual_font_size_24pt span em {
   font-size: 24pt;
   line-height: 24pt;
-  font-family: inherit;
 }
 .visual_font_size_28pt,
 .visual_font_size_28pt > em,
@@ -2843,7 +2695,6 @@ span#plugin_description {
 .visual_font_size_28pt span em {
   font-size: 28pt;
   line-height: 28pt;
-  font-family: inherit;
 }
 .visual_font_size_36pt,
 .visual_font_size_36pt > em,
@@ -2856,7 +2707,6 @@ span#plugin_description {
 .visual_font_size_36pt span em {
   font-size: 36pt;
   line-height: 36pt;
-  font-family: inherit;
 }
 .visual_font_size_48pt,
 .visual_font_size_48pt > em,
@@ -2869,7 +2719,6 @@ span#plugin_description {
 .visual_font_size_48pt span em {
   font-size: 48pt;
   line-height: 48pt;
-  font-family: inherit;
 }
 .visual_font_size_60pt,
 .visual_font_size_60pt > em,
@@ -2882,7 +2731,6 @@ span#plugin_description {
 .visual_font_size_60pt span em {
   font-size: 60pt;
   line-height: 60pt;
-  font-family: inherit;
 }
 .visual_font_size_72pt,
 .visual_font_size_72pt > em,
@@ -2895,7 +2743,6 @@ span#plugin_description {
 .visual_font_size_72pt span em {
   font-size: 72pt;
   line-height: 72pt;
-  font-family: inherit;
 }
 
 .visual_font_size_84pt,
@@ -2909,7 +2756,6 @@ span#plugin_description {
 .visual_font_size_84pt span em {
   font-size: 84pt;
   line-height: 84pt;
-  font-family: inherit;
 }
 
 .visual_font_size_96pt,
@@ -2923,7 +2769,6 @@ span#plugin_description {
 .visual_font_size_96pt span em {
   font-size: 96pt;
   line-height: 96pt;
-  font-family: inherit;
 }
 
 .visual_font_size_116pt,
@@ -2937,7 +2782,6 @@ span#plugin_description {
 .visual_font_size_116pt span em {
   font-size: 116pt;
   line-height: 116pt;
-  font-family: inherit;
 }
 
 .visual_font_size_128pt,
@@ -2951,7 +2795,6 @@ span#plugin_description {
 .visual_font_size_128pt span em {
   font-size: 128pt;
   line-height: 128pt;
-  font-family: inherit;
 }
 
 .visual_font_size_140pt,
@@ -2965,7 +2808,6 @@ span#plugin_description {
 .visual_font_size_140pt span em {
   font-size: 140pt;
   line-height: 140pt;
-  font-family: inherit;
 }
 
 .visual_font_size_154pt,
@@ -2979,7 +2821,6 @@ span#plugin_description {
 .visual_font_size_154pt span em {
   font-size: 154pt;
   line-height: 154pt;
-  font-family: inherit;
 }
 
 .visual_font_size_196pt,
@@ -2993,7 +2834,6 @@ span#plugin_description {
 .visual_font_size_196pt span em {
   font-size: 196pt;
   line-height: 196pt;
-  font-family: inherit;
 }
 
 .resize_visual_font_size_8pt,
@@ -3071,7 +2911,6 @@ span#plugin_description {
   padding-right: 0px;
   padding-top: 10px;
   text-align: left;
-  font-family: arial, sans-serif, verdana;
   font-size: 10px;
   border: 1px solid #000;
   position: absolute;
@@ -3159,7 +2998,6 @@ input.search_input {
   padding-left: 15px;
   padding-right: 40px;
   color: #777;
-  font-family: "Open Sans", sans-serif;
   font-size: 8.5pt;
   border-top-left-radius: 50px;
   border-bottom-left-radius: 50px;
@@ -3500,8 +3338,9 @@ table#policy_modules td * {
 }
 
 .status_tactical img {
-  border: 3px solid #000;
-  border-radius: 100px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  margin: 5px;
 }
 
 #sumary {
@@ -3509,7 +3348,6 @@ table#policy_modules td * {
   margin: 2px;
   padding: 10px 30px;
   font-size: 16px;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: bold;
   border-radius: 2px;
 }
@@ -3573,7 +3411,6 @@ div.div_groups_status {
   font-size: 10pt;
   white-space: pre-wrap;
   padding-top: 0;
-  font-family: "Open Sans", sans-serif;
 }
 
 .no_hidden_menu {
@@ -3591,6 +3428,7 @@ div.div_groups_status {
   min-width: 30px;
   min-height: 50px;
   max-height: 53px;
+  text-align: center;
 }
 
 #menu_tab_frame_view_bc #menu_tab li.nomn,
@@ -3649,14 +3487,12 @@ div.div_groups_status {
 }
 
 .title_um {
-  font-family: sans-serif;
   font-size: 20px;
   color: #82b92e;
   text-align: center;
 }
 
 .text_um {
-  font-family: sans-serif;
   font-size: 16px;
   padding-left: 80px;
 }
@@ -3746,7 +3582,6 @@ div.simple_value > span.text > p,
 div.simple_value > span.text > p > span > strong,
 div.simple_value > span.text > p > strong,
 div.simple_value > a > span.text p {
-  font-family: monospace;
   white-space: pre;
 }
 
@@ -3780,7 +3615,6 @@ div.simple_value > a > span.text p {
 .modalheadertext {
   color: white;
   position: relative;
-  font-family: "Nunito", sans-serif;
   font-size: 13pt;
   top: 8px;
 }
@@ -3793,7 +3627,6 @@ div.simple_value > a > span.text p {
   background-color: #82b92e;
   color: white;
   position: relative;
-  font-family: "Nunito", sans-serif;
   font-size: 11pt;
 }
 .modalclosex {
@@ -3860,7 +3693,6 @@ div.simple_value > a > span.text p {
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
   color: #82b92e;
-  font-family: "Nunito", sans-serif;
   font-size: 10pt;
   position: relative;
   top: 6px;
@@ -3919,7 +3751,6 @@ div.simple_value > a > span.text p {
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
   color: #fa5858;
-  font-family: "Nunito", sans-serif;
   font-size: 10pt;
   position: relative;
   top: 6px;
@@ -3977,7 +3808,6 @@ div.simple_value > a > span.text p {
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
   color: #82b92e;
-  font-family: "Nunito", sans-serif;
   font-size: 10pt;
   position: relative;
   top: 6px;
@@ -4052,7 +3882,7 @@ span.log_zone_line_error {
 
 /* global */
 .bolder {
-  font-weight: bolder;
+  font-weight: 600;
 }
 
 .readonly {
@@ -4148,25 +3978,20 @@ div#main_help_new_content {
   background: white;
   height: 100%;
   font-size: 12pt;
-  font-family: "lato-bolder", serif;
 }
 
 div#main_help_new_content h1 {
-  font-family: "lato-boldest", serif;
   font-size: 14pt;
 }
 
 div#main_help_new_content p {
-  font-family: "lato-bolder", serif;
   font-size: 12pt;
 }
 div#main_help_new_content b {
-  font-family: "lato-bolder", serif;
   font-size: 12pt;
 }
 
 div#main_help_new_content li {
-  font-family: "lato-bolder", serif;
   font-size: 12pt;
 }
 
@@ -4277,7 +4102,6 @@ div#footer_help {
 
 #is_favourite ul.container a li div.text {
   min-width: 50%;
-  font-family: sans-serif;
   font-size: 18px;
   color: #3f3f3f;
   text-align: center;
@@ -4337,7 +4161,6 @@ form ul.form_flex li ul li {
 
 #snmp_browser {
   text-align: left;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
   box-sizing: border-box;
@@ -4660,6 +4483,7 @@ div#dialog_messages table th:last-child {
 /* jQuery dialog */
 .no-close .ui-dialog-titlebar-close {
   display: none;
+  font-size: 9pt;
 }
 /* jQuery dialog */
 
@@ -4990,7 +4814,6 @@ input:checked + .p-slider:before {
 
 .label_select,
 .label_select_simple {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   margin-bottom: 15px;
 }
 
@@ -5479,7 +5302,6 @@ div.label_select_child_left > span {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-size: 10pt;
   padding: 2px 5px;
   box-sizing: border-box;
@@ -5885,7 +5707,7 @@ div#status_pie {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: auto;
   height: 96px;
 }
 
@@ -6084,13 +5906,13 @@ table.table_modal_alternate tr td {
 
 table.table_modal_alternate tr td:first-child {
   width: 35%;
-  font-weight: bold;
+  font-weight: 600;
   padding-left: 20px;
 }
 /* END - Table for show more info in events and config menu in modules graphs */
 
 .fullwidth {
-  width: 100%;
+  width: 99%;
 }
 
 /*
@@ -6105,17 +5927,18 @@ table.table_modal_alternate tr td:first-child {
   width: 80px;
   height: 20px;
   text-align: center;
-  font-family: arial, sans-serif, verdana;
   padding: 3px;
   border: 1px solid black;
 }
 
 .bars-graph-rotate .flot-text .flot-x-axis div .break_word {
   word-break: break-word;
+  font-family: "lato" !important;
 }
 
 .flot-text {
   width: 100%;
+  font-family: inherit !important;
 }
 
 /*Font header feedback*/
@@ -6135,7 +5958,6 @@ form#modal_form_feedback input[type="email"] {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -6157,7 +5979,6 @@ form#modal_form_feedback ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: monospace;
 }
 /*
  * ---------------------------------------------------------------------
@@ -6629,9 +6450,6 @@ div.graph div.legend table {
   display: block;
 }
 
-.hidden {
-}
-
 #both,
 .both {
   clear: both;
@@ -7044,9 +6862,7 @@ div.graph div.legend table {
 .font_14pt {
   font-size: 14pt;
 }
-.font_14px {
-  font-size: 14px;
-}
+
 .font_15pt {
   font-size: 15pt;
 }
@@ -7165,7 +6981,6 @@ div.graph div.legend table {
 #footer_help {
   text-align: center;
   padding: 5px;
-  font-family: verdana, arial;
   font-size: 11px;
 }
 
@@ -7183,14 +6998,14 @@ div.graph div.legend table {
 
 #p_configurar_agente {
   float: right;
-  font-style: nunito;
+  font-style: lato;
   font-size: 11pt;
   margin-right: 50px;
   margin-left: 40px;
 }
 
 .font_bold {
-  font-weight: bold;
+  /*  font-weight: bold; */
 }
 .font_w300 {
   font-weight: 300;
@@ -7519,11 +7334,6 @@ div.graph div.legend table {
   padding: 4px 0px;
 }
 
-span,
-.size_7pt {
-  font-size: 7.5pt;
-}
-
 .italic_a {
   font-style: italic;
   color: #aaaaaa;
@@ -7533,18 +7343,10 @@ span,
   font-style: italic;
 }
 
-.nunito {
-  font-family: nunito;
-}
-.verdana {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-.lato_bolder {
-  font-family: "lato-bolder";
-}
 .mono {
-  font-family: mono, monospace;
+  font-family: source-code, mono, monospace;
 }
+
 .alert_action_list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -7582,7 +7384,6 @@ span,
 
 #old_span {
   display: block;
-  font-family: verdana, arial;
   font-size: 8.5pt;
   margin-top: 2px;
   font-weight: bolder;
@@ -7677,7 +7478,6 @@ span,
 }
 
 .integria_title .ehorus_title {
-  font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #515151;
 }
 
@@ -7740,17 +7540,6 @@ span,
   font-size: 12pt;
   margin: 20px;
 }
-
-.font_10 {
-  font-size: 10pt;
-}
-.font_11 {
-  font-size: 11pt;
-}
-
-.font_11px {
-  font-size: 11px;
-}
 .font_6pt {
   font-size: 6pt;
 }
@@ -7787,10 +7576,6 @@ span,
 
 .w105px {
   width: 105px;
-}
-
-.w350px {
-  width: 350px;
 }
 
 .login_help_dialog {
@@ -7884,7 +7669,6 @@ span,
   padding: 10px;
   font-size: 14px;
   line-height: 16px;
-  font-family: mono, monospace;
   text-align: left;
 }
 
@@ -8097,7 +7881,6 @@ span,
   padding: 10px;
   font-size: 14px;
   line-height: 16px;
-  font-family: mono, monospace;
   text-align: left;
 }
 
@@ -8140,15 +7923,6 @@ span,
   border-bottom: 1px solid black;
 }
 
-.spinner_rmf {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: none;
-  padding: 5px;
-}
-.spinner_right {
-}
 .span_licence_key {
   vertical-align: middle;
   font-weight: bold;
@@ -8239,7 +8013,6 @@ span,
 }
 .db_engine {
   display: block;
-  font-family: verdana, arial, sans;
   font-size: 8.5pt;
   margin-top: 2px;
   font-weight: bolder;
@@ -8256,12 +8029,11 @@ span,
   padding: 10px;
   font-size: 14px;
   line-height: 16px;
-  font-family: mono, monospace;
   text-align: left;
 }
 .comments_form {
-  min-height: 15px;
-  padding: 0;
+  min-height: 25px;
+  padding: 15px;
   width: 100%;
 }
 
@@ -8403,7 +8175,6 @@ div.steps_vsmap {
   padding: 10px;
   font-size: 14px;
   line-height: 16px;
-  font-family: mono, monospace;
   text-align: left;
 }
 .tactical_left_column {
@@ -8411,7 +8182,6 @@ div.steps_vsmap {
   min-width: 30em;
   width: 25%;
   padding-right: 20px;
-  vertical-align: top;
   padding-top: 0px;
 }
 .gis_layers {
@@ -8519,4 +8289,17 @@ div.stat-win-spinner img {
 
 .align-left-important {
   text-align: left !important;
+}
+
+.legendLabel {
+  font-family: inherit !important;
+}
+.lato {
+  font-family: "lato" !important;
+}
+.line_heigth_initial {
+  line-height: initial;
+}
+.line_height_12pt {
+  line-height: 12pt;
 }

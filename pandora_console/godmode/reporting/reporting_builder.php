@@ -272,6 +272,8 @@ if ($idReport != 0) {
     }
 }
 
+$helpers = ($helpers ?? '');
+
 switch ($action) {
     case 'sort_items':
         switch ($activeTab) {
@@ -548,7 +550,7 @@ switch ($action) {
 
                 $subsection = $data_tab['subsection'];
                 $buttons = $data_tab['buttons'];
-                $helpers = $data_tab['helpers'];
+                $helpers = $data_tab['helper'];
             break;
         }
 

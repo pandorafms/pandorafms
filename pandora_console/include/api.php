@@ -29,11 +29,13 @@
 // Begin.
 require_once 'config.php';
 require_once 'functions_api.php';
-require '../vendor/autoload.php';
 global $config;
 
 define('DEBUG', 0);
 define('VERBOSE', 0);
+
+// Load extra classes.
+require_once $config['homedir'].'/vendor/autoload.php';
 
 // Enterprise support.
 if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php') === true) {
@@ -91,8 +93,21 @@ if ($info == 'version') {
     exit;
 }
 
-if (isInACL($ipOrigin)) {
-    if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
+if (empty($apiPassword) === true
+    || (empty($apiPassword) === false && $api_password === $apiPassword)
+    && enterprise_hook(
+        'metaconsole_validate_origin',
+        [get_parameter('server_auth')]
+) === true
+) {
+    // Allow internal direct node -> metaconsole connection.
+    $config['id_usuario'] = 'admin';
+    // Compat.
+    $config['id_user'] = 'admin';
+    $correctLogin = true;
+} else if ((bool) isInACL($ipOrigin) === true) {
+    // External access.
+    if (empty($apiPassword) === true || (empty($apiPassword) === false && $api_password === $apiPassword)) {
         $user_in_db = process_user_login($user, $password, true);
         if ($user_in_db !== false) {
             $config['id_usuario'] = $user_in_db;
@@ -109,13 +124,6 @@ if (isInACL($ipOrigin)) {
 
             config_prepare_session();
             session_write_close();
-        } else if (enterprise_hook(
-            'metaconsole_validate_origin',
-            [get_parameter('server_auth')]
-        ) === true
-        ) {
-            // Allow direct node -> metaconsole connection.
-            $correctLogin = true;
         } else {
             $no_login_msg = 'Incorrect user credentials';
         }

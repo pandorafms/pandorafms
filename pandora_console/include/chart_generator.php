@@ -176,6 +176,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $params['only_image'] = false;
     $params['menu'] = false;
 
+    $params['disable_black'] = true;
     $params_combined = json_decode($data_combined, true);
     $module_list = json_decode($data_module_list, true);
 
@@ -219,6 +220,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'pie_chart':
+            $params['pdf'] = true;
             echo flot_pie_chart(
                 $params['values'],
                 $params['keys'],
@@ -234,10 +236,12 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'vbar':
+            $params['pdf'] = true;
             echo flot_vcolumn_chart($params);
         break;
 
         case 'hbar':
+            $params['pdf'] = true;
             echo flot_hcolumn_chart(
                 $params['chart_data'],
                 $params['width'],
@@ -248,11 +252,13 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['backgroundColor'],
                 $params['tick_color'],
                 $params['val_min'],
-                $params['val_max']
+                $params['val_max'],
+                $params['pdf']
             );
         break;
 
         case 'ring_graph':
+            $params['pdf'] = true;
             echo flot_custom_pie_chart(
                 $params['chart_data'],
                 $params['width'],
@@ -271,7 +277,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['homeurl'],
                 $params['background_color'],
                 $params['legend_position'],
-                $params['background_color']
+                $params['background_color'],
+                $params['pdf']
             );
         break;
 

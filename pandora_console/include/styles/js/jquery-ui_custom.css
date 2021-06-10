@@ -24,7 +24,6 @@
 
 /*center ui dialog center*/
 .ui-button-text-only .ui-button-text {
-  font-family: "lato", "Open Sans", sans-serif;
   font-size: 9pt;
   color: #82b92e;
 }
@@ -37,13 +36,13 @@
   color: #111;
 }
 .ui-dialog .ui-dialog-title {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
-  font-size: 12pt;
+  font-size: 11pt;
+  top: 5px;
 }
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
@@ -194,7 +193,6 @@
 .ui-widget select,
 .ui-widget textarea,
 .ui-widget button {
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 a.ui-button:active,

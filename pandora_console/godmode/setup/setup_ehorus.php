@@ -116,7 +116,12 @@ $table_remote->data['ehorus_test'] = $row;
 // Print.
 echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+if ($config['style'] === 'pandora_black') {
+    html_print_image('include/ehorus/images/ehorus-logo.png');
+} else {
+    html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+}
+
 echo '</a>';
 echo '<br />';
 echo '<div class="ehorus_title">';

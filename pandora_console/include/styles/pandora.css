@@ -103,7 +103,6 @@
 @font-face {
   font-family: "source-code";
   src: url("../fonts/SourceCodePro.woff") format("woff");
-  font-family: "source-code";
 }
 
 @font-face {
@@ -357,9 +356,6 @@ select:-internal-list-box {
 }
 .w10px {
   width: 10px;
-}
-.w16px {
-  width: 16px;
 }
 .w18px {
   width: 18px;
@@ -955,8 +951,6 @@ p.center {
 button.sub,
 input.sub {
   font-weight: 500;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;
@@ -6456,9 +6450,6 @@ div.graph div.legend table {
   display: block;
 }
 
-.hidden {
-}
-
 #both,
 .both {
   clear: both;
@@ -6871,9 +6862,7 @@ div.graph div.legend table {
 .font_14pt {
   font-size: 14pt;
 }
-.font_14px {
-  font-size: 14px;
-}
+
 .font_15pt {
   font-size: 15pt;
 }
@@ -7551,17 +7540,6 @@ div.graph div.legend table {
   font-size: 12pt;
   margin: 20px;
 }
-
-.font_10 {
-  font-size: 10pt;
-}
-.font_11 {
-  font-size: 11pt;
-}
-
-.font_11px {
-  font-size: 11px;
-}
 .font_6pt {
   font-size: 6pt;
 }
@@ -7598,10 +7576,6 @@ div.graph div.legend table {
 
 .w105px {
   width: 105px;
-}
-
-.w350px {
-  width: 350px;
 }
 
 .login_help_dialog {
@@ -7949,15 +7923,6 @@ div.graph div.legend table {
   border-bottom: 1px solid black;
 }
 
-.spinner_rmf {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: none;
-  padding: 5px;
-}
-.spinner_right {
-}
 .span_licence_key {
   vertical-align: middle;
   font-weight: bold;
@@ -8217,7 +8182,6 @@ div.steps_vsmap {
   min-width: 30em;
   width: 25%;
   padding-right: 20px;
-  vertical-align: top;
   padding-top: 0px;
 }
 .gis_layers {

@@ -951,8 +951,6 @@ p.center {
 button.sub,
 input.sub {
   font-weight: 500;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
   border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;

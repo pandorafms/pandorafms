@@ -275,7 +275,7 @@ if ($correctLogin) {
                     break;
 
                     case 'event':
-                        // Preventive check for users if not available write events
+                        // Preventive check for users if not available write events.
                         if (! check_acl($config['id_user'], $event['id_grupo'], 'EW')) {
                             return false;
                         }
@@ -322,7 +322,10 @@ if ($correctLogin) {
     sleep(15);
 
     // Protection on DoS attacks.
-    echo 'auth error';
+    returnError(
+        'auth_error',
+        $returnType
+    );
 }
 
 // Logout.

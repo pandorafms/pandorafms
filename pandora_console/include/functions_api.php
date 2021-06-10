@@ -108,6 +108,7 @@ function returnError($typeError, $returnType='string')
 {
     switch ($typeError) {
         case 'no_set_no_get_no_help':
+            http_response_code(403);
             returnData(
                 $returnType,
                 [
@@ -118,6 +119,7 @@ function returnError($typeError, $returnType='string')
         break;
 
         case 'no_exist_operation':
+            http_response_code(404);
             returnData(
                 $returnType,
                 [
@@ -128,6 +130,7 @@ function returnError($typeError, $returnType='string')
         break;
 
         case 'id_not_found':
+            http_response_code(403);
             returnData(
                 $returnType,
                 [
@@ -138,6 +141,7 @@ function returnError($typeError, $returnType='string')
         break;
 
         case 'not_allowed_operation_cluster':
+            http_response_code(403);
             returnData(
                 $returnType,
                 [
@@ -148,6 +152,7 @@ function returnError($typeError, $returnType='string')
         break;
 
         case 'forbidden':
+            http_response_code(403);
             returnData(
                 $returnType,
                 [
@@ -168,11 +173,23 @@ function returnError($typeError, $returnType='string')
         break;
 
         case 'centralized':
+            http_response_code(403);
             returnData(
                 $returnType,
                 [
                     'type' => 'string',
                     'data' => __('This console is not the environment administrator. Please, manage this feature from centralized manager console (Metaconsole).'),
+                ]
+            );
+        break;
+
+        case 'auth_error':
+            http_response_code(403);
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => __('Auth error'),
                 ]
             );
         break;

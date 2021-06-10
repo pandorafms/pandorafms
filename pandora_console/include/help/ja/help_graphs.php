@@ -8,7 +8,6 @@
 <style type="text/css">
 
 * {
-    font-family: 'lato-bolder';
     font-size: 1em;
 }
 
@@ -24,9 +23,6 @@ ul.clean {
     list-style-type: none;
 }
 
-p,u,i,b {
-    font-family: 'lato-bolder';
-}
 b {
     font-size: 0.90em!important;
 }

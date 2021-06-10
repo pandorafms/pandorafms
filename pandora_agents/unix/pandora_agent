@@ -1014,8 +1014,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.754';
-use constant AGENT_BUILD => '210430';
+use constant AGENT_VERSION => '7.0NG.755';
+use constant AGENT_BUILD => '210610';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1229,7 +1229,8 @@ use constant MAX_LOOP_COUNTER => 1000000000;
 # Print usage information and exit.
 ################################################################################
 sub print_usage () {
-	print "\nUsage: $0 <Pandora home>\n\n";
+	print "Pandora FMS Agent for Linux v" . AGENT_VERSION . " Build " . AGENT_BUILD . "\n\n";
+	print "Usage: $0 <Pandora home>\n\n";
 	print "\tPandora home is the directory where pandora_agent.conf is located,\n";
 	print "\tby default /etc/pandora.\n\n";
 	exit 1;
@@ -2330,9 +2331,6 @@ sub launch_tentacle_proxy () {
 
 			#Execute tentacle server as a daemon
 			my $new_process = "tentacle_server -a ".$Conf{'proxy_address'}." -p ".$Conf{'proxy_port'}." -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
-
-			$new_process .= ' -C' if ($Conf{'server_ssl'} eq '1');
-
 			log_message ('setup', 'Proxy mode enabled');
 			exec ($new_process);
 		} 

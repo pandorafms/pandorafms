@@ -439,6 +439,12 @@ if ($create_user) {
 
         if ($result) {
             $res = save_pass_history($id, $password_new);
+        } else {
+            $is_err = true;
+            $user_info = $values;
+            $password_new = '';
+            $password_confirm = '';
+            $new_user = true;
         }
 
         db_pandora_audit(

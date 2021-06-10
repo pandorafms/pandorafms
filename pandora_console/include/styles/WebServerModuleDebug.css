@@ -1,0 +1,10 @@
+/* Web Server Module Debug Specific CSS file */
+.query_result_editor,
+.query_result_view {
+  min-height: 45em;
+  height: 45em;
+}
+
+#query_result_container {
+  margin-top: 30px;
+}

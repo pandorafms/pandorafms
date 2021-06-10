@@ -16,7 +16,7 @@ global $config;
 require_once 'include/functions_custom_graphs.php';
 
 // Check ACL
-$searchGraphs = check_acl($config['id_user'], 0, 'IR');
+$searchGraphs = check_acl($config['id_user'], 0, 'RR');
 
 $graphs = false;
 

@@ -64,7 +64,7 @@ $buttons = [
 
 // Header.
 ui_print_page_header(
-    __('Planned Downtime'),
+    __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
     '',
@@ -308,12 +308,12 @@ if ($create_downtime || $update_downtime) {
                     );
                 } else {
                     ui_print_error_message(
-                        __('Each planned downtime must have a different name')
+                        __('Each scheduled downtime must have a different name')
                     );
                 }
             } else {
                 ui_print_error_message(
-                    __('Planned downtime must have a name')
+                    __('Scheduled downtime must have a name')
                 );
             }
         } else if ($update_downtime) {
@@ -345,7 +345,7 @@ if ($create_downtime || $update_downtime) {
             $values = [];
             if (trim(io_safe_output($name)) == '') {
                 ui_print_error_message(
-                    __('Planned downtime must have a name')
+                    __('Scheduled downtime must have a name')
                 );
             }
 
@@ -1015,7 +1015,21 @@ $table->data['module'][1] = "
     '',
     '',
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    false
 )."</td>
                 <td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
     'images/add.png',
@@ -1489,14 +1503,14 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
             $(this).css ("width", "180px");
         });
 
-        // Warning message about the problems caused updating a past planned downtime
+        // Warning message about the problems caused updating a past scheduled downtime
         var type_execution = "<?php echo $type_execution; ?>";
         var datetime_from = <?php echo json_encode(strtotime($once_date_from.' '.$once_time_from)); ?>;
         var datetime_now = <?php echo json_encode($utimestamp); ?>;
         var create = <?php echo json_encode($create); ?>;
         if (!create && (type_execution == 'periodically' || (type_execution == 'once' && datetime_from < datetime_now))) {
             $("input#submit-updbutton, input#submit-add_item, table#list a").click(function (e) {
-                if (!confirm("<?php echo __('WARNING: If you edit this planned downtime, the data of future SLA reports may be altered'); ?>")) {
+                if (!confirm("<?php echo __('WARNING: If you edit this scheduled downtime, the data of future SLA reports may be altered'); ?>")) {
                     e.preventDefault();
                 }
             });

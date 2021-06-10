@@ -26,9 +26,8 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
-
-
 
 if (is_ajax()) {
     $search_agents = (bool) get_parameter('search_agents');
@@ -110,7 +109,7 @@ if ($id_graph !== 0) {
 }
 
 
-if ($add_graph) {
+if ($add_graph === true) {
     $name = get_parameter_post('name');
     $description = get_parameter_post('description');
     $module_number = get_parameter_post('module_number');
@@ -179,7 +178,7 @@ if ($update_graph) {
         $stacked = $threshold;
     }
 
-    if (trim($name) != '') {
+    if (empty(trim($name)) === false) {
         $success = db_process_sql_update(
             'tgraph',
             [
@@ -221,7 +220,7 @@ function add_quotes($item)
 }
 
 
-if ($add_module) {
+if ($add_module === true) {
     $id_graph = get_parameter('id');
     $id_modules = get_parameter('module');
     $id_agents = get_parameter('id_agents');
@@ -252,7 +251,7 @@ if ($add_module) {
     }
 }
 
-if ($delete_module) {
+if ($delete_module === true) {
     $id_graph = get_parameter('id');
 
     $deleteGraph = get_parameter('delete');
@@ -261,7 +260,7 @@ if ($delete_module) {
     db_process_sql('UPDATE tgraph_source SET field_order=field_order-1 WHERE id_graph='.$id_graph.' AND field_order>'.$order_val);
 }
 
-if ($change_weight) {
+if ($change_weight === true) {
     $weight = get_parameter('weight');
     $id_gs = get_parameter('graph');
     db_process_sql_update(
@@ -281,7 +280,7 @@ if ($change_label) {
     );
 }
 
-if ($edit_graph) {
+if ($edit_graph === true) {
     $buttons = [
         'graph_list'   => [
             'active' => false,
@@ -319,7 +318,7 @@ if ($edit_graph) {
         'view'         => [
             'active' => false,
             'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
-                'images/operation.png',
+                'images/eye.png',
                 true,
                 [
                     'title' => __('View graph'),
@@ -335,41 +334,47 @@ if ($edit_graph) {
     $graphInTgraph = db_get_row_sql('SELECT name FROM tgraph WHERE id_graph = '.$id_graph);
     $name = $graphInTgraph['name'];
 } else {
-    $buttons = '';
+    $buttons = [];
 }
 
 $head = __('Graph builder');
 
-if (isset($name)) {
-    $head .= ' - '.$name;
+if (isset($name) === true) {
+    $head .= ' &raquo; '.$name;
 }
 
 // Header.
-$tab = get_parameter('tab', '');
+$tab = get_parameter('tab');
 switch ($tab) {
-    default:
-    case 'main':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            'graph_builder',
-            false,
-            $buttons
-        );
+    case 'graph_editor':
+        $headerHelp = '';
     break;
 
-    case 'graph_editor':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            '',
-            false,
-            $buttons
-        );
+    case 'main':
+    default:
+        $headerHelp = 'graph_builder';
     break;
 }
+
+// Header.
+ui_print_standard_header(
+    $head,
+    'images/chart.png',
+    false,
+    $headerHelp,
+    false,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom graphs'),
+        ],
+    ]
+);
 
 if ($add_graph) {
     ui_print_result_message(
@@ -405,12 +410,12 @@ if ($delete_module) {
 
 // Parse CHUNK information into showable information.
 // Split id to get all parameters.
-if (!$delete_module) {
-    if (isset($_POST['period'])) {
+if ($delete_module === false) {
+    if (isset($_POST['period']) === true) {
         $period = $_POST['period'];
     }
 
-    if ((isset($chunkdata) ) && ($chunkdata != '')) {
+    if ((isset($chunkdata) === true) && (empty($chunkdata) === false)) {
         $module_array = [];
         $weight_array = [];
         $agent_array = [];
@@ -418,7 +423,8 @@ if (!$delete_module) {
         $chunk1 = explode('|', $chunkdata);
         $modules = '';
         $weights = '';
-        for ($a = 0; $a < count($chunk1); $a++) {
+        $chunkCount = count($chunk1);
+        for ($a = 0; $a < $chunkCount; $a++) {
             $chunk2[$a] = [];
             $chunk2[$a] = explode(',', $chunk1[$a]);
             if (strpos($modules, $chunk2[$a][1]) == 0) {
@@ -449,5 +455,9 @@ switch ($active_tab) {
 
     case 'graph_editor':
         include_once 'godmode/reporting/graph_builder.graph_editor.php';
+    break;
+
+    default:
+        // Nothing to do.
     break;
 }

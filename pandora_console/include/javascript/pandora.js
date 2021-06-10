@@ -1609,6 +1609,7 @@ function paint_graph_status(
     svg
       .append("g")
       .attr("transform", "translate(100, 150)")
+      .attr("class", "invert_filter")
       .call(yAxis);
 
     //legend Normal text
@@ -1620,9 +1621,9 @@ function paint_graph_status(
       .attr("x", legend_width_x + 15)
       .attr("y", legend_height_x - 20)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_normal)
       .style("text-anchor", "first")
       .attr("width", 300)
@@ -1646,9 +1647,9 @@ function paint_graph_status(
       .attr("x", legend_width_x + 15)
       .attr("y", legend_height_x + 5)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_warning)
       .style("text-anchor", "first");
 
@@ -1670,9 +1671,9 @@ function paint_graph_status(
       .attr("x", legend_width_x + 15)
       .attr("y", legend_height_x + 30)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_critical)
       .style("text-anchor", "first");
 
@@ -1815,7 +1816,6 @@ function paint_graph_status(
         .attr("x", width_x)
         .attr("y", height_x)
         .attr("fill", "black")
-        .style("font-family", "arial")
         .style("font-weight", "bold")
         .style("font-size", 14)
         .style("fill", "red")
@@ -1831,7 +1831,6 @@ function paint_graph_status(
         .attr("x", width_x)
         .attr("y", height_x)
         .attr("fill", "black")
-        .style("font-family", "arial")
         .style("font-weight", "bold")
         .style("font-size", 14)
         .style("fill", "red")

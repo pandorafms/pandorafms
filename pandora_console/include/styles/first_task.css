@@ -1,7 +1,6 @@
 .new_task p,
 .new_task div {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
-  font-weight: lighter;
+  font-weight: inherit;
 }
 .new_task {
   margin-top: 30px;

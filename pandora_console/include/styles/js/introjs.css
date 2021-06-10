@@ -91,7 +91,6 @@ tr.introjs-showElement > th {
   left: -16px;
   z-index: 9999999999;
   padding: 2px;
-  font-family: Arial, verdana, tahoma;
   font-size: 13px;
   font-weight: bold;
   color: white;
@@ -213,7 +212,7 @@ tr.introjs-showElement > th {
   margin: 0;
   text-decoration: none;
   text-shadow: 1px 1px 0 #fff;
-  font: 11px / normal sans-serif;
+  font: 11px / normal;
   color: #333;
   white-space: nowrap;
   cursor: pointer;

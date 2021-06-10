@@ -151,9 +151,32 @@ ui_print_message_dialog(
 
         // ACL.
         $all_groups = agents_get_all_groups_agent($agent_id);
-        if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
+
+        // If in metaconsole, resotre DB to check meta user acl.
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+
+        if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') !== true) {
             include $config['homedir'].'/general/noaccess.php';
             exit;
+        }
+
+        // Metaconsole connection to the node.
+        $server_id = (int) get_parameter('server', 0);
+        if (is_metaconsole() === true && empty($server_id) === false) {
+            $server = metaconsole_get_connection_by_id($server_id);
+            // Error connecting.
+            if (metaconsole_connect($server) !== NOERR) {
+                echo '<html>';
+                    echo '<body>';
+                ui_print_error_message(
+                    __('There was a problem connecting with the node')
+                );
+                    echo '</body>';
+                echo '</html>';
+                exit;
+            }
         }
 
         $draw_alerts = get_parameter('draw_alerts', 0);

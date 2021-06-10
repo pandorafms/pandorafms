@@ -1071,14 +1071,12 @@ class Item extends CachedModel
 
         $mobile_navigation = false;
 
-        if (isset($_SERVER['PHP_SELF']) === true
-            && (strstr($_SERVER['PHP_SELF'], 'mobile/') !== false
-            || strstr($_SERVER['HTTP_REFERER'], 'mobile/') !== false)
+        if (strstr(($_SERVER['PHP_SELF'] ?? ''), 'mobile/') !== false
+            || strstr(($_SERVER['HTTP_REFERER'] ?? ''), 'mobile/') !== false
         ) {
             $mobile_navigation = true;
         }
 
-        error_log(obhd($_SERVER['PHP_SELF']));
         // Load side libraries.
         include_once $config['homedir'].'/include/functions_ui.php';
         if (\is_metaconsole() === true) {

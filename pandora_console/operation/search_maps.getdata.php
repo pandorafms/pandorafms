@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 global $config;
 
-$searchMaps = check_acl($config['id_user'], 0, 'IR');
+$searchMaps = check_acl($config['id_user'], 0, 'VR');
 
 $maps = false;
 $totalMaps = 0;

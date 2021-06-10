@@ -13,6 +13,8 @@
 // GNU General Public License for more details.
 require_once '../../include/config.php';
 
+use PandoraFMS\User;
+
 // Set root on homedir, as defined in setup.
 chdir($config['homedir']);
 
@@ -67,10 +69,13 @@ if (!isset($config['pure'])) {
     $config['pure'] = 0;
 }
 
-$myhash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
-
 // Check input hash.
-if ($myhash != $hash) {
+if (User::validatePublicHash($hash) !== true) {
+    db_pandora_audit(
+        'Invalid public visual console',
+        'Trying to access public visual console'
+    );
+    include 'general/noaccess.php';
     exit;
 }
 
@@ -259,7 +264,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         items,
         baseUrl,
         <?php echo ($refr * 1000); ?>,
-        handleUpdate
+        handleUpdate,
+        // BeforeUpdate.
+        null,
+        // Size.
+        null,
+        // User id.
+        "<?php echo get_parameter('id_user', ''); ?>",
+        // Hash.
+        "<?php echo get_parameter('hash', ''); ?>"
     );
 
     var controls = document.getElementById('vc-controls');

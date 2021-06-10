@@ -743,7 +743,8 @@ class ManageNetScanScripts extends Wizard
             $datam[2] .= '<a href="javascript:delete_macro_form(\'table-form-recon_\');update_preview();">';
             $datam[2] .= html_print_image(
                 'images/delete.png',
-                true
+                true,
+                ['class' => 'invert_filter']
             );
             $datam[2] .= '</a></div>';
 

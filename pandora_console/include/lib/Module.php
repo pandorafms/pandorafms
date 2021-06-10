@@ -228,8 +228,10 @@ class Module extends Entity
                 throw $e;
             }
 
-            if ($this->nombre() === 'delete_pending') {
-                return null;
+            if ($this->nombre() === 'delete_pending'
+                || $this->nombre() === 'pendingdelete'
+            ) {
+                throw new \Exception('Object is pending to be deleted', 1);
             }
 
             if ($link_agent === true) {
@@ -315,6 +317,30 @@ class Module extends Entity
 
 
     /**
+     * Get/set for disable field, this method also takes in mind the status of
+     * assigned agent (if any).
+     *
+     * @param boolean|null $disabled Used in set operations.
+     *
+     * @return boolean|null Return disabled status for this module or null if
+     *                      set operation.
+     */
+    public function disabled(?bool $disabled=null)
+    {
+        if ($disabled === null) {
+            if ($this->agent() !== null) {
+                return ((bool) $this->fields['disabled'] || (bool) $this->agent()->disabled());
+            }
+
+            return ((bool) $this->fields['disabled']);
+        }
+
+        $this->fields['disabled'] = $disabled;
+        return null;
+    }
+
+
+    /**
      * Dynamically call methods in this object.
      *
      * @param string $methodName Name of target method or attribute.
@@ -392,9 +418,7 @@ class Module extends Entity
             }
         }
 
-        throw new \Exception(
-            get_class($this).' error, method '.$methodName.' does not exist'
-        );
+        return parent::__call($methodName, $params);
     }
 
 
@@ -705,6 +729,13 @@ class Module extends Entity
 
         $updates = $this->fields;
         $updates['id_tipo_modulo'] = $this->moduleType()->id_tipo();
+
+        // In the case of the webserver modules, debug_content special characters must be handled.
+        if ($updates['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
+            && $updates['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING
+        ) {
+            $updates['debug_content'] = io_safe_input($updates['debug_content']);
+        }
 
         if ($this->fields['id_agente_modulo'] > 0) {
             // Update.

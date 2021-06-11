@@ -552,7 +552,9 @@ function cron_list_table()
                         continue;
                     }
 
-                    if (empty($args[0]) === false || (string) $args[1] !== '0') {
+                    hd($args, true);
+                    hd('cron', true);
+                    if (empty($args[1]) === false && (string) $args[1] !== '0') {
                         $agents_id = $args[1];
                     } else {
                         if (empty($args[2]) === false) {
@@ -566,8 +568,7 @@ function cron_list_table()
                         }
                     }
 
-                    $id_group = $args[3];
-                    $report_per_agent = $args[0];
+                    $report_per_agent = $args[3];
                     $report_name = $args[4];
                     $email = $args[5];
                     $data[2] .= '<br>- '.__('Template').': ';

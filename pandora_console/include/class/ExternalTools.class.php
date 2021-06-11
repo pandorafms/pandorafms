@@ -221,6 +221,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -249,6 +251,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -277,6 +281,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -326,6 +332,8 @@ class ExternalTools extends HTML
                         'title'   => __('Add new custom command'),
                         'onclick' => 'manageCommandLines(event)',
                         'id'      => 'img_add_button_custom_command',
+                        'class'   => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -420,6 +428,7 @@ class ExternalTools extends HTML
                                 'title'   => __('Delete this custom command'),
                                 'onclick' => 'manageCommandLines(event)',
                                 'id'      => 'img_delete_button_custom_'.$index,
+                                'class'   => 'invert_filter',
                             ]
                         ),
                     ],

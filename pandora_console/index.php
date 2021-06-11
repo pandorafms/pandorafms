@@ -1125,8 +1125,14 @@ if ($searchPage) {
         } else {
             $sec = $main_sec;
             if (file_exists($page) === true) {
-                if (extensions_is_extension($page) === false) {
-                    include_once $page;
+                if ((bool) extensions_is_extension($page) === false) {
+                    try {
+                        include_once $page;
+                    } catch (Exception $e) {
+                        ui_print_error_message(
+                            $e->getMessage().' in '.$e->getFile().':'.$e->getLine()
+                        );
+                    }
                 } else {
                     if ($sec[0] == 'g') {
                         extensions_call_godmode_function(basename($page));
@@ -1278,6 +1284,7 @@ if ($config['pure'] == 0) {
     // Container div.
     echo '</div>';
     echo '<div id="both"></div>';
+    echo '</div>';
 
     echo '<div id="foot">';
     include 'general/footer.php';

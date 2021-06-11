@@ -1015,7 +1015,21 @@ $table->data['module'][1] = "
     '',
     '',
     0,
-    true
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    false
 )."</td>
                 <td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>".'<div id="add_button_div">'.'<a class="add_button" href="">'.html_print_image(
     'images/add.png',

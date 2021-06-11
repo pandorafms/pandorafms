@@ -101,21 +101,39 @@ if ($id_policy_module) {
     $plugin_parameter = $module['plugin_parameter'];
 }
 
+$plugin_parameter_split = explode('&#x0a;', $plugin_parameter);
+$plugin_parameter_final_split = '';
+
+foreach ($plugin_parameter_split as $key => $value) {
+    if (strpos($value, 'http_auth_user') === false && strpos($value, 'http_auth_pass') === false) {
+        $plugin_parameter_final_split .= $value.'&#x0a;';
+    }
+
+    if (strpos($value, 'http_auth_user') !== false) {
+        $plugin_parameter_http_user = str_replace('http_auth_user&#x20;', '', $value);
+    }
+
+    if (strpos($value, 'http_auth_pass') !== false) {
+        $plugin_parameter_http_pass = str_replace('http_auth_pass&#x20;', '', $value);
+    }
+}
+
 if ((bool) $adopt === false) {
     $data[1] = html_print_textarea(
         'plugin_parameter',
         15,
         65,
-        $plugin_parameter,
+        $plugin_parameter_final_split,
         $disabledTextBecauseInPolicy,
-        true
+        true,
+        'resizev'
     );
 } else {
     $data[1] = html_print_textarea(
         'plugin_parameter',
         15,
         65,
-        $plugin_parameter,
+        $plugin_parameter_final_split,
         false,
         true
     );
@@ -258,16 +276,12 @@ foreach ($texts as $code => $text) {
         "get_content",
         "debug",
         "task_end",
-        "head",
-        "http_auth_user",
-        "http_auth_pass"
+        "head"
     ];
 
     $(document).ready(function() {
 
         var plugin_parameter = $("#textarea_plugin_parameter");
-        var http_auth_user = $('#text-http_user');
-        var http_auth_pass = $('#password-http_pass');
 
         $(plugin_parameter).keyup(function() {
 
@@ -277,18 +291,6 @@ foreach ($texts as $code => $text) {
             } else {
                 $('#button-btn_loadbasic').attr('disabled', 'disabled');
             }
-
-            // Update http_auth_user from conf data
-            var http_auth_user_value = get_module_token_from_config('http_auth_user', plugin_parameter, "\n");
-            if (http_auth_user_value != "") {
-                http_auth_user.val(http_auth_user_value);
-            }
-        
-                // Update http_auth_pass from conf data
-            var http_auth_pass_value = get_module_token_from_config('http_auth_pass', plugin_parameter, "\n");
-            if (http_auth_pass_value != "") {
-                http_auth_pass.val(http_auth_pass_value);
-    }
         });
 
         $('#button-btn_loadbasic').click(function() {
@@ -412,57 +414,6 @@ foreach ($texts as $code => $text) {
         });
 
         $(plugin_parameter).trigger('keyup');
-
-        http_auth_user.keyup(function() {
-            config = plugin_parameter.val();
-            if (config.search("http_auth_user") == -1) {
-                var http_auth_user_end =
-                    "http_auth_user " + this.value + "\n" + "task_end" + "\n";
-                plugin_parameter.val(config.replace(/^task_end.*$/m, http_auth_user_end));
-            } else {
-                plugin_parameter.val(
-                config.replace(/^http_auth_user.*$/m, "http_auth_user " + this.value)
-            );
-            // Hide success and error indicators
-            $(".checks").hide();
-            }
-        });
-
-        http_auth_pass.keyup(function() {
-            config = plugin_parameter.val();
-            if (config.search("http_auth_pass") == -1) {
-                var http_auth_pass_end =
-                    "http_auth_pass " + this.value + "\n" + "task_end" + "\n";
-                plugin_parameter.val(config.replace(/^task_end.*$/m, http_auth_pass_end));
-            } else {
-                plugin_parameter.val(
-                config.replace(/^http_auth_pass.*$/m, "http_auth_pass " + this.value)
-            );
-            // Hide success and error indicators
-            $(".checks").hide();
-            }
-        });
     });
-
-    function get_module_token_from_config(token_name, plugin_parameter, separator) {
-            var return_var = "";
-            if(token_name == null || token_name == '') {
-                return ''; 
-            }
-
-  data = plugin_parameter.val().split(separator);
-  len = data.length;
-  for (i = 0; i < len; i++) {
-    if (data[i][0] == "#") continue;
-    tokens = data[i].split(" ");
-    if (tokens.length == 0) continue;
-    token = tokens.shift();
-    if (token == token_name ) return_var = tokens.join(" ");
-  }
-
-  return_var = $.trim(return_var);
-
-  return return_var;
-}
 
 </script>

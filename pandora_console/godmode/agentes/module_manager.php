@@ -238,7 +238,7 @@ echo '</table>';
 if (!$config['disable_help']) {
     echo '<div class="disable_help">';
     echo '<strong>';
-    echo "<a class='color-black-grey' target='_blank' href='http://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
+    echo "<a class='color-black-grey invert_filter' target='_blank' href='http://pandorafms.com/Library/Library/'>".__('Get more modules on Monitoring Library').'</a>';
     echo '</strong>';
     echo '</div>';
 }
@@ -1130,7 +1130,6 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Enable module'),
                 'title' => __('Enable module'),
-                'class' => 'invert_filter_important',
             ]
         ).'</a>';
     } else {

@@ -676,8 +676,8 @@ $trapcount = (int) db_get_value_sql($sql_count);
 
 // No traps.
 if (empty($traps)) {
-    // Header.
-    ui_print_page_header(
+    // Header
+    ui_print_standard_header(
         __('SNMP Console'),
         'images/op_snmp.png',
         false,
@@ -686,6 +686,16 @@ if (empty($traps)) {
         [
             $list,
             $statistics,
+        ],
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('SNMP'),
+            ],
         ]
     );
 
@@ -774,8 +784,8 @@ if (empty($traps)) {
         ui_require_javascript_file('wz_jsgraphics');
         ui_require_javascript_file('pandora_visual_console');
     } else {
-        // Header.
-        ui_print_page_header(
+        // Header
+        ui_print_standard_header(
             __('SNMP Console'),
             'images/op_snmp.png',
             false,
@@ -785,6 +795,16 @@ if (empty($traps)) {
                 $fullscreen,
                 $list,
                 $statistics,
+            ],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('SNMP'),
+                ],
             ]
         );
     }

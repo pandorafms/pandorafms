@@ -17,13 +17,12 @@
 */
 
 * {
-  font-family: verdana, sans-serif;
   font-size: 8pt;
 }
 h1,
 h2,
 h3 {
-  font: bold 1em Arial, Sans-serif;
+  font: bold 1em;
   text-transform: uppercase;
   color: #675;
   padding-bottom: 5px;

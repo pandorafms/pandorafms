@@ -218,7 +218,16 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         $new_module = $module;
 
         // Rewrite different values
-        $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        if ($module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_PROC
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_STRING
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_INC
+        ) {
+            $new_module['ip_target'] = $module['ip_target'];
+        } else {
+            $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        }
+
         $new_module['policy_linked'] = 0;
         $new_module['id_policy_module'] = 0;
 
@@ -378,7 +387,7 @@ function modules_change_disabled($id_agent_module, $new_value=1)
  *
  * @param mixed Agent module id to be deleted. Accepts an array with ids.
  *
- * @return True if the module was deleted. False if not.
+ * @return boolean True if the module was deleted. False if not.
  */
 function modules_delete_agent_module($id_agent_module)
 {
@@ -446,6 +455,16 @@ function modules_delete_agent_module($id_agent_module)
         }
     }
 
+    // Remove module from service child list.
+    enterprise_include_once('include/functions_services.php');
+    \enterprise_hook(
+        'service_elements_removal_tool',
+        [
+            $id_agent_module,
+            SERVICE_ELEMENT_MODULE,
+        ]
+    );
+
     alerts_delete_alert_agent_module(0, $where);
 
     db_process_sql_delete('tgraph_source', $where);
@@ -467,6 +486,130 @@ function modules_delete_agent_module($id_agent_module)
         $where
     );
     db_process_sql_delete('ttag_module', $where);
+
+    $id_borrar_modulo = $id_agent_module;
+
+    enterprise_include_once('include/functions_config_agents.php');
+    enterprise_hook(
+        'config_agents_delete_module_in_conf',
+        [
+            modules_get_agentmodule_agent($id_borrar_modulo),
+            modules_get_agentmodule_name($id_borrar_modulo),
+        ]
+    );
+
+    // Init transaction.
+    $error = 0;
+
+    // First delete from tagente_modulo -> if not successful, increment
+    // error. NOTICE that we don't delete all data here, just marking for deletion
+    // and delete some simple data.
+    $values = [
+        'nombre'         => 'pendingdelete',
+        'disabled'       => 1,
+        'delete_pending' => 1,
+    ];
+    $result = db_process_sql_update(
+        'tagente_modulo',
+        $values,
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    } else {
+        // Set flag to update module status count.
+        db_process_sql(
+            'UPDATE tagente
+			SET update_module_count = 1, update_alert_count = 1
+			WHERE id_agente = '.$id_agent
+        );
+    }
+
+    $result = db_process_sql_delete(
+        'tagente_estado',
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    $result = db_process_sql_delete(
+        'tagente_datos_inc',
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    if (alerts_delete_alert_agent_module(
+        false,
+        ['id_agent_module' => $id_borrar_modulo]
+    ) === false
+    ) {
+        $error++;
+    }
+
+    $result = db_process_delete_temp(
+        'ttag_module',
+        'id_agente_modulo',
+        $id_borrar_modulo
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    // Trick to detect if we are deleting a synthetic module (avg or arithmetic)
+    // If result is empty then module doesn't have this type of submodules.
+    $ops_json = enterprise_hook(
+        'modules_get_synthetic_operations',
+        [$id_borrar_modulo]
+    );
+    $result_ops_synthetic = json_decode($ops_json);
+    if (!empty($result_ops_synthetic)) {
+        $result = enterprise_hook(
+            'modules_delete_synthetic_operations',
+            [$id_borrar_modulo]
+        );
+        if ($result === false) {
+            $error++;
+        }
+    } else {
+        $result_components = enterprise_hook(
+            'modules_get_synthetic_components',
+            [$id_borrar_modulo]
+        );
+        $count_components = 1;
+        if (!empty($result_components)) {
+            // Get number of components pending to delete to know when it's needed to update orders.
+            $num_components = count($result_components);
+            $last_target_module = 0;
+            foreach ($result_components as $id_target_module) {
+                $update_orders = false;
+                // Detects change of component or last component to update orders.
+                if (($count_components == $num_components)
+                    || ($last_target_module != $id_target_module)
+                ) {
+                    $update_orders = true;
+                }
+
+                $result = enterprise_hook(
+                    'modules_delete_synthetic_operations',
+                    [
+                        $id_target_module,
+                        $id_borrar_modulo,
+                        $update_orders,
+                    ]
+                );
+
+                if ($result === false) {
+                    $error++;
+                }
+
+                $count_components++;
+                $last_target_module = $id_target_module;
+            }
+        }
+    }
 
     return true;
 }
@@ -2263,12 +2406,14 @@ function modules_get_agentmodule_data(
     $module_name = modules_get_agentmodule_name($id_agent_module);
     $agent_id = modules_get_agentmodule_agent($id_agent_module);
     $agent_name = modules_get_agentmodule_agent_name($id_agent_module);
+    $agent_alias = modules_get_agentmodule_agent_alias($id_agent_module);
     $module_type = modules_get_agentmodule_type($id_agent_module);
 
     foreach ($values as $key => $data) {
         $values[$key]['module_name'] = $module_name;
         $values[$key]['agent_id'] = $agent_id;
         $values[$key]['agent_name'] = $agent_name;
+        $values[$key]['agent_alias'] = $agent_alias;
         $values[$key]['module_type'] = $module_type;
     }
 
@@ -2286,6 +2431,7 @@ function modules_get_agentmodule_data(
                 'module_name' => $values[$key]['module_name'],
                 'agent_id'    => $values[$key]['agent_id'],
                 'agent_name'  => $values[$key]['agent_name'],
+                'agent_alias' => $values[$key]['agent_alias'],
                 'module_type' => $values[$key]['module_type'],
             ];
         }

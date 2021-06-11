@@ -272,6 +272,8 @@ if ($idReport != 0) {
     }
 }
 
+$helpers = ($helpers ?? '');
+
 switch ($action) {
     case 'sort_items':
         switch ($activeTab) {
@@ -548,7 +550,7 @@ switch ($action) {
 
                 $subsection = $data_tab['subsection'];
                 $buttons = $data_tab['buttons'];
-                $helpers = $data_tab['helpers'];
+                $helpers = $data_tab['helper'];
             break;
         }
 
@@ -567,17 +569,24 @@ switch ($action) {
             // Print header.
             ui_meta_print_header(__('Reporting'), '', $buttons);
         } else {
-            // Page header for normal console.
-            ui_print_page_header(
-                __('Custom reporting'),
+            // Header.
+            ui_print_standard_header(
+                __('List of reports'),
                 'images/op_reporting.png',
                 false,
                 '',
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
 
@@ -2100,6 +2109,20 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2486,7 +2509,7 @@ switch ($action) {
                             0
                         );
                         $values['exception_condition'] = (int) get_parameter(
-                            'radiobutton_exception_condition',
+                            'exception_condition',
                             0
                         );
                         $values['exception_condition_value'] = get_parameter(
@@ -2722,6 +2745,20 @@ switch ($action) {
                                 $es['users_groups'] = get_parameter('users_groups', 0);
                                 $es['select_by_group'] = get_parameter('select_by_group', 0);
                                 $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
                                 $values['external_source'] = json_encode($es);
                             break;
 
@@ -3145,17 +3182,24 @@ switch ($action) {
                 // Print header.
                 ui_meta_print_header(__('Reporting'), '', $buttons);
             } else {
-                // Page header for normal console.
-                ui_print_page_header(
+                // Header.
+                ui_print_standard_header(
                     $subsection,
                     'images/op_reporting.png',
                     false,
                     '',
                     false,
                     $buttons,
-                    false,
-                    '',
-                    60
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Reporting'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('Custom reports'),
+                        ],
+                    ]
                 );
             }
 
@@ -3251,17 +3295,25 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 } else {
     $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
-    if ($action !== 'update' && !is_metaconsole()) {
-        ui_print_page_header(
+    if ($action !== 'update' && is_metaconsole() === false) {
+        // Header.
+        ui_print_standard_header(
             $textReportName,
             'images/op_reporting.png',
             false,
             $tab_builder,
             false,
             $buttons,
-            false,
-            '',
-            60
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Reporting'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Custom reports'),
+                ],
+            ]
         );
     }
 }
@@ -3291,17 +3343,25 @@ if ($resultOperationDB !== null) {
         $activeTab = 'list_items';
         $buttons[$activeTab]['active'] = true;
 
-        if (!is_metaconsole()) {
-            ui_print_page_header(
+        if (is_metaconsole() === false) {
+            // Header.
+            ui_print_standard_header(
                 $textReportName,
                 'images/op_reporting.png',
                 false,
                 $helpers,
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
     }

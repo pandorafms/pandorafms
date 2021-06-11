@@ -261,7 +261,10 @@ $table->data[1][2] .= html_print_select(
 );
 $table->data[1][3] = html_print_select([], 'module[]', '', false, '', '', true, true, false, '', false, 'width:180px;');
 
-$templates = alerts_get_alert_templates(false, ['id', 'name']);
+$usr_groups = users_get_groups($config['id_user'], 'LW', true);
+$filter_groups = '';
+$filter_groups = implode(',', array_keys($usr_groups));
+$templates = alerts_get_alert_templates(['id_group IN ('.$filter_groups.')'], ['id', 'name']);
 $table->data[2][0] = __('Alert template');
 $table->data[2][1] = html_print_select(
     index_array($templates, 'id', 'name'),

@@ -214,7 +214,7 @@ $table_simple->colspan[3][1] = 3;
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended(
     'name',
-    io_safe_input(html_entity_decode($name, ENT_QUOTES, 'UTF-8')),
+    $name,
     'text-name',
     '',
     45,

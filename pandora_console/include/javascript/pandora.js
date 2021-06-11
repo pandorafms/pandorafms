@@ -481,7 +481,6 @@ function alert_templates_changed_by_multiple_agents_with_alerts(
       }
       jQuery.each(data, function(i, val) {
         var decoded_val = js_html_entity_decode(val);
-        console.log("161616");
 
         decoded_val = decoded_val
           .replace(/"/g, "&quot;")

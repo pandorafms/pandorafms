@@ -41,22 +41,22 @@ class Files
     /**
      * Create Zip.
      *
-     * @param string $name Name file.zip genarate.
-     * @param string $dir  Directory to conver zip.
+     * @param string $filename Path to target zip file.
+     * @param string $path     Directory to be zipped.
      *
      * @return void
      */
-    public static function zip(string $name, string $dir)
+    public static function zip(string $filename, string $path)
     {
         // Generate a collections zip for Metaconsole.
         $zip = new \ZipArchive();
         $zip->open(
-            $name,
+            $filename,
             (\ZipArchive::CREATE | \ZipArchive::OVERWRITE)
         );
 
         $rdi = new \RecursiveDirectoryIterator(
-            $dir
+            $path
         );
         $files = new \RecursiveIteratorIterator(
             $rdi,
@@ -72,7 +72,7 @@ class Files
                 $filePath = $file->getRealPath();
                 $relativePath = substr(
                     $filePath,
-                    (strlen($dir) + 1)
+                    (strlen($path) + 1)
                 );
 
                 // Add current file to archive.
@@ -135,11 +135,14 @@ class Files
      * @param boolean $content_only Remove only folder content.
      * @param array   $exclusions   Name of folders or files to avoid deletion
      *    [
-     *     'a',
-     *     'a/b.txt'
+     *     'a/',
+     *     'b/b.txt',
+     *     'c/'
      *    ]
-     *    Specify full paths when definining exclusions and don't forget to
-     *   exclude containing folder also.
+     *    This example will exclude 'a' and 'c' subdirectories and 'b/b.txt'
+     *    file from ellimination.
+     *    Specify full relative paths when definining exclusions.
+     *    If you specifies a directory, there's no need to specify content.
      *
      * @return void
      */
@@ -152,6 +155,10 @@ class Files
             return;
         }
 
+        if (substr($folder, (strlen($folder) - 1), 1) !== '/') {
+            $folder .= '/';
+        }
+
         $pd = opendir($folder);
         if ((bool) $pd === true) {
             while (($pf = readdir($pd)) !== false) {
@@ -159,12 +166,22 @@ class Files
                     $pf = $folder.$pf;
 
                     if (is_dir($pf) === true) {
+                        echo $pf.'/'."\n";
                         // It's a directory.
-                        self::rmrf($pf.'/');
+                        if (in_array($pf.'/', $exclusions) === false) {
+                            echo ' => borro'."\n";
+                            self::rmrf($pf.'/');
+                        } else {
+                            echo ' => no borro'."\n";
+                        }
                     } else {
+                        echo $pf."\n";
                         // It's a file.
                         if (in_array($pf, $exclusions) === false) {
+                            echo ' => borro'."\n";
                             unlink($pf);
+                        } else {
+                            echo ' => no borro'."\n";
                         }
                     }
                 }

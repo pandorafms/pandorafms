@@ -650,9 +650,6 @@ sub main() {
 
 			close (CFG);
 
-			pandora_set_tconfig_token($DBH, 'internal_user_pass',
-				pandora_input_password(\%Config, $Config{"console_pass"})
-			);
 		} else {
 			logger(\%Config, "[WARNING] Error with configuration file when define `console_pass`: $!", 3);
 		}
@@ -698,7 +695,6 @@ sub main() {
 					print CFG "console_user " . $Config{"console_user"} . "\n";
 					close (CFG);
 
-					pandora_set_tconfig_token($DBH, 'internal_user', $Config{"console_user"});
 				} else {
 					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
 				}
@@ -715,6 +711,12 @@ sub main() {
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
 		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	} else {
+		# Test successful.
+		pandora_set_tconfig_token($DBH, 'internal_user_pass',
+			pandora_input_password(\%Config, $Config{"console_pass"})
+		);
+		pandora_set_tconfig_token($DBH, 'internal_user', $Config{"console_user"});
 	}
 
 	# Generate 'going up' events

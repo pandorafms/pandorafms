@@ -95,10 +95,8 @@ if ($info == 'version') {
 
 if (empty($apiPassword) === true
     || (empty($apiPassword) === false && $api_password === $apiPassword)
-    && enterprise_hook(
-        'metaconsole_validate_origin',
-        [get_parameter('server_auth')]
-) === true
+    && (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
+    || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true)
 ) {
     // Allow internal direct node -> metaconsole connection.
     $config['id_usuario'] = 'admin';

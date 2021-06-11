@@ -1340,7 +1340,9 @@ sub pandora_get_tconfig_token ($$$) {
 sub pandora_set_tconfig_token ($$$) {
 	my ($dbh, $token, $value) = @_;
 	
-	my $token_value = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = ?", $token);
+	my $token_value = get_db_value ($dbh,
+		"SELECT `value` FROM `tconfig` WHERE `token` = ?", $token
+	);
 	if (defined ($token_value) && $token_value ne '') {
 		db_update($dbh,
 			'UPDATE `tconfig` SET `value`=? WHERE `token`= ?',

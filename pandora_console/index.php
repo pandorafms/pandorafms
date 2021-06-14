@@ -1012,15 +1012,9 @@ if ($process_login) {
     unset($_SESSION['new_update']);
 
     include_once 'include/functions_update_manager.php';
-    enterprise_include_once('include/functions_update_manager.php');
 
     if ($config['autoupdate'] == 1) {
-        if (enterprise_installed()) {
-            $result = update_manager_check_online_enterprise_packages_available();
-        } else {
-            $result = update_manager_check_online_free_packages_available();
-        }
-
+        $result = update_manager_check_updates_available();
         if ($result) {
             $_SESSION['new_update'] = 'new';
         }
@@ -1045,6 +1039,21 @@ if (get_parameter('login', 0) !== 0) {
         include_once 'general/php7_message.php';
     }
 }
+
+
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
 
 // Header.
 if ($config['pure'] == 0) {
@@ -1079,8 +1088,6 @@ session_write_close();
 if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
-
-
 
 // Page loader / selector.
 if ($searchPage) {
@@ -1370,36 +1377,6 @@ require 'include/php_to_js_values.php';
             return rv;
         };
     })();
-    
-    function force_run_register () {
-        jQuery.post ("ajax.php",
-            {
-                "page": "general/register",
-                "load_wizards": 'registration'
-            },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                show_registration_wizard();
-            },
-            "html"
-        );
-    }
-
-    function force_run_newsletter () {
-        jQuery.post ("ajax.php",
-            {
-                "page": "general/register",
-                "load_wizards": 'newsletter'
-            },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                show_newsletter_wizard ();
-            },
-            "html"
-        );
-    }
 
     function first_time_identification () {
         jQuery.post ("ajax.php",

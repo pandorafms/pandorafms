@@ -37,14 +37,14 @@ require_once $config['homedir'].'/include/functions_update_manager.php';
 
 $current_package = update_manager_get_current_package();
 
-if ($current_package == 0) {
-    $build_package_version = $build_version;
+if ($current_package === null) {
+    $build_package_version = 'Build '.$build_version;
 } else {
-    $build_package_version = $current_package;
+    $build_package_version = 'OUM '.$current_package;
 }
 
 echo __(
-    '%s %s - Build %s - MR %s',
+    '%s %s - %s - MR %s',
     get_product_name(),
     $pandora_version,
     $build_package_version,

@@ -1004,6 +1004,10 @@ class ExternalTools extends HTML
 
                         if (parseInt(lineNumber) >= 1 && lineCount > 1) {
                             $("#custom_row_" + lineNumber).remove();
+                        } else if (lineCount === 1) {
+                            $("#custom_row_" + lineNumber).find('input').each(function() {
+                                $(this).val('');
+                            });
                         }
 
                         if (lineCount === 1) {

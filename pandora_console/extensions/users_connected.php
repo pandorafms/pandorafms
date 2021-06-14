@@ -83,8 +83,16 @@ function users_extension_main_god($god=true)
         break;
     }
 
-    $rows = db_get_all_rows_sql($sql);
+    $check_profile = db_get_row('tusuario_perfil', 'id_usuario', $config['id_user'], 'id_up');
+    if ($check_profile === false) {
+        return ui_print_error_message(
+            __('This user does not have any associated profile'),
+            '',
+            false
+        );
+    }
 
+    $rows = db_get_all_rows_sql($sql);
     if (empty($rows)) {
         $rows = [];
         echo "<div class='nf'>".__('No other users connected').'</div>';

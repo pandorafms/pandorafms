@@ -478,7 +478,7 @@ function confirmDialog(settings) {
       buttons: [
         {
           id: "cancel_btn_dialog",
-          text: "Cancel",
+          text: settings.cancelText ? settings.cancelText : "Cancel",
           class:
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
           click: function() {
@@ -488,7 +488,7 @@ function confirmDialog(settings) {
           }
         },
         {
-          text: "Ok",
+          text: settings.okText ? settings.okText : "Ok",
           class:
             hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",

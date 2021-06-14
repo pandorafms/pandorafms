@@ -114,6 +114,7 @@ then
 	cp -aRf conf/pandora_* temp_package/usr/share/pandora_server/conf/
 	cp -aRf conf/tentacle_* temp_package/usr/share/tentacle_server/conf/
 	cp -aRf util temp_package/usr/share/pandora_server/
+	cp -aRf util/pandora_ha.pl temp_package/usr/bin/pandora_ha
 	cp -aRf lib/* temp_package/usr/lib/perl5/
 	cp -aRf AUTHORS COPYING README temp_package/usr/share/pandora_server/
 	

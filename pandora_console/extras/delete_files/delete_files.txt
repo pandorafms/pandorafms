@@ -73,7 +73,7 @@ enterprise/extensions/ipam.php
 enterprise/extensions/ipam
 enterprise/extensions/disabled/visual_console_manager.php
 enterprise/extensions/visual_console_manager.php
-pandora_console/extensions/net_tools.php
+extensions/net_tools.php
 enterprise/godmode/agentes/module_manager_editor_web.php
 enterprise/include/ajax/web_server_module_debug.php
 enterprise/include/class/WebServerModuleDebug.class.php
@@ -82,4 +82,11 @@ include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php
 operation/network/network_explorer.php
-operation/vsual_console/pure_ajax.php
+operation/visual_console/pure_ajax.php
+include/ajax/update_manager.ajax.php
+godmode/update_manager/update_manager.css
+godmode/update_manager/update_manager.offline.php
+godmode/update_manager/update_manager.online.php
+include/javascript/update_manager.js
+enterprise/include/functions_update_manager.php
+include/ajax/rolling_release.ajax.php

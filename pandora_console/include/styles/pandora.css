@@ -127,7 +127,6 @@
 
 * {
   font-size: 9pt;
-  -moz-osx-font-smoothing: grayscale;
   line-height: 16pt;
 }
 
@@ -7346,7 +7345,6 @@ div.graph div.legend table {
 .mono {
   font-family: source-code, mono, monospace;
 }
-
 .alert_action_list {
   display: grid;
   grid-template-columns: 1fr 1fr;

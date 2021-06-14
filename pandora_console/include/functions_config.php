@@ -2362,7 +2362,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_docs_url'])) {
-        config_update_value('custom_docs_url', 'http://wiki.pandorafms.com/');
+        config_update_value('custom_docs_url', 'https://pandorafms.com/manual');
     }
 
     if (!isset($config['custom_support_url'])) {

@@ -55,6 +55,10 @@ class Files
             (\ZipArchive::CREATE | \ZipArchive::OVERWRITE)
         );
 
+        if (substr($path, (strlen($path) - 1), 1) !== '/') {
+            $path .= '/';
+        }
+
         $rdi = new \RecursiveDirectoryIterator(
             $path
         );
@@ -70,9 +74,10 @@ class Files
                 // Get real and relative
                 // path for current file.
                 $filePath = $file->getRealPath();
-                $relativePath = substr(
-                    $filePath,
-                    (strlen($path) + 1)
+                $relativePath = str_replace(
+                    $path,
+                    '',
+                    $filePath
                 );
 
                 // Add current file to archive.
@@ -166,22 +171,14 @@ class Files
                     $pf = $folder.$pf;
 
                     if (is_dir($pf) === true) {
-                        echo $pf.'/'."\n";
                         // It's a directory.
                         if (in_array($pf.'/', $exclusions) === false) {
-                            echo ' => borro'."\n";
                             self::rmrf($pf.'/');
-                        } else {
-                            echo ' => no borro'."\n";
                         }
                     } else {
-                        echo $pf."\n";
                         // It's a file.
                         if (in_array($pf, $exclusions) === false) {
-                            echo ' => borro'."\n";
                             unlink($pf);
-                        } else {
-                            echo ' => no borro'."\n";
                         }
                     }
                 }

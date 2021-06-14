@@ -98,7 +98,9 @@ if (empty($apiPassword) === true
     && (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
     || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true)
 ) {
-    // Allow internal direct node -> metaconsole connection.
+    // Allow internal direct node -> metaconsole connection
+    // or node -> own console connection.
+    $config['__internal_call'] = true;
     $config['id_usuario'] = 'admin';
     // Compat.
     $config['id_user'] = 'admin';

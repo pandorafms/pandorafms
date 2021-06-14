@@ -33,58 +33,11 @@ function users_extension_main_god($god=true)
         $image = 'images/user.png';
     }
 
-    // Header
+    // Header.
     ui_print_page_header(__('Users connected'), $image, false, '', $god);
 
-    // Get groups user has permission
-    $group_um = users_get_groups_UM($config['id_user']);
-    // Is admin or has group permissions all.
-    $groups = implode(',', array_keys($group_um, 1));
-
-    // Get user conected last 5 minutes.Show only those on which the user has permission.
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $sql = sprintf(
-                'SELECT tusuario.id_user, tusuario.last_connect
-                FROM tusuario
-                INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
-                AND tusuario_perfil.id_grupo IN (%s)                 
-                WHERE last_connect > (UNIX_TIMESTAMP(NOW()) - '.SECONDS_5MINUTES.')
-                GROUP BY tusuario.id_user
-				ORDER BY last_connect DESC',
-                $groups
-            );
-        break;
-
-        case 'postgresql':
-            $sql = sprintf(
-                "SELECT tusuario.id_user, tusuario.last_connect
-            FROM tusuario
-            INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
-            AND tusuario_perfil.id_grupo IN (%s)
-            WHERE last_connect > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_5MINUTES.')
-            GROUP BY tusuario.id_user
-            ORDER BY last_connect DESC',
-                $groups
-            );
-        break;
-
-        case 'oracle':
-            $sql = sprintf(
-                "SELECT tusuario.id_user, tusuario.last_connect
-                FROM tusuario
-                INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
-                AND tusuario_perfil.id_grupo IN (%s)
-                WHERE last_connect > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_5MINUTES.')
-                GROUP BY tusuario.id_user
-				ORDER BY last_connect DESC',
-                $groups
-            );
-        break;
-    }
-
     $check_profile = db_get_row('tusuario_perfil', 'id_usuario', $config['id_user'], 'id_up');
-    if ($check_profile === false) {
+    if ($check_profile === false && !users_is_admin()) {
         return ui_print_error_message(
             __('This user does not have any associated profile'),
             '',
@@ -92,11 +45,93 @@ function users_extension_main_god($god=true)
         );
     }
 
+    // Get groups user has permission.
+    $group_um = users_get_groups_UM($config['id_user']);
+    // Is admin or has group permissions all.
+    $groups = implode(',', array_keys($group_um, 1));
+
+    // Get user conected last 5 minutes.Show only those on which the user has permission.
+    switch ($config['dbtype']) {
+        case 'mysql':
+            if (users_is_admin()) {
+                $sql = sprintf(
+                    'SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario                
+                    WHERE last_connect > (UNIX_TIMESTAMP(NOW()) - '.SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC'
+                );
+            } else {
+                $sql = sprintf(
+                    'SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario
+                    INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
+                    AND tusuario_perfil.id_grupo IN (%s)                 
+                    WHERE last_connect > (UNIX_TIMESTAMP(NOW()) - '.SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC',
+                    $groups
+                );
+            }
+        break;
+
+        case 'postgresql':
+            if (users_is_admin()) {
+                $sql = sprintf(
+                    "SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario
+                    WHERE last_connect > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC'
+                );
+            } else {
+                $sql = sprintf(
+                    "SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario
+                    INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
+                    AND tusuario_perfil.id_grupo IN (%s)
+                    WHERE last_connect > (ceil(date_part('epoch', CURRENT_TIMESTAMP)) - ".SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC',
+                    $groups
+                );
+            }
+        break;
+
+        case 'oracle':
+            if (users_is_admin()) {
+                $sql = sprintf(
+                    "SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario
+                    WHERE last_connect > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC'
+                );
+            } else {
+                $sql = sprintf(
+                    "SELECT tusuario.id_user, tusuario.last_connect
+                    FROM tusuario
+                    INNER JOIN tusuario_perfil ON tusuario_perfil.id_usuario = tusuario.id_user
+                    AND tusuario_perfil.id_grupo IN (%s)
+                    WHERE last_connect > (ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) - '.SECONDS_5MINUTES.')
+                    GROUP BY tusuario.id_user
+                    ORDER BY last_connect DESC',
+                    $groups
+                );
+            }
+        break;
+
+        default:
+            // Nothing to do.
+        break;
+    }
+
     $rows = db_get_all_rows_sql($sql);
     if (empty($rows)) {
         $rows = [];
         echo "<div class='nf'>".__('No other users connected').'</div>';
     } else {
+        $table = new StdClass();
         $table->cellpadding = 0;
         $table->cellspacing = 0;
         $table->width = '100%';
@@ -113,7 +148,7 @@ function users_extension_main_god($god=true)
         $rowPair = true;
         $iterator = 0;
 
-        // Get data
+        // Get data.
         foreach ($rows as $row) {
             // Get data of user's last login.
             switch ($config['dbtype']) {
@@ -142,6 +177,10 @@ function users_extension_main_god($god=true)
                             $row['id_user']
                         )
                     );
+                break;
+
+                default:
+                    // Nothing to do.
                 break;
             }
 

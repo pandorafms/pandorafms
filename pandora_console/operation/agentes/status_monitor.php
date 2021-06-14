@@ -1512,410 +1512,413 @@ if ($not_condition !== '') {
                 if (in_array('server_type', $show_fields) || is_metaconsole()) {
                     $data[4] = servers_show_type($row['id_modulo']);
                 }
-            }
-
-            if (in_array('module_name', $show_fields) || is_metaconsole()) {
-                $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
-                if ($row['extended_info'] != '') {
-                    $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
-                }
-
-                if ($row['tags'] != '') {
-                    $data[3] .= html_print_image(
-                        '/images/tag_red.png',
-                        true,
-                        [
-                            'title' => $row['tags'],
-                            'class' => 'tag_row invert_filter',
-                        ]
-                    );
-                }
-            }
-
-            if (in_array('server_type', $show_fields) || is_metaconsole()) {
-                $data[4] = servers_show_type($row['id_modulo']);
-            }
 
 
-
-            if (in_array('interval', $show_fields) || is_metaconsole()) {
-                $data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
-            }
-
-            if (in_array('status', $show_fields) || is_metaconsole()) {
-                if ($row['utimestamp'] == 0 && (($row['module_type'] < 21
-                    || $row['module_type'] > 23) && $row['module_type'] != 100)
-                ) {
-                    $data[6] = ui_print_status_image(
-                        STATUS_MODULE_NO_DATA,
-                        __('NOT INIT'),
-                        true
-                    );
-                } else if ($row['estado'] == 0) {
-                    if (is_numeric($row['datos'])) {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_OK,
-                            __('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
-                            true
-                        );
-                    } else {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_OK,
-                            __('NORMAL').': '.htmlspecialchars($row['datos']),
-                            true
-                        );
-                    }
-                } else if ($row['estado'] == 1) {
-                    if (is_numeric($row['datos'])) {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_CRITICAL,
-                            __('CRITICAL').': '.remove_right_zeros(
-                                number_format($row['datos'], $config['graph_precision'])
-                            ),
-                            true
-                        );
-                    } else {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_CRITICAL,
-                            __('CRITICAL').': '.htmlspecialchars($row['datos']),
-                            true
-                        );
-                    }
-                } else if ($row['estado'] == 2) {
-                    if (is_numeric($row['datos'])) {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_WARNING,
-                            __('WARNING').': '.remove_right_zeros(
-                                number_format($row['datos'], $config['graph_precision'])
-                            ),
-                            true
-                        );
-                    } else {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_WARNING,
-                            __('WARNING').': '.htmlspecialchars($row['datos']),
-                            true
-                        );
-                    }
-                } else if ($row['estado'] == 3) {
-                    if (is_numeric($row['datos'])) {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_UNKNOWN,
-                            __('UNKNOWN').': '.remove_right_zeros(
-                                number_format($row['datos'], $config['graph_precision'])
-                            ),
-                            true
-                        );
-                    } else {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_UNKNOWN,
-                            __('UNKNOWN').': '.htmlspecialchars($row['datos']),
-                            true
-                        );
-                    }
-                } else if ($row['estado'] == 4) {
-                    if (is_numeric($row['datos'])) {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_NO_DATA,
-                            __('NO DATA').': '.remove_right_zeros(
-                                number_format($row['datos'], $config['graph_precision'])
-                            ),
-                            true
-                        );
-                    } else {
-                        $data[6] = ui_print_status_image(
-                            STATUS_MODULE_NO_DATA,
-                            __('NO DATA').': '.htmlspecialchars($row['datos']),
-                            true
-                        );
-                    }
-                } else {
-                    $last_status = modules_get_agentmodule_last_status(
-                        $row['id_agente_modulo']
-                    );
-                    switch ($last_status) {
-                        case 0:
-                            if (is_numeric($row['datos'])) {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
-                                    true
-                                );
-                            } else {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.htmlspecialchars($row['datos']),
-                                    true
-                                );
-                            }
-                        break;
-
-                        case 1:
-                            if (is_numeric($row['datos'])) {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
-                                    true
-                                );
-                            } else {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.htmlspecialchars($row['datos']),
-                                    true
-                                );
-                            }
-                        break;
-
-                        case 2:
-                            if (is_numeric($row['datos'])) {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
-                                    true
-                                );
-                            } else {
-                                $data[6] = ui_print_status_image(
-                                    STATUS_MODULE_UNKNOWN,
-                                    __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.htmlspecialchars($row['datos']),
-                                    true
-                                );
-                            }
-                        break;
-                    }
-                }
-            }
-
-            if (in_array('last_status_change', $show_fields) || is_metaconsole()) {
-                $data[7] = ($row['last_status_change'] > 0) ? human_time_comparation($row['last_status_change']) : __('N/A');
-            }
-
-            if (in_array('graph', $show_fields) || is_metaconsole()) {
-                $data[8] = '';
-
-                $acl_graphs = false;
-
-                // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions.
-                if (!is_metaconsole()) {
-                    $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
-                    $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
-                } else {
-                    $acl_graphs = true;
-                }
-
-                if ($row['history_data'] == 1 && $acl_graphs) {
-                    $graph_type = return_graphtype($row['module_type']);
-
-                    $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
-                    $handle = dechex(crc32($row['id_agente_modulo'].$row['module_name']));
-                    $win_handle = 'day_'.$handle;
-
-                    $graph_params = [
-                        'type'    => $graph_type,
-                        'period'  => SECONDS_1DAY,
-                        'id'      => $row['id_agente_modulo'],
-                        'refresh' => SECONDS_10MINUTES,
-                    ];
-
-                    if (is_metaconsole() && isset($row['server_id'])) {
-                        // Set the server id.
-                        $graph_params['server'] = $row['server_id'];
+                if (in_array('module_name', $show_fields) || is_metaconsole()) {
+                    $data[3] = ui_print_truncate_text($row['module_name'], 'module_small', false, true, true);
+                    if ($row['extended_info'] != '') {
+                        $data[3] .= ui_print_help_tip($row['extended_info'], true, '/images/default_list.png');
                     }
 
-                    $graph_params_str = http_build_query($graph_params);
-
-                    $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
-
-                    $data[8] = get_module_realtime_link_graph($row);
-
-                    if (!is_snapshot_data($row['datos'])) {
-                        $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
-                    }
-
-                    $data[8] .= '<a href="javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
-                        'images/binary.png',
-                        true,
-                        [
-                            'border' => '0',
-                            'alt'    => '',
-                            'class'  => 'invert_filter',
-                        ]
-                    ).'</a>';
-
-                    $data[8] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
-								class=\'invisible\'>'.$row['module_name'].'</span>';
-                }
-            }
-
-            if (in_array('warn', $show_fields) || is_metaconsole()) {
-                $data[9] = ui_print_module_warn_value(
-                    $row['max_warning'],
-                    $row['min_warning'],
-                    $row['str_warning'],
-                    $row['max_critical'],
-                    $row['min_critical'],
-                    $row['str_critical'],
-                    $row['warning_inverse'],
-                    $row['critical_inverse']
-                );
-
-                if (is_numeric($row['datos']) && !modules_is_string_type($row['module_type'])) {
-                    if ($config['render_proc']) {
-                        switch ($row['module_type']) {
-                            case 2:
-                            case 6:
-                            case 9:
-                            case 18:
-                            case 21:
-                            case 31:
-                                if ($row['datos'] >= 1) {
-                                    $salida = $config['render_proc_ok'];
-                                } else {
-                                    $salida = $config['render_proc_fail'];
-                                }
-                            break;
-
-                            default:
-                                switch ($row['module_type']) {
-                                    case 15:
-                                        $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
-                                        if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                            $salida = human_milliseconds_to_string($row['datos']);
-                                        } else {
-                                            $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
-                                        }
-                                    break;
-
-                                    default:
-                                        $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
-                                    break;
-                                }
-                            break;
-                        }
-                    } else {
-                        switch ($row['module_type']) {
-                            case 15:
-                                $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
-                                if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
-                                    $salida = human_milliseconds_to_string($row['datos']);
-                                } else {
-                                    $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
-                                }
-                            break;
-
-                            default:
-                                $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
-                            break;
-                        }
-                    }
-
-                    // Show units ONLY in numeric data types.
-                    if (isset($row['unit'])) {
-                        $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);
-                        if ($data_macro) {
-                            $salida = $data_macro;
-                        } else {
-                            $salida .= '&nbsp;'.'<i>'.io_safe_output($row['unit']).'</i>';
-                            if (strlen($salida) > $config['agent_size_text_small']) {
-                                $salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
-                                // Clean tag <i>.
-                                $text_aux = explode('<a', $salida);
-                                $match = preg_replace('/(&lt;i&gt;|&lt;\/i&gt;|&lt;i|&lt;\/i|i&gt;|\/i&gt;|&lt;|&gt;)/', '', $text_aux[0]);
-                                $salida = $match.'<a'.$text_aux[1];
-                            } else {
-                                $salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
-                            }
-                        }
-                    }
-                } else {
-                    // Fixed the goliat sends the strings from web.
-                    // Without HTML entities.
-                    if ($is_web_content_string) {
-                        $module_value = $row['datos'];
-                    } else {
-                        $module_value = io_safe_output($row['datos']);
-                    }
-
-                    $is_snapshot = is_snapshot_data($module_value);
-                    $is_large_image = is_text_to_black_string($module_value);
-
-                    if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
-                        $link = ui_get_snapshot_link(
+                    if ($row['tags'] != '') {
+                        $data[3] .= html_print_image(
+                            '/images/tag_red.png',
+                            true,
                             [
-                                'id_module'   => $row['id_agente_modulo'],
-                                'interval'    => $row['current_interval'],
-                                'module_name' => $row['module_name'],
-                                'id_node'     => $row['server_id'],
+                                'title' => $row['tags'],
+                                'class' => 'tag_row invert_filter',
                             ]
                         );
-                        $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
+                    }
+                }
+
+                if (in_array('server_type', $show_fields) || is_metaconsole()) {
+                    $data[4] = servers_show_type($row['id_modulo']);
+                }
+
+
+                if (in_array('interval', $show_fields) || is_metaconsole()) {
+                    $data[5] = ($row['module_interval'] == 0) ? human_time_description_raw($row['agent_interval']) : human_time_description_raw($row['module_interval']);
+                }
+
+                if (in_array('status', $show_fields) || is_metaconsole()) {
+                    if ($row['utimestamp'] == 0 && (($row['module_type'] < 21
+                        || $row['module_type'] > 23) && $row['module_type'] != 100)
+                    ) {
+                        $data[6] = ui_print_status_image(
+                            STATUS_MODULE_NO_DATA,
+                            __('NOT INIT'),
+                            true
+                        );
+                    } else if ($row['estado'] == 0) {
+                        if (is_numeric($row['datos'])) {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_OK,
+                                __('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                true
+                            );
+                        } else {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_OK,
+                                __('NORMAL').': '.htmlspecialchars($row['datos']),
+                                true
+                            );
+                        }
+                    } else if ($row['estado'] == 1) {
+                        if (is_numeric($row['datos'])) {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_CRITICAL,
+                                __('CRITICAL').': '.remove_right_zeros(
+                                    number_format($row['datos'], $config['graph_precision'])
+                                ),
+                                true
+                            );
+                        } else {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_CRITICAL,
+                                __('CRITICAL').': '.htmlspecialchars($row['datos']),
+                                true
+                            );
+                        }
+                    } else if ($row['estado'] == 2) {
+                        if (is_numeric($row['datos'])) {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_WARNING,
+                                __('WARNING').': '.remove_right_zeros(
+                                    number_format($row['datos'], $config['graph_precision'])
+                                ),
+                                true
+                            );
+                        } else {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_WARNING,
+                                __('WARNING').': '.htmlspecialchars($row['datos']),
+                                true
+                            );
+                        }
+                    } else if ($row['estado'] == 3) {
+                        if (is_numeric($row['datos'])) {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_UNKNOWN,
+                                __('UNKNOWN').': '.remove_right_zeros(
+                                    number_format($row['datos'], $config['graph_precision'])
+                                ),
+                                true
+                            );
+                        } else {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_UNKNOWN,
+                                __('UNKNOWN').': '.htmlspecialchars($row['datos']),
+                                true
+                            );
+                        }
+                    } else if ($row['estado'] == 4) {
+                        if (is_numeric($row['datos'])) {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_NO_DATA,
+                                __('NO DATA').': '.remove_right_zeros(
+                                    number_format($row['datos'], $config['graph_precision'])
+                                ),
+                                true
+                            );
+                        } else {
+                            $data[6] = ui_print_status_image(
+                                STATUS_MODULE_NO_DATA,
+                                __('NO DATA').': '.htmlspecialchars($row['datos']),
+                                true
+                            );
+                        }
                     } else {
-                        $sub_string = substr(io_safe_output($row['datos']), 0, 12);
-                        if ($module_value == $sub_string) {
-                            if ($module_value == 0 && !$sub_string) {
-                                $salida = 0;
-                            } else {
-                                $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);
-                                if ($data_macro) {
-                                    $salida = $data_macro;
+                        $last_status = modules_get_agentmodule_last_status(
+                            $row['id_agente_modulo']
+                        );
+                        switch ($last_status) {
+                            case 0:
+                                if (is_numeric($row['datos'])) {
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                        true
+                                    );
                                 } else {
-                                    $salida = $row['datos'];
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.htmlspecialchars($row['datos']),
+                                        true
+                                    );
                                 }
+                            break;
+
+                            case 1:
+                                if (is_numeric($row['datos'])) {
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                        true
+                                    );
+                                } else {
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.htmlspecialchars($row['datos']),
+                                        true
+                                    );
+                                }
+                            break;
+
+                            case 2:
+                                if (is_numeric($row['datos'])) {
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.remove_right_zeros(number_format($row['datos'], $config['graph_precision'])),
+                                        true
+                                    );
+                                } else {
+                                    $data[6] = ui_print_status_image(
+                                        STATUS_MODULE_UNKNOWN,
+                                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.htmlspecialchars($row['datos']),
+                                        true
+                                    );
+                                }
+                            break;
+                        }
+                    }
+                }
+
+                if (in_array('last_status_change', $show_fields) || is_metaconsole()) {
+                    $data[7] = ($row['last_status_change'] > 0) ? human_time_comparation($row['last_status_change']) : __('N/A');
+                }
+
+                if (in_array('graph', $show_fields) || is_metaconsole()) {
+                    $data[8] = '';
+
+                    $acl_graphs = false;
+
+                    // Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions.
+                    if (!is_metaconsole()) {
+                        $agent_groups = agents_get_all_groups_agent($row['id_agent'], $row['id_group']);
+                        $acl_graphs = check_acl_one_of_groups($config['id_user'], $agent_groups, 'RR');
+                    } else {
+                        $acl_graphs = true;
+                    }
+
+                    if ($row['history_data'] == 1 && $acl_graphs) {
+                        $graph_type = return_graphtype($row['module_type']);
+
+                        $url = ui_get_full_url('operation/agentes/stat_win.php', false, false, false);
+                        $handle = dechex(crc32($row['id_agente_modulo'].$row['module_name']));
+                        $win_handle = 'day_'.$handle;
+
+                        $graph_params = [
+                            'type'    => $graph_type,
+                            'period'  => SECONDS_1DAY,
+                            'id'      => $row['id_agente_modulo'],
+                            'refresh' => SECONDS_10MINUTES,
+                        ];
+
+                        if (is_metaconsole() && isset($row['server_id'])) {
+                            // Set the server id.
+                            $graph_params['server'] = $row['server_id'];
+                        }
+
+                        $graph_params_str = http_build_query($graph_params);
+
+                        $link = 'winopeng_var(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\', 800, 480)';
+
+                        $data[8] = get_module_realtime_link_graph($row);
+
+                        if (!is_snapshot_data($row['datos'])) {
+                            $data[8] .= '<a href="javascript:'.$link.'">'.html_print_image('images/chart.png', true, ['border' => '0', 'alt' => '', 'class' => 'invert_filter']).'</a>';
+                        }
+
+                        $data[8] .= '<a href="javascript: show_module_detail_dialog('.$row['id_agente_modulo'].', '.$row['id_agent'].', \''.$row['server_name'].'\', 0, '.SECONDS_1DAY.', \''.$row['module_name'].'\')">'.html_print_image(
+                            'images/binary.png',
+                            true,
+                            [
+                                'border' => '0',
+                                'alt'    => '',
+                                'class'  => 'invert_filter',
+                            ]
+                        ).'</a>';
+
+                        $data[8] .= '<span id=\'hidden_name_module_'.$row['id_agente_modulo'].'\'
+								class=\'invisible\'>'.$row['module_name'].'</span>';
+                    }
+                }
+
+                if (in_array('warn', $show_fields) || is_metaconsole()) {
+                    $data[9] = ui_print_module_warn_value(
+                        $row['max_warning'],
+                        $row['min_warning'],
+                        $row['str_warning'],
+                        $row['max_critical'],
+                        $row['min_critical'],
+                        $row['str_critical'],
+                        $row['warning_inverse'],
+                        $row['critical_inverse']
+                    );
+
+                    if (is_numeric($row['datos']) && !modules_is_string_type($row['module_type'])) {
+                        if ($config['render_proc']) {
+                            switch ($row['module_type']) {
+                                case 2:
+                                case 6:
+                                case 9:
+                                case 18:
+                                case 21:
+                                case 31:
+                                    if ($row['datos'] >= 1) {
+                                        $salida = $config['render_proc_ok'];
+                                    } else {
+                                        $salida = $config['render_proc_fail'];
+                                    }
+                                break;
+
+                                default:
+                                    switch ($row['module_type']) {
+                                        case 15:
+                                            $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
+                                            if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                                                $salida = human_milliseconds_to_string($row['datos']);
+                                            } else {
+                                                $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                            }
+                                        break;
+
+                                        default:
+                                            $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                        break;
+                                    }
+                                break;
                             }
                         } else {
-                            // Fixed the goliat sends the strings from web.
-                            // Without HTML entities.
-                            if ($is_web_content_string) {
-                                $sub_string = substr($row['datos'], 0, 12);
+                            switch ($row['module_type']) {
+                                case 15:
+                                    $value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
+                                    if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0') {
+                                        $salida = human_milliseconds_to_string($row['datos']);
+                                    } else {
+                                        $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                    }
+                                break;
+
+                                default:
+                                    $salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+                                break;
+                            }
+                        }
+
+                        // Show units ONLY in numeric data types.
+                        if (isset($row['unit'])) {
+                            $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);
+                            if ($data_macro) {
+                                $salida = $data_macro;
                             } else {
-                                // Fixed the data from Selenium Plugin.
-                                if ($module_value != strip_tags($module_value)) {
-                                    $module_value = io_safe_input($module_value);
-                                    $sub_string = substr($row['datos'], 0, 12);
+                                $salida .= '&nbsp;'.'<i>'.io_safe_output($row['unit']).'</i>';
+                                if (strlen($salida) > $config['agent_size_text_small']) {
+                                    $salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
+                                    // Clean tag <i>.
+                                    $text_aux = explode('<a', $salida);
+                                    $match = preg_replace('/(&lt;i&gt;|&lt;\/i&gt;|&lt;i|&lt;\/i|i&gt;|\/i&gt;|&lt;|&gt;)/', '', $text_aux[0]);
+                                    $salida = $match.'<a'.$text_aux[1];
                                 } else {
-                                    $sub_string = substr(io_safe_output($row['datos']), 0, 12);
+                                    $salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
                                 }
                             }
+                        }
+                    } else {
+                        // Fixed the goliat sends the strings from web.
+                        // Without HTML entities.
+                        if ($is_web_content_string) {
+                            $module_value = $row['datos'];
+                        } else {
+                            $module_value = io_safe_output($row['datos']);
+                        }
 
+                        $is_snapshot = is_snapshot_data($module_value);
+                        $is_large_image = is_text_to_black_string($module_value);
+
+                        if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {
+                            $link = ui_get_snapshot_link(
+                                [
+                                    'id_module'   => $row['id_agente_modulo'],
+                                    'interval'    => $row['current_interval'],
+                                    'module_name' => $row['module_name'],
+                                    'id_node'     => $row['server_id'],
+                                ]
+                            );
+                            $salida = ui_get_snapshot_image($link, $is_snapshot).'&nbsp;&nbsp;';
+                        } else {
+                            $sub_string = substr(io_safe_output($row['datos']), 0, 12);
                             if ($module_value == $sub_string) {
-                                $salida = $module_value;
+                                if ($module_value == 0 && !$sub_string) {
+                                    $salida = 0;
+                                } else {
+                                    $data_macro = modules_get_unit_macro($row['datos'], $row['unit']);
+                                    if ($data_macro) {
+                                        $salida = $data_macro;
+                                    } else {
+                                        $salida = $row['datos'];
+                                    }
+                                }
                             } else {
-                                $salida = '<span '."id='hidden_value_module_".$row['id_agente_modulo']."'
+                                // Fixed the goliat sends the strings from web.
+                                // Without HTML entities.
+                                if ($is_web_content_string) {
+                                    $sub_string = substr($row['datos'], 0, 12);
+                                } else {
+                                    // Fixed the data from Selenium Plugin.
+                                    if ($module_value != strip_tags($module_value)) {
+                                        $module_value = io_safe_input($module_value);
+                                        $sub_string = substr($row['datos'], 0, 12);
+                                    } else {
+                                        $sub_string = substr(io_safe_output($row['datos']), 0, 12);
+                                    }
+                                }
+
+                                if ($module_value == $sub_string) {
+                                    $salida = $module_value;
+                                } else {
+                                    $salida = '<span '."id='hidden_value_module_".$row['id_agente_modulo']."'
 								class='invisible'>".$module_value.'</span>'.'<span '."id='value_module_".$row['id_agente_modulo']."'
 								title='".$module_value."' "."class='nowrap'>".'<span id="value_module_text_'.$row['id_agente_modulo'].'">'.$sub_string.'</span> '."<a href='javascript: toggle_full_value(".$row['id_agente_modulo'].")'>".html_print_image('images/rosette.png', true).'</a></span>';
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (in_array('data', $show_fields) || is_metaconsole()) {
-                $data[10] = $salida;
-            }
-
-            if (in_array('timestamp', $show_fields) || is_metaconsole()) {
-                if ($row['module_interval'] > 0) {
-                    $interval = $row['module_interval'];
-                } else {
-                    $interval = $row['agent_interval'];
+                if (in_array('data', $show_fields) || is_metaconsole()) {
+                    $data[10] = $salida;
                 }
 
-                if ($row['estado'] == 3) {
-                    $option = [
-                        'html_attr' => 'class="redb"',
-                        'style'     => 'font-size:7pt;',
-                    ];
-                } else {
-                    $option = ['style' => 'font-size:7pt;'];
+                if (in_array('timestamp', $show_fields) || is_metaconsole()) {
+                    if ($row['module_interval'] > 0) {
+                        $interval = $row['module_interval'];
+                    } else {
+                        $interval = $row['agent_interval'];
+                    }
+
+                    if ($row['estado'] == 3) {
+                        $option = [
+                            'html_attr' => 'class="redb"',
+                            'style'     => 'font-size:7pt;',
+                        ];
+                    } else {
+                        $option = ['style' => 'font-size:7pt;'];
+                    }
+
+                    $data[11] = ui_print_timestamp($row['utimestamp'], true, $option);
                 }
 
-                $data[11] = ui_print_timestamp($row['utimestamp'], true, $option);
                 array_push($table->data, $data);
             }
-        }
+
+            html_print_table($table);
 
 
-        if ($count_modules > $config['block_size']) {
-            ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+            if ($count_modules > $config['block_size']) {
+                ui_pagination($count_modules, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
+            }
         } else {
             if ($first_interaction) {
                 ui_print_info_message(['no_close' => true, 'message' => __('This group doesn\'t have any monitor')]);
@@ -1924,7 +1927,6 @@ if ($not_condition !== '') {
             }
         }
 
-        html_print_table($table);
 
         // End Build List Result.
         echo "<div id='monitor_details_window'></div>";

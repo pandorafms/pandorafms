@@ -1,0 +1,318 @@
+.update_text p {
+  font-size: 11pt;
+}
+
+.update_text a {
+  font-size: 11pt;
+  color: #82b92e;
+}
+
+.update_manager_warning p {
+  font-size: 10pt;
+}
+
+.ui-widget-content,
+.ui-widget-content p {
+  font-size: 12pt;
+}
+.fileupload_form {
+  background-color: #373a3d;
+  background-image: -moz-linear-gradient(center, #373a3d, #313437);
+  border-radius: 3px;
+  margin: 0px;
+  padding: 30px;
+}
+#drop_file {
+  background-color: #e6e6e6;
+  border: 20px solid rgba(0, 0, 0, 0);
+  border-radius: 3px;
+  color: #707070;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  padding: 40px 50px;
+  text-align: center;
+  text-transform: uppercase;
+}
+#drop_file table {
+  vertical-align: middle;
+}
+#drop_file table td,
+#drop_file table label {
+  color: #707070;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 0;
+  vertical-align: middle;
+}
+#drop_file table select {
+  float: none;
+}
+#drop_file a {
+  background-color: #82b92e;
+  border-radius: 2px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1;
+  padding: 12px 26px;
+}
+#drop_file a:hover {
+  background-color: #a6ce67;
+  text-decoration: none;
+}
+#drop_file input {
+  display: none;
+}
+
+.fileupload_form ul {
+  border-bottom: 1px solid #3d4043;
+  border-top: 1px solid #2b2e31;
+  list-style: none outside none;
+  margin: 0 -30px;
+  padding: 0;
+}
+.fileupload_form ul li {
+  background-color: #333639;
+  background-image: -moz-linear-gradient(center, #333639, #303335);
+  border-bottom: 1px solid #2b2e31;
+  border-top: 1px solid #3d4043;
+  padding: 15px;
+  position: relative;
+}
+.fileupload_form ul li #input-progress {
+  left: 68px;
+  position: absolute;
+}
+.fileupload_form ul li p {
+  color: #eeeeee;
+  font-size: 12px;
+  font-weight: bold;
+  left: 95px;
+  overflow: hidden;
+  position: absolute;
+  top: 12px;
+  white-space: nowrap;
+}
+.fileupload_form ul li i {
+  color: #7f7f7f;
+  display: block;
+  font-style: normal;
+  font-weight: normal;
+}
+.fileupload_form ul li canvas {
+  left: 13px;
+  position: absolute;
+  top: 15px;
+}
+.fileupload_form ul li span {
+  background: url("../images/check-cross.png") no-repeat scroll 0 0
+    rgba(0, 0, 0, 0);
+  cursor: pointer;
+  height: 12px;
+  position: absolute;
+  right: 13px;
+  top: 34px;
+  width: 15px;
+}
+.fileupload_form ul li div {
+  display: block !important;
+}
+.fileupload_form ul li.working span {
+  background-position: 0 -12px;
+  height: 16px;
+}
+.fileupload_form ul li.loading span {
+  background: url("../images/spinner.gif") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+  height: 16px;
+}
+.fileupload_form ul li.suc span {
+  background: url("../images/check-cross.png") no-repeat scroll 0 0
+    rgba(0, 0, 0, 0);
+  height: 12px;
+}
+.fileupload_form ul li.suc p {
+  color: #5a8629;
+}
+.fileupload_form ul li.error span {
+  background: url("../images/check-cross.png") no-repeat scroll 0 -12px rgba(0, 0, 0, 0);
+  height: 16px;
+}
+.fileupload_form ul li.error p {
+  color: #ff3333;
+}
+
+#log_zone {
+  background-color: #e6e6e6;
+  border: 20px solid rgba(0, 0, 0, 0);
+  border-radius: 3px;
+  color: #707070;
+  font-size: 12px;
+  margin-bottom: 30px;
+  padding: 10px;
+  text-align: left;
+}
+
+#box_online {
+  background-image: url("../images/update_manager_background.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  padding: 40px 50px;
+  border: 1px solid #f3f3f3;
+  border-radius: 5px;
+  min-height: 600px;
+  background-size: contain;
+}
+
+div#box_online * {
+  font-size: 16pt;
+  margin-bottom: 50px;
+}
+
+#box_online .content {
+  max-width: 60%;
+}
+
+.update_popup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.update_icon {
+  padding-left: 20px;
+}
+
+.update_text h3 {
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: left;
+  padding-left: 19px;
+  padding-bottom: 5px;
+}
+
+a.update_manager_button {
+  padding: 10px 12px;
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+a.update_manager_button:after {
+  content: url(../images/update_manager_button.png);
+  padding-left: 10px;
+}
+
+.progressbar {
+  margin-top: 15px;
+}
+
+.ui-draggable,
+.ui-draggable .ui-dialog-titlebar {
+  cursor: default;
+}
+
+#box_online #pkg_version {
+  color: #82b92e;
+  font-size: 75pt;
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+/* METACONSOLE */
+.box_online_meta {
+  background: none;
+  min-height: 400px;
+  text-align: center;
+  border: none;
+}
+
+div#box_online.box_online_meta * {
+  font-size: 14pt;
+}
+
+#box_online.box_online_meta .content {
+  max-width: 100%;
+}
+
+#box_online.box_online_meta #pkg_version {
+  font-size: 60pt;
+}
+
+/* COMMUNITY */
+.update_manager_open {
+  max-width: 50%;
+  font-size: 10pt;
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid #eaeaea;
+  border-radius: 5px;
+}
+
+.update_manager_warning {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.update_manager_warning img {
+  padding-right: 20px;
+  width: 90px;
+}
+
+a.update_manager_button_open {
+  padding: 5px 10px;
+  font-size: 16px;
+  text-decoration: none;
+  border: 1px solid #82b92e;
+  color: #82b92e;
+  border-radius: 2px;
+}
+
+a.update_manager_button_open:hover {
+  color: #fff;
+  background-color: #82b92e;
+}
+
+#um-update-details-header {
+  background-image: url(../images/pandora_logo.png);
+}
+
+.um-progress-bar {
+  background-color: #8bb92e !important;
+}
+
+.um-error {
+  color: #e63c52;
+}
+
+.um-success {
+  color: #8bb92e;
+}
+
+.dz-success-mark svg {
+  background: #8bb92e;
+  border-radius: 50%;
+}
+
+.newsletter_div {
+  font-size: 12pt;
+  margin: 5px 20px;
+  float: left;
+  padding-top: 23px;
+}
+.register_update_manager {
+  margin: 5px 0 10px;
+  float: left;
+  padding-left: 15px;
+}

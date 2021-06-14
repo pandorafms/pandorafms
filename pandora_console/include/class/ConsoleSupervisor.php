@@ -32,7 +32,7 @@ require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
-require_once $config['homedir'].'/include/functions_update_manager.php';
+require_once $config['homedir'].'/godmode/um_client/vendor/autoload.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -1395,7 +1395,7 @@ class ConsoleSupervisor
         $PHPsafe_mode = ini_get('safe_mode');
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
-        $PHPmemory_limit_min = config_return_in_bytes('500M');
+        $PHPmemory_limit_min = config_return_in_bytes('800M');
         $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
@@ -1511,7 +1511,7 @@ class ConsoleSupervisor
                     ),
                     'message' => sprintf(
                         __('Recommended value is: %s'),
-                        sprintf(__('%s or greater'), '500M')
+                        sprintf(__('%s or greater'), '800M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
                     'url'     => $url,
                 ]
@@ -2388,38 +2388,20 @@ class ConsoleSupervisor
         }
 
         // Avoid contact for messages too much often.
-        if (isset($config['last_um_check'])
+        if (isset($config['last_um_check']) === true
             && time() < $config['last_um_check']
         ) {
             return;
         }
 
-        // Only ask for messages once a day.
-        $future = (time() + 2 * SECONDS_1HOUR);
-        config_update_value('last_um_check', $future);
-
-        $params = [
-            'pandora_uid' => $config['pandora_uid'],
-            'timezone'    => $config['timezone'],
-            'language'    => $config['language'],
-        ];
-
-        $result = update_manager_curl_request('get_messages', $params);
-
-        try {
-            if ($result['success'] === true) {
-                $messages = json_decode($result['update_message'], true);
-            }
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-        };
-
-        if (is_array($messages)) {
+        $messages = update_manager_get_messages();
+        if (is_array($messages) === true) {
             $source_id = get_notification_source_id(
                 'Official&#x20;communication'
             );
+
             foreach ($messages as $message) {
-                if (!isset($message['url'])) {
+                if (isset($message['url']) === false) {
                     $message['url'] = '#';
                 }
 
@@ -2462,7 +2444,7 @@ class ConsoleSupervisor
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    $config['current_package_enterprise']
+                    $config['current_package']
                 ) === false
                 ) {
                     $missed++;

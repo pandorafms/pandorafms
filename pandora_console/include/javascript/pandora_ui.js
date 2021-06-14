@@ -491,7 +491,9 @@ function confirmDialog(settings) {
       buttons: [
         {
           id: "cancel_btn_dialog",
-          text: settings.strCancelButton,
+          text: settings.cancelText
+            ? settings.cancelText
+            : settings.strCancelButton,
           class:
             hideCancelButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",

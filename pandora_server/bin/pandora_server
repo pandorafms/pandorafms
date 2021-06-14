@@ -76,6 +76,36 @@ sub pandora_shutdown () {
 
 	# Stop the netflow daemon
 	pandora_stop_netflow_daemon ();
+
+	# Stop server threads.
+	stop_server_threads();
+
+	# Wait threads.
+	my $max_wait = 10;
+	my $waiting = 1;
+	my $start_waiting = time();
+	while ($waiting eq 1) {
+		$waiting = 0;
+		foreach my $thr (threads->list()) {
+			#my $tid = shift @{$self->{'_threads'}};
+			#my $thr = threads->object($tid);
+
+			if (defined($thr)) {
+				if ($thr->is_joinable()) {
+					$thr->join();
+				} else {
+					$thr->kill('KILL');
+					if (time() - $start_waiting < $max_wait) {
+						$waiting = 1;
+					} else {
+						# Some discovery external scripts tasks.
+						$thr->detach();
+					}
+				}
+			}
+		}
+		sleep (1);
+	}
 	
 	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 1);
 	db_disconnect ($DBH);
@@ -110,7 +140,7 @@ sub pandora_startup () {
 	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
 		
 	# Start the event replication thread. Do not start with start_server_thread, this thread may exit on its own.
-	threads->create(\&pandora_process_event_replication, \%Config) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
+	start_server_thread(\&pandora_process_event_replication, [\%Config]) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
 
 	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
@@ -774,7 +804,9 @@ sub main() {
 
 			db_do ($DBH,
 				"UPDATE tserver SET status = -1
-				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
+				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive
+				AND status != 0 AND server_type != ?",
+				PandoraFMS::Tools::SATELLITESERVER
 			);
 
 			# Set the master server

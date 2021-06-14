@@ -81,32 +81,10 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
+
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
-    }
-
-    if ($upd_info['middlename'] == 1) {
-        // User wants to enable newsletter reminders.
-        if ($user_info['middlename'] > 0) {
-            // User has already registered!. No sense.
-            $upd_info['middlename'] = $user_info['middlename'];
-        } else {
-            // Force subscription reminder.
-            $upd_info['middlename'] = 0;
-        }
-    }
-
-    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
-        // Switch is ON. user had not registered.
-        $newsletter_reminder_value = 1;
-    } else if ($upd_info['middlename'] < 1) {
-        // Switch is OFF. User do not want to register.
-        $newsletter_reminder_value = 0;
-    } else if ($upd_info['middlename'] > 0) {
-        // Switc is OFF. User is already registered!
-        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
@@ -460,26 +438,6 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
-if (!$config['disabled_newsletter']) {
-    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename'] > 0) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
-    } else {
-        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-        $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-        $newsletter_reminder .= html_print_switch(
-            [
-                'name'     => 'newsletter_reminder',
-                'value'    => $newsletter_reminder_value,
-                'disabled' => false,
-            ]
-        );
-    }
-
-    $newsletter_reminder .= '</div>';
-}
-
-
 
 $autorefresh_list_out = [];
 if (is_metaconsole()) {
@@ -673,7 +631,7 @@ if (is_metaconsole()) {
                 <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
             </div> 
             <div class="user_edit_second_row white_box">
-                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
+                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$double_authentication.'</div>
                 <div class="edit_user_timezone">'.$timezone;
 
 

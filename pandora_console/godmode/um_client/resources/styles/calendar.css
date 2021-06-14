@@ -1,0 +1,67 @@
+/* 
+ * ---------------------------------------------------------------------
+ * - CALENDAR TOOLTIP												-
+ * ---------------------------------------------------------------------
+ */
+
+/* Calendar background */
+table.scw {
+  background-color: #82b92e;
+  border: 0 !important;
+  border-radius: 4px;
+}
+
+/* Week number heading */
+td.scwWeekNumberHead {
+  color: #111;
+}
+
+td.scwWeek {
+  color: #111 !important;
+}
+
+/* Today selector */
+td.scwFootDisabled {
+  background-color: #000;
+  color: #ffffff;
+}
+
+tfoot.scwFoot {
+  color: #111;
+}
+
+.scwFoot :hover {
+  color: #3f3f3f !important;
+}
+
+table.scwCells {
+  background-color: #fff !important;
+  color: #3c3c3c !important;
+}
+
+table.scwCells:hover {
+  background-color: #fff !important;
+}
+
+td.scwCellsExMonth {
+  background-color: #eee !important;
+  color: #3c3c3c !important;
+}
+
+td.scwCellsWeekend {
+  background-color: #3c3c3c !important;
+  color: #fff !important;
+  border: 0 !important;
+}
+
+td.scwInputDate {
+  background-color: #777 !important;
+  color: #ffffff !important;
+  border: 0 !important;
+}
+
+td.scwFoot {
+  background-color: #fff !important;
+  color: #3c3c3c !important;
+  border: 0 !important;
+}

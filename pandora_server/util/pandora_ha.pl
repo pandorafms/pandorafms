@@ -296,6 +296,21 @@ sub ha_main($) {
 
   while ($Running) {
     eval {
+      eval { 
+        local $SIG{__DIE__};
+        # Load enterprise components.
+        enterprise_load($conf, 1);
+
+        # Register Enterprise logger
+        enterprise_hook('pandoraha_logger', [\&log_message]);
+        log_message($conf, 'LOG', 'Enterprise capabilities loaded');
+
+      };
+      if ($@) {
+        # No enterprise capabilities.
+        log_message($conf, 'LOG', 'No enterprise capabilities');
+      }
+
       # Start the Pandora FMS server if needed.
       log_message($conf, 'LOG', 'Checking the pandora_server service.');
 

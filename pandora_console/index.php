@@ -220,7 +220,8 @@ echo '<head>'."\n";
 // This starts the page head. In the callback function,
 // $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
-
+// Avoid clickjacking.
+header('X-Frame-Options: SAMEORIGIN');
 // Enterprise main.
 enterprise_include_once('index.php');
 
@@ -1123,9 +1124,15 @@ if ($searchPage) {
             include 'general/noaccess.php';
         } else {
             $sec = $main_sec;
-            if (file_exists($page)) {
-                if (! extensions_is_extension($page)) {
-                    include_once $page;
+            if (file_exists($page) === true) {
+                if ((bool) extensions_is_extension($page) === false) {
+                    try {
+                        include_once $page;
+                    } catch (Exception $e) {
+                        ui_print_error_message(
+                            $e->getMessage().' in '.$e->getFile().':'.$e->getLine()
+                        );
+                    }
                 } else {
                     if ($sec[0] == 'g') {
                         extensions_call_godmode_function(basename($page));
@@ -1276,6 +1283,7 @@ if ($config['pure'] == 0) {
     // Container div.
     echo '</div>';
     echo '<div id="both"></div>';
+    echo '</div>';
 
     echo '<div id="foot">';
     include 'general/footer.php';

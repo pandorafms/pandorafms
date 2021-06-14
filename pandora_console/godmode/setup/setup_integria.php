@@ -41,8 +41,10 @@ if (is_ajax()) {
     $integria_pass = get_parameter('integria_pass', '');
     $integria_api_hostname = get_parameter('api_hostname', '');
     $integria_api_pass = get_parameter('api_pass', '');
+    $user_level_conf = get_parameter('user_level_conf', 0);
+    $user_level_conf_bool = $user_level_conf === 'true' ? true : false;
 
-    $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', []);
+    $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', [], false, '', '', $user_level_conf_bool);
 
     if ($login_result != false) {
         echo json_encode(['login' => 1]);
@@ -53,7 +55,7 @@ if (is_ajax()) {
     return;
 }
 
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false && $config['integria_enabled']) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -86,7 +88,7 @@ if (get_parameter('update_config', 0) == 1) {
             );
         }
 
-        $ticket_types = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', '', false, 'json');
+        $ticket_types = integria_api_call(null, null, null, null, 'get_types', '', false, 'json');
 
         $types_string = '';
 
@@ -216,19 +218,19 @@ $integria_users_values = [];
 $integria_types_values = [];
 $integria_status_values = [];
 
-$integria_groups_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', []);
+$integria_groups_csv = integria_api_call(null, null, null, null, 'get_groups', []);
 
 get_array_from_csv_data_pair($integria_groups_csv, $integria_group_values);
 
-$integria_status_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', []);
+$integria_status_csv = integria_api_call(null, null, null, null, 'get_incidents_status', []);
 
 get_array_from_csv_data_pair($integria_status_csv, $integria_status_values);
 
-$integria_criticity_levels_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', []);
+$integria_criticity_levels_csv = integria_api_call(null, null, null, null, 'get_incident_priorities', []);
 
 get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
 
-$integria_users_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_users', []);
+$integria_users_csv = integria_api_call(null, null, null, null, 'get_users', []);
 
 $csv_array = explode("\n", $integria_users_csv);
 
@@ -238,7 +240,7 @@ foreach ($csv_array as $csv_line) {
     }
 }
 
-$integria_types_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', []);
+$integria_types_csv = integria_api_call(null, null, null, null, 'get_types', []);
 
 get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
@@ -267,6 +269,12 @@ $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
 
+// Enable eHorus user configuration.
+$row = [];
+$row['name'] = ('Integria configuration at user level');
+$row['control'] = html_print_checkbox_switch('integria_user_level_conf', 1, $config['integria_user_level_conf'], true);
+$table_remote->data['integria_user_level_conf'] = $row;
+
 // Integria user.
 $row = [];
 $row['name'] = __('User');
@@ -282,7 +290,7 @@ $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('API Hostname');
+$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
 $row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
 $table_remote->data['integria_hostname'] = $row;
 
@@ -329,22 +337,20 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('alert_macros', true);
+);
 $table_alert_settings->data['custom_response_incident_title'] = $row;
 
 // Alert incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'incident_content',
+    7,
+    25,
     $config['incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('alert_macros', true);
+    true
+);
 $table_alert_settings->data['custom_response_incident_content'] = $row;
 
 // Alert default group.
@@ -452,22 +458,21 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('response_macros', true);
+);
 $table_cr_settings->data['custom_response_incident_title'] = $row;
 
 // Custom response incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'cr_incident_content',
+    7,
+    25,
     $config['cr_incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('response_macros', true);
+    true
+);
+
 $table_cr_settings->data['custom_response_incident_content'] = $row;
 
 // Custom response default group.
@@ -599,7 +604,7 @@ if ($has_connection != false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Alert default values').'</legend>';
+    echo '<legend>'.__('Alert default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_alert_settings);
 
@@ -609,7 +614,7 @@ if ($has_connection != false) {
     // Form custom response default settings.
     echo '<div id="form_custom_response_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Event custom response default values').'</legend>';
+    echo '<legend>'.__('Event custom response default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_cr_settings);
 
@@ -631,6 +636,29 @@ echo '</form>';
 ?>
 
 <script type="text/javascript">
+
+    if($('input:checkbox[name="integria_user_level_conf"]').is(':checked'))
+    {
+        $('#integria-remote-setup-integria_user').hide();
+        $('#integria-remote-setup-integria_pass').hide()
+    }
+
+    var handleUserLevel = function(event) {
+        var is_checked = $('input:checkbox[name="integria_enabled"]').is(':checked');
+        var is_checked_userlevel = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
+        
+        if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
+            showUserPass();
+            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', true);
+        }
+        else {
+            hideUserPass();
+            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', false);
+        };
+    }
+
+    $('input:checkbox[name="integria_enabled"]').change(handleEnable);
+    $('input:checkbox[name="integria_user_level_conf"]').change(handleUserLevel);
 
     if(!$('input:checkbox[name="integria_enabled"]').is(':checked')) {
         $('#form_remote').hide();
@@ -723,6 +751,7 @@ echo '</form>';
         var integria_pass = $('input[name=integria_pass]').val();
         var api_hostname = $('input[name=integria_hostname]').val();
         var api_pass = $('input[name=integria_api_pass]').val();
+        var user_level_conf = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
 
         var data = {
             page: 'godmode/setup/setup_integria',
@@ -731,6 +760,7 @@ echo '</form>';
             integria_pass: integria_pass,
             api_hostname: api_hostname,
             api_pass: api_pass,
+            user_level_conf: user_level_conf,
         }
 
         // AJAX call to check API connection.

@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Empty Network editor.
  *
- * @category   Extensions
+ * @category   View
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 // Check user credentials.
@@ -203,12 +203,24 @@ if ($edit_networkmap) {
     }
 }
 
-ui_print_page_header(
-    __('Networkmap'),
+// Header.
+ui_print_standard_header(
+    __('Network maps editor'),
     'images/bricks.png',
     false,
     'network_map_enterprise_edit',
-    false
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Networkmap'),
+        ],
+    ]
 );
 
 $id_snmp_l2_recon = db_get_value(
@@ -390,7 +402,7 @@ if ($not_found) {
         'circo'          => 'circular',
         'neato'          => 'spring1',
         'fdp'            => 'spring2',
-        'radial_dinamic' => 'radial dinamic',
+        'radial_dinamic' => 'radial dynamic',
     ];
 
     $table->data[7][0] = __('Method generation networkmap');

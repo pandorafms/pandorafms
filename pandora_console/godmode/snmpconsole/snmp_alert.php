@@ -585,133 +585,21 @@ if ($update_alert || $duplicate_alert) {
 
 // Duplicate alert snmp
 if ($duplicate_alert) {
-    $sql = sprintf(
-        'insert into talert_snmp (
-		id_alert, al_field1, al_field2, al_field3, 
-		al_field4, al_field5, al_field6, al_field7,
-		al_field8, al_field9, al_field10, al_field11, 
-        al_field12, al_field13, al_field14, al_field15,
-        al_field16, al_field17, al_field18, al_field19,
-        al_field20, description, alert_type, agent, custom_oid,
-        oid, time_threshold, times_fired, last_fired,
-        max_alerts, min_alerts, internal_counter, priority,
-		'.db_escape_key_identifier('_snmp_f1_').',
-		'.db_escape_key_identifier('_snmp_f2_').',
-		'.db_escape_key_identifier('_snmp_f3_').',
-		'.db_escape_key_identifier('_snmp_f4_').',
-		'.db_escape_key_identifier('_snmp_f5_').',
-		'.db_escape_key_identifier('_snmp_f6_').',
-		'.db_escape_key_identifier('_snmp_f7_').',
-		'.db_escape_key_identifier('_snmp_f8_').',
-		'.db_escape_key_identifier('_snmp_f9_').',
-		'.db_escape_key_identifier('_snmp_f10_').',
-		'.db_escape_key_identifier('_snmp_f11_').',
-		'.db_escape_key_identifier('_snmp_f12_').',
-		'.db_escape_key_identifier('_snmp_f13_').',
-		'.db_escape_key_identifier('_snmp_f14_').',
-		'.db_escape_key_identifier('_snmp_f15_').',
-		'.db_escape_key_identifier('_snmp_f16_').',
-		'.db_escape_key_identifier('_snmp_f17_').',
-		'.db_escape_key_identifier('_snmp_f18_').',
-		'.db_escape_key_identifier('_snmp_f19_').',
-		'.db_escape_key_identifier('_snmp_f20_').",
-		trap_type, single_value, position, disable_event, id_group,
-		order_1, order_2, order_3, order_4, order_5, order_6, order_7, order_8, 
-		order_9, order_10, order_11, order_12, order_13, order_14, order_15, 
-		order_16, order_17, order_18, order_19, order_20)
-		VALUES
-		(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
-		'%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', 
-		'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
-		'%s', '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, 
-		%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-        $id_alert,
-        $al_field1,
-        $al_field2,
-        $al_field3,
-        $al_field4,
-        $al_field5,
-        $al_field6,
-        $al_field7,
-        $al_field8,
-        $al_field9,
-        $al_field10,
-        $al_field11,
-        $al_field12,
-        $al_field13,
-        $al_field14,
-        $al_field15,
-        $al_field16,
-        $al_field17,
-        $al_field18,
-        $al_field19,
-        $al_field20,
-        $description,
-        $alert_type,
-        $source_ip,
-        $custom_value,
-        $oid,
-        $time_threshold,
-        $times_fired,
-        $last_fired,
-        $max_alerts,
-        $min_alerts,
-        $internal_counter,
-        $priority,
-        $custom_oid_data_1,
-        $custom_oid_data_2,
-        $custom_oid_data_3,
-        $custom_oid_data_4,
-        $custom_oid_data_5,
-        $custom_oid_data_6,
-        $custom_oid_data_7,
-        $custom_oid_data_8,
-        $custom_oid_data_9,
-        $custom_oid_data_10,
-        $custom_oid_data_11,
-        $custom_oid_data_12,
-        $custom_oid_data_13,
-        $custom_oid_data_14,
-        $custom_oid_data_15,
-        $custom_oid_data_16,
-        $custom_oid_data_17,
-        $custom_oid_data_18,
-        $custom_oid_data_19,
-        $custom_oid_data_20,
-        $trap_type,
-        $single_value,
-        $position,
-        $disable_event,
-        $group,
-        $order_1,
-        $order_2,
-        $order_3,
-        $order_4,
-        $order_5,
-        $order_6,
-        $order_7,
-        $order_8,
-        $order_9,
-        $order_10,
-        $order_11,
-        $order_12,
-        $order_13,
-        $order_14,
-        $order_15,
-        $order_16,
-        $order_17,
-        $order_18,
-        $order_19,
-        $order_20
-    );
-    $result = db_process_sql($sql);
+    $values_duplicate = $alert;
+    if (!empty($values_duplicate)) {
+        unset($values_duplicate['id_as']);
+        $result = db_process_sql_insert('talert_snmp', $values_duplicate);
 
-    if (!$result) {
+        if (!$result) {
+            db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
+            ui_print_error_message(__('There was a problem duplicating the alert'));
+        } else {
+            db_pandora_audit('SNMP management', "Duplicate snmp alert #$id_as");
+            ui_print_success_message(__('Successfully Duplicate'));
+        }
+    } else {
         db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
         ui_print_error_message(__('There was a problem duplicating the alert'));
-    } else {
-        db_pandora_audit('SNMP management', "Duplicate snmp alert #$id_as");
-        ui_print_success_message(__('Successfully Duplicate'));
     }
 }
 
@@ -1369,7 +1257,14 @@ if ($create_alert || $update_alert) {
             foreach ($other_actions as $action) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
-                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a> </td>';
+                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a> </td>';
                 $data[1] .= '</tr>';
             }
         }
@@ -1390,7 +1285,34 @@ if ($create_alert || $update_alert) {
         }
 
         if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
-                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update'), 'class' => 'invert_filter']).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter', 'alt' => __('Delete')]).'</a>';
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/copy.png',
+                    true,
+                    [
+                        'alt'   => __('Duplicate'),
+                        'title' => __('Duplicate'),
+                    ]
+                ).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Update'),
+                    ]
+                ).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image(
+                    'images/add.png',
+                    true,
+                    [
+                        'title' => __('Add action'),
+                    ]
+                ).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a>';
 
 
                 $data[9] = html_print_checkbox_extended(
@@ -1521,7 +1443,7 @@ if ($create_alert || $update_alert) {
 
                     echo '<div class="right mrgn_lft_10px;">';
                     html_print_input_hidden('multiple_delete', 1);
-                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
+                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete mrgn_btn_10px"');
                     echo '</div>';
                     echo '</form>';
                 }

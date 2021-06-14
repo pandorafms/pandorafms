@@ -524,10 +524,13 @@ function io_json_mb_encode($string, $encode_options=0)
     $v = json_encode($string, $encode_options);
     $v = preg_replace_callback(
         "/\\\\u([0-9a-zA-Z]{4})/",
-        create_function(
-            '$matches',
-            'return mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16");'
-        ),
+        function ($matches) {
+            return mb_convert_encoding(
+                pack('H*', $matches[1]),
+                'UTF-8',
+                'UTF-16'
+            );
+        },
         $v
     );
     $v = preg_replace('/\\\\\//', '/', $v);
@@ -589,4 +592,33 @@ function io_output_password($password)
     }
 
     return io_safe_output($plaintext);
+}
+
+
+/**
+ * Clean html tags symbols for prevent use JS
+ *
+ * @param string $string String for safe.
+ *
+ * @return string
+ */
+function io_safe_html_tags(string $string)
+{
+    // Must have safe output for work properly.
+    $string = io_safe_output($string);
+    if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+        $output = strstr($string, '<', true);
+        $tmpOutput = strstr($string, '<');
+        $output .= strstr(substr($tmpOutput, 1), '>', true);
+        $tmpOutput = strstr($string, '>');
+        $output .= substr($tmpOutput, 1);
+        // If the string still contains tags symbols.
+        if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+            $output = io_safe_html_tags($output);
+        }
+    } else {
+        $output = $string;
+    }
+
+    return $output;
 }

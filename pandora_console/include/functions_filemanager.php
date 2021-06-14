@@ -1,36 +1,40 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Filemanager
+ * Images File Manager functions.
+ *
+ * @category   Functions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
-/**
- * #@+
- * Constants
- */
+// Get global data.
+// Constants.
 define('MIME_UNKNOWN', 0);
 define('MIME_DIR', 1);
 define('MIME_IMAGE', 2);
 define('MIME_ZIP', 3);
 define('MIME_TEXT', 4);
-/*
-    #@-
-*/
 
-if (!function_exists('mime_content_type')) {
+if (function_exists('mime_content_type') === false) {
 
 
     /**
@@ -38,11 +42,11 @@ if (!function_exists('mime_content_type')) {
      *
      * Help function in case mime_magic is not loaded on PHP.
      *
-     * @param string Filename to get MIME type.
+     * @param string $filename Filename to get MIME type.
      *
      * @return The MIME type of the file.
      */
-    function mime_content_type($filename)
+    function mime_content_type(string $filename)
     {
         $mime_types = [
             'txt'  => 'text/plain',
@@ -55,7 +59,7 @@ if (!function_exists('mime_content_type')) {
             'xml'  => 'application/xml',
             'swf'  => 'application/x-shockwave-flash',
             'flv'  => 'video/x-flv',
-            // images
+            // Images.
             'png'  => 'image/png',
             'jpe'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
@@ -67,7 +71,7 @@ if (!function_exists('mime_content_type')) {
             'tif'  => 'image/tiff',
             'svg'  => 'image/svg+xml',
             'svgz' => 'image/svg+xml',
-            // archives
+            // Archives.
             'zip'  => 'application/zip',
             'rar'  => 'application/x-rar-compressed',
             'exe'  => 'application/x-msdownload',
@@ -75,22 +79,22 @@ if (!function_exists('mime_content_type')) {
             'cab'  => 'application/vnd.ms-cab-compressed',
             'gz'   => 'application/x-gzip',
             'gz'   => 'application/x-bzip2',
-            // audio/video
+            // Audio/Video.
             'mp3'  => 'audio/mpeg',
             'qt'   => 'video/quicktime',
             'mov'  => 'video/quicktime',
-            // adobe
+            // Adobe.
             'pdf'  => 'application/pdf',
             'psd'  => 'image/vnd.adobe.photoshop',
             'ai'   => 'application/postscript',
             'eps'  => 'application/postscript',
             'ps'   => 'application/postscript',
-            // ms office
+            // MS Office.
             'doc'  => 'application/msword',
             'rtf'  => 'application/rtf',
             'xls'  => 'application/vnd.ms-excel',
             'ppt'  => 'application/vnd.ms-powerpoint',
-            // open office
+            // Open Source Office files.
             'odt'  => 'application/vnd.oasis.opendocument.text',
             'ods'  => 'application/vnd.oasis.opendocument.spreadsheet',
         ];
@@ -98,9 +102,9 @@ if (!function_exists('mime_content_type')) {
         $ext_fields = explode('.', $filename);
         $ext = array_pop($ext_fields);
         $ext = strtolower($ext);
-        if (array_key_exists($ext, $mime_types)) {
+        if (array_key_exists($ext, $mime_types) === true) {
             return $mime_types[$ext];
-        } else if (function_exists('finfo_open')) {
+        } else if (function_exists('finfo_open') === true) {
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
@@ -117,6 +121,14 @@ if (!function_exists('mime_content_type')) {
 global $config;
 
 
+/**
+ * Upload file.
+ *
+ * @param boolean $upload_file_or_zip     Upload file or zip.
+ * @param string  $default_real_directory String with default directory.
+ *
+ * @return void
+ */
 function upload_file($upload_file_or_zip, $default_real_directory)
 {
     global $config;
@@ -124,7 +136,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
     $homedir_filemanager = trim($config['homedir']);
     $sec2 = get_parameter('sec2');
 
-    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+    if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
         $homedir_filemanager .= '/attachment/collection/';
     }
 
@@ -140,9 +152,9 @@ function upload_file($upload_file_or_zip, $default_real_directory)
         return;
     }
 
-    if ($upload_file_or_zip) {
-        $decompress = get_parameter('decompress');
-        if (!$decompress) {
+    if ($upload_file_or_zip === true) {
+        $decompress = (bool) get_parameter('decompress', false);
+        if ($decompress === false) {
             $upload_file = true;
             $upload_zip = false;
         } else {
@@ -151,24 +163,24 @@ function upload_file($upload_file_or_zip, $default_real_directory)
         }
     } else {
         $upload_file = (bool) get_parameter('upload_file');
-        $upload_zip = (bool) get_parameter('upload_zip');
+        $upload_zip  = (bool) get_parameter('upload_zip');
     }
 
-    // Upload file
-    if ($upload_file) {
-        if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
-            $filename = $_FILES['file']['name'];
-            $filesize = $_FILES['file']['size'];
-            $real_directory = io_safe_output((string) get_parameter('real_directory'));
-            $directory = io_safe_output((string) get_parameter('directory'));
-            $umask = io_safe_output((string) get_parameter('umask', ''));
+    // Upload file.
+    if ($upload_file === true) {
+        if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
+            $filename       = $_FILES['file']['name'];
+            $filesize       = $_FILES['file']['size'];
+            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $directory      = filemanager_safe_directory((string) get_parameter('directory'));
+            $umask          = io_safe_output((string) get_parameter('umask'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
                 // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
                 ui_print_error_message(__('Security error'));
             } else {
-                // Copy file to directory and change name
-                if ($directory == '') {
+                // Copy file to directory and change name.
+                if (empty($directory) === true) {
                     $nombre_archivo = $real_directory.'/'.$filename;
                 } else {
                     $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
@@ -177,36 +189,34 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
                     $config['filemanager']['message'] = ui_print_error_message(__('Upload error'));
                 } else {
-                    if ($umask !== '') {
+                    if (empty($umask) === false) {
                         chmod($nombre_archivo, $umask);
                     }
 
                     $config['filemanager']['correct_upload_file'] = 1;
                     ui_print_success_message(__('Upload correct'));
 
-                    // Delete temporal file
+                    // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
                 }
             }
         }
     }
 
-    // Upload zip
-    if ($upload_zip) {
-        if (isset($_FILES['file']) && $_FILES['file']['name'] != '') {
-            $filename = $_FILES['file']['name'];
-            $filesize = $_FILES['file']['size'];
-            $real_directory = (string) get_parameter('real_directory');
-            $real_directory = io_safe_output($real_directory);
-            $directory = (string) get_parameter('directory');
-            $directory = io_safe_output($directory);
+    // Upload zip.
+    if ($upload_zip === true) {
+        if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
+            $filename       = $_FILES['file']['name'];
+            $filesize       = $_FILES['file']['size'];
+            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $directory      = filemanager_safe_directory((string) get_parameter('directory'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
                 // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
                 ui_print_error_message(__('Security error'));
             } else {
-                // Copy file to directory and change name
-                if ($directory == '') {
+                // Copy file to directory and change name.
+                if (empty($directory) === true) {
                     $nombre_archivo = $real_directory.'/'.$filename;
                 } else {
                     $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
@@ -215,10 +225,10 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
                     ui_print_error_message(__('Attach error'));
                 } else {
-                    // Delete temporal file
+                    // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
 
-                    // Extract the zip file
+                    // Extract the zip file.
                     $zip = new ZipArchive;
                     $pathname = $homedir_filemanager.'/'.$directory.'/';
 
@@ -236,9 +246,9 @@ function upload_file($upload_file_or_zip, $default_real_directory)
 }
 
 
-if (isset($_SERVER['CONTENT_LENGTH'])) {
-    // Control the max_post_size exceed
-    if (intval($_SERVER['CONTENT_LENGTH']) > 0 && empty($_POST) and empty($_FILES)) {
+if (isset($_SERVER['CONTENT_LENGTH']) === true) {
+    // Control the max_post_size exceed.
+    if (intval($_SERVER['CONTENT_LENGTH']) > 0 && empty($_POST) === true && empty($_FILES) === true) {
         $config['filemanager']['correct_upload_file'] = 0;
         $config['filemanager']['message'] = ui_print_error_message(__('File size seems to be too large. Please check your php.ini configuration or contact with the administrator'), '', true);
     }
@@ -270,18 +280,16 @@ function create_text_file($default_real_directory)
 
     $filename = io_safe_output(get_parameter('name_file'));
 
-    if ($filename != '') {
-        $real_directory = (string) get_parameter('real_directory');
-        $real_directory = io_safe_output($real_directory);
-        $directory = (string) get_parameter('directory');
-        $directory = io_safe_output($directory);
-        $umask = (string) get_parameter('umask', '');
+    if (empty($filename) === false) {
+        $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+        $directory      = filemanager_safe_directory((string) get_parameter('directory'));
+        $umask          = (string) get_parameter('umask');
 
         if (strpos($real_directory, $default_real_directory) !== 0) {
             // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
             ui_print_error_message(__('Security error'));
         } else {
-            if ($directory == '') {
+            if (empty($directory) === true) {
                 $nombre_archivo = $real_directory.'/'.$filename;
             } else {
                 $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
@@ -307,31 +315,30 @@ function create_text_file($default_real_directory)
 
 $homedir_filemanager = trim($config['homedir']);
 $sec2 = get_parameter('sec2');
-if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
+if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
     $homedir_filemanager .= '/attachment/collection/';
 }
 
-// CREATE DIR
+// CREATE DIR.
 $create_dir = (bool) get_parameter('create_dir');
-if ($create_dir) {
+if ($create_dir === true) {
     global $config;
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_create_dir'] = 0;
     $config['filemanager']['message'] = null;
 
-    $directory = (string) get_parameter('directory', '/');
-    $directory = io_safe_output($directory);
-    $hash = get_parameter('hash', '');
-    $testHash = md5($directory.$config['dbpass']);
+    $directory = filemanager_safe_directory((string) get_parameter('directory', '/'));
+    $hash      = (string) get_parameter('hash');
+    $testHash  = md5($directory.$config['dbpass']);
 
-    if ($hash != $testHash) {
+    if ($hash !== $testHash) {
          ui_print_error_message(__('Security error.'));
     } else {
-        $dirname = (string) get_parameter('dirname');
-        $dirname = io_safe_output($dirname);
+        $dirname = filemanager_safe_directory((string) get_parameter('dirname'));
 
-        if ($dirname != '') {
+        if (empty($dirname) === false) {
+            // Create directory.
             @mkdir(
                 $homedir_filemanager.'/'.$directory.'/'.$dirname
             );
@@ -344,9 +351,9 @@ if ($create_dir) {
     }
 }
 
-// DELETE FILE OR DIR
+// DELETE FILE OR DIR.
 $delete_file = (bool) get_parameter('delete_file');
-if ($delete_file) {
+if ($delete_file === true) {
     global $config;
 
     $config['filemanager'] = [];
@@ -355,22 +362,22 @@ if ($delete_file) {
 
     $filename = (string) get_parameter('filename');
     $filename = io_safe_output($filename);
-    $hash = get_parameter('hash', '');
+    $hash     = get_parameter('hash', '');
     $testHash = md5($filename.$config['dbpass']);
 
-    if ($hash != $testHash) {
+    if ($hash !== $testHash) {
         $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
     } else {
         $config['filemanager']['message'] = ui_print_success_message(__('Deleted'), '', true);
 
-        if (is_dir($filename)) {
-            if (rmdir($filename)) {
+        if (is_dir($filename) === true) {
+            if (rmdir($filename) === true) {
                 $config['filemanager']['delete'] = 1;
             } else {
                 $config['filemanager']['delete'] = 0;
             }
         } else {
-            if (unlink($filename)) {
+            if (unlink($filename) === true) {
                     $config['filemanager']['delete'] = 1;
             } else {
                 $config['filemanager']['delete'] = 0;
@@ -637,7 +644,7 @@ function filemanager_file_explorer(
         }
 
         if (($prev_dir_str != '') && ($father != $relative_directory)) {
-            $table->data[0][0] = html_print_image('images/go_previous.png', true);
+            $table->data[0][0] = html_print_image('images/go_previous.png', true, ['class' => 'invert_filter']);
             $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['dbpass']).'">';
             $table->data[0][1] .= __('Parent directory');
             $table->data[0][1] .= '</a>';
@@ -653,26 +660,26 @@ function filemanager_file_explorer(
 
             switch ($fileinfo['mime']) {
                 case MIME_DIR:
-                    $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory')]);
+                    $data[0] = html_print_image('images/mimetypes/directory.png', true, ['title' => __('Directory'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_IMAGE:
-                    $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image')]);
+                    $data[0] = html_print_image('images/mimetypes/image.png', true, ['title' => __('Image'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_ZIP:
-                    $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file')]);
+                    $data[0] = html_print_image('images/mimetypes/zip.png', true, ['title' => __('Compressed file'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_TEXT:
-                    $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                    $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file'), 'class' => 'invert_filter']);
                 break;
 
                 case MIME_UNKNOWN:
                     if ($fileinfo['size'] == 0) {
                         if ((strstr($fileinfo['name'], '.txt') !== false) || (strstr($fileinfo['name'], '.conf') !== false) || (strstr($fileinfo['name'], '.sql') !== false) || (strstr($fileinfo['name'], '.pl') !== false)) {
                             $fileinfo['mime'] = MIME_TEXT;
-                            $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file')]);
+                            $data[0] = html_print_image('images/mimetypes/text.png', true, ['title' => __('Text file'), 'class' => 'invert_filter']);
                         } else {
                             // unknow
                             $data[0] = '';
@@ -684,7 +691,7 @@ function filemanager_file_explorer(
                 break;
 
                 default:
-                    $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown')]);
+                    $data[0] = html_print_image('images/mimetypes/unknown.png', true, ['title' => __('Unknown'), 'class' => 'invert_filter']);
                 break;
             }
 
@@ -752,7 +759,7 @@ function filemanager_file_explorer(
                         && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
                         $hash = md5($fileinfo['realpath'].$config['dbpass']);
-                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file')]).'</a>';
+                        $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
                     }
                 }
             }
@@ -761,7 +768,7 @@ function filemanager_file_explorer(
                 $filename = base64_encode($fileinfo['name']);
                 $hash = md5($filename.$config['dbpass']);
                 $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
-                $data[4] .= html_print_image('images/file.png', true);
+                $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
             }
 
@@ -863,7 +870,7 @@ function filemanager_file_explorer(
             echo '</div>';
         } else {
             echo "<div style='text-align: right; width: ".$table->width."; color:#AC4444; margin-bottom:10px;'>";
-            echo "<image src='images/info.png' />".__('The directory is read-only');
+            echo "<image class='invert_filter' src='images/info.png' />".__('The directory is read-only');
             echo '</div>';
         }
     }
@@ -955,4 +962,38 @@ function filemanager_list_dir($dirpath)
     closedir($dir);
 
     return array_merge($dirs, $files);
+}
+
+
+/**
+ * A miminal security check to avoid directory traversal.
+ *
+ * @param string $directory      String with the complete directory.
+ * @param string $safedDirectory String with a safe name directory.
+ *
+ * @return string Safe directory
+ */
+function filemanager_safe_directory(
+    string $directory,
+    string $safedDirectory=''
+) {
+    // Safe output.
+    $directory = io_safe_output($directory);
+    $forbiddenAttempting = false;
+
+    if ((bool) preg_match('/(\.){1,2}/', $directory) !== false) {
+        $directory = preg_replace('/(\.){1,2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+        $forbiddenAttempting = true;
+    }
+
+    if ((bool) preg_match('/(/\/\)+/', $directory) !== false) {
+        $directory = preg_replace('/(/\/\)+/', '/', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+        $forbiddenAttempting = true;
+    }
+
+    if ($forbiddenAttempting === true) {
+        db_pandora_audit('File manager', 'Attempting to use a forbidden file or directory name');
+    }
+
+    return $directory;
 }

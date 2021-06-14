@@ -246,13 +246,24 @@ function mainModuleGroups()
         $array_data[$value['id_grupo']][$value['id_mg']] = $value;
     }
 
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         __('Combined table of agent group and module group'),
         'images/module_group.png',
         false,
         '',
         false,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Views'),
+            ],
+        ]
     );
 
     echo "<table cellpadding='4' cellspacing='4' class='databox filters bolder margin-bottom-10' width='100%'>

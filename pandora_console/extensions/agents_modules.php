@@ -1,16 +1,29 @@
 <?php
 /**
- *  Pandora FMS - http://pandorafms.com
- *  ==================================================
- *  Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
- *  Please see http://pandorafms.org for full contribution list
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
+ * Agents/Modules Monitoring view.
+ *
+ * @category   Operations
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
 // Begin.
@@ -370,7 +383,7 @@ function mainAgentsModules()
 			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else {
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         }
     }
 
@@ -435,14 +448,25 @@ function mainAgentsModules()
 
     if ($config['pure'] == 0) {
         // Header.
-        ui_print_page_header(
+        ui_print_standard_header(
             __('Agents/Modules'),
             'images/module.png',
             false,
             '',
             false,
-            $updated_time
+            (array) $updated_time,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
         );
+
         echo '<table class="w100p">';
         echo '<tr>';
         echo "<td> <span class='float-right'>".$fullscreen['text'].'</span> </td>';

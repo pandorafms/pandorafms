@@ -3152,10 +3152,6 @@ function events_get_agent(
         }
     }
 
-    if (is_metaconsole() === true && empty($id_server) === false) {
-        $sql_where .= ' AND server_id = '.$id_server;
-    }
-
     if ($show_summary_group) {
         return events_get_events_grouped(
             $sql_where,
@@ -3169,7 +3165,7 @@ function events_get_agent(
     } else {
         return events_get_events_no_grouped(
             $sql_where,
-            (is_metaconsole() === true && empty($id_server) === false) ? true : false,
+            (is_metaconsole() === true && (int) $id_server === 0) ? true : false,
             $history
         );
     }
@@ -3792,7 +3788,7 @@ function events_page_responses($event, $childrens_ids=[])
 				$('.params_rows').remove();
 				
 				$('#responses_table')
-					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"left height_30px\" colspan=\"2\">'+description+'</td></tr>');
+					.append('<tr class=\"params_rows\"><td>".__('Description')."</td><td class=\"height_30px\" colspan=\"2\">'+description+'</td></tr>');
 				
 				if (params.length == 1 && params[0] == '') {
 					return;
@@ -4318,10 +4314,6 @@ function events_page_details($event, $server='')
 
     $table_class = 'table_modal_alternate';
 
-    if ($config['style'] === 'pandora_black') {
-        $table_class = 'black_table_modal_alternate';
-    }
-
     // Details.
     $table_details = new stdClass;
     $table_details->width = '100%';
@@ -4526,7 +4518,7 @@ function events_page_details($event, $server='')
             $link = "winopeng_var('".$url.'?'.$graph_params_str."','".$win_handle."', 800, 480)";
 
             $data[1] = '<a href="javascript:'.$link.'">';
-            $data[1] .= html_print_image('images/chart_curve.png', true);
+            $data[1] .= html_print_image('images/chart_curve.png', true, ['class' => 'invert_filter']);
             $data[1] .= '</a>';
             $table_details->data[] = $data;
         }
@@ -4546,13 +4538,19 @@ function events_page_details($event, $server='')
             $data[1] .= html_print_image(
                 'images/bell.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         } else {
             $data[1] .= html_print_image(
                 'images/bell_pause.png',
                 true,
-                ['title' => __('Go to data overview')]
+                [
+                    'title' => __('Go to data overview'),
+                    'class' => 'invert_filter',
+                ]
             );
         }
 

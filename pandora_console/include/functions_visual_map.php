@@ -2666,7 +2666,7 @@ function visual_map_process_wizard_add_modules(
     $id_server=0,
     $kind_relationship=VISUAL_MAP_WIZARD_PARENTS_NONE,
     $item_in_the_map=0,
-    $fontf='arial',
+    $fontf='lato',
     $fonts='12pt'
 ) {
     if (empty($id_modules)) {
@@ -2943,7 +2943,7 @@ function visual_map_process_wizard_add_agents(
     $id_server=0,
     $kind_relationship=VISUAL_MAP_WIZARD_PARENTS_NONE,
     $item_in_the_map=0,
-    $fontf='arial',
+    $fontf='lato',
     $fonts='12pt'
 ) {
     global $config;

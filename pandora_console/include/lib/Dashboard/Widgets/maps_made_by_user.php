@@ -29,7 +29,7 @@
 namespace PandoraFMS\Dashboard;
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
-
+use PandoraFMS\User;
 /**
  * Maps by users Widgets.
  */
@@ -498,6 +498,8 @@ class MapsMadeByUser extends Widget
                 'ratio'   => $ratio_t,
                 'size'    => $size,
                 'cellId'  => $this->cellId,
+                'hash'    => User::generatePublicHash(),
+                'id_user' => $config['id_user'],
             ]
         );
 

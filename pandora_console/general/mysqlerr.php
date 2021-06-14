@@ -28,7 +28,6 @@
 .modalheadertex{
     color:white;
     position:relative;
-    font-family:Nunito;
     font-size:13pt;
     top:8px;
 }
@@ -70,7 +69,6 @@
 }
 .modalwikibuttontex{
     color:#ffffff;
-    font-family:Nunito;
     font-size:10pt;
     position:relative;
     top:6px;

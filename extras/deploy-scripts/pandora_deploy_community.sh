@@ -254,6 +254,8 @@ server_dependencies=" \
     perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
+    expect \
+	openssh-clients \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -270,10 +272,10 @@ vmware_dependencies=" \
 execute_cmd "yum install -y $vmware_dependencies" "Installing SDK VMware perl dependencies"
 
 # Instant client Oracle
-oracle_dependencier=" \
+oracle_dependencies=" \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-basic-19.8.0.0.0-1.x86_64.rpm \
     https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm"
-execute_cmd "yum install -y $vmware_dependencies" "Installing Oracle Instant client"
+execute_cmd "yum install -y $oracle_dependencies" "Installing Oracle Instant client"
 
 # Disabling SELINUX and firewalld
 setenforce 0

@@ -105,7 +105,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
-('custom_report_front_font', 'opensans.ttf'),
+('custom_report_front_font', 'lato.ttf'),
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
@@ -226,7 +226,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES
-(1,'Documentation','http://wiki.pandorafms.com/'),
+(1,'Documentation','https://pandorafms.com/manual'),
 (2,'Enterprise Edition','http://pandorafms.com'),
 (3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
 (4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),
@@ -364,7 +364,7 @@ INSERT INTO `tusuario_perfil` (`id_up`, `id_usuario`, `id_perfil`, `id_grupo`, `
 -- Dumping data for table `tperfil`
 --
 
-INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1),(4,'Group&#x20;coordinator',1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
 --
 -- Dumping data for table `tnews`

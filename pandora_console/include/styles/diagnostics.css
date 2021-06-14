@@ -19,6 +19,7 @@
 
 .dataTables_wrapper {
   min-height: 150px;
+  margin-bottom: 20px;
 }
 
 .datatables-td-title {

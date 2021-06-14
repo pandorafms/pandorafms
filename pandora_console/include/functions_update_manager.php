@@ -755,43 +755,47 @@ function newsletter_wiz_modal(
     );
 
     // Avoid to show default email.
-    if ($email == 'admin@example.com') {
+    if ($email === 'admin@example.com') {
         $email = '';
     }
 
-    $output .= '<div id="newsletter_wizard" title="';
-    $output .= __('Do you want to be up to date?');
-    $output .= '" class="invisible">';
-    $output .= '<div class="register_update_manager">';
-    $output .= html_print_image('images/pandora_circle_big.png', true);
-    $output .= '</div>';
-
-    $output .= '<div class="newsletter_div">';
-    $output .= __(
-        'Subscribe to our newsletter',
-        $product_name
-    );
-    $output .= '</div>';
-
-    $output .= '<div class="license_text both">';
-    $output .= '<p>Stay up to date with updates, upgrades and promotions by subscribing to our newsletter.</p>';
-    $output .= '<p>';
-    $output .= __(
-        'By subscribing to the newsletter, you accept that your email will be transferred to a database owned by %s. These data will be used only to provide you with information about %s and will not be given to third parties. You can unsubscribe from this database at any time from the newsletter subscription options.',
-        $product_name,
-        $product_name
+    $modalContent = html_print_div(
+        [
+            'class'   => 'register_update_manager',
+            'content' => html_print_image(
+                'images/pandora_circle_big.png',
+                true
+            ),
+        ],
+        true
     );
 
-    $output .= '</p>';
+    $modalContent .= html_print_div(
+        [
+            'class'   => 'newsletter_div',
+            'content' => __('Subscribe to our newsletter'),
+        ],
+        true
+    );
 
-    $output .= '</div>';
-    // Show regiter to newsletter state.
-    $show_newsletter = ($display_newsletter !== true) ? 'inline-block' : 'none';
+    $modalContent .= html_print_div(
+        [
+            'class'   => 'license_text both',
+            'content' => sprintf(
+                '<p>%s</p><p>%s</p>',
+                __('Stay up to date with updates, upgrades and promotions by subscribing to our newsletter.'),
+                __(
+                    'By subscribing to the newsletter, you accept that your email will be transferred to a database owned by %s. These data will be used only to provide you with information about %s and will not be given to third parties. You can unsubscribe from this database at any time from the newsletter subscription options.',
+                    $product_name,
+                    $product_name
+                )
+            ),
+        ],
+        true
+    );
 
-    $output .= '<div class="mrgn_lft_4em">';
-    $output .= '<div id="box_newsletter">';
-    $output .= '<span id="label-email-newsletter">'.__('Email').' </span>';
-    $output .= html_print_input_text_extended(
+    // Email Input case.
+    $emailInputCase = '<span id="label-email-newsletter">'.__('Email').' </span>'.html_print_input_text_extended(
         'email-newsletter',
         $email,
         'text-email-newsletter',
@@ -800,52 +804,110 @@ function newsletter_wiz_modal(
         255,
         false,
         '',
-        ['style' => 'display:'.$show_newsletter.'; width: 200px;'],
+        ['style' => 'display: inline-block; width: 200px;'],
         true
     );
-    $output .= '</div><br /><br />';
 
-    $output .= '<div class="submit_buttons_container">';
-    $output .= '<div class="left">';
-    $output .= html_print_submit_button(
-        __('Cancel'),
-        'cancel_newsletter',
-        false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel w100px"',
+    // Generate the submit buttons.
+    // Cancel Button.
+    $submitButtons = html_print_div(
+        [
+            'class'   => 'left',
+            'content' => html_print_submit_button(
+                __('Cancel'),
+                'cancel_newsletter',
+                false,
+                'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel w100px"',
+                true
+            ),
+        ],
         true
     );
-    $output .= '</div>';
-    $output .= '<div class="right">';
-    $output .= html_print_submit_button(
-        __('OK!'),
-        'newsletter',
-        false,
-        'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
-        true
-    );
-    $output .= '</div>';
-    $output .= '</div>';
 
-    $output .= '<div id="both"></div>';
-    $output .= '<br/>';
-    $output .= '</div>';
-    $output .= '</div>';
+    // OK Button.
+    $submitButtons .= html_print_div(
+        [
+            'class'   => 'right',
+            'content' => html_print_submit_button(
+                __('OK!'),
+                'newsletter',
+                false,
+                'class="ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next w100px"',
+                true
+            ),
+        ],
+        true
+    );
+
+    $submitButtonsCase = html_print_div(
+        [
+            'class'   => 'submit_buttons_container',
+            'content' => $submitButtons,
+        ],
+        true
+    );
+
+    $modalContent .= html_print_div(
+        [
+            'class'   => 'mrgn_lft_4em',
+            'content' => html_print_div(
+                [
+                    'id'      => 'box_newsletter',
+                    'content' => $emailInputCase.$submitButtonsCase.'<div id="both"></div><br />',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $output .= html_print_div(
+        [
+            'id'      => 'newsletter_wizard',
+            'style'   => 'display: none;',
+            'title'   => __('Do you want to be up to date?'),
+            'content' => $modalContent,
+        ],
+        true
+    );
 
     // Verification modal.
-    $output .= '<div id="news_ensure_cancel" title="Confirmation Required" class="invisible">';
-    $output .= '<div class="font_12_20">';
-    $output .= __('Are you sure you don\'t want to subscribe?');
-    $output .= '<p>';
-    $output .= __('You will miss all news about amazing features and fixes!');
-    $output .= '</p>';
-    $output .= '</div>';
-    $output .= '</div>';
+    $verificationContent = html_print_div(
+        [
+            'class'   => 'font_12_20',
+            'content' => __('Are you sure you don\'t want to subscribe?').'<p>'.__('You will miss all news about amazing features and fixes!').'</p>',
+        ],
+        true
+    );
+
+    $output .= html_print_div(
+        [
+            'id'      => 'news_ensure_cancel',
+            'style'   => 'display: none;',
+            'title'   => 'Confirmation Required',
+            'content' => $verificationContent,
+        ],
+        true
+    );
 
     // Results modal.
-    $output .= '<div id="news_result" title="Subscription process result" class="invisible">';
-    $output .= '<div id="news_result_content" class="font_12_20">';
-    $output .= '</div>';
-    $output .= '</div>';
+    $resultsContent = html_print_div(
+        [
+            'id'    => 'news_result_content',
+            'class' => 'font_12_20',
+        ],
+        true
+    );
+
+    $output .= html_print_div(
+        [
+            'id'      => 'news_result',
+            'style'   => 'display: none;',
+            'title'   => 'Subscription process result',
+            'content' => $resultsContent,
+        ],
+        true
+    );
 
     ob_start();
     ?>
@@ -1428,7 +1490,7 @@ function update_manager_check_online_free_packages($is_ajax=true)
                     var mr_available_header = "<?php echo __('There are db changes'); ?>\n";
                     var text1_mr_file = "<?php echo __('There are new database changes available to apply. Do you want to start the DB update process?'); ?>\n";
                     var text2_mr_file = "<?php echo __('We recommend launching '); ?>\n";
-                    var text3_mr_file = "<?php echo __('planned downtime'); ?>\n";
+                    var text3_mr_file = "<?php echo __('Scheduled downtime'); ?>\n";
 
                     var language = "<?php echo $config['language']; ?>";
                     var docsUrl = (language === "es")

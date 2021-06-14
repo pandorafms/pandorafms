@@ -7,7 +7,7 @@ class DefaultCss
 
 	public static $definition = [
 		'BODY' => [
-			'FONT-FAMILY' => 'serif',
+			'FONT-FAMILY' => 'lato',
 			'FONT-SIZE' => '11pt',
 			'TEXT-INDENT' => '0pt',
 			'LINE-HEIGHT' => 'normal',
@@ -63,7 +63,7 @@ class DefaultCss
 		],
 		'PRE' => [
 			'MARGIN' => '0.83em 0',
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 		],
 		'S' => [
 			'TEXT-DECORATION' => 'line-through',
@@ -110,16 +110,16 @@ class DefaultCss
 			'FONT-STYLE' => 'italic',
 		],
 		'SAMP' => [
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 		],
 		'CODE' => [
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 		],
 		'KBD' => [
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 		],
 		'TT' => [
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 		],
 		'SMALL' => [
 			'FONT-SIZE' => '83%',
@@ -196,17 +196,17 @@ class DefaultCss
 			'IMAGE-RENDERING' => 'auto',
 		],
 		'INPUT' => [
-			'FONT-FAMILY' => 'sans-serif',
+			'FONT-FAMILY' => 'lato',
 			'VERTICAL-ALIGN' => 'middle',
 			'FONT-SIZE' => '0.9em',
 		],
 		'SELECT' => [
-			'FONT-FAMILY' => 'sans-serif',
+			'FONT-FAMILY' => 'lato',
 			'FONT-SIZE' => '0.9em',
 			'VERTICAL-ALIGN' => 'middle',
 		],
 		'TEXTAREA' => [
-			'FONT-FAMILY' => 'monospace',
+			'FONT-FAMILY' => 'lato',
 			'FONT-SIZE' => '0.9em',
 			'VERTICAL-ALIGN' => 'text-bottom',
 		],

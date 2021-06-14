@@ -1,16 +1,32 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+/**
+ * Group View.
+ *
+ * @category   View
+ * @package    Pandora FMS
+ * @subpackage Monitoring.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 require_once 'include/config.php';
 require_once 'include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -62,17 +78,27 @@ if ($config['realtimestats'] == 0) {
     $updated_time .= '</a>';
 } else {
     // $updated_info = __("Updated at realtime");
-        $updated_info = '';
+    $updated_info = '';
 }
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Group view'),
     'images/group.png',
     false,
     '',
     false,
-    $updated_time
+    (array) $updated_time,
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ]
 );
 
 $total_agentes = 0;

@@ -24,12 +24,20 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     return;
 }
 
-\ui_print_page_header(
-    __('Monitoring').' &raquo; '.__('Clusters'),
+// Header.
+ui_print_standard_header(
+    __('Clusters'),
     'images/chart.png',
     false,
     '',
-    false
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+    ]
 );
 
 ui_require_css_file('first_task');

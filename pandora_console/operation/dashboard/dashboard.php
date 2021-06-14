@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Dashboards.
  *
  * @category   Dashboards
  * @package    Pandora FMS
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 require $config['homedir'].'/vendor/autoload.php';
@@ -70,6 +70,14 @@ if (is_ajax() === true) {
         }
     }
 } else {
+    if ((bool) is_metaconsole() === true) {
+        echo '<div class="meta_container_dashboard">';
+    }
+
     // Run.
     $cs->run();
+
+    if ((bool) is_metaconsole() === true) {
+        echo '</div>';
+    }
 }

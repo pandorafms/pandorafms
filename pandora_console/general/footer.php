@@ -31,7 +31,7 @@ if (!$config['MR']) {
     $config['MR'] = 0;
 }
 
-echo '<a class="footer" target="_blank" href="'.$config['homeurl'].$license_file.'">';
+echo '<a class="footer"target="_blank" href="'.$config['homeurl'].$license_file.'">';
 
 require_once $config['homedir'].'/include/functions_update_manager.php';
 
@@ -49,9 +49,7 @@ echo __(
     $pandora_version,
     $build_package_version,
     $config['MR']
-);
-echo '</a><br />';
-echo '<small><span>'.__('Page generated on %s', date('Y-m-d H:i:s')).'</span></small>';
+).'</a><br><span>'.__('Page generated on %s', date('Y-m-d H:i:s')).'</span><br>';
 
 
 

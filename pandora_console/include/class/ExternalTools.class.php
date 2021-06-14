@@ -221,6 +221,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -249,6 +251,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -277,6 +281,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -326,6 +332,8 @@ class ExternalTools extends HTML
                         'title'   => __('Add new custom command'),
                         'onclick' => 'manageCommandLines(event)',
                         'id'      => 'img_add_button_custom_command',
+                        'class'   => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -420,6 +428,7 @@ class ExternalTools extends HTML
                                 'title'   => __('Delete this custom command'),
                                 'onclick' => 'manageCommandLines(event)',
                                 'id'      => 'img_delete_button_custom_'.$index,
+                                'class'   => 'invert_filter',
                             ]
                         ),
                     ],
@@ -462,24 +471,18 @@ class ExternalTools extends HTML
             $ids[] = join(',', $address);
         }
 
+        // Must be an a IP at least for work.
+        if (empty($ids) === true) {
+            ui_print_message(__('The agent doesn`t have an IP yet'), 'error', true);
+            return;
+        }
+
         $ips = db_get_all_rows_sql(
             sprintf(
                 'SELECT ip FROM taddress WHERE id_a IN (%s)',
                 join(',', $ids)
             )
         );
-
-        // Must be an a IP at least for work.
-        if (empty($ips) === true) {
-            html_print_div(
-                [
-                    'class'   => 'error',
-                    'style'   => 'margin-top:5px',
-                    'content' => __('The agent hasn\'t got IP'),
-                ]
-            );
-            return;
-        }
 
         // Make the data for show in table.
         $ipsSelect = array_reduce(

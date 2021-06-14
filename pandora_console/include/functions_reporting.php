@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_netflow.php';
@@ -728,6 +729,13 @@ function reporting_make_reporting_data(
 
             case 'agent_module':
                 $report['contents'][] = reporting_agent_module(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'agents_inventory':
+                $report['contents'][] = reporting_agents_inventory(
                     $report,
                     $content
                 );
@@ -1836,6 +1844,7 @@ function reporting_event_report_group(
         $content['name'] = __('Event Report Group');
     }
 
+    $id_meta = 0;
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
@@ -1927,7 +1936,7 @@ function reporting_event_report_group(
         true,
         false,
         false,
-        false,
+        $id_meta,
         $filter_event_filter_exclude
     );
 
@@ -2175,10 +2184,6 @@ function reporting_event_report_module(
         );
     }
 
-    if (is_metaconsole()) {
-        metaconsole_restore_db();
-    }
-
     $return['description'] = $content['description'];
     $return['show_extended_events'] = $content['show_extended_events'];
     $return['date'] = reporting_get_date_text($report, $content);
@@ -2240,7 +2245,7 @@ function reporting_event_report_module(
         $return['data'] = array_reverse($data);
     }
 
-    if ($config['metaconsole']) {
+    if (is_metaconsole() === true) {
         metaconsole_restore_db();
     }
 
@@ -2250,6 +2255,184 @@ function reporting_event_report_module(
     } else {
         $return['total_events'] = 0;
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+function reporting_agents_inventory($report, $content)
+{
+    global $config;
+
+    $return['name'] = $content['name'];
+    $return['type'] = 'agents_inventory';
+    $return['title'] = $content['name'];
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['description'] = $content['description'];
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $external_source = io_safe_input(json_decode($content['external_source'], true));
+    $es_agents_inventory_display_options = $external_source['agents_inventory_display_options'];
+    $es_custom_fields = $external_source['agent_custom_field_filter'];
+    $es_os_filter = $external_source['agent_os_filter'];
+    $es_agent_status_filter = $external_source['agent_status_filter'];
+    $es_agent_version_filter = $external_source['agent_version_filter'];
+    $es_agent_module_search_filter = $external_source['agent_module_search_filter'];
+    $es_agent_group_filter = $external_source['agent_group_filter'];
+    $es_agent_server_filter = $external_source['agent_server_filter'];
+    $es_users_groups = $external_source['users_groups'];
+    $es_agent_remote_conf = $external_source['agent_remote_conf'];
+
+    if ($es_agents_inventory_display_options === '') {
+        $es_agents_inventory_display_options = [];
+    }
+
+    $search_sql = '';
+
+    if ($es_custom_fields != '') {
+        $search_sql .= ' AND id_os = '.$es_custom_fields;
+    }
+
+    if (in_array('0', $es_os_filter) === false) {
+        $search_sql .= ' AND id_os IN ('.implode(',', $es_os_filter).')';
+    }
+
+    if ($es_agent_version_filter != '') {
+        $search_sql .= ' AND tagente.agent_version LIKE "%'.$es_agent_version_filter.'%"';
+    }
+
+    if ($es_agent_module_search_filter != '') {
+        $search_sql .= ' AND tam.nombre LIKE "%'.$es_agent_module_search_filter.'%"';
+    }
+
+    if ($es_agent_group_filter != 0) {
+        $search_sql .= ' AND (tagente.id_grupo = '.$es_agent_group_filter.' OR tasg.id_group = '.$es_agent_group_filter.')';
+    }
+
+    if ($es_agent_remote_conf != 0) {
+        $search_sql .= ' AND tagente.remote = '.$es_agent_remote_conf;
+    }
+
+    $user_groups_to_sql = implode(',', array_keys(users_get_groups()));
+
+    $sql = sprintf(
+        'SELECT DISTINCT(tagente.id_agente) AS id_agente,
+        tagente.id_os,
+        tagente.direccion,
+        tagente.agent_version,
+        tagente.alias,
+        tagente.id_grupo,
+        tagente.comentarios,
+        tagente.url_address,
+        tagente.remote
+        FROM tagente LEFT JOIN tagent_secondary_group tasg
+            ON tagente.id_agente = tasg.id_agent
+        LEFT JOIN tagente_modulo tam
+            ON tam.id_agente = tagente.id_agente
+        WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
+            %s',
+        $user_groups_to_sql,
+        $user_groups_to_sql,
+        $search_sql
+    );
+
+    if (is_metaconsole()) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    } else {
+        $servers_ids = [0];
+    }
+
+    $return_data = [];
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole()) {
+            $server = metaconsole_get_connection_by_id($server_id);
+
+            if ((int) $es_agent_server_filter !== 0
+                && (int) $es_agent_server_filter !== (int) $server_id
+            ) {
+                continue;
+            }
+
+            metaconsole_connect($server);
+        }
+
+        $agents = db_get_all_rows_sql($sql);
+
+        foreach ($agents as $key => $value) {
+            if (array_search('secondary_groups', $es_agents_inventory_display_options) !== false) {
+                $sql_agent_sec_group = sprintf(
+                    'SELECT id_group
+                    FROM tagent_secondary_group
+                    WHERE id_agent = %d',
+                    $value['id_agente']
+                );
+
+                $agent_secondary_groups = [];
+                $agent_secondary_groups = db_get_all_rows_sql($sql_agent_sec_group);
+
+                $agents[$key]['secondary_groups'] = $agent_secondary_groups;
+            }
+
+            if (array_search('custom_fields', $es_agents_inventory_display_options) !== false) {
+                $sql_agent_custom_fields = sprintf(
+                    'SELECT tacd.description, tacf.name
+                    FROM tagent_custom_data tacd INNER JOIN tagent_custom_fields tacf
+                    ON tacd.id_field = tacf.id_field
+                    WHERE tacd.description != "" AND tacd.id_agent = %d',
+                    $value['id_agente']
+                );
+
+                $agent_custom_fields = [];
+                $agent_custom_fields = db_get_all_rows_sql($sql_agent_custom_fields);
+
+                $agents[$key]['custom_fields'] = $agent_custom_fields;
+            }
+
+            if (array_search('estado', $es_agents_inventory_display_options) !== false) {
+                if (in_array(6, $es_agent_status_filter)) {
+                    if (agents_get_status($value['id_agente']) === 0) {
+                        unset($agents[$key]);
+                    } else {
+                        $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                    }
+                } else {
+                    if (in_array('-1', $es_agent_status_filter) === true || in_array(agents_get_status($value['id_agente']), $es_agent_status_filter)) {
+                        $agents[$key]['estado'] = agents_get_status($value['id_agente']);
+                    } else {
+                        // Agent does not match status filter.
+                        unset($agents[$key]);
+                    }
+                }
+            }
+        }
+
+        foreach ($agents as $key => $value) {
+            foreach ($value as $agent_val_key => $agent_val) {
+                // Exclude from data to be displayed in report those fields that were not selected to be displayed by user.
+                if (array_search($agent_val_key, $es_agents_inventory_display_options) === false) {
+                    unset($agents[$key][$agent_val_key]);
+                }
+            }
+        }
+
+        $return_data[$server_id] = $agents;
+
+        if (is_metaconsole()) {
+            metaconsole_restore_db();
+        }
+    }
+
+    $all_data = [];
+
+    foreach ($return_data as $server_agents) {
+        foreach ($server_agents as $agent) {
+            $all_data[] = $agent;
+        }
+    }
+
+    $return['data'] = $all_data;
 
     return reporting_check_structure_content($return);
 }
@@ -2272,7 +2455,7 @@ function reporting_inventory_changes($report, $content, $type)
         metaconsole_connect($server);
     }
 
-    $es = json_decode($content['external_source'], true);
+        $es = json_decode($content['external_source'], true);
 
     $id_agent = $es['id_agents'];
     $module_name = $es['inventory_modules'];
@@ -2713,6 +2896,7 @@ function reporting_exception(
             // Metaconsole connection.
             $server_name = $exc['server_name'];
             if (($config['metaconsole'] == 1) && $server_name != '' && is_metaconsole()) {
+                metaconsole_restore_db();
                 $connection = metaconsole_get_connection($server_name);
                 if (metaconsole_load_external_db($connection) != NOERR) {
                     // ui_print_error_message ("Error connecting to ".$server_name);
@@ -3241,10 +3425,6 @@ function reporting_event_report_agent(
         );
     }
 
-    if ($config['metaconsole']) {
-        metaconsole_restore_db();
-    }
-
     $label = (isset($content['style']['label'])) ? $content['style']['label'] : '';
     if ($label != '') {
         $label = reporting_label_macro(
@@ -3291,8 +3471,13 @@ function reporting_event_report_agent(
         $filter_event_type,
         $filter_event_status,
         $filter_event_filter_search,
-        $filter_event_filter_exclude
+        $filter_event_filter_exclude,
+        $id_server
     );
+
+    if (is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
 
     reporting_set_conf_charts(
         $width,
@@ -4901,7 +5086,7 @@ function reporting_sql_graph(
                 $width,
                 $height,
                 $content['type'],
-                true,
+                $only_image,
                 ui_get_full_url(false, false, false, false),
                 $ttl,
                 $content['top_n_value']
@@ -9060,8 +9245,8 @@ function reporting_custom_graph(
         case 'data':
             $data = [];
             foreach ($modules as $key => $value) {
-                $data[$value] = modules_get_agentmodule_data(
-                    $value,
+                $data[$value['module']] = modules_get_agentmodule_data(
+                    $value['module'],
                     $content['period'],
                     $report['datetime']
                 );
@@ -9579,12 +9764,21 @@ function reporting_get_module_detailed_event(
  * It construct a table object with all the grouped events happened in an agent
  * during a period of time.
  *
- * @param mixed Agent id(s) to get the report from.
- * @param int Period of time (in seconds) to get the report.
- * @param int Beginning date (unixtime) of the report
- * @param bool Flag to return or echo the report table (echo by default).
+ * @param mixed   $id_agents                   Agent id(s) to get the report from.
+ * @param integer $period                      Period of time (in seconds) to get the report.
+ * @param integer $date                        Beginning date (unixtime) of the report.
+ * @param boolean $return                      Flag to return or echo the report table (echo by default).
+ * @param boolean $only_data                   Only data.
+ * @param boolean $history                     History.
+ * @param boolean $show_summary_group          Show summary group.
+ * @param boolean $filter_event_severity       Filter.
+ * @param boolean $filter_event_type           Filter.
+ * @param boolean $filter_event_status         Filter.
+ * @param boolean $filter_event_filter_search  Filter.
+ * @param boolean $filter_event_filter_exclude Filter.
+ * @param integer $id_server                   Id server.
  *
- * @return A table object (XHTML)
+ * @return array table object (XHTML)
  */
 function reporting_get_agents_detailed_event(
     $id_agents,
@@ -9598,7 +9792,8 @@ function reporting_get_agents_detailed_event(
     $filter_event_type=false,
     $filter_event_status=false,
     $filter_event_filter_search=false,
-    $filter_event_filter_exclude=false
+    $filter_event_filter_exclude=false,
+    $id_server=0
 ) {
     global $config;
 
@@ -9633,7 +9828,7 @@ function reporting_get_agents_detailed_event(
             false,
             false,
             false,
-            false,
+            $id_server,
             $filter_event_filter_exclude
         );
 
@@ -10412,11 +10607,11 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
     $tdata = [];
     $tdata[0] = html_print_image('images/module_critical.png', true, ['title' => __('Monitor critical')], false, false, false, true);
     $tdata[1] = $data['monitor_critical'] <= 0 ? '-' : $data['monitor_critical'];
-    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="big_data line_heigth_initial" href="'.$urls['monitor_critical'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = html_print_image('images/module_warning.png', true, ['title' => __('Monitor warning')], false, false, false, true);
     $tdata[3] = $data['monitor_warning'] <= 0 ? '-' : $data['monitor_warning'];
-    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="big_data line_heigth_initial" href="'.$urls['monitor_warning'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
@@ -10427,14 +10622,14 @@ function reporting_get_stats_modules_status($data, $graph_width=250, $graph_heig
 
     $tdata[2] = html_print_image('images/module_unknown.png', true, ['title' => __('Monitor unknown')], false, false, false, true);
     $tdata[3] = $data['monitor_unknown'] <= 0 ? '-' : $data['monitor_unknown'];
-    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
+    $tdata[3] = '<a style="color: '.COL_UNKNOWN.';" class="big_data line_heigth_initial" href="'.$urls['monitor_unknown'].'">'.$tdata[3].'</a>';
     $table_mbs->rowclass[] = '';
     $table_mbs->data[] = $tdata;
 
     $tdata = [];
     $tdata[0] = html_print_image('images/module_notinit.png', true, ['title' => __('Monitor not init')], false, false, false, true);
     $tdata[1] = $data['monitor_not_init'] <= 0 ? '-' : $data['monitor_not_init'];
-    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
+    $tdata[1] = '<a style="color: '.COL_NOTINIT.';" class="big_data line_heigth_initial" href="'.$urls['monitor_not_init'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '';
     $table_mbs->rowclass[] = '';
@@ -10547,7 +10742,14 @@ function reporting_get_stats_users($data)
 
     $tdata = [];
     $tdata[0] = html_print_image('images/user.png', true, ['title' => __('Defined users'), 'class' => 'invert_filter']);
-    $tdata[1] = count(get_users());
+    $user_groups = users_get_strict_mode_groups($config['id_user'], false);
+    if (array_key_exists(0, $user_groups)) {
+        $users = users_get_user_users($config['id_user'], 'AR', true);
+    } else {
+        $users = users_get_user_users($config['id_user'], 'AR', false);
+    }
+
+    $tdata[1] = count($users);
     $tdata[1] = '<a class="big_data" href="'.$urls['defined_users'].'">'.$tdata[1].'</a>';
 
     $tdata[2] = $tdata[3] = '&nbsp;';
@@ -12877,7 +13079,7 @@ function reporting_get_stats_servers()
 
     if (isset($server_performance['total_web_modules'])) {
         $tdata = [];
-        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules')]);
+        $tdata[0] = html_print_image('images/world.png', true, ['title' => __('Web modules'), 'class' => 'invert_filter']);
         $tdata[1] = '<span class="big_data">'.format_numeric($server_performance['total_web_modules']).'</span>';
 
         $tdata[2] = '<span class="med_data">'.format_numeric($server_performance['web_modules_rate'], 2).'</span>';
@@ -13947,4 +14149,70 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     }
 
     return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Email template for sending reports.
+ *
+ * @param string $subjectEmail Subject of email.
+ * @param string $bodyEmail    Body of email.
+ * @param string $scheduled    Id of schedule report.
+ * @param string $reportName   Report name.
+ * @param string $email        Serialized list of destination emails.
+ * @param array  $attachments  Attachments.
+ *
+ * @return void
+ */
+function reporting_email_template(
+    string $subjectEmail='',
+    string $bodyEmail='',
+    string $scheduled='',
+    string $reportName='',
+    string $email='',
+    array $attachments=null
+) {
+    // Subject.
+    $subject = (empty($subjectEmail) === true) ? '[Pandora] '.__('Reports') : $subjectEmail;
+    // Body.
+    if (empty($bodyEmail) === true) {
+        $body = __('Greetings').',';
+        $body .= '<p />';
+        $body .= __('Attached to this email there\'s a PDF file of the').' ';
+        $body .= $scheduled.' '.__('report');
+        $body .= ' <strong>"'.$reportName.'"</strong>';
+        $body .= '<p />';
+        $body .= __('Generated at').' '.date('Y/m/d H:i:s');
+        $body .= '<p />';
+        $body .= __('Thanks for your time.');
+        $body .= '<p />';
+        $body .= __('Best regards, Pandora FMS');
+        $body .= '<p />';
+        $body .= '<em>'.__('This is an automatically generated email from Pandora FMS, please do not reply.').'</em>';
+    } else {
+        $bodyEmail = str_replace(
+            [
+                "\r\n",
+                "\r",
+                '&#x0d;&#x0a;',
+            ],
+            "\n",
+            $bodyEmail
+        );
+
+        $body = '<p>'.implode("</p>\n<p>", explode("\n", $bodyEmail)).'</p>';
+    }
+
+    // Extract list of emails.
+    $destinationEmails = explode(',', io_safe_output($email));
+    foreach ($destinationEmails as $destination) {
+        $destination = trim($destination);
+
+        // Skip the empty 'to'.
+        if (empty($destination) === false) {
+            send_email_attachment($destination, $body, $subject, $attachments);
+        } else {
+            db_pandora_audit('ERROR:', 'Cron jobs mail, empty destination email.');
+        }
+    }
 }

@@ -23,6 +23,7 @@
 
 .visual-console-item * {
   overflow: visible;
+  font-family: inherit;
 }
 
 .visual-console-item.is-editing {
@@ -118,7 +119,6 @@
   flex-wrap: wrap;
   align-items: center;
   font-size: 12pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: 600;
   color: #343434;
   margin-right: 10px;
@@ -135,7 +135,6 @@
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -150,7 +149,6 @@
 }
 
 .div-input-group select {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   font-size: 10pt;
 }
@@ -189,7 +187,6 @@
 
 .div-input-group h3 {
   text-transform: initial;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   text-align: center;
   font-style: italic;
   text-decoration: underline;
@@ -321,13 +318,6 @@ p.error-p-validate {
   color: #ffffff;
 }
 
-/*
-@font-face {
-  font-family: Alarm Clock;
-  src: url(alarm-clock.ttf);
-}
-*/
-
 /* Digital clock */
 
 .visual-console-item .digital-clock {
@@ -348,12 +338,10 @@ p.error-p-validate {
 }
 
 .visual-console-item .digital-clock > span.time {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 25px;
 }
 
@@ -435,7 +423,6 @@ li#li-image-item label img {
 .discovery.modal * {
   font-weight: normal;
   color: #343434;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .discovery.modal select {

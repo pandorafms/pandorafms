@@ -79,6 +79,7 @@ cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
 cp -aRf conf/tentacle_* $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
 cp -aRf conf/tentacle_server.conf.new $RPM_BUILD_ROOT/etc/tentacle/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
+cp -aRf util/pandora_ha.pl $RPM_BUILD_ROOT/usr/bin/pandora_ha
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 cp -aRf AUTHORS COPYING README $RPM_BUILD_ROOT%{prefix}/pandora_server/
 
@@ -193,6 +194,7 @@ rm -Rf /etc/tentacle/tentacle_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
+rm -Rf /usr/bin/pandora_ha
 rm -Rf /etc/cron.hourly/pandora_db
 rm -Rf /etc/logrotate.d/pandora_server
 rm -Rf /usr/share/man/man1/pandora_server.1.gz
@@ -208,6 +210,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /usr/bin/pandora_exec
 /usr/bin/pandora_server
 /usr/bin/tentacle_server
+/usr/bin/pandora_ha
 
 %defattr(755,pandora,root,755)
 /usr/lib/perl5/PandoraFMS/

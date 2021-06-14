@@ -68,7 +68,12 @@ sub run ($$) {
 	$self->setServerID ();
 
 	for (1..$self->{'_num_threads'}) {
-		my $thr = threads->create (\&{$func}, $self);
+		my $thr = threads->create ({'exit' => 'thread_only'},
+			sub {
+				local $SIG{'KILL'} = sub  { exit 0; };
+				$func->(@_);
+			}, $self
+		);
 		return unless defined ($thr);
 		push (@{$self->{'_threads'}}, $thr->tid ());
 	}
@@ -301,12 +306,12 @@ sub stop ($) {
 		                       0, $self->{'_server_type'}, 0, 0);
 	};
 
-	# Detach server threads
+	# Sigkill all server threads
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object($tid);
 		next unless defined ($thr);
 
-   		$thr->detach();
+   	$thr->kill('KILL');
 	}
 }
 

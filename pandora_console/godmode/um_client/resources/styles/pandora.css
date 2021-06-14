@@ -156,7 +156,6 @@
 
 #box_online {
   background-image: url("../images/update_manager_background.jpg");
-  background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   background-color: #fff;
@@ -164,6 +163,7 @@
   border: 1px solid #f3f3f3;
   border-radius: 5px;
   min-height: 600px;
+  background-size: contain;
 }
 
 div#box_online * {

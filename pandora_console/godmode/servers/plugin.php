@@ -619,36 +619,6 @@ if (($create != '') || ($view != '')) {
                 __('To manage plugin you must activate centralized management')
             );
         }
-
-        if (!$config['metaconsole_deploy_plugin_server'] && $management_allowed) {
-            $deploy_plugin_server = true;
-
-            echo '<div id="deploy_messages" class="invisible">';
-            echo '<span>'.__('The previous configuration of plugins has been imported from the nodes. Please check that the definitions are correct.').'</br></br>'.'<b>'.__('Note:').'</b>'.__(
-                'These definitions will not be operational until you manually 
-    			copy the files from the nodes to the atachment/plugin/ directory of the meta console.'
-            ).'</br></br>'.__('You can find more information at:')."<a href='https://wiki.pandorafms.com'>https://wiki.pandorafms.com</a>".'</span>';
-            echo '</div>';
-            ?>
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    $("#deploy_messages").dialog({
-                        resizable: true,
-                        draggable: true,
-                        modal: true,
-                        height: 220,
-                        title: '<?php echo __('Warning'); ?>',
-                        width: 528,
-                        overlay: {
-                            opacity: 0.5,
-                            background: "black"
-                        }
-                    });
-                });
-            </script>
-            <?php
-            config_update_value('metaconsole_deploy_plugin_server', 1);
-        }
     } else {
         ui_print_page_header(
             __(

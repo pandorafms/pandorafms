@@ -330,10 +330,7 @@ if ($correctLogin) {
     sleep(15);
 
     // Protection on DoS attacks.
-    returnError(
-        'auth_error',
-        $returnType
-    );
+    echo 'auth error';
 }
 
 // Logout.

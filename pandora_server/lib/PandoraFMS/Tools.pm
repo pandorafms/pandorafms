@@ -915,8 +915,9 @@ sub float_equal {
 # Tries to load the PandoraEnterprise module. Must be called once before
 # enterprise_hook ().
 ################################################################################
-sub enterprise_load ($) {
+sub enterprise_load ($;$) {
 	my $pa_config = shift;
+	my $muted = shift;
 	
 	# Check dependencies
 	
@@ -944,7 +945,7 @@ sub enterprise_load ($) {
 	}
 	
 	# Initialize the enterprise module.
-	PandoraFMS::Enterprise::init($pa_config);
+	PandoraFMS::Enterprise::init($pa_config, $muted);
 	
 	return 1;
 }

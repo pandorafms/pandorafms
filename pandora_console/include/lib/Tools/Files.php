@@ -194,4 +194,123 @@ class Files
     }
 
 
+    /**
+     * Create a temporary directory with unique name.
+     *
+     * @param string $directory The directory where the temporary filename will be created.
+     * @param string $prefix    The prefix of the generated temporary filename.
+     *                          Windows use only the first three characters of prefix.
+     *
+     * @return string|false The new temporary filename, or false on failure.
+     */
+    public static function tempdirnam(string $directory, string $prefix='')
+    {
+        $filename = tempnam($directory, $prefix);
+        if ($filename === false) {
+            return false;
+        }
+
+        if (file_exists($filename) === true) {
+            unlink($filename);
+            mkdir($filename);
+            if (is_dir($filename) === true && is_writable($filename) === true) {
+                return $filename;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Apply permissions recursively on path.
+     *
+     * @param string  $path       Path to a file or directory.
+     * @param integer $file_perms Permissions to be applied to files found.
+     * @param integer $dir_perms  Permissions to be applied to directories found.
+     *
+     * @return void
+     */
+    public static function chmod(
+        string $path,
+        int $file_perms=0644,
+        int $dir_perms=0755
+    ) {
+        if (is_dir($path) === true) {
+            // Permissions over directories.
+            $dh = opendir($path);
+            if ($dh === false) {
+                return;
+            }
+
+            while (false !== ($fh = readdir($dh))) {
+                if (is_dir($fh) === true) {
+                    if ($fh === '.' || $fh === '..') {
+                        continue;
+                    }
+
+                    // Recursion: directory.
+                    self::chmod($path.'/'.$fh, $file_perms, $dir_perms);
+                } else {
+                    // Recursion: file.
+                    self::chmod($path.'/'.$fh, $file_perms, $dir_perms);
+                }
+            }
+
+            closedir($dh);
+        } else {
+            // Permissions over files.
+            chmod($path, $file_perms);
+        }
+    }
+
+
+    /**
+     * Move from source to destination
+     *
+     * @param string  $source       Source (directory or file).
+     * @param string  $destination  Destination (directory).
+     * @param boolean $content_only Moves only content if directories.
+     *
+     * @return boolean True if success False if not.
+     */
+    public static function move(
+        string $source,
+        string $destination,
+        bool $content_only=false
+    ):bool {
+        if (is_dir($destination) === false
+            || is_writable($destination) === false
+        ) {
+            return false;
+        }
+
+        if (is_file($source) === true
+            || (is_dir($source) === true && $content_only === false)
+        ) {
+            return rename($source, $destination.'/'.basename($source));
+        }
+
+        // Dir, but content only.
+        if (is_dir($source) !== true || $content_only !== true) {
+            return false;
+        }
+
+        // Get array of all source files.
+        $files = scandir($source);
+        // Identify directories.
+        $source = $source.'/';
+        $destination = $destination.'/';
+        // Cycle through all source files.
+        foreach ($files as $file) {
+            if (in_array($file, ['.', '..']) === true) {
+                continue;
+            }
+
+            // If we copied this successfully, mark it for deletion.
+            rename($source.$file, $destination.$file);
+        }
+    }
+
+
 }

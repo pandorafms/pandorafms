@@ -3400,7 +3400,7 @@ function config_user_set_custom_config()
         }
     }
 
-    if ((isset($userinfo['id_skin']) && $userinfo['id_skin'] !== 0)) {
+    if ((isset($userinfo['id_skin']) && (int) $userinfo['id_skin'] !== 0)) {
         if ((int) $userinfo['id_skin'] === 1) {
             $config['style'] = 'pandora';
         }
@@ -3416,12 +3416,10 @@ function config_user_set_custom_config()
     if ($sec2_aux != 'godmode/groups/group_list' && $skin !== false) {
         $id_user_aux = get_parameter('id');
         if ($id_user_aux == $config['id_user']) {
-            if ((int) $skin === 1 || (int) $skin === 0) {
-                $config['style'] = 'pandora';
-            }
-
-            if ((int) $skin === 2) {
+            if ($config['style'] === 'pandora_black' && (int) $skin === 0 || (int) $skin === 2) {
                 $config['style'] = 'pandora_black';
+            } else if ((int) $skin === 1 || (int) $skin === 0) {
+                $config['style'] = 'pandora';
             }
         }
     }

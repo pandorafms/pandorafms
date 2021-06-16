@@ -94,6 +94,12 @@ function plugins_delete_plugin(int $id_plugin)
         $result = $problem;
     }
 
+    // Remove all components related to this plugin.
+    db_process_sql_delete(
+        'tnetwork_component',
+        [ 'id_plugin' => $id_plugin ]
+    );
+
     if (is_metaconsole() === true && is_management_allowed() === true) {
         $sc = new Synchronizer();
         $problems = $sc->apply(

@@ -1444,7 +1444,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', 756);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 756);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';

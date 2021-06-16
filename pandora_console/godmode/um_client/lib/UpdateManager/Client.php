@@ -2239,6 +2239,11 @@ class Client
             return [];
         }
 
+        if (is_array($progress) === false) {
+            // Old data.
+            return [];
+        }
+
         return $progress;
     }
 

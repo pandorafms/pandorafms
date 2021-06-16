@@ -265,6 +265,7 @@ function network_components_get_group($id_network_component_group, $filter=false
  */
 function network_components_get_groups($id_module_components=0, $localComponent=false)
 {
+    hd($id_module_components);
     // Special vars to keep track of indentation level
     static $level = 0;
     static $id_parent = 0;
@@ -283,7 +284,7 @@ function network_components_get_groups($id_module_components=0, $localComponent=
     }
 
     $retval = [];
-    // Magic indentation is here
+    // Magic indentation is here.
     $prefix = str_repeat('&nbsp;', ($level * 3));
     foreach ($groups as $group) {
         $level++;
@@ -296,29 +297,18 @@ function network_components_get_groups($id_module_components=0, $localComponent=
         $id_parent = $tmp;
         $level--;
 
+        hd($localComponent);
+
         if ($localComponent) {
             if (! empty($childs)) {
                 $retval[$group['id_sg']] = $prefix.$group['name'];
                 $retval = ($retval + $childs);
             } else {
-                switch ($config['dbtype']) {
-                    case 'mysql':
-                    case 'postgresql':
-                        $count = db_get_value_filter(
-                            'COUNT(*)',
-                            'tlocal_component',
-                            ['id_network_component_group' => (int) $group['id_sg']]
-                        );
-                    break;
-
-                    case 'oracle':
-                        $count = db_get_value_filter(
-                            'count(*)',
-                            'tlocal_component',
-                            ['id_network_component_group' => (int) $group['id_sg']]
-                        );
-                    break;
-                }
+                $count = db_get_value_filter(
+                    'COUNT(*)',
+                    'tlocal_component',
+                    ['id_network_component_group' => (int) $group['id_sg']]
+                );
 
                 if ($count > 0) {
                     $retval[$group['id_sg']] = $prefix.$group['name'];
@@ -333,30 +323,14 @@ function network_components_get_groups($id_module_components=0, $localComponent=
                     If components id module is provided, only groups with components
                 that belongs to this id module are returned */
                 if ($id_module_components) {
-                    switch ($config['dbtype']) {
-                        case 'mysql':
-                        case 'postgresql':
-                            $count = db_get_value_filter(
-                                'COUNT(*)',
-                                'tnetwork_component',
-                                [
-                                    'id_group'  => (int) $group['id_sg'],
-                                    'id_modulo' => $id_module_components,
-                                ]
-                            );
-                        break;
-
-                        case 'oracle':
-                            $count = db_get_value_filter(
-                                'count(*)',
-                                'tnetwork_component',
-                                [
-                                    'id_group'  => (int) $group['id_sg'],
-                                    'id_modulo' => $id_module_components,
-                                ]
-                            );
-                        break;
-                    }
+                    $count = db_get_value_filter(
+                        'COUNT(*)',
+                        'tnetwork_component',
+                        [
+                            'id_group'  => (int) $group['id_sg'],
+                            'id_modulo' => $id_module_components,
+                        ]
+                    );
 
                     if ($count > 0) {
                         $retval[$group['id_sg']] = $prefix.$group['name'];

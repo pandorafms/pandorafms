@@ -112,7 +112,6 @@ $edit_file = get_parameter('edit_file', false);
 $update_file = get_parameter('update_file', false);
 $plugin_command = get_parameter('plugin_command', '');
 $tab = get_parameter('tab', '');
-$deploy_plugin = get_parameter('deploy_plugin', 0);
 
 if ($view != '') {
     $form_id = $view;
@@ -826,19 +825,7 @@ if (($create != '') || ($view != '')) {
         }
     }
 
-    if ($deploy_plugin) {
-        if (is_metaconsole()) {
-            enterprise_include_once('include/functions_plugins.php');
-            $result = plugins_deploy_plugin($deploy_plugin);
-            if (!$result) {
-                ui_print_error_message(__('Problem deploying plugin'));
-            } else {
-                ui_print_success_message(__('Plugin deployed successfully'));
-            }
-        }
-    }
-
-    // If not edition or insert, then list available plugins
+    // If not edition or insert, then list available plugins.
     $rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 
     if ($rows !== false) {
@@ -926,16 +913,6 @@ if (($create != '') || ($view != '')) {
                         'class'  => 'invert_filter',
                     ]
                 ).'</a>';
-                if (is_metaconsole()) {
-                    echo "&nbsp;&nbsp;&nbsp;<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&deploy_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image(
-                        'images/deploy.png',
-                        true,
-                        [
-                            'title' => __('Deploy'),
-                            'width' => '21 px',
-                        ]
-                    ).'</a>&nbsp;&nbsp;';
-                }
 
                 echo '</td>';
             }

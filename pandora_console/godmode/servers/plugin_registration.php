@@ -33,7 +33,7 @@ global $config;
 check_login();
 
 if ((bool) check_acl($config['id_user'], 0, 'PM') === false
-    && (bool) check_acl($config['id_user'], 0, 'AW') === false
+    || (bool) check_acl($config['id_user'], 0, 'AW') === false
 ) {
     db_pandora_audit(
         'ACL Violation',

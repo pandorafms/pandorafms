@@ -689,7 +689,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 });
 
                 $("#submit-hide-login-logout").click (function () {
-                    $("#login_logout").dialog('close');
+                    document.location = "<?php echo ui_get_full_url('index.php'); ?>";
                 });        
             });
         break;

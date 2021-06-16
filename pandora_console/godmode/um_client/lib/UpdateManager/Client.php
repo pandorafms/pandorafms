@@ -2017,6 +2017,7 @@ class Client
         }
 
         $rc = rename($file_path, $serverRepo.'/'.$file_name);
+        chmod($serverRepo.'/'.$file_name, 0660);
 
         if ($rc === false) {
             $this->lastError = 'Unable to deploy server update from '.$file_path;
@@ -2025,6 +2026,7 @@ class Client
         }
 
         file_put_contents($serverRepo.'/version.txt', $version);
+        chmod($serverRepo.'/version.txt', 0660);
 
         // Success.
         $this->notify(100, 'Server update scheduled.');

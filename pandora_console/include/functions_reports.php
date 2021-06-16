@@ -662,7 +662,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
         $types['sql_graph_hbar'] = [
             'optgroup' => __('Graphs'),
-            'name'     => __('SQL horizonal bar graph'),
+            'name'     => __('SQL horizontal bar graph'),
         ];
     }
 

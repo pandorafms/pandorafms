@@ -109,7 +109,6 @@ function add_component_selection($id_network_component_type)
 
     $component_groups = network_components_get_groups($id_network_component_type);
 
-    hd($component_groups);
     $data[1] = '<span id="component_group" class="left">';
     $data[1] .= html_print_select(
         $component_groups,

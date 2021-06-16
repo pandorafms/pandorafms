@@ -265,7 +265,6 @@ function network_components_get_group($id_network_component_group, $filter=false
  */
 function network_components_get_groups($id_module_components=0, $localComponent=false)
 {
-    hd($id_module_components);
     // Special vars to keep track of indentation level
     static $level = 0;
     static $id_parent = 0;
@@ -296,8 +295,6 @@ function network_components_get_groups($id_module_components=0, $localComponent=
         );
         $id_parent = $tmp;
         $level--;
-
-        hd($localComponent);
 
         if ($localComponent) {
             if (! empty($childs)) {

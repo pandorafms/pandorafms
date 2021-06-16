@@ -1,18 +1,35 @@
 <?php
+/**
+ * Manage plugins.
+ *
+ * @category   Utility
+ * @package    Pandora FMS
+ * @subpackage Plugins
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
+
+require_once $config['homedir'].'/include/functions_plugins.php';
 
 if (is_ajax()) {
     $get_plugin_description = get_parameter('get_plugin_description');
@@ -789,38 +806,15 @@ if (($create != '') || ($view != '')) {
             }
         }
 
-
-        if ($plugin_id != 0) {
-            // Delete all the modules with this plugin
-            $plugin_modules = db_get_all_rows_filter(
-                'tagente_modulo',
-                ['id_plugin' => $plugin_id]
-            );
-
-            if (empty($plugin_modules)) {
-                $plugin_modules = [];
-            }
-
-            foreach ($plugin_modules as $pm) {
-                modules_delete_agent_module($pm['id_agente_modulo']);
-            }
-
-            if (enterprise_installed()) {
-                enterprise_include_once('include/functions_policies.php');
-                $policies_ids = db_get_all_rows_filter('tpolicy_modules', ['id_plugin' => $plugin_id]);
-                foreach ($policies_ids as $policies_id) {
-                    policies_change_delete_pending_module($policies_id['id']);
-                }
-            }
-
-            if (is_metaconsole()) {
-                enterprise_include_once('include/functions_plugins.php');
-                $result = plugins_delete_plugin($plugin_id);
-                if (!$result) {
-                    ui_print_error_message(__('Problem deleting plugin'));
-                } else {
-                    ui_print_success_message(__('Plugin deleted successfully'));
-                }
+        if ((int) $plugin_id > 0) {
+            // Delete all iformation related with this plugin.
+            $result = plugins_delete_plugin($plugin_id);
+            if (empty($result) === false) {
+                ui_print_error_message(
+                    implode('<br>', $result)
+                );
+            } else {
+                ui_print_success_message(__('Plugin deleted successfully'));
             }
         }
     }

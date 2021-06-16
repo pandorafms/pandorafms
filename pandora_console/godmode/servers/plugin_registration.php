@@ -542,7 +542,10 @@ if (file_exists($uploaded_filename) === true) {
 
 if ($error !== null && $error !== '') {
     ui_print_error_message($error);
-} else if (is_management_allowed() === true && is_metaconsole() === true) {
+} else if ($error === null
+    && is_management_allowed() === true
+    && is_metaconsole() === true
+) {
     $attachment = '/'.str_replace(
         $config['homedir'],
         '',

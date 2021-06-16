@@ -112,6 +112,10 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+                // Nothing to do.
+            break;
         }
     break;
 
@@ -131,6 +135,10 @@ switch ($sortField) {
                     'field' => 'fullname',
                     'order' => 'DESC',
                 ];
+            break;
+
+            default:
+                // Nothing to do.
             break;
         }
     break;
@@ -152,6 +160,10 @@ switch ($sortField) {
                     'order' => 'DESC',
                 ];
             break;
+
+            default:
+                // Nothing to do.
+            break;
         }
     break;
 
@@ -171,7 +183,7 @@ switch ($sortField) {
 
 $buttons[$tab]['active'] = true;
 
-// Header
+// Header.
 if (defined('METACONSOLE')) {
     user_meta_print_header();
     $sec = 'advanced';
@@ -234,9 +246,9 @@ if (defined('METACONSOLE')) {
 
 $disable_user = get_parameter('disable_user', false);
 if ((bool) get_parameter('user_del', false) === true) {
-    // delete user
+    // Delete user.
     $id_user = get_parameter('delete_user', 0);
-    // Only allow delete user if is not the actual user
+    // Only allow delete user if is not the actual user.
     if ($id_user != $config['id_user']) {
         $user_row = users_get_user_by_id($id_user);
 
@@ -255,13 +267,13 @@ if ((bool) get_parameter('user_del', false) === true) {
             __('There was a problem deleting the user')
         );
 
-        // Delete the user in all the consoles
+        // Delete the user in all the consoles.
         if (defined('METACONSOLE') && isset($_GET['delete_all'])) {
             $servers = metaconsole_get_servers();
             foreach ($servers as $server) {
                 // Connect to the remote console.
                 if (metaconsole_connect($server) === NOERR) {
-                    // Delete the user
+                    // Delete the user.
                     $result = delete_user($id_user);
                     if ($result) {
                         db_pandora_audit(
@@ -274,7 +286,7 @@ if ((bool) get_parameter('user_del', false) === true) {
                     metaconsole_restore_db();
                 }
 
-                // Log to the metaconsole too
+                // Log to the metaconsole too.
                 if ($result) {
                     db_pandora_audit(
                         'User management',
@@ -293,7 +305,7 @@ if ((bool) get_parameter('user_del', false) === true) {
         ui_print_error_message(__('There was a problem deleting the user'));
     }
 } else if (isset($_GET['profile_del'])) {
-    // delete profile
+    // Delete profile.
     $id_profile = (int) get_parameter_post('delete_profile');
     $result = profile_delete_profile($id_profile);
     ui_print_result_message(
@@ -302,7 +314,7 @@ if ((bool) get_parameter('user_del', false) === true) {
         __('There was a problem deleting the profile')
     );
 } else if ($disable_user !== false) {
-    // disable_user
+    // Disable_user.
     $id_user = get_parameter('id', 0);
 
     if ($id_user !== 0) {
@@ -457,7 +469,7 @@ if ($user_is_admin) {
     }
 }
 
-// Filter the users
+// Filter the users.
 if ($search) {
     foreach ($info1 as $iterator => $user_info) {
         $found = false;
@@ -498,7 +510,7 @@ if ($search) {
 
 $info = $info1;
 
-// Prepare pagination
+// Prepare pagination.
 ui_pagination(count($info));
 
 $offset = (int) get_parameter('offset');
@@ -537,12 +549,12 @@ foreach ($info as $user_id => $user_info) {
 
     $cont++;
 
-    // Manual pagination due the complicated process of the ACL data
-    if ($cont <= $offset) {
+    // Manual pagination due the complicated process of the ACL data.
+    if ($cont <= $offset && $search !== true) {
         continue;
     }
 
-    if ($cont > ($limit + $offset)) {
+    if ($cont > ($limit + $offset) && $search !== true) {
         break;
     }
 
@@ -764,7 +776,7 @@ foreach ($info as $user_id => $user_info) {
             }
         } else {
             $data[6] .= '';
-            // Delete button not in this mode
+            // Delete button not in this mode.
         }
     }
 

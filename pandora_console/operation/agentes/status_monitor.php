@@ -2050,14 +2050,14 @@ function changeNotConditionStatus() {
         document.getElementById("select2-modulegroup-container").innerHTML = "None";
         document.getElementById("select2-tag_filter-container").innerHTML = "None";
         $('select[name=datatypebox] > option:first-child').val('None');
-
+        $('#datatypebox option:first').text('None');
     }else {
         document.getElementById("select2-status-container").innerHTML = "All";
         document.getElementById("select2-moduletype-container").innerHTML = "All";
         document.getElementById("select2-ag_group-container").innerHTML = "All";
         document.getElementById("select2-modulegroup-container").innerHTML = "All";
         document.getElementById("select2-tag_filter-container").innerHTML = "All";
-        $('select[name=datatypebox] > option:first-child').val('None');
+        $('#datatypebox option:first').text('All');
 
 
     }

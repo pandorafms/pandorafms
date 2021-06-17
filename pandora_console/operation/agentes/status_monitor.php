@@ -751,23 +751,27 @@ foreach ($a as $valor) {
 
 
         $table->data[3][1] .= '</div>';
+        $check_not_condition = '';
 
 if ($not_condition !== '') {
     $check_not_condition = true;
 }
 
-        $table->data[3][1] .= '<div class="w120px mrgn_top_20px">';
-        $table->data[3][1] .= html_print_input(
+$table->data[4][0] .= __('Not condition');
+        $table->data[4][1] .= '<div class="w120px mrgn_top_20px">';
+        $table->data[4][1] .= html_print_input(
             [
-                'type'    => 'checkbox',
+                'type'    => 'switch',
                 'name'    => 'not_condition',
-                'return'  => true,
+                'return'  => false,
                 'checked' => $check_not_condition,
                 'value'   => 'NOT',
+                'id'      => 'not_condition_switch',
+                'onclick' => 'changeNotConditionStatus(this)',
             ]
         );
-        $table->data[3][1] .= __('Not condition').ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
-        $table->data[3][1] .= '</div>';
+        $table->data[4][1] .= ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
+        $table->data[4][1] .= '</div>';
 
         $table_custom_fields = new stdClass();
         $table_custom_fields->class = 'filters';
@@ -815,9 +819,9 @@ if ($not_condition !== '') {
 
 
         if (is_metaconsole()) {
-            $table->colspan[4][0] = 7;
-            $table->cellstyle[4][0] = 'padding: 10px;';
-            $table->data[4][0] = ui_toggle(
+            $table->colspan[5][0] = 7;
+            $table->cellstyle[5][0] = 'padding: 10px;';
+            $table->data[5][0] = ui_toggle(
                 html_print_table($table_custom_fields, true),
                 __('Advanced Options'),
                 '',
@@ -830,9 +834,9 @@ if ($not_condition !== '') {
             $filters .= '</form>';
             ui_toggle($filters, __('Show filters'), '', '', false);
         } else {
-            $table->colspan[4][0] = 7;
-            $table->cellstyle[4][0] = 'padding-left: 10px;';
-            $table->data[4][0] = ui_toggle(
+            $table->colspan[5][0] = 7;
+            $table->cellstyle[5][0] = 'padding-left: 10px;';
+            $table->data[5][0] = ui_toggle(
                 html_print_table(
                     $table_custom_fields,
                     true
@@ -2035,5 +2039,36 @@ function refresh_pagination_callback (module_id, id_agent, server_name,module_na
         
         return false;
     });
+}
+
+function changeNotConditionStatus() {
+    let chkbox =document.getElementById('not_condition_switch');
+    if(chkbox.checked) {
+        document.getElementById("select2-status-container").innerHTML = "None";
+        document.getElementById("select2-moduletype-container").innerHTML = "None";
+        document.getElementById("select2-ag_group-container").innerHTML = "None";
+        document.getElementById("select2-modulegroup-container").innerHTML = "None";
+        document.getElementById("select2-tag_filter-container").innerHTML = "None";
+        $('select[name=datatypebox] > option:first-child').val('None');
+
+    }else {
+        document.getElementById("select2-status-container").innerHTML = "All";
+        document.getElementById("select2-moduletype-container").innerHTML = "All";
+        document.getElementById("select2-ag_group-container").innerHTML = "All";
+        document.getElementById("select2-modulegroup-container").innerHTML = "All";
+        document.getElementById("select2-tag_filter-container").innerHTML = "All";
+        $('select[name=datatypebox] > option:first-child').val('None');
+
+
+    }
+
+}
+
+let chkbox =document.getElementById('not_condition_switch');
+let value_swtich = "<?php echo $not_condition; ?>";
+if( value_swtich != "") {
+    chkbox.checked = true;
+}else {
+    chkbox.checked = false;
 }
 </script>

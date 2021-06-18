@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,33 +31,10 @@ global $config;
 
 require_once 'include/functions_networkmap.php';
 enterprise_include_once('include/functions_policies.php');
-enterprise_include_once('include/functions_dashboard.php');
 require_once 'include/functions_modules.php';
 
-$public_hash = get_parameter('hash', false);
-
-// Try to authenticate by hash on public dashboards.
-if ($public_hash === false) {
-    // Login check.
-    check_login();
-} else {
-    $validate_hash = enterprise_hook(
-        'dasboard_validate_public_hash',
-        [
-            $public_hash,
-            get_parameter('networkmap_id'),
-            'network_map',
-        ]
-    );
-    if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
-        db_pandora_audit(
-            'Invalid public hash',
-            'Trying to access report builder'
-        );
-        include 'general/noaccess.php';
-        exit;
-    }
-}
+// Login check.
+check_login();
 
 // --------------INIT AJAX-----------------------------------------------
 if (is_ajax()) {
@@ -76,6 +53,32 @@ if (is_ajax()) {
     $module_get_status = (bool) get_parameter('module_get_status', false);
     $update_node_alert = (bool) get_parameter('update_node_alert', false);
     $process_migration = (bool) get_parameter('process_migration', false);
+    $get_agent_info = (bool) get_parameter('get_agent_info', false);
+    $update_node = (bool) get_parameter('update_node', false);
+
+    if ($update_node) {
+        $node_json = io_safe_output(get_parameter('node', ''));
+        $node = json_decode($node_json, true);
+        echo json_encode($node);
+
+        return;
+    }
+
+    if ($get_agent_info) {
+        $id_agent = (int) get_parameter('id_agent');
+
+        $return = [];
+        $return['alias'] = agents_get_alias($id_agent);
+        $return['adressess'] = agents_get_addresses($id_agent);
+        $id_group = agents_get_agent_group($id_agent);
+        $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
+        $id_os = agents_get_os($id_agent);
+        $return['os'] = ui_print_os_icon($id_os, true, true);
+
+        echo json_encode($return);
+
+        return;
+    }
 
     if ($module_get_status) {
         $id = (int) get_parameter('id', 0);
@@ -261,9 +264,9 @@ if (is_ajax()) {
         $return = [];
         $return['correct'] = true;
 
-        $return['content'] = '<div style="border: 1px solid black;">
-			<div style="width: 100%; text-align: right;"><a style="text-decoration: none; color: black;" href="javascript: hide_tooltip();">X</a></div>
-			<div style="margin: 5px;">
+        $return['content'] = '<div class="border_1px_black">
+			<div class="w100p right right_align"><a class="no_decoration black" href="javascript: hide_tooltip();">X</a></div>
+			<div class="mrgn_5px">
 			';
 
         $return['content'] .= '<b>'.__('Name: ').'</b>'.ui_print_string_substr($module['nombre'], 30, true).'<br />';
@@ -303,7 +306,7 @@ if (is_ajax()) {
                     $img = 'images/policies_brick.png';
                     $title = __('(Adopt) ').$name_policy;
                 } else {
-                    $img = 'images/policies.png';
+                    $img = 'images/policies_mc.png';
                         $title = $name_policy;
                 }
             } else {
@@ -754,7 +757,6 @@ $map_dash_details = [];
 $networkmap = db_get_row('tmap', 'id', $id);
 
 if (enterprise_installed()) {
-    include_once 'enterprise/dashboard/widgets/network_map.php';
     if ($id_networkmap) {
         $id = $id_networkmap;
         $dash_mode = $dashboard_mode;
@@ -824,7 +826,10 @@ if ($networkmap === false) {
             'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                 'images/normal_screen.png',
                 true,
-                ['title' => __('Normal screen')]
+                [
+                    'title' => __('Normal screen'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ];
     } else {
@@ -834,7 +839,10 @@ if ($networkmap === false) {
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap&amp;pure=1&amp;tab=view&amp;id_networkmap='.$id.'">'.html_print_image(
                     'images/full_screen.png',
                     true,
-                    ['title' => __('Full screen')]
+                    [
+                        'title' => __('Full screen'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>',
             ];
             $buttons['list'] = [
@@ -842,7 +850,10 @@ if ($networkmap === false) {
                 'text'   => '<a href="index.php?sec=networkmapconsole&amp;sec2=operation/agentes/pandora_networkmap">'.html_print_image(
                     'images/list.png',
                     true,
-                    ['title' => __('List of networkmap')]
+                    [
+                        'title' => __('List of networkmap'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>',
             ];
         }

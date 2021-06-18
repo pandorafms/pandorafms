@@ -8,7 +8,7 @@
  *
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -120,7 +120,7 @@ function netflow_check_filter_group($id_sg)
     $id_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id_sg);
     $own_info = get_user_info($config['id_user']);
     // Get group list that user has access.
-    $groups_user = users_get_groups($config['id_user'], 'IW', $own_info['is_admin'], true);
+    $groups_user = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
     $groups_id = [];
     $has_permission = false;
 
@@ -606,10 +606,10 @@ function netflow_get_stats(
     }
 
     // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = "-o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= " -o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
     if (! is_array($string)) {
@@ -694,10 +694,10 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
     }
 
     // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = '-o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= ' -o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $string);
 
     if (! is_array($string) || ! isset($string[5])) {
@@ -765,20 +765,11 @@ function netflow_get_relationships_raw_data(
     );
 
     // Get the command to call nfdump.
-    $command = sprintf(
-        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        netflow_get_command($filter),
-        NETFLOW_MAX_DATA_CIRCULAR_MESH,
-        'record',
-        date($nfdump_date_format, $start_date),
-        date($nfdump_date_format, $end_date)
-    );
-
-    // Get the command to call nfdump.
-    $command = netflow_get_command($filter);
+    $options = ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $filter);
 
     // Execute nfdump.
-    $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    // $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -877,7 +868,7 @@ function netflow_parse_relationships_for_circular_mesh(
  *
  * @return string Command to run.
  */
-function netflow_get_command($filter)
+function netflow_get_command($options, $filter)
 {
     global $config;
 
@@ -888,6 +879,9 @@ function netflow_get_command($filter)
     if (isset($config['netflow_path']) && $config['netflow_path'] != '') {
         $command .= ' -R. -M '.$config['netflow_path'];
     }
+
+    // Add options.
+    $command .= ' '.$options;
 
     // Filter options.
     $command .= ' '.netflow_get_filter_arguments($filter);
@@ -903,7 +897,7 @@ function netflow_get_command($filter)
  *
  * @return string Command line argument string.
  */
-function netflow_get_filter_arguments($filter)
+function netflow_get_filter_arguments($filter, $safe_input=false)
 {
     // Advanced filter.
     $filter_args = '';
@@ -1015,7 +1009,7 @@ function netflow_get_filter_arguments($filter)
     }
 
     if ($filter_args != '') {
-        $filter_args = escapeshellarg($filter_args);
+        $filter_args = ($safe_input === true) ? io_safe_input(escapeshellarg($filter_args)) : escapeshellarg($filter_args);
     }
 
     return $filter_args;
@@ -1130,7 +1124,7 @@ function netflow_draw_item(
             }
 
             if ($output == 'HTML' || $output == 'PDF') {
-                $html .= "<div style='width: 100%; overflow: auto;'>";
+                $html .= "<div class='w100p overflow'>";
                 $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
                 $html .= '</div>';
 
@@ -1170,12 +1164,12 @@ function netflow_draw_item(
             }
 
             if ($output === 'HTML' || $output === 'PDF') {
-                $html = '<table style="width: 100%">';
+                $html = '<table class="w100p">';
                 $html .= '<tr>';
-                $html .= '<td style="width: 50%">';
+                $html .= '<td class="w50p">';
                 $html .= netflow_summary_table($data_summary);
                 $html .= '</td>';
-                $html .= '<td style="width: 50%">';
+                $html .= '<td class="w50p">';
                 $html .= graph_netflow_aggregate_pie(
                     $data_pie,
                     netflow_format_aggregate($aggregate),
@@ -1212,7 +1206,7 @@ function netflow_draw_item(
                 netflow_aggregate_is_ip($aggregate)
             );
 
-            $html = '<div style="text-align:center;">';
+            $html = '<div class="center">';
             $html .= graph_netflow_circular_mesh($data_circular);
             $html .= '</div>';
         return $html;
@@ -1498,8 +1492,6 @@ function netflow_get_top_summary(
         return [];
     }
 
-    $command = netflow_get_command($netflow_filter);
-
     // Execute nfdump.
     $order_text = '';
     switch ($order) {
@@ -1517,7 +1509,8 @@ function netflow_get_top_summary(
         break;
     }
 
-    $command .= " -q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $options = "-q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $command = netflow_get_command($options, $netflow_filter);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -1671,14 +1664,14 @@ function netflow_get_top_data(
     ];
 
     // Get the command to call nfdump.
-    $agg_command = sprintf(
-        '%s -q -o csv -n %s -s %s/bytes -t %s-%s',
-        netflow_get_command($filter),
+    $options = sprintf(
+        '-q -o csv -n %s -s %s/bytes -t %s-%s',
         $max,
         $aggregate,
         date($nfdump_date_format, $start_date),
         date($nfdump_date_format, $end_date)
     );
+    $agg_command = netflow_get_command($options, $filter);
 
     // Call nfdump.
     exec($agg_command, $string);

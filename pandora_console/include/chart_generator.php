@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,6 +40,17 @@ require_once $config['homedir'].'/include/functions_custom_graphs.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_tags.php';
+
+$data_raw = get_parameter('data');
+$data_decoded = json_decode(base64_decode($data_raw), true);
+if (json_last_error() === JSON_ERROR_NONE) {
+    $data = urldecode($data_decoded['data']);
+    $session_id = urldecode($data_decoded['session_id']);
+    $data_combined = urldecode($data_decoded['data_combined']);
+    $data_module_list = urldecode($data_decoded['data_module_list']);
+    $type_graph_pdf = urldecode($data_decoded['type_graph_pdf']);
+    $viewport_width = urldecode($data_decoded['viewport_width']);
+}
 
 
 /**
@@ -69,7 +80,7 @@ function echoPhantomCallback()
 global $config;
 
 // Try to initialize session using existing php session id.
-$user = new PandoraFMS\User(['phpsessionid' => $_REQUEST['session_id']]);
+$user = new PandoraFMS\User(['phpsessionid' => $session_id]);
 if (check_login(false) === false) {
     // Error handler.
     ?>
@@ -97,12 +108,12 @@ if (check_login(false) === false) {
 }
 
 // Access granted.
-$params = json_decode($_REQUEST['data'], true);
+$params = json_decode($data, true);
 
 // Metaconsole connection to the node.
 $server_id = $params['server_id'];
 
-if (is_metaconsole() && !empty($server_id)) {
+if (is_metaconsole() === true && empty($server_id) === false) {
     $server = metaconsole_get_connection_by_id($server_id);
     // Error connecting.
     if (metaconsole_connect($server) !== NOERR) {
@@ -165,22 +176,28 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
     $params['only_image'] = false;
     $params['menu'] = false;
 
-    $params_combined = json_decode($_REQUEST['data_combined'], true);
-    $module_list = json_decode($_REQUEST['data_module_list'], true);
-    $type_graph_pdf = $_REQUEST['type_graph_pdf'];
+    $params['disable_black'] = true;
+    $params_combined = json_decode($data_combined, true);
+    $module_list = json_decode($data_module_list, true);
 
-    if ($params['vconsole'] === false) {
-        $params['width'] = (int) $_REQUEST['viewport_width'];
+    if (isset($params['vconsole']) === false || $params['vconsole'] === false) {
+        if ((int) $viewport_width > 0) {
+            $params['width'] = (int) $viewport_width;
+        }
+
         if ((isset($params['width']) === false
             || ($params['width'] <= 0))
         ) {
-            $params['width'] = 650;
+            if ((int) $params['width'] <= 0) {
+                $params['width'] = 650;
+            }
+
             if ((int) $params['landscape'] === 1) {
                 $params['width'] = 850;
             }
 
             if ($type_graph_pdf === 'slicebar') {
-                $params['width'] = 150;
+                $params['width'] = 100;
                 $params['height'] = 70;
             }
         }
@@ -189,6 +206,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         echo '<div>';
     switch ($type_graph_pdf) {
         case 'combined':
+            $params['pdf'] = true;
             echo graphic_combined_module(
                 $module_list,
                 $params,
@@ -197,10 +215,12 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'sparse':
+            $params['pdf'] = true;
             echo grafico_modulo_sparse($params);
         break;
 
         case 'pie_chart':
+            $params['pdf'] = true;
             echo flot_pie_chart(
                 $params['values'],
                 $params['keys'],
@@ -216,27 +236,12 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         break;
 
         case 'vbar':
-            echo flot_vcolumn_chart(
-                $params['chart_data'],
-                $params['width'],
-                $params['height'],
-                $params['color'],
-                $params['legend'],
-                $params['long_index'],
-                $params['homeurl'],
-                $params['unit'],
-                $params['water_mark_url'],
-                $params['homedir'],
-                $params['font'],
-                $config['font_size'],
-                $params['from_ux'],
-                $params['from_wux'],
-                $params['backgroundColor'],
-                $params['tick_color']
-            );
+            $params['pdf'] = true;
+            echo flot_vcolumn_chart($params);
         break;
 
         case 'hbar':
+            $params['pdf'] = true;
             echo flot_hcolumn_chart(
                 $params['chart_data'],
                 $params['width'],
@@ -247,11 +252,13 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['backgroundColor'],
                 $params['tick_color'],
                 $params['val_min'],
-                $params['val_max']
+                $params['val_max'],
+                $params['pdf']
             );
         break;
 
         case 'ring_graph':
+            $params['pdf'] = true;
             echo flot_custom_pie_chart(
                 $params['chart_data'],
                 $params['width'],
@@ -270,7 +277,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['homeurl'],
                 $params['background_color'],
                 $params['legend_position'],
-                $params['background_color']
+                $params['background_color'],
+                $params['pdf']
             );
         break;
 
@@ -292,8 +300,10 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
                 $params['full_legend_daterray'],
                 $params['not_interactive'],
                 $params['ttl'],
-                $params['widgets'],
-                $params['show']
+                $params['sizeForTicks'],
+                $params['show'],
+                $params['date_to'],
+                $params['server_id']
             );
         break;
 

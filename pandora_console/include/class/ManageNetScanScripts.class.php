@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,8 +47,8 @@ class ManageNetScanScripts extends Wizard
      * @var array
      */
     public $pageLabels = [
-        'List net scan scripts',
-        'Operation net scan cripts',
+        'List NetScan scripts',
+        'Operation NetScan scripts',
     ];
 
 
@@ -117,8 +117,20 @@ class ManageNetScanScripts extends Wizard
             // Avoid to print header out of wizard.
             $this->prepareBreadcrum($breadcrum);
 
-            // Header
-            ui_print_page_header(__('Net scan scripts'), '', false, '', true, '', false, '', GENERIC_SIZE_TEXT, '', $this->printHeader(true));
+            // Header.
+            ui_print_page_header(
+                __('Net scan scripts'),
+                '',
+                false,
+                '',
+                true,
+                '',
+                false,
+                '',
+                GENERIC_SIZE_TEXT,
+                '',
+                $this->printHeader(true)
+            );
         }
 
         $id_script = get_parameter('id_script', 0);
@@ -168,7 +180,7 @@ class ManageNetScanScripts extends Wizard
         $result = [];
 
         $reconscript_name = get_parameter('form_name', '');
-        $reconscript_description = get_parameter('form_description', '');
+        $reconscript_description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('form_description'))));
         $reconscript_script = get_parameter('form_script', '');
 
         // Get macros.
@@ -248,7 +260,7 @@ class ManageNetScanScripts extends Wizard
 
         // If modified any parameter.
         $reconscript_name = get_parameter('form_name', '');
-        $reconscript_description = get_parameter('form_description', '');
+        $reconscript_description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('form_description'))));
         $reconscript_script = get_parameter('form_script', '');
 
         // Get macros.
@@ -338,28 +350,21 @@ class ManageNetScanScripts extends Wizard
             ['id_recon_script' => $id_script]
         );
 
+        $result_dlt2 = db_process_sql_delete(
+            'trecon_task',
+            ['id_recon_script' => $id_script]
+        );
+
         if (!$result_dlt) {
             $result = [
                 'error' => 1,
                 'msg'   => __('Problem deleting Net scan Scripts'),
             ];
         } else {
-            $result_dlt2 = db_process_sql_delete(
-                'trecon_task',
-                ['id_recon_script' => $id_script]
-            );
-
-            if (!$result_dlt2) {
-                $result = [
-                    'error' => 1,
-                    'msg'   => __('Problem deleting Net scan Scripts'),
-                ];
-            } else {
-                $result = [
-                    'error' => 0,
-                    'msg'   => __('Deleted successfully'),
-                ];
-            }
+            $result = [
+                'error' => 0,
+                'msg'   => __('Deleted successfully'),
+            ];
         }
 
         return $result;
@@ -376,6 +381,8 @@ class ManageNetScanScripts extends Wizard
      */
     private function printListNetScanScripts(array $msg)
     {
+        global $config;
+
         if (count($msg) > 0) {
             if ($msg['error'] === 1) {
                 ui_print_error_message($msg['msg']);
@@ -408,7 +415,7 @@ class ManageNetScanScripts extends Wizard
                 }
 
                 echo '<tr>';
-                echo "<td class='".$tdcolor."' style='min-width: 100px;'>";
+                echo "<td class='".$tdcolor." mw100px''>";
                 echo '<b><a href="'.$url.'&page=1&id_script='.$row['id_recon_script'].'">';
                 echo $row['name'];
                 echo '</a></b></td>';
@@ -430,7 +437,7 @@ class ManageNetScanScripts extends Wizard
                 echo '<form
                     method="post"
                     onsubmit="if (! confirm (\''.__('Are you sure delete script?').'\')) return false"
-                    style="display: inline;">';
+                    class="display_in">';
                 echo html_print_input_hidden('page', 0, true);
                 echo html_print_input_hidden(
                     'operation_scp',
@@ -450,6 +457,7 @@ class ManageNetScanScripts extends Wizard
                     true,
                     [
                         'title' => __('Delete Script'),
+                        'class' => 'invert_filter',
                     ]
                 );
                 echo '</form>';
@@ -460,7 +468,7 @@ class ManageNetScanScripts extends Wizard
 
             echo "<form name=reconscript method='post' action='".$url."'>";
                 echo html_print_input_hidden('page', 1, true);
-                echo "<input name='crtbutton' style='float:right;' type='submit' class='sub next' value='".__('Add')."'>";
+                echo "<input name='crtbutton' type='submit' class='sub next float-right' value='".__('Add')."'>";
             echo '</form>';
         } else {
             ui_print_info_message(
@@ -535,12 +543,6 @@ class ManageNetScanScripts extends Wizard
 
         $data = [];
         $data[0] = __('Name');
-        $data[0] .= ui_print_help_icon(
-            'reconscript_definition',
-            true,
-            '',
-            'images/help_w.png'
-        );
 
         $data[1] = '<input type="text" name="form_name" size=30 value="'.$form_name.'">';
         $table->data['recon_name'] = $data;
@@ -603,7 +605,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Description');
-            $datam[0] .= "<span style='font-weight: normal'> ( ";
+            $datam[0] .= "<span class='normal_weight'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span>';
             $datam[0] .= html_print_input_hidden(
@@ -632,7 +634,7 @@ class ManageNetScanScripts extends Wizard
             }
 
             $datam[2] = __('Default value');
-            $datam[2] .= "<span style='font-weight: normal'> ( ";
+            $datam[2] .= "<span class='normal_weight'> ( ";
             $datam[2] .= $macro_name;
             $datam[2] .= ' ) </span>';
             $datam[3] = html_print_input_text_extended(
@@ -686,7 +688,7 @@ class ManageNetScanScripts extends Wizard
 
             $datam = [];
             $datam[0] = __('Help');
-            $datam[0] .= "<span style='font-weight: normal'> ( ";
+            $datam[0] .= "<span class='normal_weight'> ( ";
             $datam[0] .= $macro_name;
             $datam[0] .= ' )</span><br><br><br>';
 
@@ -697,7 +699,7 @@ class ManageNetScanScripts extends Wizard
                 6,
                 100,
                 $macro_help_value,
-                'class="command_advanced_conf" style="width: 97%;"'.$tadisabled,
+                'class="command_advanced_conf w97p"'.$tadisabled,
                 true
             );
 
@@ -718,7 +720,7 @@ class ManageNetScanScripts extends Wizard
 
         if (!$locked) {
             $datam = [];
-            $datam[0] = '<span style="font-weight: bold">';
+            $datam[0] = '<span class="bolder">';
             $datam[0] .= __('Add macro').'</span>';
             $datam[0] .= '<a href="javascript:new_macro(\'table-form-recon_\');update_preview();">';
             $datam[0] .= html_print_image(
@@ -726,9 +728,9 @@ class ManageNetScanScripts extends Wizard
                 true
             );
             $datam[0] .= '</a>';
-            $datam[0] .= '<div id="next_macro" style="display:none">';
+            $datam[0] .= '<div id="next_macro" class="invisible">';
             $datam[0] .= $i.'</div>';
-            $datam[0] .= '<div id="next_row" style="display:none">';
+            $datam[0] .= '<div id="next_row" class="invisible">';
             $datam[0] .= $next_name_number.'</div>';
 
             $delete_macro_style = '';
@@ -741,7 +743,8 @@ class ManageNetScanScripts extends Wizard
             $datam[2] .= '<a href="javascript:delete_macro_form(\'table-form-recon_\');update_preview();">';
             $datam[2] .= html_print_image(
                 'images/delete.png',
-                true
+                true,
+                ['class' => 'invert_filter']
             );
             $datam[2] .= '</a></div>';
 

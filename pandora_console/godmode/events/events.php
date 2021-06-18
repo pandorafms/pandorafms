@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,25 +34,53 @@ $section = (string) get_parameter('section', 'filter');
 if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
     $buttons['view'] = [
         'active'    => false,
-        'text'      => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image('images/events_list.png', true, ['title' => __('Event list')]).'</a>',
+        'text'      => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">'.html_print_image(
+            'images/events_list.png',
+            true,
+            [
+                'title' => __('Event list'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
         'operation' => true,
     ];
 
     $buttons['filter'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image('images/filter_mc.png', true, ['title' => __('Filter list')]).'</a>',
+        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">'.html_print_image(
+            'images/filter_mc.png',
+            true,
+            [
+                'title' => __('Filter list'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 }
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $buttons['responses'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">'.html_print_image('images/event_responses.png', true, ['title' => __('Event responses')]).'</a>',
+        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">'.html_print_image(
+            'images/event_responses.png',
+            true,
+            [
+                'title' => __('Event responses'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 
     $buttons['fields'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">'.html_print_image('images/custom_columns.png', true, ['title' => __('Custom fields')]).'</a>',
+        'text'   => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">'.html_print_image(
+            'images/custom_columns.png',
+            true,
+            [
+                'title' => __('Custom fields'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 }
 
@@ -70,7 +98,7 @@ switch ($section) {
     case 'responses':
         $buttons['responses']['active'] = true;
         $subpage = ' - '.__('Responses');
-        $help_header = 'events_responses_tab';
+        $help_header = '';
     break;
 
     case 'view':

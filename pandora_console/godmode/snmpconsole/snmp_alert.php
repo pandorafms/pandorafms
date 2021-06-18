@@ -1,16 +1,18 @@
 <?php
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 // Load global vars
 if (! check_acl($config['id_user'], 0, 'LW')) {
     db_pandora_audit(
@@ -61,6 +63,11 @@ if ($add_action) {
     $values[db_escape_key_identifier('al_field13')] = get_parameter('field13_value');
     $values[db_escape_key_identifier('al_field14')] = get_parameter('field14_value');
     $values[db_escape_key_identifier('al_field15')] = get_parameter('field15_value');
+    $values[db_escape_key_identifier('al_field16')] = get_parameter('field16_value');
+    $values[db_escape_key_identifier('al_field17')] = get_parameter('field17_value');
+    $values[db_escape_key_identifier('al_field18')] = get_parameter('field18_value');
+    $values[db_escape_key_identifier('al_field19')] = get_parameter('field19_value');
+    $values[db_escape_key_identifier('al_field20')] = get_parameter('field20_value');
 
     $result = db_process_sql_insert('talert_snmp_action', $values);
 }
@@ -92,7 +99,7 @@ if ($update_alert || $modify_alert) {
         __('SNMP Console').' &raquo; '.__('Alert overview'),
         'images/op_snmp.png',
         false,
-        'snmp_alert_overview_tab',
+        '',
         false
     );
 }
@@ -117,12 +124,17 @@ if ($save_alert || $modify_alert) {
     $al_field7 = (string) get_parameter_post('field7_value');
     $al_field8 = (string) get_parameter_post('field8_value');
     $al_field9 = (string) get_parameter_post('field9_value');
-    $al_field10 = (string) get_parameter_post('al_field10');
+    $al_field10 = (string) get_parameter_post('field10_value');
     $al_field11 = (string) get_parameter_post('field11_value');
     $al_field12 = (string) get_parameter_post('field12_value');
     $al_field13 = (string) get_parameter_post('field13_value');
     $al_field14 = (string) get_parameter_post('field14_value');
     $al_field15 = (string) get_parameter_post('field15_value');
+    $al_field16 = (string) get_parameter_post('field16_value');
+    $al_field17 = (string) get_parameter_post('field17_value');
+    $al_field18 = (string) get_parameter_post('field18_value');
+    $al_field19 = (string) get_parameter_post('field19_value');
+    $al_field20 = (string) get_parameter_post('field20_value');
     $max_alerts = (int) get_parameter_post('max_alerts', 1);
     $min_alerts = (int) get_parameter_post('min_alerts', 0);
     $priority = (int) get_parameter_post('priority', 0);
@@ -170,6 +182,7 @@ if ($save_alert || $modify_alert) {
     $trap_type = (int) get_parameter('trap_type', -1);
     $single_value = (string) get_parameter('single_value');
     $position = (int) get_parameter('position');
+    $disable_event = (int) get_parameter('disable_event');
     $group = (int) get_parameter('group');
 
     if ($time_threshold == -1) {
@@ -194,6 +207,11 @@ if ($save_alert || $modify_alert) {
             'al_field13'                           => $al_field13,
             'al_field14'                           => $al_field14,
             'al_field15'                           => $al_field15,
+            'al_field16'                           => $al_field16,
+            'al_field17'                           => $al_field17,
+            'al_field18'                           => $al_field18,
+            'al_field19'                           => $al_field19,
+            'al_field20'                           => $al_field20,
             'description'                          => $description,
             'agent'                                => $source_ip,
             'custom_oid'                           => $custom_value,
@@ -245,6 +263,7 @@ if ($save_alert || $modify_alert) {
             'trap_type'                            => $trap_type,
             'single_value'                         => $single_value,
             'position'                             => $position,
+            'disable_event'                        => $disable_event,
             'id_group'                             => $group,
         ];
 
@@ -265,7 +284,9 @@ if ($save_alert || $modify_alert) {
 			al_field5 = '%s', al_field6 = '%s',al_field7 = '%s',
 			al_field8 = '%s', al_field9 = '%s',al_field10 = '%s',
 			al_field11 = '%s', al_field12 = '%s', al_field13 = '%s',
-			al_field14 = '%s', al_field15 = '%s',
+			al_field14 = '%s', al_field15 = '%s', al_field16 = '%s',
+            al_field17 = '%s', al_field18 = '%s', al_field19 = '%s',
+            al_field20 = '%s',
 			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
@@ -296,8 +317,8 @@ if ($save_alert || $modify_alert) {
 			order_11 = '%d', order_12 = '%d', order_13 = '%d',
 			order_14 = '%d', order_15 = '%d', order_16 = '%d',
 			order_17 = '%d', order_18 = '%d', order_19 = '%d',
-			order_20 = '%d', trap_type = %d, 
-			single_value = '%s', position = '%s', id_group ='%s'
+            order_20 = '%d', trap_type = %d, single_value = '%s',
+            position = '%s', disable_event = %d, id_group ='%s'
 			WHERE id_as = %d",
             $priority,
             $alert_type,
@@ -316,6 +337,11 @@ if ($save_alert || $modify_alert) {
             $al_field13,
             $al_field14,
             $al_field15,
+            $al_field16,
+            $al_field17,
+            $al_field18,
+            $al_field19,
+            $al_field20,
             $description,
             $source_ip,
             $custom_value,
@@ -366,6 +392,7 @@ if ($save_alert || $modify_alert) {
             $trap_type,
             $single_value,
             $position,
+            $disable_event,
             $group,
             $id_as
         );
@@ -414,6 +441,11 @@ if ($update_alert || $duplicate_alert) {
     $al_field13 = $alert['al_field13'];
     $al_field14 = $alert['al_field14'];
     $al_field15 = $alert['al_field15'];
+    $al_field16 = $alert['al_field16'];
+    $al_field17 = $alert['al_field17'];
+    $al_field18 = $alert['al_field18'];
+    $al_field19 = $alert['al_field19'];
+    $al_field20 = $alert['al_field20'];
     $max_alerts = $alert['max_alerts'];
     $min_alerts = $alert['min_alerts'];
     $priority = $alert['priority'];
@@ -460,7 +492,17 @@ if ($update_alert || $duplicate_alert) {
     $trap_type = $alert['trap_type'];
     $single_value = $alert['single_value'];
     $position = $alert['position'];
+    $disable_event = $alert['disable_event'];
     $group = $alert['id_group'];
+
+    if (!check_acl_restricted_all($config['id_user'], $group, 'LW')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access SNMP Alert Management'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
 } else if ($create_alert) {
     // Variable init
     $id_as = -1;
@@ -486,6 +528,11 @@ if ($update_alert || $duplicate_alert) {
     $al_field13 = '';
     $al_field14 = '';
     $al_field15 = '';
+    $al_field16 = '';
+    $al_field17 = '';
+    $al_field18 = '';
+    $al_field19 = '';
+    $al_field20 = '';
     $max_alerts = 1;
     $min_alerts = 0;
     $priority = 0;
@@ -532,131 +579,27 @@ if ($update_alert || $duplicate_alert) {
     $trap_type = -1;
     $single_value = '';
     $position = 0;
+    $disable_event = 0;
     $group = 0;
 }
 
 // Duplicate alert snmp
 if ($duplicate_alert) {
-    $sql = sprintf(
-        'insert into talert_snmp (
-		id_alert, al_field1, al_field2, al_field3, 
-		al_field4, al_field5, al_field6, al_field7,
-		al_field8, al_field9, al_field10, al_field11, 
-		al_field12, al_field13, al_field14, al_field15,
-		description, alert_type, agent, custom_oid, oid, time_threshold,
-		times_fired, last_fired, max_alerts, min_alerts,
-		internal_counter, priority,
-		'.db_escape_key_identifier('_snmp_f1_').',
-		'.db_escape_key_identifier('_snmp_f2_').',
-		'.db_escape_key_identifier('_snmp_f3_').',
-		'.db_escape_key_identifier('_snmp_f4_').',
-		'.db_escape_key_identifier('_snmp_f5_').',
-		'.db_escape_key_identifier('_snmp_f6_').',
-		'.db_escape_key_identifier('_snmp_f7_').',
-		'.db_escape_key_identifier('_snmp_f8_').',
-		'.db_escape_key_identifier('_snmp_f9_').',
-		'.db_escape_key_identifier('_snmp_f10_').',
-		'.db_escape_key_identifier('_snmp_f11_').',
-		'.db_escape_key_identifier('_snmp_f12_').',
-		'.db_escape_key_identifier('_snmp_f13_').',
-		'.db_escape_key_identifier('_snmp_f14_').',
-		'.db_escape_key_identifier('_snmp_f15_').',
-		'.db_escape_key_identifier('_snmp_f16_').',
-		'.db_escape_key_identifier('_snmp_f17_').',
-		'.db_escape_key_identifier('_snmp_f18_').',
-		'.db_escape_key_identifier('_snmp_f19_').',
-		'.db_escape_key_identifier('_snmp_f20_').",
-		trap_type, single_value, position, id_group,
-		order_1, order_2, order_3, order_4, order_5, order_6, order_7, order_8, 
-		order_9, order_10, order_11, order_12, order_13, order_14, order_15, 
-		order_16, order_17, order_18, order_19, order_20)
-		VALUES
-		(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
-		'%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', 
-		'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', 
-		'%s', '%s', '%s', '%s', %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, 
-		%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-        $id_alert,
-        $al_field1,
-        $al_field2,
-        $al_field3,
-        $al_field4,
-        $al_field5,
-        $al_field6,
-        $al_field7,
-        $al_field8,
-        $al_field9,
-        $al_field10,
-        $al_field11,
-        $al_field12,
-        $al_field13,
-        $al_field14,
-        $al_field15,
-        $description,
-        $alert_type,
-        $source_ip,
-        $custom_value,
-        $oid,
-        $time_threshold,
-        $times_fired,
-        $last_fired,
-        $max_alerts,
-        $min_alerts,
-        $internal_counter,
-        $priority,
-        $custom_oid_data_1,
-        $custom_oid_data_2,
-        $custom_oid_data_3,
-        $custom_oid_data_4,
-        $custom_oid_data_5,
-        $custom_oid_data_6,
-        $custom_oid_data_7,
-        $custom_oid_data_8,
-        $custom_oid_data_9,
-        $custom_oid_data_10,
-        $custom_oid_data_11,
-        $custom_oid_data_12,
-        $custom_oid_data_13,
-        $custom_oid_data_14,
-        $custom_oid_data_15,
-        $custom_oid_data_16,
-        $custom_oid_data_17,
-        $custom_oid_data_18,
-        $custom_oid_data_19,
-        $custom_oid_data_20,
-        $trap_type,
-        $single_value,
-        $position,
-        $group,
-        $order_1,
-        $order_2,
-        $order_3,
-        $order_4,
-        $order_5,
-        $order_6,
-        $order_7,
-        $order_8,
-        $order_9,
-        $order_10,
-        $order_11,
-        $order_12,
-        $order_13,
-        $order_14,
-        $order_15,
-        $order_16,
-        $order_17,
-        $order_18,
-        $order_19,
-        $order_20
-    );
-    $result = db_process_sql($sql);
+    $values_duplicate = $alert;
+    if (!empty($values_duplicate)) {
+        unset($values_duplicate['id_as']);
+        $result = db_process_sql_insert('talert_snmp', $values_duplicate);
 
-    if (!$result) {
+        if (!$result) {
+            db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
+            ui_print_error_message(__('There was a problem duplicating the alert'));
+        } else {
+            db_pandora_audit('SNMP management', "Duplicate snmp alert #$id_as");
+            ui_print_success_message(__('Successfully Duplicate'));
+        }
+    } else {
         db_pandora_audit('SNMP management', "Fail try to duplicate snmp alert #$id_as");
         ui_print_error_message(__('There was a problem duplicating the alert'));
-    } else {
-        db_pandora_audit('SNMP management', "Duplicate snmp alert #$id_as");
-        ui_print_success_message(__('Successfully Duplicate'));
     }
 }
 
@@ -742,11 +685,11 @@ if ($create_alert || $update_alert) {
     }
 
     // SNMP alert filters
-    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter" style="font-weight: bold">';
+    echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter bolder">';
 
     // Description
     echo '<tr>'.'<td class="datos" valign="top">'.__('Description').'</td>'.'<td class="datos">';
-            html_print_textarea('description', 3, 2, $description, 'style="width:400px;"');
+            html_print_textarea('description', 3, 2, $description, 'class="w400px"');
     echo '</td>'.'</tr>';
 
     // echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
@@ -759,7 +702,7 @@ if ($create_alert || $update_alert) {
     echo '<tr id="tr-custom_value"><td class="datos"  valign="top">'.__('Custom Value/OID');
 
     echo '</td><td class="datos">';
-    html_print_textarea('custom_value', 2, 2, $custom_value, 'style="width:400px;"');
+    html_print_textarea('custom_value', 2, 2, $custom_value, 'class="w400px"');
 
     echo '</td></tr>';
 
@@ -768,12 +711,19 @@ if ($create_alert || $update_alert) {
     html_print_input_text('source_ip', $source_ip, '', 20);
     echo '</td></tr>';
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('LW') === true) {
+        $return_all_group = true;
+    }
+
     // Group
     echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
+    echo '<div class="w250px">';
     html_print_select_groups(
         $config['id_user'],
         'AR',
-        true,
+        $return_all_group,
         'group',
         $group,
         '',
@@ -790,6 +740,7 @@ if ($create_alert || $update_alert) {
         'id_grupo',
         false
     );
+    echo '</div>';
     echo '</td></tr>';
 
     // Trap type
@@ -966,13 +917,6 @@ if ($create_alert || $update_alert) {
     html_print_input_text('custom_oid_data_20', $custom_oid_data_20, '', 60);
     echo '</td></tr>';
 
-    // Button
-    // echo '<tr><td></td><td align="right">';
-    // End table
-    // echo "</td></tr></table>";
-    // Alert configuration
-    // echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox_color" style="border:1px solid #A9A9A9;">';
-    // echo '<tr><td class="datos"><b>' . __('Alert configuration') . ui_print_help_icon("snmp_alert_configuration", true) . '</b></td></tr>';
     // Alert fields
     $al = [
         'al_field1'  => $al_field1,
@@ -990,6 +934,11 @@ if ($create_alert || $update_alert) {
         'al_field13' => $al_field13,
         'al_field14' => $al_field14,
         'al_field15' => $al_field15,
+        'al_field16' => $al_field16,
+        'al_field17' => $al_field17,
+        'al_field18' => $al_field18,
+        'al_field19' => $al_field19,
+        'al_field20' => $al_field20,
     ];
 
     // Hidden div with help hint to fill with javascript
@@ -1027,8 +976,8 @@ if ($create_alert || $update_alert) {
     $fields[SECONDS_1WEEK] = human_time_description_raw(SECONDS_1WEEK);
     $fields[-1] = __('Other value');
 
-    html_print_select($fields, 'time_threshold', $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
-    echo '<div id="div-time_other" style="display:none">';
+    html_print_select($fields, 'time_threshold', $time_threshold, '', '', '0', false, false, false, '" class="mrgn_right_60px');
+    echo '<div id="div-time_other" class="invisible">';
     html_print_input_text('time_other', 0, '', 6);
     echo ' '.__('seconds').'</div></td></tr>';
 
@@ -1080,9 +1029,13 @@ if ($create_alert || $update_alert) {
 
     html_print_input_text('position', $position, '', 3);
     echo '</td></tr>';
+    echo '<tr><td class="datos">'.__('Disable event').'</td><td class="datos">';
+
+    html_print_checkbox('disable_event', 1, $disable_event, false);
+    echo '</td></tr>';
     echo '</table>';
 
-    echo "<table style='width:100%'>";
+    echo "<table class='w100p'>";
     echo '<tr><td></td><td align="right">';
     if ($id_as > 0) {
         html_print_submit_button(__('Update'), 'submit', false, 'class="sub upd"', false);
@@ -1289,20 +1242,35 @@ if ($create_alert || $update_alert) {
         $url = 'index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'id_alert_snmp='.$row['id_as'].'&'.'update_alert=1';
         $data[1] = '<table>';
         $data[1] .= '<tr>';
-        $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+            $data[1] .= '<a href="'.$url.'">'.alerts_get_alert_action_name($row['id_alert']).'</a>';
+        } else {
+            $data[1] .= alerts_get_alert_action_name($row['id_alert']);
+        }
+
         $other_actions = db_get_all_rows_filter('talert_snmp_action', ['id_alert_snmp' => $row['id_as']]);
         $data[1] .= '</tr>';
+
 
         if ($other_actions != false) {
             foreach ($other_actions as $action) {
                 $data[1] .= '<tr>';
                 $data[1] .= '<td>'.alerts_get_alert_action_name($action['alert_type']).'</td>';
-                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a> </td>';
+                $data[1] .= '<td> <a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_action=1&action_id='.$action['id'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a> </td>';
                 $data[1] .= '</tr>';
             }
         }
 
         $data[1] .= '</table>';
+
 
         $data[2] = $row['agent'];
         $data[3] = $row['oid'];
@@ -1316,18 +1284,50 @@ if ($create_alert || $update_alert) {
             $data[7] = __('Never');
         }
 
-        $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/copy.png', true, ['alt' => __('Duplicate'), 'title' => __('Duplicate')]).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image('images/config.png', true, ['border' => '0', 'alt' => __('Update')]).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image('images/add.png', true, ['title' => __('Add action')]).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image('images/cross.png', true, ['border' => '0', 'alt' => __('Delete')]).'</a>';
+        if (check_acl_restricted_all($config['id_user'], $row['id_group'], 'LW')) {
+                $data[8] = '<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'duplicate_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/copy.png',
+                    true,
+                    [
+                        'alt'   => __('Duplicate'),
+                        'title' => __('Duplicate'),
+                    ]
+                ).'</a>'.'<a href="index.php?'.'sec=snmpconsole&'.'sec2=godmode/snmpconsole/snmp_alert&'.'update_alert=1&'.'id_alert_snmp='.$row['id_as'].'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Update'),
+                    ]
+                ).'</a>'.'<a href="javascript:show_add_action_snmp(\''.$row['id_as'].'\');">'.html_print_image(
+                    'images/add.png',
+                    true,
+                    [
+                        'title' => __('Add action'),
+                    ]
+                ).'</a>'.'<a href="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row['id_as'].'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'border' => '0',
+                        'alt'    => __('Delete'),
+                    ]
+                ).'</a>';
 
 
-        $data[9] = html_print_checkbox_extended(
-            'delete_ids[]',
-            $row['id_as'],
-            false,
-            false,
-            false,
-            'class="chk_delete"',
-            true
-        );
+                $data[9] = html_print_checkbox_extended(
+                    'delete_ids[]',
+                    $row['id_as'],
+                    false,
+                    false,
+                    false,
+                    'class="chk_delete"',
+                    true
+                );
+        } else {
+            $data[8] = '';
+            $data[9] = '';
+        }
 
         $idx = count($table->data);
         // The current index of the table is 1 less than the count of table data so we count before adding to table->data
@@ -1337,12 +1337,12 @@ if ($create_alert || $update_alert) {
     }
 
     // DIALOG ADD MORE ACTIONS
-    echo '<div id="add_action_snmp-div" style="display:none;text-align:left">';
+    echo '<div id="add_action_snmp-div" class="invisible left">';
 
         echo '<form id="add_action_form" method="post">';
-            echo '<table class="databox_color" style="width:100%">';
+            echo '<table class="databox_color w100p">';
                 echo '<tr>';
-                    echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                    echo '<td class="datos2 bolder_6px">';
                         echo __('ID Alert SNMP');
                     echo '</td>';
                     echo '<td class="datos">';
@@ -1350,7 +1350,7 @@ if ($create_alert || $update_alert) {
                     echo '</td>';
                 echo '</tr>';
                 echo '<tr class="datos2">';
-                    echo '<td class="datos2" style="font-weight:bold;padding:6px;">';
+                    echo '<td class="datos2 bolder_6px">';
                         echo __('Action');
                     echo '</td>';
                     echo '<td class="datos2">';
@@ -1409,11 +1409,19 @@ if ($create_alert || $update_alert) {
                     'al_field13' => $al_field13,
                     'al_field14' => $al_field14,
                     'al_field15' => $al_field15,
+                    'al_field16' => $al_field16,
+                    'al_field17' => $al_field17,
+                    'al_field18' => $al_field18,
+                    'al_field19' => $al_field19,
+                    'al_field20' => $al_field20,
                 ];
 
                 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
                     echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif', true);
-                    echo '<td class="datos">'.html_print_image('images/spinner.gif', true);
+                    echo '<td class="datos">'.html_print_image(
+                        'images/spinner.gif',
+                        true
+                    );
                     html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
                     echo '</td>';
                     echo '</tr>';
@@ -1433,20 +1441,20 @@ if ($create_alert || $update_alert) {
 
                     ui_pagination($count, $url_pagination);
 
-                    echo '<div style="float:right; margin-left: 10px;">';
+                    echo '<div class="right mrgn_lft_10px;">';
                     html_print_input_hidden('multiple_delete', 1);
-                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
+                    html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete mrgn_btn_10px"');
                     echo '</div>';
                     echo '</form>';
                 }
 
-                echo '<div style="float:right;">';
+                echo '<div class="right">';
                 echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
                 html_print_input_hidden('create_alert', 1);
                 html_print_submit_button(__('Create'), 'alert', false, 'class="sub next"');
                 echo '</form></div>';
 
-                echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';
+                echo '<div class="snmp_legend">';
                 echo '<h3>'.__('Legend').'</h3>';
                 foreach (get_priorities() as $num => $name) {
                     echo '<span class="'.get_priority_class($num).'">'.$name.'</span>';
@@ -1458,6 +1466,7 @@ if ($create_alert || $update_alert) {
                 unset($table);
 }
 
+ui_require_javascript_file('pandora', 'include/javascript/', true);
 ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 <script language="javascript" type="text/javascript">
@@ -1563,24 +1572,19 @@ $(document).ready (function () {
         }
     });
     
-    tinyMCE.init({
-        selector: 'textarea.tiny-mce-editor',
-        theme : "advanced",
-        plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
-        theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
-        theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
-        theme_advanced_buttons3 : "",
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_resizing : true,
-        theme_advanced_statusbar_location : "bottom",
-        force_p_newlines : false,
-        forced_root_block : '',
-        inline_styles : true,
-        valid_children : "+body[style]",
-        element_format : "html"
-    });
+    var added_config = {
+        "selector": "textarea.tiny-mce-editor",
+        "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+        "theme_advanced_buttons1" : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
+        "theme_advanced_buttons2" : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+        "force_p_newlines": false,
+        "forced_root_block": '',
+        "inline_styles": true,
+        "valid_children": "+body[style]",
+        "element_format": "html",
+    }
 
+    defineTinyMCE(added_config);
 });
 
 function show_add_action_snmp(id_alert_snmp) {

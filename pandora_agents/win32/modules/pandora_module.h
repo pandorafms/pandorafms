@@ -1,6 +1,6 @@
 /* Defines a parent class for a Pandora module.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -216,6 +216,7 @@ namespace Pandora_Modules {
 		
 		string getDataOutput (Pandora_Data *data);
 		void   cleanDataList ();
+		int    module_wait_timeout;
 	public:
 		Pandora_Module                    (string name);
 		virtual ~Pandora_Module           ();
@@ -231,6 +232,7 @@ namespace Pandora_Modules {
 		int          getInterval   ();
 		int          getIntensiveInterval   ();
 		void         setTimeout    (int timeout);
+		void         setWaitTimeout (int timeout);
 		int          getTimeout    ();
 		string       getSave ();
 		bool         getAsync ();

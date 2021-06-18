@@ -146,7 +146,7 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("text-anchor", "middle");
           text.setAttribute("alignment-baseline", "middle");
           text.setAttribute("font-size", "15");
-          text.setAttribute("font-family", "arial");
+          text.setAttribute("font-family", "lato");
           text.setAttribute("font-weight", "bold");
           text.setAttribute(
             "transform",
@@ -226,7 +226,7 @@ export default class Percentile extends Item<PercentileProps> {
           text.setAttribute("text-anchor", "middle");
           text.setAttribute("alignment-baseline", "middle");
           text.setAttribute("font-size", "16");
-          text.setAttribute("font-family", "arial");
+          text.setAttribute("font-family", "lato");
           text.setAttribute("font-weight", "bold");
           text.setAttribute("fill", colors.text);
 
@@ -259,6 +259,13 @@ export default class Percentile extends Item<PercentileProps> {
           svg.append(text);
         }
         break;
+    }
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      svg.setAttribute("opacity", "0.2");
     }
 
     if (svg !== null) element.append(svg);

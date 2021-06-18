@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ class HTML
     /**
      * Breadcrum
      *
-     * @var array.
+     * @var array
      */
     public $breadcrum;
 
@@ -119,7 +119,7 @@ class HTML
     /**
      * Add an element to breadcrum array.
      *
-     * @param string $breads Elements to add to breadcrum.
+     * @param array $breads Elements to add to breadcrum.
      *
      * @return void
      */
@@ -254,7 +254,7 @@ class HTML
      *
      * @return boolean Alowed or not.
      */
-    public function aclMulticheck($access=null)
+    public function aclMulticheck($access=null, $id_group=0)
     {
         global $config;
 
@@ -268,7 +268,7 @@ class HTML
         foreach ($perms as $perm) {
             $allowed = $allowed || (bool) check_acl(
                 $config['id_user'],
-                0,
+                $id_group,
                 $perm
             );
         }
@@ -336,13 +336,34 @@ class HTML
 
 
     /**
+     * Return formatted html for error handler.
+     *
+     * @param string $message Error mesage.
+     *
+     * @return string
+     */
+    public static function error($message)
+    {
+        if (is_ajax()) {
+            echo json_encode(
+                [
+                    'error' => ui_print_error_message($message, '', true),
+                ]
+            );
+        } else {
+            return ui_print_error_message($message, '', true);
+        }
+    }
+
+
+    /**
      * Print input using functions html lib.
      *
      * @param array $data Input definition.
      *
      * @return string HTML code for desired input.
      */
-    public function printInput($data)
+    public static function printInput($data)
     {
         global $config;
 
@@ -377,7 +398,7 @@ class HTML
      *
      * @return void
      */
-    public function printGoBackButton($url=null)
+    public static function printGoBackButton($url=null)
     {
         if (isset($url) === false) {
             $url = ui_get_full_url(
@@ -404,7 +425,7 @@ class HTML
             ],
         ];
 
-        $this->printForm($form);
+        self::printForm($form);
     }
 
 
@@ -446,11 +467,16 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlock(
+    public static function printBlock(
         array $input,
         bool $return=false,
         bool $direct=false
     ) {
+        global $config;
+        if ($config['style'] === 'pandora_black') {
+            $text_color = 'style="color: white"';
+        }
+
         $output = '';
         if ($input['hidden'] == 1) {
             $class = ' hidden';
@@ -465,6 +491,10 @@ class HTML
         if (is_array($input['block_content']) === true) {
             $direct = (bool) $input['direct'];
             $toggle = (bool) $input['toggle'];
+
+            if (isset($input['label']) === true) {
+                $output .= '<span '.$text_color.'>'.$input['label'].'</span>';
+            }
 
             // Print independent block of inputs.
             $output .= '<li id="li-'.$input['block_id'].'" class="'.$class.'">';
@@ -481,7 +511,7 @@ class HTML
             $html = '';
 
             foreach ($input['block_content'] as $in) {
-                $html .= $this->printBlock(
+                $html .= self::printBlock(
                     $in,
                     $return,
                     (bool) $direct
@@ -522,20 +552,34 @@ class HTML
         } else {
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
+                && $input['arguments']['type'] != 'datalist'
             ) {
+                // Raw content for attach at the start of the input.
+                if (isset($input['surround_start']) === true) {
+                    $output .= $input['surround_start'];
+                }
+
                 if (!$direct) {
                     $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 }
 
-                $output .= '<label>'.$input['label'].'</label>';
-                $output .= $this->printInput($input['arguments']);
+                if (isset($input['label']) === true) {
+                    $output .= '<label '.$text_color.'>'.$input['label'].'</label>';
+                }
+
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 if (!$direct) {
                     $output .= '</li>';
                 }
+
+                // Raw content for attach at the end of the input.
+                if (isset($input['surround_end']) === true) {
+                    $output .= $input['surround_end'];
+                }
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -557,7 +601,7 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlockAsGrid(array $input, bool $return=false)
+    public static function printBlockAsGrid(array $input, bool $return=false)
     {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -571,11 +615,17 @@ class HTML
         }
 
         if (is_array($input['block_content']) === true) {
+            if (empty($input['label']) === false) {
+                $output .= '<div class="label_select">';
+                $output .= $input['label'];
+                $output .= '</div>';
+            }
+
             // Print independent block of inputs.
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlockAsGrid($input, $return);
+                $output .= self::printBlockAsGrid($input, $return);
             }
 
             $output .= '</ul></li>';
@@ -586,18 +636,18 @@ class HTML
                 if ($input['arguments']['inline'] != 'true') {
                     $output .= '<div class="edit_discovery_input">';
                 } else {
-                    $output .= '<div style="display: flex; margin-bottom: 25px; flex-wrap: wrap;">';
+                    $output .= '<div class="flex mrgn_btn_25px wrap">';
                     if (!isset($input['extra'])) {
-                        $output .= '<div style="width: 50%;">';
+                        $output .= '<div class="w50p">';
                     }
 
                     if (isset($input['extra'])) {
-                        $output .= '<div style="display: flex; margin-right:10px;">';
+                        $output .= '<div class="flex mrgn_right_10px">';
                     }
                 }
 
                 if ($input['arguments']['inline'] == 'true' && isset($input['extra'])) {
-                    $output .= '<div style="margin-right:10px;">';
+                    $output .= '<div class="mrgn_right_10px">';
                 }
 
                 $output .= '<div class="label_select">';
@@ -614,18 +664,18 @@ class HTML
 
                 if ($input['arguments']['type'] == 'text' || $input['arguments']['type'] == 'text_extended') {
                     $output .= '<div class="discovery_text_input">';
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                     $output .= '</div>';
                 } else if ($input['arguments']['inline'] == 'true') {
                     if (isset($input['extra'])) {
-                        $output .= '<div style="">';
-                        $output .= '<div style="float: left;">';
+                        $output .= '<div  >';
+                        $output .= '<div class="float-left">';
                     } else {
-                        $output .= '<div style="width:50%;">';
-                        $output .= '<div style="float: right;">';
+                        $output .= '<div class="w50p">';
+                        $output .= '<div class="float-right">';
                     }
 
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                     $output .= '</div>';
                     $output .= '</div>';
 
@@ -633,14 +683,14 @@ class HTML
                         $output .= '</div>';
                     }
                 } else {
-                    $output .= $this->printInput($input['arguments']);
+                    $output .= self::printInput($input['arguments']);
                 }
 
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 $output .= '</div>';
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -662,7 +712,7 @@ class HTML
      *
      * @return string HTML content.
      */
-    public function printBlockAsList(array $input, bool $return=false)
+    public static function printBlockAsList(array $input, bool $return=false)
     {
         $output = '';
         if ($input['hidden'] == 1) {
@@ -678,9 +728,9 @@ class HTML
         if (is_array($input['block_content']) === true) {
             // Print independent block of inputs.
             $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
-            $output .= '<ul class="wizard '.$input['block_class'].'">';
+            $output .= '<ul class="wizard list '.$input['block_class'].'">';
             foreach ($input['block_content'] as $input) {
-                $output .= $this->printBlockAsList($input, $return);
+                $output .= self::printBlockAsList($input, $return);
             }
 
             $output .= '</ul></li>';
@@ -690,12 +740,12 @@ class HTML
             ) {
                 $output .= '<li id="'.$input['id'].'" class="'.$class.'">';
                 $output .= '<label>'.$input['label'].'</label>';
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
                 $output .= '</li>';
             } else {
-                $output .= $this->printInput($input['arguments']);
+                $output .= self::printInput($input['arguments']);
                 // Allow dynamic content.
                 $output .= $input['extra'];
             }
@@ -718,20 +768,60 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printForm(
+    public static function printForm(
         array $data,
         bool $return=false,
         bool $print_white_box=false
     ) {
         $form = $data['form'];
         $inputs = $data['inputs'];
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
 
-        $output_head = '<form id="'.$form['id'].'" class="discovery '.$form['class'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
-        $output_head .= '" '.$form['extra'].'>';
+        $output_head = '';
+        if (empty($data['pre-content']) === false) {
+            $output_head .= $data['pre-content'];
+        }
+
+        if (isset($data['form']) === true) {
+            $output_head .= '<form ';
+            if (isset($form['name']) === true) {
+                $output_head .= 'name="'.$form['name'].'" ';
+            }
+
+            if (isset($form['id']) === true) {
+                $output_head .= 'id="'.$form['id'].'" ';
+            }
+
+            if (isset($form['class']) === true) {
+                $output_head .= 'class="discovery '.$form['class'].'" ';
+            }
+
+            if (isset($form['onsubmit']) === true) {
+                $output_head .= 'onsubmit="'.$form['onsubmit'].'" ';
+            }
+
+            if (isset($form['enctype']) === true) {
+                $output_head .= 'enctype="'.$form['enctype'].'" ';
+            }
+
+            if (isset($form['action']) === true) {
+                $output_head .= 'action="'.$form['action'].'" ';
+            }
+
+            if (isset($form['method']) === true) {
+                $output_head .= 'method="'.$form['method'].'" ';
+            }
+
+            if (isset($form['extra']) === true) {
+                $output_head .= $form['extra'];
+            }
+
+            $output_head .= '>';
+        }
 
         if ($return === false) {
             echo $output_head;
@@ -759,19 +849,25 @@ class HTML
 
         foreach ($inputs as $input) {
             if ($input['arguments']['type'] != 'submit') {
-                $output .= $this->printBlock($input, true);
+                $output .= self::printBlock($input, true);
             } else {
-                $output_submit .= $this->printBlock($input, true);
+                $output_submit .= self::printBlock($input, true);
             }
         }
 
         $output .= '</ul>';
+
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
 
         if ($print_white_box === true) {
             $output .= '</div>';
         }
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {
@@ -795,12 +891,12 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printFormAsGrid(array $data, bool $return=false)
+    public static function printFormAsGrid(array $data, bool $return=false)
     {
         $form = $data['form'];
 
         $rows = $data['rows'];
-
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
@@ -835,7 +931,7 @@ class HTML
                     if ($first_block_printed === true) {
                         // If first form block has been placed, then close it before starting a new one.
                         $output .= '</div>';
-                        $output .= '<div class="white_box" style="margin-top: 30px;">';
+                        $output .= '<div class="white_box mrgn_top_30px">';
                     } else {
                         $output .= '<div class="white_box">';
                     }
@@ -856,12 +952,36 @@ class HTML
                     $output .= ' style="'.$width.$padding_left.$padding_right;
                     $output .= $extra_styles.'">';
 
+                    // Toggle option.
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
                             if ($input['arguments']['type'] != 'submit') {
-                                $output .= $this->printBlockAsGrid($input, true);
+                                if ($input['toggle'] === true) {
+                                    $output .= ui_print_toggle(
+                                        [
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'title'           => $input['toggle_title'],
+                                            'id'              => $input['toggle_id'],
+                                            'hidden_default'  => $input['toggle_hidden_default'],
+                                            'content'         => self::printBlockAsGrid(
+                                                $input,
+                                                true
+                                            ),
+                                            'return'          => true,
+                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                            'toggle_class'    => $input['toggle_toggle_class'],
+                                            'main_class'      => $input['toggle_main_class'],
+                                            'container_class' => $input['toggle_container_class'],
+                                            'img_a'           => $input['toggle_img_a'],
+                                            'img_b'           => $input['toggle_img_b'],
+                                            'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                                        ]
+                                    );
+                                } else {
+                                    $output .= self::printBlockAsGrid($input, true);
+                                }
                             } else {
-                                $output_submit .= $this->printBlockAsGrid($input, true);
+                                $output_submit .= self::printBlockAsGrid($input, true);
                             }
                         } else {
                             $output .= $input;
@@ -875,9 +995,15 @@ class HTML
             }
         }
 
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
+
         $output .= '</div>';
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {
@@ -901,10 +1027,11 @@ class HTML
      *
      * @return string HTML code.
      */
-    public function printFormAsList(array $data, bool $return=false)
+    public static function printFormAsList(array $data, bool $return=false)
     {
         $form = $data['form'];
         $inputs = $data['inputs'];
+        $rawInputs = $data['rawInputs'];
         $js = $data['js'];
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
@@ -933,15 +1060,22 @@ class HTML
 
         foreach ($inputs as $input) {
             if ($input['arguments']['type'] != 'submit') {
-                $output .= $this->printBlockAsList($input, true);
+                $output .= self::printBlockAsList($input, true);
             } else {
-                $output_submit .= $this->printBlockAsList($input, true);
+                $output_submit .= self::printBlockAsList($input, true);
             }
         }
 
         $output .= '</ul>';
+        // There is possible add raw inputs for this form.
+        if (empty($rawInputs) === false) {
+            $output .= $rawInputs;
+        }
+
         $output .= '</div>';
+
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {
@@ -997,6 +1131,74 @@ class HTML
         echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
+    }
+
+
+    /**
+     * Returns a n-dimensional array (data) into a html tree structure.
+     *
+     * Advanced documentation:
+     *   https://www.jqueryscript.net/other/Checkable-Hierarchical-Tree.html
+     *
+     * @param string $target   Target DOM id.
+     * @param array  $data     N-dimensional array.
+     * @param string $onclick  Onclick function.
+     * @param string $onchange Onchange function.
+     *
+     * @return string
+     */
+    public static function printTree(
+        $target,
+        $data,
+        $onclick='',
+        $onchange=''
+    ) {
+        ui_require_css_file('simTree');
+        ui_require_javascript_file('simTree');
+
+        /*
+         * SAMPLE SELECT ALL.
+         *
+         * echo '<div class="subtitle">';
+         * echo '<span>';
+         * echo __('Please select devices to be monitored');
+         * echo '</span><div class="manage">';
+         * echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), false); simTree_tree.clickNode($(this));});">';
+         * echo __('select all');
+         * echo '</button>';
+         * echo '<button onclick="$(\'.sim-tree li a\').each(function(){simTree_tree.doCheck($(this), true); simTree_tree.clickNode($(this));});">';
+         * echo __('deselect all');
+         * echo '</button>';
+         * echo '</div>';
+         * echo '</div>';
+         *
+         * END SAMPLE SELECT ALL.
+         */
+
+        $output = '
+<script type="text/javascript">
+var simTree_'.$target.';
+    $(document).ready(function() {
+        simTree_'.$target.' = simTree({
+            el: $('.$target.'),
+            data: '.json_encode($data).',
+            onClick: function (item) {'.$onclick.';},
+            onChange: function (item) {
+                '.$onchange.';
+                $("#tree-data-'.$target.'").val(JSON.stringify(this.sels));
+            },
+            check: true,
+            linkParent: true
+        });
+        $("#'.$target.'").append(
+            \'<input type="hidden" id="tree-data-'.$target.'" name="tree-data-'.$target.'">\'
+        );
+
+        $("#tree-data-'.$target.'").val(JSON.stringify(simTree_'.$target.'.sels));
+    });
+</script>';
+
+        return $output;
     }
 
 

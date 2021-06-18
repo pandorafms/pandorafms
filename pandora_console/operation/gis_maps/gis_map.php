@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ ui_print_page_header(
     __('GIS Maps'),
     'images/op_gis.png',
     false,
-    'configure_gis_map',
+    '',
     false,
     $buttons
 );
@@ -170,8 +170,13 @@ if ($maps !== false) {
         $data['name'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$map['id_tgis_map'].'">'.$map['map_name'].'</a> ';
         $data['group'] = ui_print_group_icon($map['group_id'], true);
 
-        if ($edit_gis_maps) {
-            if ($display_default_column) {
+        $data['default'] = '';
+        $data['op'] = '';
+
+        if (check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+            || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM')
+        ) {
+            if (check_acl_restricted_all($config['id_user'], 0, 'MM')) {
                 $checked = false;
                 if ($map['default_map']) {
                     $checked = true;
@@ -182,7 +187,7 @@ if ($maps !== false) {
             }
 
             $table->cellclass[]['op'] = 'action_buttons';
-            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+            $data['op'] = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>'.'<a href="index.php?sec=godgismaps&amp;sec2=operation/gis_maps/gis_map&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         }
 
         array_push($table->data, $data);

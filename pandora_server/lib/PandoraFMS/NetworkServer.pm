@@ -3,7 +3,7 @@ package PandoraFMS::NetworkServer;
 # Pandora FMS Network Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -384,6 +384,7 @@ sub pandora_query_snmp ($$$$) {
 	my $output; # Command output
 
 	# If not defined, always snmp v1 (standard)
+	$snmp_version = '1' unless defined($snmp_version);
 	if ($snmp_version ne '1' && $snmp_version ne '2' 
 		&& $snmp_version ne '2c' && $snmp_version ne '3') {
 		$snmp_version = '1';
@@ -470,14 +471,16 @@ sub exec_network_module ($$$$) {
 	my $retries = $module->{'max_retries'};
 	my $target_os = pandora_get_os($dbh, $module->{'custom_string_2'});
 
-	if ($module->{'custom_string_2'} eq "inherited" ) {
+	if (defined($module->{'custom_string_2'})
+		&& $module->{'custom_string_2'} eq "inherited"
+	) {
 		$target_os = $agent_row->{'id_os'};
 	} elsif (!defined($target_os) || "$target_os" eq '0') {
 		$target_os = $agent_row->{'id_os'};
 	}
 
 	# Use the agent address by default
-	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
+	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto'|| $ip_target eq '_address_') {
 		$ip_target = $agent_row->{'direccion'};
 	}
 
@@ -493,9 +496,11 @@ sub exec_network_module ($$$$) {
 		}
 		elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 			$module_data = pandora_ping_latency ($pa_config, $ip_target, $timeout, $retries);
-			
+
 			if (defined($module_data)) {
 				$module_result = 0; # Successful
+			} else {
+				$module_result = 1; # Unsuccessful: Cannot reach target.
 			}
 		}
 
@@ -589,7 +594,7 @@ sub exec_network_module ($$$$) {
 		my %data = ("data" => $module_data);
 		pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 
-		if ($agent_os_version eq ''){
+		if (!defined($agent_os_version) || $agent_os_version eq ''){
 			$agent_os_version = $pa_config->{'servername'}.'_Net';
 		}
 

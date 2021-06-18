@@ -1,41 +1,36 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Only accesible by ajax
-if (is_ajax()) {
+/**
+ * Tree view.
+ *
+ * @category   Tree
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+if (is_ajax() === true) {
     global $config;
 
-    enterprise_include_once('include/functions_dashboard.php');
-
-    $public_hash = get_parameter('hash', 0);
-
-    // Try to authenticate by hash on public dashboards
-    if ($public_hash == 0) {
-        // Login check
-        check_login();
-    } else {
-        $validate_hash = enterprise_hook(
-            'dasboard_validate_public_hash',
-            [
-                $public_hash,
-                'tree_view',
-            ]
-        );
-        if ($validate_hash === false || $validate_hash === ENTERPRISE_NOT_HOOK) {
-            db_pandora_audit('Invalid public hash', 'Trying to access report builder');
-            include 'general/noaccess.php';
-            exit;
-        }
-    }
+    // Login check.
+    check_login();
 
     include_once $config['homedir'].'/include/class/Tree.class.php';
     include_once $config['homedir'].'/include/class/TreeOS.class.php';
@@ -54,17 +49,14 @@ if (is_ajax()) {
     $getGroupStatus = (bool) get_parameter('getGroupStatus', 0);
     $getDetail = (bool) get_parameter('getDetail');
 
-    if ($getChildren) {
+    if ($getChildren === true) {
         $type = get_parameter('type', 'group');
         $rootType = get_parameter('rootType', '');
         $id = get_parameter('id', -1);
         $rootID = get_parameter('rootID', -1);
         $serverID = get_parameter('serverID', false);
+        $metaID = (int) get_parameter('metaID', 0);
         $childrenMethod = get_parameter('childrenMethod', 'on_demand');
-        $hash = get_parameter('hash', false);
-        if ($hash !== false) {
-            enterprise_hook('dasboard_validate_public_hash', [$hash, 'tree_view']);
-        }
 
         $default_filters = [
             'searchAgent'  => '',
@@ -78,55 +70,128 @@ if (is_ajax()) {
 
         $agent_a = check_acl($config['id_user'], 0, 'AR');
         $agent_w = check_acl($config['id_user'], 0, 'AW');
-        $access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
-        $switch_type = !empty($rootType) ? $rootType : $type;
+        $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
+        $switch_type = (empty($rootType) === false) ? $rootType : $type;
         switch ($switch_type) {
             case 'os':
-                $tree = new TreeOS($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeOS(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'module_group':
-                $tree = new TreeModuleGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeModuleGroup(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'module':
-                $tree = new TreeModule($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeModule(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'tag':
-                $tree = new TreeTag($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeTag(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'group':
-                if (is_metaconsole()) {
-                    if (!class_exists('TreeGroupMeta')) {
+                if (is_metaconsole() === true) {
+                    if (class_exists('TreeGroupMeta') === false) {
                         break;
                     }
 
-                    $tree = new TreeGroupMeta($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                    $tree = new TreeGroupMeta(
+                        $type,
+                        $rootType,
+                        $id,
+                        $rootID,
+                        $serverID,
+                        $childrenMethod,
+                        $access
+                    );
                 } else {
-                    $tree = new TreeGroup($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                    $tree = new TreeGroup(
+                        $type,
+                        $rootType,
+                        $id,
+                        $rootID,
+                        $serverID,
+                        $childrenMethod,
+                        $access
+                    );
                 }
             break;
 
             case 'policies':
-                if (!class_exists('TreePolicies')) {
+                if (class_exists('TreePolicies') === false) {
                     break;
                 }
 
-                $tree = new TreePolicies($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreePolicies(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'group_edition':
-                $tree = new TreeGroupEdition($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeGroupEdition(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access
+                );
             break;
 
             case 'services':
-                $tree = new TreeService($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+                $tree = new TreeService(
+                    $type,
+                    $rootType,
+                    $id,
+                    $rootID,
+                    $serverID,
+                    $childrenMethod,
+                    $access,
+                    $metaID
+                );
             break;
 
             default:
-                // FIXME. No error handler
+                // No error handler.
             return;
         }
 
@@ -137,14 +202,14 @@ if (is_ajax()) {
         return;
     }
 
-    if ($getDetail) {
+    if ($getDetail === true) {
         include_once $config['homedir'].'/include/functions_treeview.php';
 
         $id = (int) get_parameter('id');
         $type = (string) get_parameter('type');
 
         $server = [];
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $server_id = (int) get_parameter('serverID');
             $server = metaconsole_get_servers($server_id);
         }
@@ -155,8 +220,8 @@ if (is_ajax()) {
         include_once __DIR__.'/../styles/progress.css';
         echo '</style>';
 
-        echo '<div class="left_align">';
-        if (!empty($id) && !empty($type)) {
+        echo '<div class="left_align backgrund_primary_important">';
+        if (empty($id) === false && empty($type) === false) {
             switch ($type) {
                 case 'agent':
                     treeview_printTable($id, $server, true);
@@ -171,7 +236,7 @@ if (is_ajax()) {
                 break;
 
                 default:
-                    // Nothing
+                    // Nothing.
                 break;
             }
         }

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -31,6 +31,8 @@ class TreeModuleGroup extends Tree
             'tmg.id_mg AS id',
         ];
         $this->L1inner = 'INNER JOIN tmodule_group tmg ON tmg.id_mg = x2.g';
+        $this->L1innerInside = 'INNER JOIN tagente_modulo tam 
+                                    ON ta.id_agente = tam.id_agente';
         $this->L1orderByFinal = 'tmg.name';
 
         $this->L2condition = 'AND tam.id_module_group = '.$this->rootID;

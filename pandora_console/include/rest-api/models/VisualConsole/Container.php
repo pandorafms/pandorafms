@@ -88,6 +88,7 @@ final class Container extends Model
             'height'            => (int) $data['height'],
             'backgroundURL'     => static::extractBackgroundUrl($data),
             'relationLineWidth' => (int) $data['relationLineWidth'],
+            'hash'              => static::extractHash($data),
         ];
     }
 
@@ -199,6 +200,22 @@ final class Container extends Model
 
 
     /**
+     * Extract a hash.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing hash (not empty) or null.
+     */
+    private static function extractHash(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['hash']),
+            null
+        );
+    }
+
+
+    /**
      * Extract a background color value.
      *
      * @param array $data Unknown input data structure.
@@ -245,8 +262,10 @@ final class Container extends Model
      *
      * @override Model::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter)
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ) {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
         $row = \db_get_row_filter('tlayout', $filter);
@@ -276,6 +295,10 @@ final class Container extends Model
                 false
             );
         }
+
+        $row['hash'] = md5(
+            $config['dbpass'].$row['id'].$config['id_user']
+        );
 
         return \io_safe_output($row);
     }
@@ -343,6 +366,9 @@ final class Container extends Model
             case COLOR_CLOUD:
             return Items\ColorCloud::class;
 
+            case NETWORK_LINK:
+            return Items\NetworkLink::class;
+
             default:
             return Item::class;
         }
@@ -360,7 +386,8 @@ final class Container extends Model
      */
     public static function getItemsFromDB(
         int $layoutId,
-        array $groupsFilter=[]
+        array $groupsFilter=[],
+        ?float $ratio=0
     ): array {
         // Default filter.
         $filter = ['id_layout' => $layoutId];
@@ -411,9 +438,9 @@ final class Container extends Model
             $class = static::getItemClass((int) $data['type']);
 
             try {
-                array_push($items, $class::fromDB($data));
+                array_push($items, $class::fromDB($data, $ratio));
             } catch (\Throwable $e) {
-                // TODO: Log this?
+                error_log('VC[Container]: '.$e->getMessage());
             }
         }
 
@@ -457,6 +484,7 @@ final class Container extends Model
             $item = $class::fromDB($row);
         } catch (\Throwable $e) {
             // TODO: Log this?
+            error_log(obhd($e));
         }
 
         return $item;

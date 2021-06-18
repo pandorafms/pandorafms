@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 check_login();
+
+global $config;
 
 if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
@@ -144,11 +146,6 @@ $table->head[] = __('Login Function');
 $table->head[] = __('Agent operation tab');
 $table->head[] = __('Agent godmode tab');
 $table->head[] = __('Operation');
-/*
-    $table->width = array();
-    $table->width[] = '30%';
-    $table->width[] = '30%';
-*/
 $table->width = '100%';
 $table->class = 'info_table';
 
@@ -174,7 +171,7 @@ foreach ($extensions as $file => $extension) {
     if (!$extension['enabled']) {
         $on = html_print_image('images/dot_green.disabled.png', true);
         $off = html_print_image('images/dot_red.disabled.png', true);
-        $data[] = '<i style="color: grey;">'.$file.'</i>';
+        $data[] = '<i class="grey">'.$file.'</i>';
 
         // Get version of this extensions
         if ($config['extensions'][$file]['operation_menu']) {
@@ -259,7 +256,7 @@ foreach ($extensions as $file => $extension) {
         if (!$extension['enabled']) {
             $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.disabled.png', true).'</a>'.' <a title="'.__('Enable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file.'" class="mn">'.html_print_image('images/lightbulb_off.png', true).'</a>';
         } else {
-            $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.png', true).'</a>'.' <a title="'.__('Disable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file.'" class="mn">'.html_print_image('images/lightbulb.png', true).'</a>';
+            $data[] = '<a title="'.__('Delete').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&delete='.$file.'" class="mn">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>'.' <a title="'.__('Disable').'" href="index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file.'" class="mn">'.html_print_image('images/lightbulb.png', true).'</a>';
         }
     } else {
         $data[] = '';

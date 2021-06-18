@@ -1,6 +1,6 @@
 /* Defines a factory of Pandora modules based on the module definition
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -124,6 +124,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_NATIVE_ENCODING ("module_native_encoding")
 #define TOKEN_ALERT_TEMPLATE ("module_alert_template")
 #define TOKEN_USER_SESSION ("module_user_session ")
+#define TOKEN_WAIT_TIMEOUT ("module_wait_timeout ")
 	
 string
 parseLine (string line, string token) {
@@ -178,7 +179,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
 	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
 	string                 module_native_encoding, module_alert_template, module_ff_type;
-	string                 macro;
+	string                 macro, module_wait_timeout;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -260,6 +261,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_alert_template	 = "";
 	module_user_session	 = "";
 	macro   = "";
+	module_wait_timeout = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -290,6 +292,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_exec == "") {
 			module_exec = parseLine (line, TOKEN_EXEC);
+		}
+		if (module_wait_timeout == "") {
+			module_wait_timeout = parseLine (line, TOKEN_WAIT_TIMEOUT);
 		}
 		if (module_proc == "") {
 			module_proc = parseLine (line, TOKEN_PROC);
@@ -1130,6 +1135,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_timeout != "") {
 			module->setTimeout (atoi (module_timeout.c_str ()));
 		}
+		if (module_wait_timeout != "") {
+			module->setWaitTimeout (atoi (module_wait_timeout.c_str ()));
+		}
 		
 	} else if (module_proc != "") {
 		module = new Pandora_Module_Proc (module_name,
@@ -1229,6 +1237,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Plugin (module_name, module_plugin);
 		if (module_timeout != ""){
 			module->setTimeout(atoi(module_timeout.c_str()));
+		}
+		if (module_wait_timeout != "") {
+			module->setWaitTimeout (atoi (module_wait_timeout.c_str ()));
 		}
 	} else if (module_ping != "") {
 		if (module_ping_count == "") {

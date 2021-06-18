@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,9 +76,9 @@ if ($fields === false) {
         $data[0] = '<b>'.$field['name'].'</b>';
 
         if ($field['display_on_front']) {
-            $data[1] = html_print_image('images/tick.png', true);
+            $data[1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         } else {
-            $data[1] = html_print_image('images/delete.png', true);
+            $data[1] = html_print_image('images/delete.png', true, ['class' => 'invert_filter']);
         }
 
         $custom_value = db_get_all_rows_sql(

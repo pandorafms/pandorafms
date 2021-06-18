@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -14,6 +14,8 @@
 if (! isset($config['id_user'])) {
     return;
 }
+
+use PandoraFMS\Dashboard\Manager;
 
 require_once 'include/functions_menu.php';
 require_once $config['homedir'].'/include/functions_visual_map.php';
@@ -56,6 +58,9 @@ if (check_acl($config['id_user'], 0, 'AR')) {
     $sub2['operation/agentes/status_monitor']['text'] = __('Monitor detail');
     $sub2['operation/agentes/status_monitor']['refr'] = 0;
 
+    $sub2['operation/agentes/interface_view']['text'] = __('Interface view');
+    $sub2['operation/agentes/interface_view']['refr'] = 0;
+
     enterprise_hook('tag_view_submenu');
 
     $sub2['operation/agentes/alerts_status']['text'] = __('Alert detail');
@@ -65,7 +70,7 @@ if (check_acl($config['id_user'], 0, 'AR')) {
 
     enterprise_hook('inventory_menu');
 
-    if ($config['activate_netflow'] || $config['activate_nta']) {
+    if ($config['activate_netflow']) {
         $sub['network_traffic'] = [
             'text'    => __('Network'),
             'id'      => 'Network',
@@ -77,45 +82,29 @@ if (check_acl($config['id_user'], 0, 'AR')) {
         // Initialize the submenu.
         $netflow_sub = [];
 
-        if ($config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/netflow/netflow_explorer' => [
-                        'text' => __('Netflow explorer'),
-                        'id'   => 'Netflow explorer',
-                    ],
-                    'operation/netflow/nf_live_view'     => [
-                        'text' => __('Netflow Live View'),
-                        'id'   => 'Netflow Live View',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/netflow/netflow_explorer' => [
+                    'text' => __('Netflow explorer'),
+                    'id'   => 'Netflow explorer',
+                ],
+                'operation/netflow/nf_live_view'     => [
+                    'text' => __('Netflow Live View'),
+                    'id'   => 'Netflow Live View',
+                ],
+            ]
+        );
 
-        if ($config['activate_nta']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_explorer' => [
-                        'text' => __('Network explorer'),
-                        'id'   => 'Network explorer',
-                    ],
-                ]
-            );
-        }
-
-        if ($config['activate_nta'] || $config['activate_netflow']) {
-            $netflow_sub = array_merge(
-                $netflow_sub,
-                [
-                    'operation/network/network_usage_map' => [
-                        'text' => __('Network usage map'),
-                        'id'   => 'Network usage map',
-                    ],
-                ]
-            );
-        }
+        $netflow_sub = array_merge(
+            $netflow_sub,
+            [
+                'operation/network/network_usage_map' => [
+                    'text' => __('Network usage map'),
+                    'id'   => 'Network usage map',
+                ],
+            ]
+        );
 
         $sub['network_traffic']['sub2'] = $netflow_sub;
     }
@@ -281,18 +270,14 @@ if (check_acl($config['id_user'], 0, 'MR') || check_acl($config['id_user'], 0, '
 
         $own_info = get_user_info($config['id_user']);
         if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-            $own_groups = array_keys(users_get_groups($config['id_user'], 'IR'));
+            $own_groups = array_keys(users_get_groups($config['id_user'], 'MR'));
         } else {
-            $own_groups = array_keys(users_get_groups($config['id_user'], 'IR', false));
+            $own_groups = array_keys(users_get_groups($config['id_user'], 'MR', false));
         }
 
         foreach ($gisMaps as $gisMap) {
             $is_in_group = in_array($gisMap['group_id'], $own_groups);
             if (!$is_in_group) {
-                continue;
-            }
-
-            if (! check_acl($config['id_user'], $gisMap['group_id'], 'IR')) {
                 continue;
             }
 
@@ -344,7 +329,32 @@ if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, '
         'godmode/reporting/graph_builder',
     ];
 
-    enterprise_hook('dashboard_menu');
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/dashboard/dashboard']['text'] = __('Dashboard');
+        $sub['operation/dashboard/dashboard']['id'] = 'Dashboard';
+        $sub['operation/dashboard/dashboard']['refr'] = 0;
+        $sub['operation/dashboard/dashboard']['subsecs'] = ['operation/dashboard/dashboard'];
+
+        $dashboards = Manager::getDashboards(-1, -1, true);
+
+        $sub2 = [];
+        foreach ($dashboards as $dashboard) {
+            $name = io_safe_output($dashboard['name']);
+
+            $sub2['operation/dashboard/dashboard&dashboardId='.$dashboard['id']] = [
+                'text'  => mb_substr($name, 0, 19),
+                'title' => $name,
+            ];
+        }
+
+        if (empty($sub2) === false) {
+            $sub['operation/dashboard/dashboard']['sub2'] = $sub2;
+        }
+    }
+
     enterprise_hook('reporting_godmenu');
 
     $menu_operation['reporting']['sub'] = $sub;
@@ -366,8 +376,6 @@ if (check_acl($config['id_user'], 0, 'ER')
     $sub['operation/events/events']['text'] = __('View events');
     $sub['operation/events/events']['id'] = 'View events';
     $sub['operation/events/events']['pages'] = ['godmode/events/events'];
-    $sub['operation/events/event_statistics']['text'] = __('Statistics');
-    $sub['operation/events/event_statistics']['id'] = 'Statistics';
 
     // If ip doesn't is in list of allowed IP, isn't show this options.
     include_once 'include/functions_api.php';
@@ -405,11 +413,6 @@ if (check_acl($config['id_user'], 0, 'ER')
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['text'] = __('RSS');
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['id'] = 'RSS';
         $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
-
-        // Marquee.
-        $sub['operation/events/events_marquee.php']['text'] = __('Marquee');
-        $sub['operation/events/events_marquee.php']['id'] = 'Marquee';
-        $sub['operation/events/events_marquee.php']['type'] = 'direct';
     }
 
     // Sound Events.
@@ -453,39 +456,27 @@ $sub['operation/users/user_edit_notifications']['text'] = __('Configure user not
 $sub['operation/users/user_edit_notifications']['id'] = 'Configure user notifications';
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
-// ANY user can chat with other user and dogs.
-// Users.
-$sub['operation/users/webchat']['text'] = __('WebChat');
-$sub['operation/users/webchat']['id'] = 'WebChat';
-$sub['operation/users/webchat']['refr'] = 0;
-
 
 // Incidents.
-if (check_acl($config['id_user'], 0, 'IR')
-    || check_acl($config['id_user'], 0, 'IW')
-    || check_acl($config['id_user'], 0, 'IM')
-) {
-    $temp_sec2 = $sec2;
-    $sec2 = 'incident';
-    $sec2sub = 'operation/incidents/incident_statistics';
-    $sub[$sec2]['text'] = __('Incidents');
-    $sub[$sec2]['id'] = 'Incidents';
-    $sub[$sec2]['type'] = 'direct';
-    $sub[$sec2]['subtype'] = 'nolink';
-    $sub[$sec2]['refr'] = 0;
-    $sub[$sec2]['subsecs'] = [
-        'operation/incidents/incident_detail',
-        'operation/integria_incidents',
-    ];
+$temp_sec2 = $sec2;
+$sec2 = 'incident';
+$sec2sub = 'operation/incidents/incident_statistics';
+$sub[$sec2]['text'] = __('Incidents');
+$sub[$sec2]['id'] = 'Incidents';
+$sub[$sec2]['type'] = 'direct';
+$sub[$sec2]['subtype'] = 'nolink';
+$sub[$sec2]['refr'] = 0;
+$sub[$sec2]['subsecs'] = [
+    'operation/incidents/incident_detail',
+    'operation/integria_incidents',
+];
 
-    $sub2 = [];
-    $sub2['operation/incidents/incident']['text'] = __('List of Incidents');
-    $sub2[$sec2sub]['text'] = __('Statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS Tickets');
+$sub2 = [];
+$sub2[$sec2sub]['text'] = __('Integria IMS statistics');
+$sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
 
-    $sub[$sec2]['sub2'] = $sub2;
-    $sec2 = $temp_sec2;
-}
+$sub[$sec2]['sub2'] = $sub2;
+$sec2 = $temp_sec2;
 
 
 // Messages.

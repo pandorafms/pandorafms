@@ -1,16 +1,32 @@
 <?php
+/**
+ * Configure agent groups.
+ *
+ * @category   Agents group management.
+ * @package    Pandora FMS
+ * @subpackage User interface.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 global $config;
 
 check_login();
@@ -27,7 +43,7 @@ require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('meta/include/functions_agents_meta.php');
 
-// Init vars
+// Default values.
 $icon = '';
 $name = '';
 $id_parent = 0;
@@ -39,6 +55,7 @@ $skin = 0;
 $contact = '';
 $other = '';
 $description = '';
+$max_agents = 0;
 
 $create_group = (bool) get_parameter('create_group');
 $id_group = (int) get_parameter('id_group');
@@ -62,11 +79,12 @@ if ($id_group) {
         $description = $group['description'];
         $contact = $group['contact'];
         $other = $group['other'];
+        $max_agents = $group['max_agents'];
     } else {
         ui_print_error_message(__('There was a problem loading group'));
         echo '</table>';
         echo '</div>';
-        echo '<div style="clear:both">&nbsp;</div>';
+        echo '<div id="both">&nbsp;</div>';
         echo '</div>';
         echo '<div id="foot">';
         include 'general/footer.php';
@@ -77,7 +95,7 @@ if ($id_group) {
 }
 
 // Header
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     agents_meta_print_header();
     $sec = 'advanced';
 } else {
@@ -87,13 +105,24 @@ if (defined('METACONSOLE')) {
         $title_in_header = __('Create group');
     }
 
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         $title_in_header,
         'images/group.png',
         false,
-        'create_group_tab',
-        true,
-        ''
+        '',
+        false,
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage agents group'),
+            ],
+        ]
     );
     $sec = 'gagente';
 }
@@ -145,15 +174,16 @@ if ($id_group) {
 
         $table->data[2][1] = __('You have not access to the parent.').html_print_input_hidden('id_parent', $id_parent, true);
     } else {
-        $table->data[2][1] = html_print_select_groups(
+        $table->data[2][1] = '<div class="w250px inline">';
+        $table->data[2][1] .= html_print_select_groups(
             false,
             'AR',
-            true,
+            false,
             'id_parent',
             $id_parent,
             '',
-            '',
-            '',
+            __('None'),
+            -1,
             true,
             false,
             true,
@@ -163,14 +193,27 @@ if ($id_group) {
             false,
             $id_group
         );
+        $table->data[2][1] .= '</div>';
     }
 } else {
-    $table->data[2][1] = html_print_select_groups(false, 'AR', true, 'id_parent', $id_parent, '', '', '', true);
+    $table->data[2][1] = '<div class="w250px inline">';
+    $table->data[2][1] .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'name'           => 'id_parent',
+            'selected'       => $id_parent,
+            'return'         => true,
+            'returnAllGroup' => false,
+            'nothing'        => __('None'),
+            'nothing_value'  => -1,
+        ]
+    );
+    $table->data[2][1] .= '</div>';
 }
 
 if ($acl_parent) {
     $table->data[2][1] .= ' <span id="parent_preview">';
-    $table->data[2][1] .= html_print_image('images/groups_small/'.groups_get_icon($id_parent).'.png', true);
+    $table->data[2][1] .= html_print_image('images/groups_small/'.( $id_parent != 0 ? groups_get_icon($id_parent) : 'without_group').'.png', true);
     $table->data[2][1] .= '</span>';
 }
 
@@ -181,7 +224,7 @@ if ($config['enterprise_installed']) {
     $table->data[3][1] = html_print_input_password('group_pass', $group_pass, '', 16, 255, true);
 }
 
-$table->data[$i][0] = __('Alerts');
+$table->data[$i][0] = __('Alerts').ui_print_help_tip(__('Enable alert use in this group.'), true);
 $table->data[$i][1] = html_print_checkbox_switch('alerts_enabled', 1, ! $alerts_disabled, true);
 $i++;
 
@@ -198,18 +241,21 @@ $table->data[$i][1] = html_print_input_text('description', $description, '', 60,
 $i++;
 
 $table->data[$i][0] = __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true);
-$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true);
 $i++;
 
 $table->data[$i][0] = __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true);
-$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "style='min-height: 0px;'", true);
+$table->data[$i][1] = html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true);
 $i++;
 
-$isFunctionSkins = enterprise_include_once('include/functions_skins.php');
-if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {
-    $table->data[9][0] = __('Skin');
-    $table->data[9][1] = skins_print_select($config['id_user'], 'skin', $skin, '', __('None'), 0, true);
-}
+// $isFunctionSkins = enterprise_include_once('include/functions_skins.php');
+// if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {
+// $table->data[10][0] = __('Skin');
+// $table->data[10][1] = skins_print_select($config['id_user'], 'skin', $skin, '', __('None'), 0, true);
+// }
+$table->data[$i][0] = __('Max agents allowed').'&nbsp;'.ui_print_help_tip(__('Set the maximum of agents allowed for this group. 0 is unlimited.'), true);
+$table->data[$i][1] = html_print_input_text('max_agents', $max_agents, '', 10, 255, true);
+$i++;
 
 if (defined('METACONSOLE')) {
     $sec = 'advanced';
@@ -228,6 +274,7 @@ if (isset($config['metaconsole_node_id']) && $config['metaconsole_node_id'] > 0)
 echo '<form name="grupo" method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/group_list&pure='.$config['pure'].'"'.$confirm_bottom.' >';
 html_print_table($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    html_print_button(__('Back'), 'button_back', false, '', 'class="sub cancel"');
 if ($id_group) {
     html_print_input_hidden('update_group', 1);
     html_print_input_hidden('id_group', $id_group);
@@ -318,5 +365,8 @@ function parent_changed () {
 $(document).ready (function () {
     $('#icon').change (icon_changed);
     $('#id_parent').change (parent_changed);
+    $('#button-button_back').on('click', function(){
+        window.location = '<?php echo ui_get_full_url('index.php?sec='.$sec.'&sec2=godmode/groups/group_list'); ?>';
+    });
 });
 </script>

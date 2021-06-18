@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -187,7 +187,7 @@ function extension_api_checker()
 
     $row = [];
     $row[] = __('Raw URL');
-    $row[] = html_print_input_text('url', $url, '', 150, 2048, true);
+    $row[] = html_print_input_text('url', $url, '', 50, 2048, true);
     $table3->data[] = $row;
 
     echo "<form method='post'>";
@@ -197,12 +197,10 @@ function extension_api_checker()
     echo '</fieldset>';
 
     echo '<fieldset>';
-    echo '<legend>'.__('Call parameters').'</legend>';
+    echo '<legend>'.__('Call parameters').' '.ui_print_help_tip(__('Action: get Operation: module_last_value id: 63'), true).'</legend>';
     html_print_table($table2);
     echo '</fieldset>';
-    echo "<div style='text-align: right;'>";
-    html_print_input_hidden('api_execute', 1);
-    html_print_submit_button(__('Call'), 'submit', false, 'class="sub next"');
+    echo "<div class='right'>";
     echo '</div>';
     echo '</form>';
 
@@ -212,7 +210,7 @@ function extension_api_checker()
     html_print_table($table3);
     echo '</fieldset>';
 
-    echo "<div style='text-align: right;'>";
+    echo "<div class='right'>";
     html_print_input_hidden('api_execute', 1);
     html_print_submit_button(__('Call'), 'submit', false, 'class="sub next"');
     echo '</div>';

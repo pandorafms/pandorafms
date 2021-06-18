@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@ global $config;
 
 check_login();
 
-$gis_w = check_acl($config['id_user'], 0, 'MW');
+$gis_w = check_acl($config['id_user'], 0, 'MW', false, true, true);
 $gis_m = check_acl($config['id_user'], 0, 'MM');
 $access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
@@ -30,13 +30,21 @@ require_once 'include/functions_gis.php';
 $idMap = (int) get_parameter('map_id', 0);
 $action = get_parameter('action', 'new_map');
 
+$gis_map_group = db_get_value('group_id', 'tgis_map', 'id_tgis_map', $idMap);
+
+if ($idMap > 0 && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW') && !check_acl_restricted_all($config['id_user'], $gis_map_group, 'MW')) {
+    db_pandora_audit('ACL Violation', 'Trying to access map builder');
+    include 'general/noaccess.php';
+    return;
+}
+
 $sec2 = get_parameter_get('sec2');
 $sec2 = safe_url_extraclean($sec2);
 
 $sec = get_parameter_get('sec');
 $sec = safe_url_extraclean($sec);
 
-// Layers
+// Layers.
 $layer_ids = get_parameter('layer_ids', []);
 $layers = get_parameter('layers', []);
 $layer_list = [];
@@ -76,9 +84,10 @@ switch ($action) {
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
-        $map_levels_zoom = get_parameter('map_levels_zoom');
+        $map_levels_zoom = get_parameter('map_levels_zoom', 16);
 
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
 
 
         foreach ($map_connection_list_temp as $index => $value) {
@@ -91,14 +100,14 @@ switch ($action) {
         $map_connection_default = get_parameter('map_connection_default');
 
         $map_connection_list = [];
-        foreach ($map_connection_list_temp as $idMapConnection) {
+        foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
-            if ($map_connection_default == $idMapConnection) {
+            if ($map_connection_default == $idMapConnection['id_tmap_connection']) {
                 $default = 1;
             }
 
             $map_connection_list[] = [
-                'id_conection' => $idMapConnection,
+                'id_conection' => $idMapConnection['id_tmap_connection'],
                 'default'      => $default,
             ];
         }
@@ -116,7 +125,7 @@ switch ($action) {
             $map_levels_zoom
         );
 
-        if (empty($invalidFields) && get_parameter('map_connection_list') != '') {
+        if (empty($invalidFields)) {
             $idMap = gis_save_map(
                 $map_name,
                 $map_initial_longitude,
@@ -131,8 +140,13 @@ switch ($action) {
                 $map_connection_list,
                 $layer_list
             );
-            $mapCreatedOk = true;
-            $next_action = 'update_saved';
+            if ($idMap) {
+                $mapCreatedOk = true;
+                $next_action = 'update_saved';
+            } else {
+                $next_action = 'save_new';
+                $mapCreatedOk = false;
+            }
         } else {
             $next_action = 'save_new';
             $mapCreatedOk = false;
@@ -160,7 +174,7 @@ switch ($action) {
         $map_group_id = '';
         $map_connection_list = [];
         $layer_list = [];
-        $map_levels_zoom = 0;
+        $map_levels_zoom = 16;
     break;
 
     case 'edit_map':
@@ -180,9 +194,12 @@ switch ($action) {
         $map_default_latitude = get_parameter('map_default_latitude');
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
-        $map_levels_zoom = get_parameter('map_levels_zoom');
+        $map_levels_zoom = get_parameter('map_levels_zoom', 16);
 
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
+
         foreach ($map_connection_list_temp as $index => $value) {
             $cleanValue = trim($value);
             if ($cleanValue == '') {
@@ -193,14 +210,14 @@ switch ($action) {
         $map_connection_default = get_parameter('map_connection_default');
 
         $map_connection_list = [];
-        foreach ($map_connection_list_temp as $idMapConnection) {
+        foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
-            if ($map_connection_default == $idMapConnection) {
+            if ($map_connection_default == $idMapConnection['id_tmap_connection']) {
                 $default = 1;
             }
 
             $map_connection_list[] = [
-                'id_conection' => $idMapConnection,
+                'id_conection' => $idMapConnection['id_tmap_connection'],
                 'default'      => $default,
             ];
         }
@@ -218,7 +235,7 @@ switch ($action) {
             $map_levels_zoom
         );
 
-        if (empty($invalidFields) && get_parameter('map_connection_list') != '') {
+        if (empty($invalidFields)) {
             // TODO
             gis_update_map(
                 $idMap,
@@ -255,20 +272,26 @@ switch ($action) {
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&map_id='.$idMap.'&action='.$next_action;
 
 $buttons['gis_maps_list'] = [
-    'active' => true,
+    'active' => false,
     'text'   => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
         'images/list.png',
         true,
-        ['title' => __('GIS Maps list')]
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 if ($idMap) {
     $buttons['view_gis'] = [
-        'active' => true,
+        'active' => false,
         'text'   => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$idMap.'">'.html_print_image(
             'images/op_gis.png',
             true,
-            ['title' => __('View GIS')]
+            [
+                'title' => __('View GIS'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
     ];
 }
@@ -420,7 +443,7 @@ $table->class = 'databox filters';
 
 $table->data = [];
 
-$table->data[0][0] = __('Map Name').ui_print_help_tip(__('Descriptive name for the map'), true).':';
+$table->data[0][0] = __('Map Name');
 $table->data[0][1] = html_print_input_text('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
 
@@ -439,31 +462,62 @@ foreach ($listConnectionTemp as $connectionTemp) {
     }
 }
 
-$table->data[1][0] = __('Add Map connection').ui_print_help_tip(__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true).': '.$iconError;
-$table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id='map_connection'>
+$table->data[1][0] = __('Add Map connection').$iconError;
+$table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-		<td style='padding:0px;' >
-			".html_print_select($listConnection, 'map_connection', '', '', '', '0', true)."
+		<td >
+			".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
 		</td>
-		<td style='padding:0px;' >
-			<a href='javascript: addConnectionMap();'>".html_print_image('images/add.png', true)."</a>
+		<td >
+			<a href='javascript: addConnectionMap();'>".html_print_image(
+    'images/add.png',
+    true,
+    ['class' => 'invert_filter']
+)."</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
 		</td>
 	</tr> ".gis_add_conection_maps_in_form($map_connection_list).'
 </table>';
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'MM')) {
-    $display_all_group = true;
-} else {
-    $display_all_group = false;
+
+$return_all_group = false;
+
+if (users_can_manage_group_all('MM') === true) {
+    $return_all_group = true;
 }
 
-$table->data[2][0] = __('Group').ui_print_help_tip(__('Group that owns the map'), true).':';
-$table->data[2][1] = html_print_select_groups(false, 'IW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
+$table->data[2][0] = __('Group');
+$table->data[2][1] = html_print_select_groups(
+    false,
+    'AR',
+    $return_all_group,
+    'map_group_id',
+    $map_group_id,
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    'id_grupo',
+    false,
+    false,
+    false,
+    '250px'
+);
 
-$table->data[3][0] = __('Default zoom').ui_print_help_tip(__('Default zoom level when opening the map'), true).':';
-$table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
+$table->data[3][0] = __('Default zoom');
+$table->data[3][1] = html_print_input_text('map_zoom_level', $map_zoom_level, '', 2, 4, true).html_print_input_hidden(
+    'map_levels_zoom',
+    $map_levels_zoom,
+    true
+);
 
 $table->data[4][0] = __('Center Latitude').':';
 $table->data[4][1] = html_print_input_text('map_initial_latitude', $map_initial_latitude, '', 8, 8, true);
@@ -485,7 +539,7 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
-echo '<h3>'.__('Layers').ui_print_help_tip(__('Each layer can show agents from one group or the agents added to that layer or both.'), true).'</h3>';
+echo '<h3>'.__('Layers').'</h3>';
 
 $table->width = '100%';
 $table->class = 'databox filters';
@@ -494,11 +548,11 @@ $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 $table->data = [];
 
-$table->data[0][0] = '<h4>'.__('List of layers').ui_print_help_tip(__('It is possible to edit, delete and reorder the layers.'), true).'</h4>';
-$table->data[0][1] = '<div style="text-align: right;">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true).'</div>';
+$table->data[0][0] = '<h4>'.__('List of layers').'</h4>';
+$table->data[0][1] = '<div class="right">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add "', true).'</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers"></table>';
-$table->data[1][1] = '<div id="form_layer" style="display: none;">
+$table->data[1][1] = '<div id="form_layer" class="invisible">
 		<table id="form_layer_table" class="" border="0" cellpadding="4" cellspacing="4">
 			<tr>
 				<td>'.__('Layer name').':</td>
@@ -530,6 +584,9 @@ $params['hidden_input_idagent_name'] = 'agent_id';
 $params['input_name'] = 'agent_alias';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'active_button_add_agent';
+$params['javascript_is_function_select'] = true;
+$params['disabled_javascript_on_blur_function'] = false;
+
 $table->data[1][1] .= ui_print_agent_autocomplete_input($params);
 
 
@@ -544,7 +601,7 @@ $table->data[1][1] .= '</td>
 				</td>
 			</tr>';
 
-// Group items
+// Group items.
 $group_select = html_print_select_groups($config['id_user'], 'AR', false, 'layer_group_id', '', '', '', 0, true);
 $params = [];
 $params['return'] = true;
@@ -556,8 +613,10 @@ $params['input_name'] = 'agent_alias_for_data';
 $params['value'] = '';
 $params['javascript_function_action_after_select'] = 'toggleAddGroupBtn';
 $params['selectbox_group'] = 'layer_group_id';
-// Filter by group
-$params['disabled_javascript_on_blur_function'] = true;
+$params['javascript_is_function_select'] = true;
+
+// Filter by group.
+$params['disabled_javascript_on_blur_function'] = false;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
 $add_group_btn = html_print_button(__('Add'), 'add_group', true, '', 'class="sub add"', true);
 
@@ -622,7 +681,18 @@ echo '</form>';
         <tr class="row_0">
             <td><?php html_print_input_text('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
             <td><?php html_print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', ''); ?></td>
-            <td><a id="delete_row" href="none"><?php html_print_image('images/cross.png', false, ['alt' => '']); ?></a></td>
+            <td><a id="delete_row" href="none">
+            <?php
+            html_print_image(
+                'images/cross.png',
+                false,
+                [
+                    'alt'   => '',
+                    'class' => 'invert_filter',
+                ]
+            );
+            ?>
+                </a></td>
         </tr>
     </tbody>
 </table>
@@ -920,7 +990,7 @@ function getAgentRow (layerId, agentId, agentAlias) {
     var $deleteCol = $("<td />");
 
     var $agentAlias = $("<span class=\"agent_alias\" data-agent-id=\"" + agentId + "\">" + agentAlias + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:" <?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?> </a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -976,7 +1046,7 @@ function getGroupRow (layerId, groupId, groupName, agentId, agentAlias) {
         + "<i>" + agentAlias + "</i>"
         + ")"
         + "</span>");
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
 
     $removeBtn.click(function (event) {
         var $layerRow = $("tr#layer_row_" + layerId);
@@ -1054,8 +1124,8 @@ function getLayerRow (layerId, layerData) {
     var $layerName = $("<span class=\"layer_name\">" + layerData.name + "</span>");
     var $sortUpBtn = $("<a class=\"up_arrow\" href=\"javascript:;\" />");
     var $sortDownBtn = $("<a class=\"down_arrow\" href=\"javascript:;\" />");
-    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/config.png', true); ?></a>');
-    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true); ?></a>');
+    var $editBtn = $('<a class="edit_layer" href="javascript:;"><?php echo html_print_image('images/config.png', true, ['class' => 'invert_filter']); ?></a>');
+    var $removeBtn = $('<a class="delete_row" href="javascript:;"><?php echo html_print_image('images/cross.png', true, ['class' => 'invert_filter']); ?></a>');
 
     $sortUpBtn.click(moveLayerRowUpOnClick);
     $sortDownBtn.click(moveLayerRowDownOnClick);

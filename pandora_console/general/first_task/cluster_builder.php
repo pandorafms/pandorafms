@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,6 +23,22 @@ if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 
     include 'general/noaccess.php';
     return;
 }
+
+// Header.
+ui_print_standard_header(
+    __('Clusters'),
+    'images/chart.png',
+    false,
+    '',
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+    ]
+);
 
 ui_require_css_file('first_task');
 ?>
@@ -52,8 +68,8 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no cluster
         if (check_acl($config['id_user'], 0, 'AW')) {
             ?>
         
-        <form action="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&step=1" method="post">
-            <input style="margin-bottom:20px;" type="submit" class="button_task" value="<?php echo __('Create Cluster'); ?>" />
+        <form action='index.php?sec=estado&sec2=enterprise/operation/cluster/cluster&op=new' method="post">
+            <input type="submit" class="button_task ui_toggle" value="<?php echo __('Create Cluster'); ?>" />
         </form>
         
             <?php

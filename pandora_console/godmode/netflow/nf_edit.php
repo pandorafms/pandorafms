@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ if (! defined('METACONSOLE')) {
         __('Manage Netflow Filter'),
         'images/gm_netflow.png',
         false,
-        'pcap_filter',
+        '',
         true
     );
 
@@ -67,6 +67,19 @@ $delete = (bool) get_parameter('delete');
 $multiple_delete = (bool) get_parameter('multiple_delete', 0);
 $id = (int) get_parameter('id');
 $name = (string) get_parameter('name');
+
+if ($id > 0) {
+    $filter_group = db_get_value('id_group', 'tnetflow_filter', 'id_sg', $id);
+
+    if (!check_acl_restricted_all($config['id_user'], $filter_group, 'AW')) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access events filter editor'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
+}
 
 if ($delete) {
     $id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
@@ -164,12 +177,24 @@ $total_filters = $total_filters[0]['total'];
 foreach ($filters as $filter) {
     $data = [];
 
-    $data[0] = html_print_checkbox_extended('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
-    $data[1] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'&pure='.$pure.'">'.$filter['id_name'].'</a>';
+    $data[0] = '';
+
+    if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
+        $data[0] = html_print_checkbox_extended('delete_multiple[]', $filter['id_sg'], false, false, '', 'class="check_delete"', true);
+        $data[1] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&id='.$filter['id_sg'].'&pure='.$pure.'">'.$filter['id_name'].'</a>';
+    } else {
+        $data[1] = $filter['id_name'];
+    }
+
+
     $data[2] = ui_print_group_icon($filter['id_group'], true, 'groups_small', '', !defined('METACONSOLE'));
-    $table->cellclass[][3] = 'action_buttons';
-    $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-        href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    $data[3] = '';
+
+    if (check_acl_restricted_all($config['id_user'], $filter['id_group'], 'AW')) {
+        $table->cellclass[][3] = 'action_buttons';
+        $data[3] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
+            href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit&delete=1&id='.$filter['id_sg']."&offset=0&pure=$pure'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+    }
 
     array_push($table->data, $data);
 }
@@ -178,7 +203,7 @@ if (isset($data)) {
     echo "<form method='post' action='".$config['homeurl']."index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    echo "<div style=' float: right;'>";
+    echo "<div class='right'>";
 
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';
@@ -188,7 +213,7 @@ if (isset($data)) {
 }
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-echo "<div style='margin-right: 5px; float: right;'>";
+echo "<div class='mrgn_right_5px right'>";
 html_print_submit_button(__('Create filter'), 'crt', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';

@@ -87,11 +87,13 @@ final class DonutGraph extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -165,9 +167,11 @@ final class DonutGraph extends Item
             );
         } else {
             $src = 'images/console/signes/wrong_donut_graph.png';
-            if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            if (\is_metaconsole() === true) {
                 $src = '../../'.$src;
             }
+
+            $src = ui_get_full_url($src);
 
             $style = 'width:'.$width.'px; height:'.$height.'px;';
             $data['html'] = '<img src="'.$src.'" style="'.$style.'">';
@@ -210,16 +214,17 @@ final class DonutGraph extends Item
             $inputs[] = [
                 'label'     => __('Agent'),
                 'arguments' => [
-                    'type'               => 'autocomplete_agent',
-                    'name'               => 'agentAlias',
-                    'id_agent_hidden'    => $values['agentId'],
-                    'name_agent_hidden'  => 'agentId',
-                    'server_id_hidden'   => $values['metaconsoleId'],
-                    'name_server_hidden' => 'metaconsoleId',
-                    'return'             => true,
-                    'module_input'       => true,
-                    'module_name'        => 'moduleId',
-                    'module_none'        => false,
+                    'type'                    => 'autocomplete_agent',
+                    'name'                    => 'agentAlias',
+                    'id_agent_hidden'         => $values['agentId'],
+                    'name_agent_hidden'       => 'agentId',
+                    'server_id_hidden'        => $values['metaconsoleId'],
+                    'name_server_hidden'      => 'metaconsoleId',
+                    'return'                  => true,
+                    'module_input'            => true,
+                    'module_name'             => 'moduleId',
+                    'module_none'             => false,
+                    'get_only_string_modules' => true,
                 ],
             ];
 
@@ -227,14 +232,15 @@ final class DonutGraph extends Item
             $inputs[] = [
                 'label'     => __('Module'),
                 'arguments' => [
-                    'type'           => 'autocomplete_module',
-                    'fields'         => $fields,
-                    'name'           => 'moduleId',
-                    'selected'       => $values['moduleId'],
-                    'return'         => true,
-                    'sort'           => false,
-                    'agent_id'       => $values['agentId'],
-                    'metaconsole_id' => $values['metaconsoleId'],
+                    'type'                    => 'autocomplete_module',
+                    'fields'                  => $fields,
+                    'name'                    => 'moduleId',
+                    'selected'                => $values['moduleId'],
+                    'return'                  => true,
+                    'sort'                    => false,
+                    'agent_id'                => $values['agentId'],
+                    'metaconsole_id'          => $values['metaconsoleId'],
+                    'get_only_string_modules' => true,
                 ],
             ];
 

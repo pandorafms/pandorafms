@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -43,7 +43,11 @@ function themes_get_css($path=false)
 
     $retval = [];
     foreach ($files as $file) {
-        // Skip '..' and '.' entries and files not ended in '.css'
+        if ($file === 'pandora_green_old.css') {
+            continue;
+        }
+
+        // Skip '..' and '.' entries and files not ended in '.css'.
         if ($path && ($file == '.' || $file == '..' || strtolower(substr($file, (strlen($file) - 4))) !== '.css')) {
             continue;
         }

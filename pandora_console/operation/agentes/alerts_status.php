@@ -1,16 +1,31 @@
 <?php
+/**
+ * Alerts Status
+ *
+ * @category   Alerts
+ * @package    Pandora FMS
+ * @subpackage Alert Status View
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 global $config;
 
 // Login check
@@ -173,8 +188,26 @@ if ($idAgent != 0) {
 
     $print_agent = true;
 
-    if (!is_metaconsole()) {
-        ui_print_page_header(__('Alert detail'), 'images/op_alerts.png', false, 'alert_validation');
+    if (is_metaconsole() === false) {
+        // Header.
+        ui_print_standard_header(
+            __('Alert detail'),
+            'images/op_alerts.png',
+            false,
+            '',
+            false,
+            [],
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
+        );
     } else {
         ui_meta_print_header(__('Alerts view'));
     }
@@ -371,11 +404,15 @@ if (empty($id_groups)) {
 
 
 $alerts = [];
-$options_simple = [
-    'offset' => $offset_simple,
-    'limit'  => $config['block_size'],
-    'order'  => $order,
-];
+if ($agent_view_page === true) {
+    $options_simple = ['order' => $order];
+} else {
+    $options_simple = [
+        'offset' => $offset_simple,
+        'limit'  => $config['block_size'],
+        'order'  => $order,
+    ];
+}
 
 $filter_alert = [];
 if ($filter_standby == 'standby_on') {
@@ -648,29 +685,38 @@ if (!empty($table->data)) {
     $class = '';
     if ($agent_view_page === true) {
         $class = 'w100p no-padding-imp';
+        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
     }
 
     echo '<form class="'.$class.'" method="post" action="'.$url.'">';
 
-    ui_pagination(
-        $countAlertsSimple,
-        $url,
-        $offset_simple,
-        0,
-        false,
-        'offset_simple'
-    );
+    if ($agent_view_page !== true) {
+        ui_pagination(
+            $countAlertsSimple,
+            $url,
+            $offset_simple,
+            0,
+            false,
+            'offset_simple'
+        );
+    }
+
+    echo '<div id="alerts_list" class="w100p">';
     html_print_table($table);
-    ui_pagination(
-        $countAlertsSimple,
-        $url,
-        $offset_simple,
-        0,
-        false,
-        'offset_simple',
-        true,
-        'pagination-bottom'
-    );
+    echo '</div>';
+
+    if ($agent_view_page !== true) {
+        ui_pagination(
+            $countAlertsSimple,
+            $url,
+            $offset_simple,
+            0,
+            false,
+            'offset_simple',
+            true,
+            'pagination-bottom'
+        );
+    }
 
     if (!is_metaconsole()) {
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
@@ -703,13 +749,17 @@ if ($agent_view_page === true) {
         'white_table_graph_content no-padding-imp'
     );
 } else {
+    if (!$print_agent) {
+        printFormFilterAlertAgent($agent_view_page, $free_search, $idAgent);
+    }
+
     // Dump entire content.
     echo $html_content;
 }
 
 
 // strict user hidden
-echo '<div id="strict_hidden" style="display:none;">';
+echo '<div id="strict_hidden" class="invisible">';
 html_print_input_text('strict_user_hidden', $strict_user);
 
 html_print_input_text('is_meta_hidden', (int) is_metaconsole());
@@ -777,4 +827,27 @@ ui_require_jquery_file('cluetip');
         }
     }).change();
     
+    function filter_agent_alerts(){
+        var free_search_alert = $("input[name='free_search_alert']").val();
+        $("#alerts_list").empty();    
+        
+        jQuery.ajax ({
+            data: {
+                get_agent_alerts_agent_view: 1,
+                id_agent: '<?php echo $idAgent; ?>',
+                free_search_alert: free_search_alert,
+                all_groups: '<?php echo json_encode($all_groups); ?>',
+                sort_field: '<?php echo $sortField; ?>',
+                sort: '<?php echo $sort; ?>',
+                page: 'include/ajax/alert_list.ajax'
+            },
+            type: 'POST',
+            url: "ajax.php",
+            dataType: 'html',
+            success: function (data) {
+                $("#alerts_list").empty();
+                $("#alerts_list").html(data);
+            }
+        });
+    }
 </script>

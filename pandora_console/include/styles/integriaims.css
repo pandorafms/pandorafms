@@ -53,6 +53,7 @@ div.integria_details_description textarea {
   width: 100%;
   background-color: #fbfbfb;
   resize: vertical;
+  color: #000;
 }
 
 .integriaims_details_box {
@@ -101,7 +102,6 @@ div.integria_details_description textarea {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-size: 10pt;
   padding: 2px 5px;
   box-sizing: border-box;

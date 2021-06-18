@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,10 +64,7 @@ $t->data[1][2] = html_print_input_text(
     true
 );
 
-$t->data[2][0] = __('WebSocket proxy url').ui_print_help_tip(
-    __('If you had configured a wsproxy set here target URL (for instance ws://your.public.fqdn/ws).'),
-    true
-);
+$t->data[2][0] = __('WebSocket proxy url');
 $t->data[2][2] = html_print_input_text(
     'ws_proxy_url',
     $config['ws_proxy_url'],
@@ -87,7 +84,7 @@ if (function_exists('quickShellSettings') === true) {
     quickShellSettings();
 }
 
-echo '<div class="action-buttons" style="width: 100%;">';
+echo '<div class="action-buttons w100p">';
 html_print_submit_button(
     __('Update'),
     'update_button',

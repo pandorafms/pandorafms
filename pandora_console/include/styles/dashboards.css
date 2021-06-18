@@ -1,0 +1,549 @@
+/* Optional styles for demos */
+.btn-primary {
+  color: #fff;
+  background-color: #007bff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+}
+
+#menu_tab_frame_view {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 3px;
+  width: 99%;
+  margin: 0 auto;
+}
+
+ul.mn {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+}
+
+#menu_tab li.nomn.tab_operation img,
+#menu_tab li.nomn.tab_godmode img,
+#menu_tab li.nomn_high.tab_operation img,
+#menu_tab li.nomn_high.tab_godmode img {
+  margin: 0px;
+}
+
+#menu_tab li.nomn,
+#menu_tab li.nomn_high {
+  min-height: initial;
+  max-height: initial;
+}
+
+#menu_tab li.nomn form#form-select-dashboard {
+  margin-top: 7px;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.container-fluid {
+  margin-top: 5px;
+}
+
+.container-layout {
+  border-radius: 5px;
+  border: 3px dashed #3f3f3f;
+  background: #f2f6f7;
+  padding: 10px 0px 10px 0px;
+}
+
+.grid-stack {
+  background: transparent;
+  min-height: 50px;
+}
+
+.grid-stack > .grid-stack-item > .grid-stack-item-content {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.grid-stack-item-content {
+  color: #2c3e50;
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 5px;
+  -webkit-box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);
+  -moz-box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);
+  box-shadow: 5px 5px 5px 0px rgba(214, 214, 214, 1);
+}
+
+.grid-stack-placeholder .placeholder-content {
+  background-color: #fcf5da;
+  border: 2px dashed #d3d3d3 !important;
+}
+
+.sidebar {
+  background: rgba(0, 255, 0, 0.1);
+  height: 150px;
+  padding: 25px 0;
+  text-align: center;
+}
+.sidebar .grid-stack-item {
+  width: 200px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+  z-index: 10;
+  background: rgba(0, 255, 0, 0.1);
+  cursor: default;
+  display: inline-block;
+}
+.sidebar .grid-stack-item .grid-stack-item-content {
+  background: none;
+}
+
+.grid-stack-item .grid-stack-item-content .header-widget {
+  background-color: black;
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 30px;
+}
+
+.grid-stack-item .grid-stack-item-content .content-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100% - 30px);
+  cursor: default;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.grid-stack-item .grid-stack-item-content .header-widget div:first-child {
+  flex: 1;
+  text-align: center;
+}
+
+.grid-stack-item .grid-stack-item-content .header-widget div:not(:first-child) {
+  margin-right: 8px;
+}
+
+.grid-stack-item
+  .grid-stack-item-content
+  .header-widget
+  div:not(:first-child)
+  img {
+  cursor: pointer;
+}
+
+label span.p-slider {
+  width: 30px;
+}
+
+#modal-add-widget .container-list-widgets {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+#modal-add-widget .container-list-widgets .list-widgets {
+  flex: 0 1 150px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 10px;
+}
+
+@keyframes spinner-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.dashboard-spinner {
+  background-color: transparent;
+  margin: 0px auto;
+  border-top: 5px solid rgb(82, 85, 87);
+  border-right: 5px solid rgb(82, 85, 87);
+  border-bottom: 5px solid rgb(82, 85, 87);
+  border-left: 5px solid rgba(82, 85, 87, 0.2);
+
+  animation-name: spinner-loading;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.dashboard-spinner,
+.dashboard-spinner :after {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.dashboard-spinner.small,
+.dashboard-spinner.small :after {
+  width: 12px;
+  height: 12px;
+}
+
+.div-dashboard-spinner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  opacity: 0.7;
+  background: rgb(212, 215, 218);
+  z-index: 2;
+}
+
+li#select-dashboard-slices label,
+li#search_input_widget label,
+li#div-textarea label {
+  flex: 0;
+}
+
+.visual-console-container-dashboard {
+  margin: 0px auto;
+  background-repeat: no-repeat;
+  background-size: 100% calc(100%);
+  background-position: center;
+  position: relative;
+}
+
+.container-center > .parent_graph .flot-text {
+  width: 100%;
+}
+
+.container-center > .parent_graph .flot-text .flot-y-axis div {
+  left: -2px !important;
+}
+
+.container-center > .parent_graph p {
+  margin-bottom: 3px;
+}
+
+.container-center > .parent_graph p table tr {
+  height: 25px;
+}
+
+.container-center > .parent_graph p table tr td:not(:first-child) {
+  padding-left: 10px;
+}
+
+.container-center > .parent_graph p table tr td:not(:first-child) span {
+  color: rgb(99, 99, 99);
+  font-size: 8px;
+}
+
+.container-gauges-dashboard .gauge_d3_class {
+  flex: 1;
+  float: none !important;
+  overflow: inherit !important;
+  margin: 5px !important;
+  text-align: center;
+}
+
+.container-gauges-dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-widget .container-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.widget-groups-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.widget-groups-status h1 a {
+  font-size: 1.1em;
+  font-weight: bold;
+  line-height: 20px;
+  color: #3f3f3f;
+  letter-spacing: 0.03pt;
+  text-decoration: none;
+  text-transform: capitalize;
+}
+
+.div_groups_status {
+  width: 90%;
+}
+
+.div_groups_status table tr td div {
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.div_groups_status table tr td span {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
+}
+
+.div_groups_status table tr td span b {
+  letter-spacing: 0.03pt;
+  font-size: 11pt;
+  margin-left: 10px;
+}
+
+fieldset.tactical_set {
+  background: transparent;
+}
+
+fieldset.tactical_set legend {
+  padding-left: 10px;
+}
+
+table.widget_maps_status tr td:first-child {
+  text-align: left;
+}
+
+table.widget_maps_status tr td a {
+  letter-spacing: 0.03pt;
+  font-size: 9pt;
+  text-decoration: none;
+}
+
+table.widget_maps_status tr td img {
+  width: 50px;
+  height: 20px;
+}
+
+div.container-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: inherit;
+}
+
+div.container-icon div {
+  margin: 10px;
+}
+
+div.post-widget {
+  width: 90%;
+  height: 100%;
+  text-align: initial;
+}
+
+table.group_modules_status_box tr {
+  height: 30px;
+  text-align: center;
+}
+
+table.group_modules_status_box tr td {
+  letter-spacing: 0.03pt;
+  font-size: 11pt;
+  text-decoration: none;
+  color: #3f3f3f;
+  font-weight: bolder;
+  text-align: justify;
+  border-bottom: 0px;
+}
+
+table.group_modules_status_box tr td > span {
+  padding-left: 10px;
+}
+
+table.group_modules_status_box tr td div {
+  background-color: #82b92e;
+  width: 90%;
+  padding: 3px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+table.group_modules_status_box tr td span a {
+  letter-spacing: 0.03pt;
+  font-size: 11pt;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bolder;
+  text-align: center;
+}
+
+table.widget_agent_module tbody tr td {
+  padding: 5px;
+}
+
+.container-center .widget-histogram-chart .flot-text .flot-x-axis div {
+  white-space: nowrap;
+  font-family: inherit !important;
+}
+
+li#search_input_widget {
+  width: 50%;
+  position: absolute;
+  left: 150px;
+  top: 2px;
+}
+
+div#dashboard-controls {
+  position: fixed;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  width: 600px;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f6f7;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+div#dashboard-controls div {
+  flex: 0.5;
+  text-align: center;
+}
+
+div#dashboard-controls div#dashboard-slides-form-countdown {
+  flex: 4;
+}
+
+div#dashboard-controls div#dashboard-slides-name {
+  flex: 3;
+}
+
+div#view-slides-cell-mode {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+div#main_pure {
+  background-color: #fefefe;
+  text-align: left;
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  position: static;
+}
+
+#module_details_window .progress_main {
+  height: 2.2em !important;
+}
+
+.module-graph .error {
+  font-size: 8px;
+  width: 50%;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+
+#form-config-widget .info_box,
+.content-widget .info_box {
+  border-radius: 5px;
+  width: 90%;
+}
+
+#form-config-widget .info_box {
+  margin: 0 auto;
+}
+#form-config-widget .info_box tbody tr td,
+.content-widget .info_box tbody tr td {
+  padding: 10px;
+}
+#form-config-widget .info_box tbody tr td.icon,
+.content-widget .info_box tbody tr td.icon {
+  padding-right: 10px !important;
+}
+
+#form-config-widget .info_box tbody tr td {
+  font-size: 8pt;
+}
+
+.content-widget .databox.filters > tbody > tr > td {
+  padding-right: 30px;
+}
+
+#select_multiple_modules_filtered {
+  border: 1px solid #c1c1c1;
+  border-radius: 10px;
+}
+
+#select_multiple_modules_filtered > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 5px;
+  flex-wrap: wrap;
+  flex: 1 1 320px;
+}
+
+#select_multiple_modules_filtered > div > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#select_multiple_modules_filtered > div > div > * {
+  flex: auto;
+}
+
+.visual-console-container-dashboard div.label strong {
+  color: inherit;
+}
+
+.visual-console-container-dashboard div.label strong span {
+  color: inherit;
+}
+
+/* Mobile trick */
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content {
+  overflow: visible;
+  overflow-x: visible;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.ui-mobile-viewport.ui-overlay-c > #main_page > .ui-content div.label > p {
+  margin: 0;
+}

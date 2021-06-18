@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ if ($migrate_malformed) {
 
     if ($migration_result['status'] == false) {
         ui_print_error_message(
-            __('An error occurred while migrating the malformed planned downtimes').'. '.__('Please run the migration again or contact with the administrator')
+            __('An error occurred while migrating the malformed scheduled downtimes').'. '.__('Please run the migration again or contact with the administrator')
         );
         echo '<br>';
     }
@@ -55,7 +55,7 @@ ui_print_page_header(
     __('Scheduled Downtime'),
     'images/gm_monitoring.png',
     false,
-    'planned_downtime',
+    '',
     true,
     ''
 );
@@ -80,7 +80,7 @@ if ($stop_downtime) {
     $result = planned_downtimes_stop($downtime);
 
     if ($result === false) {
-        ui_print_error_message(__('An error occurred stopping the planned downtime'));
+        ui_print_error_message(__('An error occurred stopping the scheduled downtime'));
     } else {
         echo $result['message'];
     }
@@ -103,7 +103,7 @@ if ($delete_downtime) {
 
     // The downtime shouldn't be running!!
     if ($downtime['executed']) {
-        ui_print_error_message(__('This planned downtime is running'));
+        ui_print_error_message(__('This scheduled downtime is running'));
     } else {
         $result = db_process_sql_delete('tplanned_downtime', ['id' => $id_downtime]);
 
@@ -362,14 +362,14 @@ else if (!$downtimes) {
     echo '</form>';
 
     // Info message.
-    echo '<div class="nf">'.__('No planned downtime').'</div>';
+    echo '<div class="nf">'.__('No scheduled downtime').'</div>';
 
-    echo '<div class="action-buttons" style="width: 100%">';
+    echo '<div class="action-buttons w100p" >';
 
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" class="display_in" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor">';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }
@@ -476,22 +476,42 @@ else {
         if (in_array($downtime['id_group'], $groupsAD)) {
             // Stop button
             if ($downtime['type_execution'] == 'once' && $downtime['executed'] == 1) {
-                $data['stop'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    $data['stop'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&stop_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                } else {
+                    $data['stop'] = html_print_image('images/cancel.png', true, ['title' => __('Stop downtime')]);
+                }
             } else {
                 $data['stop'] = '';
             }
 
             // Edit & delete buttons.
             if ($downtime['executed'] == 0) {
-                // Edit.
-                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
-                // Delete.
-                $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]);
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    // Edit.
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
+                    // Delete.
+                    $data['delete'] = '<a id="delete_downtime" href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list'.'&delete_downtime=1&id_downtime='.$downtime['id'].'&'.$filter_params_str.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+                } else {
+                    $data['edit'] = '';
+                    $data['delete'] = '';
+                }
             } else if ($downtime['executed'] == 1 && $downtime['type_execution'] == 'once') {
-                // Edit.
-                $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update')]).'</a>';
-                // Delete.
-                $data['delete'] = __('N/A');
+                if (check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW')
+                    || check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AD')
+                ) {
+                    // Edit.
+                    $data['edit'] = '<a href="index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">'.html_print_image('images/config.png', true, ['title' => __('Update'), 'class' => 'invert_filter']).'</a>';
+                    // Delete.
+                    $data['delete'] = __('N/A');
+                } else {
+                    $data['edit'] = '';
+                    $data['delete'] = '';
+                }
             } else {
                 $data['edit'] = '';
                 $data['delete'] = '';
@@ -519,7 +539,7 @@ else {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
     // CSV export button.
-    echo '<div style="display: inline;">';
+    echo '<div class="display_in">';
         html_print_button(
             __('Export to CSV'),
             'csv_export',
@@ -532,7 +552,7 @@ else {
     // Create button.
     if ($write_permisson) {
         echo '&nbsp;';
-        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+        echo '<form method="post" action="index.php?sec=extensions&amp;sec2=godmode/agentes/planned_downtime.editor" class="display_in" >';
         html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');
         echo '</form>';
     }
@@ -552,13 +572,13 @@ $(document).ready (function () {
     $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
     $("a#delete_downtime").click(function (e) {
-        if (!confirm("<?php echo __('WARNING: If you delete this planned downtime, it will not be taken into account in future SLA reports'); ?>")) {
+        if (!confirm("<?php echo __('WARNING: If you delete this scheduled downtime, it will not be taken into account in future SLA reports'); ?>")) {
             e.preventDefault();
         }
     });
 
     if (<?php echo json_encode($malformed_downtimes_exist); ?> && <?php echo json_encode($migrate_malformed == false); ?>) {
-        if (confirm("<?php echo __('WARNING: There are malformed planned downtimes').'.\n'.__('Do you want to migrate automatically the malformed items?'); ?>")) {
+        if (confirm("<?php echo __('WARNING: There are malformed scheduled downtimes').'.\n'.__('Do you want to migrate automatically the malformed items?'); ?>")) {
             window.location.href = "index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list&migrate_malformed=1";
         }
     }

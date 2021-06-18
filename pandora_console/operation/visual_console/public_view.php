@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,6 +12,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 require_once '../../include/config.php';
+
+use PandoraFMS\User;
 
 // Set root on homedir, as defined in setup.
 chdir($config['homedir']);
@@ -28,13 +30,22 @@ if (file_exists(ENTERPRISE_DIR.'/include/functions_login.php')) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
-ui_require_css_file('visual_maps');
+ui_require_css_file('register', 'include/styles/', true);
+
+// Connection lost alert.
+ui_require_javascript_file('connection_check', 'include/javascript/', true);
+set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
+$conn_title = __('Connection with server has been lost');
+$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
 
 global $vc_public_view;
+global $config;
+
 $vc_public_view = true;
 $config['public_view'] = true;
 
@@ -58,10 +69,13 @@ if (!isset($config['pure'])) {
     $config['pure'] = 0;
 }
 
-$myhash = md5($config['dbpass'].$visualConsoleId.$config['id_user']);
-
 // Check input hash.
-if ($myhash != $hash) {
+if (User::validatePublicHash($hash) !== true) {
+    db_pandora_audit(
+        'Invalid public visual console',
+        'Trying to access public visual console'
+    );
+    include 'general/noaccess.php';
     exit;
 }
 
@@ -82,10 +96,15 @@ try {
 $visualConsoleData = $visualConsole->toArray();
 $visualConsoleName = $visualConsoleData['name'];
 
+$bg_color = '';
+if ($config['style'] === 'pandora_black') {
+    $bg_color = 'style="background-color: #222"';
+}
+
 echo '<div id="visual-console-container"></div>';
 
 // Floating menu - Start.
-echo '<div id="vc-controls" style="z-index:300;">';
+echo '<div id="vc-controls" class="zindex300" '.$bg_color.'>';
 
 echo '<div id="menu_tab">';
 echo '<ul class="mn white-box-content box-shadow flex-row">';
@@ -128,9 +147,10 @@ echo '</div>';
 echo '</div>';
 
 // QR code dialog.
-echo '<div style="display: none;" id="qrcode_container" title="'.__('QR code of the page').'">';
+echo '<div class="invisible" id="qrcode_container" title="'.__('QR code of the page').'">';
 echo '<div id="qrcode_container_image"></div>';
 echo '</div>';
+
 
 // Check groups can access user.
 $aclUserGroups = [];
@@ -169,6 +189,22 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
 
+        //Remove spinner change VC.
+        document
+            .getElementById("visual-console-container")
+            .classList.remove("is-updating");
+
+        var div = document
+            .getElementById("visual-console-container")
+            .querySelector(".div-visual-console-spinner");
+
+        if (div !== null) {
+            var parent = div.parentElement;
+            if (parent !== null) {
+                parent.removeChild(div);
+            }
+        }
+
         // Change the background color when the fullscreen mode is enabled.
         if (prevProps
             && prevProps.backgroundColor != newProps.backgroundColor
@@ -192,17 +228,24 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             var regex = /(id=|id_visual_console=|id_layout=|id_visualmap=)\d+(&?)/gi;
             var replacement = '$1' + newProps.id + '$2';
 
+            var regex_hash = /(hash=)[^&]+(&?)/gi;
+            var replacement_hash = '$1' + newProps.hash + '$2';
             // Tab links.
             var menuLinks = document.querySelectorAll("div#menu_tab a");
             if (menuLinks !== null) {
                 menuLinks.forEach(function (menuLink) {
                     menuLink.href = menuLink.href.replace(regex, replacement);
+                    menuLink.href = menuLink.href.replace(
+                        regex_hash,
+                        replacement_hash
+                    );
                 });
             }
 
             // Change the URL (if the browser has support).
             if ("history" in window) {
                 var href = window.location.href.replace(regex, replacement);
+                href = href.replace(regex_hash, replacement_hash);
                 window.history.replaceState({}, document.title, href);
             }
         }
@@ -221,7 +264,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         items,
         baseUrl,
         <?php echo ($refr * 1000); ?>,
-        handleUpdate
+        handleUpdate,
+        // BeforeUpdate.
+        null,
+        // Size.
+        null,
+        // User id.
+        "<?php echo get_parameter('id_user', ''); ?>",
+        // Hash.
+        "<?php echo get_parameter('hash', ''); ?>"
     );
 
     var controls = document.getElementById('vc-controls');

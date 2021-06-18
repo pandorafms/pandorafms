@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,6 @@ global $config;
 require_once 'include/functions_agents.php';
 
 require_once $config['homedir'].'/include/functions_graph.php';
-include_graphs_dependencies();
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_incidents.php';
@@ -93,7 +92,7 @@ $alive_animation = agents_get_status_animation(
 $agent_name = ui_print_agent_name(
     $agent['id_agente'],
     true,
-    500,
+    'agent_medium',
     'font-size: medium;font-weight:bold',
     true
 );
@@ -112,9 +111,25 @@ if ($agent['disabled']) {
     }
 } else if ($agent['quiet']) {
     if ($in_planned_downtime) {
-        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']);
+        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        );
     } else {
-        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']).'</em>';
+        $agent_name = "<em'>".$agent_name.'&nbsp;'.html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        ).'</em>';
     }
 } else {
     $agent_name = $agent_name;
@@ -122,7 +137,7 @@ if ($agent['disabled']) {
 
 if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     $agent_name .= '<em>&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';
@@ -130,7 +145,7 @@ if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     || ($in_planned_downtime && !$agent['quiet'])
 ) {
     $agent_name .= '&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';
@@ -199,23 +214,40 @@ foreach ($addresses as $k => $add) {
 }
 
 if (!empty($address)) {
-    $table_agent_ip = '<p>'.html_print_image('images/world.png', true, ['title' => __('IP address')]);
-    $table_agent_ip .= '<span style="vertical-align:top; display: inline-block;">';
+    $table_agent_ip = '<p>'.html_print_image(
+        'images/world.png',
+        true,
+        [
+            'title' => __('IP address'),
+            'class' => 'invert_filter',
+        ]
+    );
+    $table_agent_ip .= '<span class="align-top inline">';
     $table_agent_ip .= empty($address) ? '<em>'.__('N/A').'</em>' : $address;
     $table_agent_ip .= '</span></p>';
 }
 
-$table_agent_version = '<p>'.html_print_image('images/version.png', true, ['title' => __('Agent Version')]);
-$table_agent_version .= '<span style="vertical-align:top; display: inline-block;">';
+$table_agent_version = '<p>'.html_print_image(
+    'images/version.png',
+    true,
+    [
+        'title' => __('Agent Version'),
+        'class' => 'invert_filter',
+    ]
+);
+$table_agent_version .= '<span class="align-top inline">';
 $table_agent_version .= empty($agent['agent_version']) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
 $table_agent_version .= '</span></p>';
 
 $table_agent_description = '<p>'.html_print_image(
-    'images/default_list.png',
+    'images/list.png',
     true,
-    ['title' => __('Description')]
+    [
+        'title' => __('Description'),
+        'class' => 'invert_filter',
+    ]
 );
-$table_agent_description .= '<span style="vertical-align:top; display: inline-block;">';
+$table_agent_description .= '<span class="align-top inline">';
 $table_agent_description .= empty($agent['comentarios']) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
 $table_agent_description .= '</span></p>';
 
@@ -234,7 +266,11 @@ $has_remote_conf = enterprise_hook(
 );
 
 if ($has_remote_conf) {
-    $remote_cfg = '<p>'.html_print_image('images/remote_configuration.png', true);
+    $remote_cfg = '<p>'.html_print_image(
+        'images/remote_configuration.png',
+        true,
+        ['class' => 'invert_filter']
+    );
     $remote_cfg .= __('Remote configuration enabled').'</p>';
 } else {
     $remote_cfg = '';
@@ -280,9 +316,25 @@ $table_contact->headstyle[1] = 'padding-top:6px; padding-bottom:6px;padding-righ
 $table_contact->head[0] = ' <span>'.__('Agent contact').'</span>';
 
 $buttons_refresh_agent_view = '<div class="buttons_agent_view">';
-$buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">'.html_print_image('images/refresh.png', true, ['title' => __('Refresh data'), 'alt' => '']).'</a><br>';
+$buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">'.html_print_image(
+    'images/refresh.png',
+    true,
+    [
+        'title' => __('Refresh data'),
+        'class' => 'invert_filter',
+        'alt'   => '',
+    ]
+).'</a><br>';
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
-    $buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">'.html_print_image('images/target.png', true, ['title' => __('Force remote checks'), 'alt' => '']).'</a>';
+    $buttons_refresh_agent_view .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">'.html_print_image(
+        'images/target.png',
+        true,
+        [
+            'title' => __('Force remote checks'),
+            'alt'   => '',
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 $buttons_refresh_agent_view .= '</div>';
@@ -368,6 +420,14 @@ if (enterprise_installed()) {
     $table_contact->data[] = $data;
 }
 
+$data = [];
+$data[0] = '<b>'.__('Last status change').'</b>';
+$last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+$time_elapsed = !empty($last_status_change_agent) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+$data[1] = $time_elapsed;
+
+$table_contact->data[] = $data;
+
 /*
  * END: TABLE CONTACT BUILD
  */
@@ -389,7 +449,7 @@ $table_data->head[0] = html_print_image(
     true,
     $options
 );
-$table_data->head[0] .= ' <span style="vertical-align: middle; font-weight:bold; padding-left:20px">'.__('Agent info').'</span>';
+$table_data->head[0] .= ' <span class="vertical_middle bolder pdd_l_20px">'.__('Agent info').'</span>';
 $table_data->head_colspan[0] = 4;
 
 // Gis and url address.
@@ -432,7 +492,7 @@ if (!empty($addresses)) {
     // $data_opcional = [];
     $data_opcional[] = '<b>'.__('Other IP addresses').'</b>';
     if (!empty($addresses)) {
-        $data_opcional[] = '<div style="overflow-y: scroll; max-height:50px;">'.implode('<br>', $addresses).'</div>';
+        $data_opcional[] = '<div class="overflow-y mx_height50px">'.implode('<br>', $addresses).'</div>';
     }
 }
 
@@ -516,20 +576,24 @@ $access_agent = db_get_value_sql(
 );
 
 if ($config['agentaccess'] && $access_agent > 0) {
-    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">
-                            <div class="white_table_graph_header">'.html_print_image(
+    $table_access_rate = '<div class="white_table_graph" id="table_access_rate">';
+    $table_access_rate .= '<div class="white_table_graph_header">';
+    $table_access_rate .= html_print_image(
         'images/arrow_down_green.png',
         true
-    ).'<span>'.__('Agent access rate (24h)').'</span></div>
-    <div class="white_table_graph_content h80p">
-'.graphic_agentaccess(
+    );
+    $table_access_rate .= '<span>';
+    $table_access_rate .= __('Agent access rate (Last 24h)');
+    $table_access_rate .= '</span>';
+    $table_access_rate .= '</div>';
+    $table_access_rate .= '<div class="white_table_graph_content white-table-graph-content">';
+    $table_access_rate .= graphic_agentaccess(
         $id_agente,
-        '95%',
-        100,
         SECONDS_1DAY,
         true
-    ).'</div>
-</div>';
+    );
+    $table_access_rate .= '</div>';
+    $table_access_rate .= '</div>';
 }
 
 /*
@@ -599,7 +663,7 @@ if (!empty($network_interfaces)) {
     $table_interface->style = [];
     $table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
-    $table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['interface_event_graph'] = 'width: 35%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph'] = 'right';
     // $table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
     $table_interface->align['interface_event_graph_text'] = 'left';
@@ -607,7 +671,7 @@ if (!empty($network_interfaces)) {
     $table_interface->align['interface_name'] = 'left';
     $table_interface->align['interface_ip'] = 'left';
     $table_interface->align['last_contact'] = 'left';
-    $table_interface->style['last_contact'] = 'width: 40%;padding-top:0px;padding-bottom:0px;';
+    $table_interface->style['last_contact'] = 'width: 20%;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_ip'] = 'width: 8%;padding-top:0px;padding-bottom:0px;';
     $table_interface->style['interface_mac'] = 'width: 12%;padding-top:0px;padding-bottom:0px;';
 
@@ -635,11 +699,14 @@ if (!empty($network_interfaces)) {
                 $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
                 $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=";
                 $graph_link .= $params_encoded."','";
-                $graph_link .= $win_handle."', 1000, 650)\">";
+                $graph_link .= $win_handle."', 800, 480)\">";
                 $graph_link .= html_print_image(
-                    'images/chart_curve.png',
+                    'images/chart.png',
                     true,
-                    ['title' => __('Interface traffic')]
+                    [
+                        'title' => __('Interface traffic'),
+                        'class' => 'invert_filter',
+                    ]
                 ).'</a>';
             } else {
                 $graph_link = '';
@@ -717,9 +784,15 @@ if (!empty($network_interfaces)) {
         $text_event_header = __('Events info (24hr.)');
         if (!$events) {
             $no_events = ['color' => ['criticity' => 2]];
-            $e_graph = reporting_get_event_histogram($no_events, $text_event_header);
+            $e_graph = reporting_get_event_histogram(
+                $no_events,
+                $text_event_header
+            );
         } else {
-            $e_graph = reporting_get_event_histogram($events, $text_event_header);
+            $e_graph = reporting_get_event_histogram(
+                $events,
+                $text_event_header
+            );
         }
 
         $data = [];
@@ -791,33 +864,32 @@ if (!empty($network_interfaces)) {
                     $(id).find(".white_table_graph_content").hide();
                 }
             }
-            
         });
     </script>
 <?php
-// EVENTS.
-if ($config['agentaccess'] && $access_agent > 0) {
-    $extra_class = 'h80p';
-} else {
-    $extra_class = '';
-}
-
-$table_events = '<div class="white_table_graph" id="table_events">
-            <div class="white_table_graph_header">'.html_print_image(
+$table_events = '<div class="white_table_graph" id="table_events">';
+$table_events .= '<div class="white_table_graph_header">';
+$table_events .= html_print_image(
     'images/arrow_down_green.png',
     true
-).'<span>'.__('Events (24h)').'</span></div>
-            <div class="white_table_graph_content '.$extra_class.'">
-'.graph_graphic_agentevents(
+);
+$table_events .= '<span>';
+$table_events .= __('Events (Last 24h)');
+$table_events .= '</span>';
+$table_events .= '</div>';
+$table_events .= '<div class="white_table_graph_content white-table-graph-content">';
+$table_events .= graph_graphic_agentevents(
     $id_agente,
-    100,
-    45,
+    95,
+    70,
     SECONDS_1DAY,
     '',
     true,
-    true
-).'</div>
-        </div>';
+    true,
+    500
+);
+$table_events .= '</div>';
+$table_events .= '</div>';
 
 /*
  * EVENTS TABLE END.
@@ -846,7 +918,7 @@ echo '<div id="agent_details_first_row">
 if ($table_access_rate) {
     echo '<div class="agent_access_rate_events">'.$table_access_rate.$table_events.'</div>';
 } else {
-    echo '<div style="width: 100%">'.$table_events.'</div>';
+    echo '<div class="w100p">'.$table_events.'</div>';
 }
 
 echo $agent_incidents;
@@ -854,6 +926,9 @@ echo $agent_incidents;
 if (isset($table_interface)) {
     ui_toggle(
         html_print_table($table_interface, true),
-        '<b>'.__('Interface information (SNMP)').'</b>'
+        '<b>'.__('Interface information (SNMP)').'</b>',
+        '',
+        'interface-table-status-agent',
+        true
     );
 }

@@ -34,7 +34,7 @@ div#error_buttons a {
 }
 
 .login_body_trident {
-  background: url("../../images/backgrounds/background_pandora_console_keys.jpg") !important;
+  background: url("../../images/backgrounds/background_pandora_console_keys.jpg");
 }
 
 p.log_in {
@@ -78,7 +78,6 @@ div#login_f {
   bottom: 10px;
   color: #878787;
   text-align: center;
-  font-family: "Open Sans", sans-serif;
   font-weight: 700;
   font-size: 8.5pt;
 }
@@ -180,7 +179,6 @@ div.login_pass input {
   background-repeat: no-repeat;
   background-size: 27px;
   background-position: left center;
-  font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
 }
 
@@ -290,15 +288,17 @@ div.text_banner_login span {
 }
 
 span.span1 {
-  font-size: 3vw;
-  font-family: "lato-thin";
+  font-size: 30pt;
+  font-weight: 100;
   color: white;
+  line-height: 49pt;
 }
 
 span.span2 {
-  font-size: 3vw;
-  font-family: "lato-bolder";
+  font-size: 30pt;
+  font-weight: 300;
   color: white;
+  line-height: 32pt;
 }
 
 div.img_banner_login {
@@ -324,7 +324,6 @@ div.img_banner_login img {
 
 .reset_password a {
   color: #ddd;
-  font-family: "Open Sans", sans-serif;
   font-size: 8.5pt;
 }
 

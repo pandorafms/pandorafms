@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -27,6 +27,8 @@ class TreeTag extends Tree
         $this->L1fieldName = 'id_tag';
         $this->L1fieldNameSql = 'ttm.id_tag';
         $this->L1innerInside = '
+            INNER JOIN tagente_modulo tam 
+                ON ta.id_agente = tam.id_agente
 			INNER JOIN ttag_module ttm
 				ON ttm.id_agente_modulo = tam.id_agente_modulo
 		';

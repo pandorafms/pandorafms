@@ -26,14 +26,15 @@ eval "use POSIX::strftime::GNU;1" if ($^O =~ /win/i);
 use POSIX qw(strftime setsid floor);
 use MIME::Base64;
 use JSON qw(decode_json encode_json);
+use PerlIO::encoding;
 
 use base 'Exporter';
 
 our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.743";
-my $pandora_build = "200130";
+my $pandora_version = "7.0NG.755";
+my $pandora_build = "210618";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );
@@ -87,6 +88,7 @@ our @EXPORT = qw(
 	print_warning
 	print_stderror
 	read_configuration
+	read_file
 	simple_decode_json
 	snmp_data_switcher
 	snmp_get
@@ -502,10 +504,20 @@ sub print_agent {
 	# print header
 	$xml .= "<agent_data ";
 
+	my $group_password_specified = 0;
+
 	foreach my $kad (keys %{$agent_data}){
 		no warnings "uninitialized";
 		$xml .= $kad . "='";
 		$xml .= $agent_data->{$kad} . "' ";
+
+		if ($kad eq 'group_password') {
+			$group_password_specified = 1;
+		}
+	}
+
+	if ($group_password_specified == 0 && !empty($config->{'group_password'})) {
+		$xml .= " group_password='".$config->{'group_password'}."' ";
 	}
 
 	$xml .= ">";
@@ -671,6 +683,24 @@ sub print_module {
 	if (! (empty ($data->{warning_inverse}))) {
 		$xml_module .= "\t<warning_inverse><![CDATA[" . $data->{warning_inverse} . "]]></warning_inverse>\n";
 	}
+	if (! (empty($data->{min_warning_forced})) ) {
+		$xml_module .= "\t<min_warning_forced><![CDATA[" . $data->{min_warning_forced} . "]]></min_warning_forced>\n";
+	}
+	if (! (empty($data->{max_warning_forced})) ) {
+		$xml_module .= "\t<max_warning_forced><![CDATA[" . $data->{max_warning_forced} . "]]></max_warning_forced>\n";
+	}
+	if (! (empty ($data->{min_critical_forced})) ) {
+		$xml_module .= "\t<min_critical_forced><![CDATA[" . $data->{min_critical_forced} . "]]></min_critical_forced>\n";
+	}
+	if (! (empty ($data->{max_critical_forced})) ){
+		$xml_module .= "\t<max_critical_forced><![CDATA[" . $data->{max_critical_forced} . "]]></max_critical_forced>\n";
+	}
+	if (! (empty ($data->{str_warning_forced}))) {
+		$xml_module .= "\t<str_warning_forced><![CDATA[" . $data->{str_warning_forced} . "]]></str_warning_forced>\n";
+	}
+	if (! (empty ($data->{str_critical_forced}))) {
+		$xml_module .= "\t<str_critical_forced><![CDATA[" . $data->{str_critical_forced} . "]]></str_critical_forced>\n";
+	}
 	if (! (empty ($data->{max}))) {
 		$xml_module .= "\t<max><![CDATA[" . $data->{max} . "]]></max>\n";
 	}
@@ -762,58 +792,66 @@ sub transfer_xml {
 	my $file_name;
 	my $file_path;
 
-	if (! (empty ($name))) {
-		$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
-	}
-	else {
-		# Inherit file name
-		($file_name) = $xml =~ /\s+agent_name='(.*?)'\s+.*$/m;
-		if (empty($file_name)){
-			($file_name) = $xml =~ /\s+agent_name="(.*?)"\s+.*$/m;
+	if ($xml =~ /\n/ || ! -f $xml) {
+		# Not a file, it's content.
+		if (! (empty ($name))) {
+			$file_name = $name . "." . sprintf("%d",getCurrentUTimeMilis(). (rand()*10000)) . ".data";
 		}
-		if (empty($file_name)){
-			$file_name = trim(`hostname`);
+		else {
+			# Inherit file name
+			($file_name) = $xml =~ /\s+agent_name='(.*?)'\s+.*$/m;
+			if (empty($file_name)){
+				($file_name) = $xml =~ /\s+agent_name="(.*?)"\s+.*$/m;
+			}
+			if (empty($file_name)){
+				$file_name = trim(`hostname`);
+			}
+			
+			# Tentacle server does not allow files with symbols in theirs name.
+			$file_name =~ s/[^a-zA-Z0-9_-]//g;
+			$file_name .=  "." . sprintf("%d",time()) . ".data";
 		}
 
-		$file_name .=  "." . sprintf("%d",time()) . ".data";
-	}
+		logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
 
-	logger($conf, "transfer_xml", "Failed to generate file name.") if empty($file_name);
+		$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
+		$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
+		$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
+		$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
+		$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
 
-	$conf->{temp} = $conf->{tmp}             if (empty($conf->{temp}) && defined($conf->{tmp}));
-	$conf->{temp} = $conf->{temporal}        if (empty($conf->{temp}) && defined($conf->{temporal}));
-	$conf->{temp} = $conf->{__system}->{tmp} if (empty($conf->{temp}) && defined($conf->{__system})) && (ref($conf->{__system}) eq "HASH");
-	$conf->{temp} = $ENV{'TMP'}              if empty($conf->{temp}) && $^O =~ /win/i;
-	$conf->{temp} = '/tmp'                   if empty($conf->{temp}) && $^O =~ /lin/i;
-
-	$file_path = $conf->{temp} . "/" . $file_name;
-	
-	#Creating XML file in temp directory
-	
-	if ( -e $file_path ) {
-		sleep (1);
-		$file_name = $name . "." . sprintf("%d",time()) . ".data";
 		$file_path = $conf->{temp} . "/" . $file_name;
+		
+		#Creating XML file in temp directory
+		
+		if ( -e $file_path ) {
+			sleep (1);
+			$file_name = $name . "." . sprintf("%d",time()) . ".data";
+			$file_path = $conf->{temp} . "/" . $file_name;
+		}
+
+		my $r = open (my $FD, ">>", $file_path);
+
+		if (empty($r)) {
+			print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
+			return undef;
+		}
+		
+		my $bin_opts = ':raw:encoding(UTF8)';
+		
+		if ($^O eq "Windows") {
+			$bin_opts .= ':crlf';
+		}
+		
+		binmode($FD, $bin_opts);
+
+		print $FD $xml;
+
+		close ($FD);
+
+	} else {
+		$file_path = $xml;
 	}
-
-	my $r = open (my $FD, ">>", $file_path);
-
-	if (empty($r)) {
-		print_stderror($conf, "Cannot write to [" . $file_path . "]", $conf->{'debug'});
-		return undef;
-	}
-	
-	my $bin_opts = ':raw:encoding(UTF8)';
-	
-	if ($^O eq "Windows") {
-		$bin_opts .= ':crlf';
-	}
-	
-	binmode($FD, $bin_opts);
-
-	print $FD $xml;
-
-	close ($FD);
 
 	# Reassign default values if not present
 	$conf->{tentacle_client} = "tentacle_client" if empty($conf->{tentacle_client});
@@ -832,11 +870,11 @@ sub transfer_xml {
 		my $r = -1;
 		#Send using tentacle
 		if ($^O =~ /win/i) {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path"`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path'`;
 			$r = $?;
 		}
 		else {
-			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} "$file_path" 2>&1`;
+			$msg = `$conf->{tentacle_client} -v -a $conf->{tentacle_ip} -p $conf->{tentacle_port} $conf->{tentacle_opts} '$file_path' 2>&1`;
 			$r = $?;
 		}
 			
@@ -939,7 +977,7 @@ sub print_error {
 	if (is_enabled($conf->{'as_server_plugin'})) {
 		print STDERR $msg . "\n";
 		print $value . "\n";
-		exit 1;
+		exit 0;
 	}
 
 	print_module($conf, {
@@ -948,7 +986,7 @@ sub print_error {
 		value => $value,
 		desc  => $msg,
 	});
-	exit 1;
+	exit 0;
 }
 
 ################################################################################
@@ -1146,6 +1184,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = ".\\";
+		$system{cmdsep}  = "\&";
 	}
 	else {
 		$system{devnull} = "/dev/null";
@@ -1156,6 +1195,7 @@ sub init_system {
 		$system{echo}    = "echo";
 		$system{wcl}     = "wc -l";
 		$system{tmp}     = "/tmp";
+		$system{cmdsep}  = ";";
 
 		if ($^O =~ /hpux/i) {
 			$system{os}      = "HPUX";
@@ -1261,6 +1301,27 @@ sub read_configuration {
 	}
 
 	return $config;
+}
+
+################################################################################
+## Reads a file and returns entire content or undef if error.
+################################################################################
+sub read_file {
+	my $path = shift;
+
+	my $_FILE;
+	if( !open($_FILE, "<", $path) ) {
+		# failed to open, return undef
+		return undef;
+	}
+
+	# Slurp configuration file content.
+	my $content = do { local $/; <$_FILE> };
+
+	# Close file
+	close($_FILE);
+
+	return $content;
 }
 
 ################################################################################
@@ -1999,19 +2060,18 @@ sub api_create_group {
 #   -> means $context (v3)
 # 
 #  Configuration hash
-# 
-# 	$snmp{version}
-# 	$snmp{community}
-# 	$snmp{host}
-# 	$snmp{oid}
-# 	$snmp{port}
-#	$snmp{securityName}
-#	$snmp{context
-#	$snmp{securityLevel}
-#	$snmp{authProtocol}
-#	$snmp{authKey}
-#	$snmp{privProtocol}
-#	$snmp{privKey}
+#   $snmp{version}
+#   $snmp{community}
+#   $snmp{host}
+#   $snmp{oid}
+#   $snmp{port}
+#	  $snmp{securityName}
+#	  $snmp{context
+#	  $snmp{securityLevel}
+#	  $snmp{authProtocol}
+#	  $snmp{authKey}
+#	  $snmp{privProtocol}
+#	  $snmp{privKey}
 ################################################################################
 sub snmp_walk {
 	my $snmp = shift;

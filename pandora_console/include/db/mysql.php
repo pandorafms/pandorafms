@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -1496,6 +1496,7 @@ function db_run_sql_file($location)
             // Undo results
         }
 
+        $config['db_run_sql_file_error'] = $mysqli->error;
         return false;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,16 +55,21 @@ if ($save_custom_graph) {
 if ($print_custom_graph) {
     ob_clean();
 
+    $width_value = (int) get_parameter('width', CHART_DEFAULT_WIDTH);
+
+    if ($width_value === -1) {
+        $width_value = '';
+    }
+
     $params = [
         'period'          => (int) get_parameter('period', SECONDS_5MINUTES),
-        'width'           => (int) get_parameter('width', CHART_DEFAULT_WIDTH),
+        'width'           => $width_value,
         'height'          => (int) get_parameter('height', CHART_DEFAULT_HEIGHT),
         'unit_name'       => get_parameter('unit_list', []),
         'date'            => (int) get_parameter('date', time()),
         'only_image'      => (bool) get_parameter('only_image', false),
         'homeurl'         => (string) get_parameter('homeurl', ''),
         'ttl'             => (int) get_parameter('ttl', 1),
-        'dashboard'       => (bool) get_parameter('dashboard', false),
         'vconsole'        => (bool) get_parameter('vconsole', false),
         'fullscale'       => (bool) get_parameter('fullscale', false),
         'backgroundColor' => (string) get_parameter('background_color', 'white'),
@@ -114,7 +119,6 @@ if ($print_sparse_graph) {
         'menu'                => (bool) get_parameter('menu', true),
         'backgroundColor'     => (string) get_parameter('background_color', 'white'),
         'percentil'           => get_parameter('percentil', null),
-        'dashboard'           => (bool) get_parameter('dashboard'),
         'vconsole'            => (bool) get_parameter('vconsole'),
         'type_graph'          => get_parameter('type_g', $config['type_module_charts']),
         'fullscale'           => get_parameter('fullscale', 0),
@@ -152,8 +156,8 @@ if ($get_graphs) {
 
         $table = '';
         $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
-            $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
-                $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+            $single_table .= "<tr id='row_time_lapse' class='datos'>";
+                $single_table .= "<td class='bolder w12p'>";
                     $single_table .= __('Time container lapse');
                     // $single_table .= ui_print_help_tip(__('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. '),true);
                 $single_table .= '</td>';
@@ -199,7 +203,7 @@ if ($get_graphs) {
                             'SELECT alias from tagente 
 							WHERE id_agente = '.$sql_modulo[0]['id_agente']
                         );
-                        $table .= "<div style='width: 90%'><h4>AGENT ".$sql_alias[0]['alias'].' MODULE '.$sql_modulo[0]['nombre'].'</h4><hr></div>';
+                        $table .= "<div class='w90p'><h4>AGENT ".$sql_alias[0]['alias'].' MODULE '.$sql_modulo[0]['nombre'].'</h4><hr></div>';
 
                         $params = [
                             'agent_module_id' => $value['id_agent_module'],
@@ -228,7 +232,7 @@ if ($get_graphs) {
                             $height = 300;
                         }
 
-                        $table .= "<div style='width: 90%'><h4>".$graph[0]['name'].'</h4><hr></div>';
+                        $table .= "<div class='w90p'><h4>".$graph[0]['name'].'</h4><hr></div>';
 
                         $params = [
                             'period'    => $value['time_lapse'],
@@ -255,7 +259,12 @@ if ($get_graphs) {
 
                 case 'dynamic_graph':
                     if ($value['agent'] != '') {
-                        $alias = " AND alias REGEXP '".$value['agent']."'";
+                        if (@preg_match($value['agent'], '') !== false) {
+                            $alias = " AND alias REGEXP '".$value['agent']."'";
+                        } else {
+                            // Not a valid REGEXP.
+                            $alias = " AND alias LIKE '".$value['agent']."'";
+                        }
                     }
 
                     if ($value['id_group'] === '0') {
@@ -279,7 +288,11 @@ if ($get_graphs) {
                     }
 
                     if ($value['module'] != '') {
-                        $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        if (@preg_match($value['module'], '') !== false) {
+                            $module_name = " AND nombre REGEXP '".$value['module']."'";
+                        } else {
+                            $module_name = " AND nombre LIKE '".$value['module']."'";
+                        }
                     }
 
                     $id_agent_module = db_get_all_rows_sql(
@@ -299,7 +312,7 @@ if ($get_graphs) {
 								WHERE id_agente = '.$sql_modulo2[0]['id_agente']
                             );
 
-                            $table .= "<div style='width: 90%'><h4>AGENT ".$sql_alias2[0]['alias'].' MODULE '.$sql_modulo2[0]['nombre'].'</h4><hr></div>';
+                            $table .= "<div class='w90p'><h4>AGENT ".$sql_alias2[0]['alias'].' MODULE '.$sql_modulo2[0]['nombre'].'</h4><hr></div>';
 
                             $params = [
                                 'agent_module_id' => $value2['id_agente_modulo'],

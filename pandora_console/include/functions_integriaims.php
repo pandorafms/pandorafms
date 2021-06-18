@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -21,6 +21,7 @@ global $config;
 
 require_once $config['homedir'].'/include/functions_ui.php';
 require_once $config['homedir'].'/include/functions_html.php';
+require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions.php';
 
 
@@ -38,9 +39,9 @@ function integriaims_tabs($active_tab, $view=false)
 
     $url_tabs = ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/');
 
-    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS')]).'</a>';
-    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list')]).'</a>';
-    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket')]).'</a>';
+    $setup_tab['text'] = '<a href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=integria').'">'.html_print_image('images/setup.png', true, ['title' => __('Configure Integria IMS'), 'class' => 'invert_filter']).'</a>';
+    $list_tab['text'] = '<a href="'.$url_tabs.'list_integriaims_incidents">'.html_print_image('images/list.png', true, ['title' => __('Ticket list'), 'class' => 'invert_filter']).'</a>';
+    $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident">'.html_print_image('images/pencil.png', true, ['title' => __('New ticket'), 'class' => 'invert_filter']).'</a>';
 
     switch ($active_tab) {
         case 'setup_tab':
@@ -69,8 +70,8 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     if ($view) {
-        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket')]).'</a>';
-        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket')]).'</a>';
+        $create_tab['text'] = '<a href="'.$url_tabs.'configure_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/pencil.png', true, ['title' => __('Edit ticket'), 'class' => 'invert_filter']).'</a>';
+        $view_tab['text'] = '<a href="'.$url_tabs.'dashboard_detail_integriaims_incident&incident_id='.$view.'">'.html_print_image('images/operation.png', true, ['title' => __('View ticket'), 'class' => 'invert_filter']).'</a>';
         // When the current page is the View page.
         if (!$active_tab) {
             $view_tab['active'] = true;
@@ -78,22 +79,10 @@ function integriaims_tabs($active_tab, $view=false)
     }
 
     $onheader = [];
-
-    if (check_acl($config['id_user'], 0, 'IR') && $view) {
-        $onheader['view'] = $view_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'PM')) {
-        $onheader['configure'] = $setup_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'IR')) {
-        $onheader['list'] = $list_tab;
-    }
-
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $onheader['create'] = $create_tab;
-    }
+    $onheader['view'] = $view_tab;
+    $onheader['configure'] = $setup_tab;
+    $onheader['list'] = $list_tab;
+    $onheader['create'] = $create_tab;
 
     return $onheader;
 }
@@ -137,7 +126,7 @@ function integriaims_get_details($details, $detail_index=false)
         break;
     }
 
-    $api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], $operation);
+    $api_call = integria_api_call(null, null, null, null, $operation);
     $result = [];
     get_array_from_csv_data_pair($api_call, $result);
 
@@ -161,24 +150,68 @@ function integriaims_get_details($details, $detail_index=false)
  * @param string User password.
  * @param string API password.
  * @param string API Operation.
- * @param array Array with parameters required by the API function.
+ * @param mixed String or array with parameters required by the API function.
  *
  * @return boolean True if API request succeeded, false if API request failed.
  */
-function integria_api_call($api_hostname, $user, $user_pass, $api_pass, $operation, $params_array=[], $show_credentials_error_msg=false)
+function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api_pass=null, $operation, $params='', $show_credentials_error_msg=false, $return_type='', $token='', $user_level_conf=null)
 {
-    $params_string = implode(',', $params_array);
+    global $config;
+
+    if ($user_level_conf === null) {
+        $user_level_conf = (bool) $config['integria_user_level_conf'];
+    }
+
+    $user_info = users_get_user_by_id($config['id_user']);
+
+    // API access data.
+    if ($api_hostname === null) {
+        $api_hostname = $config['integria_hostname'];
+    }
+
+    if ($api_pass === null) {
+        $api_pass = $config['integria_api_pass'];
+    }
+
+    // Integria user and password.
+    if ($user === null || $user_level_conf === true) {
+        $user = $config['integria_user'];
+
+        if ($user_level_conf === true) {
+            $user = $user_info['integria_user_level_user'];
+        }
+    }
+
+    if ($user_pass === null || $user_level_conf === true) {
+        $user_pass = $config['integria_pass'];
+
+        if ($user_level_conf === true) {
+            $user_pass = $user_info['integria_user_level_pass'];
+        }
+    }
+
+    if (is_array($params)) {
+        $params = implode($token, $params);
+    }
 
     $url_data = [
         'user'      => $user,
         'user_pass' => $user_pass,
         'pass'      => $api_pass,
         'op'        => $operation,
-        'params'    => html_entity_decode($params_string),
+        'params'    => html_entity_decode($params),
     ];
 
+    if ($return_type !== '') {
+        $url_data['return_type'] = $return_type;
+    }
+
+    if ($token !== '') {
+        $url_data['token'] = $token;
+    }
+
     // Build URL for API request.
-    $url = $api_hostname.'/integria/include/api.php';
+    $url = $api_hostname.'/include/api.php';
 
     // ob_start();
     // $out = fopen('php://output', 'w');
@@ -342,10 +375,10 @@ function get_tickets_integriaims($tickets_filters)
 
     // API call.
     $result_api_call_list = integria_api_call(
-        $config['integria_hostname'],
-        $config['integria_user'],
-        $config['integria_pass'],
-        $config['integria_api_pass'],
+        null,
+        null,
+        null,
+        null,
         'get_incidents',
         [
             $incident_text,
@@ -355,7 +388,10 @@ function get_tickets_integriaims($tickets_filters)
             '0',
             $incident_owner,
             $incident_creator,
-        ]
+        ],
+        false,
+        '',
+        ','
     );
 
     // Return array of api call 'get_incidents'.

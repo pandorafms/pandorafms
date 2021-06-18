@@ -160,6 +160,8 @@ CREATE TABLE IF NOT EXISTS `tpolicies` (
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+ALTER TABLE `tpolicies` ADD COLUMN `force_apply` tinyint(1) default 0;
+
 -- -----------------------------------------------------
 -- Table `tpolicy_alerts`
 -- -----------------------------------------------------
@@ -346,6 +348,28 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inventory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `tinventory_alert`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tinventory_alert`(
+    `id` int UNSIGNED NOT NULL auto_increment,
+    `id_module_inventory` int(10) NOT NULL,
+    `actions` text NOT NULL default '',
+	`id_group` mediumint(8) unsigned NULL default 0,
+    `condition` enum('WHITE_LIST', 'BLACK_LIST', 'MATCH') NOT NULL default 'WHITE_LIST',
+    `value` text NOT NULL default '',
+    `name` tinytext NOT NULL default '',
+    `description` text NOT NULL default '',
+    `time_threshold` int(10) NOT NULL default '0',
+    `last_fired` text NOT NULL default '',
+    `disable_event` tinyint(1) UNSIGNED default 0,
+    `enabled` tinyint(1) UNSIGNED default 1,
+	`alert_groups` text NOT NULL default '',
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+		ON DELETE CASCADE ON UPDATE CASCADE
+) engine=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `ttrap_custom_values`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `ttrap_custom_values` (
@@ -391,6 +415,8 @@ ALTER TABLE `tmetaconsole_setup` MODIFY COLUMN `meta_dbuser` text NULL,
 	MODIFY COLUMN `meta_dbhost` text NULL,
 	MODIFY COLUMN `meta_dbport` text NULL,
 	MODIFY COLUMN `meta_dbname` text NULL;
+
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `server_uid` TEXT NOT NULL default '';
 
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
@@ -539,6 +565,9 @@ CREATE TABLE IF NOT EXISTS `tskin` (
 	PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
+UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
+
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_queue`
 -- ---------------------------------------------------------------------
@@ -598,6 +627,22 @@ ALTER TABLE `tevent_rule` ADD COLUMN `operator_log_agent` text COMMENT 'Operator
 ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` enum('','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal') default '';
 ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` int(4) unsigned DEFAULT NULL;
 ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` mediumint(4) DEFAULT NULL;
+
+ALTER TABLE `tevent_rule` MODIFY COLUMN `agent` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_usuario` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_grupo` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `evento` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `event_type` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `module` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `alert` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `criticity` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `user_comment` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `id_tag` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `name` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `group_recursion` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_content` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_source` TEXT;
+ALTER TABLE `tevent_rule` MODIFY COLUMN `log_agent` TEXT;
 
 UPDATE `tevent_rule` SET `operator_agent` = "REGEX" WHERE `agent` != '';
 UPDATE `tevent_rule` SET `operator_id_usuario` = "REGEX" WHERE `id_usuario` != '';
@@ -662,6 +707,7 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
+ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -765,7 +811,8 @@ CREATE TABLE IF NOT EXISTS `treport_template` (
 	`custom_font` varchar(200) default NULL,
 	`metaconsole` tinyint(1) DEFAULT 0,
 	`agent_regex` varchar(600) NOT NULL default '',
-
+	`cover_page_render` tinyint(1) NOT NULL DEFAULT 1,
+	`index_render` tinyint(1) NOT NULL DEFAULT 1,
 	PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -783,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`description` mediumtext,
 	`text_agent` text,
 	`text` TEXT,
-	`external_source` Text,
+	`external_source` mediumtext,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,
@@ -837,6 +884,7 @@ ALTER TABLE `treport_content_template` ADD COLUMN `agent_min_value` TINYINT(1) D
 ALTER TABLE `treport_content_template` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '1';
 ALTER TABLE `treport_content_template` ADD COLUMN `failover_type` tinyint(1) DEFAULT '1';
+ALTER TABLE `treport_content_template` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
 	MODIFY COLUMN `lapse_calc` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -844,6 +892,8 @@ ALTER TABLE `treport_content_template` MODIFY COLUMN `historical_db` tinyint(1) 
 	MODIFY COLUMN `visual_format` tinyint(1) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tnews`
@@ -969,9 +1019,13 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event` ADD COLUMN `data` double(50,5) default NULL;
 ALTER TABLE `tmetaconsole_event` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 ALTER TABLE `tmetaconsole_event` ADD INDEX `server_id` (`server_id`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
+ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1018,8 +1072,10 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 -- Criticity: 5 - Minor
 -- Criticity: 6 - Major
 
-ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `data` double(50,5) default NULL;
 ALTER TABLE `tmetaconsole_event_history` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_estado_idx` (`estado`);
+ALTER TABLE `tmetaconsole_event_history` ADD INDEX `tmeh_timestamp_idx` (`timestamp`);
 -- ---------------------------------------------------------------------
 -- Table `textension_translate_string`
 -- ---------------------------------------------------------------------
@@ -1113,7 +1169,9 @@ ALTER TABLE `tmetaconsole_agent` ADD COLUMN `remote` tinyint(1) NOT NULL DEFAULT
 	ADD COLUMN `alias` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
 	MODIFY COLUMN `update_secondary_groups` tinyint(1) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `alias_as_name` tinyint(2) NOT NULL DEFAULT '0',
-	ADD INDEX `id_tagente_idx` (`id_tagente`);
+	ADD INDEX `id_tagente_idx` (`id_tagente`),
+	ADD INDEX `tma_id_os_idx` (`id_os`),
+    ADD INDEX `tma_server_name_idx` (`server_name`);
 
 -- ---------------------------------------------------------------------
 -- Table `ttransaction`
@@ -1230,25 +1288,43 @@ ALTER TABLE talert_templates ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field16_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field17_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field18_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field19_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_templates` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp`
 -- ---------------------------------------------------------------------
-ALTER TABLE talert_snmp ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
-ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `al_field20` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
 ALTER TABLE `talert_snmp` MODIFY COLUMN `al_field11` text NOT NULL,
 	MODIFY COLUMN `al_field12` text NOT NULL,
 	MODIFY COLUMN `al_field13` text NOT NULL,
 	MODIFY COLUMN `al_field14` text NOT NULL,
 	MODIFY COLUMN `al_field15` text NOT NULL;
+
 
 -- ---------------------------------------------------------------------
 -- Table `talert_snmp_action`
@@ -1258,12 +1334,18 @@ ALTER TABLE talert_snmp_action ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field16` TEXT NOT NULL AFTER `al_field15`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field17` TEXT NOT NULL AFTER `al_field16`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field18` TEXT NOT NULL AFTER `al_field17`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field19` TEXT NOT NULL AFTER `al_field18`;
+ALTER TABLE `talert_snmp_action` ADD COLUMN `al_field20` TEXT NOT NULL AFTER `al_field19`;
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`
 -- ----------------------------------------------------------------------
 ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 ALTER TABLE `tserver` MODIFY COLUMN `server_keepalive` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE `tserver` MODIFY COLUMN `version` varchar(25) NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`
@@ -1280,6 +1362,7 @@ ALTER TABLE `tagente_estado` MODIFY COLUMN `datos` mediumtext NOT NULL,
 	MODIFY COLUMN `last_known_status` tinyint(4) NULL DEFAULT '0',
 	MODIFY COLUMN `last_dynamic_update` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `last_unknown_update` bigint(20) NOT NULL DEFAULT '0';
+ALTER TABLE `tagente_estado` ADD COLUMN `last_status_change` bigint(20) NOT NULL DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
@@ -1298,16 +1381,30 @@ ALTER TABLE talert_actions ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field16` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field17` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field18` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field19` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field20` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field16_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field17_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field18_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field19_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field20_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE `talert_actions` ADD COLUMN `previous_name` text;
+
 ALTER TABLE `talert_actions` MODIFY COLUMN `field11` text NOT NULL,
 	MODIFY COLUMN `field12` text NOT NULL,
 	MODIFY COLUMN `field13` text NOT NULL,
 	MODIFY COLUMN `field14` text NOT NULL,
 	MODIFY COLUMN `field15` text NOT NULL;
+
+ALTER TABLE `talert_actions` ADD COLUMN `create_wu_integria` TINYINT(1) default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`
@@ -1316,6 +1413,7 @@ UPDATE `talert_commands` SET `fields_descriptions` = '[\"Integria&#x20;IMS&#x20;
 UPDATE `talert_commands` SET `description` = 'This&#x20;alert&#x20;send&#x20;an&#x20;email&#x20;using&#x20;internal&#x20;Pandora&#x20;FMS&#x20;Server&#x20;SMTP&#x20;capabilities&#x20;&#40;defined&#x20;in&#x20;each&#x20;server,&#x20;using:&#x0d;&#x0a;_field1_&#x20;as&#x20;destination&#x20;email&#x20;address,&#x20;and&#x0d;&#x0a;_field2_&#x20;as&#x20;subject&#x20;for&#x20;message.&#x20;&#x0d;&#x0a;_field3_&#x20;as&#x20;text&#x20;of&#x20;message.&#x20;&#x0d;&#x0a;_field4_&#x20;as&#x20;content&#x20;type&#x20;&#40;text/plain&#x20;or&#x20;html/text&#41;.', `fields_descriptions` = '[\"Destination&#x20;address\",\"Subject\",\"Text\",\"Content&#x20;Type\",\"\",\"\",\"\",\"\",\"\",\"\"]', `fields_values` = '[\"\",\"\",\"_html_editor_\",\"_content_type_\",\"\",\"\",\"\",\"\",\"\",\"\"]' WHERE id=1;
 ALTER TABLE `talert_commands` ADD COLUMN `id_group` mediumint(8) unsigned NULL default 0;
 ALTER TABLE `talert_commands` ADD COLUMN `fields_hidden` text;
+ALTER TABLE `talert_commands` ADD COLUMN `previous_name` text;
 
 UPDATE `talert_actions` SET `field4` = 'text/html', `field4_recovery` = 'text/html' WHERE id = 1;
 
@@ -1329,18 +1427,24 @@ ALTER TABLE `talert_commands` MODIFY COLUMN `id_group` mediumint(8) unsigned NUL
 ALTER TABLE `tmap` MODIFY COLUMN `id_user` varchar(250) NOT NULL DEFAULT '';
 
 -- ---------------------------------------------------------------------
+-- Table `ttag`
+-- ---------------------------------------------------------------------
+ALTER TABLE `ttag` ADD COLUMN `previous_name` text NULL;
+ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
+
+-- ---------------------------------------------------------------------
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 35);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 47);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package_enterprise', '742');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 755);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1367,12 +1471,15 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_type', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_status', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_title', '');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('cr_incident_content', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.00097656250000":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
 -- ---------------------------------------------------------------------
 
-INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png');
+ALTER TABLE `tconfig_os` ADD COLUMN `previous_name` text NULL;
+
+INSERT INTO `tconfig_os` (`id_os`, `name`, `description`, `icon_name`) VALUES (100, 'Cluster', 'Cluster agent', 'so_cluster.png', '');
 	
 UPDATE `tagente` SET `id_os` = 100 WHERE `id_os` = 21 and (select `id_os` from `tconfig_os` WHERE `id_os` = 21 and `name` = 'Cluster');
 
@@ -1404,6 +1511,7 @@ ALTER TABLE tevent_filter ADD COLUMN `id_extra` tinytext NOT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `id_source_event` int(10);
 ALTER TABLE `tevent_filter` MODIFY COLUMN `user_comment` text NOT NULL;
 ALTER TABLE `tevent_filter` MODIFY COLUMN `severity` text NOT NULL;
+ALTER TABLE tevent_filter ADD COLUMN `server_id` int(10) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario`
@@ -1424,6 +1532,8 @@ ALTER TABLE `tusuario` MODIFY COLUMN `default_event_filter` int(10) unsigned NOT
 	ADD CONSTRAINT `fk_filter_id` FOREIGN KEY `fk_filter_id` (`id_filter`) REFERENCES `tevent_filter` (`id_filter`) ON DELETE SET NULL ON UPDATE RESTRICT,
 	DROP FOREIGN KEY `fk_id_filter`,
 	DROP INDEX `fk_id_filter`;
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_user` VARCHAR(60);
+ALTER TABLE `tusuario` ADD COLUMN `integria_user_level_pass` VARCHAR(45);
 
 
 -- ---------------------------------------------------------------------
@@ -1440,11 +1550,13 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
+ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
+ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
 -- ---------------------------------------------------------------------
-ALTER TABLE tagente_datos MODIFY `datos` double(22,5);
+ALTER TABLE tagente_datos MODIFY `datos` double(50,5);
 ALTER TABLE `tagente_datos` DROP INDEX `data_index1`, ADD INDEX `data_index1` (`id_agente_modulo`, `utimestamp`);
 
 -- ---------------------------------------------------------------------
@@ -1455,7 +1567,7 @@ ALTER TABLE `tagente_datos_string` MODIFY COLUMN `datos` mediumtext NOT NULL, DR
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos_inc`
 -- ---------------------------------------------------------------------
-ALTER TABLE tagente_datos_inc MODIFY `datos` double(22,5);
+ALTER TABLE tagente_datos_inc MODIFY `datos` double(50,5);
 
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
@@ -1467,6 +1579,42 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_next` bigint(20) NOT NULL def
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` ADD COLUMN `ff_type` tinyint(1) unsigned default '0';
 ALTER TABLE `tnetwork_component` MODIFY COLUMN `ff_type` tinyint(1) unsigned NULL DEFAULT '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `manufacturer_id` varchar(200) NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `protocol` tinytext NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `module_type` tinyint UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `tnetwork_component` ADD COLUMN `execution_type` tinyint UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `tnetwork_component` ADD COLUMN `scan_type` tinyint UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `tnetwork_component` ADD COLUMN `value` text NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `value_operations` text NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `module_enabled` tinyint(1) UNSIGNED DEFAULT '0';
+ALTER TABLE `tnetwork_component` ADD COLUMN `name_oid` varchar(255) NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `query_class` varchar(200) NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `query_key_field` varchar(200) NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `scan_filters` text NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `query_filters` text NOT NULL;
+ALTER TABLE `tnetwork_component` ADD COLUMN `enabled` tinyint(1) UNSIGNED DEFAULT 1;
+
+-- ----------------------------------------------------------------------
+-- Table `tpen`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpen` (
+  `pen` int(10) unsigned NOT NULL,
+  `manufacturer` TEXT,
+  `description` TEXT,
+  PRIMARY KEY (`pen`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_profile_pen`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
+  `pen` int(10) unsigned NOT NULL,
+  `id_np` int(10) unsigned NOT NULL,
+  CONSTRAINT `fk_network_profile_pen_pen` FOREIGN KEY (`pen`)
+    REFERENCES `tpen` (`pen`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_network_profile_pen_id_np` FOREIGN KEY (`id_np`)
+    REFERENCES `tnetwork_profile` (`id_np`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`
@@ -1495,7 +1643,16 @@ ALTER TABLE `tservice` ADD COLUMN `cps` int NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `cascade_protection` tinyint(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `evaluate_sla` int(1) NOT NULL default 0;
 ALTER TABLE `tservice` ADD COLUMN `is_favourite` tinyint(1) NOT NULL default 0;
+ALTER TABLE `tservice` ADD COLUMN `unknown_as_critical` tinyint(1) NOT NULL default 0 AFTER `warning`;
+
 UPDATE tservice SET `is_favourite` = 1 WHERE `name` REGEXP '^[_|.|\[|\(]';
+-- ALl previous services are manual now.
+UPDATE `tservice` SET `auto_calculate` = 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tservice_element`
+-- ---------------------------------------------------------------------
+ALTER TABLE `tservice_element` ADD COLUMN `rules` text;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout`
@@ -1598,6 +1755,7 @@ ALTER TABLE `treport_content` ADD COLUMN `agent_min_value` TINYINT(1) DEFAULT '1
 ALTER TABLE `treport_content` ADD COLUMN `current_month` TINYINT(1) DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `failover_mode` tinyint(1) DEFAULT '0';
 ALTER TABLE `treport_content` ADD COLUMN `failover_type` tinyint(1) DEFAULT '0';
+ALTER TABLE `treport_content` ADD COLUMN `summary` tinyint(1) DEFAULT 0;
 ALTER table `treport_content` MODIFY COLUMN `name` varchar(300) NULL;
 ALTER TABLE `treport_content` ADD COLUMN `uncompressed_module` TINYINT DEFAULT '0';
 ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -1608,6 +1766,9 @@ ALTER TABLE `treport_content` MODIFY COLUMN `historical_db` tinyint(1) unsigned 
 	MODIFY COLUMN `failover_type` tinyint(1) NULL DEFAULT '1';
 ALTER TABLE `treport_content` ADD COLUMN `landscape` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`
@@ -1633,7 +1794,8 @@ UPDATE `tmetaconsole_agent` SET tmetaconsole_agent.alias = tmetaconsole_agent.no
 -- ---------------------------------------------------------------------
 -- Table `twidget_dashboard`
 -- ---------------------------------------------------------------------
-ALTER TABLE twidget_dashboard MODIFY options LONGTEXT NOT NULL default "";
+ALTER TABLE `twidget_dashboard` MODIFY `options` LONGTEXT NOT NULL default "";
+ALTER TABLE `twidget_dashboard` ADD COLUMN `position` TEXT NOT NULL default "";
 
 -- ---------------------------------------------------------------------
 -- Table `trecon_task`
@@ -1642,6 +1804,7 @@ ALTER TABLE trecon_task ADD `alias_as_name` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `snmp_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `vlan_enabled` int(2) unsigned default '0';
 ALTER TABLE trecon_task ADD `wmi_enabled` tinyint(1) unsigned DEFAULT '0';
+ALTER TABLE trecon_task ADD `rcmd_enabled` tinyint(1) unsigned DEFAULT '0';
 ALTER TABLE trecon_task ADD `auth_strings` text;
 ALTER TABLE trecon_task ADD `autoconfiguration_enabled` tinyint(1) unsigned default '0';
 ALTER TABLE trecon_task ADD `summary` text;
@@ -1652,7 +1815,39 @@ ALTER TABLE `trecon_task` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `wmi_enabled` tinyint(1) unsigned NULL DEFAULT '0',
 	MODIFY COLUMN `auth_strings` text NULL,
 	MODIFY COLUMN `autoconfiguration_enabled` tinyint(1) unsigned NULL DEFAULT '0',
-	MODIFY COLUMN `summary` text NULL;
+	MODIFY COLUMN `summary` text NULL,
+	MODIFY COLUMN `id_network_profile` text,
+	CHANGE COLUMN `create_incident` `review_mode` TINYINT(1) UNSIGNED DEFAULT 1,
+	ADD COLUMN `subnet_csv` TINYINT(1) UNSIGNED DEFAULT 0;
+
+-- Old recon always report.
+UPDATE `trecon_task` SET `review_mode` = 1;
+
+-- ----------------------------------------------------------------------
+-- Table `tdiscovery_tmp`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tdiscovery_tmp_agents` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_rt` int(10) unsigned NOT NULL,
+  `label` varchar(600) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `data` MEDIUMTEXT,
+  `review_date` datetime DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_rt` (`id_rt`),
+  INDEX `label` (`label`),
+  CONSTRAINT `tdta_trt` FOREIGN KEY (`id_rt`) REFERENCES `trecon_task` (`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tdiscovery_tmp_connections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_rt` int(10) unsigned NOT NULL,
+  `dev_1` text,
+  `dev_2` text,
+  `if_1` text,
+  `if_2` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `twidget` AND Table `twidget_dashboard`
@@ -1791,6 +1986,7 @@ ALTER TABLE tevent_response ADD COLUMN command_timeout int(5) unsigned NOT NULL 
 -- ---------------------------------------------------------------------
 
 INSERT INTO tmodule VALUES (8, 'Wux module');
+INSERT INTO tmodule VALUES (9, 'Wizard module');
 
 -- ---------------------------------------------------------------------
 -- Table `ttipo_modulo`
@@ -1801,7 +1997,8 @@ INSERT INTO `ttipo_modulo` VALUES
 (34,'remote_cmd', 10, 'Remote execution, numeric data', 'mod_remote_cmd.png'),
 (35,'remote_cmd_proc', 10, 'Remote execution, boolean data', 'mod_remote_cmd_proc.png'),
 (36,'remote_cmd_string', 10, 'Remote execution, alphanumeric data', 'mod_remote_cmd_string.png'),
-(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png');
+(37,'remote_cmd_inc', 10, 'Remote execution, incremental data', 'mod_remote_cmd_inc.png'),
+(38,'web_server_status_code_string',9,'Remote HTTP module to check server status code','mod_web_data.png');
 
 -- ---------------------------------------------------------------------
 -- Table `tdashboard`
@@ -2104,13 +2301,15 @@ INSERT INTO tlog_graph_models VALUES (6, 'Pages&#x20;with&#x20;warnings',
 INSERT INTO tlog_graph_models VALUES (7, 'Users&#x20;login',
 'Starting&#x20;Session&#x20;&#92;d+&#92;&#x20;of&#x20;user&#x20;&#40;.*&#41;',
 'user', 0);
+
 -- -----------------------------------------------------
 -- Add column in table `treport`
 -- -----------------------------------------------------
-
 ALTER TABLE `treport` ADD COLUMN `hidden` tinyint(1) NOT NULL DEFAULT 0;
 ALTER TABLE `treport` ADD COLUMN `orientation` varchar(25) NOT NULL default 'vertical';
 ALTER TABLE `treport` MODIFY COLUMN `hidden` tinyint(1) NULL DEFAULT '0' AFTER `non_interactive`;
+ALTER TABLE `treport` ADD COLUMN `cover_page_render` tinyint(1) NOT NULL DEFAULT 1;
+ALTER TABLE `treport` ADD COLUMN `index_render` tinyint(1) NOT NULL DEFAULT 1;
 
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_version` varchar(5) NOT NULL default '1';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_user` varchar(255) NOT NULL default '';
@@ -2119,6 +2318,8 @@ ALTER TABLE `trecon_task` ADD COLUMN `snmp_auth_method` varchar(25) NOT NULL def
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_method` varchar(25) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_privacy_pass` varchar(255) NOT NULL default '';
 ALTER TABLE `trecon_task` ADD COLUMN `snmp_security_level` varchar(25) NOT NULL default '';
+ALTER TABLE trecon_task add column `auto_monitor` TINYINT(1) UNSIGNED DEFAULT 1 AFTER `auth_strings`;
+UPDATE `trecon_task` SET `auto_monitor` = 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tagent_custom_fields_filter`
@@ -2140,7 +2341,7 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 -- ---------------------------------------------------------------------
 -- Table `tevento`
 -- ---------------------------------------------------------------------
-ALTER TABLE `tevento` ADD COLUMN `data` double(22,5) default NULL;
+ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
 
@@ -2224,6 +2425,7 @@ CREATE TABLE `tnotification_source` (
     `enabled` int(1) DEFAULT NULL,
     `user_editable` int(1) DEFAULT NULL,
     `also_mail` int(1) DEFAULT NULL,
+	`subtype_blacklist` TEXT,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2246,6 +2448,7 @@ ALTER TABLE `tmensajes` ADD COLUMN `response_mode` VARCHAR(200) DEFAULT NULL;
 ALTER TABLE `tmensajes` ADD COLUMN `citicity` INT(10) UNSIGNED DEFAULT '0';
 ALTER TABLE `tmensajes` ADD COLUMN `id_source` BIGINT(20) UNSIGNED NOT NULL;
 ALTER TABLE `tmensajes` ADD COLUMN `subtype` VARCHAR(255) DEFAULT '';
+ALTER TABLE `tmensajes` ADD COLUMN `hidden_sent` TINYINT(1) UNSIGNED DEFAULT 0;
 ALTER TABLE `tmensajes` ADD CONSTRAINT `tsource_fk` FOREIGN KEY (`id_source`) REFERENCES `tnotification_source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `tmensajes` DROP COLUMN `id_usuario_destino`,
 	ADD UNIQUE INDEX `id_mensaje` (`id_mensaje`);
@@ -2326,6 +2529,7 @@ CREATE TABLE `tnotification_source_group_user` (
 -- Add alert command 'Generate notification'
 -- ----------------------------------------------------------------------
 INSERT INTO `talert_commands` (`name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES ('Generate&#x20;Notification','Internal&#x20;type','This&#x20;command&#x20;allows&#x20;you&#x20;to&#x20;send&#x20;an&#x20;internal&#x20;notification&#x20;to&#x20;any&#x20;user&#x20;or&#x20;group.',1,'[\"Destination&#x20;user\",\"Destination&#x20;group\",\"Title\",\"Message\",\"Link\",\"Criticity\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Event&#x20;name\",\"Event&#x20;type\",\"Source\",\"Agent&#x20;name&#x20;or&#x20;_agent_\",\"Event&#x20;severity\",\"ID&#x20;extra\",\"Tags&#x20;separated&#x20;by&#x20;commas\",\"Comments\",\"\",\"\"]' WHERE `name` = "Monitoring&#x20;Event";
 
 -- ----------------------------------------------------------------------
 -- Update message references and pre-configure notifications
@@ -2344,7 +2548,7 @@ INSERT INTO `trecon_script` (`name`,`description`,`script`,`macros`) VALUES ('Di
 -- ----------------------------------------------------------------------
 -- Add column in table `tagent_custom_fields`
 -- ----------------------------------------------------------------------
-ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` VARCHAR(255) DEFAULT '';
+ALTER TABLE tagent_custom_fields ADD COLUMN `combo_values` TEXT NOT NULL DEFAULT '';
 
 -- ----------------------------------------------------------------------
 -- Add column in table `tnetflow_filter`
@@ -2356,6 +2560,21 @@ ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 -- Update table `tuser_task`
 -- ----------------------------------------------------------------------
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
+INSERT IGNORE INTO tuser_task VALUES (8, 'cron_task_generate_csv_log', 'a:1:{i:0;a:2:{s:11:"description";s:14:"Send to e-mail";s:4:"type";s:4:"text";}}', 'Send csv log');
+UPDATE `tuser_task` SET `parameters`='a:4:{i:0;a:6:{s:11:"description";s:28:"Report pending to be created";s:5:"table";s:7:"treport";s:8:"field_id";s:9:"id_report";s:10:"field_name";s:4:"name";s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_group";}i:1;a:2:{s:11:"description";s:426:"Save to disk in path<a href="javascript:" class="tip" style="" ><img src="http://172.16.0.2/pandora_console/images/tip_help.png" data-title="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" data-use_title_for_force_title="1" class="forced_title" alt="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" /></a>";s:4:"type";s:6:"string";}i:2;a:2:{s:11:"description";s:16:"File nane prefix";s:4:"type";s:6:"string";}i:3;a:2:{s:11:"description";s:11:"Report Type";s:4:"type";s:11:"report_type";}}' WHERE `id`=3;
+DELETE FROM `tuser_task` WHERE id = 6;
+
+-- Migrate old tasks
+UPDATE `tuser_task_scheduled` SET 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"PDF";s:15:"first_execution"')
+    WHERE `id_user_task` = 3;
+
+UPDATE `tuser_task_scheduled` SET 
+    `id_user_task` = 3, 
+    `args` = REPLACE (`args`, 'a:3', 'a:5'),
+    `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:3;s:3:"XML";s:15:"first_execution"')
+    WHERE `id_user_task` = 6;
 
 -- ----------------------------------------------------------------------
 -- ADD message in table 'tnews'
@@ -2366,6 +2585,8 @@ INSERT INTO `tnews` (`id_news`, `author`, `subject`, `text`, `timestamp`) VALUES
 -- ----------------------------------------------------------------------
 -- Alter table `talert_templates`
 -- ----------------------------------------------------------------------
+
+ALTER TABLE `talert_templates` ADD COLUMN `previous_name` text;
 
  ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM('regex','max_min','max','min','equal','not_equal','warning','critical','onchange','unknown','always','not_normal');
 
@@ -2512,6 +2733,7 @@ CREATE TABLE `tremote_command_target` (
 -- Table `trecon_script`
 -- ---------------------------------------------------------------------
 ALTER TABLE `trecon_script` ADD COLUMN `type` int(11) NOT NULL DEFAULT '0';
+UPDATE `trecon_script` SET `description`='Specific&#x20;Pandora&#x20;FMS&#x20;Intel&#x20;DCM&#x20;Discovery&#x20;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2011&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x20;./ipmi-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;&lt;custom_field3&gt;&#x20;&lt;custom_field4&gt;&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;Network&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;Username&#x0d;&#x0a;*&#x20;custom_field3&#x20;=&#x20;Password&#x0d;&#x0a;*&#x20;custom_field4&#x20;=&#x20;Additional&#x20;parameters&#x20;i.e.:&#x20;-D&#x20;LAN_2_0' WHERE `name`='IPMI&#x20;Recon';
 
 -- ---------------------------------------------------------------------
 -- Table `tusuario_perfil`
@@ -2527,3 +2749,1289 @@ INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `ma
 INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;system&#x20;load','Current&#x20;load&#x20;&#40;5&#x20;min&#41;',43,34,0,0,300,0,'uptime&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$&#40;NF-1&#41;}&#039;&#x20;|&#x20;tr&#x20;-d&#x20;&#039;,&#039;','','','',6,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
 INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;available&#x20;memory&#x20;percent','Available&#x20;memory&#x20;%',43,34,0,0,300,0,'free&#x20;|&#x20;grep&#x20;Mem&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$NF/$2&#x20;*&#x20;100}&#039;','','','',4,2,0,'','','',0,0,1,0.00,0.00,'',0.00,0.00,'',0,'','linux','',0,0,0.000000000000000,'%','nowizard','','','','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
 INSERT INTO `tnetwork_component` (`name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `max_critical`, `str_warning`, `min_ff_event`, `min_critical`, `custom_string_2`, `str_critical`, `custom_integer_1`, `custom_string_1`, `post_process`, `custom_string_3`, `wizard_level`, `custom_integer_2`, `critical_instructions`, `unit`, `unknown_instructions`, `macros`, `warning_inverse`, `warning_instructions`, `tags`, `critical_inverse`, `module_macros`, `id_category`, `min_ff_event_warning`, `disabled_types_event`, `ff_type`, `min_ff_event_normal`, `dynamic_interval`, `min_ff_event_critical`, `dynamic_min`, `each_ff`, `dynamic_two_tailed`, `dynamic_max`, `dynamic_next`) VALUES ('Linux&#x20;available&#x20;disk&#x20;/','Available&#x20;free&#x20;space&#x20;in&#x20;mountpoint&#x20;/',43,34,0,0,300,0,'df&#x20;/&#x20;|&#x20;tail&#x20;-n&#x20;+2&#x20;|&#x20;awk&#x20;&#039;{print&#x20;$&#40;NF-1&#41;}&#039;&#x20;|&#x20;tr&#x20;-d&#x20;&#039;%&#039;','','','',4,2,0,'','','',0,0,1,0.00,0.00,'0.00',0.00,0.00,'',0,'','inherited','',0,0,0.000000000000000,'','nowizard','','nowizard','0','',0,0,0,'','{\"going_unknown\":1}','',0,0,0,0,0,0,0,0,0,0);
+
+-- 
+-- Dumping data for table `tpen`
+-- 
+
+INSERT IGNORE INTO `tpen`
+VALUES
+	(9,'cisco','Cisco&#x20;System'),
+	(11,'hp','Hewlett&#x20;Packard'),
+	(2021,'general_snmp','U.C.&#x20;Davis,&#x20;ECE&#x20;Dept.&#x20;Tom'),
+	(2636,'juniper','Juniper&#x20;Networks'),
+	(3375,'f5','F5&#x20;Labs'),
+	(8072,'general_snmp','Net&#x20;SNMP'),
+	(12356,'fortinet','Fortinet')
+;
+
+-- 
+-- Dumping data for table `tnetwork_profile` and `tnetwork_profile_pen`
+-- 
+
+SET @template_name = 'Network&#x20;Management';
+SET @template_description = 'Basic network monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Network Management')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Cisco&#x20;MIBS';
+SET @template_description = 'Cisco devices monitoring template (SNMP)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Cisco MIBS' OR g.name = 'Catalyst 2900')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+INSERT INTO tnetwork_profile_pen (pen, id_np) SELECT * FROM (SELECT p.pen pen, np.id_np id_np FROM tnetwork_profile np, tpen p WHERE np.name = @template_name AND (p.pen = 9)) AS tmp WHERE NOT EXISTS (SELECT pp.id_np FROM tnetwork_profile p, tnetwork_profile_pen pp WHERE p.id_np = pp.id_np AND p.name = @template_name);
+
+SET @template_name = 'Linux&#x20;System';
+SET @template_description = 'Linux system monitoring template (SNMP)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+
+SET @module_group = 'Linux';
+
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Linux' OR g.name = 'UCD Mibs (Linux, UCD-SNMP)')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+INSERT INTO tnetwork_profile_pen (pen, id_np) SELECT * FROM (SELECT p.pen pen, np.id_np id_np FROM tnetwork_profile np, tpen p WHERE np.name = @template_name AND (p.pen = 2021 OR p.pen = 2636)) AS tmp WHERE NOT EXISTS (SELECT pp.id_np FROM tnetwork_profile p, tnetwork_profile_pen pp WHERE p.id_np = pp.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;System';
+SET @template_description = 'Windows system monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Microsoft&#x20;Windows' OR g.name = 'Windows System')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Hardware';
+SET @template_description = 'Windows hardware monitoring templae (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Hardware Layer')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Active&#x20;Directory';
+SET @template_description = 'Active directory monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows AD' OR g.name = 'AD&#x20;Counters')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;IIS';
+SET @template_description = 'IIS monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows IIS' OR g.name = 'IIS&#x20;services')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Exchange';
+SET @template_description = 'Exchange monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Exchange' OR g.name = 'Exchange&#x20;Services' OR g.name = 'Exchange&#x20;TCP&#x20;Ports')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;LDAP';
+SET @template_description = 'LDAP monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows LDAP')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;MDSTC';
+SET @template_description = 'MDSTC monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows MSDTC')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Printers';
+SET @template_description = 'Windows printers monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows Printers')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;DNS';
+SET @template_description = 'Windows DNS monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Windows&#x20;DNS' OR g.name = 'DNS&#x20;Counters')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;MS&#x20;SQL&#x20;Server';
+SET @template_description = 'MS SQL Server monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'MS&#x20;SQL&#x20;Server')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Oracle';
+SET @template_description = 'Oracle monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Oracle')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'MySQL';
+SET @template_description = 'MySQL monitoring template';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'MySQL')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+SET @template_name = 'Windows&#x20;Antivirus';
+SET @template_description = 'Windows antivirus monitoring template (WMI)';
+
+INSERT INTO tnetwork_profile (id_np, name, description) SELECT * FROM (SELECT '' id_np, @template_name name, @template_description description) AS tmp WHERE NOT EXISTS (SELECT id_np FROM tnetwork_profile WHERE name = @template_name);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) SELECT * FROM (SELECT c.id_nc id_nc, p.id_np id_np FROM tnetwork_profile p, tnetwork_component c, tnetwork_component_group g WHERE g.id_sg = c.id_group AND p.name = @template_name AND (g.name = 'Norton' OR g.name = 'Panda' OR g.name = 'McAfee' OR g.name = 'Bitdefender' OR g.name = 'BullGuard' OR g.name = 'AVG' OR g.name = 'Kaspersky')) AS tmp WHERE NOT EXISTS (SELECT pc.id_np FROM tnetwork_profile p, tnetwork_profile_component pc WHERE p.id_np = pc.id_np AND p.name = @template_name);
+
+
+-- Update widget.
+
+UPDATE twidget SET description='Show a visual console' WHERE class_name='MapsMadeByUser';
+UPDATE twidget SET description='Clock' WHERE class_name='ClockWidget';
+UPDATE twidget SET description='Group status' WHERE class_name='SystemGroupStatusWidget';
+
+--
+-- Modifies tgrupo table.
+--
+
+ALTER TABLE tgrupo ADD COLUMN max_agents int(10) NOT NULL DEFAULT 0;
+
+-- ----------------------------------------------------------------------
+-- Table `tnode_relations`
+-- ----------------------------------------------------------------------
+CREATE TABLE `tnode_relations` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+    `gateway` VARCHAR(100) NOT NULL,
+	`imei` VARCHAR(100) NOT NULL,
+	`node_address` VARCHAR(60) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------------------
+-- New wizards components and plugins
+-- ------------------------------------------------------------------------
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+SET @plugin_description = 'Get&#x20;the&#x20;result&#x20;of&#x20;an&#x20;arithmetic&#x20;operation&#x20;using&#x20;several&#x20;OIDs&#x20;values.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (@plugin_id,@plugin_name,@plugin_description,20,0,'/usr/share/pandora_server/util/plugin/wizard_snmp_module',NULL,NULL,NULL,NULL,0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Port\",\"help\":\"\",\"value\":\"161\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Version\",\"help\":\"1,&#x20;2c,&#x20;3\",\"value\":\"1\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Community\",\"help\":\"\",\"value\":\"public\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Security&#x20;level&#x20;&#40;v3&#41;\",\"help\":\"noAuthNoPriv,&#x20;authNoPriv,&#x20;authPriv\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Username&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Authentication&#x20;method&#x20;&#40;v3&#41;\",\"help\":\"MD5,&#x20;SHA\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"Authentication&#x20;password&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"9\":{\"macro\":\"_field9_\",\"desc\":\"Privacy&#x20;method&#x20;&#40;v3&#41;\",\"help\":\"DES,&#x20;AES\",\"value\":\"\",\"hide\":\"\"},\"10\":{\"macro\":\"_field10_\",\"desc\":\"Privacy&#x20;password&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"11\":{\"macro\":\"_field11_\",\"desc\":\"OID&#x20;list\",\"help\":\"Comma&#x20;separated&#x20;OIDs&#x20;used\",\"value\":\"\",\"hide\":\"\"},\"12\":{\"macro\":\"_field12_\",\"desc\":\"Operation\",\"help\":\"Aritmetic&#x20;operation&#x20;to&#x20;get&#x20;data.&#x20;Macros&#x20;_oN_&#x20;will&#x20;be&#x20;changed&#x20;by&#x20;OIDs&#x20;in&#x20;list.&#x20;Example:&#x20;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_\",\"value\":\"\",\"hide\":\"\"}}','-host&#x20;&#039;_field1_&#039;&#x20;-port&#x20;&#039;_field2_&#039;&#x20;-version&#x20;&#039;_field3_&#039;&#x20;-community&#x20;&#039;_field4_&#039;&#x20;-secLevel&#x20;&#039;_field5_&#039;&#x20;-user&#x20;&#039;_field6_&#039;&#x20;-authMethod&#x20;&#039;_field7_&#039;&#x20;-authPass&#x20;&#039;_field8_&#039;&#x20;-privMethod&#x20;&#039;_field9_&#039;&#x20;-privPass&#x20;&#039;_field10_&#039;&#x20;-oidList&#x20;&#039;_field11_&#039;&#x20;-operation&#x20;&#039;_field12_&#039;');
+
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;process';
+SET @plugin_description = 'Check&#x20;if&#x20;a&#x20;process&#x20;is&#x20;running&#x20;&#40;1&#41;&#x20;or&#x20;not&#x20;&#40;0&#41;&#x20;in&#x20;OID&#x20;.1.3.6.1.2.1.25.4.2.1.2&#x20;SNMP&#x20;tree.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (@plugin_id,@plugin_name,@plugin_description,20,0,'/usr/share/pandora_server/util/plugin/wizard_snmp_process',NULL,NULL,NULL,NULL,0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Port\",\"help\":\"\",\"value\":\"161\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Version\",\"help\":\"1,&#x20;2c,&#x20;3\",\"value\":\"1\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Community\",\"help\":\"\",\"value\":\"public\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Security&#x20;level&#x20;&#40;v3&#41;\",\"help\":\"noAuthNoPriv,&#x20;authNoPriv,&#x20;authPriv\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Username&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Authentication&#x20;method&#x20;&#40;v3&#41;\",\"help\":\"MD5,&#x20;SHA\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"Authentication&#x20;password&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"9\":{\"macro\":\"_field9_\",\"desc\":\"Privacy&#x20;method&#x20;&#40;v3&#41;\",\"help\":\"DES,&#x20;AES\",\"value\":\"\",\"hide\":\"\"},\"10\":{\"macro\":\"_field10_\",\"desc\":\"Privacy&#x20;password&#x20;&#40;v3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"11\":{\"macro\":\"_field11_\",\"desc\":\"Process\",\"help\":\"Process&#x20;name&#x20;to&#x20;check&#x20;if&#x20;is&#x20;running&#x20;&#40;case&#x20;sensitive&#41;\",\"value\":\"\",\"hide\":\"\"}}','-host&#x20;&#039;_field1_&#039;&#x20;-port&#x20;&#039;_field2_&#039;&#x20;-version&#x20;&#039;_field3_&#039;&#x20;-community&#x20;&#039;_field4_&#039;&#x20;-secLevel&#x20;&#039;_field5_&#039;&#x20;-user&#x20;&#039;_field6_&#039;&#x20;-authMethod&#x20;&#039;_field7_&#039;&#x20;-authPass&#x20;&#039;_field8_&#039;&#x20;-privMethod&#x20;&#039;_field9_&#039;&#x20;-privPass&#x20;&#039;_field10_&#039;&#x20;-process&#x20;&#039;_field11_&#039;');
+
+SET @plugin_name = 'Wizard&#x20;WMI&#x20;module';
+SET @plugin_description = 'Get&#x20;the&#x20;result&#x20;of&#x20;an&#x20;arithmetic&#x20;operation&#x20;using&#x20;distinct&#x20;fields&#x20;in&#x20;a&#x20;WMI&#x20;query&#x20;&#40;Query&#x20;must&#x20;return&#x20;only&#x20;1&#x20;row&#41;.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin` (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES (@plugin_id,@plugin_name,@plugin_description,20,0,'/usr/share/pandora_server/util/plugin/wizard_wmi_module',NULL,NULL,NULL,NULL,0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Namespace&#x20;&#40;Optional&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"User\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Password\",\"help\":\"\",\"value\":\"\",\"hide\":\"1\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"WMI&#x20;Class\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Fields&#x20;list\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Query&#x20;filter&#x20;&#40;Optional&#41;\",\"help\":\"Use&#x20;single&#x20;quotes&#x20;for&#x20;query&#x20;conditions\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"Operation\",\"help\":\"Aritmetic&#x20;operation&#x20;to&#x20;get&#x20;data.&#x20;Macros&#x20;_fN_&#x20;will&#x20;be&#x20;changed&#x20;by&#x20;fields&#x20;in&#x20;list.&#x20;Example:&#x20;&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_\",\"value\":\"\",\"hide\":\"\"}}','-host&#x20;&#039;_field1_&#039;&#x20;-namespace&#x20;&#039;_field2_&#039;&#x20;-user&#x20;&#039;_field3_&#039;&#x20;-pass&#x20;&#039;_field4_&#039;&#x20;-wmiClass&#x20;&#039;_field5_&#039;&#x20;-fieldsList&#x20;&#039;_field6_&#039;&#x20;-queryFilter&#x20;&quot;_field7_&quot;&#x20;-operation&#x20;&#039;_field8_&#039;&#x20;-wmicPath&#x20;/usr/bin/wmic');
+
+SET @plugin_name = 'Network&#x20;bandwidth&#x20;SNMP';
+SET @plugin_description = 'Retrieves&#x20;amount&#x20;of&#x20;digital&#x20;information&#x20;sent&#x20;and&#x20;received&#x20;from&#x20;device&#x20;or&#x20;filtered&#x20;&#x20;interface&#x20;index&#x20;over&#x20;a&#x20;particular&#x20;time&#x20;&#40;agent/module&#x20;interval&#41;.';
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+INSERT IGNORE INTO `tplugin`  (`id`, `name`, `description`, `max_timeout`, `max_retries`, `execute`, `net_dst_opt`, `net_port_opt`, `user_opt`, `pass_opt`, `plugin_type`, `macros`, `parameters`) VALUES  (@plugin_id,@plugin_name,@plugin_description,300,0,'perl&#x20;/usr/share/pandora_server/util/plugin/pandora_snmp_bandwidth.pl','','','','',0,'{\"1\":{\"macro\":\"_field1_\",\"desc\":\"SNMP&#x20;Version&#40;1,2c,3&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Community\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Host\",\"help\":\"\",\"value\":\"_address_\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Port\",\"help\":\"\",\"value\":\"161\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Interface&#x20;Index&#x20;&#40;filter&#41;\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"securityName\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"context\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"8\":{\"macro\":\"_field8_\",\"desc\":\"securityLevel\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"9\":{\"macro\":\"_field9_\",\"desc\":\"authProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"10\":{\"macro\":\"_field10_\",\"desc\":\"authKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"11\":{\"macro\":\"_field11_\",\"desc\":\"privProtocol\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"12\":{\"macro\":\"_field12_\",\"desc\":\"privKey\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"},\"13\":{\"macro\":\"_field13_\",\"desc\":\"UniqId\",\"help\":\"This&#x20;plugin&#x20;needs&#x20;to&#x20;store&#x20;information&#x20;in&#x20;temporary&#x20;directory&#x20;to&#x20;calculate&#x20;bandwidth.&#x20;Set&#x20;here&#x20;an&#x20;unique&#x20;identifier&#x20;with&#x20;no&#x20;spaces&#x20;or&#x20;symbols.\",\"value\":\"\",\"hide\":\"\"},\"14\":{\"macro\":\"_field14_\",\"desc\":\"inUsage\",\"help\":\"Retrieve&#x20;input&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"},\"15\":{\"macro\":\"_field15_\",\"desc\":\"outUsage\",\"help\":\"Retrieve&#x20;output&#x20;usage&#x20;&#40;%&#41;\",\"value\":\"\",\"hide\":\"\"}}','-version&#x20;&#039;_field1_&#039;&#x20;-community&#x20;&#039;_field2_&#039;&#x20;-host&#x20;&#039;_field3_&#039;&#x20;-port&#x20;&#039;_field4_&#039;&#x20;-ifIndex&#x20;&#039;_field5_&#039;&#x20;-securityName&#x20;&#039;_field6_&#039;&#x20;-context&#x20;&#039;_field7_&#039;&#x20;-securityLevel&#x20;&#039;_field8_&#039;&#x20;-authProtocol&#x20;&#039;_field9_&#039;&#x20;-authKey&#x20;&#039;_field10_&#039;&#x20;-privProtocol&#x20;&#039;_field11_&#039;&#x20;-privKey&#x20;&#039;_field12_&#039;&#x20;-uniqid&#x20;&#039;_field13_&#039;&#x20;-inUsage&#x20;&#039;_field14_&#039;&#x20;-outUsage&#x20;&#039;_field15_&#039;');
+
+SET @main_component_group_name = 'Wizard';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @main_component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@main_component_group_name,0);
+
+SELECT @component_group_parent := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @main_component_group_name;
+
+SET @component_group_name = 'CPU';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Memory';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Disk&#x20;devices';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Storage';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Temperature&#x20;sensors';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Processes';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Other';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Power&#x20;supply';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Fans';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Temperature';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Sessions';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'VPN';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Intrussions';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Antivirus';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Services';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'Disks';
+SET @component_id = '';
+SELECT @component_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+INSERT IGNORE INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (@component_id,@component_group_name,@component_group_parent);
+
+SET @component_group_name = 'CPU';
+
+SET @component_name = 'CPU&#x20;User&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;percentage&#x20;of&#x20;CPU&#x20;time&#x20;spent&#x20;processing&#x20;user-level&#x20;code,&#x20;calculated&#x20;over&#x20;the&#x20;last&#x20;minute';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.9.0','',1,'','','','','',1);
+
+SET @component_name = 'CPU&#x20;System&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;percentage&#x20;of&#x20;CPU&#x20;time&#x20;spent&#x20;processing&#x20;system-level&#x20;code,&#x20;calculated&#x20;over&#x20;the&#x20;last&#x20;minute';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.10.0','',1,'','','','','',1);
+
+SET @component_name = 'CPU&#x20;Idle&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;percentage&#x20;of&#x20;CPU&#x20;time&#x20;spent&#x20;idle,&#x20;calculated&#x20;over&#x20;the&#x20;last&#x20;minute';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.11.0','',0,'','','','','',1);
+
+SET @component_name = 'Load&#x20;average&#x20;-&#x20;_nameOID_';
+SET @component_description = 'The&#x20;1,&#x20;5&#x20;or&#x20;15&#x20;minutes&#x20;load&#x20;average';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.10.1.3','',0,'1.3.6.1.4.1.2021.10.1.2','','','','',1);
+
+SET @component_name = 'Cisco&#x20;CPU&#x20;_nameOID_&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;overall&#x20;CPU&#x20;busy&#x20;percentage&#x20;in&#x20;the&#x20;last&#x20;5&#x20;minute&#x20;period';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','cisco',1,2,'1.3.6.1.4.1.9.9.109.1.1.1.1.8','',1,'1.3.6.1.4.1.9.9.109.1.1.1.1.2','','','','',1);
+
+SET @component_name = 'F5&#x20;CPU&#x20;_nameOID_&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'This&#x20;is&#x20;average&#x20;usage&#x20;ratio&#x20;of&#x20;CPU&#x20;for&#x20;the&#x20;associated&#x20;host&#x20;in&#x20;the&#x20;last&#x20;five&#x20;minutes';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,2,'1.3.6.1.4.1.3375.2.1.7.5.2.1.35','',1,'1.3.6.1.4.1.3375.2.1.7.5.2.1.3','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;CPU&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;average&#x20;usage&#x20;ratio&#x20;of&#x20;CPU&#x20;in&#x20;the&#x20;last&#x20;five&#x20;minutes';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.1.13.1.21','',1,'1.3.6.1.4.1.2636.3.1.13.1.5','','','','',1);
+
+SET @component_name = 'HP&#x20;CPU&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;CPU&#x20;utilization&#x20;in&#x20;percent&#40;%&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','hp',1,1,'1.3.6.1.4.1.11.2.14.11.5.1.9.6.1.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;system&#x20;CPU&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'CPU&#x20;usage&#x20;of&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.1.3.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;CPU&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'CPU&#x20;usage&#x20;of&#x20;the&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.3.2.1.1.5','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'WMI&#x20;_DeviceID_&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'Load&#x20;capacity&#x20;of&#x20;each&#x20;processor,&#x20;averaged&#x20;to&#x20;the&#x20;last&#x20;second';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','{\"extra_field_1\":\"LoadPercentage\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"\",\"_field11__wmi_field\":\"_field11_\",\"_field12__wmi_field\":\"_field12_\",\"_field9__wmi_field\":\"_field9_\",\"_field10__wmi_field\":\"_field10_\",\"_field7__wmi_field\":\"_field7_\",\"_field8__wmi_field\":\"_field8_\",\"_field5__wmi_field\":\"_field5_\",\"_field6__wmi_field\":\"_field6_\",\"_field3__wmi_field\":\"_field3_\",\"_field4__wmi_field\":\"_field4_\",\"_field1__wmi_field\":\"_field1_\",\"_field2__wmi_field\":\"_field2_\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,2,'','',1,'','Win32_Processor','DeviceID','','{\"scan\":\"\",\"execution\":\"DeviceID&#x20;=&#x20;&#039;_DeviceID_&#039;\",\"field\":\"1\",\"key_string\":\"\"}',1);
+
+SET @component_group_name = 'Memory';
+
+SET @component_name = 'Total&#x20;RAM&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'Total&#x20;real/physical&#x20;memory&#x20;used&#x20;on&#x20;the&#x20;host';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.2021.4.6.0\",\"extra_field_2\":\"1.3.6.1.4.1.2021.4.5.0\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field2__snmp_field\":\"_port_\",\"_field1__snmp_field\":\"_address_\",\"_field4__snmp_field\":\"_community_\",\"_field3__snmp_field\":\"_version_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field12__snmp_field\":\"&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',2,1,'','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;host&#x20;RAM&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;host&#x20;memory&#x20;percentage&#x20;currently&#x20;in&#x20;use';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.3375.2.1.7.1.2.0\",\"extra_field_2\":\"1.3.6.1.4.1.3375.2.1.7.1.1.0\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / _o2_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',2,1,'','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Host&#x20;_nameOID_&#x20;RAM&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;host&#x20;memory&#x20;percentage&#x20;currently&#x20;in&#x20;use&#x20;for&#x20;the&#x20;specified&#x20;host';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.3375.2.1.7.4.2.1.3\",\"extra_field_2\":\"1.3.6.1.4.1.3375.2.1.7.4.2.1.2\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / _o2_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',2,2,'','',1,'1.3.6.1.4.1.3375.2.1.7.4.2.1.1','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;system&#x20;RAM&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'Memory&#x20;usage&#x20;of&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.1.4.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;RAM&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'Memory&#x20;usage&#x20;of&#x20;the&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.3.2.1.1.6','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'WMI&#x20;total&#x20;RAM&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'Percentage&#x20;of&#x20;physical&#x20;memory&#x20;currently&#x20;used';
+SET @plugin_name = 'Wizard&#x20;WMI&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"TotalVisibleMemorySize\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_wmi_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-namespace&#x20;&quot;_namespace_wmi_&quot;&#x20;-user&#x20;&quot;_user_wmi_&quot;&#x20;-pass&#x20;&quot;_pass_wmi_&quot;&#x20;-wmiClass&#x20;&quot;_class_wmi_&quot;&#x20;-fieldsList&#x20;&quot;_field_wmi_0_,_field_wmi_1_&quot;&#x20;-queryFilter&#x20;&quot;&quot;&#x20;-operation&#x20;&quot;&#40;&#40;_f2_&#x20;-&#x20;_f1_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f2_&quot;&#x20;-wmicPath&#x20;/usr/bin/wmic\",\"value_operation\":\"&#40;&#40;_TotalVisibleMemorySize_&#x20;-&#x20;_FreePhysicalMemory_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_TotalVisibleMemorySize_\",\"server_plugin\":\"',@plugin_id,'\",\"_field2__wmi_field\":\"_namespace_wmi_\",\"_field1__wmi_field\":\"_address_\",\"_field4__wmi_field\":\"_pass_wmi_\",\"_field3__wmi_field\":\"_user_wmi_\",\"_field6__wmi_field\":\"_field_wmi_0_,_field_wmi_1_\",\"_field5__wmi_field\":\"_class_wmi_\",\"_field8__wmi_field\":\"&#40;&#40;_f2_&#x20;-&#x20;_f1_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f2_\",\"_field7__wmi_field\":\"\",\"field0_wmi_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',2,1,'','',1,'','Win32_OperatingSystem','FreePhysicalMemory','','{\"scan\":\"\",\"execution\":\"\",\"field\":\"\",\"key_string\":\"\"}',1);
+
+SET @component_name = 'Total&#x20;Swap&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'Total&#x20;swap&#x20;memory&#x20;used&#x20;on&#x20;the&#x20;host';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.2021.4.4.0\",\"extra_field_2\":\"1.3.6.1.4.1.2021.4.3.0\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / _o2_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',2,1,'','',1,'','','','','',1);
+
+SET @component_name = 'Cisco&#x20;memory&#x20;pool&#x20;_nameOID_&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'Indicates&#x20;the&#x20;percentage&#x20;of&#x20;bytes&#x20;from&#x20;the&#x20;memory&#x20;pool&#x20;that&#x20;are&#x20;currently&#x20;in&#x20;use&#x20;by&#x20;applications&#x20;on&#x20;the&#x20;managed&#x20;device';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.9.9.48.1.1.1.5\",\"extra_field_2\":\"1.3.6.1.4.1.9.9.48.1.1.1.6\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;&#40;_o1_&#x20;+&#x20;_o2_&#41;&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;&#40;_oid_1_&#x20;+&#x20;_oid_2_&#41;\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / (_o1_ + _o2_)\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','cisco',2,2,'','',1,'1.3.6.1.4.1.9.9.48.1.1.1.2','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;memory&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;buffer&#x20;pool&#x20;utilization&#x20;in&#x20;percentage&#x20;of&#x20;this&#x20;subject';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.1.13.1.11','',1,'1.3.6.1.4.1.2636.3.1.13.1.5','','','','',1);
+
+SET @component_name = 'HP&#x20;memory&#x20;slot&#x20;_nameOID_&#x20;usage&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;percentage&#x20;of&#x20;currently&#x20;allocated&#x20;bytes';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.7\",\"extra_field_2\":\"1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.5\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / _o2_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','hp',2,2,'','',1,'1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.1','','','','',1);
+
+SET @component_group_name = 'Disk&#x20;devices';
+
+SET @component_name = 'Disk&#x20;_nameOID_&#x20;bytes&#x20;read';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;bytes&#x20;read&#x20;from&#x20;this&#x20;device&#x20;since&#x20;boot';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,16,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'bytes/sec','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.13.15.1.1.3','',0,'1.3.6.1.4.1.2021.13.15.1.1.2','','','','',1);
+
+SET @component_name = 'Disk&#x20;_nameOID_&#x20;bytes&#x20;written';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;bytes&#x20;written&#x20;to&#x20;this&#x20;device&#x20;since&#x20;boot';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,16,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'bytes/sec','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.13.15.1.1.4','',0,'1.3.6.1.4.1.2021.13.15.1.1.2','','','','',1);
+
+SET @component_name = 'Disk&#x20;_nameOID_&#x20;read&#x20;accesses';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;read&#x20;accesses&#x20;from&#x20;this&#x20;device&#x20;since&#x20;boot';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,16,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'accesses/sec','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.13.15.1.1.5','',0,'1.3.6.1.4.1.2021.13.15.1.1.2','','','','',1);
+
+SET @component_name = 'Disk&#x20;_nameOID_&#x20;write&#x20;accesses';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;write&#x20;accesses&#x20;to&#x20;this&#x20;device&#x20;since&#x20;boot';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,16,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'accesses/sec','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.13.15.1.1.6','',0,'1.3.6.1.4.1.2021.13.15.1.1.2','','','','',1);
+
+SET @component_group_name = 'Storage';
+
+SET @component_name = 'Storage&#x20;_nameOID_&#x20;&#40;%&#41;';
+SET @component_description = 'The&#x20;amount&#x20;of&#x20;the&#x20;storage&#x20;represented&#x20;by&#x20;this&#x20;entry&#x20;that&#x20;is&#x20;allocated';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.2.1.25.2.3.1.6\",\"extra_field_2\":\"1.3.6.1.2.1.25.2.3.1.5\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-oidList&#x20;&quot;_oid_1_,_oid_2_&quot;&#x20;-operation&#x20;&quot;&#40;_o1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_o2_&quot;\",\"value_operation\":\"&#40;_oid_1_&#x20;*&#x20;100&#41;&#x20;/&#x20;_oid_2_\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_oid_1_,_oid_2_\",\"_field12__snmp_field\":\"(_o1_ * 100) / _o2_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',2,2,'','',1,'1.3.6.1.2.1.25.2.3.1.3','','','','',1);
+
+SET @component_group_name = 'Temperature&#x20;sensors';
+
+SET @component_name = 'Temperature&#x20;_nameOID_';
+SET @component_description = 'The&#x20;temperature&#x20;of&#x20;this&#x20;sensor';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'&#xba;C','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,2,'1.3.6.1.4.1.2021.13.16.2.1.3','',0,'1.3.6.1.4.1.2021.13.16.2.1.2','','','','',1);
+
+SET @component_group_name = 'Processes';
+
+SET @component_name = 'Process&#x20;_nameOID_';
+SET @component_description = 'Check&#x20;if&#x20;the&#x20;process&#x20;is&#x20;running';
+SET @plugin_name = 'Wizard&#x20;SNMP&#x20;process';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,2,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard',CONCAT('{\"extra_field_1\":\"1.3.6.1.2.1.25.4.2.1.7\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_snmp_process&#x20;-host&#x20;&quot;_address_&quot;&#x20;-port&#x20;&quot;_port_&quot;&#x20;-version&#x20;&quot;_version_&quot;&#x20;-community&#x20;&quot;_community_&quot;&#x20;-secLevel&#x20;&quot;_sec_level_&quot;&#x20;-user&#x20;&quot;_auth_user_&quot;&#x20;-authMethod&#x20;&quot;_auth_method_&quot;&#x20;-authPass&#x20;&quot;_auth_pass_&quot;&#x20;-privMethod&#x20;&quot;_priv_method_&quot;&#x20;-privPass&#x20;&quot;_priv_pass_&quot;&#x20;-process&#x20;&quot;_nameOID_&quot;\",\"value_operation\":\"1\",\"server_plugin\":\"',@plugin_id,'\",\"_field11__snmp_field\":\"_nameOID_\",\"_field9__snmp_field\":\"_priv_method_\",\"_field10__snmp_field\":\"_priv_pass_\",\"_field7__snmp_field\":\"_auth_method_\",\"_field8__snmp_field\":\"_auth_pass_\",\"_field5__snmp_field\":\"_sec_level_\",\"_field6__snmp_field\":\"_auth_user_\",\"_field3__snmp_field\":\"_version_\",\"_field4__snmp_field\":\"_community_\",\"_field1__snmp_field\":\"_address_\",\"_field2__snmp_field\":\"_port_\",\"field0_snmp_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',2,2,'','',0,'1.3.6.1.2.1.25.4.2.1.2','','','','',1);
+
+SET @component_name = 'WMI&#x20;Number&#x20;of&#x20;processes';
+SET @component_description = 'Number&#x20;of&#x20;process&#x20;contexts&#x20;currently&#x20;loaded&#x20;or&#x20;running&#x20;on&#x20;the&#x20;operating&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','{\"extra_field_1\":\"\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"0\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,1,'','',1,'','Win32_OperatingSystem','NumberOfProcesses','','{\"scan\":\"\",\"execution\":\"\",\"field\":\"0\",\"key_string\":\"\"}',1);
+
+SET @component_name = 'WMI&#x20;&#x20;process&#x20;_Name_&#x20;running';
+SET @component_description = 'Check&#x20;if&#x20;process&#x20;is&#x20;running';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,2,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','{\"extra_field_1\":\"Name\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"0\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,2,'','',0,'','Win32_Process','Handle','','{\"scan\":\"\",\"execution\":\"Name&#x20;=&#x20;&#039;_Name_&#039;\",\"field\":\"1\",\"key_string\":\"_Name_\"}',1);
+
+SET @component_group_name = 'Other';
+
+SET @component_name = 'Wizard&#x20;system&#x20;uptime';
+SET @component_description = 'The&#x20;time&#x20;&#40;in&#x20;hundredths&#x20;of&#x20;a&#x20;second&#41;&#x20;since&#x20;the&#x20;network&#x20;management&#x20;portion&#x20;of&#x20;the&#x20;system&#x20;was&#x20;last&#x20;re-initialized';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'_timeticks_','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','all',1,1,'1.3.6.1.2.1.25.1.1.0','',1,'','','','','',1);
+
+SET @component_name = 'Wizard&#x20;network&#x20;uptime';
+SET @component_description = 'The&#x20;time&#x20;&#40;in&#x20;hundredths&#x20;of&#x20;a&#x20;second&#41;&#x20;since&#x20;the&#x20;network&#x20;management&#x20;portion&#x20;of&#x20;the&#x20;system&#x20;was&#x20;last&#x20;re-initialized';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'_timeticks_','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','all',1,1,'1.3.6.1.2.1.1.3.0','',1,'','','','','',1);
+
+SET @component_name = 'Blocks&#x20;sent';
+SET @component_description = 'Number&#x20;of&#x20;blocks&#x20;sent&#x20;to&#x20;a&#x20;block&#x20;device';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.57.0','',0,'','','','','',1);
+
+SET @component_name = 'Blocks&#x20;received';
+SET @component_description = 'Number&#x20;of&#x20;blocks&#x20;received&#x20;from&#x20;a&#x20;block&#x20;device';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.58.0','',0,'','','','','',1);
+
+SET @component_name = 'Interrupts&#x20;processed';
+SET @component_description = 'Number&#x20;of&#x20;interrupts&#x20;processed';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','general_snmp',1,1,'1.3.6.1.4.1.2021.11.59.0','',0,'','','','','',1);
+
+SET @component_group_name = 'Power&#x20;supply';
+
+SET @component_name = 'Cisco&#x20;_nameOID_&#x20;power&#x20;state';
+SET @component_description = 'The&#x20;current&#x20;state&#x20;of&#x20;the&#x20;power&#x20;supply:&#x20;normal&#40;1&#41;,&#x20;warning&#40;2&#41;,&#x20;critical&#40;3&#41;,&#x20;shutdown&#40;4&#41;,&#x20;notPresent&#40;5&#41;,&#x20;notFunctioning&#40;6&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','cisco',1,2,'1.3.6.1.4.1.9.9.13.1.5.1.3','',0,'1.3.6.1.4.1.9.9.13.1.5.1.2','','','','',1);
+
+SET @component_name = 'F5&#x20;Power&#x20;supply&#x20;_nameOID_&#x20;status';
+SET @component_description = 'The&#x20;status&#x20;of&#x20;the&#x20;indexed&#x20;power&#x20;supply&#x20;on&#x20;the&#x20;system:&#x20;bad&#40;0&#41;,&#x20;good&#40;1&#41;,&#x20;notpresent&#40;2&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,2,'1.3.6.1.4.1.3375.2.1.3.2.2.2.1.2','',1,'1.3.6.1.4.1.3375.2.1.3.2.2.2.1','','','','',1);
+
+SET @component_name = 'WMI&#x20;_Name_&#x20;power&#x20;supply&#x20;state';
+SET @component_description = 'State&#x20;of&#x20;the&#x20;power&#x20;supply&#x20;or&#x20;supplies&#x20;when&#x20;last&#x20;booted:&#x20;Other&#x20;&#40;1&#41;,&#x20;Unknown&#x20;&#40;2&#41;,&#x20;Safe&#x20;&#40;3&#41;,&#x20;Warning&#x20;&#40;4&#41;,&#x20;Critical&#x20;&#40;5&#41;,&#x20;Non-recoverable&#x20;&#40;6&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','{\"extra_field_1\":\"PowerSupplyState\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"0\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,2,'','',0,'','Win32_ComputerSystem','Name','','{\"scan\":\"\",\"execution\":\"Name&#x20;=&#x20;&#039;_Name_&#039;\",\"field\":\"1\",\"key_string\":\"\"}',1);
+
+SET @component_name = 'WMI&#x20;_Name_&#x20;Power&#x20;state';
+SET @component_description = 'Current&#x20;power&#x20;state&#x20;of&#x20;a&#x20;computer&#x20;and&#x20;its&#x20;associated&#x20;operating&#x20;system:&#x20;Unknown&#x20;&#40;0&#41;,&#x20;Full&#x20;Power&#x20;&#40;1&#41;,&#x20;Low&#x20;Power&#x20;Mode&#x20;&#40;2&#41;,&#x20;Standby&#x20;&#40;3&#41;,&#x20;Unknown&#x20;&#40;4&#41;,&#x20;Power&#x20;Cycle&#x20;&#40;5&#41;,&#x20;Power&#x20;Off&#x20;&#40;6&#41;,&#x20;Warning&#x20;&#40;7&#41;,&#x20;Hibernate&#x20;&#40;8&#41;,&#x20;Soft&#x20;Off&#x20;&#40;9&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','{\"extra_field_1\":\"PowerState\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"0\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,1,'','',0,'','Win32_ComputerSystem','Name','','{\"scan\":\"\",\"execution\":\"Name&#x20;=&#x20;&#039;_Name_&#039;\",\"field\":\"1\",\"key_string\":\"\"}',1);
+
+SET @component_group_name = 'Fans';
+
+SET @component_name = 'Cisco&#x20;_nameOID_&#x20;fan&#x20;state';
+SET @component_description = 'The&#x20;current&#x20;state&#x20;of&#x20;the&#x20;fan:&#x20;normal&#40;1&#41;,&#x20;warning&#40;2&#41;,&#x20;critical&#40;3&#41;,&#x20;shutdown&#40;4&#41;,&#x20;notPresent&#40;5&#41;,&#x20;notFunctioning&#40;6&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','cisco',1,2,'1.3.6.1.4.1.9.9.13.1.4.1.3','',1,'1.3.6.1.4.1.9.9.13.1.4.1.2','','','','',1);
+
+SET @component_name = 'F5&#x20;Fan&#x20;_nameOID_&#x20;status';
+SET @component_description = 'The&#x20;status&#x20;of&#x20;the&#x20;indexed&#x20;chassis&#x20;fan&#x20;on&#x20;the&#x20;system:&#x20;bad&#40;0&#41;,&#x20;good&#40;1&#41;,&#x20;notpresent&#40;2&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,2,'1.3.6.1.4.1.3375.2.1.3.2.1.2.1.2','',1,'1.3.6.1.4.1.3375.2.1.3.2.1.2.1.1','','','','',1);
+
+SET @component_name = 'HP&#x20;fan&#x20;tray&#x20;_nameOID_&#x20;state';
+SET @component_description = 'Current&#x20;state&#x20;of&#x20;the&#x20;fan:&#x20;failed&#40;0&#41;,&#x20;removed&#40;1&#41;,&#x20;off&#40;2&#41;,&#x20;underspeed&#40;3&#41;,&#x20;overspeed&#40;4&#41;,&#x20;ok&#40;5&#41;,&#x20;maxstate&#40;6&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.11.2.14.11.5.1.54.2.1.1.4','',1,'1.3.6.1.4.1.11.2.14.11.5.1.54.2.1.1.2','','','','',1);
+
+SET @component_group_name = 'Temperature';
+
+SET @component_name = 'Cisco&#x20;_nameOID_&#x20;temperature';
+SET @component_description = 'The&#x20;current&#x20;measurement&#x20;of&#x20;the&#x20;testpoint&#x20;being&#x20;instrumented';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'&#xba;C','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','cisco',1,2,'1.3.6.1.4.1.9.9.13.1.3.1.3','',1,'1.3.6.1.4.1.9.9.13.1.3.1.2','','','','',1);
+
+SET @component_name = 'F5&#x20;Temperature&#x20;sensor&#x20;_nameOID_';
+SET @component_description = 'The&#x20;chassis&#x20;temperature&#x20;of&#x20;the&#x20;indexed&#x20;sensor&#x20;on&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'&#xba;C','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,2,'1.3.6.1.4.1.3375.2.1.3.2.3.2.1.2','',1,'1.3.6.1.4.1.3375.2.1.3.2.3.2.1.1','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;temperature';
+SET @component_description = 'The&#x20;temperature&#x20;of&#x20;this&#x20;subject';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'&#xba;C','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.1.13.1.7','',1,'1.3.6.1.4.1.2636.3.1.13.1.5','','','','',1);
+
+SET @component_name = 'HP&#x20;_nameOID_&#x20;temperature';
+SET @component_description = 'The&#x20;current&#x20;temperature&#x20;given&#x20;by&#x20;the&#x20;indexed&#x20;chassis';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'&#xba;C','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','hp',1,2,'1.3.6.1.4.1.11.2.14.11.1.2.8.1.1.3','',0,'1.3.6.1.4.1.11.2.14.11.1.2.8.1.1.2','','','','',1);
+
+SET @component_group_name = 'Sessions';
+
+SET @component_name = 'F5&#x20;Current&#x20;auth&#x20;sessions';
+SET @component_description = 'The&#x20;current&#x20;number&#x20;of&#x20;concurrent&#x20;auth&#x20;sessions';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.1.1.2.2.3.0','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Total&#x20;auth&#x20;success&#x20;results';
+SET @component_description = 'The&#x20;total&#x20;number&#x20;of&#x20;auth&#x20;success&#x20;results';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.1.1.2.2.5.0','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Total&#x20;auth&#x20;failure&#x20;results';
+SET @component_description = 'The&#x20;total&#x20;number&#x20;of&#x20;auth&#x20;failure&#x20;results';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.1.1.2.2.6.0','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Total&#x20;auth&#x20;error&#x20;results';
+SET @component_description = 'The&#x20;total&#x20;number&#x20;of&#x20;auth&#x20;error&#x20;results';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.1.1.2.2.8.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;ephemeral&#x20;sessions&#x20;count';
+SET @component_description = 'The&#x20;current&#x20;number&#x20;of&#x20;ephemeral&#x20;sessions&#x20;on&#x20;the&#x20;device';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.1.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;direct&#x20;requests&#x20;count';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;direct&#x20;requests&#x20;to&#x20;Fortigate&#x20;local&#x20;stack&#x20;from&#x20;external,&#x20;reflecting&#x20;DOS&#x20;attack&#x20;towards&#x20;the&#x20;Fortigate';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.7.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;clash&#x20;sessions&#x20;count';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;new&#x20;sessions&#x20;which&#x20;have&#x20;collision&#x20;with&#x20;existing&#x20;sessions.&#x20;This&#x20;generally&#x20;highlights&#x20;a&#x20;shortage&#x20;of&#x20;ports&#x20;or&#x20;IP&#x20;in&#x20;ip-pool&#x20;during&#x20;source&#x20;natting&#x20;&#40;PNAT&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.3.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;expectation&#x20;sessions&#x20;count';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;current&#x20;expectation&#x20;sessions';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.4.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;sync&#x20;queue&#x20;sessions&#x20;count';
+SET @component_description = 'The&#x20;sync&#x20;queue&#x20;full&#x20;counter,&#x20;reflecting&#x20;bursts&#x20;on&#x20;the&#x20;sync&#x20;queue';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.5.0','',1,'','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;accept&#x20;queue&#x20;sessions&#x20;count';
+SET @component_description = 'The&#x20;accept&#x20;queue&#x20;full&#x20;counter,&#x20;reflecting&#x20;bursts&#x20;on&#x20;the&#x20;accept&#x20;queue';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,1,'1.3.6.1.4.1.12356.101.4.6.2.6.0','',1,'','','','','',1);
+
+SET @component_group_name = 'VPN';
+
+SET @component_name = 'F5&#x20;Current&#x20;SSL/VPN&#x20;connections';
+SET @component_description = 'The&#x20;total&#x20;current&#x20;SSL/VPN&#x20;connections&#x20;in&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.6.1.5.3.0','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Total&#x20;SSL/VPN&#x20;bytes&#x20;received';
+SET @component_description = 'The&#x20;total&#x20;raw&#x20;bytes&#x20;received&#x20;by&#x20;SSL/VPN&#x20;connections&#x20;in&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'bytes','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.6.1.5.5.0','',1,'','','','','',1);
+
+SET @component_name = 'F5&#x20;Total&#x20;SSL/VPN&#x20;bytes&#x20;transmitted';
+SET @component_description = 'The&#x20;total&#x20;raw&#x20;bytes&#x20;transmitted&#x20;by&#x20;SSL/VPN&#x20;connections&#x20;in&#x20;the&#x20;system';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'bytes','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','f5',1,1,'1.3.6.1.4.1.3375.2.6.1.5.6.0','',1,'','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;active&#x20;sites';
+SET @component_description = 'The&#x20;number&#x20;of&#x20;active&#x20;sites&#x20;in&#x20;the&#x20;VPN';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.26.1.2.1.9','',1,'1.3.6.1.4.1.2636.3.26.1.2.1.2','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;age';
+SET @component_description = 'The&#x20;age&#x20;&#40;i.e.,&#x20;time&#x20;from&#x20;creation&#x20;till&#x20;now&#41;&#x20;of&#x20;this&#x20;VPN&#x20;in&#x20;hundredths&#x20;of&#x20;a&#x20;second';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'_timeticks_','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.26.1.2.1.12','',1,'1.3.6.1.4.1.2636.3.26.1.2.1.2','','','','',1);
+
+SET @component_name = 'Juniper&#x20;_nameOID_&#x20;interface&#x20;status';
+SET @component_description = 'Status&#x20;of&#x20;this&#x20;interface:&#x20;unknown&#40;0&#41;,&#x20;noLocalInterface&#40;1&#41;,&#x20;disabled&#40;2&#41;,&#x20;encapsulationMismatch&#40;3&#41;,&#x20;down&#40;4&#41;,&#x20;up&#40;5&#41;';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','juniper',1,2,'1.3.6.1.4.1.2636.3.26.1.3.1.10','',1,'1.3.6.1.4.1.2636.3.26.1.3.1.2','','','','',1);
+
+SET @component_group_name = 'Intrussions';
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;intrussions&#x20;detected';
+SET @component_description = 'Number&#x20;of&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.1','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;intrussions&#x20;blocked';
+SET @component_description = 'Number&#x20;of&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.1','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;critical&#x20;severity&#x20;intrussions';
+SET @component_description = 'Number&#x20;of&#x20;critical&#x20;severity&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.3','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;high&#x20;severity&#x20;intrussions';
+SET @component_description = 'Number&#x20;of&#x20;high&#x20;severity&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.4','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;medium&#x20;severity&#x20;intrussions';
+SET @component_description = 'Number&#x20;of&#x20;medium&#x20;severity&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.5','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;low&#x20;severity&#x20;intrussions';
+SET @component_description = 'Number&#x20;of&#x20;low&#x20;severity&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.6','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;informational&#x20;severity&#x20;intrussions';
+SET @component_description = 'Number&#x20;of&#x20;informational&#x20;severity&#x20;intrusions&#x20;detected&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.7','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;signature&#x20;detections';
+SET @component_description = 'Number&#x20;of&#x20;intrusions&#x20;detected&#x20;by&#x20;signature&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.8','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;anomaly&#x20;detections';
+SET @component_description = 'Number&#x20;of&#x20;intrusions&#x20;DECed&#x20;as&#x20;anomalies&#x20;since&#x20;start-up&#x20;in&#x20;this&#x20;virtual&#x20;domain';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.9.2.1.1.9','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_group_name = 'Antivirus';
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;virus&#x20;detected';
+SET @component_description = 'Number&#x20;of&#x20;virus&#x20;transmissions&#x20;detected&#x20;in&#x20;the&#x20;virtual&#x20;domain&#x20;since&#x20;start-up';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.8.2.1.1.1','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;virus&#x20;blocked';
+SET @component_description = 'Number&#x20;of&#x20;virus&#x20;transmissions&#x20;blocked&#x20;in&#x20;the&#x20;virtual&#x20;domain&#x20;since&#x20;start-up';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.8.2.1.1.2','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;oversized&#x20;detected';
+SET @component_description = 'Number&#x20;of&#x20;over-sized&#x20;file&#x20;transmissions&#x20;detected&#x20;in&#x20;the&#x20;virtual&#x20;domain&#x20;since&#x20;start-up';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.8.2.1.1.17','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_name = 'Fortinet&#x20;virtual&#x20;domain&#x20;_nameOID_&#x20;oversized&#x20;blocked';
+SET @component_description = 'Number&#x20;of&#x20;over-sized&#x20;file&#x20;transmissions&#x20;blocked&#x20;in&#x20;the&#x20;virtual&#x20;domain&#x20;since&#x20;start-up';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,15,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','Array','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'snmp','fortinet',1,2,'1.3.6.1.4.1.12356.101.8.2.1.1.18','',1,'1.3.6.1.4.1.12356.101.3.2.1.1.2','','','','',1);
+
+SET @component_group_name = 'Services';
+
+SET @component_name = 'WMI&#x20;Service&#x20;_Name_&#x20;running';
+SET @component_description = '_Caption_';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,2,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.000000000000000,'','nowizard','{\"extra_field_1\":\"State\",\"extra_field_2\":\"Caption\",\"satellite_execution\":\"\",\"value_operation\":\"\",\"server_plugin\":\"0\",\"field0_wmi_field\":\"\"}','','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',1,2,'','',0,'','Win32_Service','Name','','{\"scan\":\"\",\"execution\":\"Name&#x20;=&#x20;&#039;_Name_&#039;\",\"field\":\"1\",\"key_string\":\"Running\"}',1);
+
+SET @component_group_name = 'Disks';
+
+SET @component_name = 'WMI&#x20;disk&#x20;_DeviceID_&#x20;used&#x20;&#40;%&#41;';
+SET @component_description = 'Space&#x20;percentage&#x20;used&#x20;on&#x20;the&#x20;logical&#x20;disk';
+SET @plugin_name = 'Wizard&#x20;WMI&#x20;module';
+
+SET @component_id = '';
+SELECT @component_id := `id_nc` FROM `tnetwork_component` WHERE `name` = @component_name;
+
+SET @group_id = '';
+SELECT @group_id := `id_sg` FROM `tnetwork_component_group` WHERE `name` = @component_group_name;
+
+SET @plugin_id = '';
+SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
+
+INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"Size\",\"extra_field_2\":\"FreeSpace\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_wmi_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-namespace&#x20;&quot;_namespace_wmi_&quot;&#x20;-user&#x20;&quot;_user_wmi_&quot;&#x20;-pass&#x20;&quot;_pass_wmi_&quot;&#x20;-wmiClass&#x20;&quot;_class_wmi_&quot;&#x20;-fieldsList&#x20;&quot;_field_wmi_1_,_field_wmi_2_&quot;&#x20;-queryFilter&#x20;&quot;DeviceID&#x20;=&#x20;&#039;_DeviceID_&#039;&quot;&#x20;-operation&#x20;&quot;&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_&quot;&#x20;-wmicPath&#x20;/usr/bin/wmic\",\"value_operation\":\"&#40;&#40;_Size_&#x20;-&#x20;_FreeSpace_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_Size_\",\"server_plugin\":\"',@plugin_id,'\",\"_field2__wmi_field\":\"_namespace_wmi_\",\"_field1__wmi_field\":\"_address_\",\"_field4__wmi_field\":\"_pass_wmi_\",\"_field3__wmi_field\":\"_user_wmi_\",\"_field6__wmi_field\":\"_field_wmi_1_,_field_wmi_2_\",\"_field5__wmi_field\":\"_class_wmi_\",\"_field8__wmi_field\":\"&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_\",\"_field7__wmi_field\":\"DeviceID&#x20;=&#x20;&#039;_DeviceID_&#039;\",\"field0_wmi_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',2,2,'','',1,'','Win32_LogicalDisk','DeviceID','','{\"scan\":\"DriveType&#x20;=&#x20;3\",\"execution\":\"\",\"field\":\"\",\"key_string\":\"\"}',1);
+
+INSERT IGNORE INTO `tpen` VALUES (171,'dlink','D-Link Systems, Inc.'),(14988,'mikrotik','MikroTik'),(6486,'alcatel','Alcatel-Lucent Enterprise'),(41112,'ubiquiti','Ubiquiti Networks, Inc.'),(207,'telesis','Allied Telesis, Inc.'),(10002,'frogfoot','Frogfoot Networks'),(2,'ibm','IBM'),(4,'unix','Unix'),(63,'apple','Apple Computer, Inc.'),(674,'dell','Dell Inc.'),(111,'oracle','Oracle'),(116,'hitachi','Hitachi, Ltd.'),(173,'netlink','Netlink'),(188,'ascom','Ascom'),(6574,'synology','Synology Inc.'),(3861,'fujitsu','Fujitsu Network Communications, Inc.'),(53526,'dell','Dell ATC'),(52627,'apple','Apple Inc'),(19464,'hitachi','Hitachi Communication Technologies, Ltd.'),(13062,'ascom','Ascom');
+
+CREATE TABLE IF NOT EXISTS `tipam_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`network` varchar(100) NOT NULL default '',
+	`name_network` varchar(255) default '',
+	`description` text NOT NULL,
+	`location` tinytext NOT NULL,
+	`id_recon_task` int(10) unsigned NOT NULL,
+	`scan_interval` tinyint(2) default 1,
+	`monitoring` tinyint(2) default 0,
+	`id_group` mediumint(8) unsigned NULL default 0,
+	`lightweight_mode` tinyint(2) default 0,
+	`users_operator` text,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_recon_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_ip` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_network` bigint(20) unsigned NOT NULL default 0,
+	`id_agent` int(10) unsigned NOT NULL,
+	`forced_agent` tinyint(2) NOT NULL default '0',
+	`ip` varchar(100) NOT NULL default '',
+	`ip_dec` int(10) unsigned NOT NULL,
+	`id_os` int(10) unsigned NOT NULL,
+	`forced_os` tinyint(2) NOT NULL default '0',
+	`hostname` tinytext NOT NULL,
+	`forced_hostname` tinyint(2) NOT NULL default '0',
+	`comments` text NOT NULL,
+	`alive` tinyint(2) NOT NULL default '0',
+	`managed` tinyint(2) NOT NULL default '0',
+	`reserved` tinyint(2) NOT NULL default '0',
+	`time_last_check` datetime NOT NULL default '1970-01-01 00:00:00',
+	`time_create` datetime NOT NULL default '1970-01-01 00:00:00',
+	`users_operator` text,
+	`time_last_edit` datetime NOT NULL default '1970-01-01 00:00:00',
+	`enabled` tinyint(2) NOT NULL default '1',
+	`generate_events` tinyint(2) NOT NULL default '0',
+	`leased` tinyint(2) DEFAULT '0',
+	`leased_expiration` bigint(20) DEFAULT '0',
+	`mac_address` varchar(20) DEFAULT NULL,
+	`leased_mode` tinyint(2) DEFAULT '0',
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_vlan_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_vlan` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_vlan`) REFERENCES tipam_vlan(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`name` varchar(250) NOT NULL,
+	`description` text default '',
+	`address` varchar(250) NOT NULL,
+	`mask` varchar(250) NOT NULL,
+	`subneting_mask` varchar(250) default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
+	`id` bigint(20) unsigned NOT NULL auto_increment,
+	`id_supernet` bigint(20) unsigned NOT NULL,
+	`id_network` bigint(20) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+SET @insert_type = 3;
+SET @insert_name = 'IPAM Recon';
+SET @insert_description = 'This script is used to automatically detect network hosts availability and name, used as Recon Custom Script in the recon task. Parameters used are:\n\n* custom_field1 = network. i.e.: 192.168.100.0/24\n* custom_field2 = associated IPAM network id. i.e.: 4. Please do not change this value, it is assigned automatically in IPAM management.\n\nSee documentation for more information.';
+SET @insert_script = '/usr/share/pandora_server/util/recon_scripts/IPAMrecon.pl';
+SET @insert_macros = '{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""}}';
+INSERT IGNORE INTO trecon_script (`id_recon_script`,`type`, `name`, `description`, `script`, `macros`)
+SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM (
+	SELECT `id_recon_script`,`type`, `name`, `description`, `script`, `macros` FROM `trecon_script` WHERE `name` = @insert_name
+	UNION
+	SELECT (SELECT max(`id_recon_script`)+1 FROM `trecon_script`) AS `id_recon_script`,
+	@insert_type as `type`,
+	@insert_name as `name`,
+	@insert_description as `description`,
+	@insert_script as `script`,
+	@insert_macros as `macros`
+) t limit 1;
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
+
+DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
+
+ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
+ALTER TABLE `tperfil` DROP COLUMN `incident_management`;

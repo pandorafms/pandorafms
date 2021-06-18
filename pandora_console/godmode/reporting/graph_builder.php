@@ -1,16 +1,32 @@
 <?php
+/**
+ * Combined graph
+ *
+ * @category   Combined graph
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 global $config;
 
 if (is_ajax()) {
@@ -21,7 +37,7 @@ if (is_ajax()) {
 
         $id_agent = (int) get_parameter('id_agent');
         $string = (string) get_parameter('q');
-        // q is what autocomplete plugin gives
+        // Q is what autocomplete plugin gives.
         $id_group = (int) get_parameter('id_group');
 
         $filter = [];
@@ -45,7 +61,9 @@ if (is_ajax()) {
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'RW') && ! check_acl($config['id_user'], 0, 'RM')) {
+if (! check_acl($config['id_user'], 0, 'RW')
+    && ! check_acl($config['id_user'], 0, 'RM')
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access graph builder'
@@ -66,6 +84,20 @@ $change_weight = (bool) get_parameter('change_weight', false);
 $change_label = (bool) get_parameter('change_label', false);
 $id_graph = (int) get_parameter('id', 0);
 
+if ($id_graph > 0) {
+    $graph_group = db_get_value('id_group', 'tgraph', 'id_graph', $id_graph);
+    if (!check_acl_restricted_all($config['id_user'], $graph_group, 'RW')
+        && !check_acl_restricted_all($config['id_user'], $graph_group, 'RM')
+    ) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access graph builder'
+        );
+        include 'general/noaccess.php';
+        exit;
+    }
+}
+
 if ($id_graph !== 0) {
     $sql = "SELECT * FROM tgraph 
 	WHERE (private = 0 OR (private = 1 AND id_user = '".$config['id_user']."'))
@@ -77,7 +109,7 @@ if ($id_graph !== 0) {
 }
 
 
-if ($add_graph) {
+if ($add_graph === true) {
     $name = get_parameter_post('name');
     $description = get_parameter_post('description');
     $module_number = get_parameter_post('module_number');
@@ -95,7 +127,7 @@ if ($add_graph) {
         $stacked = $threshold;
     }
 
-    // Create graph
+    // Create graph.
     $values = [
         'id_user'          => $config['id_user'],
         'name'             => $name,
@@ -114,7 +146,7 @@ if ($add_graph) {
     if (trim($name) != '') {
         $id_graph = db_process_sql_insert('tgraph', $values);
         if ($id_graph !== false) {
-            db_pandora_audit('Report management', "Create graph #$id_graph");
+            db_pandora_audit('Report management', 'Create graph #'.$id_graph);
         } else {
             db_pandora_audit('Report management', 'Fail try to create graph');
         }
@@ -146,7 +178,7 @@ if ($update_graph) {
         $stacked = $threshold;
     }
 
-    if (trim($name) != '') {
+    if (empty(trim($name)) === false) {
         $success = db_process_sql_update(
             'tgraph',
             [
@@ -166,9 +198,15 @@ if ($update_graph) {
             ['id_graph' => $id_graph]
         );
         if ($success !== false) {
-            db_pandora_audit('Report management', "Update graph #$id_graph");
+            db_pandora_audit(
+                'Report management',
+                'Update graph #'.$id_graph
+            );
         } else {
-            db_pandora_audit('Report management', "Fail try to update graph #$id_graph");
+            db_pandora_audit(
+                'Report management',
+                'Fail try to update graph #'.$id_graph
+            );
         }
     } else {
         $success = false;
@@ -182,18 +220,18 @@ function add_quotes($item)
 }
 
 
-if ($add_module) {
+if ($add_module === true) {
     $id_graph = get_parameter('id');
     $id_modules = get_parameter('module');
     $id_agents = get_parameter('id_agents');
     $weight = get_parameter('weight');
 
-    // Id modules has double entities conversion
-    // Safe output remove all entities
+    // Id modules has double entities conversion.
+    // Safe output remove all entities.
     io_safe_output_array($id_modules, '');
 
     // We need to put the entities again
-    // to browse in db
+    // to browse in db.
     io_safe_input_array($id_modules);
 
     $id_agent_modules = db_get_all_rows_sql(
@@ -213,7 +251,7 @@ if ($add_module) {
     }
 }
 
-if ($delete_module) {
+if ($delete_module === true) {
     $id_graph = get_parameter('id');
 
     $deleteGraph = get_parameter('delete');
@@ -222,7 +260,7 @@ if ($delete_module) {
     db_process_sql('UPDATE tgraph_source SET field_order=field_order-1 WHERE id_graph='.$id_graph.' AND field_order>'.$order_val);
 }
 
-if ($change_weight) {
+if ($change_weight === true) {
     $weight = get_parameter('weight');
     $id_gs = get_parameter('graph');
     db_process_sql_update(
@@ -242,23 +280,52 @@ if ($change_label) {
     );
 }
 
-if ($edit_graph) {
+if ($edit_graph === true) {
     $buttons = [
         'graph_list'   => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image('images/list.png', true, ['title' => __('Graph list')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('Graph list'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'main'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/chart.png', true, ['title' => __('Main data')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=main&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/chart.png',
+                true,
+                [
+                    'title' => __('Main data'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'graph_editor' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image('images/builder.png', true, ['title' => __('Graph editor')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/builder.png',
+                true,
+                [
+                    'title' => __('Graph editor'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'view'         => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image('images/operation.png', true, ['title' => __('View graph')]).'</a>',
+            'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">'.html_print_image(
+                'images/eye.png',
+                true,
+                [
+                    'title' => __('View graph'),
+                    'class' => 'invert_filter',
+
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -267,66 +334,88 @@ if ($edit_graph) {
     $graphInTgraph = db_get_row_sql('SELECT name FROM tgraph WHERE id_graph = '.$id_graph);
     $name = $graphInTgraph['name'];
 } else {
-    $buttons = '';
+    $buttons = [];
 }
 
 $head = __('Graph builder');
 
-if (isset($name)) {
-    $head .= ' - '.$name;
+if (isset($name) === true) {
+    $head .= ' &raquo; '.$name;
 }
 
 // Header.
-$tab = get_parameter('tab', '');
+$tab = get_parameter('tab');
 switch ($tab) {
-    default:
-    case 'main':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            'graph_builder',
-            false,
-            $buttons
-        );
+    case 'graph_editor':
+        $headerHelp = '';
     break;
 
-    case 'graph_editor':
-        ui_print_page_header(
-            $head,
-            'images/chart.png',
-            false,
-            'graph_editor',
-            false,
-            $buttons
-        );
+    case 'main':
+    default:
+        $headerHelp = 'graph_builder';
     break;
 }
 
+// Header.
+ui_print_standard_header(
+    $head,
+    'images/chart.png',
+    false,
+    $headerHelp,
+    false,
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Reporting'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Custom graphs'),
+        ],
+    ]
+);
+
 if ($add_graph) {
-    ui_print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
+    ui_print_result_message(
+        $id_graph,
+        __('Graph stored successfully'),
+        __('There was a problem storing Graph')
+    );
 }
 
 if ($add_module) {
-    ui_print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
+    ui_print_result_message(
+        $result,
+        __('Module added successfully'),
+        __('There was a problem adding Module')
+    );
 }
 
 if ($update_graph) {
-    ui_print_result_message($success, __('Update the graph'), __('Bad update the graph'));
+    ui_print_result_message(
+        $success,
+        __('Update the graph'),
+        __('Bad update the graph')
+    );
 }
 
 if ($delete_module) {
-    ui_print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
+    ui_print_result_message(
+        $result,
+        __('Graph deleted successfully'),
+        __('There was a problem deleting Graph')
+    );
 }
 
-// Parse CHUNK information into showable information
-// Split id to get all parameters
-if (!$delete_module) {
-    if (isset($_POST['period'])) {
+// Parse CHUNK information into showable information.
+// Split id to get all parameters.
+if ($delete_module === false) {
+    if (isset($_POST['period']) === true) {
         $period = $_POST['period'];
     }
 
-    if ((isset($chunkdata) ) && ($chunkdata != '')) {
+    if ((isset($chunkdata) === true) && (empty($chunkdata) === false)) {
         $module_array = [];
         $weight_array = [];
         $agent_array = [];
@@ -334,7 +423,8 @@ if (!$delete_module) {
         $chunk1 = explode('|', $chunkdata);
         $modules = '';
         $weights = '';
-        for ($a = 0; $a < count($chunk1); $a++) {
+        $chunkCount = count($chunk1);
+        for ($a = 0; $a < $chunkCount; $a++) {
             $chunk2[$a] = [];
             $chunk2[$a] = explode(',', $chunk1[$a]);
             if (strpos($modules, $chunk2[$a][1]) == 0) {
@@ -365,5 +455,9 @@ switch ($active_tab) {
 
     case 'graph_editor':
         include_once 'godmode/reporting/graph_builder.graph_editor.php';
+    break;
+
+    default:
+        // Nothing to do.
     break;
 }

@@ -131,11 +131,11 @@ $controls = [
 
 $layers = gis_get_layers($idMap);
 
-echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
+echo '<div class="gis_layers">';
 echo '<h1>'.$map['map_name'].'</h1>';
 echo '<br />';
 
-echo "<div id='map' style='z-index:100; width: 99%; height: 500px; min-height:500px; border: 1px solid black;' ></div>";
+echo "<div id='map' class='map_gis' ></div>";
 
 echo '</div>';
 
@@ -271,6 +271,14 @@ if ($layers != false) {
 
     gis_activate_select_control();
     gis_activate_ajax_refresh($layers, $timestampLastOperation, 1, $idMap);
+
+    // Connection lost alert.
+    ui_require_css_file('register', 'include/styles/', true);
+    $conn_title = __('Connection with server has been lost');
+    $conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+    ui_require_javascript_file('connection_check');
+    set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
+    ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/error_1.png');
 }
 
 // Resize GIS map on fullscreen

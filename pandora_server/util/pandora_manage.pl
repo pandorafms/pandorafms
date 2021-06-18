@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.743 PS200130";
+my $version = "7.0NG.755 Build 210618";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2015 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";
@@ -118,9 +118,12 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
+	help_screen_line('--get_module_custom_id', '<agentmodule_id>', 'Get the custom_id of given module');
+	help_screen_line('--set_module_custom_id', '<agentmodule_id> [<custom_id>]', 'Set (or erase if empty) the custom_id of given module');
 	help_screen_line('--get_agent_group', '<agent_name> [<use_alias>]', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name> [<use_alias>]', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name> [<use_alias>]', 'Get the modules of an agent');
+	help_screen_line('--get_agent_status', '<agent_name> [<use_alias>]', 'Get the status of an agent');
 	help_screen_line('--get_agents_id_name_by_alias', '<agent_alias>', '[<strict>]', 'List id and alias of agents mathing given alias');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name> <use_alias>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name> [<use_alias>]', 'Delete a local conf of a given agent');
@@ -173,6 +176,7 @@ sub help_screen{
 	help_screen_line('--get_alert_actions_meta', '[<server_name> <action_name> <separator> <return_type>]', 'get all alert actions in nodes');
 	help_screen_line('--update_alert_template', "<template_name> <field_to_change> \n\t  <new_value>", 'Update a field of an alert template');
 	help_screen_line('--validate_all_alerts', '', 'Validate all the alerts');
+	help_screen_line('--validate_alert', '<template_name> <agent_id> <module_id> [<use_alias>]', 'Validate alert given angent, module and alert');
 	help_screen_line('--create_special_day', "<special_day> <same_day> <description> <group>", 'Create special day');
 	help_screen_line('--delete_special_day', '<special_day>', 'Delete special day');
 	help_screen_line('--update_special_day', "<special_day> <field_to_change> <new_value>", 'Update a field of a special day');
@@ -188,7 +192,8 @@ sub help_screen{
 	help_screen_line('--add_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
 	help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
 	help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
-	help_screen_line('--create_profile', "<profile_name> <incident_view> <incident_edit> <incident_management> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Create profile');
+	help_screen_line('--create_profile', "<profile_name> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Create profile');
+	help_screen_line('--update_profile', "<profile_name> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Modify profile');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
@@ -199,8 +204,6 @@ sub help_screen{
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
   	help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
-	print "\nINCIDENTS:\n\n" unless $param ne '';
-	help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
 	print "\nPOLICIES:\n\n" unless $param ne '';
 	help_screen_line('--apply_policy', '<id_policy> [<id_agent> <name(boolean)> <id_server>]', 'Force apply a policy in an agent');
 	help_screen_line('--apply_all_policies', '', 'Force apply to all the policies');
@@ -243,6 +246,8 @@ sub help_screen{
 	help_screen_line('--duplicate_visual_console', '<id> <times> [<prefix>]', 'Duplicate a visual console');
 	help_screen_line('--export_json_visual_console', '<id> [<path>] [<with_element_id>]', 'Creates a json with the visual console elements information');
 
+	print "\nEVENTS\n\n" unless $param ne '';
+	help_screen_line('--event_in_progress', '<id_event> ', 'Set event in progress');
 
 	print "\n";
 	exit;
@@ -254,7 +259,7 @@ sub help_screen{
 sub api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
-	
+ 
 	eval {
 		# Set the parameters for the POST request.
 		my $params = {};
@@ -558,17 +563,33 @@ sub pandora_create_user_profile ($$$$) {
 ##########################################################################
 ## Create profile.
 ##########################################################################
-sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$$$$) {
-        my ($dbh, $profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$) {
+        my ($dbh, $profile_name, $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
 
-		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,incident_edit,incident_view,incident_management,agent_view,agent_edit,alert_edit,user_management,db_management,alert_management,pandora_management,report_view,report_edit,report_management,event_view,event_edit,event_management,agent_disable,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-		$profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,agent_view,agent_edit,agent_disable,alert_edit,alert_management,user_management,db_management,event_view,event_edit,event_management,report_view,report_edit,report_management,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management,pandora_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+		safe_input($profile_name), $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
+}
+
+##########################################################################
+#### Update profile.
+###########################################################################
+sub pandora_update_profile ($$$$$$$$$$$$$$$$$$$$$$) {
+	my ($dbh, $profile_name, $agent_view,
+		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
+
+		return db_update ($dbh, 'UPDATE tperfil SET agent_view = ?, agent_edit = ?, agent_disable = ?, alert_edit = ?, alert_management = ?, user_management = ?, db_management = ?, event_view = ?, event_edit = ?, event_management = ?, report_view = ?, report_edit = ?, report_management = ?, map_view = ?, map_edit = ?, map_management = ?, vconsole_view = ?, vconsole_edit = ?, vconsole_management = ?, pandora_management = ? WHERE name=?;',
+		$agent_view,
+		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management, safe_input($profile_name));
 }
 
 ##########################################################################
@@ -784,7 +805,7 @@ sub pandora_get_agent_status ($$) {
 	return 'normal' unless $normal == 0;
 	return 'normal' unless $normal == 0;
 		
-	return '';
+	return 'not_init';
 }
 
 ##########################################################################
@@ -1126,8 +1147,13 @@ sub cli_create_agent() {
 	exist_check($id_group,'operating system',$group_name);
 	my $agent_exists = get_agent_id($dbh,$agent_name);
 	non_exist_check($agent_exists, 'agent name', $agent_name);
-	pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
+	my $agent_id = pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh,
 		undef, undef, undef, undef, undef, undef, undef, undef, $agent_alias);
+
+	# Create address for this agent in taddress.
+  if (defined($address)) {
+      pandora_add_agent_address($conf, $agent_id, $agent_name, $address, $dbh);
+  }
 }
 
 ##############################################################################
@@ -1142,6 +1168,11 @@ sub cli_delete_agent() {
 	my $id_agent;
 	
 	$agent_name = decode_entities($agent_name);
+
+	if(is_metaconsole($conf) != 1 and pandora_get_tconfig_token ($dbh, 'centralized_management', '')) {
+		print_log "[ERROR] This node is configured with centralized mode. To delete an agent go to metaconsole. \n\n";
+		exit;
+	}
 
 	if (is_metaconsole($conf) == 1) {
 		if (not defined $use_alias) {
@@ -3977,7 +4008,7 @@ sub cli_add_profile() {
 ##############################################################################
 
 sub cli_create_profile() {
-	my ($profile_name,$incident_view,$incident_edit,$incident_management,$agent_view,
+	my ($profile_name,$agent_view,
 	$agent_edit,$agent_disable,$alert_edit,$alert_management,$user_management,$db_management,
 	$event_view,$event_edit,$event_management,$report_view,$report_edit,$report_management,
 	$map_view,$map_edit,$map_management,$vconsole_view,$vconsole_edit,$vconsole_management,$pandora_management) = @ARGV[2..25];
@@ -3985,7 +4016,27 @@ sub cli_create_profile() {
 	my $id_profile = get_profile_id($dbh,$profile_name);
 	non_exist_check($id_profile,'profile',$profile_name);
 
-	pandora_create_profile ($dbh, $profile_name, $incident_view, $incident_edit, $incident_management, $agent_view,
+	pandora_create_profile ($dbh, $profile_name, $agent_view,
+	$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+	$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+	$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
+}
+
+##############################################################################
+## Update profile.
+## Related option: --update_profile
+##############################################################################
+#
+sub cli_update_profile() {
+	my ($profile_name,$agent_view,
+	$agent_edit,$agent_disable,$alert_edit,$alert_management,$user_management,$db_management,
+	$event_view,$event_edit,$event_management,$report_view,$report_edit,$report_management,
+	$map_view,$map_edit,$map_management,$vconsole_view,$vconsole_edit,$vconsole_management,$pandora_management) = @ARGV[2..25];
+
+	my $id_profile = get_profile_id($dbh,$profile_name);
+	exist_check($id_profile,'profile',$profile_name);
+
+	pandora_update_profile ($dbh, $profile_name, $agent_view,
 	$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 	$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 	$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
@@ -4350,21 +4401,6 @@ sub cli_add_event_comment() {
 }
 
 ##############################################################################
-# Create incident.
-# Related option: --create_incident
-##############################################################################
-
-sub cli_create_incident() {
-	my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
-	
-	my $id_group = get_group_id($dbh,$group_name);
-	exist_check($id_group,'group',$group_name);
-	
-	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
-	print_log "[INFO] Creating incident '$title'\n\n";
-}
-
-##############################################################################
 # Delete data.
 # Related option: --delete_data
 ##############################################################################
@@ -4535,6 +4571,86 @@ sub cli_validate_all_alerts() {
 }
 
 ##############################################################################
+# Validate all the alerts
+# Related option: --validate_alert
+##############################################################################
+
+sub cli_validate_alert() {
+		my ($template_name, $agent_id, $module_id, $use_alias) = @ARGV[2..6];
+	my $id_agent = '';
+	my $id_agentmodule = '';
+
+	my $result = 0;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		my @id_agents = get_agent_ids_from_alias($dbh,$agent_id);
+			if(!@id_agents) {
+				print (STDERR "[ERROR] Error: The agent '$agent_id' not exists.\n\n");
+		}
+
+		foreach my $id (@id_agents) {
+			if(defined($agent_id) && $agent_id ne '') {
+				$id_agent = $id->{'id_agente'};
+				exist_check($id_agent,'agent',$agent_id);
+				
+				if($module_id ne '') {
+					$module_id = get_agent_module_id($dbh, $module_id, $id_agent);
+					if ($module_id eq -1) {
+						next;
+					}
+				}
+			}
+
+
+			my $id_alert_agent_module = '';
+			
+			if(defined($template_name) && $template_name ne '') {
+				my $id_template = get_template_id($dbh,$template_name);
+				exist_check($id_template,'template',$template_name);
+				$id_alert_agent_module = get_template_module_id($dbh,$module_id,$id_template);
+				exist_check($id_alert_agent_module,'template module',$template_name);
+			}
+
+
+			$result = pandora_validate_alert_id($id_alert_agent_module, $id, $module_id, $template_name);
+			print_log "[INFO] Validating alert for agent '$id->{'nombre'}'\n\n";
+		}
+	} else {
+		if(defined($agent_id) && $agent_id ne '') {
+			my $agent_name = get_agent_name($dbh,$agent_id);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			if($module_id ne '') {
+				my $module_name = get_module_name($dbh, $module_id);
+				exist_check($module_id,'module',$module_name);
+			}
+		}
+
+		my $id_alert_agent_module = '';
+		
+		if(defined($template_name) && $template_name ne '') {
+			my $id_template = get_template_id($dbh,$template_name);
+			exist_check($id_template,'template',$template_name);
+			$id_alert_agent_module = get_template_module_id($dbh,$module_id,$id_template);
+			exist_check($id_alert_agent_module,'template module',$template_name);
+		}
+					
+			$result = pandora_validate_alert_id($id_alert_agent_module, $id_agent, $module_id, $template_name);
+			print_log "[INFO] Validating alert for agent '$agent_id'\n\n";
+	}
+
+if($result == 0) {
+		print_log "[ERROR] Alert could not be validated\n\n";
+	}
+	else {
+			print_log "[INFO] Alert succesfully validated\n\n";
+;
+	}
+
+}
+
+
+##############################################################################
 # Validate the alerts of a given policy
 # Related option: --validate_policy_alerts
 ##############################################################################
@@ -4603,6 +4719,41 @@ sub cli_get_module_id() {
 
 }
 
+##############################################################################
+# Retrieves the module custom_id given id_agente_modulo.
+# Related option: --get_module_custom_id
+# perl pandora_manage.pl /etc/pandora/pandora_server.conf --get_module_custom_id 4
+##############################################################################
+
+sub cli_get_module_custom_id {
+	my $module_id = $ARGV[2];
+
+	my $custom_id = get_agentmodule_custom_id($dbh, $module_id);
+	
+	if (defined($custom_id)) {
+		print $custom_id;
+	} else {
+		print "\n";
+	}
+}
+
+##############################################################################
+# Update sor erases the module custom_id given id_agente_modulo.
+# Related option: --get_module_custom_id
+# perl pandora_manage.pl /etc/pandora/pandora_server.conf --get_module_custom_id 4 test
+##############################################################################
+
+sub cli_set_module_custom_id {
+	my ($module_id, $custom_id) = @ARGV[2..3];
+
+	my $rs = set_agentmodule_custom_id($dbh, $module_id, $custom_id);
+	
+	if ($rs > 0) {
+		print $custom_id;
+	} else {
+		print "[ERROR] No changes.";
+	}
+}
 
 ##############################################################################
 # Show the group name where a given agent is
@@ -4843,6 +4994,36 @@ sub cli_get_agent_modules() {
 		}
 	}
 }
+
+##############################################################################
+# Show the status of an agent
+# Related option: --get_agent_status
+##############################################################################
+
+sub cli_get_agent_status() {
+	my ($agent_name,$use_alias) = @ARGV[2..3];
+
+	my @id_agents;
+	my $id_agent;
+
+	if (defined $use_alias and $use_alias eq 'use_alias') {
+		@id_agents = get_agent_ids_from_alias($dbh,$agent_name);
+
+		foreach my $id (@id_agents) {
+			exist_check($id->{'id_agente'},'agent',$agent_name);
+
+			my $agent_status = pandora_get_agent_status($dbh,$id->{'id_agente'});
+
+			print pandora_get_agent_status($dbh,$id->{'id_agente'})."\n";
+		}
+	} else {
+		$id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+
+		print pandora_get_agent_status($dbh,$id_agent)."\n";
+	}
+}
+
 
 ##############################################################################
 # Show id, name and id_server of an agent given alias
@@ -5654,7 +5835,7 @@ sub cli_delete_group() {
 	my $group_id = get_group_id($dbh,$group_name);
 	exist_check($group_id, 'group name', $group_name);
 
-	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', $group_name);
+	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', safe_input($group_name));
 
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";
@@ -5674,16 +5855,22 @@ sub cli_delete_group() {
 sub cli_update_group() {
 	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
 	my $result;
-	$result = db_do ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
+
+	$result = get_db_value ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
 
 	if($result == "0E0"){
 		print_log "[ERROR] Group '$group_id' doesn`t exist \n\n";
 	}else{
 		if(defined($group_name)){
 			if(defined($parent_group_name)){
-				my $parent_group_id = get_group_id($dbh,$parent_group_name);
-				exist_check($parent_group_id, 'group name', $parent_group_name);
 
+				my $parent_group_id = 0;
+
+				if($parent_group_name ne 'All') {
+						$parent_group_id = get_group_id($dbh,$parent_group_name);
+						exist_check($parent_group_id, 'group name', $parent_group_name);				
+				} 
+					
 				if(defined($icon)){
 					if(defined($description)){
 						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? , description=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$description,$group_id);
@@ -7282,6 +7469,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 24);
 			cli_create_profile();
 		}
+		elsif ($param eq '--update_profile') {
+			param_check($ltotal, 24);
+			cli_update_profile();
+		}
 		elsif ($param eq '--delete_profile') {
 			param_check($ltotal, 3);
 			cli_delete_profile();
@@ -7305,10 +7496,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--add_event_comment') {
 			param_check($ltotal, 3);
 			cli_add_event_comment();
-		}
-		elsif ($param eq '--create_incident') {
-			param_check($ltotal, 7, 1);
-			cli_create_incident();
 		}
 		elsif ($param eq '--delete_data') {
 			param_check($ltotal, 4, 2);
@@ -7440,6 +7627,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 0);
 			cli_validate_all_alerts();
 		}
+		elsif ($param eq '--validate_alert') {
+			param_check($ltotal, 5,4);
+			cli_validate_alert();
+		}
 		elsif ($param eq '--validate_policy_alerts') {
 			param_check($ltotal, 1);
 			cli_validate_policy_alerts();
@@ -7447,6 +7638,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_module_id') {
 			param_check($ltotal, 2);
 			cli_get_module_id();
+		}
+		elsif ($param eq '--get_module_custom_id') {
+			param_check($ltotal, 1);
+			cli_get_module_custom_id();
+		}
+		elsif ($param eq '--set_module_custom_id') {
+			param_check($ltotal, 2);
+			cli_set_module_custom_id();
 		}
 		elsif ($param eq '--get_agent_group') {
 			param_check($ltotal, 2, 1);
@@ -7463,6 +7662,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_modules') {
 			param_check($ltotal, 2, 1);
 			cli_get_agent_modules();
+		}
+		elsif ($param eq '--get_agent_status') {
+			param_check($ltotal, 2, 1);
+			cli_get_agent_status();
 		}
 		elsif ($param eq '--get_agents_id_name_by_alias') {
 			param_check($ltotal, 2,1);
@@ -7671,6 +7874,9 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--reset_agent_counts') {
 			param_check($ltotal, 1, 0);
 			cli_reset_agent_counts();
+		}elsif ($param eq '--event_in_progress') {
+			param_check($ltotal, 1, 0);
+			cli_event_in_progress();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
@@ -8319,4 +8525,76 @@ sub cli_reset_agent_counts() {
 	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
 	print "$result \n\n ";
 
+}
+
+
+##############################################################################
+# Set an event in progress.
+# Related option: --event_in_progress
+##############################################################################
+
+sub cli_event_in_progress() {
+	my $event_id = @ARGV[2];
+
+	# Call the API.
+	my $result = api_call(
+		$conf, 'set', 'event_in_progress', $event_id
+	);
+
+	print "\n$result\n";
+}
+
+##############################################################################
+# Validates an alert given id alert, id module, id angent and template name.
+##############################################################################
+sub pandora_validate_alert_id($$$$) {
+	my ($id_alert_agent_module, $agent_id, $id_agent_module, $template_name) = @_;
+
+
+  my $group_id = get_agent_group($dbh, $agent_id);
+
+	my $critical_instructions = get_db_value($dbh, 'SELECT critical_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+	my $warning_instructions = get_db_value($dbh, 'SELECT warning_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+	my $unknown_instructions = get_db_value($dbh, 'SELECT unknown_instructions from tagente_modulo WHERE id_agente_modulo = ?', $agent_id);
+
+	my $parameters = {
+		'times_fired' => 0,
+		'internal_counter' => 0,
+		};
+
+	my $result = db_process_update($dbh, 'talert_template_modules', $parameters,{'id' => $id_alert_agent_module});
+
+	return 0 unless $result != 0;
+
+  my $module_name = safe_output(get_db_value($dbh, 'SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agent_module));
+
+
+		# Update fired alert count on the agent
+		db_process_update($dbh, 'tagente', {'update_alert_count' => 1}, {'id_agente' => $agent_id});
+
+		my $event = 'Manual validation of alert '.$template_name.' assigned to '.$module_name.'';
+
+		pandora_event(
+			$conf,
+			$event,
+			$group_id, 
+			$agent_id,
+			0,
+			$id_alert_agent_module,
+			$id_agent_module,
+			'alert_manual_validation',
+			1,
+			$dbh,
+			0,
+			'',
+			'',
+			'',
+			'',
+			$critical_instructions,
+			$warning_instructions,
+			$unknown_instructions,
+			''
+		);
+
+    return 1;
 }

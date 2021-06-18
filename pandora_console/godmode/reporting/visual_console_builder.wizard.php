@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ global $config;
 check_login();
 
 // Visual console required.
-if (empty($visualConsole)) {
+if (empty($visualConsole) === true) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access report builder'
@@ -211,26 +211,6 @@ $fonts = [
     '196pt' => '196pt',
 ];
 
-/*
-    $fontf = array('andale mono,times' => 'Andale Mono',
-    'arial,helvetica,sans-serif' => 'Arial',
-    'arial black,avant garde' => 'Arial Black',
-    'comic sans ms,sans-serif' => 'Comic Sans MS',
-    'courier new,courier' => 'Courier New',
-    'georgia,palatino' => 'Georgia',
-    'helvetica,impact' => 'Helvetica',
-    'impact,chicago' => 'Impact',
-    'symbol' => 'Symbol',
-    'tahoma,arial,helvetica,sans-serif' => 'Tahoma',
-    'terminal,monaco' => 'Terminal',
-    'times new roman,times' => 'Times New Roman',
-    'trebuchet ms,geneva' => 'Trebuchet MS',
-    'verdana,geneva' => 'Verdana',
-    'Webdings' => 'Webdings',
-    'Wingdings'  => 'Wingdings'
-    );
-*/
-
 $table->rowstyle['all_9'] = 'display: none;';
 $table->data['all_9'][0] = __('Font');
 $table->colspan['all_9'][1] = '3';
@@ -381,7 +361,7 @@ if (is_metaconsole()) {
 $table->rowstyle['all_3'] = 'display: none;';
 $table->data['all_3'][0] = __('Groups');
 $table->colspan['all_3'][1] = '3';
-$table->data['all_3'][1] = html_print_select_groups(
+$table->data['all_3'][1] = '<div class="w250px">'.html_print_select_groups(
     $config['id_user'],
     'AR',
     true,
@@ -391,7 +371,7 @@ $table->data['all_3'][1] = html_print_select_groups(
     '',
     0,
     true
-);
+).'</div>';
 
 
 $table->rowstyle['all_one_item_per_agent'] = 'display: none';
@@ -449,7 +429,7 @@ $table->data['all_4'][1] = html_print_select(
     true,
     true
 );
-$table->data['all_4'][2] = ' <span style="vertical-align: top;">'.__('Modules').'</span>';
+$table->data['all_4'][2] = ' <span class="align-top">'.__('Modules').'</span>';
 $table->data['all_4'][3] = html_print_select(
     [],
     'module[]',
@@ -535,7 +515,7 @@ if (is_metaconsole()) {
 }
 
 if (defined('METACONSOLE')) {
-    echo "<div class='title_tactical' style='margin-top: 15px; '>".__('Wizard').'</div>';
+    echo "<div class='title_tactical mrgn_top_15px'>".__('Wizard').'</div>';
 }
 
 html_print_table($table);
@@ -553,9 +533,9 @@ echo '</div>';
 echo '</form>';
 
 // Trick for it have a traduct text for javascript.
-echo '<span id="any_text" style="display: none;">'.__('Any').'</span>';
-echo '<span id="none_text" style="display: none;">'.__('None').'</span>';
-echo '<span id="loading_text" style="display: none;">'.__('Loading...').'</span>';
+echo '<span id="any_text"     class="invisible">'.__('Any').'</span>';
+echo '<span id="none_text"    class="invisible">'.__('None').'</span>';
+echo '<span id="loading_text" class="invisible">'.__('Loading...').'</span>';
 ?>
 <script type="text/javascript">
 

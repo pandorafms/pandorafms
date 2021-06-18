@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,8 @@
 // Begin.
 namespace Models\VisualConsole;
 use Models\VisualConsole\Container as VisualConsole;
+
+define('__DEBUG', 0);
 
 global $config;
 require_once $config['homedir'].'/include/class/HTML.class.php';
@@ -65,12 +67,14 @@ class View extends \HTML
                 'id'   => 'tab-label',
                 'href' => $url.'&tabSelected=label',
                 'img'  => 'label-settings.png',
-            ],[
+            ],
+            [
                 'name' => __('General settings'),
                 'id'   => 'tab-general',
                 'href' => $url.'&tabSelected=general',
                 'img'  => 'general-settings.png',
-            ],[
+            ],
+            [
                 'name' => __('Specific settings'),
                 'id'   => 'tab-specific',
                 'href' => $url.'&tabSelected=specific',
@@ -81,20 +85,9 @@ class View extends \HTML
         $activetabs = 2;
         if ($type === LABEL) {
             $activetabs = 0;
-            $tabs = [
-                [
-                    'name' => __('Label settings'),
-                    'id'   => 'tab-label',
-                    'href' => $url.'&tabSelected=label',
-                    'img'  => 'zoom.png',
-                ],[
-                    'name' => __('General settings'),
-                    'id'   => 'tab-general',
-                    'href' => $url.'&tabSelected=general',
-                    'img'  => 'pencil.png',
-                ],
-            ];
-        } else if ($type === LINE_ITEM) {
+        } else if ($type === LINE_ITEM
+            || $type === NETWORK_LINK
+        ) {
             $activetabs = 0;
             $tabs = [
                 [
@@ -112,7 +105,8 @@ class View extends \HTML
                     'id'   => 'tab-general',
                     'href' => $url.'&tabSelected=general',
                     'img'  => 'pencil.png',
-                ],[
+                ],
+                [
                     'name' => __('Specific settings'),
                     'id'   => 'tab-specific',
                     'href' => $url.'&tabSelected=specific',
@@ -255,7 +249,7 @@ class View extends \HTML
             true
         );
 
-        return $form.$jsforms;
+        return $form;
 
     }
 
@@ -319,7 +313,7 @@ class View extends \HTML
             );
         } else {
             // Only Create, settings default values if not enter tab general.
-            if ($itemId === 0 && $type != LINE_ITEM) {
+            if ($itemId === 0 && $type != LINE_ITEM && $type != NETWORK_LINK) {
                 $class = VisualConsole::getItemClass((int) $type);
                 $data = $class::getDefaultGeneralValues($data);
             }
@@ -501,6 +495,20 @@ class View extends \HTML
             break;
 
             case LABEL:
+                $data['isLinkEnabled'] = true;
+            break;
+
+            case NETWORK_LINK:
+                $data['borderColor'] = \get_parameter('borderColor');
+                $data['borderWidth'] = \get_parameter('borderWidth');
+                $data['isOnTop'] = \get_parameter_switch('isOnTop');
+                // Insert line default position ball end.
+                if ($itemId === 0) {
+                    $data['height'] = 100;
+                    $data['width'] = 100;
+                }
+            break;
+
             default:
                 // Not posible.
             break;
@@ -513,8 +521,12 @@ class View extends \HTML
                 // Save the new item.
                 $data['id_layout'] = $vCId;
                 $itemId = $class::save($data);
-            } catch (\Throwable $th) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }
@@ -523,8 +535,12 @@ class View extends \HTML
             try {
                 $item = VisualConsole::getItemFromDB($itemId);
                 $result = $item->toArray();
-            } catch (Throwable $e) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }
@@ -532,8 +548,12 @@ class View extends \HTML
             // UpdateVC.
             try {
                 $item = VisualConsole::getItemFromDB($itemId);
-            } catch (Throwable $e) {
+            } catch (\Exception $e) {
                 // Bad params.
+                if (__DEBUG === 1) {
+                    error_log($e->getMessage());
+                }
+
                 http_response_code(400);
                 return false;
             }
@@ -590,6 +610,216 @@ class View extends \HTML
         }
 
         return json_encode($result);
+    }
+
+
+    /**
+     * Returns a popup for networkLink viewer.
+     *
+     * @return void
+     */
+    public function networkLinkPopup()
+    {
+        global $config;
+
+        try {
+            include_once $config['homedir'].'/include/functions_graph.php';
+            $item_idFrom = get_parameter('from');
+            $item_idTo = get_parameter('to');
+
+            $itemFrom = db_get_row_filter(
+                'tlayout_data',
+                ['id' => $item_idFrom]
+            );
+
+            $itemTo = db_get_row_filter(
+                'tlayout_data',
+                ['id' => $item_idTo]
+            );
+
+            // Interface chart base configuration.
+            $params = [
+                'period'  => SECONDS_6HOURS,
+                'width'   => '90%',
+                'height'  => 150,
+                'date'    => time(),
+                'homeurl' => $config['homeurl'],
+            ];
+
+            if ($config['type_interface_charts'] == 'line') {
+                $stacked = CUSTOM_GRAPH_LINE;
+            } else {
+                $stacked = CUSTOM_GRAPH_AREA;
+            }
+
+            $params_combined = [
+                'weight_list'    => [],
+                'projection'     => false,
+                'from_interface' => true,
+                'return'         => 0,
+                'stacked'        => $stacked,
+            ];
+
+            // Interface FROM.
+            if (isset($itemFrom['id_metaconsole']) === true
+                && (bool) is_metaconsole() === true
+            ) {
+                $cnn = \enterprise_hook(
+                    'metaconsole_get_connection_by_id',
+                    [ $itemFrom['id_metaconsole'] ]
+                );
+
+                if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                    throw new \Exception(__('Failed to connect to node'));
+                }
+
+                $params['server_id'] = $itemFrom['id_metaconsole'];
+            } else {
+                $params['server_id'] = null;
+            }
+
+            $from = new \PandoraFMS\Module((int) $itemFrom['id_agente_modulo']);
+
+            if ((bool) $from->isInterfaceModule() === true) {
+                $interface_name = $from->getInterfaceName();
+                if ($interface_name !== null) {
+                    $data = $from->agent()->getInterfaceMetrics(
+                        $interface_name
+                    );
+
+                    echo '<h3 class="center">'.__('NetworkLink from').'</h3>';
+                    echo '<div class="margin-top-10 interface-status from w90p centered flex-row-vcenter">';
+                    ui_print_module_status($data['status']->lastStatus());
+                    echo '<span class="margin-left-1">';
+                    echo __('Interface %s status', $interface_name);
+                    echo '</span>';
+                    echo '</div>';
+
+                    $interface_traffic_modules = [
+                        __('In')  => $data['in']->id_agente_modulo(),
+                        __('Out') => $data['out']->id_agente_modulo(),
+                    ];
+
+                    $params['unit_name'] = array_fill(
+                        0,
+                        count($interface_traffic_modules),
+                        $config['interface_unit']
+                    );
+
+                    $params_combined['labels'] = array_keys(
+                        $interface_traffic_modules
+                    );
+
+                    $params_combined['modules_series'] = array_values(
+                        $interface_traffic_modules
+                    );
+
+                    // Graph.
+                    echo '<div id="stat-win-interface-graph from">';
+
+                    if (isset($itemFrom['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
+
+                    \graphic_combined_module(
+                        array_values($interface_traffic_modules),
+                        $params,
+                        $params_combined
+                    );
+
+                    echo '</div>';
+                }
+            } else {
+                if (isset($itemFrom['id_metaconsole']) === true
+                    && (bool) is_metaconsole() === true
+                ) {
+                    \enterprise_hook('metaconsole_restore_db');
+                }
+            }
+
+            // Interface TO.
+            if (isset($itemTo['id_metaconsole']) === true
+                && (bool) is_metaconsole() === true
+            ) {
+                $cnn = \enterprise_hook(
+                    'metaconsole_get_connection_by_id',
+                    [ $itemTo['id_metaconsole'] ]
+                );
+
+                if (\enterprise_hook('metaconsole_connect', [$cnn]) !== NOERR) {
+                    throw new \Exception(__('Failed to connect to node'));
+                }
+
+                $params['server_id'] = $itemTo['id_metaconsole'];
+            } else {
+                $params['server_id'] = null;
+            }
+
+            $to = new \PandoraFMS\Module((int) $itemTo['id_agente_modulo']);
+
+            if ((bool) $to->isInterfaceModule() === true) {
+                $interface_name = $to->getInterfaceName();
+                if ($interface_name !== null) {
+                    $data = $to->agent()->getInterfaceMetrics(
+                        $interface_name
+                    );
+
+                    echo '<h3 class="center">'.__('NetworkLink to').'</h3>';
+                    echo '<div class="interface-status from w90p centered flex-row-vcenter">';
+                    ui_print_module_status($data['status']->lastStatus());
+                    echo '<span class="margin-left-1">';
+                    echo __('Interface %s status', $interface_name);
+                    echo '</span>';
+                    echo '</div>';
+
+                    $interface_traffic_modules = [
+                        __('In')  => $data['in']->id_agente_modulo(),
+                        __('Out') => $data['out']->id_agente_modulo(),
+                    ];
+
+                    $params['unit_name'] = array_fill(
+                        0,
+                        count($interface_traffic_modules),
+                        $config['interface_unit']
+                    );
+
+                    $params_combined['labels'] = array_keys(
+                        $interface_traffic_modules
+                    );
+
+                    $params_combined['modules_series'] = array_values(
+                        $interface_traffic_modules
+                    );
+
+                    // Graph.
+                    echo '<div id="stat-win-interface-graph to">';
+
+                    if (isset($itemTo['id_metaconsole']) === true
+                        && (bool) is_metaconsole() === true
+                    ) {
+                        \enterprise_hook('metaconsole_restore_db');
+                    }
+
+                    \graphic_combined_module(
+                        array_values($interface_traffic_modules),
+                        $params,
+                        $params_combined
+                    );
+
+                    echo '</div>';
+                }
+            } else {
+                if (isset($itemTo['id_metaconsole']) === true
+                    && (bool) is_metaconsole() === true
+                ) {
+                    \enterprise_hook('metaconsole_restore_db');
+                }
+            }
+        } catch (\Exception $e) {
+            echo __('Failed to generate charts: %s', $e->getMessage());
+        }
     }
 
 

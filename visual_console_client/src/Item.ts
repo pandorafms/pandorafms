@@ -46,7 +46,8 @@ export const enum ItemType {
   DONUT_GRAPH = 17,
   BARS_GRAPH = 18,
   CLOCK = 19,
-  COLOR_CLOUD = 20
+  COLOR_CLOUD = 20,
+  NETWORK_LINK = 21
 }
 
 // Base item properties. This interface should be extended by the item implementations.
@@ -61,6 +62,7 @@ export interface ItemProps extends Position, Size {
   parentId: number | null;
   aclGroupId: number | null;
   cacheExpiration: number | null;
+  colorStatus: string;
 }
 
 export interface ItemClickEvent {
@@ -136,6 +138,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     parentId: parseIntOr(data.parentId, null),
     aclGroupId: parseIntOr(data.aclGroupId, null),
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
+    colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -207,6 +210,9 @@ export function titleItem(id: number): string {
       break;
     case ItemType.COLOR_CLOUD:
       title = t("Color cloud");
+      break;
+    case ItemType.NETWORK_LINK:
+      title = t("Network link");
       break;
     default:
       title = t("Item");
@@ -293,6 +299,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param element Element to move inside its container.
    */
   private initMovementListener(element: HTMLElement): void {
+    // Avoid line movement as 'block' force using circles.
+    if (
+      this.props.type == ItemType.LINE_ITEM ||
+      this.props.type == ItemType.NETWORK_LINK
+    ) {
+      return;
+    }
+
     this.removeMovement = addMovementListener(
       element,
       (x: Position["x"], y: Position["y"]) => {
@@ -372,6 +386,12 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param element Element to move inside its container.
    */
   protected initResizementListener(element: HTMLElement): void {
+    if (
+      this.props.type == ItemType.LINE_ITEM ||
+      this.props.type == ItemType.NETWORK_LINK
+    ) {
+      return;
+    }
     this.removeResizement = addResizementListener(
       element,
       (width: Size["width"], height: Size["height"]) => {
@@ -486,12 +506,18 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     let box;
     if (this.props.isLinkEnabled) {
       box = document.createElement("a") as HTMLAnchorElement;
-      if (this.props.link) box.href = this.props.link;
+
+      if (this.props.link) {
+        box.href = this.props.link;
+      } else {
+        box.className = "textDecorationNone";
+      }
     } else {
       box = document.createElement("div") as HTMLDivElement;
+      box.className = "textDecorationNone";
     }
 
-    box.className = "visual-console-item";
+    box.classList.add("visual-console-item");
     if (this.props.isOnTop) {
       box.classList.add("is-on-top");
     }
@@ -516,7 +542,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         e.stopPropagation();
       } else {
         // Add loading click item.
-        if (this.itemProps.isLinkEnabled) {
+        if (this.itemProps.isLinkEnabled && this.itemProps.link != null) {
           const divParent = document.createElement("div");
           divParent.className = "div-visual-console-spinner";
           const divSpinner = document.createElement("div");
@@ -818,7 +844,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
     if (
       prevProps &&
-      (this.props.isLinkEnabled && prevProps.link !== this.props.link)
+      this.props.isLinkEnabled &&
+      prevProps.link !== this.props.link
     ) {
       if (this.props.link !== null) {
         this.elementRef.setAttribute("href", this.props.link);
@@ -833,6 +860,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-editing");
       }
     }
+
     if (!prevMeta || prevMeta.isFetching !== this.meta.isFetching) {
       if (this.meta.isFetching) {
         this.elementRef.classList.add("is-fetching");
@@ -993,8 +1021,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    */
   protected resizeElement(width: number, height: number): void {
     // The most valuable size is the content size.
-    this.childElementRef.style.width = width > 0 ? `${width}px` : null;
-    this.childElementRef.style.height = height > 0 ? `${height}px` : null;
+    if (
+      this.props.type != ItemType.LINE_ITEM &&
+      this.props.type != ItemType.NETWORK_LINK
+    ) {
+      this.childElementRef.style.width = width > 0 ? `${width}px` : null;
+      this.childElementRef.style.height = height > 0 ? `${height}px` : null;
+    }
 
     if (this.props.label && this.props.label.length > 0) {
       // Ugly table to show the label as its legacy counterpart.
@@ -1172,7 +1205,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
 
     this.initMovementListener(this.elementRef);
-    if (this.props.type !== 13) {
+    if (
+      this.props.type !== ItemType.LINE_ITEM &&
+      this.props.type !== ItemType.NETWORK_LINK
+    ) {
       this.initResizementListener(this.elementRef);
     }
   }
@@ -1188,7 +1224,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     };
 
     this.stopMovementListener();
-    if (this.props.type !== 13) {
+    if (this.props.type !== ItemType.LINE_ITEM) {
       this.stopResizementListener();
     }
   }

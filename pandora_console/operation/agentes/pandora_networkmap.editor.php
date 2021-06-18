@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Empty Network editor.
  *
- * @category   Extensions
+ * @category   View
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 // Check user credentials.
@@ -57,10 +57,10 @@ if ($new_networkmap) {
     $offset_x = '';
     $offset_y = '';
     $scale_z = 0.5;
-    $node_sep = 0.1;
+    $node_sep = 10;
     $rank_sep = 1.0;
     $mindist = 1.0;
-    $kval = 0.1;
+    $kval = 5;
 }
 
 $disabled_generation_method_select = false;
@@ -80,9 +80,15 @@ if ($edit_networkmap) {
     } else {
         $id_group = $values['id_group'];
 
+        $id_group_acl_check = $id_group_map;
+
+        if ($id_group_map === null) {
+            $id_group_acl_check = $values['id_group_map'];
+        }
+
         // ACL for the network map.
-        $networkmap_write = check_acl($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl($config['id_user'], $id_group_map, 'MM');
+        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MW');
+        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_acl_check, 'MM');
 
         if (!$networkmap_write && !$networkmap_manage) {
             db_pandora_audit(
@@ -197,12 +203,24 @@ if ($edit_networkmap) {
     }
 }
 
-ui_print_page_header(
-    __('Networkmap'),
+// Header.
+ui_print_standard_header(
+    __('Network maps editor'),
     'images/bricks.png',
     false,
     'network_map_enterprise_edit',
-    false
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Topology maps'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Networkmap'),
+        ],
+    ]
 );
 
 $id_snmp_l2_recon = db_get_value(
@@ -265,18 +283,33 @@ if ($not_found) {
         true
     );
 
+    $return_all_group = false;
+
+    if (users_can_manage_group_all('AR') === true) {
+        $return_all_group = true;
+    }
+
     $table->data[1][0] = __('Group');
-    $table->data[1][1] = html_print_select_groups(
+    $table->data[1][1] = '<div class="w250px">'.html_print_select_groups(
+        // Id_user.
         $config['id_user'],
+        // Privilege.
         'AR',
-        true,
+        // ReturnAllGroup.
+        $return_all_group,
+        // Name.
         'id_group_map',
+        // Selected.
         $id_group_map,
+        // Script.
         '',
+        // Nothing.
         '',
+        // Nothing_value.
         '',
+        // Return.
         true
-    );
+    ).'</div>';
 
     $table->data[2][0] = __('Node radius');
     $table->data[2][1] = html_print_input_text(
@@ -304,7 +337,7 @@ if ($not_found) {
     $table->data[6][1] = html_print_input_text('scale_z', $scale_z, '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
 
     $table->data['source'][0] = __('Source');
-    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Recon task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
+    $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true, $disabled_source).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true, $disabled_source).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true, $disabled_source);
 
     $table->data['source_data_recon_task'][0] = __('Source from recon task');
     $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
@@ -333,7 +366,7 @@ if ($not_found) {
     $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $ip_mask, '', 20, 255, true, $disabled_source);
 
     $table->data['source_data_group'][0] = __('Source group');
-    $table->data['source_data_group'][1] = html_print_select_groups(
+    $table->data['source_data_group'][1] = '<div class="w250px">'.html_print_select_groups(
         $config['id_user'],
         'AR',
         true,
@@ -343,7 +376,7 @@ if ($not_found) {
         '',
         '',
         true
-    );
+    ).'</div>';
     $table->data['source_data_group'][1] .= html_print_image(
         'images/error.png',
         true,
@@ -369,7 +402,7 @@ if ($not_found) {
         'circo'          => 'circular',
         'neato'          => 'spring1',
         'fdp'            => 'spring2',
-        'radial_dinamic' => 'radial dinamic',
+        'radial_dinamic' => 'radial dynamic',
     ];
 
     $table->data[7][0] = __('Method generation networkmap');
@@ -415,7 +448,7 @@ if ($not_found) {
             __('Save networkmap'),
             'crt',
             false,
-            'class="sub next"'
+            'class="sub next" onclick="if (typeof(sent) == \'undefined\') {sent = 1; return true;} else {return false;}"'
         );
     }
 

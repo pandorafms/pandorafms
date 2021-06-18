@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,15 +27,6 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 require_once 'include/functions_gis.php';
 
 ui_require_javascript_file('openlayers.pandora');
-
-// Header.
-ui_print_page_header(
-    __('Map conections GIS'),
-    '',
-    false,
-    '',
-    true
-);
 
 $action = get_parameter('action');
 
@@ -88,8 +79,8 @@ if ($mapsConnections !== false) {
         $table->data[] = [
             '<a href="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2&amp;action=edit_connection_map&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'">'.$mapsConnection['conection_name'].'</a>',
             ui_print_group_icon($mapsConnection['group_id'], true),
-            '<a href="index.php?sec=gsetup&sec2=godmode/setup/gis&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
-				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>',
+            '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=gis&amp;id_connection_map='.$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
+				onClick="javascript: if (!confirm(\''.__('Do you wan delete this connection?').'\')) return false;">'.html_print_image('images/cross.png', true, ['class' => 'invert_filter']).'</a>',
         ];
         $table->cellclass[][2] = 'action_buttons';
     }

@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Compose message view
  *
- * @category   Extensions
+ * @category   Workspace
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 require_once 'include/functions_users.php';
@@ -34,21 +34,26 @@ require_once 'include/functions_groups.php';
 require_once 'include/functions_io.php';
 
 // Parse parameters.
-$new_msg = get_parameter('new_msg', 0);
-$dst_user = get_parameter('dst_user');
-$dst_group = get_parameter('dst_group');
-$subject = get_parameter('subject', '');
-$message = get_parameter('message');
-$read_message = get_parameter('read_message', 0);
-$reply = get_parameter('reply', 0);
-$show_sent = get_parameter('show_sent', 0);
+$send_mes     = (bool) get_parameter('send_mes', false);
+$new_msg      = (string) get_parameter('new_msg');
+$dst_user     = get_parameter('dst_user');
+$dst_group    = get_parameter('dst_group');
+$subject      = io_safe_html_tags(get_parameter('subject'));
+$message      = (string) get_parameter('message');
+$read_message = (bool) get_parameter('read_message', false);
+$reply        = (bool) get_parameter('reply', false);
+$replied      = (bool) get_parameter('replied', false);
+$show_sent    = get_parameter('show_sent', 0);
 
 $buttons['message_list'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list">'.html_print_image(
         'images/email_inbox.png',
         true,
-        ['title' => __('Received messages')]
+        [
+            'title' => __('Received messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -57,7 +62,10 @@ $buttons['sent_messages'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_list&amp;show_sent=1">'.html_print_image(
         'images/email_outbox.png',
         true,
-        ['title' => __('Sent messages')]
+        [
+            'title' => __('Sent messages'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
@@ -66,24 +74,37 @@ $buttons['create_message'] = [
     'text'   => '<a href="index.php?sec=message_list&sec2=operation/messages/message_edit">'.html_print_image(
         'images/new_message.png',
         true,
-        ['title' => __('Create message')]
+        [
+            'title' => __('Create message'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
 // Header.
-ui_print_page_header(
-    __('Messages'),
+ui_print_standard_header(
+    __('Compose message'),
     'images/email_mc.png',
     false,
     '',
     false,
-    $buttons
+    $buttons,
+    [
+        [
+            'link'  => '',
+            'label' => __('Workspace'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Messages'),
+        ],
+    ]
 );
 
 // Read a message.
 if ($read_message) {
     $message_id = (int) get_parameter('id_message');
-    if ($show_sent) {
+    if ((bool) $show_sent === true) {
         $message = messages_get_message_sent($message_id);
     } else {
         $message = messages_get_message($message_id);
@@ -106,7 +127,7 @@ if ($read_message) {
         $dst_name = $message['id_usuario_destino'];
     }
 
-    if (isset($user_name) !== true || empty($user_name) === true) {
+    if (empty($message['id_usuario_origen']) === true) {
         echo '<h1>Notification</h1>';
     } else {
         echo '<h1>Conversation with '.$user_name.'</h1>';
@@ -117,14 +138,24 @@ if ($read_message) {
     $conversation = messages_get_conversation($message);
 
     ui_require_css_file('message_edit');
-    foreach ($conversation as $row) {
-        $date = $row['date'];
 
-        if ($date === null) {
-            $date = date(
-                $config['date_format'],
-                $message['timestamp']
-            ).' '.$user_name;
+    if (empty($message['id_usuario_origen']) !== true) {
+        foreach ($conversation as $row) {
+            $date = $row['date'];
+
+            if ($date === null) {
+                $date = date(
+                    $config['date_format'],
+                    $message['timestamp']
+                ).' '.$user_name;
+            }
+
+            $parsed_message = nl2br(htmlspecialchars(trim(io_safe_output($row['message']))));
+
+            echo '<div class="container">';
+            echo '  <p>'.$parsed_message.'</p>';
+            echo '<span class="time-left">'.$date.'</span>';
+            echo '</div>';
         }
 
         $order = [
@@ -133,26 +164,11 @@ if ($read_message) {
             "\r",
         ];
         $replace = '<br />';
-        $parsed_message = str_replace(
-            $order,
-            $replace,
-            trim(io_safe_output($row['message']))
-        );
-
-        echo '<div class="container">';
-        echo '  <p>'.$parsed_message.'</p>';
-        echo '<span class="time-left">'.$date.'</span>';
-        echo '</div>';
+        $parsed_message = str_replace($order, $replace, $message['mensaje']);
+    } else {
+        // Direct message from System.
+        echo io_safe_output($message['mensaje']);
     }
-
-
-    $order = [
-        "\r\n",
-        "\n",
-        "\r",
-    ];
-    $replace = '<br />';
-    $parsed_message = str_replace($order, $replace, $message['mensaje']);
 
     // Prevent RE: RE: RE:.
     if (strstr($message['subject'], 'RE:')) {
@@ -168,7 +184,7 @@ if ($read_message) {
     ).' '.$user_name.' '.__('wrote').":\n\n".$message['mensaje'];
 
 
-    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
+    echo '<form id="delete_message" method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent='.$show_sent.'&amp;delete_message=1&amp;id='.$message_id.'">';
     echo '</form>';
 
     echo '<form id="reply_message" method="post" action="index.php?sec=message_list&sec2=operation/messages/message_edit&amp;new_msg=1&amp;reply=1">';
@@ -186,54 +202,50 @@ if ($read_message) {
         'form="delete_message" class="sub delete"'
     );
     echo '&nbsp';
-    html_print_submit_button(
-        __('Reply'),
-        'reply',
-        false,
-        'form="reply_message" class="sub next"'
-    );
+    if (empty($message['id_usuario_origen']) !== true) {
+        html_print_submit_button(
+            __('Reply'),
+            'reply',
+            false,
+            'form="reply_message" class="sub next"'
+        );
+    }
+
     echo '</div>';
 
     return;
 }
 
-// Create message (destination user).
-if (($new_msg) && (!empty($dst_user)) && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [$dst_user],
-        [],
-        $subject,
-        $message
-    );
+if ($send_mes === true) {
+    if (empty($dst_user) === true && empty($dst_group) === true) {
+        // The user or group must be selected for send the message.
+        ui_print_error_message(__('User or group must be selected.'));
+    } else {
+        // Create message (destination user).
+        $return = messages_create_message(
+            $config['id_user'],
+            [$dst_user],
+            [],
+            $subject,
+            $message
+        );
 
-    $user_name = get_user_fullname($dst_user);
-    if (!$user_name) {
-        $user_name = $dst_user;
+        $user_name = get_user_fullname($dst_user);
+        if (empty($user_name) === true) {
+            $user_name = $dst_user;
+        }
+
+        ui_print_result_message(
+            $return,
+            __('Message successfully sent to user %s', $user_name),
+            __('Error sending message to user %s', $user_name)
+        );
+
+        // If is a reply, is not necessary do more.
+        if ($replied === true) {
+            return;
+        }
     }
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent to user %s', $user_name),
-        __('Error sending message to user %s', $user_name)
-    );
-}
-
-// Create message (destination group).
-if (($new_msg) && ($dst_group != '') && (!$reply)) {
-    $return = messages_create_message(
-        $config['id_user'],
-        [],
-        [$dst_group],
-        $subject,
-        $message
-    );
-
-    ui_print_result_message(
-        $return,
-        __('Message successfully sent'),
-        __('Error sending message to group %s', groups_get_name($dst_group))
-    );
 }
 
 // Message creation form.
@@ -248,11 +260,7 @@ $table->data = [];
 
 $table->data[0][0] = __('Sender');
 
-if (!empty($own_info['fullname'])) {
-    $table->data[0][1] = $own_info['fullname'];
-} else {
-    $table->data[0][1] = $config['id_user'];
-}
+$table->data[0][1] = (empty($own_info['fullname']) === false) ? $own_info['fullname'] : $config['id_user'];
 
 $table->data[1][0] = __('Destination');
 
@@ -263,7 +271,7 @@ $is_admin = (bool) db_get_value(
     $config['id_user']
 );
 
-if ($is_admin) {
+if ($is_admin === true) {
     $users_full = db_get_all_rows_filter(
         'tusuario',
         [],
@@ -282,51 +290,58 @@ if ($is_admin) {
 
 $users = [];
 foreach ($users_full as $user_id => $user_info) {
-    $users[$user_info['id_user']] = $user_info['fullname'];
+    $users[$user_info['id_user']] = (empty($user_info['fullname']) === true) ? $user_info['id_user'] : $user_info['fullname'];
 }
 
 // Check if the user to reply is in the list, if not add reply user.
-if ($reply) {
-    if (!array_key_exists($dst_user, $users)) {
-        // Add the user to reply.
-        $user_reply = db_get_row('tusuario', 'id_user', $dst_user);
-        $users[$user_reply['id_user']] = $user_reply['fullname'];
-    }
-}
-
-
-if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
-    $return_all_groups = true;
+if ($reply === true) {
+    $table->data[1][1] = (array_key_exists($dst_user, $users) === true) ? $users[$dst_user] : $dst_user;
+    $table->data[1][1] .= html_print_input_hidden(
+        'dst_user',
+        $dst_user,
+        true
+    );
+    $table->data[1][1] .= html_print_input_hidden(
+        'replied',
+        '1',
+        true
+    );
 } else {
-    $return_all_groups = false;
-}
+    $return_all_groups = ((bool) $own_info['is_admin'] === true
+    || check_acl($config['id_user'], 0, 'PM') === true);
 
-$groups = users_get_groups($config['id_user'], 'AR');
-// Get a list of all groups.
-$table->data[1][1] = html_print_select(
-    $users,
-    'dst_user',
-    $dst_user,
-    '',
-    __('Select user'),
-    false,
-    true,
-    false,
-    '',
-    false
-);
-$table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
-$table->data[1][1] .= html_print_select_groups(
-    $config['id_user'],
-    'AR',
-    $return_all_groups,
-    'dst_group',
-    $dst_group,
-    '',
-    __('Select group'),
-    '',
-    true
-);
+    $groups = users_get_groups($config['id_user'], 'AR');
+    // Get a list of all groups.
+    $table->data[1][1] = html_print_select(
+        $users,
+        'dst_user',
+        $dst_user,
+        'changeStatusOtherSelect(\'dst_user\', \'dst_group\')',
+        __('Select user'),
+        false,
+        true,
+        false,
+        ''
+    );
+    $table->data[1][1] .= '&nbsp;&nbsp;'.__('OR').'&nbsp;&nbsp;';
+    $table->data[1][1] .= html_print_div(
+        [
+            'class'   => 'w250px inline',
+            'content' => html_print_select_groups(
+                $config['id_user'],
+                'AR',
+                $return_all_groups,
+                'dst_group',
+                $dst_group,
+                'changeStatusOtherSelect(\'dst_group\', \'dst_user\')',
+                __('Select group'),
+                '',
+                true
+            ),
+        ],
+        true
+    );
+}
 
 $table->data[2][0] = __('Subject');
 $table->data[2][1] = html_print_input_text(
@@ -348,15 +363,40 @@ $table->data[3][1] = html_print_textarea(
     true
 );
 
-echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
-html_print_table($table);
+$jsOutput = '';
+ob_start();
+?>
+<script type="text/javascript">
+    function changeStatusOtherSelect(myId, otherId) {
+        if (document.getElementById(myId).value !== "") {
+            if (otherId === "dst_group") {
+                $('#'+otherId).select2('val', '0');
+            } else {
+                document.getElementById(otherId).value = "";
+            }
+        }
+    }
+</script>
+<?php
+$jsOutput = ob_get_clean();
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-    html_print_submit_button(
-        __('Send message'),
-        'send_mes',
-        false,
-        'class="sub wand"'
-    );
-    echo '</form>';
-    echo '</div>';
+echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;new_msg=1">';
+// Print the main table.
+html_print_table($table);
+// Print the action buttons section.
+html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'style'   => 'width: '.$table->width,
+        'content' => html_print_submit_button(
+            __('Send message'),
+            'send_mes',
+            false,
+            'class="sub wand"',
+            true
+        ),
+    ]
+);
+
+echo '</form>';
+echo $jsOutput;

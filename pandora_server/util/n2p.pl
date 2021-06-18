@@ -1,7 +1,7 @@
 #!/usr/bin/perl -s
 ################################################################################
 #
-# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2007-2021 Artica Soluciones Tecnologicas S.L.
 #
 # n2p.pl	Reads Nagios 2.x configuration files and replicates the setup
 # 		using an installed Pandora FMS 1.3.
@@ -104,7 +104,7 @@ sub write_report {
 '<html>
 	<style> 
 		<!--
-			* {font-family: verdana, sans-serif; font-size: 8pt;}
+			* {font-size: 8pt;}
 			body {text-align: left; background-color: #f9f9f9;}
 			h1, h2 {font: bold 1em Arial, Sans-serif; text-transform: uppercase; color: #786; padding-bottom: 4px; padding-top: 7px;}
 			h1 {font-size: 18px; text-align: center; font-weight: bold;}

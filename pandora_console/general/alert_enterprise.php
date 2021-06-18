@@ -29,7 +29,7 @@ if (check_login()) {
     }
 
     echo "</span>
-<img class='modalclosex cerrar' src='".$config['homeurl']."images/icono_cerrar.png'>
+<img class='modalclosex cerrar' src='".$config['homeurl'].'images/icono_cerrar.png'."'>
 </div>
 
 <div class='modalcontent'>
@@ -105,7 +105,7 @@ if (check_login()) {
 
             echo __(
                 "This is the online help for %s console. This help is -in best cases- just a brief contextual help, not intented to teach you how to use %s. Official documentation of %s is about 900 pages, and you probably don't need to read it entirely, but sure, you should download it and take a look.<br><br>
-  <a href='%s' target='_blanck' class='pandora_green_text' style='font-size: 10pt; text-decoration: underline;'>Download the official documentation</a>",
+  <a href='%s' target='_blanck' class='pandora_green_text font_10 underline'>Download the official documentation</a>",
                 get_product_name(),
                 get_product_name(),
                 get_product_name(),
@@ -136,7 +136,7 @@ if (check_login()) {
         case 'modulemodal':
             echo __(
                 "The community version doesn't have the ability to define your own library of local modules, or distribute it to remote agents. You need to make those changes individually on each agent which is possible by using external tools and time and effort. Nor can it distribute local plugins, or have access to the library of enterprise plugins to monitor applications such as VMWare, RHEV or Informix between others. The Enterprise version will have all this, plus the ability to distribute and manage your own local modules on your systems, individually or through policies.
-      <br><br><img style='width:105px' src='".$config['homeurl']."images/logo_oracle.png'><img style='width:105px' src='".$config['homeurl']."images/logo_citrix.png'><img style='width:105px' src='".$config['homeurl']."images/logo_sap.png'><img style='width:105px' src='".$config['homeurl']."images/logo_exchange.png'><br><br><span style='font-style:italic;'>* Todos los logotipos pertenecen a marcas registradas</span>"
+      <br><br><img class='w105px' src='".$config['homeurl'].'images/logo_oracle.png'."'><img class='w105px' src='".$config['homeurl'].'images/logo_citrix.png'."'><img class='w105px' src='".$config['homeurl'].'images/logo_sap.png'."'><img class='w105px' src='".$config['homeurl'].'images/logo_exchange.png'."'><br><br><span class='italic'>* Todos los logotipos pertenecen a marcas registradas</span>"
             );
         break;
 
@@ -165,7 +165,12 @@ if (check_login()) {
         break;
 
         case 'monitorcheckmodal':
-                echo __('This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 40 modules per agent. This configuration has B/A modules per agent. Checkout the Enterprise Version for a professional supported system.');
+                // Get agent/module average.
+                $agentCount = db_get_value_sql('SELECT count(*) FROM tagente');
+                $modulesCount = db_get_value_sql('SELECT count(*) FROM tagente_modulo');
+                $average = ($modulesCount / $agentCount);
+
+                echo __('This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 100 modules per agent. This configuration has %d modules per agent. Checkout the Enterprise Version for a professional supported system.', $average);
         break;
 
         case 'remotemodulesmodal':
@@ -187,15 +192,15 @@ if (check_login()) {
     echo "
 
 </div>
-<div style='float:right;width:100%;height:30px;'>
-</div>
+<div class='btn_update_online_open height_30px'>
+
 <div class='modalokbutton cerrar'>
 <span class='modalokbuttontext'>OK</span>
 </div>";
     if ($open) {
         echo "<div class='modalgobutton gopandora'>
 <span class='modalgobuttontext'>About Enterprise</span>
-</div>";
+</div></div>";
     }
 }
 

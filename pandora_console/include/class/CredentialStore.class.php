@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -161,14 +161,15 @@ class CredentialStore extends Wizard
         if (! check_acl($config['id_user'], 0, 'AR')) {
             db_pandora_audit(
                 'ACL Violation',
-                'Trying to access event viewer'
+                'Trying to access credential store'
             );
 
             if (is_ajax()) {
                 echo json_encode(['error' => 'noaccess']);
+            } else {
+                include 'general/noaccess.php';
             }
 
-            include 'general/noaccess.php';
             exit;
         }
 
@@ -247,7 +248,7 @@ class CredentialStore extends Wizard
                 );
             } else {
                 $groups = [ $filter['filter_id_group'] ];
-                $childrens = groups_get_childrens($id_group, null, true);
+                $childrens = groups_get_children($id_group, null, true);
                 if (!empty($childrens)) {
                     foreach ($childrens as $child) {
                         $groups[] = (int) $child['id_grupo'];
@@ -350,7 +351,21 @@ class CredentialStore extends Wizard
             return db_get_value_sql($sql);
         }
 
-        return db_get_all_rows_sql($sql);
+        $return = db_get_all_rows_sql($sql);
+
+        // Filter out those items of group all that cannot be edited by user.
+        $return = array_filter(
+            $return,
+            function ($item) {
+                if ($item['id_group'] == 0 && users_can_manage_group_all('AR') === false) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+
+        return $return;
     }
 
 
@@ -384,6 +399,8 @@ class CredentialStore extends Wizard
             // Decrypt content.
             $key['username'] = io_output_password($key['username']);
             $key['password'] = io_output_password($key['password']);
+            $key['extra_1'] = io_output_password($key['extra_1']);
+            $key['extra_2'] = io_output_password($key['extra_2']);
 
             return $key;
         }
@@ -424,6 +441,8 @@ class CredentialStore extends Wizard
                 function ($carry, $item) {
                     $item['username'] = io_output_password($item['username']);
                     $item['password'] = io_output_password($item['password']);
+                    $item['extra_1'] = io_output_password($item['extra_1']);
+                    $item['extra_2'] = io_output_password($item['extra_2']);
                     $carry[$item['identifier']] = $item['identifier'];
                     return $carry;
                 }
@@ -443,11 +462,25 @@ class CredentialStore extends Wizard
      */
     public function draw()
     {
+        global $config;
+
         // Datatables offset, limit and order.
         $filter = get_parameter('filter', []);
         $start = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
         $order = get_datatable_order(true);
+        if ((bool) users_is_admin() === false) {
+            $all = users_can_manage_group_all('UM');
+
+            $filter['group_list'] = array_keys(
+                users_get_groups(
+                    $config['id_user'],
+                    'UM',
+                    (bool) $all
+                )
+            );
+        }
+
         try {
             ob_start();
 
@@ -558,14 +591,34 @@ class CredentialStore extends Wizard
         $extra_1 = get_parameter('extra_1', null);
         $extra_2 = get_parameter('extra_2', null);
 
-        if (empty($identifier)) {
+        if ($product === 'GOOGLE') {
+            $google_creds = json_decode(io_safe_output($extra_1));
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->ajaxMsg(
+                    'error',
+                    __('Not a valid JSON: %s', json_last_error_msg())
+                );
+                exit;
+            }
+
+            $username = $google_creds->client_email;
+            $password = $google_creds->private_key_id;
+        }
+
+        if (empty($identifier) === true) {
             $error = __('Key identifier is required');
         } else if ($id_group === null) {
             $error = __('You must select a group where store this key!');
-        } else if (empty($product)) {
+        } else if (empty($product) === true) {
             $error = __('You must specify a product type');
-        } else if (empty($username) && (empty($password))) {
+        } else if (empty($username) === true && (empty($password) === true)) {
             $error = __('You must specify a username and/or password');
+        }
+
+        if (isset($error)) {
+            $this->ajaxMsg('error', $error);
+            exit;
         }
 
         // Encrypt content (if needed).
@@ -573,10 +626,10 @@ class CredentialStore extends Wizard
             'identifier' => $identifier,
             'id_group'   => $id_group,
             'product'    => $product,
-            'username'   => io_input_password($username),
-            'password'   => io_input_password($password),
-            'extra_1'    => $extra_1,
-            'extra_2'    => $extra_2,
+            'username'   => io_input_password(io_safe_output($username)),
+            'password'   => io_input_password(io_safe_output($password)),
+            'extra_1'    => io_input_password(io_safe_output($extra_1)),
+            'extra_2'    => io_input_password(io_safe_output($extra_2)),
         ];
 
         // Spaces  are not allowed.
@@ -757,17 +810,16 @@ class CredentialStore extends Wizard
                     'form'                => [
                         'inputs' => [
                             [
-                                'label'   => __('Group'),
-                                'type'    => 'select',
-                                'id'      => 'filter_id_group',
-                                'name'    => 'filter_id_group',
-                                'options' => users_get_groups_for_select(
-                                    $config['id_user'],
-                                    'AR',
-                                    true,
-                                    true,
-                                    false
-                                ),
+                                'label'     => __('Group'),
+                                'type'      => 'select_groups',
+                                'id'        => 'filter_id_group',
+                                'name'      => 'filter_id_group',
+                                'privilege' => 'AR',
+                                'type'      => 'select_groups',
+                                'nothing'   => false,
+                                'selected'  => (defined($id_group_filter) ? $id_group_filter : 0),
+                                'return'    => true,
+                                'size'      => '80%',
                             ],
                             [
                                 'label' => __('Free search'),
@@ -785,9 +837,9 @@ class CredentialStore extends Wizard
         }
 
         // Auxiliar div.
-        $modal = '<div id="modal" style="display: none"></div>';
-        $msg = '<div id="msg" style="display: none"></div>';
-        $aux = '<div id="aux" style="display: none"></div>';
+        $modal = '<div id="modal" class="invisible"></div>';
+        $msg = '<div id="msg"     class="invisible"></div>';
+        $aux = '<div id="aux"     class="invisible"></div>';
 
         echo $modal.$msg.$aux;
 
@@ -819,6 +871,12 @@ class CredentialStore extends Wizard
             $values = [];
         }
 
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('AR') === true) {
+            $return_all_group = true;
+        }
+
         $form = [
             'action'   => '#',
             'id'       => 'modal_form',
@@ -844,13 +902,14 @@ class CredentialStore extends Wizard
         $inputs[] = [
             'label'     => __('Group'),
             'arguments' => [
-                'name'        => 'id_group',
-                'id'          => 'id_group',
-                'input_class' => 'flex-row',
-                'type'        => 'select_groups',
-                'selected'    => $values['id_group'],
-                'return'      => true,
-                'class'       => 'w50p',
+                'name'           => 'id_group',
+                'id'             => 'id_group',
+                'input_class'    => 'flex-row',
+                'type'           => 'select_groups',
+                'returnAllGroup' => $return_all_group,
+                'selected'       => $values['id_group'],
+                'return'         => true,
+                'class'          => 'w50p',
             ],
         ];
 
@@ -867,7 +926,7 @@ class CredentialStore extends Wizard
                     'AWS'    => __('Aws'),
                     'AZURE'  => __('Azure'),
                     'SAP'    => __('SAP'),
-                // 'GOOGLE' => __('Google'),
+                    'GOOGLE' => __('Google'),
                 ],
                 'selected'    => (isset($values['product']) ? $values['product'] : 'CUSTOM'),
                 'disabled'    => (bool) $values['product'],
@@ -879,6 +938,9 @@ class CredentialStore extends Wizard
         $pass_label = __('Password');
         $extra_1_label = __('Extra');
         $extra_2_label = __('Extra (2)');
+        $extra1_type = 'text';
+        $user = true;
+        $pass = true;
         $extra1 = true;
         $extra2 = true;
 
@@ -899,7 +961,14 @@ class CredentialStore extends Wizard
             break;
 
             case 'GOOGLE':
-                // Need further investigation.
+                $extra_1_label = __('Auth JSON');
+                $user = false;
+                $pass = false;
+                $extra1 = true;
+                $extra2 = false;
+                $extra1_type = 'textarea';
+            break;
+
             case 'CUSTOM':
             case 'SAP':
                 $user_label = __('Account ID');
@@ -911,29 +980,33 @@ class CredentialStore extends Wizard
             break;
         }
 
-        $inputs[] = [
-            'label'     => $user_label,
-            'id'        => 'div-username',
-            'arguments' => [
-                'name'        => 'username',
-                'input_class' => 'flex-row',
-                'type'        => 'text',
-                'value'       => $values['username'],
-                'return'      => true,
-            ],
-        ];
+        if ($user) {
+            $inputs[] = [
+                'label'     => $user_label,
+                'id'        => 'div-username',
+                'arguments' => [
+                    'name'        => 'username',
+                    'input_class' => 'flex-row',
+                    'type'        => 'text',
+                    'value'       => $values['username'],
+                    'return'      => true,
+                ],
+            ];
+        }
 
-        $inputs[] = [
-            'label'     => $pass_label,
-            'id'        => 'div-password',
-            'arguments' => [
-                'name'        => 'password',
-                'input_class' => 'flex-row',
-                'type'        => 'password',
-                'value'       => $values['password'],
-                'return'      => true,
-            ],
-        ];
+        if ($pass) {
+            $inputs[] = [
+                'label'     => $pass_label,
+                'id'        => 'div-password',
+                'arguments' => [
+                    'name'        => 'password',
+                    'input_class' => 'flex-row',
+                    'type'        => 'password',
+                    'value'       => $values['password'],
+                    'return'      => true,
+                ],
+            ];
+        }
 
         if ($extra1) {
             $inputs[] = [
@@ -941,8 +1014,9 @@ class CredentialStore extends Wizard
                 'id'        => 'div-extra_1',
                 'arguments' => [
                     'name'        => 'extra_1',
+                    'id'          => 'text-extra_1',
                     'input_class' => 'flex-row',
-                    'type'        => 'text',
+                    'type'        => $extra1_type,
                     'value'       => $values['extra_1'],
                     'return'      => true,
                 ],
@@ -991,6 +1065,7 @@ class CredentialStore extends Wizard
         * Process datatable item before draw it.
         */
         function process_datatables_item(item) {
+
             id = item.identifier;
 
             idrow = '<b><a href="javascript:" onclick="show_form(\'';
@@ -1000,11 +1075,11 @@ class CredentialStore extends Wizard
 
             item.options = '<a href="javascript:" onclick="show_form(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/eye.png', true, ['title' => __('Show')]); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/operation.png', true, ['title' => __('Show'), 'class' => 'invert_filter']); ?></a>';
 
             item.options += '<a href="javascript:" onclick="delete_key(\'';
             item.options += id;
-            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete')]); ?></a>';
+            item.options += '\')" ><?php echo html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']); ?></a>';
         }
 
         /**
@@ -1023,14 +1098,30 @@ class CredentialStore extends Wizard
          * Handles inputs visibility based on selected product.
          */
         function calculate_inputs() {
+            if ($('#product :selected').val() != "GOOGLE") {
+                // Restore text-extra_1.
+                var val = $('#text-extra_1').val();
+                if(typeof val == 'undefined') {
+                    val = '';
+                }
+                $('#text-extra_1').remove();
+                $('#div-extra_1').append(
+                    $('<input type="text" name="extra_1" id="text-extra_1" size="50" value="'+val+'"></input>')
+                );
+            }
+
             if ($('#product :selected').val() == "CUSTOM") {
                 $('#div-username label').text('<?php echo __('User'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
             } else if ($('#product :selected').val() == "AWS") {
                 $('#div-username label').text('<?php echo __('Access key ID'); ?>');
                 $('#div-password label').text('<?php echo __('Secret access key'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
             } else if ($('#product :selected').val() == "AZURE") {
@@ -1038,13 +1129,32 @@ class CredentialStore extends Wizard
                 $('#div-password label').text('<?php echo __('Application secret'); ?>');
                 $('#div-extra_1 label').text('<?php echo __('Tenant or domain name'); ?>');
                 $('#div-extra_2 label').text('<?php echo __('Subscription id'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').show();
                 $('#div-extra_2').show();
             } else if ($('#product :selected').val() == "SAP") {
                 $('#div-username label').text('<?php echo __('Account ID.'); ?>');
                 $('#div-password label').text('<?php echo __('Password'); ?>');
+                $('#div-username').show();
+                $('#div-password').show();
                 $('#div-extra_1').hide();
                 $('#div-extra_2').hide();
+            } else if ($('#product :selected').val() == "GOOGLE") {
+                $('#div-username').hide();
+                $('#div-password').hide();
+                $('#div-extra_2').hide();
+                $('#div-extra_1 label').text('<?php echo __('Auth JSON'); ?>');
+                var val = $('#text-extra_1').val();
+                if(typeof val == 'undefined') {
+                    val = '';
+                }
+
+                $('#text-extra_1').remove();
+                $('#div-extra_1').append(
+                    $('<textarea name="extra_1" id="text-extra_1">'+val+'</textarea>')
+                );
+                $('#div-extra_1').show();
             }
         }
 

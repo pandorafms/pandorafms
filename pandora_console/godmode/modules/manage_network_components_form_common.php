@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -14,7 +14,7 @@
 global $config;
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Agent Management'
@@ -22,23 +22,6 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     include 'general/noaccess.php';
     return;
 }
-
-include_javascript_d3();
-
-
-function push_table_row($row, $id=false)
-{
-    global $table;
-
-    if ($id) {
-        $data = [$id => $row];
-    } else {
-        $data = [$row];
-    }
-
-    $table->data = array_merge($table->data, $data);
-}
-
 
 $table->id = 'network_component';
 $table->width = '100%';
@@ -65,7 +48,9 @@ if (enterprise_installed()) {
             'basic'    => __('Basic'),
             'advanced' => __('Advanced'),
         ];
-        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' '.ui_print_help_icon('meta_access', true);
+        // TODO review help tips on meta.
+        $table->data[0][3] = html_print_select($wizard_levels, 'wizard_level', $wizard_level, '', '', -1, true, false, false).' ';
+        // .ui_print_help_icon('meta_access', true)
     } else {
         $table->data[0][2] = '';
         $table->data[0][3] = html_print_input_hidden('wizard_level', $wizard_level, true);
@@ -156,7 +141,14 @@ $table->data[2][3] = html_print_extended_select_for_time('module_interval', $mod
 
 $table->data[3][0] = __('Dynamic Interval');
 $table->data[3][1] = html_print_extended_select_for_time('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px', false);
-$table->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image('images/cog.png', true, ['title' => __('Advanced options Dynamic Threshold')]).'</a>';
+$table->data[3][1] .= '<a onclick=advanced_option_dynamic()>'.html_print_image(
+    'images/cog.png',
+    true,
+    [
+        'title' => __('Advanced options Dynamic Threshold'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 $table->data[3][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
 $table->data[3][2] .= html_print_input_text('dynamic_min', $dynamic_min, '', 10, 255, true);
@@ -323,7 +315,11 @@ $table->data[12][0] = __('Unknown instructions').ui_print_help_tip(__('Instructi
 $table->data[12][1] = html_print_textarea('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table->colspan[12][1] = 3;
 
-$next_row = 13;
+$table->data[13][0] = __('Description');
+$table->data[13][1] = html_print_textarea('description', 2, 65, $description, '', true);
+$table->colspan[13][1] = 3;
+
+$next_row = 14;
 
 if (check_acl($config['id_user'], 0, 'PM')) {
     $table->data[$next_row][0] = __('Category');
@@ -364,10 +360,8 @@ $table->data[$next_row][1] .= html_print_select_from_sql(
     'width: 200px',
     '5'
 );
-$table->data[$next_row][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module')]);
-// html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
-$table->data[$next_row][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module')]);
-// html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
+$table->data[$next_row][2] = html_print_image('images/darrowright.png', true, ['id' => 'right', 'title' => __('Add tags to module'), 'class' => 'invert_filter']);
+$table->data[$next_row][2] .= '<br><br><br><br>'.html_print_image('images/darrowleft.png', true, ['id' => 'left', 'title' => __('Delete tags to module'), 'class' => 'invert_filter']);
 $table->data[$next_row][3] = '<b>'.__('Tags selected').'</b><br>';
 $table->data[$next_row][3] .= html_print_select_from_sql(
     "SELECT name AS name1, name AS name2
@@ -399,121 +393,124 @@ $next_row++;
             console.log(type_name_selected);
             var element = document.getElementById("module_type_help");
             var language =  "<?php echo $config['language']; ?>" ;
-        element.onclick = function (event) {
-            if(type_name_selected == 'async_data' ||
-             type_name_selected == 'async_proc' ||
-             type_name_selected == 'async_string' ||
-             type_name_selected == 'generic_proc'||
-             type_name_selected == 'generic_data' ||
-             type_name_selected == 'generic_data_inc' ||
-             type_name_selected == 'generic_data_inc_abs'||
-             type_name_selected == 'generic_data_string' ||
-             type_name_selected == 'keep_alive'
-               ){
-                if (language == 'es'){
-                 window.open(
-                     'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
-                     '_blank',
-                     'width=800,height=600'
-                        );
-               }
-               else{
-                window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-               }
-              
-                
+
+            if (typeof element !== 'undefined' && element !== null) {
+                element.onclick = function (event) {
+                    if(type_name_selected == 'async_data' ||
+                     type_name_selected == 'async_proc' ||
+                     type_name_selected == 'async_string' ||
+                     type_name_selected == 'generic_proc'||
+                     type_name_selected == 'generic_data' ||
+                     type_name_selected == 'generic_data_inc' ||
+                     type_name_selected == 'generic_data_inc_abs'||
+                     type_name_selected == 'generic_data_string' ||
+                     type_name_selected == 'keep_alive'
+                       ){
+                        if (language == 'es'){
+                         window.open(
+                             'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                             '_blank',
+                             'width=800,height=600'
+                                );
+                       }
+                       else{
+                        window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                       }
+                      
+                        
+                    }
+                    if(type_name_selected == 'remote_icmp' ||
+                     type_name_selected == 'remote_icmp_proc'
+                     ){
+                         if(language == 'es'){
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                         }
+                         else{
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                         }
+                      
+                        
+                    }
+                    if(type_name_selected == 'remote_snmp_string' ||
+                     type_name_selected == 'remote_snmp_proc' ||
+                     type_name_selected == 'remote_snmp_inc' ||
+                     type_name_selected == 'remote_snmp'
+                     ){
+                         if(language == 'es'){
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                         }
+                         else{
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                         }
+                       
+                        
+                    }
+                    if(type_name_selected == 'remote_tcp_string' ||
+                     type_name_selected == 'remote_tcp_proc' ||
+                     type_name_selected == 'remote_tcp_inc' ||
+                     type_name_selected == 'remote_tcp'
+                       ){
+                           if(language == 'es'){
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                           }
+                           else{
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                           }
+                      
+                        
+                    }
+                    if(type_name_selected == 'web_data' ||
+                     type_name_selected == 'web_proc' ||
+                     type_name_selected == 'web_content_data' ||
+                     type_name_selected == 'web_content_string'
+                       ){
+                           if(language == 'es'){
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                           }
+                           else{
+                            window.open(
+                            'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                             '_blank',
+                             'width=800,height=600'
+                             );
+                           }
+                      
+                        
+                    }
+                }
             }
-            if(type_name_selected == 'remote_icmp' ||
-             type_name_selected == 'remote_icmp_proc'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-              
-                
-            }
-            if(type_name_selected == 'remote_snmp_string' ||
-             type_name_selected == 'remote_snmp_proc' ||
-             type_name_selected == 'remote_snmp_inc' ||
-             type_name_selected == 'remote_snmp'
-             ){
-                 if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-                 else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                 }
-               
-                
-            }
-            if(type_name_selected == 'remote_tcp_string' ||
-             type_name_selected == 'remote_tcp_proc' ||
-             type_name_selected == 'remote_tcp_inc' ||
-             type_name_selected == 'remote_tcp'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-                   else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-              
-                
-            }
-            if(type_name_selected == 'web_data' ||
-             type_name_selected == 'web_proc' ||
-             type_name_selected == 'web_content_data' ||
-             type_name_selected == 'web_content_string'
-               ){
-                   if(language == 'es'){
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-                   else{
-                    window.open(
-                    'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
-                     '_blank',
-                     'width=800,height=600'
-                     );
-                   }
-              
-                
-            }
-        }
             
             if (type_name_selected.match(/_string$/) == null) {
                 // Numeric types

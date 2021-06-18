@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,11 +58,11 @@ $table_details->style[0] = 'font-weight: bold;';
 $data = [];
 
 $data[0] = __('List alerts');
-$data[1] = '<a style=" font-size: 7pt;" href="index.php?sec=galertas&sec2=godmode/alerts/alert_list" title="'.__('List alerts').'"><b><span style=" font-size: 7pt;">'.__('List alerts').'</span></b></a>';
+$data[1] = '<a class="size_7pt" href="index.php?sec=galertas&sec2=godmode/alerts/alert_list" title="'.__('List alerts').'"><b><span>'.__('List alerts').'</span></b></a>';
 $table_details->data[] = $data;
 
 $data[0] = __('Agent');
-$data[1] = '<a style=" font-size: 7pt;" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent.'" title="'.$agent_alias.'"><b><span style=" font-size: 7pt;">'.$agent_alias.'</span></b></a>';
+$data[1] = '<a class="size_7pt" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent.'" title="'.$agent_alias.'"><b><span>'.$agent_alias.'</span></b></a>';
 $table_details->data[] = $data;
 
 $data[0] = __('Module');
@@ -89,13 +89,17 @@ if ($alert['times_fired'] > 0) {
 }
 
 $data[0] = __('Status');
-$data[1] = '<span style="margin-right: 5px;">'.ui_print_status_image($status, $title, true).'</span>'.$title;
+$data[1] = '<span class="mrg_r_5px">'.ui_print_status_image(
+    $status,
+    $title,
+    true
+).'</span>'.$title;
 $table_details->data[] = $data;
 
 $priorities = get_priorities();
 
 $data[0] = __('Priority');
-$data[1] = '<span style="width: 20px; height: 10px; margin-right: 5px; display: inline-block;" title="'.$priorities[$template['priority']].'" class="'.get_priority_class($template['priority']).'">&nbsp</span>'.$priorities[$template['priority']];
+$data[1] = '<span title="'.$priorities[$template['priority']].'" class="'.get_priority_class($template['priority']).' span_priority">&nbsp</span>'.$priorities[$template['priority']];
 $table_details->data[] = $data;
 
 $data[0] = __('Stand by');
@@ -107,7 +111,7 @@ if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
     if ($policyInfo === false) {
         $policy = __('N/A');
     } else {
-        $img = 'images/policies.png';
+        $img = 'images/policies_mc.png';
 
         $policy = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
     }
@@ -220,31 +224,31 @@ $table_days->data[0] = array_fill(0, 7, html_print_image('images/blade.png', tru
 
 $days = [];
 if ($template['monday']) {
-    $table_days->data[0][0] = html_print_image('images/tick.png', true);
+    $table_days->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['tuesday']) {
-    $table_days->data[0][1] = html_print_image('images/tick.png', true);
+    $table_days->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['wednesday']) {
-    $table_days->data[0][2] = html_print_image('images/tick.png', true);
+    $table_days->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['thursday']) {
-    $table_days->data[0][3] = html_print_image('images/tick.png', true);
+    $table_days->data[0][3] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['friday']) {
-    $table_days->data[0][4] = html_print_image('images/tick.png', true);
+    $table_days->data[0][4] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['saturday']) {
-    $table_days->data[0][5] = html_print_image('images/tick.png', true);
+    $table_days->data[0][5] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 if ($template['sunday']) {
-    $table_days->data[0][6] = html_print_image('images/tick.png', true);
+    $table_days->data[0][6] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 }
 
 $data[0] = html_print_table($table_days, true);
@@ -261,7 +265,7 @@ $table_time->styleTable = 'padding: 1px; margin: 0px; text-align: center; height
 // $data[0] = __('Time from') . ' / ' . __('Time to');
 if ($template['time_from'] == $template['time_to']) {
     $table_time->head[0] = '00:00:00<br>-<br>23:59:59';
-    $table_time->data[0][0] = html_print_image('images/tick.png', true);
+    $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 } else {
     $from_array = explode(':', $template['time_from']);
     $from = ($from_array[0] * SECONDS_1HOUR + $from_array[1] * SECONDS_1MINUTE + $from_array[2]);
@@ -274,7 +278,7 @@ if ($template['time_from'] == $template['time_to']) {
         }
 
         $table_time->head[1] = $template['time_from'].'<br>-<br>'.$template['time_to'];
-        $table_time->data[0][1] = html_print_image('images/tick.png', true);
+        $table_time->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 
         if ($template['time_to'] != '23:59:59') {
             $table_time->head[2] = $template['time_to'].'<br>-<br>23:59:59';
@@ -283,15 +287,15 @@ if ($template['time_from'] == $template['time_to']) {
     } else {
         if ($template['time_to'] != '00:00:00') {
             $table_time->head[0] = '00:00:00<br>-<br>'.$template['time_to'];
-            $table_time->data[0][0] = html_print_image('images/tick.png', true);
+            $table_time->data[0][0] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         }
 
         $table_time->head[1] = $template['time_to'].'<br>-<br>'.$template['time_from'];
-        $table_time->data[0][1] = html_print_image('images/blade.png', true);
+        $table_time->data[0][1] = html_print_image('images/blade.png', true, ['class' => 'invert_filter']);
 
         if ($template['time_from'] != '23:59:59') {
             $table_time->head[2] = $template['time_from'].'<br>-<br>23:59:59';
-            $table_time->data[0][2] = html_print_image('images/tick.png', true);
+            $table_time->data[0][2] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
         }
     }
 
@@ -343,14 +347,14 @@ $table->head = [];
 $table->data = [];
 $table->styleTable = 'text-align: center;';
 
-echo '<div class="firing_action_all" style="width: 100%;">';
+echo '<div class="firing_action_all w100p" >';
 $table->head[0] = __('Actions');
 $table->style[0] = 'font-weight: bold; text-align: left;';
 
 if (count($actions) == 1 && isset($actions[0])) {
     $table->head[1] = __('Every time that the alert is fired');
     $table->data[0][0] = $actions[0]['name'];
-    $table->data[0][1] = html_print_image('images/tick.png', true);
+    $table->data[0][1] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
@@ -360,7 +364,7 @@ if (count($actions) == 1 && isset($actions[0])) {
 
         foreach ($action['escalation'] as $k => $v) {
             if ($v > 0) {
-                $table->data[$kaction][$k] = html_print_image('images/tick.png', true);
+                $table->data[$kaction][$k] = html_print_image('images/tick.png', true, ['class' => 'invert_filter']);
             } else {
                 $table->data[$kaction][$k] = html_print_image('images/blade.png', true);
             }
@@ -418,7 +422,7 @@ $modes = [];
 $modes['firing'] = __('Firing');
 $modes['recovering'] = __('Recovering');
 
-$table->data[1][1] = '<div class="action_details" style="display: none;">'.__('Mode').'<br>'.html_print_select($modes, 'modes', 'firing', '', '', 0, true, false, false).'</div>';
+$table->data[1][1] = '<div class="action_details invisible" >'.__('Mode').'<br>'.html_print_select($modes, 'modes', 'firing', '', '', 0, true, false, false).'</div>';
 
 html_print_table($table);
 unset($table);
@@ -463,7 +467,10 @@ foreach ($actions as $kaction => $action) {
             $data[0] = '<b>'.$data[0].'</b><br>';
         }
 
-        $data[0] .= '<br><span style="font-size: xx-small;font-style:italic;">('.sprintf(__('Field %s'), ($kdesc + 1)).')</span>';
+        $data[0] .= '<br><span class="redi xx-small">('.sprintf(
+            __('Field %s'),
+            ($kdesc + 1)
+        ).')</span>';
         $data[1] = $template[$field];
         $data[2] = $action[$field];
         $data[3] = $firing_fields[$kaction]['value'][$field] = empty($action[$field]) ? $template[$field] : $action[$field];
@@ -494,20 +501,20 @@ foreach ($actions as $kaction => $action) {
     $firing_fields[$kaction]['command_preview'] = $command_preview;
 }
 
-echo '<div class="mode_table mode_table_firing action_details" style="width: 100%; display: none;">';
+echo '<div class="mode_table mode_table_firing action_details invisible w100p">';
 
 html_print_table($table);
 unset($table);
 
 foreach ($actions as $kaction => $action) {
-    echo '<div class="firing_action firing_action_'.$kaction.'" style="display:none;">';
+    echo '<div class="firing_action firing_action_'.$kaction.' invisible">';
     ui_print_info_message(['title' => __('Command preview'), 'message' => $firing_fields[$kaction]['command_preview'], 'no_close' => true]);
     echo '</div>';
 }
 
 echo '</div>';
 // Firing table
-echo '<div class="mode_table mode_table_recovering action_details" style="display: none; width: 100%;">';
+echo '<div class="mode_table mode_table_recovering action_details invisible w100p" >';
 if ($template['recovery_notify'] == 0) {
     ui_print_info_message(['title' => __('Disabled'), 'message' => __('The alert recovering is disabled on this template.'), 'no_close' => true]);
 } else {
@@ -541,7 +548,10 @@ if ($template['recovery_notify'] == 0) {
                 $data[0] = '<b>'.$data[0].'</b><br>';
             }
 
-            $data[0] .= '<br><span style="font-size: xx-small;font-style:italic;">('.sprintf(__('Field %s'), $fieldn).')</span>';
+            $data[0] .= '<br><span class="redi xx-small">('.sprintf(
+                __('Field %s'),
+                $fieldn
+            ).')</span>';
             $data[1] = $firing_fields[$kaction]['value'][$field];
             $data[2] = $template[$field.'_recovery'];
             $data[3] = $firing_fields[$kaction][$field.'_recovery'];

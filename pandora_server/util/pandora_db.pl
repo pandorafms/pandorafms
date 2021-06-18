@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2013 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,12 +29,13 @@ use Time::HiRes qw(usleep);
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
+use PandoraFMS::Core;
 use PandoraFMS::Tools;
 use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.743 PS200130";
+my $version = "7.0NG.755 Build 210618";
 
 # Pandora server configuration
 my %conf;
@@ -139,29 +140,6 @@ sub pandora_purgedb ($$) {
 		pandora_delete_old_session_data (\%conf, $dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
-		
-		#
-		# Now the log4x data
-		#
-		$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC', 1);
-		if (defined ($first_mark)) {
-			$total_time = $ulimit_timestamp - $first_mark;
-			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-			if ($purge_steps > 0) {
-				for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-					db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark );
-					log_message ('PURGE', "Log4x data deletion progress %$ax\r");
-					# Do a nanosleep here for 0,01 sec
-					usleep (10000);
-				}
-				log_message ('', "\n");
-			} else {
-				log_message ('PURGE', 'No data to purge in tagente_datos_log4x.');
-			}
-		}
-		else {
-			log_message ('PURGE', 'No data in tagente_datos_log4x.');
-		}
 	}
 	else {
 		log_message ('PURGE', 'days_purge is set to 0. Old data will not be deleted.');
@@ -401,16 +379,11 @@ sub pandora_purgedb ($$) {
 		log_message ('PURGE', 'netflow_max_lifetime is set to 0. Old netflow data will not be deleted.');
 	}
 	
-	
-	
 	# Delete old log data
 	log_message ('PURGE', "Deleting old log data.");
-	if (!defined ($conf->{'logstash_host'}) || $conf->{'logstash_host'} eq '') {
-		log_message ('!', "Log collection disabled.");
-	}
-	elsif (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
+	if (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
 		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
-    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
+    enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
@@ -431,7 +404,9 @@ sub pandora_purgedb ($$) {
 	}
 
 	# Delete old tgraph_source data
+	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
+
 
 	# Delete network traffic old data.
 	log_message ('PURGE', 'Deleting old network matrix data.');
@@ -455,8 +430,8 @@ sub pandora_purgedb ($$) {
 ###############################################################################
 # Compact agent data.
 ###############################################################################
-sub pandora_compactdb ($$) {
-	my ($conf, $dbh) = @_;
+sub pandora_compactdb ($$$) {
+	my ($conf, $dbh, $dbh_conf) = @_;
 
 	my %count_hash;
 	my %id_agent_hash;
@@ -482,7 +457,7 @@ sub pandora_compactdb ($$) {
 		$limit_utime  = $conf->{'_last_compact'};
 	}
 	
-	if ($start_utime <= $limit_utime) {
+	if ($start_utime <= $limit_utime || ( defined ($conf->{'_last_compact'}) && (($conf->{'_last_compact'} + 24 * 60 * 60) > $start_utime))) {
 		log_message ('COMPACT', "Data already compacted.");
 		return;
 	}
@@ -516,7 +491,7 @@ sub pandora_compactdb ($$) {
 					next unless defined ($module_type);
 
 					# Mark proc modules.
-					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31) {
+					if ($module_type == 2 || $module_type == 6 || $module_type == 9 || $module_type == 18 || $module_type == 21 || $module_type == 31 || $module_type == 35 || $module_type == 100) {
 						$module_proc_hash{$id_module} = 1;
 					}
 					else {
@@ -541,7 +516,9 @@ sub pandora_compactdb ($$) {
 			}
 
 			# Delete interval from the database
-			db_do ($dbh, 'DELETE FROM tagente_datos WHERE utimestamp < ? AND utimestamp >= ?', $start_utime, $stop_utime);
+			db_do ($dbh, 'DELETE ad FROM tagente_datos ad
+				INNER JOIN tagente_modulo am ON ad.id_agente_modulo = am.id_agente_modulo AND am.id_tipo_modulo NOT IN (2,6,9,18,21,31,35,100)
+				WHERE ad.utimestamp < ? AND ad.utimestamp >= ?', $start_utime, $stop_utime);
 
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {
@@ -559,9 +536,9 @@ sub pandora_compactdb ($$) {
 
 	# Mark the last compact date
 	if (defined ($conf->{'_last_compact'})) {
-		db_do ($dbh, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'UPDATE tconfig SET value=? WHERE token=?', $last_compact, 'last_compact');
 	} else {
-		db_do ($dbh, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
+		db_do ($dbh_conf, 'INSERT INTO tconfig (value, token) VALUES (?, ?)', $last_compact, 'last_compact');
 	}
 }
 
@@ -571,7 +548,7 @@ sub pandora_compactdb ($$) {
 sub pandora_init_pdb ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n");
+	log_message ('', "Pandora FMS DB Tool v$version\n\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at official web\n\n");
 	
@@ -606,6 +583,28 @@ sub pandora_init_pdb ($) {
 	help_screen () if ($conf->{'_pandora_path'} eq '');
 }
 
+########################################################################
+# Prepares conf read from historical database settings.
+########################################################################
+sub pandoradb_load_history_conf($) {
+	my $dbh = shift;
+
+	my @options = get_db_rows($dbh, 'SELECT * FROM `tconfig`');
+
+	my %options = map 
+	{
+		'_' . $_->{'token'} => $_->{'value'}
+	} @options;
+
+	$options{'_days_autodisable_deletion'} = 0 unless defined ($options{'_days_autodisable_deletion'});
+	$options{'_num_past_special_days'} = 0 unless defined($options{'_num_past_special_days'});
+	$options{'_delete_old_network_matrix'} = 0 unless defined($options{'_delete_old_network_matrix'});
+	$options{'_delete_old_messages'} = 0 unless defined($options{'_delete_old_messages'});
+	$options{'_netflow_max_lifetime'} = 0 unless defined($options{'_netflow_max_lifetime'});
+	$options{'claim_back_snmp_modules'} = 0 unless defined($options{'claim_back_snmp_modules'});
+
+	return \%options;
+}
 
 ########################################################################
 # Read external configuration file.
@@ -676,7 +675,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
 	$conf->{'_netflow_nfexpire'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_nfexpire'");
-   	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
+ 	$conf->{'_netflow_path'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_path'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_session_timeout'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'session_timeout'");
 
@@ -686,6 +685,7 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_purge_old_information'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'Days_purge_old_information'");
 	$conf->{'_elasticsearch_ip'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_ip'");
 	$conf->{'_elasticsearch_port'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'elasticsearch_port'");
+	$conf->{'_server_unique_identifier'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'server_unique_identifier'");
 
 	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
 					if ( $conf->{'_big_operation_step_datos_purge'} );
@@ -750,7 +750,7 @@ sub pandora_checkdb_consistency {
 	# 1. Check for modules that do not have tagente_estado but have
 	#    tagente_module
 	#-------------------------------------------------------------------
-	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} == 1) {
+	if (defined($conf->{'_delete_notinit'}) && $conf->{'_delete_notinit'} ne "" && $conf->{'_delete_notinit'} eq "1") {
 		log_message ('CHECKDB', "Deleting not-init data.");
 		my @modules = get_db_rows ($dbh,
 			'SELECT id_agente_modulo, id_agente
@@ -980,7 +980,7 @@ sub pandora_delete_old_module_data {
 sub pandora_delete_old_export_data {
 	my ($dbh, $ulimit_timestamp) = @_;
 
-	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
+	log_message ('PURGE', "Deleting old export data from tserver_export_data");
 	while((my $rc = db_delete_limit ($dbh, 'tserver_export_data', 'UNIX_TIMESTAMP(timestamp) < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp)) ne '0E0') {
 		print "RC:$rc\n";
 		usleep (10000);
@@ -991,35 +991,40 @@ sub pandora_delete_old_export_data {
 # Delete old session data.
 ##############################################################################
 sub pandora_delete_old_session_data {
-    my ($conf, $dbh, $ulimit_timestamp) = @_;
+	my ($conf, $dbh, $ulimit_timestamp) = @_;
 
-    my $session_timeout = $conf->{'_session_timeout'};
+	my $session_timeout = $conf->{'_session_timeout'};
 
-	if ($session_timeout ne '') {
-		if ($session_timeout == -1) {
-			# The session expires in 10 years
-			$session_timeout = 315576000;
-		} else {
-			$session_timeout *= 60;
-		}
+	# DO not erase anything if session_timeout is not set.
+	return unless (defined($session_timeout) && $session_timeout ne '');
 
-		$ulimit_timestamp = time() - $session_timeout;
+	if ($session_timeout == 0) {
+		# As defined in console.
+		$session_timeout = 90;
 	}
+
+	if ($session_timeout == -1) {
+		# The session expires in 10 years
+		$session_timeout = 315576000;
+	} else {
+		$session_timeout *= 60;
+	}
+
+	$ulimit_timestamp = time() - $session_timeout;
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
 	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 
-	db_do ($dbh, "DELETE FROM tsessions_php WHERE
-	data IS NULL OR id_session REGEXP '^cron-'");
+	db_do ($dbh, "DELETE FROM tsessions_php WHERE data IS NULL OR id_session REGEXP '^cron-'");
 }
 
 ###############################################################################
 # Main
 ###############################################################################
-sub pandoradb_main ($$$) {
-	my ($conf, $dbh, $history_dbh) = @_;
+sub pandoradb_main ($$$;$) {
+	my ($conf, $dbh, $history_dbh, $running_in_history) = @_;
 
 	log_message ('', "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 
@@ -1035,14 +1040,18 @@ sub pandoradb_main ($$$) {
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
-		if (defined($conf{'_history_event_enabled'})) {
+		if (defined($conf{'_history_event_enabled'}) && $conf->{'_history_event_enabled'} ne "" && $conf->{'_history_event_enabled'} == 1) {
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
 	}
 
+	# Only active database should be compacted. Disabled for historical database.
 	# Compact on if enable and DaysCompact are below DaysPurge 
-	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
-		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);
+	if (!$running_in_history
+		&& ($conf->{'_onlypurge'} == 0)
+		&& ($conf->{'_days_compact'} < $conf->{'_days_purge'})
+	) {
+		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh, $dbh);
 	}
 
 	# Update tconfig with last time of database maintance time (now)
@@ -1052,11 +1061,52 @@ sub pandoradb_main ($$$) {
 	# Move SNMP modules back to the Enterprise server
 	enterprise_hook("claim_back_snmp_modules", [$dbh, $conf]);
 
+	# Check if there are discovery tasks with wrong id_recon_server
+	pandora_check_forgotten_discovery_tasks ($conf, $dbh);
+
 	# Recalculating dynamic intervals.
 	enterprise_hook("update_min_max", [$dbh, $conf]);
 
+	# Metaconsole database cleanup.
+	enterprise_hook("metaconsole_database_cleanup", [$dbh, $conf]);
+
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }
+
+###############################################################################
+# Check for discovery tasks configured with servers down
+###############################################################################
+
+sub pandora_check_forgotten_discovery_tasks {
+	my ($conf, $dbh) = @_;
+
+    log_message ('FORGOTTEN DISCOVERY TASKS', "Check for discovery tasks bound to inactive servers.");
+
+		my @discovery_tasks = get_db_rows ($dbh, 'SELECT id_rt, id_recon_server, name FROM trecon_task');
+		my $discovery_tasks_count = @discovery_tasks;
+
+		# End of the check (this server has not discovery tasks!).
+		if ($discovery_tasks_count eq 0) {
+			log_message('FORGOTTEN DISCOVERY TASKS', 'There are not defined discovery tasks. Skipping.');
+			return;
+		}
+
+		my $master_server = get_db_value ($dbh, 'SELECT id_server FROM tserver WHERE server_type = ? AND status != -1', DISCOVERYSERVER);
+
+		# Goes through all the tasks to check if any have the server down.
+		foreach my $task (@discovery_tasks) {
+			if ($task->{'id_recon_server'} ne $master_server) {
+				my $this_server_status = get_db_value ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $task->{'id_recon_server'});
+				if (!defined($this_server_status) || $this_server_status eq -1) {
+					my $updated_task = db_process_update ($dbh, 'trecon_task', { 'id_recon_server' => $master_server }, { 'id_rt' => $task->{'id_rt'} });
+					log_message('FORGOTTEN DISCOVERY TASKS', 'Updated discovery task '.$task->{'name'});
+				}
+			}
+		}
+
+		log_message('FORGOTTEN DISCOVERY TASKS', 'Step ended');
+}
+
 
 # Init
 pandora_init_pdb(\%conf);
@@ -1076,9 +1126,10 @@ else {
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
 my $history_dbh = undef;
 is_metaconsole(\%conf);
-if ($conf{'_history_db_enabled'} eq '1') {
+if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1') {
 	eval {
-		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'});
+		$conf{'encryption_key'} = enterprise_hook('pandora_get_encryption_key', [\%conf, $conf{'encryption_passphrase'}]);
+		$history_dbh = db_connect ($conf{'dbengine'}, $conf{'_history_db_name'}, $conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, pandora_output_password(\%conf, $conf{'_history_db_pass'}));
 	};
 	if ($@) {
 		if (is_offline(\%conf)) {
@@ -1089,8 +1140,16 @@ if ($conf{'_history_db_enabled'} eq '1') {
 	}
 }
 
-# Get a lock
-my $lock = db_get_lock ($dbh, 'pandora_db');
+# Only run on master servers.
+pandora_set_master(\%conf, $dbh);
+if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) { 
+	log_message ('', " [*] Not a master server.\n\n");
+	exit 1;
+}
+
+# Get a lock on dbname.
+my $lock_name = $conf{'dbname'};
+my $lock = db_get_lock ($dbh, $lock_name);
 if ($lock == 0 && $conf{'_force'} == 0) { 
 	log_message ('', " [*] Another instance of DB Tool seems to be running.\n\n");
 	exit 1;
@@ -1099,9 +1158,48 @@ if ($lock == 0 && $conf{'_force'} == 0) {
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
 
+# history_dbh is unset in pandoradb_main if not in use.
+if (defined($history_dbh)) {
+	log_message('', " [>] DB Tool running on historical database.\n");
+	my $h_conf = pandoradb_load_history_conf($history_dbh);
+
+	# Keep base settings.
+	$h_conf->{'_onlypurge'} = $conf{'_onlypurge'};
+
+	# Re-launch maintenance process for historical database.
+	pandoradb_main(
+		$h_conf,
+		$history_dbh,
+		undef,
+		1 # Disable certain funcionality while runningn in historical database.
+	);
+
+	# Handle partitions.
+	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);
+	
+}
+
+# Keep integrity between PandoraFMS agents and IntegriaIMS inventory objects.
+pandora_sync_agents_integria($dbh);
+
+# Get Integria IMS ticket types for alert commands.
+my @types = pandora_get_integria_ticket_types($dbh);
+
+if (scalar(@types) != 0) {
+	my $query_string = '';
+	foreach my $type (@types) {
+	        $query_string .= $type->{'id'} . ',' . $type->{'name'} . ';';
+	}
+
+	$query_string = substr $query_string, 0, -1;
+
+	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
+	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
+}
+
 # Release the lock
 if ($lock == 1) {
-	db_release_lock ($dbh, 'pandora_db');
+	db_release_lock ($dbh, $lock_name);
 }
 
 # Cleanup and exit

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -44,7 +44,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'tag')."'>".html_print_image(
             'images/tag.png',
             true,
-            ['title' => __('Tags')]
+            [
+                'title' => __('Tags'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'tag'),
     ];
@@ -53,7 +56,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'os')."'>".html_print_image(
             'images/operating_system.png',
             true,
-            ['title' => __('OS')]
+            [
+                'title' => __('OS'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'os'),
     ];
@@ -62,7 +68,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'group')."'>".html_print_image(
             'images/group.png',
             true,
-            ['title' => __('Groups')]
+            [
+                'title' => __('Groups'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'group'),
     ];
@@ -71,7 +80,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'module_group')."'>".html_print_image(
             'images/module_group.png',
             true,
-            ['title' => __('Module groups')]
+            [
+                'title' => __('Module groups'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'module_group'),
     ];
@@ -80,7 +92,10 @@ if (!$strict_acl) {
         'text'   => "<a href='".sprintf($url, 'module')."'>".html_print_image(
             'images/brick.png',
             true,
-            ['title' => __('Modules')]
+            [
+                'title' => __('Modules'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>',
         'active' => ($tab == 'module'),
     ];
@@ -90,7 +105,10 @@ if (!$strict_acl) {
             'text'   => "<a href='".sprintf($url, 'policies')."'>".html_print_image(
                 'images/policies_mc.png',
                 true,
-                ['title' => __('Policies')]
+                [
+                    'title' => __('Policies'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
             'active' => ($tab == 'policies'),
         ];
@@ -129,12 +147,29 @@ switch ($tab) {
     break;
 }
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     if (!$strict_acl) {
-        $header_title = $header_title.' - '.$header_sub_title;
+        $header_title = $header_title.' &raquo; '.$header_sub_title;
     }
 
-    ui_print_page_header($header_title, 'images/extensions.png', false, 'tree_view', false, $tabs);
+    ui_print_standard_header(
+        $header_title,
+        'images/extensions.png',
+        false,
+        'tree_view',
+        false,
+        $tabs,
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('View'),
+            ],
+        ]
+    );
 }
 
 // ---------------------Tabs -------------------------------------------
@@ -164,7 +199,7 @@ $agent_status_arr[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 $row = [];
 $row[] = __('Search group');
-$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 40, 30, true);
+$row[] = html_print_input_text('search_group', $search_group, '', is_metaconsole() ? 50 : 25, 30, true);
 
 if (is_metaconsole()) {
     $row[] = __('Show not init modules');
@@ -177,7 +212,7 @@ $table->data[] = $row;
 
 $row = [];
 $row[] = __('Search agent');
-$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 40, 30, true);
+$row[] = html_print_input_text('search_agent', $search_agent, '', is_metaconsole() ? 50 : 25, 30, true);
 
 $row[] = __('Show not init agents');
 $row[] = html_print_checkbox('show_not_init_agents', $show_not_init_agents, true, true);
@@ -208,7 +243,7 @@ if (!is_metaconsole()) {
 
     $row = [];
     $row[] = __('Search module');
-    $row[] = html_print_input_text('search_module', $search_module, '', 40, 30, true);
+    $row[] = html_print_input_text('search_module', $search_module, '', 25, 30, true);
 
     $row[] = __('Show not init modules');
     $row[] = html_print_checkbox('show_not_init_modules', $show_not_init_modules, true, true);
@@ -291,10 +326,8 @@ enterprise_hook('close_meta_frame');
         // Clear the tree
         if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
             treeController.recipient.empty();
-        
-        $(".loading_tree").show();
-        
 
+        $(".loading_tree").show();
 
         var parameters = {};
         parameters['page'] = "include/ajax/tree.ajax";
@@ -308,21 +341,21 @@ enterprise_hook('close_meta_frame');
         parameters['filter']['statusModule'] = $("select#status_module").val();
         parameters['filter']['groupID'] = $("input#hidden-group-id").val();
         parameters['filter']['tagID'] = $("input#hidden-tag-id").val();
-        
+
         if($("#checkbox-serach_hirearchy").is(':checked')){
             parameters['filter']['searchHirearchy'] = 1;
         }
         else{
             parameters['filter']['searchHirearchy'] = 0;
         }
-        
+
         if($("#checkbox-show_not_init_agents").is(':checked')){
             parameters['filter']['show_not_init_agents'] = 1;
         }
         else{
             parameters['filter']['show_not_init_agents'] = 0;
         }
-        
+
         if($("#checkbox-show_not_init_modules").is(':checked')){
             parameters['filter']['show_not_init_modules'] = 1;
             $('#hidden-show_not_init_modules_hidden').val(1);
@@ -339,13 +372,41 @@ enterprise_hook('close_meta_frame');
             success: function(data) {
                 if (data.success) {
                     $(".loading_tree").hide();
+                    var foundMessage = '';
+                    if (data.tree.length === 0) {
+                        foundMessage = "<?php echo __('No data found'); ?>";
+                        $("div#tree-controller-recipient").append(foundMessage);
+                    } else {
+                        switch (parameters['type']) {
+                            case 'policies':
+                                foundMessage = "<?php echo __('Policies found'); ?>";
+                                break;
+                            case 'os':
+                                foundMessage = "<?php echo __('Operating systems found'); ?>";
+                                break;
+                            case 'tag':
+                                foundMessage = "<?php echo __('Tags found'); ?>";
+                                break;
+                            case 'module_group':
+                                foundMessage = "<?php echo __('Module Groups found'); ?>";
+                                break;
+                            case 'module':
+                                foundMessage = "<?php echo __('Modules found'); ?>";
+                                break;
+                            case 'group':
+                            default:
+                                foundMessage = "<?php echo __('Groups found'); ?>";
+                                break;
+                        }
+                    }
                     
+
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),
                         detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
                         page: parameters['page'],
                         emptyMessage: "<?php echo __('No data found'); ?>",
-                        foundMessage: "<?php echo __('Found groups'); ?>",
+                        foundMessage: foundMessage,
                         tree: data.tree,
                         baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
                         ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -400,7 +461,6 @@ enterprise_hook('close_meta_frame');
         .hide()
         .prop("id", "module_details_window")
         .appendTo('body');
-    
     function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
         var params = {};
         var f = new Date();

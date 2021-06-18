@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,6 +56,10 @@ if (is_metaconsole()) {
     enterprise_include_once('include/functions_license.php');
 }
 
+if ($renew_license_result !== null) {
+    echo $renew_license_result;
+}
+
 if ($update_settings) {
     if (!is_metaconsole()) {
         // Node.
@@ -80,14 +84,23 @@ foreach ($rows as $row) {
     $settings->{$row['key']} = $row['value'];
 }
 
-echo '<script type="text/javascript">';
+?>
+<script type="text/javascript">
+var texts = {
+    error_connecting: '<?php echo __('Error while connecting to licence server.'); ?>',
+    error_license: '<?php echo __('Invalid response while validating license.'); ?>',
+    error_unknown: '<?php echo __('Unknown error'); ?>',
+}
+
+<?php
 if (enterprise_installed()) {
     print_js_var_enteprise();
 }
+?>
 
-echo '</script>';
-
-echo '<form method="post">';
+</script>
+<?php
+echo '<form method="post" id="form-license">';
 // Retrieve UM url configured (or default).
 $url = get_um_url();
 
@@ -105,7 +118,7 @@ if (is_metaconsole()) {
 $table->data = [];
 
 $table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
-$table->data[0][1] = html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="height:50px; width:450px;"', true);
+$table->data[0][1] = html_print_textarea('keys[customer_key]', 10, 255, $settings->customer_key, 'style="width: 450px" class="height_50px w450px"', true);
 
 $table->data[1][0] = '<strong>'.__($license['expiry_caption']).'</strong>';
 $table->data[1][1] = html_print_input_text('expires', $license['expiry_date'], '', 10, 255, true, true);
@@ -147,8 +160,8 @@ if (enterprise_installed() || defined('DESTDIR')) {
 }
 
 if (is_metaconsole()) {
-    ui_require_css_file('pandora_enterprise', '../../'.ENTERPRISE_DIR.'/include/styles/');
-    ui_require_css_file('register', '../../include/styles/');
+    ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('register', 'include/styles/');
 } else {
     ui_require_css_file('pandora');
     ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
@@ -157,7 +170,7 @@ if (is_metaconsole()) {
 
 if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
     echo '</form>';
-    echo '<div id="code_license_dialog" style="display: none; text-align: left;" title="'.__('Request new license').'">';
+    echo '<div id="code_license_dialog" class="invisible left" title="'.__('Request new license').'">';
     echo '<div id="logo">';
     html_print_image(ui_get_custom_header_logo(true));
     echo '</div>';

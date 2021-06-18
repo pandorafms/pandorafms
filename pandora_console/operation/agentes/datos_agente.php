@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,10 +191,10 @@ $formtable->size[0] = '40%';
 $formtable->size[1] = '20%';
 $formtable->size[2] = '30%';
 
-$formtable->data[0][0] = html_print_radio_button_extended('selection_mode', 'fromnow', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true).__('Choose a time from now');
+$formtable->data[0][0] = html_print_radio_button_extended('selection_mode', 'fromnow', '', $selection_mode, false, '', 'class="mrgn_right_15px"', true).__('Choose a time from now');
 $formtable->data[0][1] = html_print_extended_select_for_time('period', $period, '', '', '0', 10, true);
 
-$formtable->data[1][0] = html_print_radio_button_extended('selection_mode', 'range', '', $selection_mode, false, '', 'style="margin-right: 15px;"', true).__('Specify time range');
+$formtable->data[1][0] = html_print_radio_button_extended('selection_mode', 'range', '', $selection_mode, false, '', 'class="mrgn_right_15px"', true).__('Specify time range');
 $formtable->data[1][1] = __('Timestamp from:');
 
 $formtable->data[1][2] = html_print_input_text('date_from', $date_from, '', 10, 10, true);
@@ -214,7 +214,7 @@ if (preg_match('/string/', $moduletype_name) || $moduletype_name == 'log4x') {
 
 html_print_table($formtable);
 
-echo '<div class="action-buttons" style="width:98%">';
+echo '<div class="action-buttons w98p">';
 html_print_submit_button(__('Update'), 'updbutton', false, 'class="sub upd"');
 echo '</div>';
 
@@ -267,7 +267,7 @@ foreach ($result as $row) {
 
             // Because this *SHIT* of print_table monster, I cannot format properly this cells
             // so, eat this, motherfucker :))
-            $datos = "<span style='font-family: mono,monospace;'>".$datos.'</span>';
+            $datos = "<span class='mono'>".$datos.'</span>';
 
             // I dont why, but using index (value) method, data is automatically converted to html entities ¿?
             $data[$attr[1]] = $datos;

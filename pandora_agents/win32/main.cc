@@ -1,6 +1,6 @@
 /* Pandora Windows agent main file.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -115,8 +115,8 @@ main (int argc, char *argv[]) {
 			return 0;
 		} else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
 			/* Help parameter */
-			cout << "Pandora agent for Windows. ";
-			cout << "Version " << getPandoraAgentVersion () << endl;
+			cout << "Pandora agent for Windows ";
+			cout << "v" << getPandoraAgentVersion () << endl << endl;
 			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
 			cout << "Available options are:" << endl;
 			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM;

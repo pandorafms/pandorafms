@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ html_print_input_hidden(
     'custom_action',
     urlencode(
         base64_encode(
-            '&nbsp;<a href="javascript:setOID()"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" style="vertical-align: middle;"></img></a>'
+            '&nbsp;<a href="javascript:setOID()"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" class="vertical_middle"></img></a>'
         )
     ),
     false
@@ -183,7 +183,7 @@ if ($id_module_type >= 15 && $id_module_type <= 18) {
     $data[3] = html_print_select(
         $snmp_versions,
         'snmp_version',
-        $tcp_send,
+        $snmp_version,
         '',
         '',
         '',
@@ -225,7 +225,7 @@ push_table_simple($data, 'snmp_1');
 
 $data = [];
 $data[0] = __('SNMP OID');
-$data[1] = '<span class="left"; style="width: 50%">';
+$data[1] = '<span class="left w50p">';
 $data[1] .= html_print_input_text(
     'snmp_oid',
     $snmp_oid,
@@ -261,7 +261,7 @@ $data[1] .= html_print_image(
     ]
 );
 $data[1] .= '</span>';
-$data[1] .= '</span><span class="right" style="width: 50%; text-align: right">';
+$data[1] .= '</span><span class="right w50p right">';
 $data[1] .= html_print_button(
     __('SNMP walk'),
     'snmp_walk',
@@ -464,6 +464,8 @@ $data[1] = html_print_select(
     $disabledBecauseInPolicy
 );
 
+$data[1] .= '<br> <br><a class="info_cell" href="'.ui_get_full_url('index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox').'">'.__('Manage credentials').'</a>';
+
 $array_os = [
     'inherited' => __('Inherited'),
     'linux'     => __('SSH'),
@@ -496,7 +498,7 @@ if ($id_module_type !== 34
     $table_simple->rowstyle['row-cmd-row-2'] = 'display: none;';
 }
 
-snmp_browser_print_container(false, '100%', '60%', 'none');
+snmp_browser_print_container(false, '100%', '60%', 'display:none');
 
 ?>
 <script type="text/javascript">

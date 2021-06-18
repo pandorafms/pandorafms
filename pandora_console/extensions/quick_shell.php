@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,12 +94,23 @@ function quickShell()
         config_update_value('gotty_ssh_port', 8081);
     }
 
+    // Context to allow self-signed certs.
+    $context = stream_context_create(
+        [
+            'http' => [ 'method' => 'GET'],
+            'ssl'  => [
+                'verify_peer'      => false,
+                'verify_peer_name' => false,
+            ],
+        ]
+    );
+
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
 
-        $test = file_get_contents($ws_url);
+        $test = file_get_contents($ws_url, false, $context);
         if ($test === false) {
             ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
             $wiz->printForm(
@@ -188,16 +199,18 @@ function quickShell()
     } else if ($method == 'telnet') {
         // Telnet.
         $port = $config['gotty_telnet_port'];
+        $username = preg_replace('/[^a-zA-Z0-9\-\.]/', '', $username);
         $command_arguments = "var args = '?arg=-l ".$username;
         $command_arguments .= '&arg='.$address;
-        $command_arguments .= '&arg='.$method_port."';";
+        $command_arguments .= '&arg='.$method_port."&arg=-E';";
     } else {
         ui_print_error_message(__('Please use SSH or Telnet.'));
         return;
     }
 
-    // If rediretion is enabled, we will try to connect to http:// or https:// endpoint.
-    $test = get_headers($ws_url);
+    // If rediretion is enabled, we will try to connect using
+    // http:// or https:// endpoint.
+    $test = get_headers($ws_url, null, $context);
     if ($test === false) {
         if (empty($wiz) === true) {
             $wiz = new Wizard();
@@ -249,6 +262,12 @@ function quickShell()
         $new = "var url = '";
         $new .= $config['ws_proxy_url'].'/'.$method."';";
     }
+
+    // Update firefox issue.
+    $original = '    this.iframe_.src = \'#\';';
+    $trick = 'this.iframe_.src = \'javascript:\';';
+
+    $r = str_replace($original, $trick, $r);
 
     // Update url.
     $gotty = str_replace($url, $new, $gotty);
@@ -317,15 +336,15 @@ function quickShellSettings()
         );
         $gotty_host = get_parameter(
             'gotty_host',
-            $config['gotty_host']
+            ''
         );
         $gotty_ssh_port = get_parameter(
             'gotty_ssh_port',
-            $config['gotty_ssh_port']
+            ''
         );
         $gotty_telnet_port = get_parameter(
             'gotty_telnet_port',
-            $config['gotty_telnet_port']
+            ''
         );
 
         $gotty_user = get_parameter(
@@ -448,10 +467,7 @@ function quickShellSettings()
     $hidden->data = [];
     $hidden->style[0] = 'font-weight: bold;width: 40%;';
 
-    $hidden->data[0][0] = __('Gotty user').ui_print_help_tip(
-        __('Optional, set a user to access gotty service'),
-        true
-    );
+    $hidden->data[0][0] = __('Gotty user');
     $hidden->data[0][1] = html_print_input_text(
         'gotty_user',
         $config['gotty_user'],
@@ -461,10 +477,7 @@ function quickShellSettings()
         true
     );
 
-    $hidden->data[1][0] = __('Gotty password').ui_print_help_tip(
-        __('Optional, set a password to access gotty service'),
-        true
-    );
+    $hidden->data[1][0] = __('Gotty password');
     $hidden->data[1][1] = html_print_input_password(
         'gotty_pass',
         io_output_password($config['gotty_pass']),
@@ -473,6 +486,7 @@ function quickShellSettings()
         100,
         true
     );
+    $hidden->data[1][1] .= ui_print_reveal_password('gotty_pass', true);
 
     html_print_table($t);
 

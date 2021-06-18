@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,7 +88,6 @@ if (check_acl($config['id_user'], 0, 'AW')
     || check_acl($config['id_user'], 0, 'LM')
     || check_acl($config['id_user'], 0, 'UM')
     || check_acl($config['id_user'], 0, 'LW')
-    || check_acl($config['id_user'], 0, 'IW')
     || check_acl($config['id_user'], 0, 'EW')
     || check_acl($config['id_user'], 0, 'DW')
 ) {
@@ -181,7 +180,7 @@ function open_submenus () {
         if (value)
             $('div.menu>ul>li#' + index + '>ul').show();
     });
-    $('div.menu>ul>li.selected>ul').removeClass('invisible');
+    //$('div.menu>ul>li.selected>ul').removeClass('invisible');
 }
 
 function close_submenus () {
@@ -189,7 +188,7 @@ function close_submenus () {
         if (value)
             $('div.menu>ul>li#' + index + '>ul').hide();
     });
-    $('div.menu>ul>li.selected>ul').addClass('invisible');
+    //$('div.menu>ul>li.selected>ul').addClass('invisible');
 }
 
 

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,14 +64,23 @@ function pandora_session_close()
 function pandora_session_read($session_id)
 {
     $session_id = addslashes($session_id);
-    $session_data = db_get_value(
-        'data',
-        'tsessions_php',
-        'id_session',
-        $session_id
+
+    // Do not use SQL cache here.
+    $session_data = db_get_all_rows_sql(
+        sprintf(
+            'SELECT data
+            FROM `tsessions_php` WHERE id_session="%s"',
+            $session_id
+        ),
+        false,
+        false
     );
 
-    if (!empty($session_data)) {
+    if (is_array($session_data) === true) {
+        $session_data = $session_data[0]['data'];
+    }
+
+    if (empty($session_data) === false) {
         return $session_data;
     } else {
         return '';
@@ -90,7 +99,6 @@ function pandora_session_read($session_id)
 function pandora_session_write($session_id, $data)
 {
     $session_id = addslashes($session_id);
-
     if (is_ajax()) {
         // Avoid session upadte while processing ajax responses - notifications.
         if (get_parameter('check_new_notifications', false)) {
@@ -101,18 +109,22 @@ function pandora_session_write($session_id, $data)
     $values = [];
     $values['last_active'] = time();
 
-    if (!empty($data)) {
+    if (empty($data) === false) {
         $values['data'] = addslashes($data);
     }
 
-    $session_exists = (bool) db_get_value(
-        'COUNT(id_session)',
-        'tsessions_php',
-        'id_session',
-        $session_id
+    // Do not use SQL cache here.
+    $session_exists = db_get_all_rows_sql(
+        sprintf(
+            'SELECT id_session
+             FROM `tsessions_php` WHERE id_session="%s"',
+            $session_id
+        ),
+        false,
+        false
     );
 
-    if (!$session_exists) {
+    if ($session_exists === false) {
         $values['id_session'] = $session_id;
         $retval_write = db_process_sql_insert('tsessions_php', $values);
     } else {
@@ -198,14 +210,71 @@ function pandora_session_gc($max_lifetime=300)
 }
 
 
-// TODO: SAML should work with pandora session handlers.
-if (db_get_value('value', 'tconfig', 'token', 'auth') != 'saml') {
-    $result_handler = session_set_save_handler(
-        'pandora_session_open',
-        'pandora_session_close',
-        'pandora_session_read',
-        'pandora_session_write',
-        'pandora_session_destroy',
-        'pandora_session_gc'
-    );
+/**
+ * Enables custom session handlers.
+ *
+ * @return boolean Context changed or  not.
+ */
+function enable_session_handlers()
+{
+    global $config;
+
+    if (isset($config['_using_pandora_sessionhandlers']) !== true
+        || $config['_using_pandora_sessionhandlers'] !== true
+    ) {
+        if (session_status() !== PHP_SESSION_NONE) {
+            // Close previous version.
+            session_write_close();
+        }
+
+        $sesion_handler = session_set_save_handler(
+            'pandora_session_open',
+            'pandora_session_close',
+            'pandora_session_read',
+            'pandora_session_write',
+            'pandora_session_destroy',
+            'pandora_session_gc'
+        );
+
+        session_start();
+
+        // Restore previous session.
+        $config['_using_pandora_sessionhandlers'] = true;
+        return $sesion_handler;
+    }
+
+    return false;
 }
+
+
+/**
+ * Disables custom session handlers.
+ *
+ * @param string|null $id_session Force swap to target session.
+ *
+ * @return void
+ */
+function disable_session_handlers($id_session=null)
+{
+    global $config;
+
+    if (session_status() !== PHP_SESSION_NONE) {
+        // Close previous version.
+        session_write_close();
+    }
+
+    $ss = new SessionHandler();
+    session_set_save_handler($ss, true);
+
+    if ($id_session !== null) {
+        session_id($id_session);
+    }
+
+    session_start();
+
+    $config['_using_pandora_sessionhandlers'] = false;
+}
+
+
+// Always enable session handler.
+$result_handler = enable_session_handlers();

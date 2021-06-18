@@ -6,7 +6,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -82,46 +82,49 @@ $table_remote->data['ehorus_user'] = $row;
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('ehorus_pass', io_output_password($config['ehorus_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('ehorus_pass', true);
 $table_remote->data['ehorus_pass'] = $row;
 
 // Directory hostname.
 $row = [];
 $row['name'] = __('API Hostname');
 $row['control'] = html_print_input_text('ehorus_hostname', $config['ehorus_hostname'], '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Hostname of the eHorus API').'. '.__('Without protocol and port').'. '.__('e.g., portal.ehorus.com'), true);
 $table_remote->data['ehorus_hostname'] = $row;
 
 // Directory port.
 $row = [];
 $row['name'] = __('API Port');
 $row['control'] = html_print_input_text('ehorus_port', $config['ehorus_port'], '', 6, 100, true);
-$row['control'] .= ui_print_help_tip(__('e.g., 18080'), true);
 $table_remote->data['ehorus_port'] = $row;
 
 // Request timeout.
 $row = [];
 $row['name'] = __('Request timeout');
 $row['control'] = html_print_input_text('ehorus_req_timeout', $config['ehorus_req_timeout'], '', 3, 10, true);
-$row['control'] .= ui_print_help_tip(__('Time in seconds to set the maximum time of the requests to the eHorus API').'. '.__('0 to disable'), true);
 $table_remote->data['ehorus_req_timeout'] = $row;
 
 // Test.
 $row = [];
 $row['name'] = __('Test');
 $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, '', 'class="sub next"', true);
-$row['control'] .= '<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-$row['control'] .= '&nbsp;<span id="test-ehorus-message" style="display:none;"></span>';
+$row['control'] .= '<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$row['control'] .= '<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$row['control'] .= '&nbsp;<span id="test-ehorus-message" class="invisible"></span>';
 $table_remote->data['ehorus_test'] = $row;
 
 // Print.
-echo '<div style="text-align: center; padding-bottom: 20px;">';
+echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+if ($config['style'] === 'pandora_black') {
+    html_print_image('include/ehorus/images/ehorus-logo.png');
+} else {
+    html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+}
+
 echo '</a>';
 echo '<br />';
-echo '<div style="font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #515151;">';
+echo '<div class="ehorus_title">';
 echo __('Remote Management System');
 echo '</div>';
 echo '<a target="_blank" rel="noopener noreferrer" href="https://ehorus.com">';

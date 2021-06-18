@@ -1,0 +1,23 @@
+.ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable {
+  padding: 0;
+}
+
+.ui-dialog .ui-widget-header {
+  margin: 0;
+}
+
+.ui-dialog-content {
+  height: 100%;
+}
+
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close {
+  margin-top: -10px;
+}
+
+.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
+  background: url("../images/icono_cerrar.png") no-repeat center center;
+}
+
+.ui-button-icon.ui-icon.ui-icon-closethick {
+  background: url("../images/icono_cerrar.png") no-repeat center center !important;
+}

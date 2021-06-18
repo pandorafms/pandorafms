@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -147,9 +147,11 @@ if (is_ajax()) {
     return;
 }
 
+
+
 ui_require_javascript_file('openlayers.pandora');
 
-$new_agent = (bool) get_parameter('new_agent');
+$new_agent = (empty($id_agente)) ? true : false;
 
 if (! isset($id_agente) && ! $new_agent) {
     db_pandora_audit('ACL Violation', 'Trying to access agent manager witout an agent');
@@ -205,13 +207,13 @@ $custom_id_div .= html_print_input_text(
 ).'</div>';
 
 if (!$new_agent && $alias != '') {
-    $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').': '.ui_print_help_tip(__("The agent's name must be the same as the one defined at the console"), true).'</p>';
+    $table_agent_name = '<div class="label_select"><p class="input_label">'.__('Agent name').'</p>';
     $table_agent_name .= '<div class="label_select_parent">';
-    $table_agent_name .= '<div class="label_select_child_left" style="width: 60%;">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
-    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name" style="width: 70%;">';
+    $table_agent_name .= '<div class="label_select_child_left w60p">'.html_print_input_text('agente', $nombre_agente, '', 50, 100, true).'</div>';
+    $table_agent_name .= '<div class="label_select_child_right agent_options_agent_name w70p">';
 
     if ($id_agente) {
-        $table_agent_name .= '<label>'.__('ID').'</label><input style="width: 50%;" type="text" readonly value="'.$id_agente.'" />';
+        $table_agent_name .= '<label>'.__('ID').'</label><input class="w50p" type="text" readonly value="'.$id_agente.'" />';
         $table_agent_name .= '<a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
         $table_agent_name .= html_print_image(
             'images/zoom.png',
@@ -219,6 +221,7 @@ if (!$new_agent && $alias != '') {
             [
                 'border' => 0,
                 'title'  => __('Agent detail'),
+                'class'  => 'invert_filter',
             ]
         );
         $table_agent_name .= '</a>';
@@ -227,7 +230,16 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image('images/cross.png', true, ['title' => __('Delete agent')]).'</a>';
+    if (!is_central_policies_on_node()) {
+        $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => __('Delete agent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
+    }
 
     // Remote configuration available.
     if (isset($filename)) {
@@ -243,12 +255,10 @@ if (!$new_agent && $alias != '') {
                 [
                     'border' => 0,
                     'title'  => __('This agent can be remotely configured'),
+                    'class'  => 'invert_filter',
                 ]
             );
-            $table_agent_name .= '</a>'.ui_print_help_tip(
-                __('You can remotely edit this agent configuration'),
-                true
-            );
+            $table_agent_name .= '</a>';
         }
     }
 
@@ -256,10 +266,10 @@ if (!$new_agent && $alias != '') {
 
     // QR code div.
     $table_qr_code = '<div class="box-shadow agent_qr white_box">';
-    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').': </p>';
+    $table_qr_code .= '<p class="input_label">'.__('QR Code Agent view').'</p>';
     $table_qr_code .= '<div id="qr_container_image"></div>';
     if ($id_agente) {
-        $table_qr_code .= "<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente)."\" );'></a>";
+        $table_qr_code .= "<a id='qr_code_agent_view' href='".ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente).");'></a>";
     }
 
     // Add Custom id div.
@@ -273,7 +283,7 @@ if ($new_agent) {
     $label_select_parent = 'label_select_parent';
 }
 
-$table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').': '.ui_print_help_tip(__('Characters /,\,|,%,#,&,$ will be ignored'), true).'</p>';
+$table_alias = '<div class="label_select"><p class="input_label">'.__('Alias').'</p>';
 $table_alias .= '<div class='.$label_select_parent.'>';
 $table_alias .= '<div class='.$label_select_child_left.'>'.html_print_input_text('alias', $alias, '', 50, 100, true, false, true).'</div>';
 if ($new_agent) {
@@ -282,10 +292,10 @@ if ($new_agent) {
 
 $table_alias .= '</div></div>';
 
-$table_ip = '<div class="label_select"><p class="input_label">'.__('IP Address').': </p>';
+$table_ip = '<div class="label_select"><p class="input_label">'.__('IP Address').'</p>';
 $table_ip .= '<div class="label_select_parent">';
 $table_ip .= '<div class="label_select_child_left">'.html_print_input_text('direccion', $direccion_agente, '', 16, 100, true).'</div>';
-$table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').ui_print_help_tip(__('Set the primary IP address as the unique IP, preventing the same primary IP address from being used in more than one agent'), true).'</div>';
+$table_ip .= '<div class="label_select_child_right">'.html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true).__('Unique IP').'</div>';
 $table_ip .= '</div></div>';
 
 if ($id_agente) {
@@ -319,11 +329,20 @@ if (is_array($modules)) {
     }
 }
 
-$table_primary_group = '<div class="label_select"><p class="input_label">'.__('Primary group').': </p>';
+$table_primary_group = '<div class="label_select"><p class="input_label">'.__('Primary group').'</p>';
 $table_primary_group .= '<div class="label_select_parent">';
 // Cannot change primary group if user have not permission for that group.
 if (isset($groups[$grupo]) || $new_agent) {
-    $table_primary_group .= html_print_select_groups(false, 'AR', false, 'grupo', $grupo, '', '', 0, true);
+    $table_primary_group .= html_print_input(
+        [
+            'type'           => 'select_groups',
+            'returnAllGroup' => false,
+            'name'           => 'grupo',
+            'selected'       => $grupo,
+            'return'         => true,
+            'required'       => true,
+        ]
+    );
 } else {
     $table_primary_group .= groups_get_name($grupo);
     $table_primary_group .= html_print_input_hidden('grupo', $grupo, true);
@@ -333,7 +352,7 @@ $table_primary_group .= '<div class="label_select_child_icons"><span id="group_p
 $table_primary_group .= ui_print_group_icon($grupo, true);
 $table_primary_group .= '</span></div></div></div>';
 
-$table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').': </p>';
+$table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').'</p>';
 $table_interval .= '<div class="label_select_parent">';
 $table_interval .= html_print_extended_select_for_time(
     'intervalo',
@@ -356,7 +375,7 @@ if ($intervalo < SECONDS_5MINUTES) {
 
 $table_interval .= '</div></div>';
 
-$table_os = '<div class="label_select"><p class="input_label">'.__('OS').': </p>';
+$table_os = '<div class="label_select"><p class="input_label">'.__('OS').'</p>';
 $table_os .= '<div class="label_select_parent">';
 $table_os .= html_print_select_from_sql(
     'SELECT id_os, name FROM tconfig_os',
@@ -378,7 +397,7 @@ if (!array_key_exists($server_name, $servers)) {
     // Set the agent have not server.
 }
 
-$table_server = '<div class="label_select"><p class="input_label">'.__('Server').': </p>';
+$table_server = '<div class="label_select"><p class="input_label">'.__('Server').'</p>';
 $table_server .= '<div class="label_select_parent">';
 if ($new_agent) {
     // Set first server by default.
@@ -398,7 +417,7 @@ $table_server .= html_print_select(
 ).'<div class="label_select_child_icons"></div></div></div>';
 
 // Description.
-$table_description = '<div class="label_select"><p class="input_label">'.__('Description').': </p>';
+$table_description = '<div class="label_select"><p class="input_label">'.__('Description').'</p>';
 $table_description .= html_print_textarea(
     'comentarios',
     3,
@@ -423,46 +442,68 @@ echo '</div>';
 
 if (enterprise_installed()) {
     $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-    $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').': </p></div>';
+    $adv_secondary_groups_label = '<div class="label_select"><p class="input_label">'.__('Secondary groups').'</p></div>';
     $adv_secondary_groups_left = html_print_select_groups(
-        false,
+        // Id_user.
         // Use the current user to select the groups.
-        'AR',
-        // ACL permission.
         false,
+        // Privilege.
+        // ACL permission.
+        'AR',
+        // ReturnAllGroup.
         // Not all group.
-        'secondary_groups',
+        false,
+        // Name.
         // HTML id.
-        '',
+        'secondary_groups',
+        // Selected.
         // No select any by default.
         '',
+        // Script.
         // Javascript onChange code.
         '',
+        // Nothing.
         // Do not user no selected value.
-        0,
+        false,
+        // Nothing_value.
         // Do not use no selected value.
-        true,
+        0,
+        // Return.
         // Return HTML (not echo).
         true,
+        // Multiple.
         // Multiple selection.
         true,
+        // Sort.
         // Sorting by default.
-        '',
+        true,
+        // Class.
         // CSS classnames (default).
-        false,
+        '',
+        // Disabled.
         // Not disabled (default).
-        'min-width:170px;',
-        // Inline styles (default).
         false,
+        // Style.
+        // Inline styles (default).
+        'min-width:170px;',
+        // Option_style.
         // Option style select (default).
         false,
+        // Id_group.
         // Do not truncate the users tree (default).
-        'id_grupo',
-        // Key to get as value (default).
         false,
+        // Keys_field.
+        // Key to get as value (default).
+        'id_grupo',
+        // Strict_user.
         // Not strict user (default).
-        $secondary_groups_selected['plain']
+        false,
+        // Delete_groups.
         // Do not show the primary group in this selection.
+        array_merge(($secondary_groups_selected['plain'] ?? []), [$agent['id_grupo']])
+        // Include_groups.
+        // Size.
+        // Simple_multiple_options.
     );
 
     $adv_secondary_groups_arrows = html_print_input_image(
@@ -490,30 +531,30 @@ if (enterprise_installed()) {
     );
 
     $adv_secondary_groups_right .= html_print_select(
-        $secondary_groups_selected['for_select'],
         // Values.
-        'secondary_groups_selected',
+        $secondary_groups_selected['for_select'],
         // HTML id.
-        '',
+        'secondary_groups_selected',
         // Selected.
         '',
         // Javascript onChange code.
         '',
         // Nothing selected.
-        0,
+        false,
         // Nothing selected.
-        true,
+        0,
         // Return HTML (not echo).
         true,
         // Multiple selection.
         true,
         // Sort.
-        '',
+        true,
         // Class.
-        false,
+        '',
         // Disabled.
-        'min-width:170px;'
+        false,
         // Style.
+        'min-width:170px;'
     );
 
     // Safe operation mode.
@@ -530,20 +571,13 @@ if (enterprise_installed()) {
             }
         }
 
-        $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').': '.ui_print_help_tip(
-            __(
-                'This mode allow %s to disable all modules 
-		of this agent while the selected module is on CRITICAL status',
-                get_product_name()
-            ),
-            true
-        ).'</p>';
+        $table_adv_safe = '<div class="label_select_simple label_simple_items"><p class="input_label input_label_simple">'.__('Safe operation mode').'</p>';
         $table_adv_safe .= html_print_checkbox_switch('safe_mode', 1, $safe_mode, true);
         $table_adv_safe .= __('Module').'&nbsp;'.html_print_select($safe_mode_modules, 'safe_mode_module', $safe_mode_module, '', '', 0, true).'</div>';
     }
 
     // Remote configuration.
-    $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').': </p>';
+    $table_adv_remote = '<div class="label_select"><p class="input_label">'.__('Remote configuration').'</p>';
 
     if (!$new_agent && isset($filename) && file_exists($filename['md5'])) {
         $table_adv_remote .= date('F d Y H:i:s', fileatime($filename['md5']));
@@ -555,12 +589,10 @@ if (enterprise_installed()) {
             [
                 'title' => __('Delete remote configuration file'),
                 'style' => 'vertical-align: middle;',
+                'class' => 'invert_filter',
             ]
         ).'</a>';
-        $table_adv_remote .= '</a>'.ui_print_help_tip(
-            __('Delete this conf file implies that for restore you must reactive remote config in the local agent.'),
-            true
-        );
+        $table_adv_remote .= '</a>';
     } else {
         $table_adv_remote .= '<em>'.__('Not available').'</em>';
     }
@@ -581,17 +613,13 @@ if (enterprise_installed()) {
     $cps_html = '<div class="label_select"><div class="label_simple_items">';
     $cps_html .= html_print_checkbox_switch('cps', $cps_val, ($cps >= 0), true);
     $cps_html .= __('Cascade protection services').'&nbsp;';
-    $cps_html .= ui_print_help_tip(
-        __('Alerts and events will be managed by the service joined by this agent.'),
-        true
-    );
     $cps_html .= '</div></div>';
 
     $table_adv_cascade .= $cps_html;
 }
 
 
-$table_adv_parent = '<div class="label_select"><label class="input_label">'.__('Parent').': </label>';
+$table_adv_parent = '<div class="label_select"><label class="input_label">'.__('Parent').'</label>';
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -627,7 +655,7 @@ if (enterprise_installed()) {
 $table_adv_parent .= '</div></div>';
 
 // Learn mode / Normal mode.
-$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').': </p>';
+$table_adv_module_mode = '<div class="label_select"><p class="input_label">'.__('Module definition').'</p>';
 $table_adv_module_mode .= '<div class="switch_radio_button">';
 $table_adv_module_mode .= html_print_radio_button_extended(
     'modo',
@@ -669,12 +697,12 @@ $table_adv_status .= html_print_checkbox_switch(
     $disabled,
     true
 );
-$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').': '.ui_print_help_tip(__('If the remote configuration is enabled, it will also go into standby mode when disabling it.'), true).'</p>';
+$table_adv_status .= '<p class="input_label input_label_simple">'.__('Disabled mode').'</p>';
 $table_adv_status .= '</div>';
 
 // Url address.
 if (enterprise_installed()) {
-    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': '.ui_print_help_tip(__('URL address must be complete, for example: https://pandorafms.com/'), true).'</p>';
+    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').'</p>';
     $table_adv_url .= html_print_input_text(
         'url_description',
         $url_description,
@@ -691,7 +719,7 @@ if (enterprise_installed()) {
         'new-password'
     ).'</div>';
 } else {
-    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').': </p></div>';
+    $table_adv_url = '<div class="label_select"><p class="input_label">'.__('Url address').'</p></div>';
     $table_adv_url .= html_print_input_text(
         'url_description',
         $url_description,
@@ -704,8 +732,7 @@ if (enterprise_installed()) {
 
 $table_adv_quiet = '<div class="label_select_simple label_simple_one_item">';
 $table_adv_quiet .= html_print_checkbox_switch('quiet', 1, $quiet, true);
-$table_adv_quiet .= '<p class="input_label input_label_simple">'.__('Quiet').': ';
-$table_adv_quiet .= ui_print_help_tip(__('The agent still runs but the alerts and events will be stop'), true).'</p>';
+$table_adv_quiet .= '<p class="input_label input_label_simple">'.__('Quiet').'</p>';
 $table_adv_quiet .= '</div>';
 
 $listIcons = gis_get_array_list_icons();
@@ -717,15 +744,15 @@ foreach ($listIcons as $index => $value) {
 
 $path = 'images/gis_map/icons/';
 // TODO set better method the path.
-$table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').': '.ui_print_help_tip(__('Agent icon for GIS Maps.'), true).'</p>';
+$table_adv_agent_icon = '<div class="label_select"><p class="input_label">'.__('Agent icon').'</p>';
 if ($icon_path == '') {
     $display_icons = 'none';
     // Hack to show no icon. Use any given image to fix not found image errors.
-    $path_without = 'images/spinner.png';
-    $path_default = 'images/spinner.png';
-    $path_ok = 'images/spinner.png';
-    $path_bad = 'images/spinner.png';
-    $path_warning = 'images/spinner.png';
+    $path_without = 'images/spinner.gif';
+    $path_default = 'images/spinner.gif';
+    $path_ok = 'images/spinner.gif';
+    $path_bad = 'images/spinner.gif';
+    $path_warning = 'images/spinner.gif';
 } else {
     $display_icons = '';
     $path_without = $path.$icon_path.'.default.png';
@@ -779,7 +806,7 @@ if ($config['activate_gis']) {
 if (enterprise_installed()) {
     $advanced_div = '<div class="secondary_groups_list">';
 } else {
-    $advanced_div = '<div class="secondary_groups_list" style="display: none">';
+    $advanced_div = '<div class="secondary_groups_list invisible" >';
 }
 
 // General display distribution.
@@ -829,10 +856,7 @@ $table->width = '100%';
 $table->class = 'custom_fields_table';
 
 $table->head = [
-    0 => __('Click to display').ui_print_help_tip(
-        __('This field allows url insertion using the BBCode\'s url tag').'.<br />'.__('The format is: [url=\'url to navigate\']\'text to show\'[/url] or [url]\'url to navigate\'[/url] ').'.<br /><br />'.__('e.g.: [url=google.com]Google web search[/url] or [url]www.goole.com[/url]'),
-        true
-    ),
+    0 => __('Click to display'),
 ];
 $table->class = 'info_table';
 $table->style = [];
@@ -901,30 +925,25 @@ foreach ($fields as $field) {
             2,
             65,
             $custom_value,
-            'style="min-height: 30px;"',
+            'class="min-height-30px',
             true
         );
     }
 
     if ($field['combo_values'] !== '') {
-        $data_field[1] = html_print_select(
-            $combo_values,
-            'customvalue_'.$field['id_field'],
-            $custom_value,
-            '',
-            __('None'),
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            false,
-            false,
-            false,
-            false,
-            '',
-            false
+        $data_field[1] = html_print_input(
+            [
+                'type'              => 'select_search',
+                'fields'            => $combo_values,
+                'name'              => 'customvalue_'.$field['id_field'],
+                'selected'          => $custom_value,
+                'nothing'           => __('None'),
+                'nothing_value'     => '',
+                'return'            => true,
+                'sort'              => false,
+                'size'              => '400px',
+                'dropdownAutoWidth' => true,
+            ]
         );
     };
 
@@ -976,18 +995,18 @@ if (enterprise_installed()) {
         );
     }
 
-    echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+    echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
     echo '</div>';
 }
 
-echo '<div class="action-buttons" style="display: flex; justify-content: flex-end; align-items: center; width: '.$table->width.'">';
+echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'">';
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help' style='padding-right:8px;'>";
+    echo "<span id='modules_not_learning_mode_context_help' class='pdd_r_10px'>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help' style='display: none;'>";
+    echo "<span id='modules_not_learning_mode_context_help' class='invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');
@@ -1210,6 +1229,7 @@ ui_require_jquery_file('bgiframe');
 
     $(document).ready (function() {
 
+        var $id_agent = '<?php echo $id_agente; ?>';
         var previous_primary_group_select;
         $("#grupo").on('focus', function () {
             previous_primary_group_select = this.value;
@@ -1264,12 +1284,14 @@ ui_require_jquery_file('bgiframe');
             }
         });
 
-        paint_qrcode(
-            "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
-            "#qr_code_agent_view",
-            128,
-            128
-        );
+        if (typeof $id_agent !== 'undefined' && $id_agent !== '0') {
+            paint_qrcode(
+                "<?php echo ui_get_full_url('mobile/index.php?page=agent&id='.$id_agente); ?>",
+                "#qr_code_agent_view",
+                128,
+                128
+            );
+        }
         $("#text-agente").prop('readonly', true);
 
     });

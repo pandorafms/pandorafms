@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,7 +104,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Tactical View'),
                 'icon' => ui_get_full_url(
-                    'images/op_monitoring.menu_gray.png'
+                    'images/menu/op_monitoring.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=view&sec2=operation/agentes/tactical'
@@ -122,7 +122,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Agent Management'),
                 'icon' => ui_get_full_url(
-                    'images/gm_resources.menu_gray.png'
+                    'images/menu/gm_resources.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'
@@ -140,7 +140,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('General Setup'),
                 'icon' => ui_get_full_url(
-                    'images/gm_setup.menu_gray.png'
+                    'images/menu/gm_setup.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=general&sec2=godmode/setup/setup&section=general'
@@ -156,7 +156,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Manage Policies'),
                 'icon' => ui_get_full_url(
-                    'images/gm_configuration.menu_gray.png'
+                    'images/menu/gm_configuration.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies'
@@ -170,7 +170,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('List Alerts'),
                 'icon' => ui_get_full_url(
-                    'images/gm_alerts.menu_gray.png'
+                    'images/menu/gm_alerts.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=galertas&sec2=godmode/alerts/alert_list'
@@ -194,7 +194,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('View Events'),
                 'icon' => ui_get_full_url(
-                    'images/op_events.menu_gray.png'
+                    'images/menu/op_events.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=eventos&sec2=operation/events/events'
@@ -218,10 +218,10 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Dashboard'),
                 'icon' => ui_get_full_url(
-                    'images/op_reporting.menu_gray.png'
+                    'images/menu/op_reporting.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
-                    'index.php?sec=reporting&sec2=enterprise/dashboard/dashboards'
+                    'index.php?sec=reporting&sec2=operation/dashboard/dashboard'
                 ),
                 'acl'  => check_acl(
                     $config['id_user'],
@@ -232,7 +232,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Visual Console'),
                 'icon' => ui_get_full_url(
-                    'images/op_network.menu_gray.png'
+                    'images/menu/op_network.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=network&sec2=godmode/reporting/map_builder'
@@ -246,7 +246,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Manage Servers'),
                 'icon' => ui_get_full_url(
-                    'images/gm_servers.menu_gray.png'
+                    'images/menu/gm_servers.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gservers&sec2=godmode/servers/modificar_server'
@@ -260,7 +260,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Edit User'),
                 'icon' => ui_get_full_url(
-                    'images/gm_users.menu_gray.png'
+                    'images/menu/gm_users.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=workspace&sec2=operation/users/user_edit'
@@ -270,7 +270,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Tree View'),
                 'icon' => ui_get_full_url(
-                    'images/op_monitoring.menu_gray.png'
+                    'images/menu/op_monitoring.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=view&sec2=operation/tree'
@@ -280,7 +280,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Network Component'),
                 'icon' => ui_get_full_url(
-                    'images/gm_configuration.menu_gray.png'
+                    'images/menu/gm_configuration.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'
@@ -294,7 +294,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Task List'),
                 'icon' => ui_get_full_url(
-                    'images/gm_discovery.menu.png'
+                    'images/menu/gm_discovery.menu.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=discovery&sec2=godmode/servers/discovery&wiz=tasklist'
@@ -338,7 +338,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Update Manager'),
                 'icon' => ui_get_full_url(
-                    'images/um_messages.menu_gray.png'
+                    'images/menu/um_messages.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=setup'
@@ -352,7 +352,7 @@ class OrderInterpreter extends Wizard
             [
                 'name' => __('Manage Agent Groups'),
                 'icon' => ui_get_full_url(
-                    'images/gm_users.menu_gray.png'
+                    'images/menu/gm_users.menu_gray.png'
                 ),
                 'url'  => ui_get_full_url(
                     'index.php?sec=gagente&sec2=godmode/groups/group_list&tab=groups'
@@ -380,7 +380,7 @@ class OrderInterpreter extends Wizard
 
         // Take value from input search.
         $text = get_parameter('text', '');
-        $array_found = [];
+        $enterprise = (bool) get_parameter('enterprise', false);
         $iterator = 0;
         $more_results = 0;
 
@@ -394,10 +394,10 @@ class OrderInterpreter extends Wizard
                     __('GO TO '.$value['name'])
                 ) && $value['acl']
                 ) {
-                    if ($iterator <= 9) {
+                    if ($iterator <= 9 && $this->canShowItem($enterprise, $this->pages_menu[$key]['url'])) {
                         echo '<li class="list_found" name="'.$iterator.'" id="'.$iterator.'">';
                         echo '
-                        Go to &nbsp;
+                        <span class="invert_filter"> Go to </span> &nbsp;
                         <img src="'.$this->pages_menu[$key]['icon'].'">';
                         echo '&nbsp;
                         <a href="'.$this->pages_menu[$key]['url'].'">
@@ -419,16 +419,38 @@ class OrderInterpreter extends Wizard
             echo $this->loadJS();
             echo '</ul>';
             if ($iterator > 10) {
-                echo '<div class="more_results">
-                  + '.$more_results.' '.__('results found').'</div>';
+                echo '<div class="more_results"><span class="invert_filter">
+                  + '.$more_results.' '.__('results found').'</span></div>';
             }
 
             if ($iterator === 0) {
-                echo __('No results found');
+                echo '<span class="invert_filter">'.__('Press enter to search').'</span>';
             }
 
             echo '</div>';
         }
+    }
+
+
+    /**
+     * Determines if the element must be shown or not.
+     *
+     * @param boolean $isEnterprise Define if the console is Enterprise.
+     * @param string  $url          Url of the element for select.
+     *
+     * @return boolean
+     */
+    private function canShowItem(bool $isEnterprise, string $url)
+    {
+        $canShow = false;
+
+        $hasEnterpriseLocation = strpos($url, '&sec2=enterprise') !== false;
+
+        if (($isEnterprise === false && $hasEnterpriseLocation === false) || $isEnterprise === true) {
+            $canShow = true;
+        }
+
+        return $canShow;
     }
 
 

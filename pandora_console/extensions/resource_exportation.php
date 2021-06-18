@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -92,7 +92,11 @@ function output_xml_report($id)
 
     $group = db_get_value('nombre', 'tgrupo', 'id_grupo', $report['id_group']);
     echo '<group><![CDATA['.io_safe_output($group)."]]></group>\n";
-    $items = db_get_all_rows_field_filter('treport_content', 'id_report', $report['id_report']);
+    $items = db_get_all_rows_field_filter(
+        'treport_content',
+        'id_report',
+        $report['id_report']
+    );
     foreach ($items as $item) {
         echo "<item>\n";
             echo '<type>'.io_safe_output($item['type'])."</type>\n";
@@ -379,7 +383,7 @@ function get_name_xml_resource($hook_enterprise)
         break;
     }
 
-    $file = $name.'.ptr';
+    $file = io_safe_output($name).'.ptr';
 
     return $file;
 }

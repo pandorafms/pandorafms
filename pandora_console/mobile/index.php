@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,7 +44,6 @@ require_once 'operation/agent.php';
 require_once 'operation/visualmaps.php';
 require_once 'operation/visualmap.php';
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
-$enterpriseHook = enterprise_include('mobile/operation/dashboard.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
 $is_mobile = true;
@@ -184,7 +183,6 @@ switch ($action) {
         }
     return;
 
-        break;
     case 'login':
         if ($user->login() && $user->isLogged()) {
             if (file_exists('../enterprise/load_enterprise.php')) {
@@ -280,9 +278,6 @@ switch ($action) {
                     $page = 'events';
                 break;
 
-                case 'Group view':
-                break;
-
                 case 'Alert detail':
                     $page = 'alerts';
                 break;
@@ -291,16 +286,15 @@ switch ($action) {
                     $page = 'tactical';
                 break;
 
-                case 'Dashboard':
-                    $page = 'dashboard';
-                    $id_dashboard = (int) db_get_value('id', 'tdashboard', 'name', $section_data);
-                    $_GET['id_dashboard'] = $id_dashboard;
-                break;
-
                 case 'Visual console':
                     $page = 'visualmap';
                     $id_map = (int) db_get_value('id', 'tlayout', 'name', $section_data);
                     $_GET['id'] = $id_map;
+                break;
+
+                case 'Group view':
+                default:
+                    // No content.
                 break;
             }
         }
@@ -358,43 +352,14 @@ switch ($action) {
             break;
 
             case 'visualmaps':
-                $visualmaps = new Visualmaps();
-                $visualmaps->show();
+                // Show a list of VC.
+                $vc_list = new Visualmaps();
+                $vc_list->show();
             break;
 
             case 'visualmap':
-                $visualmap = new Visualmap();
-                $visualmap->show();
-            break;
-
-            case 'dashboard_list':
-                if (class_exists('Dashboards')) {
-                    $dashboard = new Dashboards();
-                    $dashboard->showDashboards();
-                } else {
-                    if (class_exists('HomeEnterprise')) {
-                        $home = new HomeEnterprise();
-                    } else {
-                        $home = new Home();
-                    }
-
-                    $home->show();
-                }
-            break;
-
-            case 'dashboard':
-                if (class_exists('Dashboards')) {
-                    $dashboard = new Dashboards();
-                    $dashboard->show();
-                } else {
-                    if (class_exists('HomeEnterprise')) {
-                        $home = new HomeEnterprise();
-                    } else {
-                        $home = new Home();
-                    }
-
-                    $home->show();
-                }
+                $vc = new Visualmap();
+                $vc->show();
             break;
         }
     break;

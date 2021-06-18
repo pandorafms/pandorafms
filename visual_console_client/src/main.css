@@ -4,6 +4,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
+  margin-top: 5px;
 }
 
 .visual-console-item {
@@ -20,15 +21,25 @@
   z-index: 2;
 }
 
+.visual-console-item * {
+  overflow: visible;
+  font-family: inherit;
+}
+
 .visual-console-item.is-editing {
   border: 2px dashed #b2b2b2;
   transform: translateX(-2px) translateY(-2px);
   user-select: none;
 }
 
+.visual-console-item.is-editing:hover {
+  border-color: #82b92e;
+}
+
 .visual-console-item.is-editing.is-selected {
   border: 2px dashed #2b2b2b;
   cursor: move;
+  z-index: 10;
 }
 .visual-console-item.is-editing > .resize-draggable {
   float: right;
@@ -108,7 +119,6 @@
   flex-wrap: wrap;
   align-items: center;
   font-size: 12pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: 600;
   color: #343434;
   margin-right: 10px;
@@ -125,7 +135,6 @@
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -140,7 +149,6 @@
 }
 
 .div-input-group select {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   font-size: 10pt;
 }
@@ -179,7 +187,6 @@
 
 .div-input-group h3 {
   text-transform: initial;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   text-align: center;
   font-style: italic;
   text-decoration: underline;
@@ -311,13 +318,6 @@ p.error-p-validate {
   color: #ffffff;
 }
 
-/*
-@font-face {
-  font-family: Alarm Clock;
-  src: url(alarm-clock.ttf);
-}
-*/
-
 /* Digital clock */
 
 .visual-console-item .digital-clock {
@@ -338,12 +338,10 @@ p.error-p-validate {
 }
 
 .visual-console-item .digital-clock > span.time {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 25px;
 }
 
@@ -425,7 +423,6 @@ li#li-image-item label img {
 .discovery.modal * {
   font-weight: normal;
   color: #343434;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .discovery.modal select {
@@ -488,22 +485,20 @@ li#li-timeZone-item > select:not(:first-child) {
 }
 
 .group-container .group-item-info .group-item-info-container {
-  flex: 1 1 80px;
+  flex: 1 1 20%;
   display: flex;
   flex-direction: row;
   border-radius: 2px;
-  height: 100%;
   max-height: 50px;
-  margin: 5px;
+  margin: 1%;
 }
 
 .group-container .group-item-info .group-item-info-container .value-style {
   flex: 1;
   color: #fff;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -515,7 +510,7 @@ li#li-timeZone-item > select:not(:first-child) {
   background-color: white;
   color: black;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
   height: 100%;
   display: flex;
@@ -526,7 +521,46 @@ li#li-timeZone-item > select:not(:first-child) {
 
 div.label,
 div.simple-value {
-  display: inline-table;
   min-width: fit-content;
   min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+div.simple-value > div {
+  max-height: -webkit-fill-available;
+}
+
+div.module-graph .parent_graph p table tr {
+  height: 25px;
+}
+
+div.module-graph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+div.module-graph .gauge_d3_class {
+  flex: 1 1 100px;
+  float: none !important;
+  overflow: inherit !important;
+  text-align: center;
+}
+
+.textDecorationNone:hover {
+  text-decoration: none;
+}
+
+.vc-item-nl-label {
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 5px;
+  padding-left: 1em;
+  font-size: 14px;
 }

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,12 @@ if (!$modules || !$searchModules) {
 
         $intervalCell = modules_get_interval($module['id_agente_modulo']);
 
+
+        $module_last_value = modules_get_last_value($module['id_agente_modulo']);
+        if (!is_numeric($module_last_value)) {
+            $module_last_value = htmlspecialchars($module_last_value);
+        }
+
         if ($utimestamp_sql['utimestamp'] == 0
             && (                ($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23)
             && $module['id_tipo_modulo'] != 100)
@@ -93,25 +99,25 @@ if (!$modules || !$searchModules) {
         } else if ($status_sql['estado'] == 0) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_OK,
-                __('NORMAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('NORMAL').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 1) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_CRITICAL,
-                __('CRITICAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('CRITICAL').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 2) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_WARNING,
-                __('WARNING').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('WARNING').': '.$module_last_value,
                 true
             );
         } else if ($status_sql['estado'] == 3) {
             $statusCell = ui_print_status_image(
                 STATUS_MODULE_UNKNOWN,
-                __('UNKNOWN').': '.modules_get_last_value($module['id_agente_modulo']),
+                __('UNKNOWN').': '.$module_last_value,
                 true
             );
         } else {
@@ -120,7 +126,7 @@ if (!$modules || !$searchModules) {
                 case 0:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_OK,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('NORMAL').': '.$module_last_value,
                         true
                     );
                 break;
@@ -128,7 +134,7 @@ if (!$modules || !$searchModules) {
                 case 1:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_CRITICAL,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('CRITICAL').': '.$module_last_value,
                         true
                     );
                 break;
@@ -136,7 +142,7 @@ if (!$modules || !$searchModules) {
                 case 2:
                     $statusCell = ui_print_status_image(
                         STATUS_MODULE_WARNING,
-                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.modules_get_last_value($module['id_agente_modulo']),
+                        __('UNKNOWN').' - '.__('Last status').' '.__('WARNING').': '.$module_last_value,
                         true
                     );
                 break;

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -113,7 +113,7 @@ function custom_graphs_create(
  * @param $returnAllGroup Wheter to return graphs of group All or not.
  * @param $privileges Privileges to check in user group
  *
- * @return Custom graphs of a an user. Empty array if none.
+ * @return array graphs of a an user. Empty array if none.
  */
 function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=true, $privileges='RR')
 {
@@ -133,9 +133,14 @@ function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=t
                 continue;
             }
 
-            $all_graph = db_get_all_rows_in_table('tgraph', 'name');
-            if ($all_graph !== false) {
-                $all_graphs = array_merge($all_graphs, $all_graph);
+            $tmp_graphs = db_get_all_rows_in_table('tgraph', 'name');
+            if ($tmp_graphs !== false) {
+                foreach ($tmp_graphs as $g) {
+                    $g['id_tgraph'] = $g['id_graph'];
+                    $g['id_graph'] = $connection['id'].'|'.$g['id_graph'];
+                    $g['name'] = $g['name'].' ('.$connection['server_name'].')';
+                    $all_graphs[] = $g;
+                }
             }
 
             metaconsole_restore_db();
@@ -168,10 +173,15 @@ function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=t
             $graphs[$graph['id_graph']] = $graph['name'];
         } else {
             $graphs[$graph['id_graph']] = $graph;
+            $id_graph = 'id_graph';
+            if ((bool) is_metaconsole() === true) {
+                $id_graph = 'id_tgraph';
+            }
+
             $graphsCount = db_get_value_sql(
                 'SELECT COUNT(id_gs)
 				FROM tgraph_source
-				WHERE id_graph = '.$graph['id_graph']
+				WHERE id_graph = '.$graph[$id_graph]
             );
             $graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
         }

@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,7 +132,7 @@ if ($edit_container) {
         $id_parent = get_parameter('id_parent', 0);
         $description = io_safe_input(get_parameter('description', ''));
         $id_group = get_parameter('container_id_group', 0);
-    } else {
+    } else if ((bool) $id_container !== false) {
         $tcontainer = db_get_row_sql('SELECT * FROM tcontainer WHERE id_container = '.$id_container);
         $name = $tcontainer['name'];
         $id_parent = $tcontainer['parent'];
@@ -142,13 +142,21 @@ if ($edit_container) {
 }
 
 if ($add_container) {
-    $values = [
-        'name'        => $name,
-        'description' => $description,
-        'parent'      => $id_parent,
-        'id_group'    => $id_group,
-    ];
-    $id_container = db_process_sql_insert('tcontainer', $values);
+    if ((bool) $name !== false) {
+        $values = [
+            'name'        => $name,
+            'description' => $description,
+            'parent'      => $id_parent,
+            'id_group'    => $id_group,
+        ];
+        $id_container = db_process_sql_insert('tcontainer', $values);
+    } else {
+        $error = ui_print_error_message(
+            __('Container name is missing.'),
+            '',
+            true
+        );
+    }
 }
 
 if ($update_container) {
@@ -173,14 +181,31 @@ if ($delete_item) {
 
 $buttons['graph_container'] = [
     'active' => false,
-    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image('images/graph-container.png', true, ['title' => __('Graph container')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image(
+        'images/graph-container.png',
+        true,
+        [
+            'title' => __('Graph container'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
-// Header
-ui_print_page_header(__('Create container'), '', false, '', false, $buttons);
+// Header.
+ui_print_page_header(
+    __('Create container'),
+    '',
+    false,
+    'create_container',
+    false,
+    $buttons
+);
 
 if ($add_container) {
     ui_print_result_message($id_container, __('Container stored successfully'), __('There was a problem storing container'));
+    if (empty($error) === false) {
+        echo $error;
+    }
 }
 
 if ($update_container) {
@@ -195,11 +220,13 @@ if ($edit_container) {
 }
 
 echo '<tr>';
-echo "<td class='datos' style='width: 12%;'><b>".__('Name').'</b></td>';
+echo "<td class='datos w10p'><b>".__('Name').'</b></td>';
 if ($id_container === '1') {
-    echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' disabled='1'";
+    echo "<td class='datos w30p'><input type='text' name='name' size='30' disabled='1'";
 } else {
-    echo "<td class='datos' style='width: 27%;'><input type='text' name='name' size='30' ";
+    echo "<td class='datos w30p'><input type='text' name='name' size='30' ";
+    // Using latest style...
+    echo ' required ';
 }
 
 if ($edit_container) {
@@ -214,13 +241,25 @@ if ($own_info['is_admin'] || check_acl($config['id_user'], 0, 'PM')) {
     $return_all_groups = false;
 }
 
-echo "<td style='width: 12%;'><b>".__('Group').'</b></td><td>';
-if ($id_container === '1') {
-    echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', true);
-} else {
-    echo html_print_select_groups($config['id_user'], '', $return_all_groups, 'container_id_group', $id_group, '', '', '', true, false, true, '', false);
-}
-
+echo "<td class='w10p'><b>".__('Group').'</b></td><td>';
+echo '<div class="w250px">';
+echo html_print_input(
+    [
+        'type'           => 'select_groups',
+        'id_user'        => $config['id_user'],
+        'privilege'      => 'RW',
+        'returnAllGroup' => $return_all_groups,
+        'name'           => 'container_id_group',
+        'selected'       => $id_group,
+        'script'         => '',
+        'nothing'        => '',
+        'nothing_value'  => '',
+        'return'         => false,
+        'required'       => true,
+        'disabled'       => ($id_container === '1'),
+    ]
+);
+echo '</div>';
 echo '</td></tr>';
 
 echo '<tr>';
@@ -288,10 +327,10 @@ echo '</table>';
 
 if ($edit_container) {
     if ($id_container !== '1') {
-        echo "<div style='width:100%'><input style='float:right;' type=submit name='store' disbaled class='sub upd' value='".__('Update')."'></div>";
+        echo "<div class='w100p'><input  type=submit name='store' disbaled class='sub upd right' value='".__('Update')."'></div>";
     }
 } else {
-    echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'></div>";
+    echo "<div class='w100p'><input  type=submit name='store' class='sub next right' value='".__('Create')."'></div>";
 }
 
 echo '</form>';
@@ -320,8 +359,8 @@ if ($edit_container) {
     $type_graphs[1] = __('Line');
 
     $single_table = "<table width='100%' cellpadding=4 cellspacing=4>";
-        $single_table .= "<tr id='row_time_lapse' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 13%;'>";
+        $single_table .= "<tr id='row_time_lapse' class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Time lapse');
                 $single_table .= ui_print_help_tip(__('This is the interval or period of time with which the graph data will be obtained. For example, a week means data from a week ago from now. '), true);
             $single_table .= '</td>';
@@ -343,8 +382,8 @@ if ($edit_container) {
             $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_agent' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+        $single_table .= "<tr id='row_agent'  class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Agent');
             $single_table .= '</td>';
             $single_table .= '<td>';
@@ -366,15 +405,15 @@ if ($edit_container) {
             $single_table .= '</td>';
         $single_table .= '</tr>';
 
-        $single_table .= "<tr id='row_module' style='' class='datos'>";
-            $single_table .= "<td style='font-weight:bold;width: 12%;'>";
+        $single_table .= "<tr id='row_module' class='datos'>";
+            $single_table .= "<td class='bolder w10p'>";
                 $single_table .= __('Module');
             $single_table .= '</td>';
             $single_table .= '<td>';
     if ($idAgent) {
         $single_table .= html_print_select_from_sql($sql_modules, 'id_agent_module', $idAgentModule, '', '', '0', true);
     } else {
-        $single_table .= "<select style='max-width: 180px' id='id_agent_module' name='id_agent_module' disabled='disabled'>";
+        $single_table .= "<select class='maxw180px' id='id_agent_module' name='id_agent_module' disabled='disabled'>";
             $single_table .= "<option value='0'>";
                 $single_table .= __('Select an Agent first');
             $single_table .= '</option>';
@@ -493,7 +532,7 @@ if ($edit_container) {
 
     $data = [];
     $data[0] = __('Group');
-    $data[1] = html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true);
+    $data[1] = '<div class="w250px">'.html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'container_id_group', $id_group, '', '', '', true).'</div>';
     $table->data[] = $data;
     $table->rowclass[] = '';
 
@@ -566,11 +605,13 @@ if ($edit_container) {
         echo '</tr>';
     echo '</table>';
 
-    $total_item = db_get_all_rows_sql('SELECT count(*) FROM tcontainer_item WHERE id_container = '.$id_container);
-    $result_item = db_get_all_rows_sql('SELECT * FROM tcontainer_item WHERE id_container = '.$id_container.' LIMIT 10 OFFSET '.$offset);
+    if ((bool) $id_container !== false) {
+        $total_item = db_get_all_rows_sql('SELECT count(*) FROM tcontainer_item WHERE id_container = '.$id_container);
+        $result_item = db_get_all_rows_sql('SELECT * FROM tcontainer_item WHERE id_container = '.$id_container.' LIMIT 10 OFFSET '.$offset);
+    }
 
     if (!$result_item) {
-        echo "<div class='nf'>".__('There are no defined item container').'</div>';
+        echo "<div class='nf'>".__('There are no items in this container.').'</div>';
     } else {
         ui_pagination($total_item[0]['count(*)'], false, $offset, 10);
         $table = new stdClass();

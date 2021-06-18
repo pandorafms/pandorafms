@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * User edition.
  *
- * @category   Extensions
+ * @category   Operation
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -15,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,10 +28,11 @@
 
 global $config;
 
+$headerTitle = __('User detail editor');
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
@@ -72,6 +72,7 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['lastname'] = get_parameter_post('lastname', $user_info['lastname']);
     $password_new = get_parameter_post('password_new', '');
     $password_confirm = get_parameter_post('password_conf', '');
+    $current_password = get_parameter_post('current_password', '');
     $upd_info['email'] = get_parameter_post('email', '');
     $upd_info['phone'] = get_parameter_post('phone', '');
     $upd_info['comments'] = get_parameter_post('comments', '');
@@ -80,39 +81,16 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
+
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
-    }
-
-    if ($upd_info['middlename'] == 1) {
-        // User wants to enable newsletter reminders.
-        if ($user_info['middlename'] > 0) {
-            // User has already registered!. No sense.
-            $upd_info['middlename'] = $user_info['middlename'];
-        } else {
-            // Force subscription reminder.
-            $upd_info['middlename'] = 0;
-        }
-    }
-
-    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
-        // Switch is ON. user had not registered.
-        $newsletter_reminder_value = 1;
-    } else if ($upd_info['middlename'] < 1) {
-        // Switch is OFF. User do not want to register.
-        $newsletter_reminder_value = 0;
-    } else if ($upd_info['middlename'] > 0) {
-        // Switc is OFF. User is already registered!
-        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
     $upd_info['data_section'] = get_parameter('data_section', '');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
-
 
     // Save autorefresh list.
     $autorefresh_list = get_parameter_post('autorefresh_list');
@@ -127,7 +105,8 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
     $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
 
-
+    $upd_info['integria_user_level_user'] = get_parameter('integria_user_level_user');
+    $upd_info['integria_user_level_pass'] = get_parameter('integria_user_level_pass');
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -145,21 +124,37 @@ if (isset($_GET['modified']) && !$view_mode) {
     }
 
     if (!empty($password_new)) {
+        $correct_password = false;
+
+        $user_credentials_check = process_user_login($config['id_user'], $current_password, true);
+
+        if ($user_credentials_check !== false) {
+            $correct_password = true;
+        }
+
         if ($config['user_can_update_password'] && $password_confirm == $password_new) {
-            if ((!$is_admin || $config['enable_pass_policy_admin'])
-                && $config['enable_pass_policy']
-            ) {
-                $pass_ok = login_validate_pass($password_new, $id, true);
-                if ($pass_ok != 1) {
-                    ui_print_error_message($pass_ok);
+            if ($correct_password === true) {
+                if ((!$is_admin || $config['enable_pass_policy_admin'])
+                    && $config['enable_pass_policy']
+                ) {
+                    $pass_ok = login_validate_pass($password_new, $id, true);
+                    if ($pass_ok != 1) {
+                        ui_print_error_message($pass_ok);
+                    } else {
+                        $return = update_user_password($id, $password_new);
+                        if ($return) {
+                            $return2 = save_pass_history($id, $password_new);
+                        }
+                    }
                 } else {
                     $return = update_user_password($id, $password_new);
-                    if ($return) {
-                        $return2 = save_pass_history($id, $password_new);
-                    }
                 }
             } else {
-                $return = update_user_password($id, $password_new);
+                if ($current_password === '') {
+                    $error_msg = __('Current password of user is required to perform password change');
+                } else {
+                    $error_msg = __('Current password of user is not correct');
+                }
             }
         } else if ($password_new !== 'NON-INIT') {
             $error_msg = __('Passwords didn\'t match or other problem encountered while updating passwords');
@@ -281,9 +276,11 @@ if ($view_mode === false) {
     if ($config['user_can_update_password']) {
         $new_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_new', '', 'password_new', '', '25', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('New Password')], true, true).'</span></div>';
         $new_pass_confirm = '<div class="label_select_simple"><span>'.html_print_input_text_extended('password_conf', '', 'password_conf', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Password confirmation')], true, true).'</span></div>';
+        $current_pass = '<div class="label_select_simple"><span>'.html_print_input_text_extended('current_password', '', 'current_password', '', '20', '45', $view_mode, '', ['class' => 'input', 'placeholder' => __('Current password')], true, true).'</span></div>';
     } else {
         $new_pass = '<i>'.__('You cannot change your password under the current authentication scheme').'</i>';
         $new_pass_confirm = '';
+        $current_pass = '';
     }
 }
 
@@ -342,27 +339,25 @@ if (!$meta) {
         'Tactical view'  => __('Tactical view'),
         'Alert detail'   => __('Alert detail'),
         'Other'          => __('Other'),
+        'Dashboard'      => __('Dashboard'),
     ];
-    if (enterprise_installed()) {
-        $values['Dashboard'] = __('Dashboard');
-    }
 
     $home_screen .= html_print_select($values, 'section', io_safe_output($user_info['section']), 'show_data_section();', '', -1, true, false, false).'</div>';
 
-    if (enterprise_installed()) {
-        $dashboards = get_user_dashboards($config['id_user']);
+    $dashboards = get_user_dashboards($config['id_user']);
 
-        $dashboards_aux = [];
-        if ($dashboards === false) {
-            $dashboards = ['None' => 'None'];
-        } else {
-            foreach ($dashboards as $key => $dashboard) {
-                $dashboards_aux[$dashboard['name']] = $dashboard['name'];
-            }
+    $dashboards_aux = [];
+    if ($dashboards === false) {
+        $dashboards = ['None' => 'None'];
+    } else {
+        foreach ($dashboards as $key => $dashboard) {
+            $dashboards_aux[$dashboard['id']] = $dashboard['name'];
         }
-
-        $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
     }
+
+    $home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
+    $home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, false, '');
+    $home_screen .= '</div>';
 
     $layouts = visual_map_get_user_layouts($config['id_user'], true);
     $layouts_aux = [];
@@ -374,7 +369,9 @@ if (!$meta) {
         }
     }
 
+    $home_screen .= '<div id="show_vc" style="display: none; width: 100%;">';
     $home_screen .= html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true);
+    $home_screen .= '</div>';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
 
@@ -392,20 +389,27 @@ if (!$meta) {
     $skin = '';
 }
 
-$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').': </p>';
+$timezone = '<div class="label_select"><p class="edit_user_labels">'.__('Timezone').ui_print_help_tip(__('The timezone must be that of the associated server.'), true).'</p>';
 $timezone .= html_print_timezone_select('timezone', $user_info['timezone']).'</div>';
 
 // Double auth.
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 
-if ($config['double_auth_enabled']) {
+if ($config['double_auth_enabled'] || ($config['double_auth_enabled'] == '' && $double_auth_enabled)) {
     $double_authentication = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Double authentication').'</p>';
-    $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    if (($config['2FA_all_users'] == '' && !$double_auth_enabled)
+        || ($config['2FA_all_users'] != '' && !$double_auth_enabled)
+        || ($config['double_auth_enabled'] == '' && $double_auth_enabled)
+        || check_acl($config['id_user'], 0, 'PM')
+    ) {
+        $double_authentication .= html_print_checkbox_switch('double_auth', 1, $double_auth_enabled, true);
+    }
+
     // Dialog.
-    $double_authentication .= '<div id="dialog-double_auth" style="display:none"><div id="dialog-double_auth-container"></div></div>';
+    $double_authentication .= '<div id="dialog-double_auth"class="invisible"><div id="dialog-double_auth-container"></div></div>';
 }
 
-if ($double_auth_enabled) {
+if ($double_auth_enabled && $config['double_auth_enabled']) {
     $double_authentication .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 
@@ -426,26 +430,6 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
-if (!$config['disabled_newsletter']) {
-    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename'] > 0) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
-    } else {
-        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-        $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-        $newsletter_reminder .= html_print_switch(
-            [
-                'name'     => 'newsletter_reminder',
-                'value'    => $newsletter_reminder_value,
-                'disabled' => false,
-            ]
-        );
-    }
-
-    $newsletter_reminder .= '</div>';
-}
-
-
 
 $autorefresh_list_out = [];
 if (is_metaconsole()) {
@@ -459,8 +443,8 @@ if (is_metaconsole()) {
 $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
 $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
 $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
-$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
-$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = 'Dashboard';
+$autorefresh_list_out['operation/operation/services/services'] = 'Services';
+$autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
 $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
 
@@ -468,7 +452,7 @@ $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
-$autorefresh_list_out['enterprise/godmode/reporting/cluster_view'] = 'Cluster view';
+$autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
 if (enterprise_installed()) {
     $autorefresh_list_out['general/sap_view'] = 'SAP view';
 }
@@ -544,7 +528,7 @@ $table_ichanges = '<div class="autorefresh_select">
                             <p class="autorefresh_select_text">'.__('Full list of pages').': </p>
                             <div>'.$select_out.'</div>
                         </div>
-                        <div class="autorefresh_select_arrows">
+                        <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
     'images/darrowright_green.png',
     true,
@@ -623,21 +607,23 @@ foreach ($timezones as $timezone_name => $tz) {
 }
 
 if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
+
+    html_print_input_hidden('id', $id, false, false, false, 'id');
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">
                 <div class="edit_user_info white_box">
                     <div class="edit_user_info_left">'.$avatar.$user_id.'</div>
-                    <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.'</div>
+                    <div class="edit_user_info_right">'.$full_name.$email.$phone.$new_pass.$new_pass_confirm.$current_pass.'</div>
                 </div>  
                 <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
             </div> 
             <div class="user_edit_second_row white_box">
-                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
+                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$double_authentication.'</div>
                 <div class="edit_user_timezone">'.$timezone;
 
 
@@ -645,7 +631,7 @@ if (is_metaconsole()) {
 if (!is_metaconsole()) {
     echo '<div id="timezone-picker">
                         <img id="timezone-image" src="'.$local_file.'" width="'.$map_width.'" height="'.$map_height.'" usemap="#timezone-map" />
-                        <img class="timezone-pin" src="include/javascript/timezonepicker/images/pin.png" style="padding-top: 4px;" />
+                        <img class="timezone-pin pdd_t_4px" src="include/javascript/timezonepicker/images/pin.png" />
                         <map name="timezone-map" id="timezone-map">'.$area_data_timezone_polys.$area_data_timezone_rects.'</map>
                     </div>';
 }
@@ -698,16 +684,61 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $row = [];
     $row['name'] = __('Test');
     $row['control'] = html_print_button(__('Start'), 'test-ehorus', false, 'ehorus_connection_test(&quot;'.$ehorus_host.'&quot;,'.$ehorus_port.')', 'class="sub next"', true);
-    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-    $row['control'] .= '<span id="test-ehorus-message" style="display:none;"></span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-ehorus-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
-    echo '<div class="ehorus_user_conf">';
-
+    echo '<div class="ehorus_user_conf user_edit_fourth_row">';
     html_print_table($table_remote);
      echo '</div>';
+}
+
+if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
+    // Integria IMS user remote login.
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'integria-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
+
+    // Integria IMS user level authentication.
+    // Title
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
+    $table_remote->data['integria_user_level_conf'] = $row;
+
+    // Integria IMS user.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
+    $table_remote->data['integria_user_level_user'] = $row;
+
+    // Integria IMS pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
+    $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-integria', false, 'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')', 'class="sub next"', true);
+    $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
+    $table_remote->data['integria_test'] = $row;
+
+    echo '<div class="integria_user_conf">';
+    html_print_table($table_remote);
+    echo '</div>';
 }
 
 
@@ -886,14 +917,13 @@ $(document).ready (function () {
 
     $("input#checkbox-double_auth").change(function (e) {
         e.preventDefault();
+            if (this.checked) {
+                show_double_auth_activation();
+            } else {
+                show_double_auth_deactivation();
+            }
+    }); 
 
-        if (this.checked) {
-            show_double_auth_activation();
-        }
-        else {
-            show_double_auth_deactivation();
-        }
-    });
     
     show_data_section();
 });
@@ -906,41 +936,65 @@ function show_data_section () {
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "inline-grid");
+
             break;
         case <?php echo "'".'Visual console'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "");
+            $("#show_vc").css("display", "inline-grid");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Event list'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Group view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Tactical view'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Alert detail'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Other'."'"; ?>:
             $("#text-data_section").css("display", "");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
         case <?php echo "'".'Default'."'"; ?>:
             $("#text-data_section").css("display", "none");
             $("#dashboard").css("display", "none");
             $("#visual_console").css("display", "none");
+            $("#show_vc").css("display", "none");
+            $("#show_db").css("display", "none");
+
             break;
     }
 }
@@ -961,6 +1015,7 @@ function show_double_auth_info () {
         data: {
             page: 'include/ajax/double_auth.ajax',
             id_user: userID,
+            id_user_auth: userID,
             get_double_auth_data_page: 1,
             containerID: $dialogContainer.prop('id')
         },
@@ -1223,6 +1278,77 @@ function ehorus_connection_test(host, port) {
             else {
                 changeTestMessage(errorThrown);
             }
+            showMessage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
+
+function integria_connection_test(api_hostname, api_pass) {
+        var user = $('input#text-integria_user_level_user').val();
+        var pass = $('input#password-integria_user_level_pass').val();
+
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('#test-integria-spinner').hide();
+        }
+        var showLoadingImage = function () {
+            $('#test-integria-spinner').show();
+        }
+        var hideSuccessImage = function () {
+            $('#test-integria-success').hide();
+        }
+        var showSuccessImage = function () {
+            $('#test-integria-success').show();
+        }
+        var hideFailureImage = function () {
+            $('#test-integria-failure').hide();
+        }
+        var showFailureImage = function () {
+            $('#test-integria-failure').show();
+        }
+        var hideMessage = function () {
+            $('#test-integria-message').hide();
+        }
+        var showMessage = function () {
+            $('#test-integria-message').show();
+        }
+        var changeTestMessage = function (message) {
+            $('#test-integria-message').text(message);
+        }
+        
+        hideSuccessImage();
+        hideFailureImage();
+        hideMessage();
+        showLoadingImage();
+
+        $.ajax({
+            url: "ajax.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: 'godmode/setup/setup_integria',
+                operation: 'check_api_access',
+                integria_user: user,
+                integria_pass: pass,
+                api_hostname: api_hostname,
+                api_pass: api_pass,
+            }
+        })
+        .done(function(data, textStatus, xhr) {
+            if (data.login == '1') {
+                showSuccessImage();
+            } else {
+                showFailureImage();
+                showMessage();
+            }
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
             showMessage();
         })
         .always(function(xhr, textStatus) {

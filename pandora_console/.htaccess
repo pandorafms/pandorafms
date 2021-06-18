@@ -1,0 +1,7 @@
+# pandora disable listing
+Options -Indexes
+
+<Files ~ "\.log$"> 
+Order Allow,Deny
+Deny from All
+</Files>

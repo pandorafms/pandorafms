@@ -2,7 +2,7 @@
 /**
  * Pandora FMS - http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the  GNU Lesser General Public License
@@ -285,7 +285,7 @@ function clippy_context_help($help=null)
 
     $return = '';
 
-    include_once 'include/help/clippy/'.$help.'.php';
+    include_once $config['homedir'].'/include/help/clippy/'.$help.'.php';
 
     ob_start();
     $function = 'clippy_'.$help;
@@ -296,7 +296,7 @@ function clippy_context_help($help=null)
     $code = str_replace('{clippy}', '#'.$id, $code);
     $code = str_replace('{clippy_obj}', 'intro_'.$id, $code);
 
-    $return = $code.'<div id="'.$id.'" style="display: inline-block;"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
+    $return = $code.'<div id="'.$id.'" class="inline"><a onclick="show_'.$id.'();" href="javascript: void(0);" >'.html_print_image(
         'images/clippy_icon.png',
         true
     ).'</a></div>

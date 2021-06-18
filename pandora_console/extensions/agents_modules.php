@@ -1,16 +1,29 @@
 <?php
 /**
- *  Pandora FMS - http://pandorafms.com
- *  ==================================================
- *  Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
- *  Please see http://pandorafms.org for full contribution list
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; version 2
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
+ * Agents/Modules Monitoring view.
+ *
+ * @category   Operations
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
 // Begin.
@@ -26,17 +39,6 @@ function agents_modules_load_js()
     $ignored_params['refresh'] = '';
 
     ?>
-    <style type='text/css'>
-        .rotate_text_module {
-            -ms-transform: rotate(270deg);
-            -webkit-transform: rotate(270deg);
-            -moz-transform: rotate(270deg);
-            -o-transform: rotate(270deg);
-            writing-mode: lr-tb;
-            white-space: nowrap;
-        }
-    </style>
-
     <script type='text/javascript'>
         $(document).ready(function () {
             //Get max width of name of modules
@@ -371,17 +373,17 @@ function mainAgentsModules()
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else if ($full_modules_selected[0] && $full_agents_id[0]) {
             $full_modules = urlencode(implode(';', $full_modules_selected));
             $full_agents = urlencode(implode(';', $full_agents_id));
 
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
 			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'&full_modules_selected='.$full_modules.'
-			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			&full_agents_id='.$full_agents.'&selection_agent_module='.$selection_a_m.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         } else {
             $fullscreen['text'] = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;
-			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+			offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'&refresh='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
         }
     }
 
@@ -389,8 +391,8 @@ function mainAgentsModules()
     $filter_groups_label = '<b>'.__('Group').'</b>';
     $filter_groups = html_print_select_groups(false, 'AR', true, 'group_id', $group_id, '', '', '', true, false, true, '', false, 'width: auto;');
 
-    $filter_recursion_label = '<b>'.__('Recursion').'</b>';
-    $filter_recursion = html_print_checkbox('recursion', 1, 0, true);
+    $filter_recursion_label = '</td><td><b>'.__('Recursion').'</b>';
+    $filter_recursion = html_print_checkbox('recursion', 1, 0, true).'</td>';
     // Groups module.
     $filter_module_groups_label = '<b>'.__('Module group').'</b>';
     $filter_module_groups = html_print_select_from_sql(
@@ -446,17 +448,28 @@ function mainAgentsModules()
 
     if ($config['pure'] == 0) {
         // Header.
-        ui_print_page_header(
+        ui_print_standard_header(
             __('Agents/Modules'),
-            'images/module_mc.png',
+            'images/module.png',
             false,
-            'agents_module_view',
+            '',
             false,
-            $updated_time
+            (array) $updated_time,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
         );
-        echo '<table style="width:100%;">';
+
+        echo '<table class="w100p">';
         echo '<tr>';
-        echo "<td> <span style='float: right;'>".$fullscreen['text'].'</span> </td>';
+        echo "<td> <span class='float-right'>".$fullscreen['text'].'</span> </td>';
         echo '</tr>';
         echo '</table>';
     } else {
@@ -472,7 +485,7 @@ function mainAgentsModules()
         }
 
         // Floating menu - Start.
-        echo '<div id="vc-controls" style="z-index: 999">';
+        echo '<div id="vc-controls" class="zindex999">';
 
         echo '<div id="menu_tab">';
         echo '<ul class="mn">';
@@ -480,14 +493,21 @@ function mainAgentsModules()
         // Quit fullscreen.
         echo '<li class="nomn">';
         echo '<a target="_top" href="'.$url.'">';
-        echo html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]);
+        echo html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Back to normal mode'),
+                'class' => 'invert_filter',
+            ]
+        );
         echo '</a>';
         echo '</li>';
 
         // Countdown.
         echo '<li class="nomn">';
         echo '<div class="vc-refr">';
-        echo '<div class="vc-countdown style="display: inline;"></div>';
+        echo '<div class="vc-countdown inline_line"></div>';
         echo '<div id="vc-refr-form">';
         echo __('Refresh').':';
         echo html_print_select(
@@ -522,8 +542,8 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" style="width:100%;">';
-        $show_filters .= '<table class="white_table" cellpadding="0" cellspacing="0" border="0" style="width:100%; border:none;">';
+        $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
+        $show_filters .= '<table class="white_table w100p no-border" cellpadding="0" cellspacing="0" border="0">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td>'.$filter_groups_label.'</td>';
                 $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
@@ -541,11 +561,14 @@ function mainAgentsModules()
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span style='float: right; padding-right: 20px;'>".$filter_update.'</sapn></td>';
+                $show_filters .= "<td colspan=6 ><span class='right pdd_r_20px'>".$filter_update.'</span></td>';
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';
-        ui_toggle($show_filters, __('Filters'));
+        ui_toggle(
+            $show_filters,
+            __('Filters ').ui_print_help_tip(__('Secondary groups and agent subgroups will be taken into account.'), true)
+        );
     }
 
     if ($agents_id[0] != -1) {
@@ -665,7 +688,7 @@ function mainAgentsModules()
         if ($recursion) {
             $filter_groups['id_grupo'] = array_merge(
                 $group_id,
-                groups_get_id_recursive($group_id, true)
+                groups_get_children_ids($group_id, true)
             );
         } else {
             $filter_groups['id_grupo'] = $group_id;
@@ -683,15 +706,15 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;" class="agents_modules_table">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="agents_modules_table w100p">';
 
     echo '<tr>';
 
-    echo "<th width='140px' style='text-align: right !important; padding-right:13px;'>".__('Agents').' / '.__('Modules').'</th>';
+    echo "<th width='140px' class='pdd_r_10px lign_right'>".__('Agents').' / '.__('Modules').'</th>';
 
     if ($hor_offset > 0) {
         $new_hor_offset = ($hor_offset - $block);
-        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_left_green.png',
             true,
             ['title' => __('Previous modules')]
@@ -709,15 +732,15 @@ function mainAgentsModules()
         $text = ui_print_truncate_text(io_safe_output($module['name']), 'module_small');
 
         echo '<th align="center" width="20px" id="th_module_r_'.$nmodules.'" class="th_class_module_r">
-				<div style="width: 30px;">
-					<div id="div_module_r_'.$nmodules.'" style="display: none;padding-left:10px" class="rotate_text_module">'.$text.'</div>
+				<div class="w30px">
+					<div id="div_module_r_'.$nmodules.'"  class="rotate_text_module invisible padding-lft-10">'.$text.'</div>
 				</div>
 			</th>';
     }
 
     if (($hor_offset + $block) < $nmodules) {
         $new_hor_offset = ($hor_offset + $block);
-        echo "<th width='20px' style='vertical-align: middle; text-align: center;' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
+        echo "<th width='20px' class='vertical_middle center' rowspan='".($nagents + 1)."'><a href='index.php?".'extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&selection_a_m='.$selection_a_m.'&hor_offset='.$new_hor_offset.'&offset='.$offset."'>".html_print_image(
             'images/arrow_right_green.png',
             true,
             ['title' => __('More modules')]
@@ -775,7 +798,7 @@ function mainAgentsModules()
             break;
         }
 
-        echo "<tr style='height: 25px;'>";
+        echo "<tr class='height_25px'>";
 
         echo "<td class='$rowcolor'>
 			<a class='$rowcolor' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".$alias['alias'].'</a></td>';
@@ -795,37 +818,43 @@ function mainAgentsModules()
             foreach ($module['id'] as $module_id) {
                 if (!$match && array_key_exists($module_id, $agent_modules)) {
                     $status = modules_get_agentmodule_status($module_id);
-                    echo "<td style='text-align: center;'>";
+                    echo "<td class='center'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
-                    $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."')";
+                    $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";
 
                     echo '<a href="javascript:'.$link.'">';
+
+                    $module_last_value = modules_get_last_value($module_id);
+                    if (!is_numeric($module_last_value)) {
+                        $module_last_value = htmlspecialchars($module_last_value);
+                    }
+
                     switch ($status) {
                         case AGENT_MODULE_STATUS_NORMAL:
-                            ui_print_status_image('module_ok.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_ok.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_CRITICAL_BAD:
-                            ui_print_status_image('module_critical.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_critical.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_WARNING:
-                            ui_print_status_image('module_warning.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_warning.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_UNKNOWN:
-                            ui_print_status_image('module_unknown.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_unknown.png', $module_last_value, false);
                         break;
 
                         case AGENT_MODULE_STATUS_NORMAL_ALERT:
                         case AGENT_MODULE_STATUS_WARNING_ALERT:
                         case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-                            ui_print_status_image('module_alertsfired.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_alertsfired.png', $module_last_value, false);
                         break;
 
                         case 4:
-                            ui_print_status_image('module_no_data.png', modules_get_last_value($module_id), false);
+                            ui_print_status_image('module_no_data.png', $module_last_value, false);
                         break;
                     }
 
@@ -846,18 +875,18 @@ function mainAgentsModules()
     echo '</table>';
 
     $show_legend = "<div class='legend_white'>";
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
             <div class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></div>".__('Orange cell when the module has fired alerts').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
             <div class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></div>".__('Red cell when the module has a critical status').'
         </div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></div>".__('Yellow cell when the module has a warning status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_NORMAL.";'></div></div>".__('Green cell when the module has a normal status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_UNKNOWN.";'></div></div>".__('Grey cell when the module has an unknown status').'</div>';
-    $show_legend .= "<div style='display: flex;align-items: center;'>
+    $show_legend .= "<div class='center flex'>
         <div class='legend_square_simple'><div style='background-color: ".COL_NOTINIT.";'></div></div>".__("Cell turns blue when the module is in 'not initialize' status").'</div>';
     $show_legend .= '</div>';
     ui_toggle($show_legend, __('Legend'));

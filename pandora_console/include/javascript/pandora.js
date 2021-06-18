@@ -36,6 +36,12 @@ function winopeng_var(url, wid, width, height) {
   status = wid;
 }
 
+function newTabjs(content) {
+  content = atob(content);
+  var printWindow = window.open("");
+  printWindow.document.body.innerHTML += "<div>" + content + "</div>";
+}
+
 function open_help(url) {
   if (!navigator.onLine) {
     alert(
@@ -269,7 +275,10 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
           );
         }
       }
-      jQuery.each(data, function(i, val) {
+
+      var all_common_modules = [];
+
+      $.each(data, function(i, val) {
         var s = js_html_entity_decode(val);
 
         $("#module").append(
@@ -279,8 +288,12 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             .attr("title", s)
         );
 
+        all_common_modules.push(i);
         $("#module").fadeIn("normal");
       });
+
+      $("#hidden-all_common_modules").val(all_common_modules.toString());
+
       if (typeof selected !== "undefined") $("#module").attr("value", selected);
 
       $("#module")
@@ -718,12 +731,14 @@ function post_process_select_init_unit(name, selected) {
       );
       $("#text-" + name + "_text").val("");
     } else {
-      $("#" + name + "_select option[value=none]").attr("selected", true);
+      $("#" + name + "_select option[value=0]").attr("selected", true);
       $("#" + name + "_default").hide();
       $("#" + name + "_manual").show();
     }
   } else {
-    $("#" + name + "_select option[value=none]").attr("selected", true);
+    $("#" + name + "_select option[value=0]").attr("selected", true);
+    $("#" + name + "_default").hide();
+    $("#" + name + "_manual").show();
   }
 
   $("#" + name + "_select").change(function() {
@@ -780,13 +795,12 @@ function post_process_select_events_unit(name, selected) {
 function post_process_select_events(name) {
   $("." + name + "_toggler").click(function() {
     var value = $("#text-" + name + "_text").val();
-
     var count = $("#" + name + "_select option").filter(function(i, item) {
       if (Number($(item).val()) == Number(value)) return true;
       else return false;
     }).length;
 
-    if (count != 1) {
+    if (count < 1) {
       $("#" + name + "_select").append(
         $("<option>")
           .val(value)
@@ -837,8 +851,8 @@ function post_process_select_events(name) {
  */
 function period_select_init(name, allow_zero) {
   // Manual mode is hidden by default
-  $("#" + name + "_manual").hide();
-  $("#" + name + "_default").show();
+  $("#" + name + "_manual").css("display", "none");
+  $("#" + name + "_default").css("display", "inline");
 
   // If the text input is empty, we put on it 5 minutes by default
   if ($("#text-" + name + "_text").val() == "") {
@@ -852,8 +866,8 @@ function period_select_init(name, allow_zero) {
     }
   } else if ($("#text-" + name + "_text").val() == 0 && allow_zero != true) {
     $("#" + name + "_units option:last").prop("selected", false);
-    $("#" + name + "_manual").show();
-    $("#" + name + "_default").hide();
+    $("#" + name + "_manual").css("display", "inline");
+    $("#" + name + "_default").css("display", "none");
   }
 }
 
@@ -1288,6 +1302,72 @@ function openURLTagWindow(url) {
   );
 }
 
+/**
+ *
+ * Inicialize tinyMCE with customized parameters
+ *
+ * @param added_config  Associative Array. Config to add adding default.
+ */
+
+function defineTinyMCE(added_config) {
+  // Default values
+  var buttons1 =
+    "bold,italic,underline,|,link,image,|,cut,copy,paste,|,undo,redo,|,forecolor,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright";
+  var elements = added_config["elements"];
+  var plugins = added_config["plugins"];
+  // Initialize with fixed parameters. Some parameters must be initialized too.
+  tinyMCE.init({
+    mode: "exact",
+    theme: "advanced",
+    elements: elements,
+    plugins: plugins,
+    theme_advanced_buttons1: buttons1,
+    theme_advanced_toolbar_location: "top",
+    theme_advanced_toolbar_align: "left",
+    theme_advanced_statusbar_location: "none",
+    convert_urls: false,
+    element_format: "html"
+  });
+
+  if (!isEmptyObject(added_config)) {
+    // If use asterisk mask, you can add at end of buttons new buttons.
+    for (var key in added_config) {
+      switch (key) {
+        case "theme_advanced_buttons1*":
+          tinyMCE.settings.theme_advanced_buttons1 =
+            buttons1 + ",|," + added_config[key];
+          break;
+        case "theme_advanced_font_sizes":
+          tinyMCE.settings.theme_advanced_font_sizes =
+            "4pt=.visual_font_size_4pt, " +
+            "6pt=.visual_font_size_6pt, " +
+            "8pt=.visual_font_size_8pt, " +
+            "10pt=.visual_font_size_10pt, " +
+            "12pt=.visual_font_size_12pt, " +
+            "14pt=.visual_font_size_14pt, " +
+            "18pt=.visual_font_size_18pt, " +
+            "24pt=.visual_font_size_24pt, " +
+            "28pt=.visual_font_size_28pt, " +
+            "36pt=.visual_font_size_36pt, " +
+            "48pt=.visual_font_size_48pt, " +
+            "60pt=.visual_font_size_60pt, " +
+            "72pt=.visual_font_size_72pt, " +
+            "84pt=.visual_font_size_84pt, " +
+            "96pt=.visual_font_size_96pt, " +
+            "116pt=.visual_font_size_116pt, " +
+            "128pt=.visual_font_size_128pt, " +
+            "140pt=.visual_font_size_140pt, " +
+            "154pt=.visual_font_size_154pt, " +
+            "196pt=.visual_font_size_196pt";
+          break;
+        default:
+          tinyMCE.settings[key] = added_config[key];
+          break;
+      }
+    }
+  }
+}
+
 function removeTinyMCE(elementID) {
   if (elementID.length > 0 && !isEmptyObject(tinyMCE))
     tinyMCE.EditorManager.execCommand("mceRemoveControl", true, elementID);
@@ -1521,12 +1601,15 @@ function paint_graph_status(
     //delete elements
     svg.selectAll("g").remove();
 
-    width_x = 101;
-    height_x = 50;
+    var width_x = 101;
+    var height_x = 50;
+    var legend_width_x = 135;
+    var legend_height_x = 80;
 
     svg
       .append("g")
       .attr("transform", "translate(100, 150)")
+      .attr("class", "invert_filter")
       .call(yAxis);
 
     //legend Normal text
@@ -1535,12 +1618,12 @@ function paint_graph_status(
       .attr("width", 300)
       .attr("height", 300)
       .append("text")
-      .attr("x", width_x)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x - 20)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_normal)
       .style("text-anchor", "first")
       .attr("width", 300)
@@ -1551,8 +1634,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_normal")
-      .attr("x", width_x + 80)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 30)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#82B92E");
@@ -1561,12 +1644,12 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 100)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 5)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_warning)
       .style("text-anchor", "first");
 
@@ -1575,8 +1658,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_warning")
-      .attr("x", width_x + 185)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x - 5)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#ffd731");
@@ -1585,12 +1668,12 @@ function paint_graph_status(
     svg
       .append("g")
       .append("text")
-      .attr("x", width_x + 205)
-      .attr("y", height_x - 20)
+      .attr("x", legend_width_x + 15)
+      .attr("y", legend_height_x + 30)
       .attr("fill", "black")
-      .style("font-family", "arial")
       .style("font-weight", "bold")
       .style("font-size", "8pt")
+      .attr("class", "invert_filter")
       .html(legend_critical)
       .style("text-anchor", "first");
 
@@ -1599,8 +1682,8 @@ function paint_graph_status(
       .append("g")
       .append("rect")
       .attr("id", "legend_critical")
-      .attr("x", width_x + 285)
-      .attr("y", height_x - 30)
+      .attr("x", legend_width_x)
+      .attr("y", legend_height_x + 20)
       .attr("width", 10)
       .attr("height", 10)
       .style("fill", "#e63c52");
@@ -1624,7 +1707,7 @@ function paint_graph_status(
       .attr("id", "status_rect")
       .attr("x", width_x)
       .attr("y", height_x)
-      .attr("width", 300)
+      .attr("width", 20)
       .attr("height", 200)
       .style("fill", "#82B92E");
 
@@ -1641,7 +1724,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_w) * position - (max_w - min_w) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_w - min_w) * position)
         .style("fill", "#ffd731");
     } else {
@@ -1653,7 +1736,7 @@ function paint_graph_status(
         .attr("id", "warning_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_w - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_w - range_min) * position)
         .style("fill", "#ffd731");
 
@@ -1665,7 +1748,7 @@ function paint_graph_status(
         .attr("id", "warning_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_w) * position - (max_w - min_w) * position
@@ -1685,7 +1768,7 @@ function paint_graph_status(
           "y",
           height_x + (range_max - min_c) * position - (max_c - min_c) * position
         )
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (max_c - min_c) * position)
         .style("fill", "#e63c52");
     } else {
@@ -1697,7 +1780,7 @@ function paint_graph_status(
         .attr("id", "critical_rect")
         .attr("x", width_x)
         .attr("y", height_x + 200 - (min_c - range_min) * position)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr("height", (min_c - range_min) * position)
         .style("fill", "#e63c52");
       svg
@@ -1708,7 +1791,7 @@ function paint_graph_status(
         .attr("id", "critical_inverse_rect")
         .attr("x", width_x)
         .attr("y", height_x)
-        .attr("width", 300)
+        .attr("width", 20)
         .attr(
           "height",
           (range_max - min_c) * position - (max_c - min_c) * position
@@ -1733,7 +1816,6 @@ function paint_graph_status(
         .attr("x", width_x)
         .attr("y", height_x)
         .attr("fill", "black")
-        .style("font-family", "arial")
         .style("font-weight", "bold")
         .style("font-size", 14)
         .style("fill", "red")
@@ -1749,7 +1831,6 @@ function paint_graph_status(
         .attr("x", width_x)
         .attr("y", height_x)
         .attr("fill", "black")
-        .style("font-family", "arial")
         .style("font-weight", "bold")
         .style("font-size", 14)
         .style("fill", "red")

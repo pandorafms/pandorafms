@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,21 +39,23 @@ if (!$agents || !$searchAgents) {
         $table->head = [];
     if ($only_count) {
         $table->head[0] = __('Agent');
-        $table->head[1] = __('OS');
-        $table->head[2] = __('Interval');
-        $table->head[3] = __('Group');
+        $table->head[1] = __('Description');
+        $table->head[2] = __('OS');
+        $table->head[3] = __('Interval');
+        $table->head[4] = __('Group');
     } else {
         $table->head[0] = __('Agent').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectNameUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectNameDown]).'</a>';
-        $table->head[1] = __('OS').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=os&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectOsUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=os&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectOsDown]).'</a>';
-        $table->head[2] = __('Interval').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=interval&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectIntervalUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=interval&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectIntervalDown]).'</a>';
-        $table->head[3] = __('Group').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=group&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectGroupUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=group&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectGroupDown]).'</a>';
+        $table->head[1] = __('Description').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=comentarios&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectDescriptionUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=comentarios&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectDescriptionDown]).'</a>';
+        $table->head[2] = __('OS').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=os&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectOsUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=os&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectOsDown]).'</a>';
+        $table->head[3] = __('Interval').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=interval&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectIntervalUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=interval&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectIntervalDown]).'</a>';
+        $table->head[4] = __('Group').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=group&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectGroupUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=group&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectGroupDown]).'</a>';
     }
 
-    $table->head[4] = __('Modules');
-    $table->head[5] = __('Status');
-    $table->head[6] = __('Alerts');
-    $table->head[7] = __('Last contact').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown]).'</a>';
-    $table->head[8] = '';
+    $table->head[5] = __('Modules');
+    $table->head[6] = __('Status');
+    $table->head[7] = __('Alerts');
+    $table->head[8] = __('Last contact').' '.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectLastContactUp]).'</a>'.'<a href="index.php?search_category=agents&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=last_contact&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectLastContactDown]).'</a>';
+    $table->head[9] = '';
 
     $table->align = [];
     $table->align[0] = 'left';
@@ -64,7 +66,8 @@ if (!$agents || !$searchAgents) {
     $table->align[5] = 'left';
     $table->align[6] = 'left';
     $table->align[7] = 'left';
-    $table->align[8] = 'center';
+    $table->align[8] = 'left';
+    $table->align[9] = 'center';
 
     $table->data = [];
 
@@ -92,7 +95,7 @@ if (!$agents || !$searchAgents) {
         );
 
         if ($in_planned_downtime) {
-            $cellName .= '<em>'.ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+            $cellName .= '<em>'.ui_print_help_tip(__('Agent in scheduled downtime'), true, 'images/minireloj-16.png');
             $cellName .= '</em>';
         }
 
@@ -102,20 +105,29 @@ if (!$agents || !$searchAgents) {
         $time = ui_print_timestamp($last_time, true);
         $time_style = $time;
         if ($diferencia > ($agent['intervalo'] * 2)) {
-            $time_style = '<b><span style="color: #ff0000">'.$time.'</span></b>';
+            $time_style = '<b><span class="color_ff0">'.$time.'</span></b>';
         }
 
         $manage_agent = '';
 
         if (check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
             $url_manage = 'index.php?sec=estado&sec2=godmode/agentes/configurar_agente&id_agente='.$agent['id_agente'];
-            $manage_agent = '<a href="'.$url_manage.'">'.html_print_image('images/cog.png', true, ['title' => __('Manage'), 'alt' => __('Manage')]).'</a>';
+            $manage_agent = '<a href="'.$url_manage.'">'.html_print_image(
+                'images/cog.png',
+                true,
+                [
+                    'title' => __('Manage'),
+                    'alt'   => __('Manage'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>';
         }
 
         array_push(
             $table->data,
             [
                 $cellName,
+                ui_print_truncate_text($agent['comentarios'], 'comentarios', false, true, true, '[&hellip;]'),
                 ui_print_os_icon($agent['id_os'], false, true),
                 human_time_description_raw($agent['intervalo'], false, 'tiny'),
                 ui_print_group_icon($agent['id_grupo'], true),

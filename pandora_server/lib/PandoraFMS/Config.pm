@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -44,8 +44,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.743";
-my $pandora_build = "200130";
+my $pandora_version = "7.0NG.755";
+my $pandora_build = "210618";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -60,11 +60,9 @@ my %pa_config;
 sub help_screen {
 	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	print "Following options are optional : \n";
-	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	print "	-D        :  Daemon mode (runs in background)\n";
 	print "	-P <file> :  Store PID to file.\n";
-	print "	-q        :  Quiet startup \n";
 	print "	-S <install|uninstall|run>:  Manage the win32 service.\n";
 	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
@@ -79,7 +77,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-20".substr($pandora_build,0,2)." " . pandora_get_initial_copyright_notice() . "\n";
+	print "$init_string v$pandora_version Build $pandora_build\n\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at official web page.\n\n";
 
@@ -103,17 +101,11 @@ sub pandora_init {
 		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
 			help_screen();
 		}
-		elsif ($parametro =~ m/-v\z/i) {
-			$pa_config->{"verbosity"}=5;
-		}
 		elsif ($parametro =~ m/^-P\z/i) {
 			$pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}
-		elsif ($parametro =~ m/-q\z/) {
-			$pa_config->{"quiet"}=1;
 		}
 		elsif ($parametro =~ m/-D\z/) {
 			$pa_config->{"daemon"}=1;
@@ -125,9 +117,9 @@ sub pandora_init {
 			($pa_config->{"pandora_path"} = $parametro);
 		}
 	}
-	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
-		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
+	if (!defined ($pa_config->{"pandora_path"}) || $pa_config->{"pandora_path"} eq ""){
+		print "[ERROR] I need at least one parameter: Complete path to " . pandora_get_initial_product_name() . " configuration file. \n";
+		print "For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
 		exit;
 	}
 }
@@ -177,6 +169,8 @@ sub pandora_get_sharedconfig ($$) {
 
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
+	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
+
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
 	}
@@ -214,6 +208,9 @@ sub pandora_get_sharedconfig ($$) {
 			$pa_config->{"mta_encryption"} = 'none';
 		}
 	}
+
+	# Server identifier
+	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
 }
 
 ##########################################################################
@@ -263,7 +260,6 @@ sub pandora_load_config {
 	$pa_config->{"webserver"} = 1; # 3.0
 	$pa_config->{"web_timeout"} = 60; # 6.0SP5
 	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
-	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
 	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
 	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
@@ -294,7 +290,7 @@ sub pandora_load_config {
 	$pa_config->{"inventory_threads"} = 2; # 2.1
 	$pa_config->{"export_threads"} = 1; # 3.0
 	$pa_config->{"web_threads"} = 1; # 3.0
-	$pa_config->{"web_engine"} = 'lwp'; # 5.1
+	$pa_config->{"web_engine"} = 'curl'; # 5.1
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
 	$pa_config->{"recon_reverse_geolocation_file"} = ''; # 3.1
@@ -305,6 +301,8 @@ sub pandora_load_config {
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
+	$pa_config->{"elastic_query_size"} = 10; # 7.754 Elements per request (ELK)
+	$pa_config->{"event_server_cache_ttl"} = 10; # 7.754
 	$pa_config->{"preload_windows"} = 0; # 7.741
 	$pa_config->{"icmpserver"} = 0; # 4.0
 	$pa_config->{"icmp_threads"} = 3; # 4.0
@@ -316,6 +314,7 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmp_storm_silence_period"} = 0; # 7.0
 	$pa_config->{"snmp_delay"} = 0; # > 6.0SP3
 	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
 	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
@@ -332,6 +331,7 @@ sub pandora_load_config {
 	$pa_config->{"dynamic_updates"} = 5; # 7.0
 	$pa_config->{"dynamic_warning"} = 25; # 7.0
 	$pa_config->{"dynamic_constant"} = 10; # 7.0
+	$pa_config->{"mssql_driver"} = undef; # 745 
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
@@ -396,7 +396,8 @@ sub pandora_load_config {
 	$pa_config->{'max_log_generation'} = 1;
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
-	$pa_config->{'use_xml_timestamp'} = 0; 
+	# If 1 => uses timestamp from received XML #5763.
+	$pa_config->{'use_xml_timestamp'} = 1;
 
 	# Server restart delay in seconds
 	$pa_config->{'restart_delay'} = 60; 
@@ -468,6 +469,7 @@ sub pandora_load_config {
 	$pa_config->{"stats_interval"} = 300;
 	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
+	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
 	# -------------------------------------------------------------------------
 	
@@ -510,15 +512,12 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
-	# Logstash
-	$pa_config->{"logstash_host"} = '';
-	$pa_config->{"logstash_port"} = 0;
-
 	$pa_config->{"wuxserver"} = 1; # 7.0
 	$pa_config->{"wux_host"} = undef; # 7.0
 	$pa_config->{"wux_port"} = 4444; # 7.0
 	$pa_config->{"wux_browser"} = "*firefox"; # 7.0
 	$pa_config->{"wux_webagent_timeout"} = 15; # 7.0
+	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
 	$pa_config->{"syslogserver"} = 1; # 7.0.716
@@ -667,6 +666,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^snmp_storm_silence_period\s+(\d+)/i) { 
+			$pa_config->{'snmp_storm_silence_period'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^snmp_delay\s+(\d+)/i) { 
 			$pa_config->{'snmp_delay'}= clean_blank($1); 
 		}
@@ -745,9 +747,6 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^transactionalserver\s+([0-9]*)/i) {
 			$pa_config->{'transactionalserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
-			$pa_config->{'transactional_threads'}= clean_blank($1);
-		}
 		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
 			$pa_config->{'transactional_threshold'}= clean_blank($1);
 		}
@@ -814,7 +813,9 @@ sub pandora_load_config {
 			$pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^verbosity\s+([0-9]*)/i) {
-			$pa_config->{"verbosity"} = clean_blank($1); 
+			if ($pa_config->{"verbosity"} == 0) {
+				$pa_config->{"verbosity"} = clean_blank($1);
+			}
 		} 
 		elsif ($parametro =~ m/^server_threshold\s+([0-9]*)/i) { 
 			$pa_config->{"server_threshold"} = clean_blank($1); 
@@ -995,8 +996,14 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^log_window\s+([0-9]*)/i) {
 			$pa_config->{'log_window'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^elastic_query_size\s+([0-9]*)/i) {
+			$pa_config->{'elastic_query_size'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^preload_windows\s+([0-9]*)/i) {
 			$pa_config->{'preload_windows'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^event_server_cache_ttl\s+([0-9]*)/i) {
+			$pa_config->{"event_server_cache_ttl"} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^snmp_threads\s+([0-9]*)/i) {
 			$pa_config->{'snmp_threads'}= clean_blank($1);
@@ -1180,12 +1187,8 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^dynamic_constant\s+([0-9]*)/i) {
 			$pa_config->{'dynamic_constant'}= clean_blank($1);
 		}
-
-		elsif ($parametro =~ m/^logstash_host\s+(.*)/i) {
-			$pa_config->{'logstash_host'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^logstash_port\s+([0-9]*)/i) {
-			$pa_config->{'logstash_port'}= clean_blank($1);
+		elsif ($parametro =~ m/^mssql_driver\s+(.*)/i) {
+			$pa_config->{'mssql_driver'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^wuxserver\s+([0-1]*)/i) {
 			$pa_config->{"wuxserver"} = clean_blank($1);
@@ -1201,6 +1204,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^wux_webagent_timeout\s+([0-9]*)/i) {
 			$pa_config->{'wux_webagent_timeout'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^clean_wux_sessions\s+([0-9]*)/i) {
+			$pa_config->{'clean_wux_sessions'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^syslogserver\s+([0-1])/i) {
 			$pa_config->{'syslogserver'}= clean_blank($1);

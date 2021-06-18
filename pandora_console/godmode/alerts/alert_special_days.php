@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Copyright (c) 2012-2016 Junichi Satoh
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
@@ -116,8 +116,12 @@ if ($create_special_day) {
     $same_day = (string) get_parameter('same_day');
     $values = [];
     $values['id_group'] = (string) get_parameter('id_group');
-    $values['description'] = (string) get_parameter('description');
+    $values['description'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
 
+    $aviable_description = true;
+    if (preg_match('/script/i', $values['description'])) {
+        $aviable_description = false;
+    }
 
     $array_date = explode('-', $date);
 
@@ -142,8 +146,12 @@ if ($create_special_day) {
             $result = '';
             $messageAction = __('Could not be created, it already exists');
         } else {
-            $result = alerts_create_alert_special_day($date, $same_day, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            if ($aviable_description) {
+                $result = alerts_create_alert_special_day($date, $same_day, $values);
+                $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$values['description'].'"}';
+            } else {
+                $result = false;
+            }
         }
     }
 
@@ -172,9 +180,14 @@ if ($update_special_day) {
     $date = (string) get_parameter('date');
     $date_orig = (string) get_parameter('date_orig');
     $same_day = (string) get_parameter('same_day');
-    $description = (string) get_parameter('description');
+    $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
     $id_group = (string) get_parameter('id_group');
     $id_group_orig = (string) get_parameter('id_group_orig');
+
+    $aviable_description = true;
+    if (preg_match('/script/i', $description)) {
+        $aviable_description = false;
+    }
 
     $array_date = explode('-', $date);
 
@@ -206,12 +219,16 @@ if ($update_special_day) {
                 $result = '';
                 $messageAction = __('Could not be updated, it already exists');
             } else {
+                if ($aviable_description !== false) {
+                    $result = alerts_update_alert_special_day($id, $values);
+                    $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
+                }
+            }
+        } else {
+            if ($aviable_description !== false) {
                 $result = alerts_update_alert_special_day($id, $values);
                 $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
             }
-        } else {
-            $result = alerts_update_alert_special_day($id, $values);
-            $info = '{"Date":"'.$date.'","Same day of the week":"'.$same_day.'","Description":"'.$description.'"}';
         }
     }
 
@@ -253,8 +270,8 @@ if ($delete_special_day) {
 }
 
 
-echo "<table cellpadding='4' cellspacing='4' class='databox upload' width='100%
-' style='font-weight: bold; margin-bottom: 10px;'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox upload bolder margin-bottom-10' width='100%
+'><tr>";
 echo "<form method='post' enctype='multipart/form-data' action='index.php?sec=gagente&sec2=godmode/alerts/alert_special_days'>";
 echo '<td>';
 echo __('iCalendar(.ics) file').'&nbsp;';
@@ -279,7 +296,9 @@ if (!users_can_manage_group_all('LM')) {
     $can_manage_group_all = true;
 }
 
+echo '<div class="inline w250px">';
 html_print_select_groups(false, 'LM', $can_manage_group_all, 'id_group', $id_group, false, '', 0, false, false, true, '', false, 'width:100px;');
+echo '</div>';
 echo '</td><td>';
 echo __('Overwrite');
 ui_print_help_tip(__('Check this box, if you want to overwrite existing same days.'), false);
@@ -310,12 +329,12 @@ if ($display_range) {
         $html .= '">&lt;&lt;&nbsp;</a>';
     }
 
-    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range='.$display_range.'" style="font-weight: bold;">['.$display_range.']</a>';
+    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range='.$display_range.'" class="bolder">['.$display_range.']</a>';
     $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range=';
     $html .= ($display_range + 1);
     $html .= '">&nbsp;&gt;&gt;</a>';
 } else {
-    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days" style="font-weight: bold;">['.__('Default').']</a>&nbsp;&nbsp;';
+    $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days" class="bolder">['.__('Default').']</a>&nbsp;&nbsp;';
     $html .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&display_range=';
     $html .= ($this_year - 1);
     $html .= '">&lt;&lt;&nbsp;</a>';
@@ -453,7 +472,7 @@ for ($month = 1; $month <= 12; $month++) {
 
         if ($special_days != '') {
             foreach ($special_days as $special_day) {
-                $cal_table->data[$cal_line][$week] .= '<div style="font-size: 18px;';
+                $cal_table->data[$cal_line][$week] .= '<div class="font_18px" style="';
                 if ($special_day['same_day'] == 'sunday' || $special_day['same_day'] == 'saturday') {
                     $cal_table->data[$cal_line][$week] .= 'color: red;';
                 }
@@ -498,14 +517,26 @@ for ($month = 1; $month <= 12; $month++) {
                     break;
                 }
 
-                $cal_table->data[$cal_line][$week] .= ui_print_help_tip($special_day['description'], true);
+                // Only show description if is filled.
+                if (empty($special_day['description']) === false) {
+                    $cal_table->data[$cal_line][$week] .= ui_print_help_tip($special_day['description'], true);
+                }
+
                 if ($special_day['id_group'] || ($can_manage_group_all && $special_day['id_group'] == 0)) {
                     $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&id='.$special_day['id'].'" title=';
                     $cal_table->data[$cal_line][$week] .= __('Edit');
-                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/wrench_orange.png', true).'</a> &nbsp;';
+                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                        'images/config.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    ).'</a> &nbsp;';
                     $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days&delete_special_day=1&id='.$special_day['id'].'"onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;" title=';
                     $cal_table->data[$cal_line][$week] .= __('Remove');
-                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/cross.png', true).'</a>';
+                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                        'images/cross.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    ).'</a>';
                     ;
                 }
 
@@ -519,7 +550,11 @@ for ($month = 1; $month <= 12; $month++) {
 
         $cal_table->data[$cal_line][$week] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_special_days&create_special_day=1&date='.$date.'" title=';
         $cal_table->data[$cal_line][$week] .= __('Create');
-        $cal_table->data[$cal_line][$week] .= '>'.html_print_image('images/plus.png', true).'</a>';
+        $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+            'images/add_mc.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
 
         if ($week == 6) {
             $cal_line++;

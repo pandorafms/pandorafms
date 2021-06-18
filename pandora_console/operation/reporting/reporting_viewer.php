@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,27 +76,48 @@ $options['list_reports'] = [
     'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure='.$pure.'">'.html_print_image(
         'images/report_list.png',
         true,
-        ['title' => __('Report list')]
+        [
+            'title' => __('Report list'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>',
 ];
 
-if (check_acl($config['id_user'], 0, 'RW')) {
+if ($id_report > 0) {
+    $report_group = db_get_value(
+        'id_group',
+        'treport',
+        'id_report',
+        $id_report
+    );
+}
+
+if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
     $options['main']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
         'images/op_reporting.png',
         true,
-        ['title' => __('Main data')]
+        [
+            'title' => __('Main data'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     $options['list_items']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
         'images/list.png',
         true,
-        ['title' => __('List items')]
+        [
+            'title' => __('List items'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     $options['item_editor']['text'] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=new&id_report='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/pen.png',
+        'images/pencil.png',
         true,
-        ['title' => __('Item editor')]
+        [
+            'title' => __('Item editor'),
+            'class' => 'invert_filter',
+        ]
     ).'</a>';
 
     if (enterprise_installed()) {
@@ -106,14 +127,36 @@ if (check_acl($config['id_user'], 0, 'RW')) {
 
 $options['view'] = [
     'active' => true,
-    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$id_report.'&pure='.$pure.'">'.html_print_image('images/operation.png', true, ['title' => __('View report')]).'</a>',
+    'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$id_report.'&pure='.$pure.'">'.html_print_image(
+        'images/eye.png',
+        true,
+        [
+            'title' => __('View report'),
+            'class' => 'invert_filter',
+
+        ]
+    ).'</a>',
 ];
 
 if (!defined('METACONSOLE')) {
     if ($config['pure'] == 0) {
-        $options['screen']['text'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>".html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $options['screen']['text'] = "<a href='$url&pure=1&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>".html_print_image(
+            'images/full_screen.png',
+            true,
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
     } else {
-        $options['screen']['text'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>".html_print_image('images/normal_screen.png', true, ['title' => __('Back to normal mode')]).'</a>';
+        $options['screen']['text'] = "<a href='$url&pure=0&enable_init_date=$enable_init_date&date_init=$date_init&time_init=$time_init'>".html_print_image(
+            'images/normal_screen.png',
+            true,
+            [
+                'title' => __('Back to normal mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
 
         // In full screen, the manage options are not available
         $options = [
@@ -133,16 +176,24 @@ if (is_metaconsole()) {
     // Print header
     ui_meta_print_header(__('Reporting'), '', $options);
 } else {
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         reporting_get_name($id_report),
         'images/op_reporting.png',
         false,
         '',
         false,
         $options,
-        false,
-        '',
-        55
+        [
+            [
+                'link'  => '',
+                'label' => __('Reporting'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Custom reports'),
+            ],
+        ]
     );
 }
 
@@ -193,12 +244,12 @@ $table->data[0][0] = html_print_image(
 );
 
 if (reporting_get_description($id_report)) {
-    $table->data[0][1] = '<div style="float:left">'.reporting_get_description($id_report).'</div>';
+    $table->data[0][1] = '<div class="float-left">'.reporting_get_description($id_report).'</div>';
 } else {
-    $table->data[0][1] = '<div style="float:left">'.reporting_get_name($id_report).'</div>';
+    $table->data[0][1] = '<div class="float-left">'.reporting_get_name($id_report).'</div>';
 }
 
-$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
+$table->data[0][1] .= '<div class="right w100p mrgn_right_50px right_align">'.__('Set initial date').html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 $html_enterprise = enterprise_hook(
     'reporting_print_button_PDF',
     [$id_report]
@@ -218,7 +269,7 @@ $table->data[1][2] .= html_print_input_text('date', $date, '', 12, 10, true).' '
 $table->data[1][2] .= html_print_input_text('time', $time, '', 10, 7, true).' ';
 $table->data[1][2] .= html_print_submit_button(__('Update'), 'date_submit', false, 'class="sub next"', true);
 
-echo '<form method="post" action="'.$url.'&pure='.$config['pure'].'" style="margin-right: 0px;">';
+echo '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
 html_print_table($table);
 html_print_input_hidden('id_report', $id_report);
 echo '</form>';
@@ -250,7 +301,7 @@ reporting_html_print_report($report, false, $config['custom_report_info']);
 // The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??
 $table->rowspan[0][0] = 1;
 
-echo '<div id="loading" style="text-align: center;">';
+echo '<div id="loading" class="center">';
 echo html_print_image('images/wait.gif', true, ['border' => '0']);
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';

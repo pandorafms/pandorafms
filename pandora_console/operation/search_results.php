@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,7 +19,8 @@ enterprise_include('operation/reporting/custom_reporting.php');
 
 $searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0, 'AR');
 $searchUsers = $searchPolicies = check_acl($config['id_user'], 0, 'AR');
-$searchMaps = $searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'IR');
+$searchReports = $searchGraphs = check_acl($config['id_user'], 0, 'RR');
+$searchMaps = check_acl($config['id_user'], 0, 'VR');
 $searchMain = true;
 $searchHelps = true;
 
@@ -141,7 +142,7 @@ if ($searchMaps) {
         'text'   => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
             'images/visual_console.png',
             true,
-            ['title' => __('Maps')]
+            ['title' => __('Visual consoles')]
         ).'</a>',
         'active' => $searchTab == 'maps',
     ];
@@ -165,7 +166,7 @@ if ($searchModules) {
 if ($searchPolicies) {
     $policies_tab = [
         'text'   => "<a href='index.php?search_category=policies&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(
-            'images/policies.png',
+            'images/policies_mc.png',
             true,
             ['title' => __('Policies')]
         ).'</a>',

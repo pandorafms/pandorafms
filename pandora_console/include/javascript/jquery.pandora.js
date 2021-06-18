@@ -174,6 +174,11 @@ $(document).ready(function() {
 
     if (typeof show_error_license == "undefined") show_error_license = 0;
 
+    if (typeof hide_counter == "undefined") hide_counter = 0;
+
+    let height = 300;
+    if (typeof invalid_license != "undefined") height = 350;
+
     if (process_login_ok || show_error_license) {
       $("#license_error_msg_dialog").dialog({
         dialogClass: "no-close",
@@ -181,28 +186,32 @@ $(document).ready(function() {
         resizable: false,
         draggable: true,
         modal: true,
-        height: 470,
+        height: height,
         width: 850,
         overlay: {
           opacity: 0.5,
           background: "black"
         },
         open: function() {
-          var remaining = 30;
+          if (hide_counter != 1) {
+            var remaining = 30;
 
-          // Timeout counter.
-          var count = function() {
-            if (remaining > 0) {
-              $("#license_error_remaining").text(remaining);
-              remaining -= 1;
-            } else {
-              $("#license_error_remaining").hide();
-              $("#ok_buttom").show();
-              clearInterval(count);
-            }
-          };
+            // Timeout counter.
+            var count = function() {
+              if (remaining > 0) {
+                $("#license_error_remaining").text(remaining);
+                remaining -= 1;
+              } else {
+                $("#license_error_remaining").hide();
+                $("#ok_buttom").show();
+                clearInterval(count);
+              }
+            };
 
-          setInterval(count, 1000);
+            setInterval(count, 1000);
+          } else {
+            $("#ok_buttom").show();
+          }
         }
       });
 

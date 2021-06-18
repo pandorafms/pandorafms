@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,14 +39,21 @@ ui_print_page_header(
     __('Module management').' &raquo; '.__('Module template management'),
     'images/gm_modules.png',
     false,
-    'module_template_tab',
+    '',
     true,
     '',
     true,
     'modulemodal'
 );
-
-
+/*
+    // At this moment, this message is not necessary
+    ui_print_info_message(
+    __(
+        'This section is maintained only for legacy use. Please, keep in mind use %s for manage template blocks.',
+        '<a href="'.ui_get_full_url('index.php?logged=1&sec=gmodules&sec2=godmode/modules/manage_block_templates').'">Module Blocks</a>'
+    )
+    );
+*/
 require_once 'include/functions_network_profiles.php';
 
 $delete_profile = (bool) get_parameter('delete_profile');
@@ -226,7 +233,7 @@ $table->head[0] = html_print_checkbox('all_delete', 0, false, true, false);
 ;
 $table->head[1] = __('Name');
 $table->head[2] = __('Description');
-$table->head[3] = '<span style="margin-right:7%;">'.__('Action').'</span>';
+$table->head[3] = '<span class="mrgn_right_7p">'.__('Action').'</span>';
 $table->size = [];
 $table->size[0] = '20px';
 $table->size[2] = '65%';
@@ -249,7 +256,10 @@ foreach ($result as $row) {
         $row['id_np'],
         '',
         true,
-        ['onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;']
+        [
+            'onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;',
+            'class'   => 'invert_filter',
+        ]
     );
     $data[3] .= html_print_input_image(
         'export_profile',
@@ -257,10 +267,13 @@ foreach ($result as $row) {
         $row['id_np'],
         '',
         true,
-        ['title' => 'Export to CSV']
+        [
+            'title' => 'Export to CSV',
+            'class' => 'invert_filter',
+        ]
     );
-    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
-    $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV')]).'</a>';
+    $data[3] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&delete_profile=1&delete_profile='.$row['id_np'].'" '.'onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
+    $data[3] .= '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates'.'&export_profile='.$row['id_np'].'">'.html_print_image('images/csv.png', true, ['title' => __('Export to CSV'), 'class' => 'invert_filter']).'</a>';
 
     array_push($table->data, $data);
 }
@@ -271,7 +284,7 @@ if (!empty($table->data)) {
     ui_pagination($count_network_templates, false, $offset);
     html_print_table($table);
     ui_pagination($count_network_templates, false, $offset, 0, false, 'offset', true, 'pagination-bottom');
-    echo "<div style='padding-left: 5px; float: right; '>";
+    echo "<div class='pdd_l_5px right'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';
     echo '</form>';
@@ -280,7 +293,7 @@ if (!empty($table->data)) {
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';
-echo '<div style="float:right;" class="">';
+echo '<div class="right">';
 html_print_submit_button(__('Create'), 'crt', '', 'class="sub next"');
 echo '</div></form>';
 

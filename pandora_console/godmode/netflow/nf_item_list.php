@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,15 +20,6 @@ require_once $config['homedir'].'/include/functions_html.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'IW')) {
-    db_pandora_audit(
-        'ACL Violation',
-        'Trying to access event viewer'
-    );
-    include 'general/noaccess.php';
-    return;
-}
-
 // id report
 $id = (int) get_parameter('id');
 
@@ -43,7 +34,14 @@ $buttons['edit_report']['text'] = '<a href="'.$config['homeurl'].'index.php?sec=
 
 // Header
 if (! defined('METACONSOLE')) {
-    ui_print_page_header(__('Report items'), 'images/gm_netflow.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Report items'),
+        'images/gm_netflow.png',
+        false,
+        '',
+        true,
+        $buttons
+    );
 } else {
     $nav_bar = [
         [
@@ -222,9 +220,9 @@ $last_item = $item_max['id_rc'];
 foreach ($reports_item as $item) {
     $data = [];
     if (($item['id_rc'] == $first_item) && ($item['id_rc'] == $last_item)) {
-        $data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
+        $data[0] = '<span class="list_block_float">&nbsp;</span>';
     } else if (($item['id_rc'] == $first_item) && ($item['id_rc'] != $last_item)) {
-        $data[0] = '<span style="display: block; float: left; width: 16px;">&nbsp;</span>';
+        $data[0] = '<span class="list_block_float">&nbsp;</span>';
         $data[0] .= '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=down&id_rc='.$item['id_rc'].'">'.html_print_image('images/down.png', true, ['title' => __('Move to down')]).'</a>';
     } else if (($item['id_rc'] == $last_item) && ($item['id_rc'] != $first_item)) {
         $data[0] = '<a href="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$item['id_report'].'&order=1&dir=up&id_rc='.$item['id_rc'].'">'.html_print_image('images/up.png', true, ['title' => __('Move to up')]).'</a>';
@@ -262,7 +260,7 @@ foreach ($reports_item as $item) {
     }
 
     $data[5] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
-		href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc='.$item['id_rc'].'&id='.$id."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>'.html_print_checkbox_extended('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
+		href='".$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&delete=1&id_rc='.$item['id_rc'].'&id='.$id."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>'.html_print_checkbox_extended('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
 
     array_push($table->data, $data);
 }
@@ -271,7 +269,7 @@ if (isset($data)) {
     echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_item_list&id='.$id.'">';
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    echo "<div style='padding-bottom: 20px; text-align: right; width:".$table->width."'>";
+    echo "<div class='right pdd_b_20px'style='width:".$table->width."'>";
     html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
     echo '</div>';
     echo '</form>';
@@ -280,7 +278,7 @@ if (isset($data)) {
 }
 
 echo '<form method="post" action="'.$config['homeurl'].'index.php?sec=netf&sec2=godmode/netflow/nf_report_item&id='.$id.'">';
-echo "<div style='padding-bottom: 20px; text-align: right; width:".$table->width."'>";
+echo "<div class='right pdd_b_20px' style='width:".$table->width."'>";
 html_print_submit_button(__('Create item'), 'crt', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';

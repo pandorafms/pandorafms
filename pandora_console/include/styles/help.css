@@ -1,7 +1,7 @@
 /* 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2021 Artica Soluciones Tecnológicas S.L
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,13 +17,12 @@
 */
 
 * {
-  font-family: verdana, sans-serif;
   font-size: 8pt;
 }
 h1,
 h2,
 h3 {
-  font: bold 1em Arial, Sans-serif;
+  font: bold 1em;
   text-transform: uppercase;
   color: #675;
   padding-bottom: 5px;

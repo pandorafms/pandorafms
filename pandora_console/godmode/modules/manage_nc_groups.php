@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ check_login();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'AW')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access SNMP Group Management'
@@ -40,20 +40,21 @@ if (defined('METACONSOLE')) {
         __('Module management').' &raquo; '.__('Component group management'),
         '',
         false,
-        'component_groups',
+        '',
         true
     );
     $sec = 'gmodules';
 }
 
-
-$create = (bool) get_parameter('create');
-$update = (bool) get_parameter('update');
-$delete = (bool) get_parameter('delete');
-$new = (bool) get_parameter('new');
-$id = (int) get_parameter('id');
-$multiple_delete = (bool) get_parameter('multiple_delete', 0);
-$pure = get_parameter('pure', 0);
+if (is_management_allowed() === true || is_metaconsole()) {
+    $create = (bool) get_parameter('create');
+    $update = (bool) get_parameter('update');
+    $delete = (bool) get_parameter('delete');
+    $new = (bool) get_parameter('new');
+    $id = (int) get_parameter('id');
+    $multiple_delete = (bool) get_parameter('multiple_delete', 0);
+    $pure = get_parameter('pure', 0);
+}
 
 if ($create) {
     $name = (string) get_parameter('name');
@@ -124,7 +125,7 @@ if ($delete) {
         ['id_sg' => $id]
     );
 
-    if (($result !== false) and ($result1 !== false)) {
+    if (($result !== false) && ($result1 !== false)) {
         $result = true;
     } else {
         $result = false;
@@ -186,7 +187,7 @@ if ($multiple_delete) {
     );
 }
 
-if (($id || $new) && !$delete && !$multiple_delete) {
+if (($id || $new) && !$delete && !$multiple_delete && (is_management_allowed() === true || is_metaconsole())) {
     include_once 'manage_nc_groups_form.php';
     return;
 }
@@ -229,7 +230,10 @@ $table->class = 'info_table';
 $table->head = [];
 $table->head['checkbox'] = html_print_checkbox('all_delete', 0, false, true, false);
 $table->head[0] = __('Name');
-$table->head[1] = __('Action');
+if (is_management_allowed() === true || is_metaconsole()) {
+    $table->head[1] = __('Action');
+}
+
 $table->style = [];
 $table->style[0] = 'font-weight: bold';
 $table->align = [];
@@ -258,31 +262,41 @@ foreach ($groups as $group) {
     }
 
     $table->cellclass[][1] = 'action_buttons';
-    $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
+    if (is_management_allowed() === true || is_metaconsole()) {
+        $data[1] = "<a onclick='if(confirm(\"".__('Are you sure?')."\")) return true; else return false;' 
         href='index.php?sec=".$sec.'&sec2=godmode/modules/manage_nc_groups&delete=1&id='.$group['id_sg']."&offset=0'>".html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+    }
 
     array_push($table->data, $data);
+}
+
+if (is_management_allowed() === false && !is_metaconsole()) {
+    ui_print_warning_message(__('This node is configured with centralized mode. This page is for read only. Go to metaconsole to manage the component groups.'));
 }
 
 if (isset($data)) {
     echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
     html_print_input_hidden('multiple_delete', 1);
     html_print_table($table);
-    echo "<div style='padding-left: 10px; float: right;'>";
-    html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-    echo '</div>';
+    if (is_management_allowed() === true || is_metaconsole()) {
+        echo "<div class='pdd_l_10px float-right mrgn_btn_15px'>";
+        html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+        echo '</div>';
+    }
+
     echo '</form>';
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('There are no defined component groups') ]);
 }
 
-
-echo '<form method="post" action='.$url.'>';
-echo '<div class="" style="float:right;">';
-html_print_input_hidden('new', 1);
-html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
+if (is_management_allowed() === true || is_metaconsole()) {
+    echo '<form method="post" action='.$url.'>';
+    echo '<div class="float-right">';
+        html_print_input_hidden('new', 1);
+        html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
+    echo '</div>';
+    echo '</form>';
+}
 
 enterprise_hook('close_meta_frame');
 

@@ -1,13 +1,11 @@
 .new_task p,
 .new_task div {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
-  font-weight: lighter;
+  font-weight: inherit;
 }
 .new_task {
   margin-top: 30px;
   min-width: 600px;
   left: 20px;
-  width: 60%;
   height: 300px;
   background-color: #ececec;
   border-radius: 3px 3px 3px 3px;

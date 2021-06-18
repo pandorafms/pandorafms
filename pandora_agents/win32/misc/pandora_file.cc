@@ -1,6 +1,6 @@
 /* Misc utils for files.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,24 @@
 
 
 using namespace std;
+
+/**
+ * Checks if a directory exists.
+ *
+ * @param dirpath Path of the directory to check.
+ *
+ * @retval True if the directory exists.
+ **/
+bool
+Pandora_File::dirExists (const string dirpath) {
+	struct stat info;
+
+	if (stat(dirpath.c_str(), &info) == 0 && (info.st_mode & S_IFDIR)) {
+		return true;
+	}
+	
+	return false;
+}
 
 /**
  * Checks if a file exists.

@@ -1,6 +1,6 @@
 /* Pandora agent service for Win32.
    
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
   
    This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 
 #define FTP_DEFAULT_PORT 21
 #define SSH_DEFAULT_PORT 22
+#define SECONDARY_DIR "secondary" /* Path of the secondary buffer relative to the primary buffer. */
 
 using namespace std;
 using namespace Pandora_Modules;
@@ -39,6 +40,7 @@ namespace Pandora {
 	 * Class to implement the Pandora Windows service.
 	 */
 	class Pandora_Windows_Service : public Windows_Service {
+		typedef int (Pandora::Pandora_Windows_Service::*copy_func_p)(string, bool);
 	private:
 		Pandora_Agent_Conf  *conf;
 		Pandora_Module_List *modules;
@@ -54,7 +56,8 @@ namespace Pandora {
 		list<string> collection_disk;
 		
 		string        getXmlHeader    ();
-		int           copyDataFile    (string filename);
+		int           copyDataFile    (string filename, bool secondary_buffer = false);
+		int           copyToSecondary (string filename, bool secondary_buffer = true);
 		string        getValueFromCmdExec (string cmd_exec, int timeout);
 		string        getAgentNameFromCmdExec (string cmd_exec);
 		string        getCoordinatesFromCmdExec (string cmd_exec);
@@ -114,8 +117,8 @@ namespace Pandora {
 					     const char *svc_description);
 		
 		void           start        ();
-		int            sendXml      (Pandora_Module_List *modules);
-        void           sendBufferedXml (string path);
+		int            sendXml      (Pandora_Module_List *modules, string extra = "");
+        void           sendBufferedXml (string path, copy_func_p copy_func, bool secondary_buffer);
 		Pandora_Agent_Conf *getConf ();
 		string         getEHKey (string ehorus_conf);
 		long           getInterval ();

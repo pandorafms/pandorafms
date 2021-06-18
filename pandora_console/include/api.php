@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,13 +29,14 @@
 // Begin.
 require_once 'config.php';
 require_once 'functions_api.php';
-
+require '../vendor/autoload.php';
 global $config;
 
 define('DEBUG', 0);
 define('VERBOSE', 0);
 
 // TESTING THE UPDATE MANAGER.
+enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
@@ -54,10 +55,9 @@ $api_password = get_parameter('apipass', '');
 $password = get_parameter('pass', '');
 $user = get_parameter('user', '');
 $info = get_parameter('info', '');
+$raw_decode = (bool) get_parameter('raw_decode', false);
 
-$other = parseOtherParameter($otherSerialize, $otherMode);
-
-$other = parseOtherParameter($otherSerialize, $otherMode);
+$other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
     db_get_value_filter(
         'value',
@@ -261,6 +261,13 @@ if ($correctLogin) {
                         }
                     break;
 
+                    case 'event':
+                        // Preventive check for users if not available write events
+                        if (! check_acl($config['id_user'], $event['id_grupo'], 'EW')) {
+                            return false;
+                        }
+                    break;
+
                     default:
                         // Ignore.
                     break;
@@ -306,7 +313,7 @@ if ($correctLogin) {
 }
 
 // Logout.
-if (session_status() === PHP_SESSION_ACTIVE) {
+if (session_status() !== PHP_SESSION_DISABLED) {
     $_SESSION = [];
     // Could give a warning if no session file is created. Ignore.
     @session_destroy();

@@ -3,7 +3,7 @@ package PandoraFMS::DataServer;
 # Pandora FMS Data Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -82,8 +82,11 @@ sub new ($$;$) {
 	my $self = $class->SUPER::new($config, DATASERVER, \&PandoraFMS::DataServer::data_producer, \&PandoraFMS::DataServer::data_consumer, $dbh);
 
 	# Load external .enc files for XML::Parser.
-	if ($config->{'enc_dir'} ne '' && !grep {$_ eq $config->{'enc_dir'}} @XML::Parser::Expat::Encoding_Path) {
+	if ($config->{'enc_dir'} ne '') {
 		push(@XML::Parser::Expat::Encoding_Path, $config->{'enc_dir'});
+		if ($XML::Simple::PREFERRED_PARSER eq 'XML::SAX::ExpatXS') {
+			push(@XML::SAX::ExpatXS::Encoding::Encoding_Path, $config->{'enc_dir'});
+		}
 	}
 
 	if ($config->{'autocreate_group'} > 0 && !defined(get_group_name ($dbh, $config->{'autocreate_group'}))) {
@@ -114,7 +117,7 @@ sub run ($) {
 ###############################################################################
 sub data_producer ($) {
 	my $self = shift;
-	my $pa_config = $self->getConfig ();
+	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
 	my @tasks;
 	my @files;
@@ -159,7 +162,7 @@ sub data_producer ($) {
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		my $agent_name = $1;
 
-		next if (agent_lock($pa_config, $agent_name) == 0);
+		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 			
 		push (@tasks, $file);
 	}
@@ -231,6 +234,7 @@ sub data_consumer ($$) {
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
+		# If 1 => uses timestamp from received XML #5763.
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '0' || ! defined ($xml_data->{'timestamp'}));
 
 		# Double check that the file exists
@@ -273,6 +277,11 @@ sub process_xml_data ($$$$$) {
 
 	# Timezone offset must be an integer beween -12 and +12
 	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?\d+/) {
+		$timezone_offset = 0;
+	}
+	
+	# If set by server, do not use offset.
+	if ($pa_config->{'use_xml_timestamp'} eq '0') {
 		$timezone_offset = 0;
 	}
 	
@@ -628,6 +637,9 @@ sub process_module_data ($$$$$$$$$$) {
 
 	# Get module parameters, matching column names in tagente_modulo
 	my $module_conf;
+
+	# Extra usable fields but not supported at DB level.
+	my $extra = {};
 	
 	# Supported tags
 	my $tags = {'name' => 0, 'data' => 0, 'type' => 0, 'description' => 0, 'max' => 0,
@@ -638,7 +650,9 @@ sub process_module_data ($$$$$$$$$$) {
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
 				'module_ff_interval' => 0, 'alert_template' => '', 'crontab' =>	'', 'min_ff_event_normal' => 0,
 				'min_ff_event_warning' => 0, 'min_ff_event_critical' => 0, 'ff_timeout' => 0, 'each_ff' => 0, 'module_parent' => 0,
-				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0};
+				'module_parent_unlink' => 0, 'cron_interval' => 0, 'ff_type' => 0, 'min_warning_forced' => 0, 'max_warning_forced' => 0,
+				'min_critical_forced' => 0, 'max_critical_forced' => 0, 'str_warning_forced' => 0, 'str_critical_forced' => 0
+			};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -688,7 +702,15 @@ sub process_module_data ($$$$$$$$$$) {
 	$module_conf->{'unknown_instructions'} = '' unless defined ($module_conf->{'unknown_instructions'});
 	$module_conf->{'disabled_types_event'} = '' unless defined ($module_conf->{'disabled_types_event'});
 	$module_conf->{'module_macros'} = '' unless defined ($module_conf->{'module_macros'});
-	
+
+	# Extract extra fields.
+	foreach my $pk (keys %{$module_conf}) {
+		if ($pk =~ /_forced$/) {
+			$extra->{$pk} = $module_conf->{$pk};
+			delete $module_conf->{$pk};
+		}
+	}
+
 	# Get module data or create it if it does not exist
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
@@ -821,7 +843,13 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Update module configuration if in learning mode and not a policy module
 	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
-		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+		update_module_configuration(
+			$pa_config,
+			$dbh,
+			$module,
+			$module_conf,
+			$extra
+		);
 	}
 	
 	# Module disabled!
@@ -894,8 +922,8 @@ sub get_macros_for_data($$){
 ##########################################################################
 # Update module configuration in tagente_modulo if necessary.
 ##########################################################################
-sub update_module_configuration ($$$$) {
-	my ($pa_config, $dbh, $module, $module_conf) = @_;
+sub update_module_configuration ($$$$$) {
+	my ($pa_config, $dbh, $module, $module_conf, $extra) = @_;
 
 	# Update if at least one of the configuration tokens has changed
 	foreach my $conf_token ('descripcion', 'extended_info', 'module_interval') {
@@ -913,6 +941,9 @@ sub update_module_configuration ($$$$) {
 	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 	$module->{'module_interval'} = ($module_conf->{'module_interval'} eq '') ? $module->{'module_interval'} : $module_conf->{'module_interval'};
+
+	# Enterprise updates.
+	enterprise_hook('update_module_fields', [$dbh, $pa_config, $module, $extra]);
 }
 
 ###############################################################################
@@ -1060,9 +1091,16 @@ sub process_xml_matrix_network {
 # Get a lock on the given agent. Return 1 on success, 0 otherwise.
 ##########################################################################
 sub agent_lock {
-	my ($pa_config, $agent_name) = @_;
+	my ($pa_config, $dbh, $agent_name) = @_;
 
-	return 1 if ($pa_config->{'dataserver_lifo'} == 1);
+	# Do not lock on LIFO mode if the agent already exist.
+	# get_agent_id will be called again from process_xml_data,
+	# so the should be no race conditions if the agent does
+	# not exist.
+	if ($pa_config->{'dataserver_lifo'} == 1 &&
+		get_agent_id ($dbh, $agent_name) > 0) {
+		return 1;
+	}
 
 	$AgentSem->down ();
 	if (defined ($Agents{$agent_name})) {
@@ -1080,8 +1118,6 @@ sub agent_lock {
 ##########################################################################
 sub agent_unlock {
 	my ($pa_config, $agent_name) = @_;
-
-	return if ($pa_config->{'dataserver_lifo'} == 1);
 
 	$AgentSem->down ();
 	delete ($Agents{$agent_name});

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,11 +31,10 @@ $id_tag = (int) get_parameter('id_tag', 0);
 $update_tag = (int) get_parameter('update_tag', 0);
 $create_tag = (int) get_parameter('create_tag', 0);
 $name_tag = (string) get_parameter('name_tag', '');
-$description_tag = (string) get_parameter('description_tag', '');
-$description_tag = io_safe_input(strip_tags(io_safe_output($description_tag)));
+$description_tag = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description_tag'))));
 $url_tag = (string) get_parameter('url_tag', '');
-$email_tag = (string) get_parameter('email_tag', '');
-$phone_tag = (string) get_parameter('phone_tag', '');
+$email_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('email_tag')))));
+$phone_tag = io_safe_input(strip_tags(io_safe_output(((string) get_parameter('phone_tag')))));
 $tab = (string) get_parameter('tab', 'list');
 
 if (defined('METACONSOLE')) {
@@ -48,7 +47,14 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+            'text'   => '<a href="index.php?sec='.$sec.'&sec2=advanced/component_management&tab=tags">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List tags'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -59,13 +65,27 @@ if (defined('METACONSOLE')) {
     $buttons = [
         'list' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+            'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('List tags'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
     $buttons[$tab]['active'] = true;
     // Header
-    ui_print_page_header(__('Tags configuration'), 'images/tag.png', false, '', true, $buttons);
+    ui_print_page_header(
+        __('Tags configuration'),
+        'images/tag.png',
+        false,
+        ['class' => 'invert_filter'],
+        true,
+        $buttons
+    );
 }
 
 // Two actions can performed in this page: update and create tags
@@ -80,6 +100,10 @@ if ($update_tag && $id_tag != 0) {
     $values['url'] = $url_tag;
     $values['email'] = $email_tag;
     $values['phone'] = $phone_tag;
+    // Only for Metaconsole. Save the previous name for synchronizing.
+    if (is_metaconsole()) {
+        $values['previous_name'] = db_get_value('name', 'ttag', 'id_tag', $id_tag);
+    }
 
     $result = false;
     if ($values['name'] != '') {
@@ -150,16 +174,16 @@ else {
 // Create/Update tag form
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action='.$action.'&id_tag='.$id_tag.'" enctype="multipart/form-data">';
 
-echo '<div align=left style="width: 100%" class="pandora_form">';
+echo '<div align=left class="pandora_form w100p">';
 
 echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
 if (defined('METACONSOLE')) {
     if ($action == 'update') {
-        echo "<th colspan=8 style='text-align:center'>".__('Update Tag').'</th>';
+        echo "<th colspan=8 class='center'>".__('Update Tag').'</th>';
     }
 
     if ($action == 'new') {
-        echo "<th colspan=8 style='text-align:center'>".__('Create Tag').'</th>';
+        echo "<th colspan=8 class='center'>".__('Create Tag').'</th>';
     }
 }
 

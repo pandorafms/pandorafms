@@ -159,7 +159,7 @@ function set_center(id) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php"
+    url: window.base_url_homedir + "/ajax.php"
   });
 }
 
@@ -208,7 +208,7 @@ function delete_link(
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           var found = -1;
@@ -266,7 +266,7 @@ function update_fictional_node(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -306,7 +306,7 @@ function update_node_name(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_edit").dialog("close");
@@ -352,7 +352,7 @@ function change_shape(id_db_node) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         $("#shape_icon_in_progress").css("display", "none");
         if (data["correct"]) {
@@ -629,7 +629,7 @@ function update_link(row_index, id_link) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $(".edit_icon_progress_" + row_index).css("display", "none");
 
@@ -738,163 +738,171 @@ function add_new_link(new_link) {
 }
 
 function move_to_networkmap(node) {
-  var params = [];
-  params.push("get_networkmap_from_fictional=1");
-  params.push("id=" + node.id_db);
-  params.push("id_map=" + node.map_id);
-  params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+  // Checks if is widget or not
+  var widget = false;
+  widget = $("#hidden-widget").val();
 
-  jQuery.ajax({
-    data: params.join("&"),
-    dataType: "json",
-    type: "POST",
-    url: "ajax.php",
-    success: function(data) {
-      if (data["correct"]) {
-        window.location =
-          "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
-          data["id_networkmap"];
-      } else {
-        edit_node(node, true);
+  if (widget == true) {
+    var id_cell = $(".widget_content").data("id_cell");
+    move_to_networkmap_widget(node.networkmap_id, id_cell);
+  } else {
+    var params = [];
+    params.push("get_networkmap_from_fictional=1");
+    params.push("id=" + node.id_db);
+    params.push("id_map=" + node.map_id);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: window.base_url_homedir + "/ajax.php",
+      success: function(data) {
+        if (data["correct"]) {
+          window.location =
+            "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
+            data["id_networkmap"];
+        } else {
+          edit_node(node, true);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function edit_node(data_node, dblClick) {
-  if (enterprise_installed) {
-    var flag_edit_node = true;
-    var edit_node = null;
+  var flag_edit_node = true;
+  var edit_node = null;
 
-    //Only select one node
-    var selection = d3.selectAll(".node_selected");
-    var id;
+  //Only select one node
+  var selection = d3.selectAll(".node_selected");
+  var id;
 
-    if (selection[0].length == 1) {
-      edit_node = selection[0].pop();
-    } else if (selection[0].length > 1) {
-      edit_node = selection[0].pop();
-    } else if (dblClick) {
-      edit_node = d3.select("#id_node_" + data_node["id"] + networkmap_id);
-      edit_node = edit_node[0][0];
-    } else {
-      flag_edit_node = false;
+  if (selection[0].length == 1) {
+    edit_node = selection[0].pop();
+  } else if (selection[0].length > 1) {
+    edit_node = selection[0].pop();
+  } else if (dblClick) {
+    edit_node = d3.select("#id_node_" + data_node["id"] + networkmap_id);
+    edit_node = edit_node[0][0];
+  } else {
+    flag_edit_node = false;
+  }
+
+  if (flag_edit_node) {
+    d3.selectAll(".node_selected").classed("node_selected", false);
+    d3.select(edit_node).classed("node_selected", true);
+
+    id = d3
+      .select(edit_node)
+      .attr("id")
+      .replace("id_node_", "");
+    var id_networkmap_lenght = networkmap_id.toString().length;
+    var id_node_length = id.length - id_networkmap_lenght;
+    id = id.substring(0, id_node_length);
+    var index_node = $.inArray(data_node, graph.nodes);
+    var node_selected = graph.nodes[index_node];
+    var selected_links = get_relations(node_selected);
+
+    $("select[name='shape'] option[value='" + node_selected.shape + "']").prop(
+      "selected",
+      true
+    );
+    $("select[name='shape']").attr(
+      "onchange",
+      "javascript: change_shape(" + node_selected.id_db + ");"
+    );
+    $("#node_options-fictional_node_update_button-1 input").attr(
+      "onclick",
+      "update_fictional_node(" + node_selected.id_db + ");"
+    );
+
+    $("#node_options-node_name-2 input").attr(
+      "onclick",
+      "update_node_name(" + node_selected.id_db + ");"
+    );
+
+    var params = [];
+    params.push("get_agent_info=1");
+    params.push("id_agent=" + node_selected["id_agent"]);
+    params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+
+    if (!enterprise_installed) {
+      params.push("page=operation/agentes/pandora_networkmap.view");
     }
 
-    if (flag_edit_node) {
-      d3.selectAll(".node_selected").classed("node_selected", false);
-      d3.select(edit_node).classed("node_selected", true);
-
-      id = d3
-        .select(edit_node)
-        .attr("id")
-        .replace("id_node_", "");
-      var id_networkmap_lenght = networkmap_id.toString().length;
-      var id_node_length = id.length - id_networkmap_lenght;
-      id = id.substring(0, id_node_length);
-      var index_node = $.inArray(data_node, graph.nodes);
-      var node_selected = graph.nodes[index_node];
-      var selected_links = get_relations(node_selected);
-
-      $(
-        "select[name='shape'] option[value='" + node_selected.shape + "']"
-      ).prop("selected", true);
-      $("select[name='shape']").attr(
-        "onchange",
-        "javascript: change_shape(" + node_selected.id_db + ");"
-      );
-      $("#node_options-fictional_node_update_button-1 input").attr(
-        "onclick",
-        "update_fictional_node(" + node_selected.id_db + ");"
-      );
-
-      $("#node_options-node_name-2 input").attr(
-        "onclick",
-        "update_node_name(" + node_selected.id_db + ");"
-      );
-
-      var params = [];
-      params.push("get_agent_info=1");
-      params.push("id_agent=" + node_selected["id_agent"]);
-      params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
-
-      jQuery.ajax({
-        data: params.join("&"),
-        dataType: "json",
-        type: "POST",
-        url: "ajax.php",
-        success: function(data) {
-          $("#node_details-0-1").html(
-            '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
-              node_selected["id_agent"] +
-              '">' +
-              data["alias"] +
-              "</a>"
-          );
-
-          var addresses = "";
-          if (data["adressess"] instanceof Array) {
-            for (var i; i < data["adressess"].length; i++) {
-              addresses += data["adressess"][i] + "<br>";
-            }
-          } else {
-            for (var address in data["adressess"]) {
-              addresses += address + "<br>";
-            }
-          }
-          $("#node_details-1-1").html(addresses);
-          $("#node_details-2-1").html(data["os"]);
-          $("#node_details-3-1").html(data["group"]);
-
-          $("[aria-describedby=dialog_node_edit]").css({ top: "200px" });
-          $("#foot").css({
-            top: parseInt(
-              $("[aria-describedby=dialog_node_edit]").css("height") +
-                $("[aria-describedby=dialog_node_edit]").css("top")
-            ),
-            position: "relative"
-          });
-
-          get_interface_data_to_table(node_selected, selected_links);
-        }
-      });
-
-      $("#dialog_node_edit").dialog(
-        "option",
-        "title",
-        dialog_node_edit_title.replace(
-          "%s",
-          ellipsize(node_selected["text"], 40)
-        )
-      ); // It doesn't eval the possible XSS so it's ok
-      $("#dialog_node_edit").dialog("open");
-
-      if (node_selected.id_agent == undefined || node_selected.type == 3) {
-        //Fictional node
-        $("#node_options-fictional_node_name").css("display", "");
-        $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-        $("#node_options-fictional_node_networkmap_link").css("display", "");
-        $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
-        $("#node_options-fictional_node_update_button").css("display", "");
-        $("#node_options-node_name").css("display", "none");
-        $("#node_options-node_update_button").css("display", "none");
-      } else {
-        $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
-        $("#node_options-fictional_node_name").css("display", "none");
-        $("#node_options-fictional_node_networkmap_link").css(
-          "display",
-          "none"
+    jQuery.ajax({
+      data: params.join("&"),
+      dataType: "json",
+      type: "POST",
+      url: window.base_url_homedir + "/ajax.php",
+      success: function(data) {
+        $("#node_details-0-1").html(
+          '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' +
+            node_selected["id_agent"] +
+            '">' +
+            data["alias"] +
+            "</a>"
         );
-        $("#node_options-fictional_node_update_button").css("display", "none");
-        $("#node_options-node_name").css("display", "");
-      }
 
-      //Clean
-      $("#relations_table .relation_link_row").remove();
-      //Show the no relations
-      $("#relations_table-loading").css("display", "none");
-      $("#relations_table-no_relations").css("display", "");
+        var addresses = "";
+        if (data["adressess"] instanceof Array) {
+          for (var i; i < data["adressess"].length; i++) {
+            addresses += data["adressess"][i] + "<br>";
+          }
+        } else {
+          for (var address in data["adressess"]) {
+            addresses += address + "<br>";
+          }
+        }
+        $("#node_details-1-1").html(addresses);
+        $("#node_details-2-1").html(data["os"]);
+        $("#node_details-3-1").html(data["group"]);
+
+        $("[aria-describedby=dialog_node_edit]").css({ top: "200px" });
+        $("#foot").css({
+          top: parseInt(
+            $("[aria-describedby=dialog_node_edit]").css("height") +
+              $("[aria-describedby=dialog_node_edit]").css("top")
+          ),
+          position: "relative"
+        });
+
+        get_interface_data_to_table(node_selected, selected_links);
+      }
+    });
+
+    $("#dialog_node_edit").dialog(
+      "option",
+      "title",
+      dialog_node_edit_title.replace("%s", ellipsize(node_selected["text"], 40))
+    ); // It doesn't eval the possible XSS so it's ok
+    $("#dialog_node_edit").dialog("open");
+    $("#open_version_dialog").dialog();
+    $("#open_version").dialog();
+
+    if (node_selected.id_agent == undefined || node_selected.type == 3) {
+      //Fictional node
+      $("#node_options-fictional_node_name").css("display", "");
+      $("input[name='edit_name_fictional_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
+      $("#node_options-fictional_node_networkmap_link").css("display", "");
+      $("#edit_networkmap_to_link").val(node_selected.networkmap_id);
+      $("#node_options-fictional_node_update_button").css("display", "");
+      $("#node_options-node_name").css("display", "none");
+      $("#node_options-node_update_button").css("display", "none");
+    } else {
+      $("input[name='edit_name_node']").val(node_selected.text); // It doesn't eval the possible XSS so it's ok
+      $("#node_options-fictional_node_name").css("display", "none");
+      $("#node_options-fictional_node_networkmap_link").css("display", "none");
+      $("#node_options-fictional_node_update_button").css("display", "none");
+      $("#node_options-node_name").css("display", "");
     }
+
+    //Clean
+    $("#relations_table .relation_link_row").remove();
+    //Show the no relations
+    $("#relations_table-loading").css("display", "none");
+    $("#relations_table-no_relations").css("display", "");
   }
 }
 
@@ -911,7 +919,7 @@ function get_interface_data_to_table(node_selected, selected_links) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data.length == 0) {
         $("#interface_information")
@@ -999,7 +1007,7 @@ function load_interfaces(selected_links) {
       type: "POST",
       async: true,
       cache: false,
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $(
@@ -1166,14 +1174,22 @@ function add_agent_node(agents) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agent_name").val("");
             $("#dialog_node_add").dialog("close");
 
+            const new_id =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
+
             var temp_node = {};
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] = new_id;
             temp_node["id_db"] = data["id_node"];
             temp_node["id_agent"] = data["id_agent"];
             temp_node["id_module"] = "";
@@ -1196,43 +1212,43 @@ function add_agent_node(agents) {
             graph.nodes.push(temp_node);
 
             /*jQuery.each(data['rel'], function(i, relation) {
-							var temp_link = {};
-							if (i == 0) {
-								var found = 0;
-								temp_link['source'] = graph.nodes[temp_node['id']];
-								jQuery.each(graph.nodes, function(j, element) {
-									if (element.id_agent == relation['id_agent_end']) {
-										found = j;
-									}
-								});
-								temp_link['target'] = graph.nodes[found];
-							}
-							else {
-								var found = 0;
-								temp_link['target'] = graph.nodes[temp_node['id']];
-								jQuery.each(graph.nodes, function(j, element) {
-									if (element.id_agent == relation['id_agent_start']) {
-										found = j;
-									}
-								});
-								temp_link['source'] = graph.nodes[found];
-							}
-							temp_link['id_db'] = String(relation['id_db']);
-							temp_link['id_agent_end'] = String(relation['id_agent_end']);
-							temp_link['id_agent_start'] = String(relation['id_agent_start']);
-							temp_link['id_module_end'] = relation['id_module_end'];
-							temp_link['id_module_start'] = relation['id_module_start'];
-							temp_link['source_in_db'] = String(relation['source_in_db']);
-							temp_link['target_in_db'] = String(relation['target_in_db']);
-							temp_link['arrow_end'] = relation['arrow_end'];
-							temp_link['arrow_start'] = relation['arrow_start'];
-							temp_link['status_end'] = relation['status_end'];
-							temp_link['status_start'] = relation['status_start'];
-							temp_link['text_end'] = relation['text_end'];
-							temp_link['text_start'] = relation['text_start'];
-							
-							graph.links.push(temp_link);
-						});*/
+              var temp_link = {};
+              if (i == 0) {
+                var found = 0;
+                temp_link['source'] = graph.nodes[temp_node['id']];
+                jQuery.each(graph.nodes, function(j, element) {
+                  if (element.id_agent == relation['id_agent_end']) {
+                    found = j;
+                  }
+                });
+                temp_link['target'] = graph.nodes[found];
+              }
+              else {
+                var found = 0;
+                temp_link['target'] = graph.nodes[temp_node['id']];
+                jQuery.each(graph.nodes, function(j, element) {
+                  if (element.id_agent == relation['id_agent_start']) {
+                    found = j;
+                  }
+                });
+                temp_link['source'] = graph.nodes[found];
+              }
+              temp_link['id_db'] = String(relation['id_db']);
+              temp_link['id_agent_end'] = String(relation['id_agent_end']);
+              temp_link['id_agent_start'] = String(relation['id_agent_start']);
+              temp_link['id_module_end'] = relation['id_module_end'];
+              temp_link['id_module_start'] = relation['id_module_start'];
+              temp_link['source_in_db'] = String(relation['source_in_db']);
+              temp_link['target_in_db'] = String(relation['target_in_db']);
+              temp_link['arrow_end'] = relation['arrow_end'];
+              temp_link['arrow_start'] = relation['arrow_start'];
+              temp_link['status_end'] = relation['status_end'];
+              temp_link['status_start'] = relation['status_start'];
+              temp_link['text_end'] = relation['text_end'];
+              temp_link['text_start'] = relation['text_start'];
+            	
+              graph.links.push(temp_link);
+            });*/
 
             draw_elements_graph();
             init_drag_and_drop();
@@ -1357,7 +1373,7 @@ function delete_nodes() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             var found = -1;
@@ -1695,7 +1711,7 @@ function update_networkmap() {
           data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: "ajax.php",
+          url: window.base_url_homedir + "/ajax.php",
           success: function(data) {
             d3.select(
               "#id_node_" + d.id + networkmap_id + " .node_shape"
@@ -1716,7 +1732,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_start_" + d.id_module_start).attr(
                 "marker-start",
@@ -1739,7 +1755,7 @@ function update_networkmap() {
             data: params.join("&"),
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             success: function(data) {
               d3.selectAll(".id_module_end_" + d.id_module_end).attr(
                 "marker-end",
@@ -2267,7 +2283,7 @@ function add_interface_link(data_parent) {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         var parent_name = data_parent.text;
         var child_name = child_data.text;
@@ -2333,7 +2349,7 @@ function add_interface_link_js() {
     },
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         var temp_link = {};
@@ -2406,7 +2422,7 @@ function refresh_holding_area() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           window.holding_area = data["holding_area"];
@@ -2414,7 +2430,13 @@ function refresh_holding_area() {
           jQuery.each(holding_area.nodes, function(i, node) {
             var temp_node = {};
 
-            temp_node["id"] = graph.nodes.length;
+            temp_node["id"] =
+              Math.max.apply(
+                Math,
+                graph.nodes.map(function(o) {
+                  return o.id;
+                })
+              ) + 1;
             holding_area.nodes[i]["id"] = temp_node["id"];
 
             temp_node["id_db"] = node["id_db"];
@@ -2540,12 +2562,12 @@ function restart_map() {
     "<div style='width:25%; float:left'><img style='padding-left:20px; padding-top:20px;' src='images/icono_info_mr.png'></div>";
   dialog_confirm_text =
     dialog_confirm_text +
-    "<div style='width:75%; float:left;'><h3><strong style='font-family:Verdana; font-size:13pt;'>" +
+    "<div style='width:75%; float:left;'><h3><strong style='font-size:13pt;'>" +
     warning_message +
     "</strong></h3>";
   dialog_confirm_text =
     dialog_confirm_text +
-    "<p style='font-family:Verdana; font-size:12pt;'>" +
+    "<p style='font-size:12pt;'>" +
     message_to_confirm +
     "</p></div>";
   dialog_confirm_text = dialog_confirm_text + "</div>";
@@ -2616,7 +2638,7 @@ function proceed_to_restart_map() {
     data: params.join("&"),
     dataType: "html",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $("#restart_map_form")
         .html(data)
@@ -2634,7 +2656,7 @@ function reset_map_from_form(new_elements) {
     data: data,
     dataType: "json",
     type: "POST",
-    url: "ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(d) {
       window.location =
         "index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=" +
@@ -2699,9 +2721,23 @@ function set_parent(parent_data) {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
+            var child_index = -1;
+            var parent_index = -1;
+
+            // Get indexes of child and parent nodes.
+            $.each(graph.nodes, function(i, d) {
+              if (child_data.id == d.id) {
+                child_index = i;
+              }
+
+              if (parent_data.id == d.id) {
+                parent_index = i;
+              }
+            });
+
             //Add the relationship and paint
             item = {};
             item["arrow_start"] = "";
@@ -2714,11 +2750,11 @@ function set_parent(parent_data) {
             item["id_module_end"] = 0;
             item["id_db"] = data["id"];
             item["source_id_db"] = child_data.id_db;
-            item["target_id_db"] = parent_data.id;
-            item["id_agent_start"] = graph.nodes[child_data.id]["id_agent"];
-            item["id_agent_end"] = graph.nodes[parent_data.id]["id_agent"];
-            item["target"] = graph.nodes[parent_data.id];
-            item["source"] = graph.nodes[child_data.id];
+            item["target_id_db"] = parent_data.id_db;
+            item["id_agent_start"] = graph.nodes[child_index]["id_agent"];
+            item["id_agent_end"] = graph.nodes[parent_index]["id_agent"];
+            item["target"] = graph.nodes[parent_index];
+            item["source"] = graph.nodes[child_index];
 
             graph.links.push(item);
           }
@@ -2801,7 +2837,7 @@ function init_drag_and_drop() {
           jQuery.ajax({
             dataType: "json",
             type: "POST",
-            url: "ajax.php",
+            url: window.base_url_homedir + "/ajax.php",
             data: {
               node: JSON.stringify(d),
               x: holding_pos_x,
@@ -2834,18 +2870,35 @@ function init_drag_and_drop() {
           });
         });
       } else {
-        var params = [];
-        params.push("update_node_alert=1");
-        params.push("map_id=" + networkmap_id);
-        params.push("page=operation/agentes/pandora_networkmap.view");
         jQuery.ajax({
-          data: params.join("&"),
           dataType: "json",
           type: "POST",
-          url: "ajax.php",
+          url: window.base_url_homedir + "/ajax.php",
+          data: {
+            node: JSON.stringify(d),
+            update_node: 1,
+            page: "operation/agentes/pandora_networkmap.view"
+          },
           success: function(data) {
-            if (data["correct"]) {
-              $("#open_version_dialog").dialog();
+            if (d.state == "holding_area") {
+              //It is out the holding area
+              if (data["state"] == "") {
+                //Remove the style of nodes and links
+                //in holding area
+                d3.select("#id_node_" + d.id + networkmap_id).classed(
+                  "holding_area",
+                  false
+                );
+                d3.select(".source_" + d.id + networkmap_id).classed(
+                  "holding_area_link",
+                  false
+                );
+                d3.select(".target_" + d.id + networkmap_id).classed(
+                  "holding_area_link",
+                  false
+                );
+                graph.nodes[d.id].state = "";
+              }
             }
           }
         });
@@ -2908,13 +2961,21 @@ function add_fictional_node() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           $("#dialog_node_add").dialog("close");
 
+          const new_id =
+            Math.max.apply(
+              Math,
+              graph.nodes.map(function(o) {
+                return o.id;
+              })
+            ) + 1;
+
           var temp_node = {};
-          temp_node["id"] = graph.nodes.length;
+          temp_node["id"] = new_id;
           temp_node["id_db"] = data["id_node"];
           temp_node["id_agent"] = data["id_agent"];
           temp_node["id_module"] = 0;
@@ -2942,8 +3003,16 @@ function add_fictional_node() {
   } else {
     $("#dialog_node_add").dialog("close");
 
+    const new_id =
+      Math.max.apply(
+        Math,
+        graph.nodes.map(function(o) {
+          return o.id;
+        })
+      ) + 1;
+
     var temp_node = {};
-    temp_node["id"] = graph.nodes.length;
+    temp_node["id"] = new_id;
     temp_node["id_db"] = data["id_node"];
     temp_node["id_agent"] = data["id_agent"];
     temp_node["id_module"] = 0;
@@ -3013,6 +3082,7 @@ function init_graph(parameter_object) {
   window.show_minimap = false;
   window.show_labels = true;
   window.context_minimap;
+  window.base_url_homedir = parameter_object.base_url_homedir;
 
   window.holding_area_dimensions = [200, 200];
   if (typeof parameter_object.holding_area_dimensions != "undefined") {
@@ -3316,8 +3386,8 @@ function init_graph(parameter_object) {
           "stroke-opacity: 0.75; " +
           "stroke-dasharray: none; " +
           "stroke-dashoffset: 0"
-      );
-
+      )
+      .attr("class", "fill_222");
     window.layer_graph
       .append("text")
       .append("tspan")
@@ -3334,9 +3404,9 @@ function init_graph(parameter_object) {
           "text-anchor: start; " +
           "fill: #000000; " +
           "fill-opacity: 1; " +
-          "stroke: none; " +
-          "font-family: Verdana"
+          "stroke: none; "
       )
+      .attr("class", "fill_fff")
       .attr(
         "x",
         networkmap_dimensions[0] + node_radius - holding_area_dimensions[0]
@@ -4003,7 +4073,7 @@ function draw_elements_graph() {
 
   node_temp
     .append("text")
-    .attr("class", "node_text")
+    .attr("class", "node_text fill_fff")
     .attr("id", "node_text_" + networkmap_id)
     .attr(
       "style",
@@ -4020,12 +4090,12 @@ function draw_elements_graph() {
       "style",
       "font-size: " +
         font_size +
-        "px !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000"
+        "px !important; text-align:center; text-anchor:middle; fill:#000000"
     )
     .text(function(d) {
       return ellipsize(get_node_name_ov(d), 30);
     })
-    .classed("dragable_node", true) //own dragable
+    .classed("dragable_node fill_fff", true) //own dragable
     .on("click", selected_node)
     .on("contextmenu", function(d) {
       show_menu("node", d);
@@ -4070,7 +4140,7 @@ function choose_group_for_show_agents() {
         data: params.join("&"),
         dataType: "json",
         type: "POST",
-        url: "ajax.php",
+        url: window.base_url_homedir + "/ajax.php",
         success: function(data) {
           if (data["correct"]) {
             $("#agents_filter_group").html("");
@@ -4136,7 +4206,7 @@ function get_status_node() {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         color_status_node = data["status_agent"];
@@ -4158,7 +4228,7 @@ function get_status_module() {
       data: params.join("&"),
       dataType: "json",
       type: "POST",
-      url: "../../../ajax.php",
+      url: window.base_url_homedir + "/ajax.php",
       success: function(data) {
         if (data["correct"]) {
           modules[data["id"]].status_color = data["status_color"];
@@ -4256,7 +4326,7 @@ function show_tooltip_content(id) {
     data: params.join("&"),
     dataType: "json",
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       if (data["correct"]) {
         $("#tooltip").html(data["content"]);
@@ -4276,7 +4346,7 @@ function show_tooltip(id, x, y) {
   jQuery.ajax({
     data: params1.join("&"),
     type: "POST",
-    url: "../../../ajax.php",
+    url: window.base_url_homedir + "/ajax.php",
     success: function(data) {
       $("#tooltip").html(data);
       $("#tooltip").css("display", "");
@@ -4515,4 +4585,28 @@ function update_fictional_node_popup(id) {
     radious,
     color
   );
+}
+
+function move_to_networkmap_widget(networkmap_id, id_cell) {
+  var params = [];
+
+  $(".widget_content").each(function(i) {
+    $("#body_cell").empty();
+  });
+
+  params.push("networkmap=true");
+  params.push("networkmap_id=" + networkmap_id);
+
+  params.push("page=enterprise/include/ajax/map_enterprise.ajax");
+  jQuery.ajax({
+    data: params.join("&"),
+    dataType: "html",
+    type: "POST",
+    url: window.base_url_homedir + "/ajax.php",
+    success: function(data) {
+      $(".widget_content").each(function(i) {
+        $("#body_cell").append(data);
+      });
+    }
+  });
 }

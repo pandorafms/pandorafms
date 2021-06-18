@@ -231,7 +231,6 @@ class RangesInputGroup extends InputGroup<Partial<ColorCloudProps>> {
     const handleCreate = () => {
       if (isValid(state)) onCreate(state);
       state = initialState;
-      console.log(state);
       rangesInputFromValue.value = `${state.fromValue || ""}`;
       rangesInputToValue.value = `${state.toValue || ""}`;
       rangesInputColor.value = `${state.color}`;
@@ -409,6 +408,13 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     radialGradient.append(stop0, stop100);
     defs.append(radialGradient);
     svg.append(defs, circle);
+
+    if (
+      this.props.agentDisabled === true ||
+      this.props.moduleDisabled === true
+    ) {
+      svg.setAttribute("opacity", "0.2");
+    }
 
     return svg;
   }

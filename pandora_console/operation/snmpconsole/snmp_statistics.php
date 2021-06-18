@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,23 +38,51 @@ $refr = (int) get_parameter('refr', 0);
 // Fullscreen
 $fullscreen = [];
 if ($config['pure']) {
-    $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=0&refr='.$refr.'">'.html_print_image('images/normal_screen.png', true, ['title' => __('Normal screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=0&refr='.$refr.'">'.html_print_image(
+        'images/normal_screen.png',
+        true,
+        [
+            'title' => __('Normal screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 } else {
-    $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=1&refr='.$refr.'">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen')]).'</a>';
+    $fullscreen['text'] = '<a target="_top" href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure=1&refr='.$refr.'">'.html_print_image(
+        'images/full_screen.png',
+        true,
+        [
+            'title' => __('Full screen'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 }
 
 // List
 $list = [];
-$list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image('images/op_snmp.png', true, ['title' => __('List')]).'</a>';
+$list['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_view&pure='.$config['pure'].'&refresh='.$refr.'">'.html_print_image(
+    'images/op_snmp.png',
+    true,
+    [
+        'title' => __('List'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 // Statistics (This file)
 $statistics = [];
 $statistics['active'] = true;
-$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image('images/op_reporting.png', true, ['title' => __('Statistics')]).'</a>';
+$statistics['text'] = '<a href="index.php?sec=estado&sec2=operation/snmpconsole/snmp_statistics&pure='.$config['pure'].'&refr='.$refr.'">'.html_print_image(
+    'images/op_reporting.png',
+    true,
+    [
+        'title' => __('Statistics'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 // Header
-ui_print_page_header(
-    __('SNMP Console'),
+ui_print_standard_header(
+    __('SNMP Statistics'),
     'images/op_snmp.png',
     false,
     '',
@@ -63,6 +91,16 @@ ui_print_page_header(
         $fullscreen,
         $list,
         $statistics,
+    ],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SNMP'),
+        ],
     ]
 );
 

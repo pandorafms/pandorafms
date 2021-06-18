@@ -29,6 +29,8 @@ $CODEHOME/pandora_console/pandora_console.redhat.spec \
 $CODEHOME/pandora_console/pandora_console.rhel7.spec \
 $CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec \
 $CODEHOME/pandora_server/pandora_server.redhat.spec \
+$PANDHOME_ENT/pandora_agents/pandora_agent.spec \
+$PANDHOME_ENT/pandora_server/pandora_server_enterprise.redhat.spec \
 $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.redhat.spec \
 $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.rhel7.spec \
 $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.redhat.spec"
@@ -36,7 +38,7 @@ DEBIAN_FILES="$CODEHOME/pandora_console/DEBIAN \
 $CODEHOME/pandora_server/DEBIAN \
 $CODEHOME/pandora_agents/unix/DEBIAN \
 $PANDHOME_ENT/pandora_console/DEBIAN \
-$PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/DEBIAN"
+$PANDHOME_ENT/pandora_server/DEBIAN"
 INSTALLER_FILES="$CODEHOME/pandora_console/pandora_console_install \
 $CODEHOME/pandora_server/pandora_server_installer \
 $CODEHOME/pandora_agents/unix/pandora_agent_installer"
@@ -55,6 +57,9 @@ AGENT_UNIX_FILE="$CODEHOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODEHOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODEHOME/pandora_agents/win32/installer/pandora.mpi"
 AGENT_WIN_RC_FILE="$CODEHOME/pandora_agents/win32/versioninfo.rc"
+AGENT_DARWIN_BUILDER="$CODEHOME/pandora_agents/unix/Darwin/dmg/build_darwin_dmg.sh"
+AGENT_DARWIN_DISTR="$CODEHOME/pandora_agents/unix/Darwin/dmg/extras/distribution.xml"
+AGENT_DARWIN_PLIST="$CODEHOME/pandora_agents/unix/Darwin/dmg/files/pandorafms_uninstall/PandoraFMS agent uninstaller.app/Contents/Info.plist"
 SATELLITE_FILE="$PANDHOME_ENT/satellite_server/satellite_server.pl"
 PERL_PLUGIN_FILES="$PANDHOME_ENT/pandora_server/util/recon_script/vmware-plugin.pl \
 $PANDHOME_ENT/pandora_server/util/recon_script/pcm_client.pl \
@@ -136,6 +141,14 @@ for file in $INSTALLER_FILES; do
 	update_installer_version $file
 done
 
+# Darwin dmg installer files
+echo "Updating DARWIN DMG files..."
+sed -i -e "/VERSION/s/=\"7.0NG.*/=\"$VERSION\"/" "$AGENT_DARWIN_BUILDER"
+sed -i -r "s/(version=\").*(\"\s+onConclusion=)/\1$VERSION\2/g"  "$AGENT_DARWIN_DISTR"
+sed -i -r "s/(CFBundleVersion<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+sed -i -r "s/(CFBundleShortVersionString<\/key>\s*<string>).*(<\/string>)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+sed -i -r "s/(CFBundleGetInfoString<\/key>\s*<string>).*( Pandora FMS)/\1$VERSION\2/g"  "$AGENT_DARWIN_PLIST"
+
 # Perl plugins files
 for file in $PERL_PLUGIN_FILES; do
 	echo "Updating plugin file $file..."
@@ -147,13 +160,13 @@ echo "Updating Pandora Server version..."
 sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$SERVER_FILE"
 sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$SERVER_FILE"
 echo "Updating DB maintenance script version..."
-sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_DB_FILE"
+sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION Build $BUILD\";/" "$SERVER_DB_FILE"
 echo "Updating CLI script version..."
-sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION PS$BUILD\";/" "$SERVER_CLI_FILE"
+sed -i -e "s/my\s\s*\$version\s*=.*/my \$version = \"$VERSION Build $BUILD\";/" "$SERVER_CLI_FILE"
 sed -i -e "s/\s*\#\s*\Version.*/\# Version $VERSION/" "$SERVER_CONF_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_OPEN_FILE"
 sed -i -e "s/\s*\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"$VERSION\"/" "$SERVER_WIN_MPI_ENT_FILE"
-echo "Updateing Pandora PluginTools version..."
+echo "Updating Pandora PluginTools version..."
 sed -i -e "s/my\s\s*\$pandora_version\s*=.*/my \$pandora_version = \"$VERSION\";/" "$PLUGIN_LIB_FILE"
 sed -i -e "s/my\s\s*\$pandora_build\s*=.*/my \$pandora_build = \"$BUILD\";/" "$PLUGIN_LIB_FILE"
 
@@ -184,7 +197,7 @@ echo "Updating Pandora Unix Agent version..."
 sed -i -e "s/\s*use\s*constant\s*AGENT_VERSION =>.*/use constant AGENT_VERSION => '$VERSION';/" "$AGENT_UNIX_FILE"
 sed -i -e "s/\s*use\s*constant\s*AGENT_BUILD =>.*/use constant AGENT_BUILD => '$BUILD';/" "$AGENT_UNIX_FILE"
 echo "Updating Pandora Windows Agent version..."
-sed -i -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE"
+sed -i -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION Build $BUILD\")/" "$AGENT_WIN_FILE"
 sed -i -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE"
 NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
 sed -i -n "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE"

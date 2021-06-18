@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,7 +67,7 @@ function extension_db_status()
     html_print_table($table);
     echo '</fieldset>';
 
-    echo "<div style='text-align: right;'>";
+    echo "<div class='right'>";
     html_print_input_hidden('db_status_execute', 1);
     html_print_submit_button(__('Execute Test'), 'submit', false, 'class="sub next"');
     echo '</div>';

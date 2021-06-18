@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +26,12 @@
  * ============================================================================
  */
 
- // Config functions.
+// Config functions.
+require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/functions.php';
+enterprise_include_once('include/functions_config.php');
+use PandoraFMS\Core\DBMaintainer;
+use PandoraFMS\Core\Config;
 
 
 /**
@@ -147,8 +152,11 @@ function config_update_config()
     }
 
     $error_update = [];
+    $errors = [];
+    $warnings = [];
 
-    $sec2 = get_parameter_get('sec2');
+    $sec2 = get_parameter('sec2');
+
     switch ($sec2) {
         case 'godmode/setup/setup':
             $section_setup = get_parameter('section');
@@ -192,8 +200,20 @@ function config_update_config()
                         $error_update[] = __('Use cert.');
                     }
 
-                    if (!config_update_value('attachment_store', (string) get_parameter('attachment_store'))) {
+                    $attachment_store = (string) get_parameter('attachment_store');
+                    if (file_exists($attachment_store) === false
+                        || is_writable($attachment_store) === false
+                    ) {
                         $error_update[] = __('Attachment store');
+                        $error_update[] .= __(
+                            "Path doesn't exists or is not writable"
+                        );
+                    } else {
+                        if (config_update_value('attachment_store', $attachment_store) === false) {
+                            $error_update[] = __(
+                                'Attachment store.'
+                            );
+                        }
                     }
 
                     if (!config_update_value('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API'))) {
@@ -222,10 +242,6 @@ function config_update_config()
 
                     if (!config_update_value('activate_netflow', (bool) get_parameter('activate_netflow'))) {
                         $error_update[] = __('Enable Netflow');
-                    }
-
-                    if (!config_update_value('activate_nta', (bool) get_parameter_switch('activate_nta'))) {
-                        $error_update[] = __('Enable Network Traffic Analyzer');
                     }
 
                     $timezone = (string) get_parameter('timezone');
@@ -286,7 +302,11 @@ function config_update_config()
                         $error_update[] = __('Command Snapshot');
                     }
 
-                    if (!config_update_value('server_log_dir', get_parameter('server_log_dir'))) {
+                    if (!config_update_value('use_custom_encoding', get_parameter('use_custom_encoding', 0))) {
+                        $error_update[] = __('Use custom encoding');
+                    }
+
+                    if (!config_update_value('server_log_dir', io_safe_input(strip_tags(io_safe_output(get_parameter('server_log_dir')))))) {
                         $error_update[] = __('Server logs directory');
                     }
 
@@ -299,7 +319,7 @@ function config_update_config()
                     }
 
                     if (!config_update_value('past_planned_downtimes', get_parameter('past_planned_downtimes'))) {
-                        $error_update[] = __('Allow create planned downtimes in the past');
+                        $error_update[] = __('Allow create scheduled downtimes in the past');
                     }
 
                     if (!config_update_value('limit_parameters_massive', get_parameter('limit_parameters_massive'))) {
@@ -318,8 +338,16 @@ function config_update_config()
                         $error_update[] = __('alias_as_name');
                     }
 
-                    if (!config_update_value('auditdir', get_parameter('auditdir'))) {
-                        $error_update[] = __('Audit log directory');
+                    if (!config_update_value('console_log_enabled', get_parameter('console_log_enabled'))) {
+                        $error_update[] = __('Console log enabled');
+                    }
+
+                    if (!config_update_value('audit_log_enabled', get_parameter('audit_log_enabled'))) {
+                        $error_update[] = __('Audit log enabled');
+                    }
+
+                    if (!config_update_value('module_custom_id_ro', get_parameter('module_custom_id_ro'))) {
+                        $error_update[] = __('Module Custom ID read only');
                     }
 
                     if (!config_update_value('unique_ip', get_parameter('unique_ip'))) {
@@ -350,20 +378,8 @@ function config_update_config()
                         $error_update[] = __('Email user');
                     }
 
-                    if (!config_update_value('email_password', get_parameter('email_password'))) {
+                    if (!config_update_value('email_password', io_input_password(get_parameter('email_password')))) {
                         $error_update[] = __('Email password');
-                    }
-
-                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
-                        $error_update[] = __('WebSocket bind address');
-                    }
-
-                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
-                        $error_update[] = __('WebSocket port');
-                    }
-
-                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
-                        $error_update[] = __('WebSocket proxy url');
                     }
                 break;
 
@@ -441,10 +457,6 @@ function config_update_config()
 
                         if (!config_update_value('enable_update_manager', get_parameter('enable_update_manager'))) {
                             $error_update[] = __('Enable Update Manager');
-                        }
-
-                        if (!config_update_value('disabled_newsletter', get_parameter('disabled_newsletter'))) {
-                            $error_update[] = __('Disabled newsletter');
                         }
 
                         if (!config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'))) {
@@ -608,7 +620,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (!config_update_value('ldap_admin_pass', get_parameter('ldap_admin_pass'))) {
+                    if (!config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')))) {
                         $error_update[] = __('Admin LDAP password');
                     }
 
@@ -720,8 +732,28 @@ function config_update_config()
                         $error_update[] = __('Double authentication');
                     }
 
+                    if (!config_update_value('2FA_all_users', get_parameter('2FA_all_users'))) {
+                        $error_update[] = __('2FA all users');
+                    }
+
                     if (!config_update_value('session_timeout', get_parameter('session_timeout'))) {
                         $error_update[] = __('Session timeout');
+                    } else {
+                        if ((int) get_parameter('session_timeout') === 0) {
+                            $error_update[] = __('Session timeout forced to 90 minutes');
+
+                            if (!config_update_value('session_timeout', 90)) {
+                                $error_update[] = __('Session timeout');
+                            }
+                        }
+                    }
+
+                    if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 0) {
+                        if (!config_update_value('ad_save_password', get_parameter('ad_save_password'))) {
+                            $error_update[] = __('Save Password');
+                        }
+                    } else if (isset($config['fallback_local_auth']) && $config['fallback_local_auth'] == 1) {
+                        config_update_value('ad_save_password', 1);
                     }
                 break;
 
@@ -839,6 +871,18 @@ function config_update_config()
                     if (!config_update_value('max_execution_event_response', get_parameter('max_execution_event_response'))) {
                         $error_update[] = __('Max execution event response');
                     }
+
+                    if (!config_update_value('row_limit_csv', get_parameter('row_limit_csv'))) {
+                        $error_update[] = __('Row limit in csv log');
+                    }
+
+                    if (!config_update_value('snmpwalk', get_parameter('snmpwalk'))) {
+                        $error_update[] = __('SNMP walk binary path');
+                    }
+
+                    if (!config_update_value('snmpwalk_fallback', get_parameter('snmpwalk_fallback'))) {
+                        $error_update[] = __('SNMP walk binary path (fallback for v1)');
+                    }
                 break;
 
                 case 'vis':
@@ -916,6 +960,10 @@ function config_update_config()
                         $error_update[] = __('Use round corners');
                     }
 
+                    if (!config_update_value('maximum_y_axis', (bool) get_parameter('maximum_y_axis'))) {
+                        $error_update[] = __('Chart fit to content');
+                    }
+
                     if (!config_update_value('show_qr_code_header', (bool) get_parameter('show_qr_code_header'))) {
                         $error_update[] = __('Show QR code header');
                     }
@@ -980,6 +1028,14 @@ function config_update_config()
                         $error_update[] = __('Custom subtitle header');
                     }
 
+                    if (!config_update_value('meta_custom_title_header', (string) get_parameter('meta_custom_title_header'))) {
+                        $error_update[] = __('Meta custom title header');
+                    }
+
+                    if (!config_update_value('meta_custom_subtitle_header', (string) get_parameter('meta_custom_subtitle_header'))) {
+                        $error_update[] = __('Meta custom subtitle header');
+                    }
+
                     if (!config_update_value('custom_title1_login', (string) get_parameter('custom_title1_login'))) {
                         $error_update[] = __('Custom title1 login');
                     }
@@ -1006,10 +1062,6 @@ function config_update_config()
 
                     if (!config_update_value('rb_copyright_notice', (string) get_parameter('rb_copyright_notice'))) {
                         $error_update[] = __('Copyright notice');
-                    }
-
-                    if (!config_update_value('meta_custom_logo', (string) get_parameter('meta_custom_logo'))) {
-                        $error_update[] = __('Custom logo metaconsole');
                     }
 
                     if (!config_update_value('meta_custom_logo_white_bg', (string) get_parameter('meta_custom_logo_white_bg'))) {
@@ -1156,6 +1208,10 @@ function config_update_config()
                         $error_update[] = __('Default type of module charts.');
                     }
 
+                    if (!config_update_value('items_combined_charts', (string) get_parameter('items_combined_charts', 10))) {
+                        $error_update[] = __('Default Number of elements in Custom Graph.');
+                    }
+
                     if (!config_update_value('type_interface_charts', (string) get_parameter('type_interface_charts', 'line'))) {
                         $error_update[] = __('Default type of interface charts.');
                     }
@@ -1204,15 +1260,21 @@ function config_update_config()
                         $error_update[] = __('Default zoom graphs');
                     }
 
-                    if (!config_update_value('graph_image_height', (int) get_parameter('graph_image_height', 280))) {
-                        $error_update[] = __('Default height of the chart image');
+                    if (!config_update_value(
+                        'graph_image_height',
+                        (int) get_parameter('graph_image_height', 130)
+                    )
+                    ) {
+                        $error_update[] = __(
+                            'Default height of the chart image'
+                        );
                     }
 
                     // --------------------------------------------------
                     // CUSTOM VALUES POST PROCESS
                     // --------------------------------------------------
-                    $custom_value = get_parameter('custom_value');
-                    $custom_text = get_parameter('custom_text');
+                    $custom_value = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_value'))));
+                    $custom_text = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_text'))));
                     $custom_value_add = (bool) get_parameter('custom_value_add', 0);
                     $custom_value_to_delete = get_parameter('custom_value_to_delete', 0);
 
@@ -1283,8 +1345,8 @@ function config_update_config()
                     // --------------------------------------------------
                     // MODULE CUSTOM UNITS
                     // --------------------------------------------------
-                    $custom_unit = get_parameter('custom_module_unit');
-                    $custom_unit_to_delete = get_parameter('custom_module_unit_to_delete', '');
+                    $custom_unit = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit'))));
+                    $custom_unit_to_delete = io_safe_input(strip_tags(io_safe_output(get_parameter('custom_module_unit_to_delete', ''))));
 
                     if (!empty($custom_unit)) {
                         if (!add_custom_module_unit(
@@ -1311,12 +1373,8 @@ function config_update_config()
                         $error_update[] = __('HTML font size for SLA (em)');
                     }
 
-                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 14))) {
+                    if (!config_update_value('global_font_size_report', get_parameter('global_font_size_report', 10))) {
                         $error_update[] = __('PDF font size (px)');
-                    }
-
-                    if (!config_update_value('interval_description', (string) get_parameter('interval_description', 'large'))) {
-                        $error_update[] = __('Interval description');
                     }
 
                     if (!config_update_value('custom_report_front', get_parameter('custom_report_front'))) {
@@ -1345,6 +1403,10 @@ function config_update_config()
 
                     if (!config_update_value('csv_divider', (string) get_parameter('csv_divider', ';'))) {
                         $error_update[] = __('CSV divider');
+                    }
+
+                    if (!config_update_value('csv_decimal_separator', (string) get_parameter('csv_decimal_separator', '.'))) {
+                        $error_update[] = __('CSV decimal separator');
                     }
 
                     if (!config_update_value('use_data_multiplier', get_parameter('use_data_multiplier', '1'))) {
@@ -1409,24 +1471,37 @@ function config_update_config()
                 break;
 
                 case 'hist_db':
+                    if ($config['dbname'] == get_parameter('history_db_name')
+                        && $config['dbport'] == get_parameter('history_db_port')
+                        && $config['dbhost'] == io_input_password(get_parameter('history_db_host'))
+                    ) {
+                        // Same definition for active and historical database!
+                        // This is a critical error.
+                        $config['error_config_update_config']['correct'] = false;
+                        $config['error_config_update_config']['message'] = __(
+                            'Active and historical database cannot be the same.'
+                        );
+                        return;
+                    } else {
+                        if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
+                            $error_update[] = __('Host');
+                        }
+
+                        if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
+                            $error_update[] = __('Port');
+                        }
+
+                        if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
+                            $error_update[] = __('Database name');
+                        }
+                    }
+
                     if (!config_update_value('history_db_enabled', get_parameter('history_db_enabled'))) {
                         $error_update[] = __('Enable history database');
                     }
 
                     if (!config_update_value('history_event_enabled', get_parameter('history_event_enabled'))) {
                         $error_update[] = __('Enable history event');
-                    }
-
-                    if (!config_update_value('history_db_host', get_parameter('history_db_host'))) {
-                        $error_update[] = __('Host');
-                    }
-
-                    if (!config_update_value('history_db_port', get_parameter('history_db_port'))) {
-                        $error_update[] = __('Port');
-                    }
-
-                    if (!config_update_value('history_db_name', get_parameter('history_db_name'))) {
-                        $error_update[] = __('Database name');
                     }
 
                     if (!config_update_value('history_db_user', get_parameter('history_db_user'))) {
@@ -1468,6 +1543,68 @@ function config_update_config()
                     ) {
                         $error_update[] = __('Delay');
                     }
+
+                    if ((bool) $config['history_db_enabled'] === true) {
+                        $dbm = new DBMaintainer(
+                            [
+                                'host' => $config['history_db_host'],
+                                'port' => $config['history_db_port'],
+                                'name' => $config['history_db_name'],
+                                'user' => $config['history_db_user'],
+                                'pass' => $config['history_db_pass'],
+                            ]
+                        );
+
+                        // Performs several checks and installs if needed.
+                        if ($dbm->checkDatabaseDefinition() === true
+                            && $dbm->isInstalled() === false
+                        ) {
+                            // Target is ready but several tasks are pending.
+                            $dbm->process();
+                        } else if ($dbm->check() !== true) {
+                            $errors[] = $dbm->getLastError();
+                        }
+                    }
+
+                    // Historical configuration tokens (stored in historical db).
+                    if (Config::set(
+                        'days_purge',
+                        get_parameter('history_dbh_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database purge');
+                    }
+
+                    if (Config::set(
+                        'history_partitions_auto',
+                        get_parameter_switch('history_partitions_auto', 0),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database partitions');
+                    }
+
+                    if (Config::set(
+                        'event_purge',
+                        get_parameter('history_dbh_events_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database events purge');
+                    }
+
+                    if (Config::set(
+                        'string_purge',
+                        get_parameter('history_dbh_string_purge'),
+                        true
+                    ) !== true
+                    ) {
+                        $error_update[] = __('Historical database string purge');
+                    }
+
+                    // Disable history db in history db.
+                    Config::set('history_db_enabled', 0, true);
                 break;
 
                 case 'ehorus':
@@ -1505,6 +1642,10 @@ function config_update_config()
                 break;
 
                 case 'integria':
+                    if (!config_update_value('integria_user_level_conf', (int) get_parameter('integria_user_level_conf', 0))) {
+                        $error_update[] = __('Integria user login');
+                    }
+
                     if (!config_update_value('integria_enabled', (int) get_parameter('integria_enabled', 0))) {
                         $error_update[] = __('Enable Integria IMS');
                     }
@@ -1517,7 +1658,17 @@ function config_update_config()
                         $error_update[] = __('Integria password');
                     }
 
-                    if (!config_update_value('integria_hostname', (string) get_parameter('integria_hostname', $config['integria_hostname']))) {
+                    $integria_hostname = (string) get_parameter('integria_hostname', $config['integria_hostname']);
+
+                    if (parse_url($integria_hostname, PHP_URL_SCHEME) === null) {
+                        if (empty($_SERVER['HTTPS']) === false) {
+                            $integria_hostname = 'https://'.$integria_hostname;
+                        } else {
+                            $integria_hostname = 'http://'.$integria_hostname;
+                        }
+                    }
+
+                    if (!config_update_value('integria_hostname', $integria_hostname)) {
                         $error_update[] = __('integria API hostname');
                     }
 
@@ -1590,6 +1741,32 @@ function config_update_config()
                     }
                 break;
 
+                case 'module_library':
+                    $module_library_user = get_parameter('module_library_user');
+                    if (!config_update_value('module_library_user', $module_library_user)) {
+                        $error_update[] = __('User');
+                    }
+
+                    $module_library_password = get_parameter('module_library_password');
+                    if (!config_update_value('module_library_password', $module_library_password)) {
+                        $error_update[] = __('Password');
+                    }
+                break;
+
+                case 'websocket_engine':
+                    if (!config_update_value('ws_bind_address', get_parameter('ws_bind_address'))) {
+                        $error_update[] = __('WebSocket bind address');
+                    }
+
+                    if (!config_update_value('ws_port', get_parameter('ws_port'))) {
+                        $error_update[] = __('WebSocket port');
+                    }
+
+                    if (!config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'))) {
+                        $error_update[] = __('WebSocket proxy url');
+                    }
+                break;
+
                 default:
                     // Ignore.
                 break;
@@ -1608,6 +1785,14 @@ function config_update_config()
     } else {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = true;
+    }
+
+    if (count($errors) > 0) {
+        $config['error_config_update_config']['errors'] = $errors;
+    }
+
+    if (count($warnings) > 0) {
+        $config['error_config_update_config']['warnings'] = $warnings;
     }
 
     enterprise_include_once('include/functions_policies.php');
@@ -1737,6 +1922,10 @@ function config_process_config()
         config_update_value('round_corner', false);
     }
 
+    if (isset($config['maximum_y_axis']) === false) {
+        config_update_value('maximum_y_axis', false);
+    }
+
     if (!isset($config['show_qr_code_header'])) {
         config_update_value('show_qr_code_header', false);
     }
@@ -1799,6 +1988,36 @@ function config_process_config()
         config_update_value('max_macro_fields', 10);
     }
 
+    if (!isset($config['row_limit_csv'])) {
+        config_update_value('row_limit_csv', 10000);
+    }
+
+    if (!isset($config['snmpwalk'])) {
+        switch (PHP_OS) {
+            case 'FreeBSD':
+                config_update_value('snmpwalk', '/usr/local/bin/snmpwalk');
+            break;
+
+            case 'NetBSD':
+                config_update_value('snmpwalk', '/usr/pkg/bin/snmpwalk');
+            break;
+
+            case 'WIN32':
+            case 'WINNT':
+            case 'Windows':
+                config_update_value('snmpwalk', 'snmpwalk');
+            break;
+
+            default:
+                config_update_value('snmpwalk', 'snmpbulkwalk');
+            break;
+        }
+    }
+
+    if (!isset($config['snmpwalk_fallback'])) {
+        config_update_value('snmpwalk_fallback', 'snmpwalk');
+    }
+
     if (!isset($config['event_purge'])) {
         config_update_value('event_purge', 15);
     }
@@ -1833,6 +2052,10 @@ function config_process_config()
 
     if (!isset($config['collection_max_size'])) {
         config_update_value('collection_max_size', 1000000);
+    }
+
+    if (!isset($config['policy_add_max_agents'])) {
+        config_update_value('policy_add_max_agents', 200);
     }
 
     if (!isset($config['event_replication'])) {
@@ -1915,14 +2138,16 @@ function config_process_config()
         config_update_value('alias_as_name', 0);
     }
 
-    if (!isset($config['auditdir'])) {
-        $auditdir = '/var/www/html/pandora_console';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $auditdir = $config['homedir'];
-        }
+    if (!isset($config['console_log_enabled'])) {
+        config_update_value('console_log_enabled', 0);
+    }
 
-        config_update_value('auditdir', $auditdir);
+    if (!isset($config['audit_log_enabled'])) {
+        config_update_value('audit_log_enabled', 0);
+    }
+
+    if (!isset($config['module_custom_id_ro'])) {
+        config_update_value('module_custom_id_ro', 0);
     }
 
     if (!isset($config['elasticsearch_ip'])) {
@@ -1942,7 +2167,7 @@ function config_process_config()
     }
 
     if (!isset($config['font_size'])) {
-        config_update_value('font_size', 6);
+        config_update_value('font_size', 8);
     }
 
     if (!isset($config['limit_parameters_massive'])) {
@@ -1957,10 +2182,22 @@ function config_process_config()
         config_update_value('welcome_state', WELCOME_STARTED);
     }
 
+    if (!isset($config['2Fa_auth'])) {
+        config_update_value('2Fa_auth', '');
+    }
+
      /*
       * Parse the ACL IP list for access API
       */
 
+    $temp_list_ACL_IPs_for_API = [];
+    if (isset($config['list_ACL_IPs_for_API'])) {
+        if (!empty($config['list_ACL_IPs_for_API'])) {
+            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
+        }
+    }
+
+    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
     $keysConfig = array_keys($config);
 
     /*
@@ -2004,17 +2241,9 @@ function config_process_config()
     }
 
     if (!isset($config['fontpath'])) {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            // Windows.
-            $fontpath = $config['homedir'].'\include\fonts\smallfont.ttf';
-        } else {
-            $home = str_replace('\\', '/', $config['homedir']);
-            $fontpath = $home.'/include/fonts/smallfont.ttf';
-        }
-
         config_update_value(
             'fontpath',
-            $fontpath
+            'lato.ttf'
         );
     }
 
@@ -2062,6 +2291,20 @@ function config_process_config()
         config_update_value('custom_logo_collapsed', 'pandora_logo_green_collapsed.png');
     }
 
+    if (is_metaconsole()) {
+        if (!isset($config['meta_custom_logo'])) {
+            config_update_value('meta_custom_logo', 'pandoraFMS_metaconsole_full.svg');
+        }
+
+        if (!isset($config['meta_custom_logo_collapsed'])) {
+            config_update_value('meta_custom_logo_collapsed', 'pandoraFMS_metaconsole_collapse.svg');
+        }
+
+        if (!isset($config['meta_menu_type'])) {
+            config_update_value('meta_menu_type', 'classic');
+        }
+    }
+
     if (!isset($config['custom_logo_white_bg'])) {
         config_update_value('custom_logo_white_bg', 'pandora_logo_head_white_bg.png');
     }
@@ -2098,6 +2341,14 @@ function config_process_config()
         config_update_value('custom_subtitle_header', __('the Flexible Monitoring System'));
     }
 
+    if (!isset($config['meta_custom_title_header'])) {
+        config_update_value('meta_custom_title_header', __('PandoraFMS Metaconsole'));
+    }
+
+    if (!isset($config['meta_custom_subtitle_header'])) {
+        config_update_value('meta_custom_subtitle_header', __('Centralized operation console'));
+    }
+
     if (!isset($config['custom_title1_login'])) {
         config_update_value('custom_title1_login', __('PANDORA FMS'));
     }
@@ -2107,11 +2358,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_docs_url'])) {
-        config_update_value('custom_docs_url', 'http://wiki.pandorafms.com/');
+        config_update_value('custom_docs_url', 'https://pandorafms.com/manual');
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.artica.es');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2127,11 +2378,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.artica.es');
-    }
-
-    if (!isset($config['meta_custom_logo'])) {
-        config_update_value('meta_custom_logo', 'logo_pandora_metaconsola.png');
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo_white_bg'])) {
@@ -2244,10 +2491,6 @@ function config_process_config()
 
     if (!isset($config['activate_netflow'])) {
         config_update_value('activate_netflow', 0);
-    }
-
-    if (!isset($config['activate_nta'])) {
-        config_update_value('activate_nta', 0);
     }
 
     if (!isset($config['netflow_path'])) {
@@ -2699,7 +2942,7 @@ function config_process_config()
     }
 
     if (!isset($config['legacy_vc'])) {
-        config_update_value('legacy_vc', 1);
+        config_update_value('legacy_vc', 0);
     }
 
     if (!isset($config['vc_default_cache_expiration'])) {
@@ -2778,6 +3021,10 @@ function config_process_config()
         config_update_value('event_storm_protection', 0);
     }
 
+    if (!isset($config['use_custom_encoding'])) {
+        config_update_value('use_custom_encoding', 0);
+    }
+
     if (!isset($config['server_log_dir'])) {
         config_update_value('server_log_dir', '');
     }
@@ -2798,6 +3045,10 @@ function config_process_config()
         config_update_value('type_module_charts', 'area');
     }
 
+    if (!isset($config['items_combined_charts'])) {
+        config_update_value('items_combined_charts', 10);
+    }
+
     if (!isset($config['type_interface_charts'])) {
         config_update_value('type_interface_charts', 'line');
     }
@@ -2807,7 +3058,7 @@ function config_process_config()
     }
 
     if (!isset($config['graph_image_height'])) {
-        config_update_value('graph_image_height', 280);
+        config_update_value('graph_image_height', 130);
     }
 
     if (!isset($config['zoom_graph'])) {
@@ -2846,6 +3097,10 @@ function config_process_config()
         config_update_value('csv_divider', ';');
     }
 
+    if (!isset($config['csv_decimal_separator'])) {
+        config_update_value('csv_decimal_separator', '.');
+    }
+
     if (!isset($config['use_data_multiplier'])) {
         config_update_value('use_data_multiplier', '1');
     }
@@ -2858,25 +3113,20 @@ function config_process_config()
         config_update_value('custom_report_info', 1);
     }
 
-    // Juanma (06/05/2014) New feature: Custom front page for reports.
     if (!isset($config['custom_report_front'])) {
         config_update_value('custom_report_front', 0);
+    }
+
+    if (!isset($config['global_font_size_report'])) {
+        config_update_value('global_font_size_report', 10);
     }
 
     if (!isset($config['font_size_item_report'])) {
         config_update_value('font_size_item_report', 2);
     }
 
-    if (!isset($config['global_font_size_report'])) {
-        config_update_value('global_font_size_report', 14);
-    }
-
-    if (!isset($config['interval_description'])) {
-        config_update_value('interval_description', 'large');
-    }
-
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'FreeSans.ttf');
+        config_update_value('custom_report_front_font', 'lato.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {
@@ -3016,6 +3266,10 @@ function config_process_config()
     }
 
     // Integria.
+    if (!isset($config['integria_user_level_conf'])) {
+        config_update_value('integria_user_level_conf', 0);
+    }
+
     if (!isset($config['integria_enabled'])) {
         config_update_value('integria_enabled', 0);
     }
@@ -3028,17 +3282,17 @@ function config_process_config()
         config_update_value('integria_hostname', '');
     }
 
-    // Finally, check if any value was overwritten in a form.
-    config_update_config();
-
-    $temp_list_ACL_IPs_for_API = [];
-    if (isset($config['list_ACL_IPs_for_API'])) {
-        if (!empty($config['list_ACL_IPs_for_API'])) {
-            $temp_list_ACL_IPs_for_API = explode(';', $config['list_ACL_IPs_for_API']);
-        }
+    // Module Library.
+    if (!isset($config['module_library_user'])) {
+        config_update_value('module_library_user', '');
     }
 
-    $config['list_ACL_IPs_for_API'] = $temp_list_ACL_IPs_for_API;
+    if (!isset($config['module_library_password'])) {
+        config_update_value('module_library_password', '');
+    }
+
+    // Finally, check if any value was overwritten in a form.
+    config_update_config();
 }
 
 
@@ -3099,7 +3353,7 @@ function get_um_url()
  */
 function config_return_in_bytes($val)
 {
-    $val = trim($val);
+    $val = (int) trim($val);
     $last = strtolower($val[(strlen($val) - 1)]);
     switch ($last) {
         // The 'G' modifier is available since PHP 5.1.0.
@@ -3143,6 +3397,32 @@ function config_user_set_custom_config()
     if (isset($userinfo['timezone'])) {
         if ($userinfo['timezone'] != '') {
             date_default_timezone_set($userinfo['timezone']);
+        }
+    }
+
+    if ((isset($userinfo['id_skin']) && $userinfo['id_skin'] !== 0)) {
+        if ((int) $userinfo['id_skin'] === 1) {
+            $config['style'] = 'pandora';
+        }
+
+        if ((int) $userinfo['id_skin'] === 2) {
+            $config['style'] = 'pandora_black';
+        }
+    }
+
+    $skin = get_parameter('skin', false);
+    $sec2_aux = get_parameter('sec2');
+
+    if ($sec2_aux != 'godmode/groups/group_list' && $skin !== false) {
+        $id_user_aux = get_parameter('id');
+        if ($id_user_aux == $config['id_user']) {
+            if ((int) $skin === 1 || (int) $skin === 0) {
+                $config['style'] = 'pandora';
+            }
+
+            if ((int) $skin === 2) {
+                $config['style'] = 'pandora_black';
+            }
         }
     }
 

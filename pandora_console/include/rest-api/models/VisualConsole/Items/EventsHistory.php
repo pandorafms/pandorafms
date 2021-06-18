@@ -73,17 +73,20 @@ final class EventsHistory extends Item
      * Fetch a vc item data structure from the database using a filter.
      *
      * @param array $filter Filter of the Visual Console Item.
+     * @param float $ratio  Ratio visual console in dashboards.
      *
      * @return array The Visual Console Item data structure stored into the DB.
      * @throws \InvalidArgumentException When an agent Id cannot be found.
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -102,17 +105,51 @@ final class EventsHistory extends Item
             throw new \InvalidArgumentException('missing agent Id');
         }
 
-        // Use the same HTML output as the old VC.
-        $html = \graph_graphic_moduleevents(
-            $agentId,
-            $moduleId,
-            (int) $data['width'],
-            (int) $data['height'],
-            static::extractMaxTime($data),
-            '',
-            true,
-            2
-        );
+        if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
+            $data['width'] = 420;
+            $data['height'] = 80;
+
+            if ($ratio != 0) {
+                $data['width'] = ($data['width'] * $ratio);
+                $data['height'] = ($data['height'] * $ratio);
+            }
+        }
+
+        $data['height'] = ($data['height'] - 20);
+
+        if ((int) $data['width'] < 11) {
+            $data['width'] = 11;
+        }
+
+        if ((int) $data['height'] < 11) {
+            $data['height'] = 11;
+        }
+
+        if (empty($moduleId) === true) {
+            $html = \graph_graphic_agentevents(
+                $agentId,
+                100,
+                (int) $data['height'],
+                static::extractMaxTime($data),
+                '',
+                true,
+                false,
+                500
+            );
+        } else {
+            // Use the same HTML output as the old VC.
+            $html = \graph_graphic_moduleevents(
+                $agentId,
+                $moduleId,
+                100,
+                (int) $data['height'],
+                static::extractMaxTime($data),
+                '',
+                true,
+                1,
+                $data['width']
+            );
+        }
 
         $data['html'] = $html;
 
@@ -188,7 +225,7 @@ final class EventsHistory extends Item
                     'return'             => true,
                     'module_input'       => true,
                     'module_name'        => 'moduleId',
-                    'module_none'        => false,
+                    'module_none'        => true,
                 ],
             ];
 
@@ -204,6 +241,8 @@ final class EventsHistory extends Item
                     'sort'           => false,
                     'agent_id'       => $values['agentId'],
                     'metaconsole_id' => $values['metaconsoleId'],
+                    'nothing'        => '--',
+                    'nothing_value'  => 0,
                 ],
             ];
 

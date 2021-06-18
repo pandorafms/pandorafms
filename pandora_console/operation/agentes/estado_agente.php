@@ -1,17 +1,32 @@
 <?php
+/**
+ * Agent Status View.
+ *
+ * @category   View
+ * @package    Pandora FMS
+ * @subpackage Monitoring.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 ob_start();
@@ -176,7 +191,14 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $tab = 'setup';
 
     // Setup tab.
-    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image('images/setup.png', true, ['title' => __('Setup')]).'</a>';
+    $setuptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.html_print_image(
+        'images/setup.png',
+        true,
+        [
+            'title' => __('Setup'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
 
     $setuptab['godmode'] = true;
 
@@ -185,7 +207,25 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     $onheader = ['setup' => $setuptab];
 }
 
-ui_print_page_header(__('Agent detail'), 'images/agent_mc.png', false, 'agent_status', false, $onheader);
+// Header.
+ui_print_standard_header(
+    __('Agent detail'),
+    'images/agent.png',
+    false,
+    '',
+    false,
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ]
+);
 
 if (!$strict_user) {
     if (tags_has_user_acl_tags()) {
@@ -204,9 +244,9 @@ if (isset($result_delete)) {
 
 echo '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente&group_id='.$group_id.'">';
 
-echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%" style="font-weight: bold; margin-bottom: 10px;">';
+echo '<table cellpadding="4" cellspacing="4" class="databox filters bolder mrgn_btn_10px" width="100%">';
 
-echo '<tr><td style="white-space:nowrap;">';
+echo '<tr><td class="nowrap mw180px padding-right-2-imp">';
 
 echo __('Group').'&nbsp;';
 
@@ -214,17 +254,17 @@ $groups = users_get_groups(false, $access);
 
 html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Recursion').'&nbsp;';
 html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Search').'&nbsp;';
 html_print_input_text('search', $search, '', 15);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 $fields = [];
 $fields[AGENT_STATUS_NORMAL] = __('Normal');
@@ -237,12 +277,12 @@ $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 echo __('Status').'&nbsp;';
 html_print_select($fields, 'status', $status, 'this.form.submit()', __('All'), AGENT_STATUS_ALL, false, false, true, '', false, 'width: 90px;');
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 echo __('Search in custom fields').'&nbsp;';
 html_print_input_text('search_custom', $search_custom, '', 15);
 
-echo '</td><td style="white-space:nowrap;">';
+echo '</td><td class="nowrap">';
 
 html_print_submit_button(
     __('Search'),
@@ -251,7 +291,7 @@ html_print_submit_button(
     ['class' => 'sub search']
 );
 
-echo '</td><td style="width:5%;">&nbsp;</td>';
+echo '</td>';
 
 echo '</tr></table></form>';
 
@@ -521,7 +561,9 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = ' AND ( nombre '.$order_collation."
-			COLLATE utf8_general_ci LIKE '%$search%' OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
+            COLLATE utf8_general_ci LIKE '%$search%' 
+            OR comentarios ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%'
+            OR alias ".$order_collation." COLLATE utf8_general_ci LIKE '%$search%') ";
     }
 }
 
@@ -537,7 +579,7 @@ if (!empty($search_custom)) {
 if ($group_id > 0) {
     $groups = [$group_id];
     if ($recursion) {
-        $groups = groups_get_id_recursive($group_id, true);
+        $groups = groups_get_children_ids($group_id, true);
     }
 } else {
     $groups = [];
@@ -567,7 +609,7 @@ if ($strict_user) {
     if ($group_id > 0) {
         $groups = [$group_id];
         if ($recursion) {
-            $groups = groups_get_id_recursive($group_id, true);
+            $groups = groups_get_children_ids($group_id, true);
         }
 
         $filter['id_group'] = implode(',', $groups);
@@ -693,7 +735,7 @@ $table->class = 'info_table';
 
 $table->head = [];
 $table->head[0] = __('Agent').ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
-$table->size[0] = '10%';
+$table->size[0] = '12%';
 
 $table->head[1] = __('Description').ui_get_sorting_arrows($url_up_description, $url_down_description, $selectDescriptionUp, $selectDescriptionDown);
 $table->size[1] = '16%';
@@ -775,22 +817,44 @@ foreach ($agents as $agent) {
 
     $data[0] = '<div class="left_'.$agent['id_agente'].'">';
 
-    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.$agent['alias'].'</span></b></a>';
+    $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'"><b><span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium', false, true, true).'</span></b></a>';
 
     if ($agent['quiet']) {
         $data[0] .= '&nbsp;';
-        $data[0] .= html_print_image('images/dot_blue.png', true, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']);
+        $data[0] .= html_print_image(
+            'images/dot_blue.png',
+            true,
+            [
+                'border' => '0',
+                'title'  => __('Quiet'),
+                'alt'    => '',
+            ]
+        );
     }
 
     if ($in_planned_downtime) {
-        $data[0] .= ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+        $data[0] .= ui_print_help_tip(
+            __('Agent in scheduled downtime'),
+            true,
+            'images/minireloj-16.png'
+        );
         $data[0] .= '</em>';
     }
 
     $data[0] .= '<div class="agentleft_'.$agent['id_agente'].'" style="visibility: hidden; clear: left;">';
 
-    if ($agent['id_os'] == 100) {
-        $data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
+    if ($agent['id_os'] == CLUSTER_OS_ID) {
+        if (enterprise_installed()) {
+            $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                $agent['id_agente']
+            );
+            $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+            $url .= '/operation/cluster/cluster';
+            $url = ui_get_full_url(
+                $url.'&op=view&id='.$cluster->id()
+            );
+            $data[0] .= '<a href="'.$url.'">'.__('View').'</a>';
+        }
     } else {
         $data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'">'.__('View').'</a>';
     }
@@ -798,8 +862,18 @@ foreach ($agents as $agent) {
     if (check_acl($config['id_user'], $agent['id_grupo'], 'AW')) {
         $data[0] .= ' | ';
 
-        if ($agent['id_os'] == 100) {
-                $data[0] .= '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            if (enterprise_installed()) {
+                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                    $agent['id_agente']
+                );
+                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                $url .= '/operation/cluster/cluster';
+                $url = ui_get_full_url(
+                    $url.'&op=update&id='.$cluster->id()
+                );
+                $data[0] .= '<a href="'.$url.'">'.__('Edit').'</a>';
+            }
         } else {
                 $data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent['id_agente'].'">'.__('Edit').'</a>';
         }
@@ -814,15 +888,31 @@ foreach ($agents as $agent) {
     if (enterprise_installed()) {
         enterprise_include_once('include/functions_config_agents.php');
         if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image('images/application_edit.png', true, ['align' => 'middle', 'title' => __('Remote config')]).'</a>';
+            $data[10] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1">'.html_print_image(
+                'images/application_edit.png',
+                true,
+                [
+                    'align' => 'middle',
+                    'title' => __('Remote config'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>';
         }
     }
 
     $data[2] = ui_print_os_icon($agent['id_os'], false, true);
 
-    $data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent['intervalo']).'</span>';
+    $data[3] = '<span>'.human_time_description_raw(
+        $agent['intervalo']
+    ).'</span>';
     $data[4] = '<a href="'.$config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent['id_grupo'].'">';
-    $data[4] .= ui_print_group_icon($agent['id_grupo'], true, 'groups_small', '', false);
+    $data[4] .= ui_print_group_icon(
+        $agent['id_grupo'],
+        true,
+        'groups_small',
+        '',
+        false
+    );
     $data[4] .= '</a>';
     $agent['not_init_count'] = $agent['notinit_count'];
 
@@ -871,9 +961,8 @@ if (!empty($table->data)) {
     );
 
     if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, 'AM')) {
-        echo '<div style="text-align: right; float: right;">';
+        echo '<div class="right float-right">';
         echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-            html_print_input_hidden('new_agent', 1);
             html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
         echo '</form>';
         echo '</div>';
@@ -882,9 +971,8 @@ if (!empty($table->data)) {
     unset($table);
 } else {
     ui_print_info_message([ 'no_close' => true, 'message' => __('There are no defined agents') ]);
-    echo '<div style="text-align: right; float: right;">';
+    echo '<div class="right float-right">';
     echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-        html_print_input_hidden('new_agent', 1);
         html_print_submit_button(__('Create agent'), 'crt', false, 'class="sub next"');
     echo '</form>';
     echo '</div>';

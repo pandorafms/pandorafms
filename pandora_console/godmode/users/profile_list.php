@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 
-if (! check_acl($config['id_user'], 0, 'UM')) {
+if (! check_acl($config['id_user'], 0, 'PM')) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access User Management'
@@ -41,11 +41,25 @@ if (!defined('METACONSOLE')) {
     $buttons = [
         'user'    => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                'images/gm_users.png',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'profile' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                'images/profiles.png',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -81,7 +95,7 @@ if ($delete_profile) {
     } else {
         db_pandora_audit(
             'Profile management',
-            'Delete profile '.$profile['name']
+            'Delete profile '.io_safe_output($profile['name'])
         );
         ui_print_success_message(__('Successfully deleted'));
     }
@@ -92,11 +106,6 @@ if ($delete_profile) {
 // Store the variables when create or update
 if ($create_profile || $update_profile) {
     $name = get_parameter('name');
-
-    // Incidents
-    $incident_view = (bool) get_parameter('incident_view');
-    $incident_edit = (bool) get_parameter('incident_edit');
-    $incident_management = (bool) get_parameter('incident_management');
 
     // Agents
     $agent_view = (bool) get_parameter('agent_view');
@@ -138,9 +147,6 @@ if ($create_profile || $update_profile) {
 
     $values = [
         'name'                => $name,
-        'incident_view'       => $incident_view,
-        'incident_edit'       => $incident_edit,
-        'incident_management' => $incident_management,
         'agent_view'          => $agent_view,
         'agent_edit'          => $agent_edit,
         'agent_disable'       => $agent_disable,
@@ -169,10 +175,7 @@ if ($update_profile) {
     if ($name) {
         $ret = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
         if ($ret !== false) {
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -196,7 +199,7 @@ if ($update_profile) {
 
             db_pandora_audit(
                 'User management',
-                'Update profile '.$name,
+                'Update profile '.io_safe_output($name),
                 false,
                 false,
                 $info
@@ -220,10 +223,7 @@ if ($create_profile) {
 
         if ($ret !== false) {
             ui_print_success_message(__('Successfully created'));
-            $info = '{"Name":"'.$incident_view.'",
-				"Incident view":"'.$incident_view.'",
-				"Incident edit":"'.$incident_edit.'",
-				"Incident management":"'.$incident_management.'",
+            $info = '{"Name":"'.$name.'",
 				"Agent view":"'.$agent_view.'",
 				"Agent edit":"'.$agent_edit.'",
 				"Agent disable":"'.$agent_disable.'",
@@ -247,7 +247,7 @@ if ($create_profile) {
 
             db_pandora_audit(
                 'User management',
-                'Created profile '.$name,
+                'Created profile '.io_safe_output($name),
                 false,
                 false,
                 $info
@@ -275,37 +275,31 @@ $table->align = [];
 
 $table->head['profiles'] = __('Profiles');
 
-$table->head['IR'] = 'IR'.ui_print_help_tip(__('System incidents reading'), true);
-$table->head['IW'] = 'IW'.ui_print_help_tip(__('System incidents writing'), true);
-$table->head['IM'] = 'IM'.ui_print_help_tip(__('System incidents management'), true);
-$table->head['AR'] = 'AR'.ui_print_help_tip(__('Agents reading'), true);
-$table->head['AW'] = 'AW'.ui_print_help_tip(__('Agents management'), true);
-$table->head['AD'] = 'AD'.ui_print_help_tip(__('Agents disable'), true);
-$table->head['LW'] = 'LW'.ui_print_help_tip(__('Alerts editing'), true);
-$table->head['LM'] = 'LM'.ui_print_help_tip(__('Alerts management'), true);
-$table->head['UM'] = 'UM'.ui_print_help_tip(__('Users management'), true);
-$table->head['DM'] = 'DM'.ui_print_help_tip(__('Database management'), true);
-$table->head['ER'] = 'ER'.ui_print_help_tip(__('Events reading'), true);
-$table->head['EW'] = 'EW'.ui_print_help_tip(__('Events writing'), true);
-$table->head['EM'] = 'EM'.ui_print_help_tip(__('Events management'), true);
-$table->head['RR'] = 'RR'.ui_print_help_tip(__('Reports reading'), true);
-$table->head['RW'] = 'RW'.ui_print_help_tip(__('Reports writing'), true);
-$table->head['RM'] = 'RM'.ui_print_help_tip(__('Reports management'), true);
-$table->head['MR'] = 'MR'.ui_print_help_tip(__('Network maps reading'), true);
-$table->head['MW'] = 'MW'.ui_print_help_tip(__('Network maps writing'), true);
-$table->head['MM'] = 'MM'.ui_print_help_tip(__('Network maps management'), true);
-$table->head['VR'] = 'VR'.ui_print_help_tip(__('Visual console reading'), true);
-$table->head['VW'] = 'VW'.ui_print_help_tip(__('Visual console writing'), true);
-$table->head['VM'] = 'VM'.ui_print_help_tip(__('Visual console management'), true);
-$table->head['PM'] = 'PM'.ui_print_help_tip(__('Systems management'), true);
+$table->head['AR'] = 'AR';
+$table->head['AW'] = 'AW';
+$table->head['AD'] = 'AD';
+$table->head['LW'] = 'LW';
+$table->head['LM'] = 'LM';
+$table->head['UM'] = 'UM';
+$table->head['DM'] = 'DM';
+$table->head['ER'] = 'ER';
+$table->head['EW'] = 'EW';
+$table->head['EM'] = 'EM';
+$table->head['RR'] = 'RR';
+$table->head['RW'] = 'RW';
+$table->head['RM'] = 'RM';
+$table->head['MR'] = 'MR';
+$table->head['MW'] = 'MW';
+$table->head['MM'] = 'MM';
+$table->head['VR'] = 'VR';
+$table->head['VW'] = 'VW';
+$table->head['VM'] = 'VM';
+$table->head['PM'] = 'PM';
 $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
 
 $table->align = array_fill(1, 11, 'center');
 
 $table->size['profiles'] = '200px';
-$table->size['IR'] = '10px';
-$table->size['IW'] = '10px';
-$table->size['IM'] = '10px';
 $table->size['AR'] = '10px';
 $table->size['AW'] = '10px';
 $table->size['AD'] = '10px';
@@ -333,13 +327,17 @@ if ($profiles === false) {
     $profiles = [];
 }
 
-$img = html_print_image('images/ok.png', true, ['border' => 0]);
+$img = html_print_image(
+    'images/ok.png',
+    true,
+    [
+        'border' => 0,
+        'class'  => 'invert_filter',
+    ]
+);
 
 foreach ($profiles as $profile) {
     $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
-    $data['IR'] = ($profile['incident_view'] ? $img : '');
-    $data['IW'] = ($profile['incident_edit'] ? $img : '');
-    $data['IM'] = ($profile['incident_management'] ? $img : '');
     $data['AR'] = ($profile['agent_view'] ? $img : '');
     $data['AW'] = ($profile['agent_edit'] ? $img : '');
     $data['AD'] = ($profile['agent_disable'] ? $img : '');
@@ -361,9 +359,20 @@ foreach ($profiles as $profile) {
     $data['VM'] = ($profile['vconsole_management'] ? $img : '');
     $data['PM'] = ($profile['pandora_management'] ? $img : '');
     $table->cellclass[]['operations'] = 'action_buttons';
-    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image('images/config.png', true, ['title' => __('Edit')]).'</a>';
+    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
+        'images/config.png',
+        true,
+        [
+            'title' => __('Edit'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>';
     if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true).'</a>';
+        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+            'images/cross.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a>';
     }
 
     array_push($table->data, $data);

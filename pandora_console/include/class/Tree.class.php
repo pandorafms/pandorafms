@@ -1,15 +1,30 @@
 <?php
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Tree view.
+ *
+ * @category   Tree
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 class Tree
 {
 
@@ -64,14 +79,22 @@ class Tree
     const TV_DEFAULT_AGENT_STATUS = -1;
 
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
+    public function __construct(
+        $type,
+        $rootType='',
+        $id=-1,
+        $rootID=-1,
+        $serverID=false,
+        $childrenMethod='on_demand',
+        $access='AR',
+        $id_meta_server=0
+    ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }
 
@@ -90,7 +113,7 @@ class Tree
         include_once $config['homedir'].'/include/functions_tags.php';
         enterprise_include_once('include/functions_agents.php');
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() && $id_meta_server == 0) {
             enterprise_include_once('meta/include/functions_ui_meta.php');
         }
     }
@@ -123,7 +146,7 @@ class Tree
             return '';
         }
 
-        return " AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ";
+        return " AND tam.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchModule'])."%%' ";
     }
 
 
@@ -133,7 +156,7 @@ class Tree
             return '';
         }
 
-        return " AND LOWER(ta.alias) LIKE LOWER('%%".$this->filter['searchAgent']."%%')";
+        return " AND LOWER(ta.alias) LIKE LOWER('%%".str_replace('%', '%%', $this->filter['searchAgent'])."%%')";
     }
 
 
@@ -256,8 +279,10 @@ class Tree
 
     protected function getTagJoin()
     {
-        return 'INNER JOIN ttag_module ttm
-			ON tam.id_agente_modulo = ttm.id_agente_modulo';
+        return 'INNER JOIN tagente_modulo tam 
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN ttag_module ttm
+			        ON tam.id_agente_modulo = ttm.id_agente_modulo';
     }
 
 
@@ -331,7 +356,7 @@ class Tree
             return '';
         }
 
-        return " AND tg.nombre LIKE '%%".$this->filter['searchGroup']."%%'";
+        return " AND tg.nombre LIKE '%%".str_replace('%', '%%', $this->filter['searchGroup'])."%%'";
     }
 
 
@@ -557,7 +582,6 @@ class Tree
         $module['id_module_type'] = (int) $module['id_tipo_modulo'];
         $module['server_type'] = (int) $module['id_modulo'];
         $module['status'] = $module['estado'];
-        $module['value'] = $module['datos'];
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
@@ -566,6 +590,8 @@ class Tree
             $module['serverName'] = false;
             $module['serverID'] = false;
         }
+
+        $module['value'] = modules_get_agentmodule_data_for_humans($module);
 
         if (!isset($module['value'])) {
             $module['value'] = modules_get_last_value($module['id']);
@@ -623,7 +649,7 @@ class Tree
             }
         }
 
-        $module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
+        $module['statusImageHTML'] = ui_print_status_image($statusType, htmlspecialchars($statusTitle), true);
 
         // HTML of the server type image
         $module['serverTypeHTML'] = servers_show_type($module['server_type']);
@@ -681,9 +707,24 @@ class Tree
             );
         }
 
-        // Alerts fired image
+        $module_alerts = alerts_get_alerts_agent_module($module['id']);
+
+        $module_alert_triggered = false;
+
+        foreach ($module_alerts as $module_alert) {
+            if ($module_alert['times_fired'] > 0) {
+                $module_alert_triggered = true;
+            }
+        }
+
+        // Module has alerts.
         if ((bool) $module['alerts']) {
-            $module['alertsImageHTML'] = html_print_image('images/bell.png', true, ['title' => __('Module alerts')]);
+            // Module has alerts triggered.
+            if ($module_alert_triggered === true) {
+                $module['alertsImageHTML'] = html_print_image('images/bell_orange.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+            } else {
+                $module['alertsImageHTML'] = html_print_image('images/bell_green.png', true, ['title' => __('Module alerts'), 'style' => 'filter: initial']);
+            }
         }
     }
 
@@ -738,11 +779,9 @@ class Tree
             $agent['counters']['warning'],
             $agent['counters']['unknown'],
             $agent['counters']['total'],
-            $agent['counters']['not_init']
+            $agent['counters']['not_init'],
+            $agent['counters']['alerts']
         );
-
-        // Alerts fired image
-        $agent['alertImageHTML'] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
 
         // search module recalculate counters
         if (array_key_exists('state_normal', $agent)) {
@@ -807,7 +846,7 @@ class Tree
 
         // Quiet image
         if (isset($agent['quiet']) && $agent['quiet']) {
-            $agent['quietImageHTML'] = html_print_image('/images/dot_blue.png', true, ['title' => __('Quiet')]);
+               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children
@@ -894,11 +933,16 @@ class Tree
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
         $module_status_inner = '';
-        $module_status_filter = $this->getModuleStatusFilterFromTestado();
-        if (!empty($module_status_filter)) {
-            $module_status_inner = '
-				INNER JOIN tagente_estado tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo';
+        $module_search_inner = '';
+        $module_search_filter = '';
+        if (!empty($this->filter['searchModule'])) {
+            $module_search_inner = '
+                INNER JOIN tagente_modulo tam
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo';
+            $module_search_filter = "AND tam.disabled = 0
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM
@@ -907,13 +951,11 @@ class Tree
 					FROM tagente ta
 					LEFT JOIN tagent_secondary_group tasg
 						ON ta.id_agente = tasg.id_agent
-					INNER JOIN tagente_modulo tam
-						ON ta.id_agente = tam.id_agente
 					$inner_inside
 					$module_status_inner
 					$group_inner
+                    $module_search_inner
 					WHERE ta.disabled = 0
-						AND tam.disabled = 0
 						%s
 						$agent_search_filter
 						$agent_status_filter
@@ -936,6 +978,7 @@ class Tree
 			$inner
 			GROUP BY g
 			ORDER BY $order_by_final";
+            hd($sql, true);
         return $sql;
     }
 

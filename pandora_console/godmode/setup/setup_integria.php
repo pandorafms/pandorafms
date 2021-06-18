@@ -6,7 +6,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,12 +31,20 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 require_once $config['homedir'].'/include/functions_integriaims.php';
 
 if (is_ajax()) {
+    $operation = (string) get_parameter('operation', '');
+
+    if ($operation === 'check_api_access') {
+    } else if ($operation === 'sync_inventory') {
+    }
+
     $integria_user = get_parameter('integria_user', '');
     $integria_pass = get_parameter('integria_pass', '');
     $integria_api_hostname = get_parameter('api_hostname', '');
     $integria_api_pass = get_parameter('api_pass', '');
+    $user_level_conf = get_parameter('user_level_conf', 0);
+    $user_level_conf_bool = $user_level_conf === 'true' ? true : false;
 
-    $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', []);
+    $login_result = integria_api_call($integria_api_hostname, $integria_user, $integria_pass, $integria_api_pass, 'get_login', [], false, '', '', $user_level_conf_bool);
 
     if ($login_result != false) {
         echo json_encode(['login' => 1]);
@@ -47,7 +55,7 @@ if (is_ajax()) {
     return;
 }
 
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false && $config['integria_enabled']) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -80,6 +88,16 @@ if (get_parameter('update_config', 0) == 1) {
             );
         }
 
+        $ticket_types = integria_api_call(null, null, null, null, 'get_types', '', false, 'json');
+
+        $types_string = '';
+
+        if ($ticket_types !== '') {
+            foreach (json_decode($ticket_types, true) as $key => $value) {
+                $types_string .= $value['id'].','.$value['name'].';';
+            }
+        }
+
         if ($command_exists === false) {
             // Create 'Integria IMS Ticket' command only when user enables IntegriaIMS integration and it does not exist in database.
             $id_command_inserted = db_process_sql_insert(
@@ -89,7 +107,8 @@ if (get_parameter('update_config', 0) == 1) {
                     'command'             => io_safe_input('Internal type'),
                     'internal'            => 1,
                     'description'         => io_safe_input('Create a ticket in Integria IMS'),
-                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'"]',
+                    'fields_descriptions' => '["'.io_safe_input('Ticket title').'","'.io_safe_input('Ticket group ID').'","'.io_safe_input('Ticket priority').'","'.io_safe_input('Ticket owner').'","'.io_safe_input('Ticket type').'","'.io_safe_input('Ticket status').'","'.io_safe_input('Ticket description').'","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
+                    'fields_values'       => '["", "", "","","'.$types_string.'","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]',
                 ]
             );
 
@@ -115,40 +134,79 @@ if (get_parameter('update_config', 0) == 1) {
 
             alerts_create_alert_action(io_safe_input('Create Integria IMS ticket'), $id_command_inserted, $action_values);
         } else {
-            // Update 'Create Integria IMS Ticket' action when setup data is updated, user enables IntegriaIMS integration and command does exist in database.
-            db_process_sql_update(
-                'talert_actions',
-                [
-                    'field1'          => io_safe_input($config['incident_title']),
-                    'field1_recovery' => io_safe_input($config['incident_title']),
-                    'field2'          => io_safe_input($config['default_group']),
-                    'field2_recovery' => io_safe_input($config['default_group']),
-                    'field3'          => io_safe_input($config['default_criticity']),
-                    'field3_recovery' => io_safe_input($config['default_criticity']),
-                    'field4'          => io_safe_input($config['default_owner']),
-                    'field4_recovery' => io_safe_input($config['default_owner']),
-                    'field5'          => io_safe_input($config['incident_type']),
-                    'field5_recovery' => io_safe_input($config['incident_type']),
-                    'field6'          => io_safe_input($config['incident_status']),
-                    'field6_recovery' => io_safe_input($config['incident_status']),
-                    'field7'          => io_safe_input($config['incident_content']),
-                    'field7_recovery' => io_safe_input($config['incident_content']),
-                ],
-                ['name' => io_safe_input('Create Integria IMS ticket')]
+            // Update 'Integria IMS Ticket' command with ticket types retrieved from Integria IMS.
+            $sql_update_command_values = sprintf(
+                '
+                UPDATE talert_commands
+                SET fields_values = \'["","","","","%s","","","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_","_integria_type_custom_field_"]\'
+                WHERE name="%s"',
+                $types_string,
+                io_safe_input('Integria IMS Ticket')
             );
+
+            db_process_sql($sql_update_command_values);
+
+            // Update those actions that make use of 'Integria IMS Ticket' command when setup default fields are updated. Empty fields in actions will be filled in with default values.
+            $update_action_values = [
+                $config['incident_title'],
+                $config['default_group'],
+                $config['default_criticity'],
+                $config['default_owner'],
+                $config['incident_type'],
+                $config['incident_status'],
+                $config['incident_content'],
+            ];
+
+            foreach ($update_action_values as $key => $value) {
+                $field_key = ($key + 1);
+
+                $sql_update_action_field = sprintf(
+                    '
+                    UPDATE talert_actions taa
+                    INNER JOIN talert_commands tac
+                    ON taa.id_alert_command=tac.id
+                    SET field%s= "%s"
+                    WHERE tac.name="Integria&#x20;IMS&#x20;Ticket"
+                    AND (
+                        taa.field%s IS NULL OR taa.field%s=""
+                    )',
+                    $field_key,
+                    $value,
+                    $field_key,
+                    $field_key,
+                    $field_key
+                );
+
+                db_process_sql($sql_update_action_field);
+            }
+
+            foreach ($update_action_values as $key => $value) {
+                $field_key = ($key + 1);
+
+                $sql_update_action_recovery_field = sprintf(
+                    '
+                    UPDATE talert_actions taa
+                    INNER JOIN talert_commands tac
+                    ON taa.id_alert_command=tac.id
+                    SET field%s_recovery = "%s"
+                    WHERE tac.name="Integria&#x20;IMS&#x20;Ticket"
+                    AND (
+                        taa.field%s_recovery IS NULL OR taa.field%s_recovery=""
+                    )',
+                    $field_key,
+                    $value,
+                    $field_key,
+                    $field_key,
+                    $field_key
+                );
+
+                db_process_sql($sql_update_action_recovery_field);
+            }
         }
     } else {
-        if ($event_response_exists != false) {
+        if ($event_response_exists !== false) {
             // Delete 'Create incident in IntegriaIMS from event' event response if it does exist and IntegriaIMS integration is disabled.
             db_process_sql_delete('tevent_response', ['name' => io_safe_input('Create ticket in IntegriaIMS from event')]);
-        }
-
-        if ($command_exists != false) {
-            // Delete 'Integria IMS Ticket' command if it does exist and IntegriaIMS integration is disabled.
-            db_process_sql_delete('talert_commands', ['name' => io_safe_input('Integria IMS Ticket')]);
-
-            // Delete 'Create Integria IMS Ticket' action if command exists and IntegriaIMS integration is disabled.
-            db_process_sql_delete('talert_actions', ['name' => io_safe_input('Create Integria IMS ticket')]);
         }
     }
 }
@@ -160,19 +218,19 @@ $integria_users_values = [];
 $integria_types_values = [];
 $integria_status_values = [];
 
-$integria_groups_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', []);
+$integria_groups_csv = integria_api_call(null, null, null, null, 'get_groups', []);
 
 get_array_from_csv_data_pair($integria_groups_csv, $integria_group_values);
 
-$integria_status_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', []);
+$integria_status_csv = integria_api_call(null, null, null, null, 'get_incidents_status', []);
 
 get_array_from_csv_data_pair($integria_status_csv, $integria_status_values);
 
-$integria_criticity_levels_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', []);
+$integria_criticity_levels_csv = integria_api_call(null, null, null, null, 'get_incident_priorities', []);
 
 get_array_from_csv_data_pair($integria_criticity_levels_csv, $integria_criticity_values);
 
-$integria_users_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_users', []);
+$integria_users_csv = integria_api_call(null, null, null, null, 'get_users', []);
 
 $csv_array = explode("\n", $integria_users_csv);
 
@@ -182,7 +240,7 @@ foreach ($csv_array as $csv_line) {
     }
 }
 
-$integria_types_csv = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_types', []);
+$integria_types_csv = integria_api_call(null, null, null, null, 'get_types', []);
 
 get_array_from_csv_data_pair($integria_types_csv, $integria_types_values);
 
@@ -211,6 +269,12 @@ $table_remote->class = 'databox filters';
 $table_remote->size['name'] = '30%';
 $table_remote->style['name'] = 'font-weight: bold';
 
+// Enable eHorus user configuration.
+$row = [];
+$row['name'] = ('Integria configuration at user level');
+$row['control'] = html_print_checkbox_switch('integria_user_level_conf', 1, $config['integria_user_level_conf'], true);
+$table_remote->data['integria_user_level_conf'] = $row;
+
 // Integria user.
 $row = [];
 $row['name'] = __('User');
@@ -221,28 +285,35 @@ $table_remote->data['integria_user'] = $row;
 $row = [];
 $row['name'] = __('Password');
 $row['control'] = html_print_input_password('integria_pass', io_output_password($config['integria_pass']), '', 30, 100, true);
+$row['control'] .= ui_print_reveal_password('integria_pass', true);
 $table_remote->data['integria_pass'] = $row;
 
 // Integria hostname.
 $row = [];
-$row['name'] = __('API Hostname');
+$row['name'] = __('URL to Integria IMS setup').ui_print_help_tip(__('Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, https://support.mycompany.com).'), true);
 $row['control'] = html_print_input_text('integria_hostname', $config['integria_hostname'], '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Hostname of Integria IMS\' API (scheme must be specified. Example: http://192.168.0.0)'), true);
 $table_remote->data['integria_hostname'] = $row;
 
 // API password.
 $row = [];
 $row['name'] = __('API Password');
 $row['control'] = html_print_input_password('integria_api_pass', io_output_password($config['integria_api_pass']), '', 30, 100, true);
-$row['control'] .= ui_print_help_tip(__('Password of Integria IMS\' API'), true);
+$row['control'] .= ui_print_reveal_password('integria_api_pass', true);
 $table_remote->data['integria_api_pass'] = $row;
 
 // Request timeout.
 $row = [];
 $row['name'] = __('Request timeout');
 $row['control'] = html_print_input_text('integria_req_timeout', $config['integria_req_timeout'], '', 3, 10, true);
-$row['control'] .= ui_print_help_tip(__('Time in seconds to set the maximum time of the requests to the Integria API').'. '.__('0 to disable'), true);
 $table_remote->data['integria_req_timeout'] = $row;
+
+$row = [];
+$row['name'] = __('Inventory');
+$row['control'] = html_print_button(__('Sync inventory'), 'sync-inventory', false, '', 'class="sub next"', true);
+$row['control'] .= '<span id="test-integria-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="test-integria-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$row['control'] .= '<span id="test-integria-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$table_remote->data['integria_sync_inventory'] = $row;
 
 // Alert settings.
 $table_alert_settings = new StdClass();
@@ -266,22 +337,20 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('alert_macros', true);
+);
 $table_alert_settings->data['custom_response_incident_title'] = $row;
 
 // Alert incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'incident_content',
+    7,
+    25,
     $config['incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('alert_macros', true);
+    true
+);
 $table_alert_settings->data['custom_response_incident_content'] = $row;
 
 // Alert default group.
@@ -389,22 +458,21 @@ $row['control'] = html_print_input_text(
     true,
     false,
     false
-).ui_print_help_icon('response_macros', true);
+);
 $table_cr_settings->data['custom_response_incident_title'] = $row;
 
 // Custom response incident description.
 $row = [];
-$row['name'] = __('Description');
-$row['control'] = html_print_input_text(
+$row['name'] = __('Ticket body');
+$row['control'] = html_print_textarea(
     'cr_incident_content',
+    7,
+    25,
     $config['cr_incident_content'],
     '',
-    50,
-    100,
-    true,
-    false,
-    false
-).ui_print_help_icon('response_macros', true);
+    true
+);
+
 $table_cr_settings->data['custom_response_incident_content'] = $row;
 
 // Custom response default group.
@@ -494,19 +562,19 @@ $table_cr_settings->data['custom_response_incident_status'] = $row;
 $row = [];
 $row['name'] = __('Test');
 $row['control'] = html_print_button(__('Start'), 'test-integria', false, '', 'class="sub next"', true);
-$row['control'] .= '<span id="test-integria-spinner" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="test-integria-success" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="test-integria-failure" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-$row['control'] .= '&nbsp;<span id="test-integria-message" style="display:none;"></span>';
+$row['control'] .= '<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+$row['control'] .= '<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+$row['control'] .= '<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+$row['control'] .= '&nbsp;<span id="test-integria-message" class="invisible"></span>';
 $table_remote->data['integria_test'] = $row;
 
 // Print.
-echo '<div style="text-align: center; padding-bottom: 20px;">';
+echo '<div class="center pdd_b_20px">';
 echo '<a target="_blank" rel="noopener noreferrer" href="http://integriaims.com">';
 html_print_image('images/integria_logo.png');
 echo '</a>';
 echo '<br />';
-echo '<div style="font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #515151;">';
+echo '<div clsas="integria_title">';
 echo __('Integria IMS');
 echo '</div>';
 echo '<a target="_blank" rel="noopener noreferrer" href="https://integriaims.com">';
@@ -536,7 +604,7 @@ if ($has_connection != false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Alert default values').'</legend>';
+    echo '<legend>'.__('Alert default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_alert_settings);
 
@@ -546,7 +614,7 @@ if ($has_connection != false) {
     // Form custom response default settings.
     echo '<div id="form_custom_response_settings">';
     echo '<fieldset>';
-    echo '<legend>'.__('Event custom response default values').'</legend>';
+    echo '<legend>'.__('Event custom response default values').'&nbsp'.ui_print_help_icon('alert_macros', true).'</legend>';
 
     html_print_table($table_cr_settings);
 
@@ -568,6 +636,29 @@ echo '</form>';
 ?>
 
 <script type="text/javascript">
+
+    if($('input:checkbox[name="integria_user_level_conf"]').is(':checked'))
+    {
+        $('#integria-remote-setup-integria_user').hide();
+        $('#integria-remote-setup-integria_pass').hide()
+    }
+
+    var handleUserLevel = function(event) {
+        var is_checked = $('input:checkbox[name="integria_enabled"]').is(':checked');
+        var is_checked_userlevel = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
+        
+        if (event.target.value == '1' && is_checked && !is_checked_userlevel) {
+            showUserPass();
+            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', true);
+        }
+        else {
+            hideUserPass();
+            $('input:checkbox[name="integria_user_level_conf"]').attr('checked', false);
+        };
+    }
+
+    $('input:checkbox[name="integria_enabled"]').change(handleEnable);
+    $('input:checkbox[name="integria_user_level_conf"]').change(handleUserLevel);
 
     if(!$('input:checkbox[name="integria_enabled"]').is(':checked')) {
         $('#form_remote').hide();
@@ -660,14 +751,16 @@ echo '</form>';
         var integria_pass = $('input[name=integria_pass]').val();
         var api_hostname = $('input[name=integria_hostname]').val();
         var api_pass = $('input[name=integria_api_pass]').val();
+        var user_level_conf = $('input:checkbox[name="integria_user_level_conf"]').is(':checked');
 
         var data = {
-            page: "godmode/setup/setup_integria",
-            check_api_access: 1,
+            page: 'godmode/setup/setup_integria',
+            operation: 'check_api_access',
             integria_user: integria_user,
             integria_pass: integria_pass,
             api_hostname: api_hostname,
             api_pass: api_pass,
+            user_level_conf: user_level_conf,
         }
 
         // AJAX call to check API connection.
@@ -695,7 +788,100 @@ echo '</form>';
             hideLoadingImage();
         });
     }
+
+    var handleInventorySync = function (event) {
+    
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('span#test-integria-spinner-sync').hide();
+        }
+        var showLoadingImage = function () {
+            $('span#test-integria-spinner-sync').show();
+        }
+        var hideSuccessImage = function () {
+            $('span#test-integria-success-sync').hide();
+        }
+        var showSuccessImage = function () {
+            $('span#test-integria-success-sync').show();
+        }
+        var hideFailureImage = function () {
+            $('span#test-integria-failure-sync').hide();
+        }
+        var showFailureImage = function () {
+            $('span#test-integria-failure-sync').show();
+        }
+
+        
+        hideSuccessImage();
+        hideFailureImage();
+        showLoadingImage();
+
+        var integria_user = $('input[name=integria_user]').val();
+        var integria_pass = $('input[name=integria_pass]').val();
+        var api_hostname = $('input[name=integria_hostname]').val();
+        var api_pass = $('input[name=integria_api_pass]').val();
+
+        if (!api_hostname.match(/^[a-zA-Z]+:\/\//))
+        {
+            api_hostname = 'http://' + api_hostname;
+        }
+
+        var url = api_hostname + '/integria/include/api.php';
+
+        <?php
+        // Retrieve all agents and codify string in the format that will be sent over in Ajax call.
+            $agent_fields = [
+                'nombre',
+                'alias',
+                'id_os',
+                'direccion',
+                'id_agente',
+                'id_grupo',
+            ];
+
+            $agents = agents_get_agents(false, $agent_fields);
+
+            $agents_query_string_array = [];
+
+            foreach ($agents as $agent_data) {
+                $agents_query_string_array[] = implode('|;|', $agent_data);
+            }
+            ?>
+
+        var agents_query_string_array = <?php echo json_encode($agents_query_string_array); ?>;
+
+        var data = {
+            op: 'sync_pandora_agents_inventory',
+            user: integria_user,
+            user_pass: integria_pass,
+            pass: api_pass,
+            params: agents_query_string_array,
+            token: '|;|'
+        }
+
+        // AJAX call to check API connection.
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: data
+        })
+        .done(function(data, textStatus, xhr) {
+            showSuccessImage();
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
+
     $('input#button-test-integria').click(handleTest);
+    $('input#button-sync-inventory').click(handleInventorySync);
     
 
 

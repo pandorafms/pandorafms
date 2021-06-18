@@ -1,17 +1,32 @@
 <?php
+/**
+ * Agents defined view.
+ *
+ * @category   Manage Agents.
+ * @package    Pandora FMS
+ * @subpackage Resources.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 // Take some parameters (GET).
@@ -32,7 +47,16 @@ if (($ag_group == -1) && ($group_id != 0)) {
     $ag_group = $group_id;
 }
 
-if (! check_acl($config['id_user'], 0, 'AW') && ! check_acl($config['id_user'], 0, 'AD')) {
+if (! check_acl(
+    $config['id_user'],
+    0,
+    'AW'
+) && ! check_acl(
+    $config['id_user'],
+    0,
+    'AD'
+)
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access agent manager'
@@ -51,7 +75,14 @@ $search = get_parameter('search', '');
 $tab = 'view';
 
 // Setup tab.
-$viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">'.html_print_image('images/operation.png', true, ['title' => __('View')]).'</a>';
+$viewtab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente">'.html_print_image(
+    'images/eye_show.png',
+    true,
+    [
+        'title' => __('View'),
+        'class' => 'invert_filter',
+    ]
+).'</a>';
 
 $viewtab['operation'] = true;
 
@@ -60,7 +91,30 @@ $viewtab['active'] = false;
 $onheader = ['view' => $viewtab];
 
 // Header.
-ui_print_page_header(__('Agents defined in %s', get_product_name()), 'images/agent_mc.png', false, '', true, $onheader);
+ui_print_standard_header(
+    __('Agents defined in %s', get_product_name()),
+    'images/agent.png',
+    false,
+    '',
+    true,
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Resources'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Manage agents'),
+        ],
+    ]
+);
+
+if (is_central_policies_on_node()) {
+    ui_print_warning_message(
+        __('This node is configured with centralized mode. To delete an agent go to metaconsole.')
+    );
+}
 
 // Perform actions.
 $agent_to_delete = (int) get_parameter('borrar_agente');
@@ -68,9 +122,13 @@ $enable_agent = (int) get_parameter('enable_agent');
 $disable_agent = (int) get_parameter('disable_agent');
 
 if ($disable_agent != 0) {
-    $server_name = db_get_row_sql('select server_name from tagente where id_agente = '.$disable_agent);
+    $server_name = db_get_row_sql(
+        'select server_name from tagente where id_agente = '.$disable_agent
+    );
 } else if ($enable_agent != 0) {
-    $server_name = db_get_row_sql('select server_name from tagente where id_agente = '.$enable_agent);
+    $server_name = db_get_row_sql(
+        'select server_name from tagente where id_agente = '.$enable_agent
+    );
 }
 
 
@@ -96,32 +154,68 @@ if ($agent_to_delete) {
         exit;
     }
 
-    ui_print_result_message($result, __('Success deleted agent.'), __('Could not be deleted.'));
+    ui_print_result_message(
+        $result,
+        __('Success deleted agent.'),
+        __('Could not be deleted.')
+    );
 
     if (enterprise_installed()) {
         // Check if the remote config file still exist.
         if (isset($config['remote_config'])) {
-            enterprise_include_once('include/functions_config_agents.php');
-            if (enterprise_hook('config_agents_has_remote_configuration', [$id_agente])) {
-                ui_print_error_message(__('Maybe the files conf or md5 could not be deleted'));
+            enterprise_include_once(
+                'include/functions_config_agents.php'
+            );
+            if (enterprise_hook(
+                'config_agents_has_remote_configuration',
+                [$id_agente]
+            )
+            ) {
+                ui_print_error_message(
+                    __('Maybe the files conf or md5 could not be deleted')
+                );
             }
         }
     }
 }
 
 if ($enable_agent) {
-    $result = db_process_sql_update('tagente', ['disabled' => 0], ['id_agente' => $enable_agent]);
-    $alias = agents_get_alias($enable_agent);
+    $result = db_process_sql_update(
+        'tagente',
+        ['disabled' => 0],
+        ['id_agente' => $enable_agent]
+    );
+    $alias = io_safe_output(agents_get_alias($enable_agent));
 
     if ($result) {
         // Update the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 0];
-        enterprise_hook('agent_update_from_cache', [$enable_agent, $values, $server_name]);
-        config_agents_update_config_token($enable_agent, 'standby', 0);
-        db_pandora_audit('Agent management', 'Enable  '.$alias);
+        enterprise_hook(
+            'agent_update_from_cache',
+            [
+                $enable_agent,
+                $values,
+                $server_name,
+            ]
+        );
+        enterprise_hook(
+            'config_agents_update_config_token',
+            [
+                $enable_agent,
+                'standby',
+                0,
+            ]
+        );
+        db_pandora_audit(
+            'Agent management',
+            'Enable  '.$alias
+        );
     } else {
-        db_pandora_audit('Agent management', 'Fail to enable '.$alias);
+        db_pandora_audit(
+            'Agent management',
+            'Fail to enable '.$alias
+        );
     }
 
     ui_print_result_message(
@@ -133,18 +227,38 @@ if ($enable_agent) {
 
 if ($disable_agent) {
     $result = db_process_sql_update('tagente', ['disabled' => 1], ['id_agente' => $disable_agent]);
-    $alias = agents_get_alias($disable_agent);
+    $alias = io_safe_output(agents_get_alias($disable_agent));
 
     if ($result) {
         // Update the agent from the metaconsole cache.
         enterprise_include_once('include/functions_agents.php');
         $values = ['disabled' => 1];
-        enterprise_hook('agent_update_from_cache', [$disable_agent, $values, $server_name]);
-        config_agents_update_config_token($disable_agent, 'standby', 1);
+        enterprise_hook(
+            'agent_update_from_cache',
+            [
+                $disable_agent,
+                $values,
+                $server_name,
+            ]
+        );
+        enterprise_hook(
+            'config_agents_update_config_token',
+            [
+                $disable_agent,
+                'standby',
+                1,
+            ]
+        );
 
-        db_pandora_audit('Agent management', 'Disable  '.$alias);
+        db_pandora_audit(
+            'Agent management',
+            'Disable  '.$alias
+        );
     } else {
-        db_pandora_audit('Agent management', 'Fail to disable '.$alias);
+        db_pandora_audit(
+            'Agent management',
+            'Fail to disable '.$alias
+        );
     }
 
     ui_print_result_message(
@@ -154,7 +268,7 @@ if ($disable_agent) {
     );
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
+echo "<table cellpadding='4' cellspacing='4' class='databox filters font_bold margin-bottom-10' width='100%'>
 	<tr>";
 echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
@@ -163,14 +277,34 @@ echo '<td>';
 
 echo __('Group').'&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AR') && !check_acl($config['id_user'], 0, 'AW')) {
+if (!$own_info['is_admin'] && !check_acl(
+    $config['id_user'],
+    0,
+    'AR'
+) && !check_acl($config['id_user'], 0, 'AW')
+) {
     $return_all_group = false;
 } else {
     $return_all_group = true;
 }
 
-html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, false, false, true, '', false);
-
+echo '<div class="w250px inline">';
+html_print_select_groups(
+    false,
+    'AR',
+    $return_all_group,
+    'ag_group',
+    $ag_group,
+    'this.form.submit();',
+    '',
+    0,
+    false,
+    false,
+    true,
+    '',
+    false
+);
+echo '</div>';
 echo '<td>';
 echo __('Show Agents').'&nbsp;';
 $fields = [
@@ -178,14 +312,21 @@ $fields = [
     1 => __('Only disabled'),
     0 => __('Only enabled'),
 ];
-html_print_select($fields, 'disabled', $disabled, 'this.form.submit()');
+html_print_select(
+    $fields,
+    'disabled',
+    $disabled,
+    'this.form.submit()'
+);
 
 echo '</td>';
 
 echo '<td>';
 echo __('Operative System').'&nbsp;';
 
-$pre_fields = db_get_all_rows_sql('select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os');
+$pre_fields = db_get_all_rows_sql(
+    'select distinct(tagente.id_os),tconfig_os.name from tagente,tconfig_os where tagente.id_os = tconfig_os.id_os'
+);
 $fields = [];
 
 foreach ($pre_fields as $key => $value) {
@@ -198,13 +339,23 @@ echo '</td>';
 
 echo '<td>';
 echo __('Recursion').'&nbsp;';
-html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
+html_print_checkbox(
+    'recursion',
+    1,
+    $recursion,
+    false,
+    false,
+    'this.form.submit()'
+);
 
 echo '</td><td>';
 echo __('Search').'&nbsp;';
 html_print_input_text('search', $search, '', 12);
 
-echo ui_print_help_tip(__('Search filter by alias, name, description, IP address or custom fields content'), true);
+echo ui_print_help_tip(
+    __('Search filter by alias, name, description, IP address or custom fields content'),
+    true
+);
 
 echo '</td><td>';
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
@@ -403,7 +554,7 @@ if ($ag_group > 0) {
     $ag_groups = [];
     $ag_groups = (array) $ag_group;
     if ($recursion) {
-        $ag_groups = groups_get_id_recursive($ag_group, true);
+        $ag_groups = groups_get_children_ids($ag_group, true);
     }
 
     $user_groups_to_sql = implode(',', $ag_groups);
@@ -490,7 +641,7 @@ if ($agents !== false) {
     echo '<th>'.__('Type').'</th>';
     echo '<th>'.__('Group').ui_get_sorting_arrows($url_up_group, $url_down_group, $selectGroupUp, $selectGroupDown).'</th>';
     echo '<th>'.__('Description').'</th>';
-    echo "<th style='text-align:left'>".__('Actions').'</th>';
+    echo "<th class='context_help_body'>".__('Actions').'</th>';
     echo '</tr></thead>';
     $color = 1;
 
@@ -498,16 +649,35 @@ if ($agents !== false) {
     $iterator = 0;
     foreach ($agents as $agent) {
         // Begin Update tagente.remote 0/1 with remote agent function return.
-        if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
-            db_process_sql_update('tagente', ['remote' => 1], 'id_agente = '.$agent['id_agente'].'');
+        if (enterprise_hook(
+            'config_agents_has_remote_configuration',
+            [$agent['id_agente']]
+        )
+        ) {
+            db_process_sql_update(
+                'tagente',
+                ['remote' => 1],
+                'id_agente = '.$agent['id_agente'].''
+            );
         } else {
             db_process_sql_update('tagente', ['remote' => 0], 'id_agente = '.$agent['id_agente'].'');
         }
 
             // End Update tagente.remote 0/1 with remote agent function return.
-        $all_groups = agents_get_all_groups_agent($agent['id_agente'], $agent['id_grupo']);
-        $check_aw = check_acl_one_of_groups($config['id_user'], $all_groups, 'AW');
-        $check_ad = check_acl_one_of_groups($config['id_user'], $all_groups, 'AD');
+        $all_groups = agents_get_all_groups_agent(
+            $agent['id_agente'],
+            $agent['id_grupo']
+        );
+        $check_aw = check_acl_one_of_groups(
+            $config['id_user'],
+            $all_groups,
+            'AW'
+        );
+        $check_ad = check_acl_one_of_groups(
+            $config['id_user'],
+            $all_groups,
+            'AD'
+        );
 
         $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
 
@@ -552,13 +722,22 @@ if ($agents !== false) {
             $agent['alias'] = $agent['nombre'];
         }
 
-        if ($agent['id_os'] == 100) {
-            $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
-            echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.$agent['alias'].'</a>';
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            if (enterprise_installed()) {
+                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                    $agent['id_agente']
+                );
+                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                $url .= '/operation/cluster/cluster';
+                $url = ui_get_full_url(
+                    $url.'&op=update&id='.$cluster->id()
+                );
+                echo '<a href="'.$url.'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</a>';
+            }
         } else {
             echo '<a alt ='.$agent['nombre']." href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=$main_tab&
-			id_agente=".$agent['id_agente']."'>".'<span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.$agent['alias'].'</span>'.'</a>';
+			id_agente=".$agent['id_agente']."'>".'<span class="'.$custom_font_size.' title ="'.$agent['nombre'].'">'.ui_print_truncate_text($agent['alias'], 'agent_medium').'</span>'.'</a>';
         }
 
         echo '</strong>';
@@ -579,21 +758,42 @@ if ($agents !== false) {
 
         if ($agent['quiet']) {
             echo '&nbsp;';
-            html_print_image('images/dot_blue.png', false, ['border' => '0', 'title' => __('Quiet'), 'alt' => '']);
+            html_print_image(
+                'images/dot_blue.png',
+                false,
+                [
+                    'border' => '0',
+                    'title'  => __('Quiet'),
+                    'alt'    => '',
+                ]
+            );
         }
 
         if ($in_planned_downtime) {
-            ui_print_help_tip(__('Agent in planned downtime'), false, 'images/minireloj-16.png');
+            ui_print_help_tip(
+                __('Agent in scheduled downtime'),
+                false,
+                'images/minireloj-16.png'
+            );
 
             echo '</em>';
         }
 
-        echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
+        echo '</span><div class="left actions clear_left" style=" visibility: hidden">';
         if ($check_aw) {
-            if ($agent['id_os'] == 100) {
-                $cluster = db_get_row_sql('select id from tcluster where id_agent = '.$agent['id_agente']);
-                echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_builder&id_cluster='.$cluster['id'].'&step=1&update=1">'.__('Edit').'</a>';
-                echo ' | ';
+            if ($agent['id_os'] == CLUSTER_OS_ID) {
+                if (enterprise_installed()) {
+                    $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                        $agent['id_agente']
+                    );
+                    $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                    $url .= '/operation/cluster/cluster';
+                    $url = ui_get_full_url(
+                        $url.'&op=update&id='.$cluster->id()
+                    );
+                    echo '<a href="'.$url.'">'.__('Edit').'</a>';
+                    echo ' | ';
+                }
             } else {
                 echo '<a href="index.php?sec=gagente&
 				sec2=godmode/agentes/configurar_agente&tab=main&
@@ -614,8 +814,18 @@ if ($agents !== false) {
 			id_agente='.$agent['id_agente'].'">'.__('Alerts').'</a>';
         echo ' | ';
 
-        if ($agent['id_os'] == 100) {
-            echo '<a href="index.php?sec=reporting&sec2=enterprise/godmode/reporting/cluster_view&id='.$cluster['id'].'">'.__('View').'</a>';
+        if ($agent['id_os'] == CLUSTER_OS_ID) {
+            if (enterprise_installed()) {
+                $cluster = PandoraFMS\Enterprise\Cluster::loadFromAgentId(
+                    $agent['id_agente']
+                );
+                $url = 'index.php?sec=reporting&sec2='.ENTERPRISE_DIR;
+                $url .= '/operation/cluster/cluster';
+                $url = ui_get_full_url(
+                    $url.'&op=view&id='.$cluster->id()
+                );
+                echo '<a href="'.$url.'">'.__('View').'</a>';
+            }
         } else {
             echo '<a href="index.php?sec=estado
 			&sec2=operation/agentes/ver_agente
@@ -631,7 +841,15 @@ if ($agents !== false) {
             enterprise_include_once('include/functions_config_agents.php');
             if (enterprise_hook('config_agents_has_remote_configuration', [$agent['id_agente']])) {
                 echo "<a href='index.php?".'sec=gagente&'.'sec2=godmode/agentes/configurar_agente&'.'tab=remote_configuration&'.'id_agente='.$agent['id_agente']."&disk_conf=1'>";
-                echo html_print_image('images/application_edit.png', true, ['align' => 'middle', 'title' => __('Edit remote config')]);
+                echo html_print_image(
+                    'images/application_edit.png',
+                    true,
+                    [
+                        'align' => 'middle',
+                        'title' => __('Edit remote config'),
+                        'class' => 'invert_filter',
+                    ]
+                );
                 echo '</a>';
             }
         }
@@ -669,7 +887,7 @@ if ($agents !== false) {
             $offsetArg = $offset;
         }
 
-        echo "<td class='$tdcolor action_buttons' align='left' style='width:7%' valign='middle'>";
+        echo "<td class='$tdcolor action_buttons' align='left' width=7% valign='middle'>";
 
         if ($agent['disabled']) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
@@ -691,10 +909,10 @@ if ($agents !== false) {
                 echo ' onClick="if (!confirm(\' '.__('You are going to disable a cluster agent. Are you sure?').'\')) return false;">';
             }
 
-            echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent')]).'</a>';
+            echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent'), 'class' => 'invert_filter']).'</a>';
         }
 
-        if ($check_aw) {
+        if ($check_aw && !is_central_policies_on_node()) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 
@@ -704,7 +922,7 @@ if ($agents !== false) {
                 echo ' onClick="if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;">';
             }
 
-            echo html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+            echo html_print_image('images/cross.png', true, ['border' => '0', 'class' => 'invert_filter']).'</a>';
         }
 
         echo '</td>';
@@ -719,9 +937,8 @@ if ($agents !== false) {
 
 if (check_acl($config['id_user'], 0, 'AW')) {
     // Create agent button.
-    echo '<div style="text-align: right;">';
+    echo '<div class="action-buttons">';
     echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-    html_print_input_hidden('new_agent', 1);
     html_print_submit_button(
         __('Create agent'),
         'crt-2',

@@ -149,75 +149,438 @@ function progressbar(
 }
 
 
+/**
+ * Draw vertical bars graph.
+ *
+ * @param array   $data   Data chart.
+ * @param array   $params Params draw chart.
+ * @param integer $ttl    Pdf option.
+ *
+ * @return mixed
+ */
 function vbar_graph(
-    $chart_data,
-    $width,
-    $height,
-    $color,
-    $legend,
-    $long_index,
-    $no_data_image,
-    $xaxisname='',
-    $yaxisname='',
-    $water_mark='',
-    $font='',
-    $font_size='',
-    $unit='',
-    $ttl=1,
-    $homeurl='',
-    $backgroundColor='white',
-    $from_ux=false,
-    $from_wux=false,
-    $tick_color='white',
-    $base64=false
+    array $data,
+    array $options,
+    int $ttl=1
 ) {
-    setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    global $config;
 
-    if (empty($chart_data)) {
-        return graph_nodata_image($width, $height, 'vbar');
+    // INFO IN: https://github.com/flot/flot/blob/master/API.md.
+    // Xaxes chart Title.
+    if (isset($options['x']['title']['title']) === false) {
+        $options['x']['title']['title'] = '';
     }
 
-    if ($ttl == 2) {
-        $params = [
-            'chart_data'         => $chart_data,
-            'width'              => $width,
-            'height'             => $height,
-            'color'              => $color,
-            'legend'             => $legend,
-            'long_index'         => $long_index,
-            'homeurl'            => $homeurl,
-            'unit'               => $unit,
-            'water_mark_url'     => $water_mark_url,
-            'homedir'            => $homedir,
-            'font'               => $font,
-            'font_size'          => $font_size,
-            'from_ux'            => $from_ux,
-            'from_wux'           => $from_wux,
-            'backgroundColor'    => $backgroundColor,
-            'tick_color'         => $tick_color,
-            'return_img_base_64' => $base64,
+    if (isset($options['x']['title']['fontSize']) === false) {
+        $options['x']['title']['fontSize'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['x']['title']['fontFamily']) === false) {
+        $options['x']['title']['fontFamily'] = preg_replace(
+            '/.ttf/',
+            'Font, lato',
+            $config['fontpath']
+        );
+    }
+
+    if (isset($options['x']['title']['padding']) === false) {
+        $options['x']['title']['padding'] = 10;
+    }
+
+    // Xaxes font ticks.
+    if (isset($options['x']['font']['size']) === false) {
+        $options['x']['font']['size'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['x']['font']['lineHeight']) === false) {
+        $options['x']['font']['lineHeight'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['x']['font']['style']) === false) {
+        $options['x']['font']['style'] = 'normal';
+    }
+
+    if (isset($options['x']['font']['weight']) === false) {
+        $options['x']['font']['weight'] = 'normal';
+    }
+
+    if (isset($options['x']['font']['family']) === false) {
+        $options['x']['font']['family'] = preg_replace(
+            '/.ttf/',
+            'Font',
+            $config['fontpath']
+        );
+    }
+
+    if (isset($options['x']['font']['variant']) === false) {
+        $options['x']['font']['variant'] = 'small-caps';
+    }
+
+    if (isset($options['x']['font']['color']) === false) {
+        $options['x']['font']['color'] = '#545454';
+        if ($options['pdf'] === true) {
+            $options['x']['font']['color'] = '#000';
+        } else if ($config['style'] === 'pandora_black') {
+            $options['x']['font']['color'] = '#fff';
+        }
+    }
+
+    // Show ticks.
+    if (isset($options['x']['show']) === false) {
+        $options['x']['show'] = true;
+    }
+
+    // Type position bottom or top or left or right.
+    if (isset($options['x']['position']) === false) {
+        $options['x']['position'] = 'bottom';
+    }
+
+    // Grid color axes x.
+    if (isset($options['x']['color']) === false) {
+        $options['x']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['x']['color'] = '#222';
+        }
+    }
+
+    if (isset($options['x']['labelWidth']) === false) {
+        $options['x']['labelWidth'] = null;
+    }
+
+    if (isset($options['x']['labelHeight']) === false) {
+        $options['x']['labelHeight'] = null;
+    }
+
+    // Yaxes chart Title.
+    if (isset($options['y']['title']['title']) === false) {
+        $options['y']['title']['title'] = '';
+    }
+
+    if (isset($options['y']['title']['fontSize']) === false) {
+        $options['y']['title']['fontSize'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['y']['title']['fontFamily']) === false) {
+        $options['y']['title']['fontFamily'] = preg_replace(
+            '/.ttf/',
+            'Font',
+            $config['fontpath']
+        );
+    }
+
+    if (isset($options['y']['title']['padding']) === false) {
+        $options['y']['title']['padding'] = 10;
+    }
+
+    // Yaxes font ticks.
+    if (isset($options['y']['font']['size']) === false) {
+        $options['y']['font']['size'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['y']['font']['lineHeight']) === false) {
+        $options['y']['font']['lineHeight'] = ((int) $config['font_size'] + 2);
+    }
+
+    if (isset($options['y']['font']['style']) === false) {
+        $options['y']['font']['style'] = 'normal';
+    }
+
+    if (isset($options['y']['font']['weight']) === false) {
+        $options['y']['font']['weight'] = 'normal';
+    }
+
+    if (isset($options['y']['font']['family']) === false) {
+        $options['y']['font']['family'] = preg_replace(
+            '/.ttf/',
+            'Font',
+            $config['fontpath']
+        );
+    }
+
+    if (isset($options['y']['font']['variant']) === false) {
+        $options['y']['font']['variant'] = 'small-caps';
+    }
+
+    if (isset($options['y']['font']['color']) === false) {
+        $options['y']['font']['color'] = '#545454';
+        if ($options['pdf'] === true) {
+            $options['y']['font']['color'] = '#000';
+        } else if ($config['style'] === 'pandora_black') {
+            $options['y']['font']['color'] = '#fff';
+        }
+    }
+
+    // Show ticks.
+    if (isset($options['y']['show']) === false) {
+        $options['y']['show'] = true;
+    }
+
+    // Type position bottom or top or left or right.
+    if (isset($options['y']['position']) === false) {
+        $options['y']['position'] = 'left';
+    }
+
+    // Grid color axes y.
+    if (isset($options['y']['color']) === false) {
+        $options['y']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['y']['color'] = '#222';
+        }
+    }
+
+    if (isset($options['y']['labelWidth']) === false) {
+        $options['y']['labelWidth'] = null;
+    }
+
+    if (isset($options['y']['labelHeight']) === false) {
+        $options['y']['labelHeight'] = null;
+    }
+
+    // Bars options.
+    // left, right or center.
+    if (isset($options['bars']['align']) === false) {
+        $options['bars']['align'] = 'center';
+    }
+
+    if (isset($options['bars']['barWidth']) === false) {
+        $options['bars']['barWidth'] = 0.8;
+    }
+
+    if (isset($options['bars']['horizontal']) === false) {
+        $options['bars']['horizontal'] = false;
+    }
+
+    // Grid Options.
+    if (isset($options['grid']['show']) === false) {
+        $options['grid']['show'] = true;
+    }
+
+    if (isset($options['grid']['aboveData']) === false) {
+        $options['grid']['aboveData'] = false;
+    }
+
+    if (isset($options['grid']['color']) === false) {
+        $options['grid']['color'] = '#ffffff';
+        if ($config['style'] === 'pandora_black') {
+            $options['grid']['color'] = '#111';
+        }
+    }
+
+    if (isset($options['grid']['backgroundColor']) === false) {
+        $options['grid']['backgroundColor'] = [
+            'colors' => [
+                '#ffffff',
+                '#ffffff',
+            ],
         ];
+        if ($config['style'] === 'pandora_black' && $ttl === 1) {
+            $options['grid']['backgroundColor'] = [
+                'colors' => [
+                    '#222',
+                    '#222',
+                ],
+            ];
+        }
+    }
+
+    if (isset($options['grid']['margin']) === false) {
+        $options['grid']['margin'] = 0;
+    }
+
+    if (isset($options['grid']['labelMargin']) === false) {
+        $options['grid']['labelMargin'] = 5;
+    }
+
+    if (isset($options['grid']['axisMargin']) === false) {
+        $options['grid']['axisMargin'] = 5;
+    }
+
+    if (isset($options['grid']['markings']) === false) {
+        $options['grid']['markings'] = [];
+    }
+
+    if (isset($options['grid']['borderWidth']) === false) {
+        $options['grid']['borderWidth'] = 0;
+    }
+
+    if (isset($options['grid']['borderColor']) === false) {
+        $options['grid']['borderColor'] = '#ffffff';
+    }
+
+    if (isset($options['grid']['minBorderMargin']) === false) {
+        $options['grid']['minBorderMargin'] = 5;
+    }
+
+    if (isset($options['grid']['clickable']) === false) {
+        $options['grid']['clickable'] = false;
+    }
+
+    if (isset($options['grid']['hoverable']) === false) {
+        $options['grid']['hoverable'] = false;
+    }
+
+    if (isset($options['grid']['autoHighlight']) === false) {
+        $options['grid']['autoHighlight'] = false;
+    }
+
+    if (isset($options['grid']['mouseActiveRadius']) === false) {
+        $options['grid']['mouseActiveRadius'] = false;
+    }
+
+    // Series bars.
+    if (isset($options['seriesBars']['show']) === false) {
+        $options['seriesBars']['show'] = true;
+    }
+
+    if (isset($options['seriesBars']['lineWidth']) === false) {
+        $options['seriesBars']['lineWidth'] = 0.3;
+    }
+
+    if (isset($options['seriesBars']['fill']) === false) {
+        $options['seriesBars']['fill'] = true;
+    }
+
+    if (isset($options['seriesBars']['fillColor']) === false) {
+        $options['seriesBars']['fillColor'] = [
+            'colors' => [
+                [ 'opacity' => 0.9 ],
+                [ 'opacity' => 0.9 ],
+            ],
+        ];
+    };
+
+    // Generals options.
+    if (isset($options['generals']['unit']) === false) {
+        $options['generals']['unit'] = '';
+    }
+
+    if (isset($options['generals']['divisor']) === false) {
+        $options['generals']['divisor'] = 1000;
+    }
+
+    if (isset($options['generals']['forceTicks']) === false) {
+        $options['generals']['forceTicks'] = false;
+    }
+
+    if (isset($options['generals']['arrayColors']) === false) {
+        $options['generals']['arrayColors'] = false;
+    }
+
+    if (isset($options['generals']['rotate']) === false) {
+        $options['generals']['rotate'] = false;
+    }
+
+    if (isset($options['generals']['pdf']['width']) === false) {
+        $options['generals']['pdf']['width'] = false;
+    }
+
+    if (isset($options['generals']['pdf']['height']) === false) {
+        $options['generals']['pdf']['height'] = false;
+    }
+
+    $params = [
+        'data'       => $data,
+        'x'          => [
+            'title'       => [
+                'title'      => $options['x']['title']['title'],
+                'fontSize'   => $options['x']['title']['fontSize'],
+                'fontFamily' => $options['x']['title']['fontFamily'],
+                'padding'    => $options['x']['title']['padding'],
+            ],
+            'font'        => [
+                'size'       => $options['x']['font']['size'],
+                'lineHeight' => $options['x']['font']['lineHeight'],
+                'style'      => $options['x']['font']['style'],
+                'weight'     => $options['x']['font']['weight'],
+                'family'     => $options['x']['font']['family'],
+                'variant'    => $options['x']['font']['variant'],
+                'color'      => $options['x']['font']['color'],
+            ],
+            'show'        => $options['x']['show'],
+            'position'    => $options['x']['position'],
+            'color'       => $options['x']['color'],
+            'labelWidth'  => $options['x']['labelWidth'],
+            'labelHeight' => $options['x']['labelHeight'],
+        ],
+        'y'          => [
+            'title'       => [
+                'title'      => $options['y']['title']['title'],
+                'fontSize'   => $options['y']['title']['fontSize'],
+                'fontFamily' => $options['y']['title']['fontFamily'],
+                'padding'    => $options['y']['title']['padding'],
+            ],
+            'font'        => [
+                'size'       => $options['y']['font']['size'],
+                'lineHeight' => $options['y']['font']['lineHeight'],
+                'style'      => $options['y']['font']['style'],
+                'weight'     => $options['y']['font']['weight'],
+                'family'     => $options['y']['font']['family'],
+                'variant'    => $options['y']['font']['variant'],
+                'color'      => $options['y']['font']['color'],
+            ],
+            'show'        => $options['y']['show'],
+            'position'    => $options['y']['position'],
+            'color'       => $options['y']['color'],
+            'labelWidth'  => $options['y']['labelWidth'],
+            'labelHeight' => $options['y']['labelHeight'],
+        ],
+        'bars'       => [
+            'align'      => $options['bars']['align'],
+            'barWidth'   => $options['bars']['barWidth'],
+            'horizontal' => $options['bars']['horizontal'],
+        ],
+        'grid'       => [
+            'show'              => $options['grid']['show'],
+            'aboveData'         => $options['grid']['aboveData'],
+            'color'             => $options['grid']['color'],
+            'backgroundColor'   => $options['grid']['backgroundColor'],
+            'margin'            => $options['grid']['margin'],
+            'labelMargin'       => $options['grid']['labelMargin'],
+            'axisMargin'        => $options['grid']['axisMargin'],
+            'markings'          => $options['grid']['markings'],
+            'borderWidth'       => $options['grid']['borderWidth'],
+            'borderColor'       => $options['grid']['borderColor'],
+            'minBorderMargin'   => $options['grid']['minBorderMargin'],
+            'clickable'         => $options['grid']['clickable'],
+            'hoverable'         => $options['grid']['hoverable'],
+            'autoHighlight'     => $options['grid']['autoHighlight'],
+            'mouseActiveRadius' => $options['grid']['mouseActiveRadius'],
+        ],
+        'seriesBars' => [
+            'show'      => $options['seriesBars']['show'],
+            'lineWidth' => $options['seriesBars']['lineWidth'],
+            'fill'      => $options['seriesBars']['fill'],
+            'fillColor' => $options['seriesBars']['fillColor'],
+        ],
+        'generals'   => [
+            'unit'        => $options['generals']['unit'],
+            'divisor'     => $options['generals']['divisor'],
+            'forceTicks'  => $options['generals']['forceTicks'],
+            'arrayColors' => $options['generals']['arrayColors'],
+            'rotate'      => $options['generals']['rotate'],
+        ],
+    ];
+
+    if (empty($params['data']) === true) {
+        return graph_nodata_image(
+            0,
+            0,
+            'vbar',
+            '',
+            true,
+            ($ttl === 2) ? true : false
+        );
+    }
+
+    if ((int) $ttl === 2) {
+        $params['backgroundColor'] = $options['grid']['backgroundColor'];
+        $params['return_img_base_64'] = true;
+        $params['generals']['pdf']['width'] = $options['generals']['pdf']['width'];
+        $params['generals']['pdf']['height'] = $options['generals']['pdf']['height'];
         return generator_chart_to_pdf('vbar', $params);
     }
 
-    return flot_vcolumn_chart(
-        $chart_data,
-        $width,
-        $height,
-        $color,
-        $legend,
-        $long_index,
-        $homeurl,
-        $unit,
-        $water_mark_url,
-        $homedir,
-        $font,
-        $font_size,
-        $from_ux,
-        $from_wux,
-        $backgroundColor,
-        $tick_color
-    );
+    return flot_vcolumn_chart($params);
 }
 
 
@@ -237,7 +600,9 @@ function area_graph(
 
     include_once 'functions_flot.php';
 
-    setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    if ($water_mark !== false) {
+        setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    }
 
     return flot_area_graph(
         $agent_module_id,
@@ -274,7 +639,9 @@ function stacked_bullet_chart(
 ) {
     include_once 'functions_d3.php';
 
-    setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    if ($water_mark !== false) {
+        setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    }
 
     if (empty($chart_data)) {
         return '<img src="'.$no_data_image.'" />';
@@ -305,7 +672,8 @@ function stacked_gauge(
     $font='',
     $font_size='',
     $unit='',
-    $homeurl=''
+    $homeurl='',
+    $transitionDuration=500
 ) {
     include_once 'functions_d3.php';
 
@@ -323,7 +691,8 @@ function stacked_gauge(
         $unit,
         $font,
         ($font_size + 2),
-        $no_data_image
+        $no_data_image,
+        $transitionDuration
     );
 }
 
@@ -348,9 +717,13 @@ function hbar_graph(
     $tick_color='white',
     $val_min=null,
     $val_max=null,
-    $base64=false
+    $base64=false,
+    $pdf=false
 ) {
-    setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    global $config;
+    if ($water_mark !== false) {
+        setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    }
 
     if ($chart_data === false || empty($chart_data) === true) {
         return graph_nodata_image($width, $height, 'hbar');
@@ -373,6 +746,14 @@ function hbar_graph(
         return generator_chart_to_pdf('hbar', $params);
     }
 
+    if ($config['style'] === 'pandora_black' && $ttl === 1) {
+        $backgroundColor = '#222';
+    }
+
+    if ($config['style'] === 'pandora_black' && $ttl === 1) {
+        $tick_color = '#fff';
+    }
+
     return flot_hcolumn_chart(
         $chart_data,
         $width,
@@ -383,7 +764,8 @@ function hbar_graph(
         $backgroundColor,
         $tick_color,
         $val_min,
-        $val_max
+        $val_max,
+        $pdf
     );
 }
 
@@ -402,16 +784,18 @@ function pie_graph(
     $colors='',
     $hide_labels=false
 ) {
-    if (empty($chart_data)) {
+    if (empty($chart_data) === true) {
         return graph_nodata_image($width, $height, 'pie');
     }
 
-    setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    if ($water_mark !== false) {
+        setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+    }
 
-    // This library allows only 8 colors
+    // This library allows only 8 colors.
     $max_values = 9;
 
-    // Remove the html_entities
+    // Remove the html_entities.
     $temp = [];
     foreach ($chart_data as $key => $value) {
         $temp[io_safe_output($key)] = $value;
@@ -484,7 +868,8 @@ function ring_graph(
     $legend_position=false,
     $colors='',
     $hide_labels=false,
-    $background_color='white'
+    $background_color='white',
+    $pdf=false
 ) {
     if (empty($chart_data)) {
         return graph_nodata_image($width, $height, 'pie');
@@ -512,7 +897,7 @@ function ring_graph(
             'homeurl'          => $homeurl,
             'background_color' => $background_color,
             'legend_position'  => $legend_position,
-            'background_color' => $background_color,
+            'pdf'              => $pdf,
         ];
 
         return generator_chart_to_pdf('ring_graph', $params);
@@ -536,6 +921,7 @@ function ring_graph(
         $homeurl,
         $background_color,
         $legend_position,
-        $background_color
+        $background_color,
+        $pdf
     );
 }

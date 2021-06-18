@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,15 +35,18 @@ global $config;
 
 check_login();
 
-enterprise_hook('open_meta_frame');
-
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
-enterprise_include_once('meta/include/functions_agents_meta.php');
 
-if (is_ajax()) {
-    if (! check_acl($config['id_user'], 0, 'AR')) {
+if (is_metaconsole() === true) {
+    enterprise_include_once('include/functions_metaconsole.php');
+    enterprise_include_once('meta/include/functions_agents_meta.php');
+    enterprise_hook('open_meta_frame');
+}
+
+if (is_ajax() === true) {
+    if ((bool) check_acl($config['id_user'], 0, 'AR') === false) {
         db_pandora_audit('ACL Violation', 'Trying to access Group Management');
         include 'general/noaccess.php';
         return;
@@ -53,13 +56,13 @@ if (is_ajax()) {
     $get_group_agents = (bool) get_parameter('get_group_agents');
     $get_is_disabled = (bool) get_parameter('get_is_disabled');
 
-    if ($get_group_json) {
+    if ($get_group_json === true) {
         $id_group = (int) get_parameter('id_group');
 
-        if ($id_group == 0) {
+        if ($id_group === 0 || $id_group === -1) {
             $group = [
                 'id_grupo'  => 0,
-                'nombre'    => 'All',
+                'nombre'    => 'None',
                 'icon'      => 'world',
                 'parent'    => 0,
                 'disabled'  => 0,
@@ -69,7 +72,7 @@ if (is_ajax()) {
             return;
         }
 
-        if (! check_acl($config['id_user'], $id_group, 'AR')) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -84,7 +87,7 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_group_agents) {
+    if ($get_group_agents === true) {
         ob_clean();
         $id_group = (int) get_parameter('id_group');
         $disabled = (int) get_parameter('disabled', 0);
@@ -105,10 +108,13 @@ if (is_ajax()) {
         // (by default and for compatibility show void agents).
         $show_void_agents = (int) get_parameter('show_void_agents', 1);
         $serialized = (bool) get_parameter('serialized', false);
-        $serialized_separator = (string) get_parameter('serialized_separator', '|');
+        $serialized_separator = (string) get_parameter(
+            'serialized_separator',
+            '|'
+        );
         $force_serialized = (bool) get_parameter('force_serialized', false);
 
-        if (! check_acl($config['id_user'], $id_group, 'AR')) {
+        if ((bool) check_acl($config['id_user'], $id_group, 'AR') === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access Alert Management'
@@ -117,12 +123,15 @@ if (is_ajax()) {
             return;
         }
 
-        if (https_is_running()) {
+        if (https_is_running() === true) {
             header('Content-type: application/json');
         }
 
         if ($filter_agents_json != '') {
-            $filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
+            $filter['id_agente'] = json_decode(
+                io_safe_output($filter_agents_json),
+                true
+            );
         }
 
         if ($all_agents) {
@@ -132,14 +141,13 @@ if (is_ajax()) {
         }
 
         if ($search != '') {
-            $filter['string'] = $search;
+            $filter['aliasRegex'] = $search;
         }
 
         if ($status_agents != AGENT_STATUS_ALL) {
             $filter['status'] = $status_agents;
         }
 
-        // Juanma (22/05/2014) Fix: If remove void agents set.
         $_sql_post = ' 1=1 ';
         if ($show_void_agents == 0) {
             $_sql_post .= ' AND id_agente IN (SELECT a.id_agente FROM tagente a, tagente_modulo b WHERE a.id_agente=b.id_agente AND b.delete_pending=0) AND \'1\'';
@@ -167,6 +175,17 @@ if (is_ajax()) {
             $force_serialized
         );
 
+        $agents_aux = [];
+        foreach ($agents as $key => $value) {
+            if (empty($search) === true) {
+                $agents_aux[$key] = $value;
+            } else if (preg_match('/'.$search.'/', io_safe_output($value)) === true) {
+                $agents_aux[$key] = $value;
+            }
+        }
+
+        $agents = $agents_aux;
+
         $agents_disabled = [];
         // Add keys prefix.
         if ($keys_prefix !== '') {
@@ -185,7 +204,10 @@ if (is_ajax()) {
                                 'id_tmetaconsole_setup' => $agent_info[0],
                             ]
                         );
-                    } else if ($serialized && !is_metaconsole() && $force_serialized) {
+                    } else if ($serialized
+                        && is_metaconsole() === false
+                        && $force_serialized
+                    ) {
                         $agent_info = explode($serialized_separator, $k);
                         $agent_disabled = db_get_value_filter(
                             'disabled',
@@ -221,10 +243,14 @@ if (is_ajax()) {
         return;
     }
 
-    if ($get_is_disabled) {
+    if ($get_is_disabled === true) {
         $index = get_parameter('id_agent');
 
-        $agent_disabled = db_get_value_filter('disabled', 'tagente', ['id_agente' => $index]);
+        $agent_disabled = db_get_value_filter(
+            'disabled',
+            'tagente',
+            ['id_agente' => $index]
+        );
 
         $return['disabled'] = $agent_disabled;
         $return['id_agent'] = $index;
@@ -236,17 +262,33 @@ if (is_ajax()) {
     return;
 }
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+
+$tab = (string) get_parameter('tab', 'groups');
+
+if ($tab !== 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
+    && (bool) check_acl($config['id_user'], 0, 'AW') === false
+) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access Group Management'
     );
     include 'general/noaccess.php';
     return;
+} else if ($tab === 'credbox'
+    && (bool) check_acl($config['id_user'], 0, 'UM') === false
+    && (bool) check_acl($config['id_user'], 0, 'PM') === false
+) {
+    db_pandora_audit(
+        'ACL Violation',
+        'Trying to access Credential Store'
+    );
+    include 'general/noaccess.php';
+    return;
 }
 
 $sec = defined('METACONSOLE') ? 'advanced' : 'gagente';
-$url_credbox  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=credbox';
+$url_credbox  = 'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox';
 $url_tree  = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=tree';
 $url_groups = 'index.php?sec='.$sec.'&sec2=godmode/groups/group_list&tab=groups';
 
@@ -257,6 +299,7 @@ $buttons['tree'] = [
         true,
         [
             'title' => __('Tree Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -268,6 +311,7 @@ $buttons['groups'] = [
         true,
         [
             'title' => __('Group view'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
@@ -279,17 +323,17 @@ $buttons['credbox'] = [
         true,
         [
             'title' => __('Credential Store'),
+            'class' => 'invert_filter',
         ]
     ).'</a>',
 ];
-
-$tab = (string) get_parameter('tab', 'groups');
 
 $title = __('Groups defined in %s', get_product_name());
 // Marks correct tab.
 switch ($tab) {
     case 'tree':
         $buttons['tree']['active'] = true;
+        $title .= sprintf(' &raquo; %s', __('Tree view'));
     break;
 
     case 'credbox':
@@ -300,23 +344,38 @@ switch ($tab) {
     case 'groups':
     default:
         $buttons['groups']['active'] = true;
+        $title .= sprintf(' &raquo; %s', __('Table view'));
     break;
 }
 
 // Header.
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     agents_meta_print_header();
-    echo '<div class="notify">';
-    echo __('Edit or delete groups can cause problems with synchronization');
-    echo '</div>';
+    html_print_div(
+        [
+            'class'   => 'notify',
+            'content' => __('Edit or delete groups can cause problems with synchronization'),
+        ]
+    );
 } else {
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         $title,
         'images/group.png',
         false,
-        'group_list_tab',
-        true,
-        $buttons
+        '',
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Profiles'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Manage agents group'),
+            ],
+        ]
     );
 }
 
@@ -333,7 +392,7 @@ $delete_group = (bool) get_parameter('delete_group');
 $pure = get_parameter('pure', 0);
 
 // Create group.
-if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
+if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
     $id_parent = (int) get_parameter('id_parent');
@@ -344,27 +403,37 @@ if (($create_group) && (check_acl($config['id_user'], 0, 'PM'))) {
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
     $check = db_get_value('nombre', 'tgrupo', 'nombre', $name);
     $propagate = (bool) get_parameter('propagate');
+
+    $aviable_name = true;
+    if (preg_match('/script/i', $name)) {
+        $aviable_name = false;
+    }
 
     // Check if name field is empty.
     if ($name != '') {
         if (!$check) {
-            $values = [
-                'nombre'      => $name,
-                'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
-                'parent'      => $id_parent,
-                'disabled'    => $alerts_disabled,
-                'custom_id'   => $custom_id,
-                'id_skin'     => $skin,
-                'description' => $description,
-                'contact'     => $contact,
-                'propagate'   => $propagate,
-                'other'       => $other,
-                'password'    => io_safe_input($group_pass),
-            ];
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => $id_parent,
+                    'disabled'    => $alerts_disabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
+                ];
 
-            $result = db_process_sql_insert('tgrupo', $values);
+                $result = db_process_sql_insert('tgrupo', $values);
+            }
+
             if ($result) {
                 ui_print_success_message(__('Group successfully created'));
             } else {
@@ -393,86 +462,242 @@ if ($update_group) {
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
+    $max_agents = (int) get_parameter('max_agents', 0);
+
+    $aviable_name = true;
+    if (preg_match('/script/i', $name)) {
+        $aviable_name = false;
+    }
+
+    // Check if group name is unique.
+    $check = db_get_value_filter(
+        'nombre',
+        'tgrupo',
+        [
+            'nombre'   => $name,
+            'id_grupo' => $id_group,
+        ],
+        'AND NOT'
+    );
 
     // Check if name field is empty.
     if ($name != '') {
-        $sql = sprintf(
-            'UPDATE tgrupo
-             SET nombre = "%s",
-                icon = "%s",
-                disabled = %d,
-                parent = %d,
-                custom_id = "%s",
-                propagate = %d,
-                id_skin = %d,
-                description = "%s",
-                contact = "%s",
-                other = "%s",
-                password = "%s"
-            WHERE id_grupo = %d',
-            $name,
-            empty($icon) ? '' : substr($icon, 0, -4),
-            !$alerts_enabled,
-            $id_parent,
-            $custom_id,
-            $propagate,
-            $skin,
-            $description,
-            $contact,
-            $other,
-            $group_pass,
-            $id_group
-        );
+        if (!$check) {
+            if ($aviable_name === true) {
+                $values = [
+                    'nombre'      => $name,
+                    'icon'        => empty($icon) ? '' : substr($icon, 0, -4),
+                    'parent'      => ($id_parent == -1) ? 0 : $id_parent,
+                    'disabled'    => !$alerts_enabled,
+                    'custom_id'   => $custom_id,
+                    'id_skin'     => $skin,
+                    'description' => $description,
+                    'contact'     => $contact,
+                    'propagate'   => $propagate,
+                    'other'       => $other,
+                    'password'    => io_safe_input($group_pass),
+                    'max_agents'  => $max_agents,
+                ];
 
-        $result = db_process_sql($sql);
-    } else {
-        $result = false;
-    }
+                $result = db_process_sql_update(
+                    'tgrupo',
+                    $values,
+                    ['id_grupo' => $id_group]
+                );
+            }
 
-    if ($result !== false) {
-        ui_print_success_message(__('Group successfully updated'));
+            if ($result) {
+                ui_print_success_message(__('Group successfully updated'));
+            } else {
+                ui_print_error_message(__('There was a problem modifying group'));
+            }
+        } else {
+            ui_print_error_message(__('Each group must have a different name'));
+        }
     } else {
-        ui_print_error_message(__('There was a problem modifying group'));
+        ui_print_error_message(__('Group must have a name'));
     }
 }
 
 // Delete group.
-if (($delete_group) && (check_acl($config['id_user'], 0, 'PM'))) {
+if (($delete_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
     $id_group = (int) get_parameter('id_group');
 
     $usedGroup = groups_check_used($id_group);
 
     if (!$usedGroup['return']) {
-        $group = db_get_row_filter(
-            'tgrupo',
-            ['id_grupo' => $id_group]
-        );
+        $errors_meta = false;
+        if (is_metaconsole()) {
+            $group_name = groups_get_name($id_group);
+            $servers = metaconsole_get_servers();
 
-        db_process_sql_update(
-            'tgrupo',
-            ['parent' => $group['parent']],
-            ['parent' => $id_group]
-        );
+            $error_counter = 0;
+            $success_counter = 0;
+            $success_nodes = [];
+            $error_nodes = [];
+            // Check if the group can be deleted or not.
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $result_exist_group = db_get_row_filter(
+                            'tgrupo',
+                            [
+                                'nombre'   => $group_name,
+                                'id_grupo' => $id_group,
+                            ]
+                        );
+                        if ($result_exist_group !== false) {
+                            $used_group = groups_check_used($id_group);
+                            // Save the names of the nodes that are empty
+                            // and can be deleted, and those that cannot.
+                            if (!$used_group['return']) {
+                                $success_nodes[] .= $server['server_name'];
+                                $success_counter++;
+                            } else {
+                                $error_nodes[] .= $server['server_name'];
+                                $error_counter++;
+                            }
+                        }
+                    }
 
-        $result = db_process_sql_delete(
-            'tgroup_stat',
-            ['id_group' => $id_group]
-        );
+                    metaconsole_restore_db();
+                }
+            }
 
-        $result = db_process_sql_delete(
-            'tgrupo',
-            ['id_grupo' => $id_group]
-        );
+            if ($error_counter > 0) {
+                ui_print_error_message(
+                    __(
+                        'The group %s could not be deleted because it is not empty in the nodes',
+                        $group_name
+                    ).': '.implode(', ', $error_nodes)
+                );
+                $errors_meta = true;
+            } else {
+                if ($success_counter > 0) {
+                    $error_deleting_counter = 0;
+                    $success_deleting_counter = 0;
+                    $error_deleting = [];
+                    $success_deleting = [];
+                    $error_connecting_node = [];
+                    // Delete the group in the nodes.
+                    if (isset($servers) === true
+                        && is_array($servers) === true
+                    ) {
+                        foreach ($servers as $server) {
+                            if (metaconsole_connect($server) == NOERR) {
+                                $group = db_get_row_filter(
+                                    'tgrupo',
+                                    ['id_grupo' => $id_group]
+                                );
+
+                                db_process_sql_update(
+                                    'tgrupo',
+                                    ['parent' => $group['parent']],
+                                    ['parent' => $id_group]
+                                );
+
+                                db_process_sql_delete(
+                                    'tgroup_stat',
+                                    ['id_group' => $id_group]
+                                );
+
+                                $result = db_process_sql_delete(
+                                    'tgrupo',
+                                    ['id_grupo' => $id_group]
+                                );
+
+                                if ($result === false) {
+                                    $error_deleting[] .= $server['server_name'];
+                                    $error_deleting_counter++;
+                                } else {
+                                    $success_deleting[] .= $server['server_name'];
+                                    $success_deleting_counter++;
+                                }
+                            } else {
+                                $error_deleting_counter++;
+                                $error_connecting_node[] .= $server['server_name'];
+                            }
+
+                            metaconsole_restore_db();
+                        }
+                    }
+
+                    // If the group could not be deleted in any node,
+                    // do not delete it in meta.
+                    if ($error_deleting_counter > 0) {
+                        $errors_meta = true;
+                        if (empty($error_connecting_node) === false) {
+                            ui_print_error_message(
+                                __(
+                                    'Error connecting to %s',
+                                    implode(
+                                        ', ',
+                                        $error_connecting_node
+                                    ).'. The group has not been deleted in the metaconsole.'
+                                )
+                            );
+                        }
+
+                        if (empty($error_deleting) === false) {
+                            ui_print_error_message(
+                                __(
+                                    'The group has not been deleted in the metaconsole due to an error in the node database'
+                                ).': '.implode(', ', $error_deleting)
+                            );
+                        }
+                    }
+
+                    if ($success_deleting_counter > 0) {
+                        ui_print_success_message(
+                            __(
+                                'The group %s has been deleted in the nodes',
+                                $group_name
+                            ).': '.implode(', ', $success_deleting)
+                        );
+                    }
+                }
+            }
+        }
+
+        if ($errors_meta === false) {
+            $group = db_get_row_filter(
+                'tgrupo',
+                ['id_grupo' => $id_group]
+            );
+
+            db_process_sql_update(
+                'tgrupo',
+                ['parent' => $group['parent']],
+                ['parent' => $id_group]
+            );
+
+            $result = db_process_sql_delete(
+                'tgroup_stat',
+                ['id_group' => $id_group]
+            );
+
+            $result = db_process_sql_delete(
+                'tgrupo',
+                ['id_grupo' => $id_group]
+            );
+
+            if ($result && (!$usedGroup['return'])) {
+                ui_print_success_message(__('Group successfully deleted'));
+            } else {
+                ui_print_error_message(
+                    __('There was a problem deleting group')
+                );
+            }
+        }
     } else {
         ui_print_error_message(
-            sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables']))
+            sprintf(
+                __('The group is not empty. It is use in %s.'),
+                implode(', ', $usedGroup['tables'])
+            )
         );
-    }
-
-    if ($result && (!$usedGroup['return'])) {
-        ui_print_success_message(__('Group successfully deleted'));
-    } else {
-        ui_print_error_message(__('There was a problem deleting group'));
     }
 }
 
@@ -504,14 +729,14 @@ if ($tab == 'tree') {
     $search = (string) get_parameter('search', '');
     $block_size = $config['block_size'];
 
-    if (!empty($search)) {
+    if (empty($search) === false) {
         $search_name = 'AND t.nombre LIKE "%'.$search.'%"';
     }
 
-    if (!users_can_manage_group_all('AR')) {
+    if (users_can_manage_group_all('AR') === false) {
         $user_groups_acl = users_get_groups(false, 'AR');
-        $groups_acl = implode(',', $user_groups_ACL);
-        if (empty($groups_acl)) {
+        $groups_acl = implode('","', $user_groups_acl);
+        if (empty($groups_acl) === true) {
             return ui_print_info_message(
                 [
                     'no_close' => true,
@@ -520,13 +745,20 @@ if ($tab == 'tree') {
             );
         }
 
-        $acl = 'AND t.id_grupo IN ('.$groups_acl.')';
+        $acl = 'AND t.nombre IN ("'.$groups_acl.'")';
     }
 
     $form = "<form method='post' action=''>";
-        $form .= "<table class='databox filters' width='100%' style='font-weight: bold;'>";
+        $form .= "<table class='databox filters bolder' width='100%'>";
             $form .= '<tr><td>'.__('Search').'&nbsp;';
-                $form .= html_print_input_text('search', $search, '', 100, 100, true);
+                $form .= html_print_input_text(
+                    'search',
+                    $search,
+                    '',
+                    100,
+                    100,
+                    true
+                );
             $form .= '</td><td>';
                 $form .= "<input name='find' type='submit' class='sub search' value='".__('Search')."'>";
             $form .= '<td></tr>';
@@ -555,7 +787,7 @@ if ($tab == 'tree') {
 
     $groups = db_get_all_rows_sql($groups_sql);
 
-    if (!empty($groups)) {
+    if (empty($groups) === false) {
         // Count all groups for pagination only saw user and filters.
         $groups_sql_count = sprintf(
             'SELECT count(*)
@@ -598,7 +830,12 @@ if ($tab == 'tree') {
 
         foreach ($groups as $key => $group) {
             $url = 'index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'];
-            $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            if (is_metaconsole()) {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'].'&tab=groups';
+            } else {
+                $url_delete = 'index.php?sec=gagente&sec2=godmode/groups/group_list&delete_group=1&id_group='.$group['id_grupo'];
+            }
+
             $table->data[$key][0] = $group['id_grupo'];
             $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
             if ($group['icon'] != '') {
@@ -608,8 +845,8 @@ if ($tab == 'tree') {
                     [
                         'style' => '',
                         'class' => 'bot',
-                        'alt'   => $group['nombre'],
-                        'title' => $group['nombre'],
+                        'alt'   => io_safe_input($group['nombre']),
+                        'title' => io_safe_input($group['nombre']),
                     ],
                     false,
                     false,
@@ -636,7 +873,12 @@ if ($tab == 'tree') {
                 ]
             ).'</a>';
 
-            $confirm_message = __('Are you sure?');
+            if (is_metaconsole() === true) {
+                $confirm_message = __('Are you sure? This group will also be deleted in all the nodes.');
+            } else {
+                $confirm_message = __('Are you sure?');
+            }
+
             if ($group['has_child']) {
                 $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
             }
@@ -673,13 +915,18 @@ if ($tab == 'tree') {
             'pagination-bottom'
         );
     } else {
-        ui_print_info_message(['no_close' => true, 'message' => __('There are no defined groups') ]);
+        ui_print_info_message(
+            [
+                'no_close' => true,
+                'message'  => __('There are no defined groups'),
+            ]
+        );
     }
 }
 
-if (check_acl($config['id_user'], 0, 'PM')) {
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
-        echo '<div class="action-buttons" style="width:100%;">';
+        echo '<div class="action-buttons w100p">';
             html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');
         echo '</div>';
     echo '</form>';
@@ -692,7 +939,7 @@ $tab = 'group_edition';
 
 ?>
 
-<?php if (!is_metaconsole()) { ?>
+<?php if (is_metaconsole() === false) { ?>
     <script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
 <?php } else { ?>
     <script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
@@ -732,7 +979,6 @@ $tab = 'group_edition';
 
                     treeController.init({
                         recipient: $("div#tree-controller-recipient"),
-                        //detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
                         page: parameters['page'],
                         emptyMessage: "<?php echo __('No data found'); ?>",
                         foundMessage: "<?php echo __('Found groups'); ?>",

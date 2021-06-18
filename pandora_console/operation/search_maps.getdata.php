@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 global $config;
 
-$searchMaps = check_acl($config['id_user'], 0, 'IR');
+$searchMaps = check_acl($config['id_user'], 0, 'VR');
 
 $maps = false;
 $totalMaps = 0;
 
 if ($searchMaps) {
-    $user_groups = users_get_groups($config['id_user'], 'AR', false);
+    $user_groups = users_get_groups($config['id_user'], 'AR', true);
     $id_user_groups = array_keys($user_groups);
     $id_user_groups_str = implode(',', $id_user_groups);
 

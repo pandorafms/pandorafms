@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -114,7 +114,7 @@ class HelpFeedBack extends Wizard
         echo '<div class="help_feedback">';
         // Load feedback form.
         echo $this->loadFeedbackForm();
-        echo '</div><div id="back" style="display: none"></div>';
+        echo '</div><div id="back" class="invisible"></div>';
     }
 
 
@@ -236,6 +236,7 @@ class HelpFeedBack extends Wizard
      */
     public function sendMailMethod()
     {
+        global $config;
         $suggestion = get_parameter('type', 'false');
         $feedback_text = get_parameter('feedback_text', null);
         $feedback_mail = get_parameter('feedback_email', null);

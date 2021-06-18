@@ -217,9 +217,19 @@ sub sendmail {
                     print STDERR "> [...", length($$data), " bytes sent ...]\n";
                 }
             }
-			my @sockets = $Sel->can_write($mailcfg{'timeout'});
-			return 0 if (!@sockets);
-           	syswrite($sockets[0], $$data) || return 0;
+		    my @sockets = $Sel->can_write($mailcfg{'timeout'});
+            return 0 if (!@sockets);
+             eval {
+                local $SIG{__DIE__};
+                # Split log data in chunks if case write is
+                    my $data_sent = 0;
+                    while ($data_sent < length($$data)) {
+                        $data_sent += syswrite($sockets[0], $$data, length($$data) - $data_sent, $data_sent) || die $!;
+                    } 
+            };
+            if ($@) {
+                print STDERR "[sendmail] error: $!\n";
+            }
         }
         1;
     }
@@ -434,8 +444,11 @@ sub sendmail {
         socket_write("STARTTLS$CRLF") || return fail("send STARTTLS error");
         socket_read()
             || return fail('STARTTLS error');
-        IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
-            || return fail("start_SSL failed");
+        {
+            local $SIG{__DIE__};
+            IO::Socket::SSL->start_SSL($S, SSL_hostname => $server, SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE())
+                || return fail("start_SSL failed");
+        };
 
         # The client SHOULD send an EHLO command as the
         # first command after a successful TLS negotiation.
@@ -478,11 +491,11 @@ sub sendmail {
                     || return fail("send AUTH LOGIN failed (lost connection?)");
                 socket_read()
                     || return fail("AUTH LOGIN failed: $server_reply");
-                socket_write(encode_base64($auth->{user},$CRLF))
+                socket_write(encode_base64($auth->{user}, ""), $CRLF)
                     || return fail("send LOGIN username failed (lost connection?)");
                 socket_read()
                     || return fail("LOGIN username failed: $server_reply");
-                socket_write(encode_base64($auth->{password},$CRLF))
+                socket_write(encode_base64($auth->{password}, ""), $CRLF)
                     || return fail("send LOGIN password failed (lost connection?)");
                 socket_read()
                     || return fail("LOGIN password failed: $server_reply");
@@ -491,7 +504,7 @@ sub sendmail {
                 warn "Trying AUTH PLAIN\n" if ($mailcfg{debug} > 9);
                 socket_write(
                     "AUTH PLAIN "
-                    . encode_base64(join("\0", $auth->{user}, $auth->{user}, $auth->{password}), $CRLF)
+                    . encode_base64(join("\0", $auth->{user}, $auth->{user}, $auth->{password}), ""), $CRLF
                 ) || return fail("send AUTH PLAIN failed (lost connection?)");
                 socket_read()
                     || return fail("AUTH PLAIN failed: $server_reply");
@@ -505,7 +518,7 @@ sub sendmail {
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");
                 $challenge =~ s/^\d+\s+//;
                 my $response = _hmac_md5($auth->{password}, decode_base64($challenge));
-                socket_write(encode_base64("$auth->{user} $response", $CRLF))
+                socket_write(encode_base64("$auth->{user} $response", ""), $CRLF)
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");
                 socket_read()
                     || return fail("AUTH CRAM-MD5 failed: $server_reply");

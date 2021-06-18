@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,22 +114,32 @@ $controls = [
 $layers = gis_get_layers($idMap);
 
 // Render map
-$has_management_acl = check_acl($config['id_user'], $map['group_id'], 'MW')
-    || check_acl($config['id_user'], $map['group_id'], 'MM');
+$has_management_acl = check_acl_restricted_all($config['id_user'], $map['group_id'], 'MW')
+    || check_acl_restricted_all($config['id_user'], $map['group_id'], 'MM');
 
 $buttons = [];
 
+$buttons['gis_maps_list'] = [
+    'text' => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('GIS Maps list'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
+];
 if ($config['pure'] == 0) {
-    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'&amp;pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode'), 'class' => 'invert_filter']).'</a>';
 } else {
-    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'">'.html_print_image('images/normalscreen.png', true, ['title' => __('Back to normal mode')]).'</a>';
+    $buttons[]['text'] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.((int) get_parameter('refr', 0)).'">'.html_print_image('images/normalscreen.png', true, ['title' => __('Back to normal mode'), 'class' => 'invert_filter']).'</a>';
 }
 
 if ($has_management_acl) {
     $hash = md5($config['dbpass'].$idMap.$config['id_user']);
     $buttons['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/gis_maps/public_console.php?hash='.$hash.'&map_id='.$idMap.'&id_user='.$config['id_user']
-    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console')]).'</a>';
+    ).'" target="_blank">'.html_print_image('images/camera_mc.png', true, ['title' => __('Show link to public Visual Console'), 'class' => 'invert_filter']).'</a>';
 }
 
 $times = [
@@ -144,7 +154,7 @@ $times = [
     SECONDS_2HOUR     => __('2 hours'),
 ];
 
-$buttons[]['text'] = "<div style='margin-top: 6px;'>".__('Refresh').': '.html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false).'</div>';
+$buttons[]['text'] = "<div class='mrgn_top_6px'>".__('Refresh').': '.html_print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false).'</div>';
 
 $status = [
     'all'     => __('None'),
@@ -154,10 +164,10 @@ $status = [
     'default' => __('Other'),
 ];
 
-$buttons[]['text'] = "<div style='margin-top: 6px;'>".__('Filter by status').': '.html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false).'</div>';
+$buttons[]['text'] = "<div class='mrgn_top_6px'>".__('Filter by status').': '.html_print_select($status, 'show_status', 'all', 'changeShowStatus(this.value);', '', 0, true, false, false).'</div>';
 
 if ($has_management_acl) {
-    $buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='.$idMap.'">'.html_print_image('images/setup.png', true, ['title' => __('Setup')]).'</a>';
+    $buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='.$idMap.'">'.html_print_image('images/setup.png', true, ['title' => __('Setup'), 'class' => 'invert_filter']).'</a>';
     $buttons['setup']['godmode'] = 1;
 }
 
@@ -193,7 +203,7 @@ if ($layers != false) {
             $layer['id_tmap_layer']
         );
 
-        // calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
+        // Calling agents_get_group_agents with none to obtain the names in the same case as they are in the DB.
         $agentNamesByGroup = [];
         if ($layer['tgrupo_id_grupo'] >= 0) {
             $agentNamesByGroup = agents_get_group_agents(
@@ -239,7 +249,7 @@ if ($layers != false) {
             $icon_width = $icon_size[0];
             $icon_height = $icon_size[1];
 
-            // Is a group item
+            // Is a group item.
             if (!empty($groupsByAgentId[$idAgent])) {
                 $groupId = (int) $groupsByAgentId[$idAgent]['id'];
                 $groupName = $groupsByAgentId[$idAgent]['name'];

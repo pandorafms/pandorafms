@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,21 +18,14 @@ require_once 'include/functions_integriaims.php';
 
 check_login();
 
-if (!check_acl($config['id_user'], 0, 'IR')) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
-    ui_print_error_message(__('Integria integration must be enabled in Pandora setup'));
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
     return;
 }
 
 // Check connection to Integria IMS API.
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -46,10 +39,10 @@ ui_require_css_file('integriaims');
 $incident_id = (int) get_parameter('incident_id');
 // API call.
 $result_api_call_list = integria_api_call(
-    $config['integria_hostname'],
-    $config['integria_user'],
-    $config['integria_pass'],
-    $config['integria_api_pass'],
+    null,
+    null,
+    null,
+    null,
     'get_incident_details',
     [$incident_id]
 );
@@ -124,10 +117,7 @@ $table_files->head[1] = __('Timestamp');
 $table_files->head[2] = __('Description');
 $table_files->head[3] = __('User');
 $table_files->head[4] = __('Size');
-
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $table_files->head[5] = __('Delete');
-}
+$table_files->head[5] = __('Delete');
 
 $table_files->data = [];
 
@@ -159,7 +149,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
         $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
 
-        $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent]);
+        $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', '|;|');
 
         // API method returns '0' string if success.
         $file_added = ($result_api_call === '0') ? true : false;
@@ -176,7 +166,7 @@ if ($upload_file && ($_FILES['userfile']['name'] != '')) {
 
 // Delete file.
 if (isset($_GET['delete_file'])) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'delete_file', [$delete_file_id]);
+    $result_api_call = integria_api_call(null, null, null, null, 'delete_file', [$delete_file_id]);
 
     $file_deleted = false;
 
@@ -193,7 +183,7 @@ if (isset($_GET['delete_file'])) {
 
 // Download file.
 if (isset($_GET['download_file'])) {
-    $file_base64 = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'download_file', [$download_file_id]);
+    $file_base64 = integria_api_call(null, null, null, null, 'download_file', [$download_file_id]);
     ob_end_clean();
 
     $decoded = base64_decode($file_base64);
@@ -219,7 +209,7 @@ if (isset($_GET['download_file'])) {
 }
 
 // Retrieve files belonging to incident and create list table.
-$result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_files', [$incident_id]);
+$result_api_call = integria_api_call(null, null, null, null, 'get_incident_files', [$incident_id]);
 
 if ($result_api_call != false && strlen($result_api_call) > 0) {
     $files = [];
@@ -240,11 +230,10 @@ foreach ($files as $key => $value) {
     $table_files->data[$i][2] = $value[12];
     $table_files->data[$i][3] = $value[8];
     $table_files->data[$i][4] = $value[13];
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
-                                    onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
-    }
+    $table_files->data[$i][5] .= '<a id="link_delete_file" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$incident_id.'&delete_file='.$value[0]).'"
+                                onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+    $table_files->data[$i][5] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+
 
     $table_files->data[$i][5] .= '</a>';
 
@@ -263,13 +252,11 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
 
-$upload_file_form = '<div>';
+$upload_file_form = '<div class="w100p">';
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
-}
+$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
 
 $upload_file_form .= '<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
 
@@ -318,11 +305,11 @@ $table_comments_section->data[0][0] .= html_print_textarea(
     true
 );
 
-$table_comments_section->data[1][1] .= '<div style="width: 100%; text-align:right;">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
+$table_comments_section->data[1][1] .= '<div class="w100p right">'.html_print_submit_button(__('Add'), 'accion', $comment_disabled, 'class="sub wand"', true).'</div>';
 
 // Upload comment. If ticket is closed, this action cannot be performed.
 if ($upload_comment && $array_get_incidents[6] != 7) {
-    $result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0']);
+    $result_api_call = integria_api_call(null, null, null, null, 'create_workunit', [$incident_id, $comment_description, '0.00', 0, 1, '0'], false, '', '|;|');
 
     // API method returns id of new comment if success.
     $comment_added = ($result_api_call >= '0') ? true : false;
@@ -335,7 +322,7 @@ if ($upload_comment && $array_get_incidents[6] != 7) {
 }
 
 // Retrieve comments belonging to incident and create comments table.
-$result_api_call = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_workunits', [$incident_id]);
+$result_api_call = integria_api_call(null, null, null, null, 'get_incident_workunits', [$incident_id]);
 
 if ($result_api_call != false && strlen($result_api_call) > 0) {
     $comments = [];
@@ -352,18 +339,17 @@ $comment_table = '';
 
 if (!empty($comments)) {
     foreach ($comments as $key => $value) {
-        $comment_table .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span style="float: right;">'.$value[2].'&nbspHours</span></div>';
+        $comment_table .= '<div class="comment_title">'.$value[3].'<span>&nbspsaid&nbsp</span>'.$value[1].'<span class="float-right">'.$value[2].'&nbspHours</span></div>';
         $comment_table .= '<div class="comment_body">'.$value[4].'</div>';
     }
 } else {
     $comment_table = __('No comments found');
 }
 
-$upload_comment_form = '<div>';
+$upload_comment_form = '<div class="w100p">';
 
-if (check_acl($config['id_user'], 0, 'IW')) {
-    $upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';
-}
+$upload_comment_form .= '<form method="post" id="comment_form" enctype="multipart/form-data"><h4>'.__('Add comment').'</h4>'.html_print_table($table_comments_section, true).html_print_input_hidden('upload_comment', 1, true).'</form>';
+
 
 $upload_comment_form .= '<h4>'.__('Comments').'</h4>'.$comment_table.'</div>';
 
@@ -376,11 +362,11 @@ $details_box .= '
     <div class="integriaims_details_titles">'.__('Priority').'</div>
     <div class="integriaims_details_titles">'.__('Type').'</div>';
 $details_box .= '
-    <div>'.html_print_image('images/heart.png', true).'</div>
-    <div>'.html_print_image('images/builder.png', true).'</div>
-    <div>'.html_print_image('images/user_green.png', true).'</div>
+    <div>'.html_print_image('images/heart.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/builder.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/user_green.png', true, ['class' => 'invert_filter']).'</div>
     <div>'.ui_print_integria_incident_priority($priority, $priority_text).'</div>
-    <div>'.html_print_image('images/incidents.png', true).'</div>';
+    <div>'.html_print_image('images/incidents.png', true, ['class' => 'invert_filter']).'</div>';
 $details_box .= '
     <div>'.$status_text.'</div>
     <div>'.$resolution_text.'</div>
@@ -410,9 +396,9 @@ $people_box .= '</div>';
 // Dates box.
 $dates_box = '<div class="integriaims_details_box integriaims_details_box_three">';
 $dates_box .= '
-    <div>'.html_print_image('images/tick.png', true).'</div>
-    <div>'.html_print_image('images/update.png', true, ['width' => '21']).'</div>
-    <div>'.html_print_image('images/mul.png', true).'</div>';
+    <div>'.html_print_image('images/tick.png', true, ['class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/update.png', true, ['width' => '21', 'class' => 'invert_filter']).'</div>
+    <div>'.html_print_image('images/mul.png', true, ['class' => 'invert_filter']).'</div>';
 $dates_box .= '
     <div class="integriaims_details_titles">'.__('Created at').':</div>
     <div class="integriaims_details_titles">'.__('Updated at').':</div>

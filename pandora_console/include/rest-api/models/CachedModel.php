@@ -72,42 +72,29 @@ abstract class CachedModel extends Model
      *
      * @overrides Model::fromDB.
      */
-    public static function fromDB(array $filter): Model
+    public static function fromDB(array $filter, ?float $ratio=0): Model
     {
         global $config;
+        $save_cache = false;
+        if ($ratio == 0 && $filter['cache_expiration'] > 0) {
+            $data = static::fetchCachedData($filter);
+            $save_cache = true;
+        }
 
-        // TODO: Remove references to the VC items. This class should be usable with any resource.
-        if ($filter['cache_expiration'] > 0) {
-            // Obtain the item's data from cache.
-            $cachedData = static::fetchCachedData($filter);
-            if ($cachedData === null) {
-                $userId = (static::$indexCacheByUser === true) ? $config['id_user'] : null;
-
-                // Delete expired data cache.
-                static::clearCachedData(
-                    [
-                        'vc_item_id' => $filter['id'],
-                        'vc_id'      => $filter['id_layout'],
-                        'user_id'    => $userId,
-                    ]
-                );
-                // Obtain the item's data from the database.
-                $data = static::fetchDataFromDB($filter);
-                // Save the item's data in cache.
-                static::saveCachedData(
-                    [
-                        'vc_item_id' => $filter['id'],
-                        'vc_id'      => $filter['id_layout'],
-                        'user_id'    => $userId,
-                        'expiration' => $filter['cache_expiration'],
-                    ],
-                    $data
-                );
-            } else {
-                $data = $cachedData;
-            }
+        if (isset($data) === false) {
+            $data = static::fetchDataFromDB($filter, $ratio);
         } else {
-            $data = static::fetchDataFromDB($filter);
+            // Retrieved from cache.
+            $save_cache = false;
+        }
+
+        if ($save_cache === true) {
+            // Rebuild cache.
+            if (static::saveCachedData($filter, $data) !== true) {
+                throw new \Exception(
+                    $config['dbconnection']->error
+                );
+            }
         }
 
         return static::fromArray($data);

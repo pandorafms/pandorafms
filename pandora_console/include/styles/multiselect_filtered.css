@@ -1,0 +1,73 @@
+.multi-select .multi-select-container {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.multi-select.flex-column {
+  justify-content: space-between;
+}
+
+.multi-select-container.flex-column * {
+  margin: 0.2em 0;
+}
+
+.multi-select-container.flex-column {
+  flex-wrap: nowrap;
+  align-self: flex-end;
+}
+
+.arrows-container {
+  width: 50px;
+  margin-bottom: 65px;
+}
+
+.multi-select-container .filter input,
+.multi-select-container .filter select,
+.multi-select-container .filter .select2 {
+  float: right;
+  width: 50%;
+  text-align: left;
+}
+
+.multi-select-container .filter .select2 {
+  width: 50% !important;
+}
+
+.multi-select-container .filter input[type="checkbox"] {
+  width: auto;
+}
+
+.group-filter.flex-row-vcenter div,
+.item-filter.flex-row-vcenter div {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.multi-select-container .title {
+  text-align: center;
+  font-style: italic;
+  margin-top: 1em;
+  color: #424242;
+}
+
+.multi-select-container.flex-column div {
+  text-align: left;
+}
+
+.multi-select-container.flex-column div input {
+  margin-left: 1em;
+}
+
+.multi-select-container
+  .select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
+  line-height: inherit !important;
+}
+
+.p-slider {
+  margin: auto !important;
+}

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,12 +25,19 @@ function load_matrix_console()
 
     if (! $pure) {
         $title_menu = __('Matrix events');
-        $fullscreen['text'] = '<a href="index.php?extension_in_menu=eventos&sec=extensions&sec2=extensions/matrix_events&pure=1">'.html_print_image('images/full_screen.png', true, ['title' => __('Full screen mode')]).'</a>';
+        $fullscreen['text'] = '<a href="index.php?extension_in_menu=eventos&sec=extensions&sec2=extensions/matrix_events&pure=1">'.html_print_image(
+            'images/full_screen.png',
+            true,
+            [
+                'title' => __('Full screen mode'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $onheader = ['fullscreen' => $fullscreen];
         ui_print_page_header($title_menu, 'images/op_monitoring.png', false, '', false, $onheader);
     }
 
-    echo '<canvas id="matrix-terminal" style="display:block;"></canvas>';
+    echo '<canvas id="matrix-terminal" class="visible"></canvas>';
 
     ?>
     <script language="javascript" type="text/javascript">
@@ -96,7 +103,7 @@ function load_matrix_console()
                     context.fillRect(0, 0, width, height);
                     
                     context.fillStyle = "#0F0"; // Green text
-                    context.font = font_size + "px arial";
+                    context.font = font_size + "px lato";
                     // Looping over drops
                     for (var i = 0; i < drops.length; i++) {
                         if (drops[i] == -1) {

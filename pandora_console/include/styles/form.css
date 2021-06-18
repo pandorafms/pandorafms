@@ -31,7 +31,6 @@ li.discovery > a label {
 }
 
 div.data_container > label {
-  font-family: "lato", "Open Sans", sans-serif;
   font-weight: lighter;
 }
 
@@ -44,7 +43,7 @@ div.data_container {
 }
 
 div.data_container:hover {
-  box-shadow: 2px 2px 10px #ddd;
+  box-shadow: 2px 2px 10px #777777;
 }
 
 /*
@@ -143,7 +142,6 @@ div.arrow_box:before {
 .breadcrumb_link {
   color: #848484;
   font-size: 10pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   text-decoration: none;
 }
 
@@ -172,7 +170,6 @@ form.discovery * {
 }
 
 form.discovery .label_select b {
-  font-family: "lato", "Open Sans", sans-serif;
   font-weight: bolder;
 }
 
@@ -205,7 +202,7 @@ label {
 }
 
 li > input[type="number"],
-li > input[type="text"],
+li > input[type="text"]:not(.search_input),
 li > input[type="email"],
 li > input[type="password"],
 .discovery_text_input > input[type="password"],
@@ -215,8 +212,6 @@ li > input[type="password"],
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
-  font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
   margin-bottom: 4px;
@@ -292,13 +287,13 @@ ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: monospace;
 }
 
 .hidden {
   display: none;
 }
 
+form.modal-dashboard ul.wizard li.hidden,
 form.modal ul.wizard li.hidden {
   display: none;
 }
@@ -308,6 +303,7 @@ form.top-action-buttons ul.wizard {
   flex-direction: row;
 }
 
+form.modal-dashboard ul.wizard li,
 form.modal ul.wizard li {
   display: flex;
   flex-direction: row;
@@ -316,6 +312,7 @@ form.modal ul.wizard li {
   justify-items: center;
 }
 
+form.modal-dashboard ul.wizard li *,
 form.modal ul.wizard li * {
   flex: 1;
 }
@@ -338,7 +335,6 @@ div.ui-tooltip.ui-corner-all.ui-widget-shadow.ui-widget.ui-widget-content.uitool
   background: transparent;
   color: #fff;
   font-weight: bold;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 8pt;
 }

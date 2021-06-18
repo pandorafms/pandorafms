@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.743
-%define release     200130
+%define version     7.0NG.755
+%define release     210618
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -24,7 +24,7 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools perl-XML-Twig
-Requires:           nmap sudo perl-HTML-Tree perl-XML-Simple perl-Net-Telnet
+Requires:           fping nmap sudo perl-HTML-Tree perl-XML-Simple perl-Net-Telnet
 Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-IO-Socket-SSL snmp-mibs perl-JSON
 Requires:           perl-Encode-Locale perl-Geo-IP
 
@@ -79,6 +79,7 @@ cp -aRf conf/pandora_server.conf.new $RPM_BUILD_ROOT/etc/pandora/
 cp -aRf conf/tentacle_* $RPM_BUILD_ROOT%{prefix}/tentacle/conf/
 cp -aRf conf/tentacle_server.conf.new $RPM_BUILD_ROOT/etc/tentacle/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
+cp -aRf util/pandora_ha.pl $RPM_BUILD_ROOT/usr/bin/pandora_ha
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 cp -aRf AUTHORS COPYING README $RPM_BUILD_ROOT%{prefix}/pandora_server/
 
@@ -102,17 +103,32 @@ fi
 exit 0
 
 %post
-chkconfig pandora_server on 
-chkconfig tentacle_serverd on 
+if [ `command -v systemctl` ];
+then
+        echo "Copying new version for tentacle_serverd service"
+        cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+        chmod -x /usr/lib/systemd/system/tentacle_serverd.service
 
-# Enable the services on SystemD
-systemctl enable tentacle_serverd.service
+# Enable the service on SystemD
+        systemctl enable tentacle_serverd.service
+else
+        chkconfig tentacle_serverd on
+fi
+
+chkconfig pandora_server on
+
+# Enable the service on SystemD
 systemctl enable pandora_server.service
 
 
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 chmod 750 /etc/cron.hourly/pandora_db
-cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server
+
+if [ -d /etc/logrotate.d ] ; then
+   if [ ! -f /etc/logrotate.d/pandora_server ] ; then
+      cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server
+   fi
+fi
 
 if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora
@@ -138,6 +154,14 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
 
 exit 0
 
@@ -170,6 +194,7 @@ rm -Rf /etc/tentacle/tentacle_server.conf*
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
+rm -Rf /usr/bin/pandora_ha
 rm -Rf /etc/cron.hourly/pandora_db
 rm -Rf /etc/logrotate.d/pandora_server
 rm -Rf /usr/share/man/man1/pandora_server.1.gz
@@ -185,6 +210,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 /usr/bin/pandora_exec
 /usr/bin/pandora_server
 /usr/bin/tentacle_server
+/usr/bin/pandora_ha
 
 %defattr(755,pandora,root,755)
 /usr/lib/perl5/PandoraFMS/

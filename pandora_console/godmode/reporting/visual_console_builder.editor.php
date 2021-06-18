@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,9 +83,9 @@ visual_map_editor_print_hack_translate_strings();
 visual_map_editor_print_item_palette($visualConsole['id'], $background);
 
 if (!defined('METACONSOLE')) {
-    echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll; margin: 0 auto;">';
+    echo '<div id="frame_view" class="frame_view_meta">';
 } else {
-    echo '<div id="frame_view" style="overflow: auto; margin: 0px auto; padding: 5px; ">';
+    echo '<div id="frame_view" class="frame_view_node mrgn_top_meta_35px">';
 }
 
 echo '<div id="background" class="" style="top:0px;
@@ -119,6 +119,7 @@ foreach ($layoutDatas as $layoutData) {
     }
 
     switch ($layoutData['type']) {
+        case NETWORK_LINK:
         case LINE_ITEM:
             visual_map_print_user_line_handles($layoutData);
             visual_map_print_user_lines($layoutData);
@@ -145,7 +146,7 @@ foreach ($layoutDatas as $layoutData) {
     );
 }
 
-echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='".$metaconsole_hack.'images/console/background/'.$background."' width='100%' height='100%' />";
+echo "<img class='vc_bg_image' id='background_img' src='".$metaconsole_hack.'images/console/background/'.$background."' width='100%' height='100%' />";
 
 echo '</div>';
 echo '</div>';
@@ -163,11 +164,11 @@ html_print_input_hidden('message_size', __('Min allowed size is 1024x768'));
 
 
 // Loading dialog
-echo "<div id='loading_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Loading in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='loading_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Loading in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
-echo "<div id='saving_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Saving in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='saving_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Saving in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
-echo "<div id='delete_in_progress_dialog' style='display: none; text-align: center;' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
+echo "<div id='delete_in_progress_dialog' class='invisible center' title='".__('Action in progress')."'>".__('Deletion in progress').'<br />'.html_print_image('images/spinner.gif', true).'</div>';
 
 // CSS
 ui_require_css_file('color-picker', 'include/styles/js/');
@@ -195,54 +196,21 @@ ui_require_javascript_file('encode_decode_base64');
     id_visual_console = <?php echo $visualConsole['id']; ?>;
     visual_map_main();
     
-    tinyMCE.init({
-        mode : "exact",
-        elements: "text-label",
-        convert_urls: false,
-        theme : "advanced",
-        <?php
-        if ($config['style'] == 'pandora_legacy') {
-            echo 'content_css: "'.ui_get_full_url('include/styles/pandora_legacy.css', false, false, false).'",'."\n";
-        } else {
-            echo 'content_css: "'.ui_get_full_url('include/styles/pandora.css', false, false, false).'",'."\n";
-        }
-        ?>
-        theme_advanced_font_sizes :
-            "4pt=.visual_font_size_4pt, " +
-            "6pt=.visual_font_size_6pt, " +
-            "8pt=.visual_font_size_8pt, " +
-            "10pt=.visual_font_size_10pt, " +
-            "12pt=.visual_font_size_12pt, " +
-            "14pt=.visual_font_size_14pt, " +
-            "18pt=.visual_font_size_18pt, " +
-            "24pt=.visual_font_size_24pt, " +
-            "28pt=.visual_font_size_28pt, " +
-            "36pt=.visual_font_size_36pt, " +
-            "48pt=.visual_font_size_48pt, " +
-            "60pt=.visual_font_size_60pt, " +
-            "72pt=.visual_font_size_72pt, " +
-            "84pt=.visual_font_size_84pt, " +
-            "96pt=.visual_font_size_96pt, " +
-            "116pt=.visual_font_size_116pt, " +
-            "128pt=.visual_font_size_128pt, " +
-            "140pt=.visual_font_size_140pt, " +
-            "154pt=.visual_font_size_154pt, " +
-            "196pt=.visual_font_size_196pt",
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_buttons1 : "bold,italic, |, justifyleft, justifycenter, justifyright, |,undo, redo, |, image, link, |, fontselect, |, forecolor, fontsizeselect, |, code",
-        theme_advanced_buttons2 : "",
-        theme_advanced_buttons3 : "",
-        theme_advanced_statusbar_location : "none",
-        width: "400",
-        height: "200",
-        nowrap: true,
-        plugins : "noneditable",
-        inline_styles : true,
-        valid_children : "+body[style]",
-        element_format : "html",
-        editor_deselector : "noselected"
-    });
+     var added_config = {
+        "plugins": "noneditable",
+        "elements": "text-label",
+        "theme_advanced_buttons1": 
+          "bold,italic,|,justifyleft,justifycenter,justifyright,|,undo,redo,|,image,link,|,fontselect,|,forecolor,fontsizeselect,|,code",
+        "valid_children": "+body[style]",
+        "theme_advanced_font_sizes": "true",
+        "content_css": <?php echo '"'.ui_get_full_url('include/styles/pandora.css', false, false, false).'"'; ?>,
+        "editor_deselector": "noselected",
+        "inline_styles": true,
+        "nowrap": true,
+        "width": "50%",
+        "height": "100%",
+     }
+    defineTinyMCE(added_config);
 
     $('.item img').each(function(){
         

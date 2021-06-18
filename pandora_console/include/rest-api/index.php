@@ -9,6 +9,10 @@ if (!is_ajax()) {
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
+
+// Require also some stuff from Pandora FMS.
+enterprise_include('include/functions_metaconsole.php');
+
 use Models\VisualConsole\Container as VisualConsole;
 use Models\VisualConsole\View as Viewer;
 use Models\VisualConsole\Item as Item;
@@ -51,7 +55,7 @@ ob_clean();
 
 if ($visualConsoleId) {
     // Retrieve the visual console.
-    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId], $ratio);
     $visualConsoleData = $visualConsole->toArray();
     $vcGroupId = $visualConsoleData['groupId'];
 
@@ -80,8 +84,36 @@ if ($getVisualConsole === true) {
         $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
     }
 
-    $vcItems = VisualConsole::getItemsFromDB($visualConsoleId, $aclUserGroups);
-    echo '['.implode($vcItems, ',').']';
+    $size = get_parameter('size', []);
+
+    $ratio = 0;
+    if (isset($size) === true
+        && is_array($size) === true
+        && empty($size) === false
+    ) {
+        $visualConsoleData = $visualConsole->toArray();
+        $ratio_visualconsole = ($visualConsoleData['height'] / $visualConsoleData['width']);
+        $ratio = ($size['width'] / $visualConsoleData['width']);
+        $radio_h = ($size['height'] / $visualConsoleData['height']);
+
+        $visualConsoleData['width'] = $size['width'];
+        $visualConsoleData['height'] = ($size['width'] * $ratio_visualconsole);
+
+        if ($visualConsoleData['height'] > $size['height']) {
+            $ratio = $radio_h;
+
+            $visualConsoleData['height'] = $size['height'];
+            $visualConsoleData['width'] = ($size['height'] / $ratio_visualconsole);
+        }
+    }
+
+    $vcItems = VisualConsole::getItemsFromDB(
+        $visualConsoleId,
+        $aclUserGroups,
+        $ratio
+    );
+
+    echo '['.implode(',', $vcItems).']';
     return;
 } else if ($getVisualConsoleItem === true
     || $updateVisualConsoleItem === true
@@ -217,7 +249,9 @@ if ($getVisualConsole === true) {
     $item = VisualConsole::getItemFromDB($itemId);
     $data = $item->toArray();
     $data['id_layout'] = $visualConsoleId;
-    if ($data['type'] === LINE_ITEM) {
+    if ($data['type'] === LINE_ITEM
+        || $data['type'] === NETWORK_LINK
+    ) {
         $data['endX'] = ($data['endX'] + 20);
         $data['endY'] = ($data['endY'] + 20);
         $data['startX'] = ($data['startX'] + 20);

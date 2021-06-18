@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,14 +19,6 @@ require_once '../../include/functions.php';
 require_once '../../include/functions_integriaims.php';
 
 check_login();
-
-if (! check_acl($config['id_user'], 0, 'IR') && ! check_acl($config['id_user'], 0, 'IW') && ! check_acl($config['id_user'], 0, 'IM')) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
 
 // API calls.
 $status_incident = integriaims_get_details('status');

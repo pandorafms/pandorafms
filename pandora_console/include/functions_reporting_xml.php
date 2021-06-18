@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2017 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,14 +31,6 @@ function reporting_xml_get_report($report, $filename, $return=false)
     unset($report['private']);
     unset($report['custom_logo']);
     // ----------------------------------------------------------------------
-    // change agent name.
-    if (count($report['contents']) > 0) {
-        for ($i = 0; $i < count($report['contents']); $i++) {
-            $aux = explode('-', $report['contents'][$i]['subtitle']);
-            $report['contents'][$i]['subtitle'] = db_get_value('alias', 'tagente', 'nombre', $report['contents'][$i]['agent_name']).' -'.$aux[1];
-        }
-    }
-
     // Remove entities.
     $report = io_safe_output($report);
 

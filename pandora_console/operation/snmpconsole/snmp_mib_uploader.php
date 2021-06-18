@@ -1,17 +1,32 @@
 <?php
+/**
+ * MIB Uploader view
+ *
+ * @category   Monitoring
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2013 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 check_login();
@@ -24,8 +39,26 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
 
 require_once 'include/functions_filemanager.php';
 
-// Header
-ui_print_page_header(__('MIB uploader'), 'images/op_snmp.png', false, '', false);
+// Header.
+ui_print_standard_header(
+    __('MIB uploader'),
+    'images/op_snmp.png',
+    false,
+    '',
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SMNP'),
+        ],
+    ]
+);
+
 
 if (isset($config['filemanager']['message'])) {
     echo $config['filemanager']['message'];
@@ -68,6 +101,19 @@ $available_directories[$directory] = $directory;
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
 ui_print_info_message(__('MIB files will be installed on the system. Please note that a MIB may depend on other MIB. To customize trap definitions use the SNMP trap editor.'));
+
+$upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
+$create_text_file = (bool) get_parameter('create_text_file');
+
+$default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
+
+if ($upload_file_or_zip) {
+    upload_file($upload_file_or_zip, $default_real_directory);
+}
+
+if ($create_text_file) {
+    create_text_file($default_real_directory);
+}
 
 filemanager_file_explorer(
     $real_directory,

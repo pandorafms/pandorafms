@@ -1,15 +1,18 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
+/**
+ * Pandora FMS - http://pandorafms.com
+ * ==================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; version 2
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ */
+
 require_once 'include/functions_messages.php';
 require_once 'include/functions_servers.php';
 require_once 'include/functions_notifications.php';
@@ -18,7 +21,8 @@ ui_require_css_file('order_interpreter');
 
 // Check permissions
 // Global errors/warnings checking.
- config_check();
+config_check();
+
 
 
 if ($config['menu_type'] == 'classic') {
@@ -73,19 +77,12 @@ if ($config['menu_type'] == 'classic') {
         if ($check_minor_release_available) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] == 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a style="font-size:8pt;font-style:italic;" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }
-
-
-        // Chat messages.
-        $header_chat = "<div id='header_chat'><span id='icon_new_messages_chat' style='display: none;'>";
-        $header_chat .= "<a href='index.php?sec=workspace&sec2=operation/users/webchat'>";
-        $header_chat .= html_print_image('images/header_chat_gray.png', true, ['title' => __('New chat message')]);
-        $header_chat .= '</a></span></div>';
 
 
         // Search.
@@ -101,8 +98,8 @@ if ($config['menu_type'] == 'classic') {
 
         if ($acl_head_search) {
             // Search bar.
-            $search_bar = '<form autocomplete="off" method="get" style="display: inline;" name="quicksearch" action="">';
-            '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
+            $search_bar = '<form autocomplete="off" method="get" class="display_in" name="quicksearch" action="">';
+            '<input autocomplete="false" name="hidden" type="text" class="invisible">';
             if (!isset($config['search_keywords'])) {
                 $search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
             } else {
@@ -149,7 +146,7 @@ if ($config['menu_type'] == 'classic') {
         }
 
         if ($_GET['sec'] == 'main' || !isset($_GET['sec'])) {
-            // home screen chosen by the user
+            // Home screen chosen by the user.
             $home_page = '';
             if (isset($config['id_user'])) {
                 $user_info = users_get_user_by_id($config['id_user']);
@@ -176,11 +173,12 @@ if ($config['menu_type'] == 'classic') {
                     break;
 
                     case 'Default':
+                    default:
                         $_GET['sec2'] = 'general/logon_ok';
                     break;
 
                     case 'Dashboard':
-                        $_GET['sec2'] = 'enterprise/dashboard/main_dashboard';
+                        $_GET['sec2'] = 'operation/dashboard/dashboard';
                     break;
 
                     case 'Visual console':
@@ -213,84 +211,116 @@ if ($config['menu_type'] == 'classic') {
             $select[0]['autorefresh_white_list']
         );
 
-        if ($autorefresh_list !== null
-            && array_search($_GET['sec2'], $autorefresh_list) !== false
+        if ($config['legacy_vc']
+            || ($_GET['sec2'] !== 'operation/visual_console/render_view')
+            || (($_GET['sec2'] !== 'operation/visual_console/render_view')
+            && $config['legacy_vc'])
         ) {
-            $do_refresh = true;
-            if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                    $do_refresh = false;
+            if ($autorefresh_list !== null
+                && array_search($_GET['sec2'], $autorefresh_list) !== false
+            ) {
+                $do_refresh = true;
+                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
+                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
+                        $do_refresh = false;
+                    }
                 }
-            }
 
-            if ($do_refresh) {
+                if ($do_refresh) {
+                    $autorefresh_img = html_print_image(
+                        'images/header_refresh_gray.png',
+                        true,
+                        [
+                            'class' => 'bot',
+                            'alt'   => 'lightning',
+                            'title' => __('Configure autorefresh'),
+                        ]
+                    );
+
+                    if ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0
+                        && $config['refr'] === null
+                    ) {
+                        $config['refr'] = $select[0]['time_autorefresh'];
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date(
+                            'i:s',
+                            $config['refr']
+                        );
+                        $autorefresh_txt .= '</span>)';
+                    } else if ($_GET['refr']) {
+                        $autorefresh_txt .= ' (<span id="refrcounter">';
+                        $autorefresh_txt .= date('i:s', $config['refr']);
+                        $autorefresh_txt .= '</span>)';
+                    }
+
+                    $ignored_params['refr'] = '';
+                    $values = get_refresh_time_array();
+
+                    $autorefresh_additional = '<span id="combo_refr" class="invisible">';
+                    $autorefresh_additional .= html_print_select(
+                        $values,
+                        'ref',
+                        '',
+                        '',
+                        __('Select'),
+                        '0',
+                        true,
+                        false,
+                        false
+                    );
+                    $autorefresh_additional .= '</span>';
+                    unset($values);
+                    if ($home_page != '') {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
+                    } else {
+                        $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
+                    }
+
+                    if ($_GET['refr']
+                        || ((isset($select[0]['time_autorefresh']) === true)
+                        && $select[0]['time_autorefresh'] !== 0)
+                    ) {
+                        if ($home_page != '') {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
+                        } else {
+                            $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
+                        }
+                    } else {
+                        $autorefresh_link_open_txt = '<a>';
+                    }
+
+                    $autorefresh_link_close = '</a>';
+                    $display_counter = 'display:block';
+                } else {
+                    $autorefresh_img = html_print_image(
+                        'images/header_refresh_disabled_gray.png',
+                        true,
+                        [
+                            'class' => 'bot autorefresh_disabled invert_filter',
+                            'alt'   => 'lightning',
+                            'title' => __('Disabled autorefresh'),
+                        ]
+                    );
+
+                    $ignored_params['refr'] = false;
+
+                    $autorefresh_link_open_img = '';
+                    $autorefresh_link_open_txt = '';
+                    $autorefresh_link_close = '';
+
+                    $display_counter = 'display:none';
+                }
+            } else {
                 $autorefresh_img = html_print_image(
-                    'images/header_refresh_gray.png',
+                    'images/header_refresh_disabled_gray.png',
                     true,
                     [
-                        'class' => 'bot',
+                        'class' => 'bot autorefresh_disabled invert_filter',
                         'alt'   => 'lightning',
-                        'title' => __('Configure autorefresh'),
+                        'title' => __('Disabled autorefresh'),
                     ]
                 );
-
-                if ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0
-                    && $config['refr'] === null
-                ) {
-                    $config['refr'] = $select[0]['time_autorefresh'];
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date(
-                        'i:s',
-                        $config['refr']
-                    );
-                    $autorefresh_txt .= '</span>)';
-                } else if ($_GET['refr']) {
-                    $autorefresh_txt .= ' (<span id="refrcounter">';
-                    $autorefresh_txt .= date('i:s', $config['refr']);
-                    $autorefresh_txt .= '</span>)';
-                }
-
-                $ignored_params['refr'] = '';
-                $values = get_refresh_time_array();
-
-                $autorefresh_additional = '<span id="combo_refr" style="display: none;">';
-                $autorefresh_additional .= html_print_select(
-                    $values,
-                    'ref',
-                    '',
-                    '',
-                    __('Select'),
-                    '0',
-                    true,
-                    false,
-                    false
-                );
-                $autorefresh_additional .= '</span>';
-                unset($values);
-                if ($home_page != '') {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="index.php?refr=">';
-                } else {
-                    $autorefresh_link_open_img = '<a class="white autorefresh" href="'.ui_get_url_refresh($ignored_params).'">';
-                }
-
-                if ($_GET['refr']
-                    || ((isset($select[0]['time_autorefresh']) === true)
-                    && $select[0]['time_autorefresh'] !== 0)
-                ) {
-                    if ($home_page != '') {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="index.php?refr=">';
-                    } else {
-                        $autorefresh_link_open_txt = '<a class="autorefresh autorefresh_txt" href="'.ui_get_url_refresh($ignored_params).'">';
-                    }
-                } else {
-                    $autorefresh_link_open_txt = '<a>';
-                }
-
-                $autorefresh_link_close = '</a>';
-                $display_counter = 'display:block';
-            } else {
-                $autorefresh_img = html_print_image('images/header_refresh_disabled_gray.png', true, ['class' => 'bot autorefresh_disabled', 'alt' => 'lightning', 'title' => __('Disabled autorefresh')]);
 
                 $ignored_params['refr'] = false;
 
@@ -300,46 +330,28 @@ if ($config['menu_type'] == 'classic') {
 
                 $display_counter = 'display:none';
             }
-        } else {
-            $autorefresh_img = html_print_image(
-                'images/header_refresh_disabled_gray.png',
-                true,
-                [
-                    'class' => 'bot autorefresh_disabled',
-                    'alt'   => 'lightning',
-                    'title' => __('Disabled autorefresh'),
-                ]
-            );
 
-            $ignored_params['refr'] = false;
+            $header_autorefresh = '<div id="header_autorefresh">';
+            $header_autorefresh .= $autorefresh_link_open_img;
+            $header_autorefresh .= $autorefresh_img;
+            $header_autorefresh .= $autorefresh_link_close;
+            $header_autorefresh .= '</div>';
 
-            $autorefresh_link_open_img = '';
-            $autorefresh_link_open_txt = '';
-            $autorefresh_link_close = '';
-
-            $display_counter = 'display:none';
+            $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
+            $header_autorefresh_counter .= $autorefresh_link_open_txt;
+            $header_autorefresh_counter .= $autorefresh_txt;
+            $header_autorefresh_counter .= $autorefresh_link_close;
+            $header_autorefresh_counter .= $autorefresh_additional;
+            $header_autorefresh_counter .= '</div>';
         }
-
-        $header_autorefresh = '<div id="header_autorefresh">';
-        $header_autorefresh .= $autorefresh_link_open_img;
-        $header_autorefresh .= $autorefresh_img;
-        $header_autorefresh .= $autorefresh_link_close;
-        $header_autorefresh .= '</div>';
-
-        $header_autorefresh_counter = '<div id="header_autorefresh_counter" style="'.$display_counter.'">';
-        $header_autorefresh_counter .= $autorefresh_link_open_txt;
-        $header_autorefresh_counter .= $autorefresh_txt;
-        $header_autorefresh_counter .= $autorefresh_link_close;
-        $header_autorefresh_counter .= $autorefresh_additional;
-        $header_autorefresh_counter .= '</div>';
 
         // Button for feedback pandora.
         if (enterprise_installed()) {
             $header_feedback = '<div id="feedback-icon-header">';
-            $header_feedback .= '<div id="modal-feedback-form" style="display:none;"></div>';
-            $header_feedback .= '<div id="msg-header" style="display: none"></div>';
+            $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
+            $header_feedback .= '<div id="msg-header" class="invisible"></div>';
             $header_feedback .= html_print_image(
-                '/images/feedback-header.png',
+                'images/feedback-header.png',
                 true,
                 [
                     'title' => __('Feedback'),
@@ -361,13 +373,29 @@ if ($config['menu_type'] == 'classic') {
 
         $header_support = '<div id="header_support">';
         $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
-        $header_support .= html_print_image('/images/header_support.png', true, ['title' => __('Go to support'), 'class' => 'bot', 'alt' => 'user']);
+        $header_support .= html_print_image(
+            'images/header_support.png',
+            true,
+            [
+                'title' => __('Go to support'),
+                'class' => 'bot invert_filter',
+                'alt'   => 'user',
+            ]
+        );
         $header_support .= '</a></div>';
 
         // Documentation.
         $header_docu = '<div id="header_docu">';
         $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
-        $header_docu .= html_print_image('/images/header_docu.png', true, ['title' => __('Go to documentation'), 'class' => 'bot', 'alt' => 'user']);
+        $header_docu .= html_print_image(
+            'images/header_docu.png',
+            true,
+            [
+                'title' => __('Go to documentation'),
+                'class' => 'bot invert_filter',
+                'alt'   => 'user',
+            ]
+        );
         $header_docu .= '</a></div>';
 
 
@@ -394,7 +422,7 @@ if ($config['menu_type'] == 'classic') {
             );
         }
 
-        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span> ('.$config['id_user'].')</span></a></div>';
+        $header_user = '<div id="header_user"><a href="index.php?sec=workspace&sec2=operation/users/user_edit">'.$header_user.'<span id="user_name_header"> ('.$config['id_user'].')</span></a></div>';
 
         // Logout.
         $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
@@ -403,7 +431,7 @@ if ($config['menu_type'] == 'classic') {
             true,
             [
                 'alt'   => __('Logout'),
-                'class' => 'bot',
+                'class' => 'bot invert_filter',
                 'title' => __('Logout'),
             ]
         );
@@ -411,17 +439,17 @@ if ($config['menu_type'] == 'classic') {
 
         echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_chat, $header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
         ?>
     </div>    <!-- Closes #table_header_inner -->
 </div>    <!-- Closes #table_header -->
 
 
 <!-- Notifications content wrapper-->
-<div id='notification-content' style='display:none;' /></div>
+<div id='notification-content' class='invisible'/></div>
 
 <!-- Old style div wrapper -->
-<div id="alert_messages" style="display: none"></div>
+<div id="alert_messages" class="invisible"></div>
 
 <script type="text/javascript">
     /* <![CDATA[ */
@@ -524,15 +552,34 @@ if ($config['menu_type'] == 'classic') {
         });
     }
 
-    function print_toast(title, subtitle, severity, url, id, onclick) {
+    function closeToast(event) {
+        var match = /notification-(.*)-id-([0-9]+)/.exec(event.target.id);
+        var div_id = document.getElementById(match.input);
+        $(div_id).attr("hidden",true);
+    }
+
+    function print_toast(title, subtitle, severity, url, id, onclick, closeToast) {
         // TODO severity.
         severity = '';
-
         // Start the toast.
+
+        var parent_div = document.createElement('div');
+
+        // Print close image
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute("src", './images/close_button_dialog.png');
+        img.setAttribute('onclick', closeToast);
+        img.setAttribute('style', 'margin-left: 95%;');
+        parent_div.appendChild(img);
+
+        // Print a element
         var toast = document.createElement('a');
-        toast.setAttribute('onclick', onclick);
-        toast.setAttribute('href', url);
         toast.setAttribute('target', '_blank');
+        toast.setAttribute('href', url);
+        toast.setAttribute('onclick', onclick);
+
+        var link_div = document.createElement('div');
 
         // Fill toast.
         var toast_div = document.createElement('div');
@@ -542,9 +589,13 @@ if ($config['menu_type'] == 'classic') {
         var toast_text = document.createElement('p');
         toast_title.innerHTML = title;
         toast_text.innerHTML = subtitle;
-        toast_div.appendChild(toast_title);
+
+        // Append Elements
+        toast_div.appendChild(img);
+        link_div.appendChild(toast_title);
+        toast.appendChild(link_div);
+        toast_div.appendChild(toast);
         toast_div.appendChild(toast_text);
-        toast.appendChild(toast_div);
 
         // Show and program the hide event.
         toast_div.className = toast_div.className + ' show';
@@ -552,15 +603,35 @@ if ($config['menu_type'] == 'classic') {
             toast_div.className = toast_div.className.replace("show", "");
         }, 8000);
 
-        return toast;
-    }
+        toast_div.appendChild(parent_div);
 
+        return toast_div;
+    }
+  
     function check_new_notifications() {
         var last_id = document.getElementById('notification-ball-header')
             .getAttribute('last_id');
         if (last_id === null) {
             console.error('Cannot retrieve notifications ball last_id.');
             return;
+        }
+
+        // Get notifications buffer in local storage.
+        var user_notifications = localStorage.getItem('user_notifications');
+
+        if (user_notifications !== null && user_notifications.length) {
+            var user_notifications_parsed = JSON.parse(user_notifications);
+            var current_timestamp = Math.floor(Date.now() / 1000);
+
+            // Remove old notifications from local storage.
+            user_notifications_parsed_updated = user_notifications_parsed.filter(function(notification) {
+                return (notification.item_datetime > current_timestamp - 90);
+            });
+
+            if (user_notifications_parsed_updated.length !== user_notifications_parsed.length) {
+                localStorage.setItem('user_notifications', JSON.stringify(user_notifications_parsed_updated));
+                user_notifications_parsed = user_notifications_parsed_updated;
+            }
         }
 
         jQuery.post ("ajax.php",
@@ -601,20 +672,43 @@ if ($config['menu_type'] == 'classic') {
                     not_drop.removeChild(not_drop.firstChild);
                 }
 
-                // Add the new toasts.
-                if (Array.isArray(data.new_notifications)) {
-                    data.new_notifications.forEach(function(ele) {
-                        toast_wrapper.appendChild(
-                            print_toast(
-                                ele.subject,
-                                ele.mensaje,
-                                ele.criticity,
-                                ele.full_url,
-                                'notification-toast-id-' + ele.id_mensaje,
-                                'click_on_notification_toast(event)'
-                            )
-                        );
-                    });
+                // Prevent to print toasts if tab is not active.
+                if (document.hidden === false) {
+                    var localStorageItemsArray = [];
+
+                    // Add the new toasts.
+                    if (Array.isArray(data.new_notifications)) {
+                        data.new_notifications.forEach(function(ele) {
+                            // Keep track of notifications in browser local storage to avoid displaying toasts more than once across different tabs for a specific user.
+                            if (typeof user_notifications_parsed !== "undefined") {
+                                localStorageItemsArray = user_notifications_parsed;
+
+                                // Check if toast has already been fired and therefore it should be skipped.
+                                if (localStorageItemsArray.some(function(item) {
+                                    return item.message_id == ele.id_mensaje && ele.id_usuario_origen == ele.id_usuario_origen
+                                })) {
+                                    return;
+                                }
+
+                            }
+
+                            localStorageItemsArray.push({message_id: ele.id_mensaje, source_user_id: ele.id_usuario_origen, item_datetime: Math.floor(Date.now() / 1000)});
+
+                            localStorage.setItem('user_notifications', JSON.stringify(localStorageItemsArray));
+                            
+                            toast_wrapper.appendChild(
+                                print_toast(
+                                    ele.subject,
+                                    ele.mensaje,
+                                    ele.criticity,
+                                    ele.full_url,
+                                    'notification-toast-id-' + ele.id_mensaje,
+                                    'click_on_notification_toast(event)',
+                                    'closeToast(event)'
+                                )
+                            );
+                        });
+                    }
                 }
             },
             "json"
@@ -634,8 +728,6 @@ if ($config['menu_type'] == 'classic') {
 
     var fixed_header = <?php echo json_encode((bool) $config_fixed_header); ?>;
 
-    var new_chat = <?php echo (int) $_SESSION['new_chat']; ?>;
-    
     function showinterpreter(){
 
         document.onclick = function(e) {
@@ -700,6 +792,7 @@ if ($config['menu_type'] == 'classic') {
                     page: 'include/ajax/order_interpreter',
                     method: 'getResult',
                     text: $('#keywords').val(),
+                    enterprise: <?php echo (int) enterprise_installed(); ?>,
                 },
                 success: function (data) {
                    $('#result_order').html(data);
@@ -749,7 +842,7 @@ if ($config['menu_type'] == 'classic') {
     $(document).ready (function () {
 
         // Check new notifications on a periodic way
-        setInterval(check_new_notifications, 10000);
+        setInterval(check_new_notifications, 60000);
 
         // Print the wrapper for notifications
         var notifications_toasts_wrapper = document.createElement('div');
@@ -773,9 +866,7 @@ if ($config['menu_type'] == 'classic') {
                 }
             }
 
-            $new_dashboard = get_parameter('new_dashboard', 0);
-
-            if ($_GET['sec2'] == 'enterprise/dashboard/main_dashboard' && $new_dashboard) {
+            if ($_GET['sec2'] == 'operation/dashboard/dashboard' && $new_dashboard) {
                 $do_refresh = false;
             }
         }
@@ -785,9 +876,7 @@ if ($config['menu_type'] == 'classic') {
             $('div#head').addClass('fixed_header');
             $('div#main').css('padding-top', $('div#head').innerHeight() + 'px');
         }
-        
-        check_new_chats_icon('icon_new_messages_chat');
-        
+      
         /* Temporal fix to hide graphics when ui_dialog are displayed */
         $("#yougotalert").click(function () { 
             $("#agent_access").css("display", "none");
@@ -813,7 +902,9 @@ if ($config['menu_type'] == 'classic') {
         blinkpubli();
 
         <?php
-        if ($_GET['refr'] || $do_refresh === true) {
+        if ($_GET['refr']
+            || (isset($do_refresh) === true && $do_refresh === true)
+        ) {
             if ($_GET['sec2'] == 'operation/events/events') {
                 $autorefresh_draw = true;
             }
@@ -877,7 +968,7 @@ if ($config['menu_type'] == 'classic') {
                     var newValue = btoa(JSON.stringify(values));           
                     <?php
                     // Check if the url has the parameter fb64.
-                    if ($_GET['fb64']) {
+                    if (isset($_GET['fb64']) === true) {
                         $fb64 = $_GET['fb64'];
                         ?>
                             var fb64 = '<?php echo $fb64; ?>';  

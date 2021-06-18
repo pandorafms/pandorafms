@@ -1,11 +1,14 @@
 [Unit]
 Description=Tentacle server daemon
 After=network-online.target
+Requires=network.target
 
 [Service]
 Type=forking
 ExecStart=/usr/bin/tentacle_server -F /etc/tentacle/tentacle_server.conf
 User=pandora
+Restart=on-failure
+RestartPreventExitStatus=1
 
 [Install]
 WantedBy=multi-user.target

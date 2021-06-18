@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.743
-%define release     200130
+%define version     7.0NG.755
+%define release     210618
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -28,7 +28,7 @@ Requires:           perl(HTTP::Request::Common) perl(LWP::Simple) perl(LWP::User
 Requires:           perl(XML::Simple) perl(XML::Twig) net-snmp-utils
 Requires:           perl(NetAddr::IP) net-snmp net-tools
 Requires:           perl(IO::Socket::INET6) perl(IO::Socket::SSL) perl(Net::Telnet)
-Requires:           nmap sudo perl(JSON)
+Requires:           fping nmap sudo perl(JSON)
 Requires:           perl(Time::HiRes) perl(Encode::Locale)
 Requires:           perl perl(Sys::Syslog) perl(HTML::Entities) perl(Geo::IP)
 
@@ -71,6 +71,7 @@ install -m 0755 bin/tentacle_server $RPM_BUILD_ROOT%{_bindir}/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
+cp -aRf util/pandora_ha.pl $RPM_BUILD_ROOT/usr/bin/pandora_ha
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 
 install -m 0755 util/pandora_server $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
@@ -82,7 +83,9 @@ install -m 0444 man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT%{_mandir}/man1/
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
-install -m 0644 util/pandora_server_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
+if [ ! -f $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server ] ; then
+   install -m 0644 util/pandora_server_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
+fi
 install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pandora/pandora_server.conf.new
 install -m 0640 conf/tentacle_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/tentacle/tentacle_server.conf.new
 
@@ -110,20 +113,34 @@ exit 0
 
 %post
 # Initial installation
-if [ "$1" = 1 ]; then
-   /sbin/chkconfig --add pandora_server
-   /sbin/chkconfig --add tentacle_serverd
-   /sbin/chkconfig pandora_server on 
-   /sbin/chkconfig tentacle_serverd on 
+# Run when not uninstalling
+if [ "$1" -ge 1 ]
+then
+        if [ `command -v systemctl` ]
+        then
+                echo "Copying new version for tentacle_serverd service"
+                cp -f /usr/share/pandora_server/util/tentacle_serverd.service /usr/lib/systemd/system/
+                chmod -x /usr/lib/systemd/system/tentacle_serverd.service
+        # Enable the services on SystemD
+                systemctl enable tentacle_serverd.service     
+        else
+                /sbin/chkconfig --add tentacle_serverd
+                /sbin/chkconfig tentacle_serverd on 
+        fi
 
-   echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
-   echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
-   echo "The manual can be reached at: man pandora or man pandora_server"
-   echo "Pandora FMS Documentation is in: http://pandorafms.org"
-   echo " "
+        /sbin/chkconfig --add pandora_server
+        /sbin/chkconfig pandora_server on 
+
+        systemctl enable pandora_server.service
+
+        echo "Pandora FMS Server configuration is %{_sysconfdir}/pandora/pandora_server.conf"
+        echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
+        echo "The manual can be reached at: man pandora or man pandora_server"
+        echo "Pandora FMS Documentation is in: http://pandorafms.org"
+        echo " "
 fi
 
-# This will avoid confi files overwritting on UPGRADES.
+# This will avoid config files overwritting on UPGRADES.
 # Main configuration file
 if [ ! -e "/etc/pandora/pandora_server.conf" ]
 then
@@ -143,6 +160,14 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+
+if [ "$1" -gt 1 ]
+then
+
+      echo "If Tentacle Server daemon was running with init.d script,"
+      echo "please stop it manually and start the service with systemctl"
+
+fi
 
 %preun
 
@@ -178,6 +203,7 @@ exit 0
 %{_bindir}/pandora_exec
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
+%{_bindir}/pandora_ha
 
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora

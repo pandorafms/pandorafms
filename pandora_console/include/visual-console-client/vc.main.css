@@ -4,25 +4,16 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
+  margin-top: 5px;
 }
 
 .visual-console-item {
   position: absolute;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: initial;
-  -webkit-box-direction: initial;
-      -ms-flex-direction: initial;
-          flex-direction: initial;
+  flex-direction: initial;
   justify-items: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-user-select: text;
-     -moz-user-select: text;
-      -ms-user-select: text;
-          user-select: text;
+  align-items: center;
+  user-select: text;
   z-index: 1;
 }
 
@@ -30,19 +21,25 @@
   z-index: 2;
 }
 
+.visual-console-item * {
+  overflow: visible;
+  font-family: inherit;
+}
+
 .visual-console-item.is-editing {
   border: 2px dashed #b2b2b2;
-  -webkit-transform: translateX(-2px) translateY(-2px);
-          transform: translateX(-2px) translateY(-2px);
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  transform: translateX(-2px) translateY(-2px);
+  user-select: none;
+}
+
+.visual-console-item.is-editing:hover {
+  border-color: #82b92e;
 }
 
 .visual-console-item.is-editing.is-selected {
   border: 2px dashed #2b2b2b;
   cursor: move;
+  z-index: 10;
 }
 .visual-console-item.is-editing > .resize-draggable {
   float: right;
@@ -59,25 +56,12 @@
   pointer-events: none;
 }
 
-@-webkit-keyframes spinner-loading {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(1turn);
-            transform: rotate(1turn);
-  }
-}
-
 @keyframes spinner-loading {
   0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-    -webkit-transform: rotate(1turn);
-            transform: rotate(1turn);
+    transform: rotate(1turn);
   }
 }
 
@@ -89,15 +73,10 @@
   border-bottom: 5px solid rgb(82, 85, 87);
   border-left: 5px solid rgba(82, 85, 87, 0.2);
 
-  -webkit-animation-name: spinner-loading;
-
-          animation-name: spinner-loading;
-  -webkit-animation-duration: 0.8s;
-          animation-duration: 0.8s;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
-  -webkit-animation-timing-function: linear;
-          animation-timing-function: linear;
+  animation-name: spinner-loading;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
 }
 
 .visual-console-spinner,
@@ -118,12 +97,8 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   opacity: 0.7;
   background: rgb(212, 215, 218);
   z-index: 2;
@@ -139,20 +114,11 @@
 
 /*Forms*/
 .div-input-group label {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
   font-size: 12pt;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: 600;
   color: #343434;
   margin-right: 10px;
@@ -169,11 +135,9 @@
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   margin-right: 10px;
   padding-left: 2px;
 }
@@ -185,21 +149,14 @@
 }
 
 .div-input-group select {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   font-size: 10pt;
 }
 
 .input-groups {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 .input-group {
@@ -209,18 +166,10 @@
 }
 
 .div-ranges-input-group {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .div-ranges-input-group > div {
@@ -230,23 +179,14 @@
 
 .div-input-group,
 .div-input-group div div {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .div-input-group h3 {
   text-transform: initial;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   text-align: center;
   font-style: italic;
   text-decoration: underline;
@@ -258,21 +198,11 @@
 }
 
 .div-input-group-autocomplete-agent {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: flex-start;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
   height: 70px;
 }
 
@@ -335,34 +265,19 @@ p.error-p-validate {
 }
 
 .fa-spin {
-  -webkit-animation: fa-spin 2s infinite linear;
-          animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
 }
 
 .fa-pulse {
-  -webkit-animation: fa-spin 1s infinite steps(8);
-          animation: fa-spin 1s infinite steps(8);
-}
-
-@-webkit-keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-  }
+  animation: fa-spin 1s infinite steps(8);
 }
 
 @keyframes fa-spin {
   0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -403,32 +318,17 @@ p.error-p-validate {
   color: #ffffff;
 }
 
-/*
-@font-face {
-  font-family: Alarm Clock;
-  src: url(alarm-clock.ttf);
-}
-*/
-
 /* Digital clock */
 
 .visual-console-item .digital-clock {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: column;
+  justify-content: center;
   justify-items: center;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-content: center;
+  align-items: center;
 }
 
 .visual-console-item .digital-clock > span {
@@ -438,12 +338,10 @@ p.error-p-validate {
 }
 
 .visual-console-item .digital-clock > span.time {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 
 .visual-console-item .digital-clock > span.date {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 25px;
 }
 
@@ -458,18 +356,15 @@ p.error-p-validate {
 }
 
 .visual-console-item .analogic-clock .hour-hand {
-  -webkit-animation: rotate-hour 43200s infinite linear;
-          animation: rotate-hour 43200s infinite linear;
+  animation: rotate-hour 43200s infinite linear;
 }
 
 .visual-console-item .analogic-clock .minute-hand {
-  -webkit-animation: rotate-minute 3600s infinite linear;
-          animation: rotate-minute 3600s infinite linear;
+  animation: rotate-minute 3600s infinite linear;
 }
 
 .visual-console-item .analogic-clock .second-hand {
-  -webkit-animation: rotate-second 60s infinite linear;
-          animation: rotate-second 60s infinite linear;
+  animation: rotate-second 60s infinite linear;
 }
 
 #html-tabs .ui-widget-header {
@@ -479,19 +374,10 @@ p.error-p-validate {
 
 #html-tabs .ui-tabs-anchor {
   float: none;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #html-tabs .ui-tabs-anchor img {
@@ -525,28 +411,18 @@ li#li-position-item > label:not(:first-child) {
 }
 
 li#li-image-item label {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 li#li-image-item label img {
-  -webkit-box-flex: initial;
-      -ms-flex: initial;
-          flex: initial;
+  flex: initial;
 }
 
 .discovery.modal * {
   font-weight: normal;
   color: #343434;
-  font-family: "lato", "Open Sans", sans-serif;
 }
 
 .discovery.modal select {
@@ -569,9 +445,7 @@ li#li-image-item label img {
 
 li#li-timeZone-item > label:not(:first-child),
 .discovery.modal li#div-textarea-label > label {
-  -webkit-box-flex: inherit;
-      -ms-flex: inherit;
-          flex: inherit;
+  flex: inherit;
 }
 
 li#li-timeZone-item > select:not(:first-child) {
@@ -584,13 +458,8 @@ li#li-timeZone-item > select:not(:first-child) {
 
 /*style item group show statistic*/
 .group-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  flex-direction: column;
   width: 100%;
   height: 100%;
 }
@@ -600,113 +469,100 @@ li#li-timeZone-item > select:not(:first-child) {
   background-color: #9d9ea0;
   color: black;
   font-weight: bold;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 .group-container .group-item-info {
   width: 100%;
   height: 70%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
+  flex-direction: row;
+  flex-wrap: wrap;
   padding: 2%;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
 }
 
 .group-container .group-item-info .group-item-info-container {
-  -webkit-box-flex: 1;
-      -ms-flex: 1 1 80px;
-          flex: 1 1 80px;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  flex: 1 1 20%;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
+  flex-direction: row;
   border-radius: 2px;
-  height: 100%;
   max-height: 50px;
-  margin: 5px;
+  margin: 1%;
 }
 
 .group-container .group-item-info .group-item-info-container .value-style {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+  flex: 1;
   color: #fff;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
-  height: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .group-container .group-item-info .group-item-info-container .name-style {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
+  flex: 1;
   background-color: white;
   color: black;
   font-size: 100%;
-  padding: 5px;
+  padding: 5%;
   width: 100%;
   height: 100%;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 div.label,
 div.simple-value {
-  display: inline-table;
-  min-width: -webkit-fit-content;
-  min-width: -moz-fit-content;
   min-width: fit-content;
-  min-height: -webkit-fit-content;
-  min-height: -moz-fit-content;
   min-height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+div.simple-value > div {
+  max-height: -webkit-fill-available;
+}
+
+div.module-graph .parent_graph p table tr {
+  height: 25px;
+}
+
+div.module-graph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+div.module-graph .gauge_d3_class {
+  flex: 1 1 100px;
+  float: none !important;
+  overflow: inherit !important;
+  text-align: center;
+}
+
+.textDecorationNone:hover {
+  text-decoration: none;
+}
+
+.vc-item-nl-label {
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 5px;
+  padding-left: 1em;
+  font-size: 14px;
 }
 
 /* Styles for the solid icons */
@@ -737,34 +593,19 @@ div.simple-value {
 }
 
 .fa-spin {
-  -webkit-animation: fa-spin 2s infinite linear;
-          animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
 }
 
 .fa-pulse {
-  -webkit-animation: fa-spin 1s infinite steps(8);
-          animation: fa-spin 1s infinite steps(8);
-}
-
-@-webkit-keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
-  }
+  animation: fa-spin 1s infinite steps(8);
 }
 
 @keyframes fa-spin {
   0% {
-    -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   100% {
-    -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -805,30 +646,15 @@ div.simple-value {
   color: #ffffff;
 }
 
-@font-face {
-  font-family: Alarm Clock;
-  src: url(alarm-clock.ttf);
-}
-
 /* Digital clock */
 
 .visual-console-item .digital-clock {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  flex-direction: column;
+  justify-content: center;
   justify-items: center;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-content: center;
+  align-items: center;
 }
 
 .visual-console-item .digital-clock > span {
@@ -840,7 +666,6 @@ div.simple-value {
 }
 
 .visual-console-item .digital-clock > span.time {
-  font-family: "Alarm Clock", "Courier New", Courier, monospace;
   font-size: 50px;
 }
 
@@ -859,19 +684,15 @@ div.simple-value {
 }
 
 .visual-console-item .analogic-clock .hour-hand {
-  -webkit-animation: rotate-hour 43200s infinite linear;
-          animation: rotate-hour 43200s infinite linear;
+  animation: rotate-hour 43200s infinite linear;
 }
 
 .visual-console-item .analogic-clock .minute-hand {
-  -webkit-animation: rotate-minute 3600s infinite linear;
-          animation: rotate-minute 3600s infinite linear;
+  animation: rotate-minute 3600s infinite linear;
 }
 
 .visual-console-item .analogic-clock .second-hand {
-  -webkit-animation: rotate-second 60s infinite linear;
-          animation: rotate-second 60s infinite linear;
+  animation: rotate-second 60s infinite linear;
 }
-
 
 /*# sourceMappingURL=vc.main.css.map*/

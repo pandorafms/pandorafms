@@ -3,7 +3,7 @@ package PandoraFMS::Server;
 # Pandora FMS generic server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -68,7 +68,12 @@ sub run ($$) {
 	$self->setServerID ();
 
 	for (1..$self->{'_num_threads'}) {
-		my $thr = threads->create (\&{$func}, $self);
+		my $thr = threads->create ({'exit' => 'thread_only'},
+			sub {
+				local $SIG{'KILL'} = sub  { exit 0; };
+				$func->(@_);
+			}, $self
+		);
 		return unless defined ($thr);
 		push (@{$self->{'_threads'}}, $thr->tid ());
 	}
@@ -301,12 +306,12 @@ sub stop ($) {
 		                       0, $self->{'_server_type'}, 0, 0);
 	};
 
-	# Detach server threads
+	# Sigkill all server threads
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object($tid);
 		next unless defined ($thr);
 
-   		$thr->detach();
+   	$thr->kill('KILL');
 	}
 }
 

@@ -3,7 +3,7 @@ package PandoraFMS::WMIServer;
 # Pandora FMS WMI Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -161,6 +161,11 @@ sub data_consumer ($$) {
 	else {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -N';
 	}
+
+	#Check ip_taget macro
+	if ($module->{'ip_target'} eq '_address_') {
+		$module->{'ip_target'} = get_db_value($dbh, "SELECT direccion FROM tagente WHERE id_agente=?", $module->{'id_agente'});
+	}
 	
 	# Use a custom namespace
 	my $namespace = $module->{'tcp_send'};
@@ -203,11 +208,35 @@ sub data_consumer ($$) {
 	my @row = split(/\|/, $output[2]);
 
 	# Get the specified column
-	$module_data = $row[$module->{'tcp_port'}] if (defined ($module->{'tcp_port'}) &&  defined ($row[$module->{'tcp_port'}]));
-	if ($module_data =~ m/^ERROR/) {
-		pandora_update_module_on_error ($pa_config, $module, $dbh);
-		return;
-	} 
+	if (defined ($module->{'tcp_port'})) {
+		$wmi_query =~ m/SELECT\s(.+)\sFROM/ig;
+		my @wmi_columns = split /\s*,\s*/, $1;
+		my $selected_col = $wmi_columns[$module->{'tcp_port'}];
+
+		if (!defined($selected_col)) {
+			logger($pa_config, 'Warning, WMI module ' . safe_output($module->{'name'}) . ' column missconfigured, using first available.', 10);
+			$selected_col = shift @wmi_columns;
+		}
+
+		# Get result col number
+		my @output_col = split(/\|/, $output[1]);
+
+		# Find column number
+		my $col_number;
+
+    for(my $i = 0; $i < @output_col; $i++ ) {
+        if( $output_col[$i] =~ /$selected_col/i ) {
+        		$col_number = $i;	
+            last;
+        }
+    }		
+		
+		$module_data = $row[$col_number] if (defined ($col_number) &&  defined ($row[$col_number]));
+		if ($module_data =~ m/^ERROR/) {
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
+			return;
+		} 
+	}
 		
 	# Regexp
 	if ($module->{'snmp_community'} ne ''){

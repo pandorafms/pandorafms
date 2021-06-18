@@ -1,8 +1,12 @@
-FROM centos:centos7
-MAINTAINER Pandora FMS Team <info@pandorafms.com>
+FROM centos:7
+LABEL maintainer="Pandora FMS Team <info@pandorafms.com>"
 
 # Add Pandora FMS agent installer
-ADD unix /tmp/pandora_agent/unix
+ADD unix /opt/pandora/pandora_agent/unix
+
+RUN export LC_ALL=C
+
+RUN yum -y update
 
 # Install dependencies
 RUN yum -y install \
@@ -11,10 +15,13 @@ RUN yum -y install \
 	perl \
 	python3 \
 	sed \
-	"perl(Sys::Syslog)"
+	perl-YAML-Tiny \
+	"perl(Sys::Syslog)" \
+	&& yum clean all
 
+ 
 # Install Pandora FMS agent
-RUN cd /tmp/pandora_agent/unix \
+RUN cd /opt/pandora/pandora_agent/unix \
 	&& chmod +x pandora_agent_installer \
 	&& ./pandora_agent_installer --install
 
@@ -41,8 +48,7 @@ if [ $TIMEZONE != "" ]; then\n \
 \tln -sfn /usr/share/zoneinfo/$TIMEZONE /etc/localtime\n \
 fi\n \
 /etc/init.d/pandora_agent_daemon start\n \
-rm -f $0\n \
-tail -f /var/log/pandora/pandora_agent.log' \
+tail -F /var/log/pandora/pandora_agent.log' \
 >> /entrypoint.sh && \
 chmod +x /entrypoint.sh
 

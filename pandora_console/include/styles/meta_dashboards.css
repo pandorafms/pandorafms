@@ -1,0 +1,32 @@
+div#page {
+  width: auto;
+  margin: 0 auto;
+}
+
+.networkconsole {
+  height: 100%;
+}
+
+.networkconsole svg {
+  height: 100%;
+}
+.minimap {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border: 1px solid #bbbbbb;
+}
+.holding_networkmap {
+  display: none;
+  position: absolute;
+  right: 50px;
+  top: 20px;
+}
+
+.select-dashboard-width {
+  width: 110%;
+}
+
+#menu_tab li.nomn form#form-select-dashboard {
+  margin-top: 0px !important;
+}

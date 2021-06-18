@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,10 @@ if ($delete != 0 && is_metaconsole()) {
     open_meta_frame();
 }
 
+if ($tag_name != '' && is_metaconsole()) {
+    open_meta_frame();
+}
+
 // Metaconsole nodes
 $servers = false;
 if (is_metaconsole()) {
@@ -62,6 +66,7 @@ if (is_ajax()) {
                 function ($counter, $server) use ($id_tag) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_local_modules_count($id_tag);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;
@@ -79,6 +84,7 @@ if (is_ajax()) {
                 function ($counter, $server) use ($id_tag) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_policy_modules_count($id_tag);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;
@@ -110,7 +116,14 @@ if (is_metaconsole()) {
 $buttons = [
     'list' => [
         'active' => false,
-        'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image('images/list.png', true, ['title' => __('List tags')]).'</a>',
+        'text'   => '<a href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tab=list">'.html_print_image(
+            'images/list.png',
+            true,
+            [
+                'title' => __('List tags'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ],
 ];
 
@@ -125,7 +138,7 @@ if (is_metaconsole()) {
         __('Tags configuration'),
         'images/tag.png',
         false,
-        'tags_config',
+        '',
         true,
         $buttons
     );
@@ -182,7 +195,7 @@ $row[] = $filter_button;
 
 $table->data[] = $row;
 
-$filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+$filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&tag_name="'.$tag_name.'>';
 $filter_form .= html_print_table($table, true);
 $filter_form .= '</form>';
 // End of filter form
@@ -247,7 +260,11 @@ if (!empty($result)) {
 
         // The tooltip needs a title on the item, don't delete the title
         $data[3] = '<a class="tag_details img_help" title="'.__('Tag details').'"
-			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image('images/zoom.png', true).'</a> ';
+			href="'.ui_get_full_url(false, false, false, false).'/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag='.$tag['id_tag'].'">'.html_print_image(
+            'images/zoom.png',
+            true,
+            ['class' => 'invert_filter']
+        ).'</a> ';
 
         $modules_count = 0;
         if (is_metaconsole() && !empty($servers)) {
@@ -257,6 +274,7 @@ if (!empty($result)) {
                 function ($counter, $server) use ($tag_id) {
                     if (metaconsole_connect($server) === NOERR) {
                         $counter += tags_get_modules_count($tag_id);
+                        metaconsole_restore_db();
                     }
 
                     return $counter;
@@ -274,7 +292,11 @@ if (!empty($result)) {
         if ($email_large == $email_small) {
             $output = $email_large;
         } else {
-            $output = "<div title='".sprintf(__('Emails for the tag: %s'), $tag['name'])."' style='display: none;' class='email_large' id='email_large_".$tag['id_tag']."'>".$email_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$email_small.'</span> '."<a href='javascript: show_dialog(".$tag['id_tag'].")'>".html_print_image('images/rosette.png', true).''.'</a></span>';
+            $output = "<div title='".sprintf(__('Emails for the tag: %s'), $tag['name'])."' class='email_large invisible' id='email_large_".$tag['id_tag']."'>".$email_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$email_small.'</span> '."<a href='javascript: show_dialog(".$tag['id_tag'].")'>".html_print_image(
+                'images/rosette.png',
+                true,
+                ['class' => 'invert_filter']
+            ).''.'</a></span>';
         }
 
         $data[4] = $output;
@@ -284,14 +306,32 @@ if (!empty($result)) {
         if ($phone_large == $phone_small) {
             $output = $phone_large;
         } else {
-            $output = "<div title='".sprintf(__('Phones for the tag: %s'), $tag['name'])."' style='display: none;' class='phone_large' id='phone_large_".$tag['id_tag']."'>".$phone_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> '."<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>".html_print_image('images/rosette.png', true).''.'</a></span>';
+            $output = "<div title='".sprintf(__('Phones for the tag: %s'), $tag['name'])."' class='phone_large invisible' id='phone_large_".$tag['id_tag']."'>".$phone_large.'</div>'.'<span id="value_'.$tag['id_tag'].'">'.$phone_small.'</span> '."<a href='javascript: show_phone_dialog(".$tag['id_tag'].")'>".html_print_image(
+                'images/rosette.png',
+                true,
+                ['class' => 'invert_filter']
+            ).''.'</a></span>';
         }
 
         $data[5] = $output;
 
         $table->cellclass[][6] = 'action_buttons';
-        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image('images/config.png', true, ['title' => 'Edit']).'</a>';
-        $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image('images/cross.png', true, ['title' => 'Delete']).'</a>';
+        $data[6] = "<a href='index.php?sec=".$sec.'&sec2=godmode/tag/edit_tag&action=update&id_tag='.$tag['id_tag']."'>".html_print_image(
+            'images/config.png',
+            true,
+            [
+                'title' => 'Edit',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
+        $data[6] .= '<a  href="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag='.$tag['id_tag'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">'.html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'title' => 'Delete',
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         array_push($table->data, $data);
     }
 

@@ -202,11 +202,13 @@ final class Group extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -408,28 +410,28 @@ final class Group extends Item
         $html .= '<div class="group-item-info">';
         // Critical.
         $html .= '<div class="group-item-info-container">';
-        $html .= '<div class="value-style" style="background-color: #e63c52;">';
+        $html .= '<div class="value-style red_background">';
         $html .= $critical;
         $html .= '</div>';
         $html .= '<div class="name-style">'.__('Critical').'</div>';
         $html .= '</div>';
         // Warning.
         $html .= '<div class="group-item-info-container">';
-        $html .= '<div class="value-style" style="background-color: #f8db3f;">';
+        $html .= '<div class="value-style yellow_background">';
         $html .= $warning;
         $html .= '</div>';
         $html .= '<div class="name-style">'.__('Warning').'</div>';
         $html .= '</div>';
         // Normal.
         $html .= '<div class="group-item-info-container">';
-        $html .= '<div class="value-style" style="background-color: #84b83c;">';
+        $html .= '<div class="value-style green_background">';
         $html .= $normal;
         $html .= '</div>';
         $html .= '<div class="name-style">'.__('Normal').'</div>';
         $html .= '</div>';
         // Unknown.
         $html .= '<div class="group-item-info-container">';
-        $html .= '<div class="value-style" style="background-color: #9d9ea0;">';
+        $html .= '<div class="value-style grey_background">';
         $html .= $unknown;
         $html .= '</div>';
         $html .= '<div class="name-style">'.__('Unknown').'</div>';

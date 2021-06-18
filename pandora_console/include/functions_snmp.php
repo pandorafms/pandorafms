@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -394,24 +394,14 @@ function print_snmp_tags_active_filters($filter_resume=[])
     }
 
     // Date from
-    if (isset($filter_resume['date_from_trap']) && $filter_resume['date_from_trap'] != '') {
-        if (isset($filter_resume['time_from_trap']) && $filter_resume['time_from_trap'] != '') {
-            array_push(
-                $tags_set,
-                [
-                    'title' => __('From'),
-                    'value' => $filter_resume['date_from_trap'].' '.$filter_resume['time_from_trap'],
-                ]
-            );
-        } else {
-            array_push(
-                $tags_set,
-                [
-                    'title' => __('From'),
-                    'value' => $filter_resume['date_from_trap'],
-                ]
-            );
-        }
+    if (isset($filter_resume['hours_ago']) === true) {
+        array_push(
+            $tags_set,
+            [
+                'title' => __('Max. hours old'),
+                'value' => $filter_resume['hours_ago'].' '.__('hours'),
+            ]
+        );
     }
 
     // Date to
@@ -454,4 +444,62 @@ function print_snmp_tags_active_filters($filter_resume=[])
     if (sizeof($filter_resume) > 0) {
         ui_print_tags_view($title, $tags_set);
     }
+}
+
+
+/**
+ * Retunr module type for snmp data type
+ *
+ * @param  [type] $snmp_data_type
+ * @return void
+ */
+function snmp_module_get_type(string $snmp_data_type)
+{
+    if (preg_match('/INTEGER/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Integer32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/octect string/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/bits/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/object identifier/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/IpAddress/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/Counter/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/Counter32/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/Gauge/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Gauge32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Gauge64/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Unsigned32/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/TimeTicks/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/Opaque/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/Counter64/i', $snmp_data_type)) {
+        $type = 'remote_snmp_inc';
+    } else if (preg_match('/UInteger32/i', $snmp_data_type)) {
+        $type = 'remote_snmp';
+    } else if (preg_match('/BIT STRING/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else if (preg_match('/STRING/i', $snmp_data_type)) {
+        $type = 'remote_snmp_string';
+    } else {
+        $type = 'remote_snmp_string';
+    }
+
+    if (!$type) {
+        $type = 'remote_snmp';
+    }
+
+    $type_id = modules_get_type_id($type);
+
+    return $type_id;
 }

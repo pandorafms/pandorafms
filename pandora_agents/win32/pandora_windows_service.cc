@@ -1,6 +1,6 @@
 /* Pandora agents service for Win32.
    
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez, Ramon Novoa.
   
    This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@
 
 using namespace std;
 using namespace Pandora;
+using namespace Pandora_File;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
@@ -251,6 +252,22 @@ Pandora_Windows_Service::pandora_init (bool reload_modules) {
 		}
 	}
 
+	/* Set up the secondary buffer. */
+	if (conf->getValue ("secondary_mode") == "always") {
+		string secondary_temporal = conf->getValue("temporal");
+		if (secondary_temporal[secondary_temporal.length () - 1] != '\\') {
+			secondary_temporal += "\\";
+		}
+		secondary_temporal += SECONDARY_DIR;
+		if (!dirExists(secondary_temporal) && mkdir (secondary_temporal.c_str()) != 0) {
+			pandoraLog ("Pandora_Windows_Service::pandora_init: Can not create directory %s", secondary_temporal.c_str());
+		}
+		conf->setValue("secondary_temporal", secondary_temporal);
+	}
+	else if (conf->getValue ("secondary_mode") == "on_error") {
+		conf->setValue("secondary_temporal", conf->getValue("temporal"));
+	}
+	
 	// Set the intensive interval
 	if (intensive_interval != "") {
 		try {
@@ -406,8 +423,8 @@ Pandora_Windows_Service::killTentacleProxy() {
 
 int 
 Pandora_Windows_Service::launchTentacleProxy() {
-	string server_ip, server_port, proxy_max_connections, proxy_timeout, server_ssl;
-	string proxy_cmd;
+	string server_ip, server_port, proxy_max_connections, proxy_timeout;
+	string proxy_cmd, proxy_address, proxy_port;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;	
 	
@@ -434,16 +451,19 @@ Pandora_Windows_Service::launchTentacleProxy() {
 			server_port = "41121";
 		}
 
-		server_ssl = conf->getValue("server_ssl");
-
-		if (server_ssl == "1") {
-			proxy_cmd = "tentacle_server.exe -C";
-		}
-		else {
-			proxy_cmd = "tentacle_server.exe";
+		// Proxy address.
+		proxy_address = conf->getValue("proxy_address");
+		if (proxy_address == "") {
+			proxy_address = "0.0.0.0";
 		}
 
-		proxy_cmd += " -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout;
+		// Proxy port.
+		proxy_port = conf->getValue("proxy_port");
+		if (proxy_port == "") {
+			proxy_port = "41121";
+		}
+
+		proxy_cmd = "tentacle_server.exe -b " + server_ip + " -g " + server_port + " -c " + proxy_max_connections + " -t " + proxy_timeout + " -a " + proxy_address + " -p " + proxy_port;
 
 		ZeroMemory (&si, sizeof (si));
 		ZeroMemory (&pi, sizeof (pi));
@@ -980,7 +1000,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 }
 
 int
-Pandora_Windows_Service::copyDataFile (string filename)
+Pandora_Windows_Service::copyDataFile (string filename, bool secondary_buffer)
 {
 	int rc = 0, timeout;
 	unsigned char copy_to_secondary = 0;
@@ -1020,19 +1040,18 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 	if (rc == 0) {
 		pandoraDebug ("Successfuly copied XML file to server.");
-	} else if (conf->getValue ("secondary_mode") == "on_error") {
-		copy_to_secondary = 1;
 	}
 	
-	if (conf->getValue ("secondary_mode") == "always") {
-		copy_to_secondary = 1;	
-	}
+	return rc;
+}
 
-	// Exit unless we have to send the file to a secondary server 
-	if (copy_to_secondary == 0) {
-		return rc;
-	}
-	
+int
+Pandora_Windows_Service::copyToSecondary (string filename, bool secondary_buffer)
+{
+	int rc = 0, timeout;
+	unsigned char copy_to_secondary = 0;
+	string mode, host, remote_path;
+
 	// Read secondary server configuration
 	mode = conf->getValue ("secondary_transfer_mode");
 	host = conf->getValue ("secondary_server_ip");
@@ -1040,6 +1059,12 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	timeout = atoi (conf->getValue ("secondary_transfer_timeout").c_str ());
 	if (timeout == 0) {
 		timeout = 30;
+	}
+
+	// Adjust the path for the secondary buffer.
+	if (secondary_buffer) {
+		filename.insert(0, "\\");
+		filename.insert(0, SECONDARY_DIR);
 	}
 
 	// Fix remote path
@@ -1061,7 +1086,7 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	} else {
 		rc = PANDORA_EXCEPTION;
 		pandoraLog ("Invalid transfer mode: %s."
-			    "Please recheck transfer_mode option "
+			    "Please recheck secondary_transfer_mode option "
 			    "in configuration file.");
 	}
 	
@@ -1670,11 +1695,12 @@ Pandora_Windows_Service::checkConfig (string file) {
 }
 
 int
-Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
-    int rc = 0, xml_buffer;
+Pandora_Windows_Service::sendXml (Pandora_Module_List *modules, string extra /* = ""*/) {
+    int rc = 0, rc_sec = 0, xml_buffer;
     string            data_xml;
 	string            xml_filename, random_integer;
 	string            tmp_filename, tmp_filepath;
+	string            secondary_filename, secondary_filepath;
 	string            encoding;
 	string            ehorus_conf, eh_key;
 	static HANDLE     mutex = 0; 
@@ -1750,10 +1776,13 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 			modules->goNext ();
 		}
 	}
-	
+
+	/* Write extra content (omnishell, for instance) */
+	data_xml += extra;
+
 	/* Close the XML header */
 	data_xml += "</agent_data>";
-	
+
 	/* Generate temporal filename */
 	random_integer = inttostr (rand());
 	tmp_filename = conf->getValue ("agent_name");
@@ -1779,8 +1808,19 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Allways reports to Data Server*/
 	rc = this->copyDataFile (tmp_filename);
+	if (rc != 0 && conf->getValue("secondary_mode") == "on_error") {
+		rc = this->copyToSecondary (tmp_filename, false);
+	} else if (conf->getValue("secondary_mode") == "always") {
+		rc_sec = this->copyToSecondary (tmp_filename, false);
+
+		/* Secondary buffer. */
+		if (rc_sec != 0 && xml_buffer == 1 && (GetDiskFreeSpaceEx (conf->getValue ("secondary_temporal").c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart >= min_free_bytes)) {
+			secondary_filepath = conf->getValue ("secondary_temporal") + "\\" + tmp_filename;
+			CopyFile (tmp_filepath.c_str(), secondary_filepath.c_str(), false);
+		}
+	}
         
-	/* Delete the file if successfully copied, buffer disabled or not enough space available */
+	/* Primary buffer. Delete the file if successfully copied, buffer disabled or not enough space available. */
 	if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
 		/* Rename the file if debug mode is enabled*/
 		if (getPandoraDebug ()) {
@@ -1793,17 +1833,27 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Send any buffered data files */
 	if (xml_buffer == 1) {
-		this->sendBufferedXml (conf->getValue ("temporal"));
+		this->sendBufferedXml (conf->getValue ("temporal"), &Pandora_Windows_Service::copyDataFile, false);
+		if (conf->getValue ("secondary_mode") == "always") {
+			this->sendBufferedXml (conf->getValue ("secondary_temporal"), &Pandora_Windows_Service::copyToSecondary, true);
+		} else {
+			this->sendBufferedXml (conf->getValue ("temporal"), &Pandora_Windows_Service::copyToSecondary, false);
+		}
 	}
 
 	ReleaseMutex (mutex);
 }
 
 void
-Pandora_Windows_Service::sendBufferedXml (string path) {
+Pandora_Windows_Service::sendBufferedXml (string path, copy_func_p copy_func, bool secondary_buffer) {
     string base_path = path, file_path;
     WIN32_FIND_DATA file_data;
     HANDLE find;
+
+	/* Nothing to do. */
+	if (path == "") {
+		return;
+	}
 
 	if (base_path[base_path.length () - 1] != '\\') {
 		base_path += "\\";
@@ -1817,7 +1867,7 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
     }
 
     /* Send data files as long as there are no errors */
-    if (this->copyDataFile (file_data.cFileName) != 0) {
+    if ((this->*copy_func) (file_data.cFileName, secondary_buffer) != 0) {
         FindClose(find);
         return;
     }
@@ -1832,7 +1882,7 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
     Pandora_File::removeFile (base_path + file_data.cFileName);
 
     while (FindNextFile(find, &file_data) != 0) {
-        if (this->copyDataFile (file_data.cFileName) != 0) {
+        if ((this->*copy_func) (file_data.cFileName, secondary_buffer) != 0) {
             FindClose(find);
             return;
         }
@@ -1962,7 +2012,7 @@ Pandora_Windows_Service::pandora_run () {
 void
 Pandora_Windows_Service::pandora_run (int forced_run) {
 	Pandora_Agent_Conf  *conf = NULL;
-	string server_addr, conf_file, *all_conf;
+	string server_addr, conf_file, *all_conf, omnishell_output, omnishell_path;
 	int startup_delay = 0;
 	int i, num;
 	static bool startup = true;
@@ -1998,6 +2048,15 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 		}
 		this->checkCollections ();
 	}
+
+	
+	/* Execute omnishell commands */
+	omnishell_path = '"'+Pandora::getPandoraInstallDir ();
+	omnishell_path += "util\\omnishell_client.exe\" \"" + conf_file+"\"";
+	if (getPandoraDebug () != false) {
+		pandoraLog ("Omnishell: Running");
+	}
+	omnishell_output = getValueFromCmdExec(omnishell_path.c_str(), 6000000);
 
 	server_addr = conf->getValue ("server_ip");
 
@@ -2070,7 +2129,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 				
 		// Send the XML
 		if (!server_addr.empty ()) {
-		  this->sendXml (this->modules);
+		  this->sendXml (this->modules, omnishell_output);
 		}
 	}
 	

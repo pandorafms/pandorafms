@@ -17,6 +17,9 @@
  * @param {function | null} onUpdate Callback which will be execuded when the Visual Console.
  * is updated. It will receive two arguments with the old and the new Visual Console's
  * data structure.
+ * @param {string|null} id_user User id given for public access.
+ * @param {string|null} hash Authorization hash given for public access.
+ *
  * @return {VisualConsole | null} The Visual Console instance or a null value.
  */
 // eslint-disable-next-line no-unused-vars
@@ -26,7 +29,11 @@ function createVisualConsole(
   items,
   baseUrl,
   updateInterval,
-  onUpdate
+  onUpdate,
+  beforeUpdate,
+  size,
+  id_user,
+  hash
 ) {
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
@@ -43,15 +50,33 @@ function createVisualConsole(
         var abortable = loadVisualConsoleData(
           baseUrl,
           visualConsoleId,
+          size,
+          id_user,
+          hash,
           function(error, data) {
             if (error) {
+              //Remove spinner change VC.
+              document
+                .getElementById("visual-console-container")
+                .classList.remove("is-updating");
+
+              var div = document
+                .getElementById("visual-console-container")
+                .querySelector(".div-visual-console-spinner");
+
+              if (div !== null) {
+                var parent = div.parentElement;
+                if (parent !== null) {
+                  parent.removeChild(div);
+                }
+              }
               console.log(
                 "[ERROR]",
                 "[VISUAL-CONSOLE-CLIENT]",
                 "[API]",
                 error.message
               );
-              done();
+              abortable.abort();
               return;
             }
 
@@ -67,18 +92,23 @@ function createVisualConsole(
                     ? JSON.parse(data.items)
                     : data.items;
 
-                // Add the datetime when the item was received.
                 var receivedAt = new Date();
-                items.map(function(item) {
-                  item["receivedAt"] = receivedAt;
-                  return item;
-                });
-
                 var prevProps = visualConsole.props;
-                // Update the data structure.
-                visualConsole.props = props;
-                // Update the items.
-                visualConsole.updateElements(items);
+                if (beforeUpdate) {
+                  beforeUpdate(items, visualConsole, props);
+                } else {
+                  // Add the datetime when the item was received.
+                  items.map(function(item) {
+                    item["receivedAt"] = receivedAt;
+                    return item;
+                  });
+
+                  // Update the data structure.
+                  visualConsole.props = props;
+                  // Update the items.
+                  visualConsole.updateElements(items);
+                }
+
                 // Emit the VC update event.
                 if (onUpdate) onUpdate(prevProps, visualConsole.props);
               } catch (ignored) {} // eslint-disable-line no-empty
@@ -163,13 +193,44 @@ function createVisualConsole(
       var item = e.item || {};
       var meta = item.meta || {};
 
-      if ((meta.editMode || meta.lineMode) && !meta.isUpdating) {
+      if (meta.editMode && !meta.isUpdating) {
         createOrUpdateVisualConsoleItem(
           visualConsole,
           asyncTaskManager,
           baseUrl,
           item
         );
+      } else if (meta.lineMode && item.props.type == 21) {
+        load_modal({
+          url: baseUrl + "/ajax.php",
+          modal: {
+            title: "NetworkLink information",
+            ok: "Ok"
+          },
+          extradata: [
+            {
+              name: "from",
+              value: item.props.linkedStart
+            },
+            {
+              name: "to",
+              value: item.props.linkedEnd
+            }
+          ],
+          onshow: {
+            page: "include/rest-api/index",
+            method: "networkLinkPopup"
+          }
+        });
+        // confirmDialog({
+        //   title: "todo",
+        //   message:
+        //     "<pre>" +
+        //     item.props.labelStart +
+        //     "</pre><br><pre>" +
+        //     item.props.labelEnd +
+        //     "</pre>"
+        // });
       }
     });
     // VC Item moved.
@@ -180,7 +241,7 @@ function createVisualConsole(
         y: e.newPosition.y,
         type: e.item.props.type
       };
-      if (e.item.props.type === 13) {
+      if (e.item.props.type === 13 || e.item.props.type === 21) {
         var startIsLeft =
           e.item.props.startPosition.x - e.item.props.endPosition.x <= 0;
         var startIsTop =
@@ -256,6 +317,7 @@ function createVisualConsole(
         endX: e.endPosition.x,
         endY: e.endPosition.y
       };
+
       var taskId = "visual-console-item-update-" + id;
 
       // Persist the new position.
@@ -267,18 +329,14 @@ function createVisualConsole(
             id,
             data,
             function(error, data) {
-              // if (!error && !data) return;
-              if (error || !data) {
-                console.log(
-                  "[ERROR]",
-                  "[VISUAL-CONSOLE-CLIENT]",
-                  "[API]",
-                  error ? error.message : "Invalid response"
-                );
+              if (!error && !data) return;
 
-                // TODO: Move the element to its initial position.
+              try {
+                var decoded_data = JSON.parse(data);
+                visualConsole.updateElement(decoded_data);
+              } catch (error) {
+                console.error(error);
               }
-
               done();
             }
           );
@@ -456,6 +514,9 @@ function createVisualConsole(
         case "COLOR_CLOUD":
           type = 20;
           break;
+        case "NETWORK_LINK":
+          type = 21;
+          break;
         default:
           type = 0;
       }
@@ -542,7 +603,7 @@ function createVisualConsole(
               item.setMeta({ isUpdating: false });
 
               var itemRetrieved = item.props;
-              if (itemRetrieved["type"] == 13) {
+              if (itemRetrieved["type"] == 13 || itemRetrieved["type"] == 21) {
                 var startIsLeft =
                   itemRetrieved["startPosition"]["x"] -
                     itemRetrieved["endPosition"]["x"] <=
@@ -597,6 +658,8 @@ function createVisualConsole(
  * Fetch a Visual Console's structure and its items.
  * @param {string} baseUrl Base URL to build the API path.
  * @param {number} vcId Identifier of the Visual Console.
+ * @param {string|null} id_user User id given for public access.
+ * @param {string|null} hash Authorization hash given for public access.
  * @param {function} callback Function to be executed on request success or fail.
  * On success, the function will receive an object with the next properties:
  * - `props`: object with the Visual Console's data structure.
@@ -604,7 +667,7 @@ function createVisualConsole(
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function loadVisualConsoleData(baseUrl, vcId, callback) {
+function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var vcJqXHR = null;
@@ -666,7 +729,9 @@ function loadVisualConsoleData(baseUrl, vcId, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsole: 1,
-        visualConsoleId: vcId
+        visualConsoleId: vcId,
+        id_user: typeof id_user == undefined ? id_user : null,
+        auth_hash: typeof hash == undefined ? hash : null
       },
       "json"
     )
@@ -680,7 +745,10 @@ function loadVisualConsoleData(baseUrl, vcId, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsoleItems: 1,
-        visualConsoleId: vcId
+        size: size,
+        visualConsoleId: vcId,
+        id_user: typeof id_user == undefined ? id_user : null,
+        auth_hash: typeof hash == undefined ? hash : null
       },
       "json"
     )
@@ -1155,6 +1223,9 @@ function createOrUpdateVisualConsoleItem(
     case 20:
       nameType = "Color Cloud";
       break;
+    case 21:
+      nameType = "Network Link";
+      break;
 
     default:
       nameType = "Static graph";
@@ -1235,7 +1306,8 @@ function createOrUpdateVisualConsoleItem(
           tinyMCE != undefined &&
           tinyMCE.editors.length > 0 &&
           item.itemProps.type != 12 &&
-          item.itemProps.type != 13
+          item.itemProps.type != 13 &&
+          item.itemProps.type != 21
         ) {
           // Content tiny.
           var label = tinyMCE.activeEditor.getContent();

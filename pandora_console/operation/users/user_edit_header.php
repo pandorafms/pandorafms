@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,9 +85,12 @@ if (is_metaconsole()) {
         'main'          => [
             'active' => $_GET['sec2'] === 'operation/users/user_edit',
             'text'   => "<a href='{$urls['main']}'>".html_print_image(
-                'images/user_green.png',
+                'images/user.png',
                 true,
-                ['title' => __('User management')]
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ],
         'notifications' => [
@@ -95,7 +98,10 @@ if (is_metaconsole()) {
             'text'   => "<a href='{$urls['notifications']}'>".html_print_image(
                 'images/alerts_template.png',
                 true,
-                ['title' => __('User notifications')]
+                [
+                    'title' => __('User notifications'),
+                    'class' => 'invert_filter',
+                ]
             ).'</a>',
         ],
     ];
@@ -107,17 +113,23 @@ if (is_metaconsole()) {
         $tab_name = 'User Notifications';
     }
 
-    ui_print_page_header(
-        __('User detail editor'),
-        'images/op_workspace.png',
+    // Header.
+    ui_print_standard_header(
+        $headerTitle,
+        'images/user.png',
         false,
         $helpers,
         false,
         $buttons,
-        false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        __('Workspace').ui_print_breadcrums($tab_name)
+        [
+            [
+                'link'  => '',
+                'label' => __('Workspace'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Edit user'),
+            ],
+        ]
     );
 }

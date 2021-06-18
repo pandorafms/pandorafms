@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -371,18 +371,54 @@ if ($items) {
     $table->head[0] = '<span title="'.__('Position').'">'.__('P.').'</span>';
     $table->head[1] = __('Type');
     if (!$filterEnable) {
-        $table->head[1] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
+        $table->head[1] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_up,
+            true,
+            [
+                'title' => __('Ascendent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_down,
+            true,
+            [
+                'title' => __('Descent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a></span>';
     }
 
     $table->head[2] = __('Agent');
     if (!$filterEnable) {
-        $table->head[2] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
+        $table->head[2] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_up,
+            true,
+            [
+                'title' => __('Ascendent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_down,
+            true,
+            [
+                'title' => __('Descent'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a></span>';
     }
 
     $table->head[3] = __('Module');
 
     if (!$filterEnable) {
-        $table->head[3] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_up, true, ['title' => __('Ascendent')]).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image($arrow_down, true, ['title' => __('Descent')]).'</a></span>';
+        $table->head[3] .= ' <span class="sort_arrow"><a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_up,
+            true,
+            ['title' => __('Ascendent')]
+        ).'</a>'.'<a onclick="return message_check_sort_items();" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report='.$idReport.$urlFilter.'&pure='.$config['pure'].'">'.html_print_image(
+            $arrow_down,
+            true,
+            ['title' => __('Descent')]
+        ).'</a></span>';
     }
 
     $table->head[4] = __('Time lapse');
@@ -455,7 +491,7 @@ foreach ($items as $item) {
 
     if ($item['type'] == 'custom_graph') {
         $custom_graph_name = db_get_row_sql('SELECT name FROM tgraph WHERE id_graph = '.$item['id_gs']);
-        $row[1] = get_report_name($item['type']).' ('.$custom_graph_name['name'].')';
+        $row[1] = get_report_name($item['type']).' ('.io_safe_output($custom_graph_name['name']).')';
     }
 
 
@@ -471,7 +507,7 @@ foreach ($items as $item) {
             if ($is_inventory_item) {
                 $external_source = json_decode($item['external_source'], true);
                 $agents = $external_source['id_agents'];
-                $modules = $external_source['inventory_modules'];
+                $modules = io_safe_output($external_source['inventory_modules']);
 
                 $agent_name_db = [];
                 foreach ($agents as $a) {
@@ -515,27 +551,92 @@ foreach ($items as $item) {
 
     $style = json_decode(io_safe_output($item['style']), true);
 
+
+    // Macros
+    $items_macro = [];
+
+    if (!empty($item['id_agent'])) {
+        $id_agent = $item['id_agent'];
+        // Add macros name.
+        $agent_description = agents_get_description($id_agent);
+        $agent_group = agents_get_agent_group($id_agent);
+        $agent_address = agents_get_address($id_agent);
+        $agent_alias = agents_get_alias($id_agent);
+
+        $items_macro_agent = [
+            'id_agent'          => $id_agent,
+            'agent_description' => $agent_description,
+            'agent_group'       => $agent_group,
+            'agent_address'     => $agent_address,
+            'agent_alias'       => $agent_alias,
+        ];
+
+        $items_macro = array_merge($items_macro, $items_macro_agent);
+    }
+
+    if (!empty($item['id_agent_module'])) {
+        $id_agent_module = $item['id_agent_module'];
+        $module_name = modules_get_agentmodule_name(
+            $id_agent_module
+        );
+        $module_description = modules_get_agentmodule_descripcion(
+            $id_agent_module
+        );
+
+        $items_macro_module = [
+            'id_agent_module'    => $id_agent_module,
+            'module_name'        => $module_name,
+            'module_description' => $module_description,
+        ];
+
+        $items_macro = array_merge($items_macro, $items_macro_module);
+    }
+
+
+
     if ($style['name_label'] != '') {
         $text = empty($style['name_label']) ? $item['description'] : $style['name_label'];
-        $row[5] = ui_print_truncate_text($text, 'description', true, true);
     } else {
         if ($item['name'] == '' && $item['description'] == '') {
-            $row[5] = '-';
+            $text = '-';
         } else {
             $text = empty($item['name']) ? $item['description'] : $item['name'];
-            $row[5] = ui_print_truncate_text($text, 'description', true, true);
         }
     }
+
+        // Apply macros
+        $items_macro['type'] = $item['type'];
+        $text = reporting_label_macro(
+            $items_macro,
+            $text
+        );
+    $row[5] = ui_print_truncate_text($text, 'description', true, true);
+
 
     $row[6] = '';
 
     if (check_acl($config['id_user'], $item['id_group'], 'RM')) {
         $table->cellclass[][6] = 'action_buttons';
-        $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image('images/wrench_orange.png', true, ['title' => __('Edit')]).'</a>';
+        $row[6] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report='.$idReport.'&id_item='.$item['id_rc'].'">'.html_print_image(
+            'images/config.png',
+            true,
+            [
+                'title' => __('Edit'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
         $row[6] .= '&nbsp;';
-        $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete')]).'</a>';
+        $row[6] .= '<a  onClick="if (!confirm (\'Are you sure?\')) return false;" href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete&id_report='.$idReport.'&id_item='.$item['id_rc'].$urlFilter.'">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         $row[6] .= '&nbsp;';
-        $row[6] .= html_print_checkbox_extended('delete_multiple[]', $item['id_rc'], false, false, '', 'class="check_delete"', true);
+        $row[6] .= html_print_checkbox_extended(
+            'delete_multiple[]',
+            $item['id_rc'],
+            false,
+            false,
+            '',
+            'class="check_delete"',
+            true
+        );
     }
 
     $row[7] = '';
@@ -559,11 +660,11 @@ if (defined('METACONSOLE')) {
         ui_pagination($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report='.$idReport.$urlFilter);
         echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=".$idReport."'
 		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-            echo "<div style='text-align: right; width:100%'>";
+            echo "<div class='right w100p'>";
 
         if (check_acl($config['id_user'], 0, 'RM')) {
             html_print_input_hidden('ids_items_to_delete', '');
-            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px"');
         }
 
             echo '</div>';
@@ -583,10 +684,10 @@ if (defined('METACONSOLE')) {
 
         echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=".$idReport."'
 			method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-            echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+            echo "<div class='pdd_b_20px right; w100p'>";
 
             html_print_input_hidden('ids_items_to_delete', '');
-            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+            html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete right mrgn_btn_15px"');
             echo '</div>';
         echo '</form>';
     }
@@ -708,11 +809,11 @@ function check_all_checkboxes() {
 
 function toggleFormFilter() {
     if ($("#form_filter").css('display') == 'none') {
-        $("#image_form_filter").attr('src', <?php echo "'".html_print_image('images/up.png', true, false, true)."'"; ?> );
+        $("#image_form_filter").attr('src', <?php echo "'".html_print_image('images/up.png', true, ['class' => 'invert_filter'], true)."'"; ?> );
         $("#form_filter").css('display','');
     }
     else {
-        $("#image_form_filter").attr('src', <?php echo "'".html_print_image('images/down.png', true, false, true)."'"; ?> );
+        $("#image_form_filter").attr('src', <?php echo "'".html_print_image('images/down.png', true, ['class' => 'invert_filter'], true)."'"; ?> );
         $("#form_filter").css('display','none');
     }
 }

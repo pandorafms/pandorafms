@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -173,12 +173,21 @@ function alerts_get_event_status_group($idGroup, $type='alert_fired', $query='AN
         $idAgents = array_values($agents);
     }
 
-    $result = db_get_all_rows_sql(
+    $sql = sprintf(
         'SELECT id_evento
-		FROM tevento
-		WHERE estado = 0 AND id_agente IN (0,'.implode(',', $idAgents).') '.$typeWhere.$query.'
-		ORDER BY id_evento DESC LIMIT 1'
+        FROM tevento
+        WHERE estado = 0
+            AND id_agente IN (0, %s)
+            %s
+            %s
+        ORDER BY id_evento DESC
+        LIMIT 1',
+        implode(',', $idAgents),
+        $typeWhere,
+        $query
     );
+
+    $result = db_get_all_rows_sql($sql);
 
     if ($result === false) {
         return false;
@@ -439,10 +448,11 @@ function alerts_delete_alert_action($id_alert_action)
  * Clone an alert action.
  *
  * @param int Id of the original alert action
+ * @param int Agent group id if it wants to be changed when clone.
  *
  * @return mixed Id of the cloned action or false in case of fail.
  */
-function alerts_clone_alert_action($id_alert_action)
+function alerts_clone_alert_action($id_alert_action, $id_group)
 {
     $id_alert_action = safe_int($id_alert_action, 1);
     if (empty($id_alert_action)) {
@@ -453,6 +463,10 @@ function alerts_clone_alert_action($id_alert_action)
 
     if (empty($action)) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $action['id_group'] = $id_group;
     }
 
     unset($action['id']);
@@ -1121,15 +1135,20 @@ function alerts_get_alert_template_field3_recovery($id_alert_template)
  * Duplicates an alert template.
  *
  * @param int Id of an alert template.
+ * @param int Agent group id if it wants to be changed when duplicate.
  *
  * @return mixed Duplicates an alert template or false if something goes wrong.
  */
-function alerts_duplicate_alert_template($id_alert_template)
+function alerts_duplicate_alert_template($id_alert_template, $id_group)
 {
     $template = alerts_get_alert_template($id_alert_template);
 
     if ($template === false) {
         return false;
+    }
+
+    if ($id_group != '') {
+        $template['id_group'] = $id_group;
     }
 
     $name = io_safe_input(__('Copy of').' ').$template['name'];
@@ -2142,8 +2161,12 @@ function get_group_alerts(
             $filter .= ' AND talert_template_modules.disabled = 0';
         break;
 
-        default:
+        case 'all':
             $filter .= '';
+        break;
+
+        default:
+            $filter .= ' AND talert_template_modules.disabled = 0 ';
         break;
     }
 
@@ -2181,16 +2204,17 @@ function get_group_alerts(
                 if (empty($id_group)) {
                     $subQuery = 'SELECT id_agente_modulo
 						FROM tagente_modulo
-						WHERE 1 = 0';
+                        WHERE 1 = 0';
                 } else {
                     $subQuery = 'SELECT id_agente_modulo
-						FROM tagente_modulo
-						WHERE delete_pending = 0
+						FROM tagente_modulo tam
+						WHERE delete_pending = 0 AND tam.disabled = 0
 							AND id_agente IN (SELECT id_agente
 								FROM tagente ta
 								LEFT JOIN tagent_secondary_group tasg
 									ON ta.id_agente = tasg.id_agent
-								WHERE
+								WHERE ta.disabled = 0
+                                    AND
 										id_grupo IN ('.implode(',', $id_group).')
 										OR id_group IN ('.implode(',', $id_group).'))';
                 }
@@ -2199,7 +2223,7 @@ function get_group_alerts(
 					FROM tagente_modulo
 					WHERE delete_pending = 0
 						AND id_agente IN (SELECT id_agente
-							FROM tagente WHERE id_grupo = '.$idGroup.')';
+							FROM tagente WHERE id_grupo = '.$idGroup.' AND tagente.disabled = 0)';
             }
         } else {
             // ALL GROUP
@@ -2731,7 +2755,7 @@ function alerts_ui_update_or_create_actions($update=true)
         $al_action = alerts_get_alert_action($id);
         if ($al_action !== false) {
             if ($al_action['id_group'] == 0) {
-                if (! check_acl($config['id_user'], 0, 'PM')) {
+                if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
                         'ACL Violation',
                         'Trying to access Alert Management'
@@ -2747,6 +2771,7 @@ function alerts_ui_update_or_create_actions($update=true)
     $id_alert_command = (int) get_parameter('id_command');
     $group = get_parameter('group');
     $action_threshold = (int) get_parameter('action_threshold');
+    $create_wu_integria = (int) get_parameter('create_wu_integria');
 
     // Validate some values
     if (!$id_alert_command) {
@@ -2769,17 +2794,44 @@ function alerts_ui_update_or_create_actions($update=true)
     $info_fields = '';
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
-        $values['field'.$i] = (string) get_parameter('field'.$i.'_value');
+        $field_value = get_parameter('field'.$i.'_value');
+
+        if (is_array($field_value)) {
+            $field_value = reset(array_filter($field_value));
+
+            if ($field_value === false) {
+                $field_value = '';
+            }
+        }
+
+        $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
-        $values['field'.$i.'_recovery'] = (string) get_parameter('field'.$i.'_recovery_value');
+
+        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+
+        if (is_array($field_recovery_value)) {
+            $field_recovery_value = reset(array_filter($field_recovery_value));
+
+            if ($field_recovery_value === false) {
+                $field_recovery_value = '';
+            }
+        }
+
+        $values['field'.$i.'_recovery'] = (string) $field_recovery_value;
         $info_fields .= ' Field'.$i.'Recovery: '.$values['field'.$i.'_recovery'];
     }
 
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
+    $values['create_wu_integria'] = $create_wu_integria;
     if ($update) {
         $values['name'] = $name;
         $values['id_alert_command'] = $id_alert_command;
+        // Only for Metaconsole, save the previous name for synchronization.
+        if (is_metaconsole()) {
+            $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
+        }
+
         $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
     } else {
         $name_check = db_get_value('name', 'talert_actions', 'name', $name);
@@ -2824,4 +2876,75 @@ function alerts_ui_update_or_create_actions($update=true)
         $update ? __('Successfully updated') : __('Successfully created'),
         $update ? __('Could not be updated') : __('Could not be created')
     );
+}
+
+
+/**
+ * Retrieve all agent_modules with configured alerts filtered by group.
+ *
+ * @param integer|null $id_grupo  Filter by group.
+ * @param boolean      $recursion Filter by group recursive.
+ *
+ * @return array With agent module ids.
+ */
+function alerts_get_agent_modules(
+    ?int $id_grupo,
+    bool $recursion=false
+) : array {
+    if ($id_grupo === null) {
+        $agent_modules = db_get_all_rows_sql(
+            'SELECT distinct(atm.id_agent_module)
+             FROM talert_template_modules atm
+             INNER JOIN tagente_modulo am
+                ON am.id_agente_modulo = atm.id_agent_module
+             WHERE atm.disabled = 0'
+        );
+    } else if ($recursion !== true) {
+        $sql = sprintf(
+            'SELECT distinct(atm.id_agent_module)
+                FROM talert_template_modules atm
+                INNER JOIN tagente_modulo am
+                ON am.id_agente_modulo = atm.id_agent_module
+                INNER JOIN tagente ta
+                ON am.id_agente = ta.id_agente
+                LEFT JOIN tagent_secondary_group tasg
+                ON tasg.id_agent = ta.id_agente
+                WHERE atm.disabled = 0
+                AND (tasg.id_group = %d
+                OR ta.id_grupo = %d)
+            ',
+            $id_grupo,
+            $id_grupo
+        );
+        $agent_modules = db_get_all_rows_sql($sql);
+    } else {
+        $groups = groups_get_children_ids($id_grupo, true);
+        if (empty($groups) === false) {
+            $sql = sprintf(
+                'SELECT distinct(atm.id_agent_module)
+                    FROM talert_template_modules atm
+                    INNER JOIN tagente_modulo am
+                    ON am.id_agente_modulo = atm.id_agent_module
+                    INNER JOIN tagente ta
+                    ON am.id_agente = ta.id_agente
+                    LEFT JOIN tagent_secondary_group tasg
+                    ON tasg.id_agent = ta.id_agente
+                    WHERE atm.disabled = 0
+                    AND (tasg.id_group IN (%s)
+                    OR ta.id_grupo IN (%s))
+                ',
+                implode(',', $groups),
+                implode(',', $groups)
+            );
+        }
+
+        $agent_modules = db_get_all_rows_sql($sql);
+    }
+
+    if ($agent_modules === false) {
+        return [];
+    }
+
+    return $agent_modules;
+
 }

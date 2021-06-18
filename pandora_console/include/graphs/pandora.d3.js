@@ -1,6 +1,6 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -1005,7 +1005,8 @@ function createGauge(
   critical_inverse,
   font_size,
   height,
-  font
+  font,
+  transitionDuration
 ) {
   var gauges;
 
@@ -1014,7 +1015,8 @@ function createGauge(
     label: etiqueta,
     min: undefined != min ? min : 0,
     max: undefined != max ? max : 100,
-    font_size: font_size
+    font_size: font_size,
+    transitionDuration: transitionDuration
   };
 
   if (value == null) {
@@ -1128,7 +1130,7 @@ function createGauge(
 
   gauges = new Gauge(name, config, font);
   gauges.render();
-  gauges.redraw(value);
+  gauges.redraw(value, config.transitionDuration);
   $(".gauge>text").each(function() {
     label = $(this).text();
 
@@ -1155,12 +1157,17 @@ function createGauge(
       $(this).text(text);
     }
   });
-  config = false;
-  max_warning2 = false;
-  min_warning2 = false;
 }
 
-function createGauges(data, width, height, font_size, no_data_image, font) {
+function createGauges(
+  data,
+  width,
+  height,
+  font_size,
+  no_data_image,
+  font,
+  transitionDuration
+) {
   var nombre,
     label,
     minimun_warning,
@@ -1211,7 +1218,8 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
       critical_inverse,
       font_size,
       height,
-      font
+      font,
+      transitionDuration
     );
   }
 }
@@ -1247,7 +1255,7 @@ function Gauge(placeholderName, configuration, font) {
     this.config.yellowColor = configuration.yellowColor || "#FF9900";
     this.config.redColor = configuration.redColor || "#DC3912";
 
-    this.config.transitionDuration = configuration.transitionDuration || 500;
+    this.config.transitionDuration = configuration.transitionDuration;
   };
 
   this.render = function() {
@@ -1481,11 +1489,7 @@ function Gauge(placeholderName, configuration, font) {
     var pointer = pointerContainer.selectAll("path");
     pointer
       .transition()
-      .duration(
-        undefined != transitionDuration
-          ? transitionDuration
-          : this.config.transitionDuration
-      )
+      .duration(undefined != transitionDuration ? transitionDuration : 0)
       //.delay(0)
       //.ease("linear")
       //.attr("transform", function(d)
@@ -1543,21 +1547,19 @@ function Gauge(placeholderName, configuration, font) {
   this.configure(configuration);
 }
 
-function print_phases_donut(recipient, phases) {
+function print_phases_donut(recipient, phases, width, height) {
   var svg = d3
     .select(recipient)
     .append("svg")
-    .attr("width", 800)
-    .attr("height", 500)
+    .attr("width", width)
+    .attr("height", height)
     .append("g");
 
   svg.append("g").attr("class", "slices");
   svg.append("g").attr("class", "labels");
   svg.append("g").attr("class", "lines");
 
-  var width = 550,
-    height = 300,
-    radius = Math.min(width, height) / 2;
+  var radius = Math.min(width, height) / 2 - 50;
 
   var pie = d3.layout
     .pie()
@@ -1576,8 +1578,6 @@ function print_phases_donut(recipient, phases) {
     .innerRadius(radius * 0.9)
     .outerRadius(radius * 0.9);
 
-  width = 800;
-  height = 500;
   svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   var key = function(d) {
@@ -1651,7 +1651,6 @@ function print_phases_donut(recipient, phases) {
       .text(function(d) {
         return d.data.label;
       })
-      .style("font-family", "Verdana")
       .style("font-size", "15px")
       .append("tspan")
       .attr("dy", "1.2em")
@@ -1659,7 +1658,6 @@ function print_phases_donut(recipient, phases) {
       .text(function(d) {
         return d.data.label2 + "ms";
       })
-      .style("font-family", "Verdana")
       .style("font-size", "15px");
 
     function midAngle(d) {
@@ -1816,7 +1814,6 @@ function progress_bar_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", 20)
     .html(label)
@@ -1827,7 +1824,6 @@ function progress_bar_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", "#FFFFFF")
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", 14)
     .attr("text-anchor", "middle")
@@ -1938,7 +1934,6 @@ function progress_bubble_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -1949,7 +1944,6 @@ function progress_bubble_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2080,7 +2074,6 @@ function print_circular_progress_bar(
   var labelText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -2090,7 +2083,6 @@ function print_circular_progress_bar(
   var numberText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2099,7 +2091,6 @@ function print_circular_progress_bar(
   var percentText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)
@@ -2249,7 +2240,6 @@ function print_interior_circular_progress_bar(
   var labelText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -2259,7 +2249,6 @@ function print_interior_circular_progress_bar(
   var numberText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2268,7 +2257,6 @@ function print_interior_circular_progress_bar(
   var percentText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)
@@ -2355,7 +2343,6 @@ function print_donut_graph(
       .attr("x", 15)
       .attr("y", 10)
       .text(m_d.tag_name)
-      .style("font-family", "smallfontFont")
       .style("font-size", "7pt");
   });
 
@@ -2486,6 +2473,7 @@ function printClockAnalogic1(
     var face = svg
       .append("g")
       .attr("id", "clock-face")
+      .attr("class", "invert_filter")
       .attr(
         "transform",
         "translate(" +
@@ -2646,6 +2634,8 @@ function printClockDigital1(
     svg = d3.selectAll("#clock_" + id_element + " svg");
 
   svgUnderlay.attr("id", "underlay_" + id_element);
+  svgUnderlay.attr("class", "invert_filter");
+
   svgOverlay.attr("id", "overlay_" + id_element);
 
   var digit = svg.selectAll(".digit"),

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ namespace PandoraFMS;
 /**
  * Object user.
  */
-class User
+class User implements PublicLogin
 {
 
     /**
@@ -53,11 +53,11 @@ class User
     /**
      * Initializes a user object.
      *
-     * @param array $data User information
+     * @param array|null $data User information.
      * - Username
      * - PHP session ID.
      */
-    public function __construct($data)
+    public function __construct(?array $data)
     {
         global $config;
 
@@ -88,17 +88,20 @@ class User
             if (isset($data['id_usuario']) === true
                 && isset($data['password']) === true
             ) {
-                $user_in_db = process_user_login($user, $password, true);
+                $user_in_db = process_user_login(
+                    $data['id_usuario'],
+                    $data['password'],
+                    true
+                );
                 if ($user_in_db !== false) {
                     $config['id_usuario'] = $user_in_db;
-                    $correctLogin = true;
 
                     // Originally at api.php.
                     if (session_status() === PHP_SESSION_NONE) {
                         session_start();
                     }
 
-                    $_SESSION['id_usuario'] = $user;
+                    $_SESSION['id_usuario'] = $data['id_usuario'];
                     session_write_close();
 
                     $this->idUser = $data['id_usuario'];
@@ -110,6 +113,83 @@ class User
 
         return null;
 
+    }
+
+
+    /**
+     * Generates a hash to authenticate in public views.
+     *
+     * @param string|null $other_secret If you need to authenticate using a
+     * varable string, use this 'other_secret' to customize the hash.
+     *
+     * @return string Returns a hash with the authenticaction.
+     */
+    public static function generatePublicHash(?string $other_secret=''):string
+    {
+        global $config;
+
+        $str = $config['dbpass'];
+        $str .= $config['id_user'];
+        $str .= $other_secret;
+        return hash('sha256', $str);
+    }
+
+
+    /**
+     * Validates a hash to authenticate in public view.
+     *
+     * @param string $hash         Hash to be checked.
+     * @param string $other_secret Any custom string needed for you.
+     *
+     * @return boolean Returns true if hash is valid.
+     */
+    public static function validatePublicHash(
+        string $hash,
+        string $other_secret=''
+    ):bool {
+        global $config;
+
+        if (isset($config['id_user']) === true) {
+            // Already logged in.
+            return true;
+        }
+
+        $userFromParams = false;
+        // Try to get id_user from parameters if it is missing.
+        if (isset($config['id_user']) === false) {
+            $userFromParams = true;
+            $config['id_user'] = get_parameter('id_user', false);
+            // It is impossible to authenticate without an id user.
+            if ($config['id_user'] === false) {
+                unset($config['id_user']);
+                return false;
+            }
+        } else {
+            $config['public_access'] = false;
+        }
+
+        // Build a hash to check.
+        $hashCheck = self::generatePublicHash($other_secret);
+        if ($hashCheck === $hash) {
+            // "Log" user in.
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+
+            $_SESSION['id_usuario'] = $config['id_user'];
+            session_write_close();
+
+            $config['public_access'] = true;
+            $config['force_instant_logout'] = true;
+            return true;
+        }
+
+        // Remove id user from config array if authentication has failed.
+        if ($userFromParams === true) {
+            unset($config['id_user']);
+        }
+
+        return false;
     }
 
 

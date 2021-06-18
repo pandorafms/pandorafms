@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ if ($default != 0) {
         'value' => $status_monitor_fields,
     ];
 
-    // update 'status_monitor_fields' in tconfig table to keep the value at update.
+    // Update 'status_monitor_fields' in tconfig table to keep the value at update.
     $result = db_process_sql_update(
         'tconfig',
         $values,
@@ -65,7 +65,7 @@ $fields_selected = explode(',', $config['status_monitor_fields']);
 
 $result_selected = [];
 
-// show list of fields selected.
+// Show list of fields selected.
 if ($fields_selected[0] != '') {
     foreach ($fields_selected as $field_selected) {
         switch ($field_selected) {
@@ -97,6 +97,10 @@ if ($fields_selected[0] != '') {
                 $result = __('Status');
             break;
 
+            case 'last_status_change':
+                $result = __('Last status change');
+            break;
+
             case 'graph':
                 $result = __('Graph');
             break;
@@ -111,10 +115,6 @@ if ($fields_selected[0] != '') {
 
             case 'timestamp':
                 $result = __('Timestamp');
-            break;
-
-            case 'to_critical':
-                $result = __('Last status change');
             break;
         }
 
@@ -146,11 +146,11 @@ $fields_available['module_name'] = __('Module name');
 $fields_available['server_type'] = __('Server type');
 $fields_available['interval'] = __('Interval');
 $fields_available['status'] = __('Status');
+$fields_available['last_status_change'] = __('Last status change');
 $fields_available['graph'] = __('Graph');
 $fields_available['warn'] = __('Warn');
 $fields_available['data'] = __('Data');
 $fields_available['timestamp'] = __('Timestamp');
-$fields_available['to_critical'] = __('Last status change');
 
 // remove fields already selected
 foreach ($fields_available as $key => $available) {
@@ -169,6 +169,7 @@ $table->data[1][1] = '<a href="javascript:">'.html_print_image(
     [
         'id'    => 'right',
         'title' => __('Add fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
@@ -177,6 +178,7 @@ $table->data[1][1] .= '<br><br><br><br><a href="javascript:">'.html_print_image(
     [
         'id'    => 'left',
         'title' => __('Delete fields to select'),
+        'class' => 'invert_filter',
     ]
 ).'</a>';
 

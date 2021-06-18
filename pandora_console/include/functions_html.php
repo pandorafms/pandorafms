@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -77,7 +77,7 @@ function html_debug_print($var, $file='', $oneline=false)
         fprintf($f, '%s', $output);
         fclose($f);
     } else {
-        echo '<pre style="z-index: 10000; background: #fff; padding: 1em;">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
+        echo '<pre class="bg_white pdd_1em zindex10000">'.date('Y/m/d H:i:s').' ('.gettype($var).') '.$more_info."\n";
         print_r($var);
         echo '</pre>';
     }
@@ -214,7 +214,7 @@ function html_print_side_layer($params)
         break;
     }
 
-    $out_html = '<div id="side_layer" class="menu_sidebar '.$round_class.'" style="display:none; z-index:1; overflow: hidden; height: '.$params['height'].'; width: '.$params['width'].';">';
+    $out_html = '<div id="side_layer" class="menu_sidebar invisible overflow_hidden'.$round_class.'" style=" z-index:1; height: '.$params['height'].'; width: '.$params['width'].';">';
 
     $table = new stdClass();
     $table->id = 'side_layer_layout';
@@ -223,9 +223,9 @@ function html_print_side_layer($params)
     $table->cellpadding = 2;
     $table->class = 'none';
 
-    $top = '<div id="side_top_text" style="width: 100%";">'.$params['top_text'].'</div>';
+    $top = '<div id="side_top_text" class="w100p">'.$params['top_text'].'</div>';
 
-    $button = '<div id="show_menu" style="vertical-align: middle; position: relative; width: '.$params['icon_width'].'px;  padding-right: 17px; text-align: right; height: '.$params['icon_height'].'px;">';
+    $button = '<div id="show_menu" class="vertical_middle relative right pdd_r_17px" style="width: '.$params['icon_width'].'px; height: '.$params['icon_height'].'px;">';
     // Use the no_meta parameter because this image is only in the base console
     $button .= html_print_image(
         $params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'],
@@ -237,7 +237,7 @@ function html_print_side_layer($params)
     );
     $button .= '</div>';
 
-    $body = '<div id="side_body_text" style="width: 100%;">'.$params['body_text'].'</div>';
+    $body = '<div id="side_body_text" class="w100p">'.$params['body_text'].'</div>';
 
     $bottom = '<div id="side_bottom_text" style="text-align: '.$params['position'].';">'.$params['bottom_text'].'</div>';
 
@@ -410,25 +410,32 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
 
 
 /**
- * Prints the groups of user of fields in a popup menu of a form.
+ * Print or return selector for groups.
  *
- * @param string User id
- * @param string The privilege to evaluate
- * @param boolean                                                                                 $returnAllGroup   Flag the return group, by default true.
- * @param boolean                                                                                 $returnAllColumns Flag to return all columns of groups.
- * @param array Array with dropdown values. Example: $fields["value"] = "label"
- * @param string Select form name
- * @param variant Current selected value. Can be a single value or an
- *        array of selected values (in combination with multiple)
- * @param string Javascript onChange code.
- * @param string Label when nothing is selected.
- * @param variant Value when nothing is selected
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Set the input to allow multiple selections (optional, single selection by default).
- * @param bool Whether to sort the options or not (optional, unsorted by default).
- * @param string                                                                                  $style            The string of style.
- * @param integer                                                                                 $id_group         The id of node that must do not show the children and own.
- * @param string                                                                                  $keys_field       The field of the group used in the array keys. By default ID
+ * @param string  $id_user                 User id.
+ * @param string  $privilege               The privilege to evaluate.
+ * @param boolean $returnAllGroup          Flag the return group, (true).
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param integer $id_group                Exclude group branch from id_group.
+ * @param string  $keys_field              Field to be used as array key, (id).
+ * @param boolean $strict_user             Strict.
+ * @param array   $delete_groups           Remove groups from select.
+ * @param array   $include_groups          Add groups to select.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -436,14 +443,14 @@ function html_print_select_groups(
     $id_user=false,
     $privilege='AR',
     $returnAllGroup=true,
-    $name,
+    $name=null,
     $selected='',
     $script='',
     $nothing='',
     $nothing_value=0,
     $return=false,
     $multiple=false,
-    $sort=true,
+    $sort=false,
     $class='',
     $disabled=false,
     $style=false,
@@ -454,39 +461,99 @@ function html_print_select_groups(
     $delete_groups=false,
     $include_groups=false,
     $size=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false
 ) {
+    $output = '';
+
     global $config;
+    $select2_css = 'select2.min';
 
-    $fields = users_get_groups_for_select(
-        $id_user,
-        $privilege,
-        $returnAllGroup,
-        true,
-        $id_group,
-        $keys_field
-    );
+    if ($config['style'] === 'pandora_black') {
+        $select2_css = 'select2_dark.min';
+    }
 
-    if ($delete_groups && is_array($delete_groups)) {
-        foreach ($delete_groups as $value) {
-            unset($fields[$value]);
+    if (is_ajax()) {
+        $output .= '<script src="';
+        $output .= ui_get_full_url(
+            'include/javascript/select2.min.js',
+            false,
+            false,
+            false
+        );
+        $output .= '" type="text/javascript"></script>';
+
+        $output .= '<link rel="stylesheet" href="';
+        $output .= ui_get_full_url(
+            'include/styles/'.$select2_css.'.css',
+            false,
+            false,
+            false
+        );
+        $output .= '"/>';
+    } else {
+        ui_require_css_file($select2_css);
+        ui_require_javascript_file('select2.min');
+    }
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'group_select'.$idcounter[$name];
+    }
+
+    if ($id_group !== false) {
+        $children = groups_get_children($id_group);
+        foreach ($children as $child) {
+            $delete_groups[] = $child['id_grupo'];
+        }
+
+        $delete_groups[] = $id_group;
+    }
+
+    $fields = [];
+    // Preload selector.
+    if (is_array($selected) === false) {
+        if (empty($selected) === false) {
+            $fields = [ $selected => groups_get_name($selected) ];
+        } else if ($returnAllGroup === true && $multiple === false) {
+            $fields = [ $selected => groups_get_name(null, true) ];
+        }
+    } else {
+        foreach ($selected as $k) {
+            if ($k === null || $k === '') {
+                continue;
+            }
+
+            $fields[$k] = groups_get_name($k, $returnAllGroup);
+        }
+
+        if (empty($fields) === true && $returnAllGroup) {
+            $fields[0] = groups_get_name(null, true);
         }
     }
 
-    if (is_array($include_groups)) {
-        $field = [];
-        foreach ($include_groups as $value) {
-            $field[$value] = $fields[$value];
-        }
-
-        $fields = array_intersect($fields, $field);
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+        $include_groups[$nothing_value] = $nothing;
     }
 
-    if ($strict_user) {
-        $fields = users_get_strict_mode_groups($config['id_user'], $returnAllGroup);
+    $json_exclusions = '';
+    $json_inclusions = '';
+    if (is_array($delete_groups) === true) {
+        $json_exclusions = json_encode($delete_groups);
     }
 
-    $output = html_print_select(
+    if (is_array($include_groups) === true) {
+        $json_inclusions = json_encode($include_groups);
+    }
+
+    $output .= html_print_select(
         $fields,
         $name,
         $selected,
@@ -495,7 +562,7 @@ function html_print_select_groups(
         $nothing_value,
         $return,
         $multiple,
-        false,
+        $sort,
         $class,
         $disabled,
         $style,
@@ -504,8 +571,104 @@ function html_print_select_groups(
         false,
         '',
         false,
-        $simple_multiple_options
+        $simple_multiple_options,
+        $required
     );
+
+    if ($required !== false) {
+        $require_message = __('Please select an item from this list.');
+    }
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        },
+                        ajax: {
+                            delay: 500,
+                            method: 'post',
+                            url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+                            dataType: 'json',
+                            data: function (params) {
+                                var query = {
+                                    search: params.term,
+                                    page: 'include/ajax/group',
+                                    method: 'getGroupsForSelect',
+                                    id_user: '<?php echo $id_user; ?>',
+                                    privilege: '<?php echo $privilege; ?>',
+                                    exclusions: '<?php echo $json_exclusions; ?>',
+                                    inclusions: '<?php echo $json_inclusions; ?>',
+                                    step: params.page || 1,
+                                    strict: "<?php echo $strict_user; ?>",
+                                    returnAllGroup: <?php echo (int) $returnAllGroup; ?>
+                                }
+
+                                return query;
+                            }
+                        }
+                    });
+
+                    <?php
+                    if ($required !== false) {
+                        ?>
+                    $(this).on('change', function(e) {
+                        e.currentTarget.setCustomValidity('');
+                    })
+
+                    $(this).on('invalid', function(e) {
+                        if ($(e.currentTarget).val() == null) {
+                            e.currentTarget.setCustomValidity(
+                                '<?php echo $require_message; ?>'
+                            );
+                        }
+                    })
+                        <?php
+                    }
+                    ?>
+
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
 
     if ($return) {
         return $output;
@@ -553,12 +716,16 @@ function html_print_select(
     $modal=false,
     $message='',
     $select_all=false,
-    $simple_multiple_options=false
+    $simple_multiple_options=false,
+    $required=false,
+    $truncate_size=false,
+    $select2_enable=true
 ) {
     $output = "\n";
 
     static $idcounter = [];
 
+    global $config;
     // If duplicate names exist, it will start numbering. Otherwise it won't
     if (isset($idcounter[$name])) {
         $idcounter[$name]++;
@@ -598,29 +765,42 @@ function html_print_select(
     }
 
     if ($style === false) {
-        $styleText = 'style=""';
+        $styleText = ' ';
+        if ($config['style'] === 'pandora_black') {
+            $styleText = 'style="color: white"';
+        }
     } else {
+        if ($config['style'] === 'pandora_black') {
+            $style .= ' color: white';
+        }
+
         $styleText = 'style="'.$style.'"';
     }
 
-    $output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    if ($required) {
+        $required = 'required';
+    }
 
-    if ($nothing != '' || empty($fields)) {
-        if ($nothing == '') {
-            $nothing = __('None');
-        }
+    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
-        $output .= '<option value="'.$nothing_value.'"';
-
-        if ($nothing_value == $selected) {
-            $output .= ' selected="selected"';
-        } else if (is_array($selected)) {
-            if (in_array($nothing_value, $selected)) {
-                $output .= ' selected="selected"';
+    if ($nothing !== false) {
+        if ($nothing != '' || empty($fields)) {
+            if ($nothing == '') {
+                $nothing = __('None');
             }
-        }
 
-        $output .= '>'.$nothing.'</option>';
+            $output .= '<option value="'.$nothing_value.'"';
+
+            if ($nothing_value == $selected) {
+                $output .= ' selected="selected"';
+            } else if (is_array($selected)) {
+                if (in_array($nothing_value, $selected)) {
+                    $output .= ' selected="selected"';
+                }
+            }
+
+            $output .= '>'.$nothing.'</option>';
+        }
     }
 
     if (is_array($fields) && !empty($fields)) {
@@ -675,6 +855,18 @@ function html_print_select(
                 $output .= ' style="'.$option_style[$value].'"';
             }
 
+            if ($truncate_size !== false) {
+                $output .= ' Title="'.$optlabel.'"';
+
+                $optlabel = ui_print_truncate_text(
+                    $optlabel,
+                    $truncate_size,
+                    false,
+                    true,
+                    false
+                );
+            }
+
             if ($optlabel === '') {
                 $output .= '>None</option>';
             } else {
@@ -690,8 +882,40 @@ function html_print_select(
     $output .= '</select>';
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
+    }
+
+    $select2 = 'select2.min';
+    if ($config['style'] === 'pandora_black') {
+        $select2 = 'select2_dark.min';
+    }
+
+    if ($multiple === false && $select2_enable === true) {
+        if (is_ajax()) {
+            $output .= '<script src="';
+            $output .= ui_get_full_url(
+                'include/javascript/select2.min.js',
+                false,
+                false,
+                false
+            );
+            $output .= '" type="text/javascript"></script>';
+
+            $output .= '<link rel="stylesheet" href="';
+            $output .= ui_get_full_url(
+                'include/styles/'.$select2.'.css',
+                false,
+                false,
+                false
+            );
+            $output .= '"/>';
+        } else {
+            ui_require_css_file($select2);
+            ui_require_javascript_file('select2.min');
+        }
+
+        $output .= '<script>$("#'.$id.'").select2();</script>';
     }
 
     if ($return) {
@@ -699,6 +923,585 @@ function html_print_select(
     }
 
     echo $output;
+}
+
+
+/**
+ * Generates a multiselect component with filters.
+ *
+ * @param array   $available    Available.
+ * @param array   $selected     Selected.
+ * @param string  $name         Custom identifier (optional).
+ * @param string  $class        Custom class for main container (optional).
+ * @param boolean $return       Dump to output or only return.
+ * @param array   $group_filter Ajax information to reload content while
+ *                              using different group filter (if enabled). Uses:
+ *                                [
+ *                                  page => 'your/controller/php',
+ *                                  method => 'yourMethodName'
+ *                                ]
+ *                              Ensure you return data in json format as:
+ *                                {id:label,id2:label2...}
+ *                              Provided by caller.
+ * @param array   $texts        Texts.
+ * @param array   $sections     Enables or disables sub-components.
+ *
+ * @return string HTML code with component.
+ */
+function html_print_select_multiple_filtered(
+    array $available,
+    array $selected,
+    ?string $name=null,
+    string $class='',
+    bool $return=true,
+    array $group_filter=[],
+    array $texts=[],
+    array $sections=[]
+) {
+    ui_require_css_file('multiselect_filtered');
+    if (is_ajax() === true) {
+        ui_require_javascript_file('multiselect_filtered', 'include/javascript/', true);
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
+
+    if (empty($name) === true) {
+        $rid = uniqid();
+    } else {
+        $rid = $name;
+    }
+
+    if (empty($texts) === true) {
+        $texts = [];
+    }
+
+    if (empty($texts['filter-item']) === true) {
+        $texts['filter-item'] = 'Filter agent alias';
+    }
+
+    if (empty($texts['title-add']) === true) {
+        $texts['title-add'] = 'Add selected';
+    }
+
+    if (empty($texts['title-del']) === true) {
+        $texts['title-del'] = 'Remove selected';
+    }
+
+    if (empty($texts['title-left']) === true) {
+        $texts['title-left'] = 'Available items';
+    }
+
+    if (empty($texts['title-right']) === true) {
+        $texts['title-right'] = 'Selected items';
+    }
+
+    if (empty($sections) === true) {
+        $sections = [];
+    }
+
+    if (isset($sections['filters']) === false) {
+        $sections['filters'] = 1;
+    }
+
+    // Show/hide all left/rigth sfilters.
+    if (isset($sections['item-selected-filters']) === false) {
+        $sections['item-selected-filters'] = 1;
+    }
+
+    if (isset($sections['item-available-filters']) === false) {
+        $sections['item-available-filters'] = 1;
+    }
+
+    if (isset($sections['group-filter']) == false) {
+        $sections['group-filter'] = 1;
+    }
+
+    if (isset($sections['item-available-filter']) === false) {
+        $sections['item-available-filter'] = 1;
+    }
+
+    if (isset($sections['item-selected-filter']) === false) {
+        $sections['item-selected-filter'] = 1;
+    }
+
+    if (isset($group_filter) === false) {
+        $sections['group-filter'] = 0;
+    }
+
+    if (isset($group_filter['nothing']) === false) {
+        $group_filter['nothing'] = '';
+    }
+
+    if (isset($group_filter['nothing_value']) === false) {
+        $group_filter['nothing_value'] = 0;
+    }
+
+    // Main container.
+    $output = '<div class="multi-select flex-row-end '.$class.'">';
+
+    // Left box.
+    $output .= '<div class="multi-select-container flex-column">';
+    $disable_filters = '';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+        && $sections['item-available-filters'] === 1
+    ) {
+        // Filtering.
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'left'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'input_class'    => 'flex-row-vcenter',
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-available-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                    'nothing'        => $group_filter['nothing'],
+                    'nothing_value'  => $group_filter['nothing_value'],
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'label'       => __('Group recursion'),
+                    'input_class' => 'flex-row-vcenter',
+                    'name'        => 'id-group-recursion-available-select-'.$rid,
+                    'id'          => 'checkbox-id-group-recursion-available-select-'.$rid,
+                    'type'        => 'switch',
+                    'onchange'    => $reload_content,
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+            $disable_filters = "disableFilters('".$rid."')";
+        }
+
+        if (isset($sections['item-available-filter']) === true
+            && $sections['item-available-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-available-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterAvailableItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-available-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-left'].'</span>';
+
+    // Selector boxes.
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $available,
+            'name'                    => 'available-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => $disable_filters,
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => false,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Middle buttons actions.
+    $add = "addItems('".$rid."','".__('None')."'); return false";
+    $del = "removeItems('".$rid."','".__('None')."'); return false";
+
+    $output .= '<div class="arrows-container flex-column">';
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowright.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-add'],
+                'onclick' => $add,
+                'class'   => 'invert_filter',
+            ],
+        ]
+    );
+
+    $output .= html_print_input(
+        [
+            'type'    => 'image',
+            'src'     => 'images/darrowleft.png',
+            'return'  => true,
+            'options' => [
+                'title'   => $texts['title-del'],
+                'onclick' => $del,
+                'class'   => 'invert_filter',
+            ],
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Right box.
+    $output .= '<div class="multi-select-container flex-column">';
+
+    // Filtering.
+    if (isset($sections['filters']) === true
+        && $sections['filters'] === 1
+        && $sections['item-selected-filters']
+    ) {
+        if (isset($sections['group-filter']) === true
+            && $sections['group-filter'] === 1
+        ) {
+            $output .= '<div class="filter">';
+
+            $output .= '<div class="group-filter flex-row-vcenter">';
+
+            $reload_content = "reloadContent('".$rid."'";
+            $reload_content .= ", '".ui_get_full_url('ajax.php')."'";
+            $reload_content .= ", '".base64_encode(
+                json_encode($group_filter)
+            )."'";
+            $reload_content .= ", 'right'";
+            $reload_content .= ", '".__('None')."')";
+
+            $output .= html_print_input(
+                [
+                    'input_class'    => 'flex-row-vcenter',
+                    'label'          => __('Filter group'),
+                    'name'           => 'id-group-selected-select-'.$rid,
+                    'returnAllGroup' => true,
+                    'privilege'      => 'AR',
+                    'type'           => 'select_groups',
+                    'return'         => true,
+                    'script'         => $reload_content,
+                ]
+            );
+
+            $output .= html_print_input(
+                [
+                    'input_class' => 'flex-row-vcenter',
+                    'label'       => __('Group recursion'),
+                    'name'        => 'id-group-recursion-selected-select-'.$rid,
+                    'type'        => 'checkbox',
+                    'script'      => $reload_content,
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+
+            $output .= '</div>';
+        }
+
+        // Filtering.
+        if (isset($sections['item-selected-filter']) === true
+            && $sections['item-selected-filter'] === 1
+        ) {
+            $output .= '<div class="item-filter flex-row-vcenter">';
+
+            $output .= html_print_input(
+                [
+                    'style'   => 'display:none;',
+                    'name'    => 'tmp-selected-select-'.$rid,
+                    'type'    => 'select',
+                    'nothing' => false,
+                    'return'  => true,
+                ]
+            );
+
+            $f = "filterSelectedItems(this.value,'".$rid."','".__('None')."')";
+            $output .= html_print_input(
+                [
+                    'label'       => __($texts['filter-item']),
+                    'name'        => 'filter-item-selected-'.$rid,
+                    'onKeyUp'     => $f,
+                    'input_class' => 'flex-row-vcenter filter w100p',
+                    'size'        => 20,
+                    'type'        => 'text',
+                    'return'      => true,
+                ]
+            );
+
+            $output .= '</div>';
+        }
+    }
+
+    $output .= '<span class="title">'.$texts['title-right'].'</span>';
+
+    $output .= html_print_input(
+        [
+            'type'                    => 'select',
+            'fields'                  => $selected,
+            'name'                    => 'selected-select-'.$rid.'[]',
+            'selected'                => '',
+            'script'                  => '',
+            'nothing'                 => '',
+            'nothing_value'           => 0,
+            'return'                  => true,
+            'multiple'                => true,
+            'sort'                    => true,
+            'class'                   => 'select-multiple',
+            'disabled'                => false,
+            'style'                   => false,
+            'option_style'            => false,
+            'size'                    => false,
+            'modal'                   => false,
+            'message'                 => '',
+            'select_all'              => true,
+            'simple_multiple_options' => false,
+        ]
+    );
+
+    $output .= '</div>';
+
+    // Close main.
+    $output .= '</div>';
+
+    if ($return === false) {
+        echo $output;
+    }
+
+    return $output;
+}
+
+
+/**
+ * Form multiple inputs for slect groups.
+ *
+ * @param array $data Data inputs.
+ *
+ * @return string Html output.
+ */
+function html_print_select_multiple_modules_filtered(array $data):string
+{
+    if (is_ajax() === true) {
+        ui_require_javascript_file(
+            'multiselect_filtered',
+            'include/javascript/',
+            true
+        );
+    } else {
+        ui_require_javascript_file('multiselect_filtered');
+    }
+
+    $uniqId = $data['uniqId'];
+
+    $return_all_group = isset($data['mReturnAllGroup']) ? $data['mReturnAllGroup'] : true;
+
+    // Group.
+    $output = '<div>';
+    $output .= html_print_input(
+        [
+            'label'          => __('Group'),
+            'name'           => 'filtered-module-group-'.$uniqId,
+            'returnAllGroup' => $return_all_group,
+            'privilege'      => 'AR',
+            'type'           => 'select_groups',
+            'return'         => true,
+            'script'         => 'fmAgentChange(\''.$uniqId.'\')',
+            'selected'       => $data['mGroup'],
+        ]
+    );
+
+    // Recursion.
+    $output .= html_print_input(
+        [
+            'label'    => __('Recursion'),
+            'type'     => 'switch',
+            'name'     => 'filtered-module-recursion-'.$uniqId,
+            'value'    => (empty($data['mRecursion']) === true) ? false : true,
+            'checked'  => (empty($data['mRecursion']) === true) ? false : true,
+            'return'   => true,
+            'id'       => 'filtered-module-recursion-'.$uniqId,
+            'onchange' => 'fmAgentChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Groups module.
+    $module_groups = db_get_all_rows_sql(
+        'SELECT * FROM tmodule_group ORDER BY name'
+    );
+    $module_groups = array_reduce(
+        $module_groups,
+        function ($carry, $item) {
+            $carry[$item['id_mg']] = $item['name'];
+            return $carry;
+        }
+    );
+
+    $output .= html_print_input(
+        [
+            'label'         => __('Module group'),
+            'type'          => 'select',
+            'fields'        => $module_groups,
+            'name'          => 'filtered-module-module-group-'.$uniqId,
+            'selected'      => $data['mModuleGroup'],
+            'return'        => true,
+            'nothing'       => __('All'),
+            'nothing_value' => 0,
+            'script'        => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+    $output .= '</div>';
+
+    $output .= '<div>';
+    // Agent.
+    $agents = agents_get_group_agents(
+        // Id_group.
+        $data['mGroup'],
+        // Search.
+        false,
+        // Case.
+        'lower',
+        // NoACL.
+        false,
+        // ChildGroups.
+        false,
+        // Serialized.
+        false,
+        // Separator.
+        '|',
+        // Add_alert_bulk_op.
+        false,
+        // Force_serialized.
+        false,
+        // Meta_fields.
+        $data['mMetaFields']
+    );
+
+    if ((empty($agents)) === true || $agents == -1) {
+        $agents = [];
+    }
+
+    if ($data['mShowSelectedOtherGroups']) {
+        $selected_agents = explode(',', $data['mAgents']);
+        foreach ($selected_agents as $agent_id) {
+            if (!array_key_exists($agent_id, $agents)) {
+                $agents[$agent_id] = agents_get_alias($agent_id);
+            }
+        }
+    }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Agents'),
+            'type'     => 'select',
+            'fields'   => $agents,
+            'name'     => 'filtered-module-agents-'.$uniqId,
+            'selected' => explode(',', $data['mAgents']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    // Show common modules.
+    $selection = [
+        0 => __('Show common modules'),
+        1 => __('Show all modules'),
+    ];
+    $output .= html_print_input(
+        [
+            'label'    => __('Show common modules'),
+            'type'     => 'select',
+            'fields'   => $selection,
+            'name'     => 'filtered-module-show-common-modules-'.$uniqId,
+            'selected' => $data['mShowCommonModules'],
+            'return'   => true,
+            'script'   => 'fmModuleChange(\''.$uniqId.'\')',
+        ]
+    );
+
+    $all_modules = select_modules_for_agent_group(
+        $data['mModuleGroup'],
+        explode(',', $data['mAgents']),
+        $data['mShowCommonModules'],
+        false
+    );
+
+    if ($data['mShowSelectedOtherGroups']) {
+        $selected_modules_ids = explode(',', $data['mModules']);
+
+        foreach ($selected_modules_ids as $id) {
+            if (!array_key_exists($id, $all_modules)) {
+                $module_data = modules_get_agentmodule($id);
+                $all_modules[$id] = $module_data['nombre'];
+            }
+        }
+    }
+
+    $output .= html_print_input(
+        [
+            'label'    => __('Modules'),
+            'type'     => 'select',
+            'fields'   => $all_modules,
+            'name'     => 'filtered-module-modules-'.$uniqId,
+            'selected' => explode(',', $data['mModules']),
+            'return'   => true,
+            'multiple' => true,
+            'style'    => 'min-width: 200px;max-width:200px;',
+        ]
+    );
+
+    $output .= '</div>';
+
+    if ($data['return'] === false) {
+        echo $output;
+    }
+
+    return $output;
 }
 
 
@@ -722,6 +1525,8 @@ function html_print_select(
  * @param string  $style          The string of style.
  * @param mixed   $size           Max elements showed in select or default (size=10)
  * @param integer $truncante_size Truncate size of the element, by default is set to GENERIC_SIZE_TEXT constant
+ * @param integer $class          Class to apply.
+ * @param boolean $required       Select is required or not.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -738,7 +1543,9 @@ function html_print_select_from_sql(
     $disabled=false,
     $style=false,
     $size=false,
-    $trucate_size=GENERIC_SIZE_TEXT
+    $truncate_size=GENERIC_SIZE_TEXT,
+    $class='',
+    $required=false
 ) {
     global $config;
 
@@ -751,13 +1558,7 @@ function html_print_select_from_sql(
     foreach ($result as $row) {
         $id = array_shift($row);
         $value = array_shift($row);
-        $fields[$id] = ui_print_truncate_text(
-            $value,
-            $trucate_size,
-            false,
-            true,
-            false
-        );
+        $fields[$id] = $value;
     }
 
     return html_print_select(
@@ -770,11 +1571,22 @@ function html_print_select_from_sql(
         $return,
         $multiple,
         $sort,
-        '',
+        $class,
         $disabled,
         $style,
         '',
-        $size
+        $size,
+        // Modal.
+        false,
+        // Message.
+        '',
+        // Select_all.
+        false,
+        // Simple_multiple_options.
+        false,
+        // Required.
+        $required,
+        $truncate_size
     );
 }
 
@@ -796,7 +1608,6 @@ function html_print_extended_select_for_unit(
 
     // $fields = post_process_get_custom_values();
     $fields['_timeticks_'] = 'Timeticks';
-    $fields['none'] = __('none');
 
     $default_module_custom_units = get_custom_module_units();
 
@@ -823,7 +1634,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -850,7 +1661,7 @@ function html_print_extended_select_for_unit(
         ).'</a>';
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100p inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', 20);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -928,7 +1739,7 @@ function html_print_extended_select_for_post_process(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_default" style="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -955,7 +1766,7 @@ function html_print_extended_select_for_post_process(
         ).'</a>';
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" style="w100p inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', 20);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
@@ -1086,8 +1897,8 @@ function html_print_extended_select_for_time(
     }
 
     ob_start();
-    // Use the no_meta parameter because this image is only in the base console
-    echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
+    // Use the no_meta parameter because this image is only in the base console.
+    echo '<div id="'.$uniq_name.'_default" class="wauto inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1102,13 +1913,13 @@ function html_print_extended_select_for_time(
             $readonly,
             'font-size: xx-small;'.$select_style
         );
-        // The advanced control is only for admins
+        // The advanced control is only for admins.
     if ($admin) {
         echo ' <a href="javascript:">'.html_print_image(
             'images/pencil.png',
             true,
             [
-                'class' => $uniq_name.'_toggler '.$class,
+                'class' => $uniq_name.'_toggler '.$class.' invert_filter',
                 'alt'   => __('Custom'),
                 'title' => __('Custom'),
                 'style' => 'width: 18px; margin-bottom: -5px;'.$style_icon,
@@ -1121,14 +1932,14 @@ function html_print_extended_select_for_time(
 
     echo '</div>';
 
-    echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
+    echo '<div id="'.$uniq_name.'_manual" class="w100 inline_line">';
         html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         html_print_select(
             $units,
             $uniq_name.'_units',
-            1,
+            '60',
             ''.$script,
             $nothing,
             $nothing_value,
@@ -1140,10 +1951,10 @@ function html_print_extended_select_for_time(
             'font-size: xx-small;'.$select_style
         );
         echo ' <a href="javascript:">'.html_print_image(
-            'images/default_list.png',
+            'images/list.png',
             true,
             [
-                'class' => $uniq_name.'_toggler',
+                'class' => $uniq_name.'_toggler invert_filter',
                 'alt'   => __('List'),
                 'title' => __('List'),
                 'style' => 'width: 18px;margin-bottom: -5px;'.$style_icon,
@@ -1152,8 +1963,8 @@ function html_print_extended_select_for_time(
     echo '</div>';
     echo "<script type='text/javascript'>
 		$(document).ready (function () {
-			period_select_init('$uniq_name', $allow_zero);
-			period_select_events('$uniq_name');
+			period_select_init('".$uniq_name."', ".(($allow_zero) ? 'true' : 'null').");
+			period_select_events('".$uniq_name."');
 		});
 		function period_select_".$name."_update(seconds) {
 			$('#text-".$uniq_name."_text').val(seconds);
@@ -1254,6 +2065,55 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
 
 
 /**
+ * Prints an input slide.
+ *
+ * @param string  $name    Name.
+ * @param integer $value   Value.
+ * @param string  $id      Id.
+ * @param boolean $return  Return.
+ * @param integer $min     Min.
+ * @param integer $max     Max.
+ * @param integer $step    Step.
+ * @param string  $class   Class.
+ * @param string  $oninput Oninput.
+ *
+ * @return string HTML code for input.
+ */
+function html_print_input_range(
+    $name,
+    $value,
+    $id='',
+    $return=true,
+    $min=0,
+    $max=100,
+    $step=1,
+    $class='',
+    $oninput=''
+) {
+    $output = '<input type="range" ';
+    if (isset($value) === true) {
+        $output .= ' value="'.$value.'" ';
+    }
+
+    $output .= ' name="'.$name.'" ';
+    $output .= ' id="'.$id.'" ';
+    $output .= ' min="'.$min.'" ';
+    $output .= ' max="'.$max.'" ';
+    $output .= ' step="'.$step.'" ';
+    $output .= ' class="'.$class.'" ';
+    $output .= ' oninput="'.$oninput.'" ';
+
+    $output .= ' />';
+
+    if ($return === false) {
+        echo $return;
+    }
+
+    return $output;
+}
+
+
+/**
  * Render an input text element. Extended version, use html_print_input_text() to simplify.
  *
  * @param string  $name       Input name.
@@ -1270,8 +2130,22 @@ function html_print_extended_select_for_cron($hour='*', $minute='*', $mday='*', 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return=false, $password=false, $function='', $autocomplete='off')
-{
+function html_print_input_text_extended(
+    $name,
+    $value,
+    $id,
+    $alt,
+    $size,
+    $maxlength,
+    $readonly,
+    $script,
+    $attributes,
+    $return=false,
+    $password=false,
+    $function='',
+    $autocomplete='off',
+    $disabled=false
+) {
     static $idcounter = 0;
 
     if ($maxlength == 0) {
@@ -1288,6 +2162,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
 
     $valid_attrs = [
         'accept',
+        'autofocus',
         'disabled',
         'maxlength',
         'name',
@@ -1320,12 +2195,18 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         'onkeyup',
         'required',
         'autocomplete',
+        'form',
+        'list',
     ];
 
-    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" ');
+    $output = '<input '.($password ? 'type="password" autocomplete="'.$autocomplete.'" ' : 'type="text" autocomplete="'.$autocomplete.'"');
+
+    if ($readonly && (!is_array($attributes) || !array_key_exists('readonly', $attributes))) {
+        $output .= 'readonly="readonly" ';
+    }
 
     if ($disabled && (!is_array($attributes) || !array_key_exists('disabled', $attributes))) {
-        $output .= 'readonly="readonly" ';
+        $output .= 'disabled="disabled" ';
     }
 
     if (is_array($attributes)) {
@@ -1345,7 +2226,7 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
         $output .= 'alt="'.$alt.'" ';
     }
 
-    // Attributes specified by function call
+    // Attributes specified by function call.
     $attrs = [
         'name'      => 'unnamed',
         'value'     => '',
@@ -1398,28 +2279,31 @@ function html_print_input_text_extended($name, $value, $id, $alt, $size, $maxlen
 
 
 /**
- * Render an input password element.
+ * Render a section <div> html element.
  *
- * The element will have an id like: "password-$name"
- *
- * @param mixed parameters:
+ * @param array   $options Parameters:
  *             - id: string
  *             - style: string
+ *             - class: string
+ *             - title: string
  *             - hidden: boolean
- *             - content: string
- * @param bool return or echo flag
+ *             - content: string.
+ * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_div($options, $return=false)
-{
+function html_print_div(
+    array $options,
+    bool $return=false
+) {
     $output = '<div';
 
-    // Valid attributes (invalid attributes get skipped)
+    // Valid attributes (invalid attributes get skipped).
     $attrs = [
         'id',
         'style',
         'class',
+        'title',
     ];
 
     if (isset($options['hidden'])) {
@@ -1447,6 +2331,56 @@ function html_print_div($options, $return=false)
     } else {
         echo $output;
     }
+}
+
+
+/**
+ * Render an anchor <a> html element.
+ *
+ * @param array   $options Parameters
+ *                - id: string.
+ *                - style: string.
+ *                - title: string.
+ *                - href: string.
+ *                - content: string.
+ * @param boolean $return  Return or echo flag.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_anchor(
+    array $options,
+    bool $return=false
+) {
+    $output = '<a ';
+
+    // Valid attributes (invalid attributes get skipped).
+    $attrs = [
+        'id',
+        'style',
+        'class',
+        'title',
+    ];
+
+    $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
+
+    foreach ($attrs as $attribute) {
+        if (isset($options[$attribute])) {
+            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        }
+    }
+
+    $output .= '>';
+
+    $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
+
+    $output .= '</a>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
 }
 
 
@@ -1523,8 +2457,26 @@ function html_print_input_password(
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255, $return=false, $disabled=false, $required=false, $function='', $class='', $onChange='', $autocomplete='')
-{
+function html_print_input_text(
+    $name,
+    $value,
+    $alt='',
+    $size=50,
+    $maxlength=255,
+    $return=false,
+    $readonly=false,
+    $required=false,
+    $function='',
+    $class='',
+    $onChange='',
+    $autocomplete='off',
+    $autofocus=false,
+    $onKeyDown='',
+    $formTo='',
+    $onKeyUp='',
+    $disabled=false,
+    $list=''
+) {
     if ($maxlength == 0) {
         $maxlength = 255;
     }
@@ -1548,11 +2500,42 @@ function html_print_input_text($name, $value, $alt='', $size=50, $maxlength=255,
         $attr['onchange'] = $onChange;
     }
 
-    if ($autocomplete !== '') {
-        $attr['autocomplete'] = $autocomplete;
+    if ($onKeyDown != '') {
+        $attr['onkeydown'] = $onKeyDown;
     }
 
-    return html_print_input_text_extended($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
+    if ($onKeyUp != '') {
+        $attr['onkeyup'] = $onKeyUp;
+    }
+
+    if ($autofocus === true) {
+        $attr['autofocus'] = $autofocus;
+    }
+
+    if ($formTo != '') {
+        $attr['form'] = $formTo;
+    }
+
+    if ($list != '') {
+        $attr['list'] = $list;
+    }
+
+    return html_print_input_text_extended(
+        $name,
+        $value,
+        'text-'.$name,
+        $alt,
+        $size,
+        $maxlength,
+        $readonly,
+        '',
+        $attr,
+        $return,
+        false,
+        $function,
+        $autocomplete,
+        $disabled
+    );
 }
 
 
@@ -1622,6 +2605,10 @@ function html_print_input_email(array $settings):string
                 $settings['size'] = 255;
             }
 
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
+            }
+
             foreach ($settings as $attribute => $attr_value) {
                 // Check valid attribute.
                 if (in_array($attribute, $valid_attrs) === false) {
@@ -1687,24 +2674,29 @@ function html_print_input_number(array $settings):string
         'autocomplete',
         'min',
         'max',
+        'step',
     ];
+
+    global $config;
+    $text_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'style="color: white"';
+    }
 
     $output = '';
     if (isset($settings) === true && is_array($settings) === true) {
         // Check Name is necessary.
         if (isset($settings['name']) === true) {
-            $output = '<input type="number" ';
+            $output = '<input '.$text_color.' type="number" ';
 
             // Check Max length.
             if (isset($settings['maxlength']) === false) {
                 $settings['maxlength'] = 255;
             }
 
-            // Check Size.
-            if (isset($settings['size']) === false
-                || $settings['size'] === 0
-            ) {
-                $settings['size'] = 255;
+            if (isset($settings['autocomplete']) === false) {
+                $settings['autocomplete'] = 'off';
             }
 
             foreach ($settings as $attribute => $attr_value) {
@@ -1773,6 +2765,8 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'lang',
         'tabindex',
         'title',
+        'data-title',
+        'data-use_title_for_force_title',
         'xml:lang',
         'onclick',
         'ondblclick',
@@ -1808,19 +2802,34 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
  *
  * The element will have an id like: "hidden-$name"
  *
- * @param string  $name   Input name.
- * @param string  $value  Input value.
- * @param boolean $return Whether to return an output string or echo now (optional, echo by default).
- * @param string  $class  Set the class of input.
+ * @param string  $name       Input name.
+ * @param string  $value      Input value.
+ * @param boolean $return     Whether to return an output string or echo now
+ * (optional, echo by default).
+ * @param string  $class      Set the class of input.
+ * @param string  $attributes String with the needed attributes to add.
+ * @param string  $id         Specific id.
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_hidden($name, $value, $return=false, $class=false)
-{
+function html_print_input_hidden(
+    $name,
+    $value,
+    $return=false,
+    $class=false,
+    $attributes=false,
+    $id=''
+) {
     if ($class !== false) {
         $classText = 'class="'.$class.'"';
     } else {
         $classText = '';
+    }
+
+    if ($attributes !== false) {
+        $otherAttributes = $attributes;
+    } else {
+        $otherAttributes = '';
     }
 
     $separator = '"';
@@ -1831,7 +2840,12 @@ function html_print_input_hidden($name, $value, $return=false, $class=false)
         }
     }
 
-    $output = '<input id="hidden-'.$name.'" '.'name="'.$name.'" '.'type="hidden" '.$classText.' '.'value='.$separator.$value.$separator.' />';
+    $idInput = 'hidden-'.$name;
+    if (empty($id) === false) {
+        $idInput = $id;
+    }
+
+    $output = '<input id="'.$idInput.'" name="'.$name.'" type="hidden" '.$classText.' value='.$separator.$value.$separator.' '.$otherAttributes.'/>';
 
     if ($return) {
         return $output;
@@ -2004,7 +3018,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -2030,13 +3044,25 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea($name, $rows, $columns, $value='', $attributes='', $return=false, $class='')
-{
-    $output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'">';
-    // $output .= io_safe_input ($value);
+function html_print_textarea(
+    $name,
+    $rows,
+    $columns,
+    $value='',
+    $attributes='',
+    $return=false,
+    $class='',
+    $disable=false,
+    $id=false
+) {
+    $disabled = ($disable) ? 'disabled' : '';
+    if ($id === false) {
+        $id = 'textarea_'.$name;
+    }
+
+    $output = '<textarea id="'.$id.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' class="'.$class.'" '.$disabled.'>';
     $output .= ($value);
     $output .= '</textarea>';
-
     if ($return) {
         return $output;
     }
@@ -2118,6 +3144,10 @@ function html_print_table(&$table, $return=false)
 {
     $output = '';
     static $table_count = 0;
+
+    if (!isset($table)) {
+        $table = new StdClass();
+    }
 
     $table_count++;
     if (isset($table->align)) {
@@ -2270,7 +3300,7 @@ function html_print_table(&$table, $return=false)
     $countcols = 0;
 
     if (!empty($table->caption)) {
-        $output .= '<caption style="text-align: left"><h4>'.$table->caption.'</h4></caption>';
+        $output .= '<caption class="left"><h4>'.$table->caption.'</h4></caption>';
     }
 
     if (!empty($table->head)) {
@@ -2388,7 +3418,11 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                if ($class === 'datos5' && $key === 1) {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                } else {
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                }
             }
 
             $output .= '</tr>'."\n";
@@ -2464,13 +3498,19 @@ function html_print_radio_button_extended(
     $output .= ' '.$attributes;
     $output .= ' />';
 
-    if ($label != '') {
-        $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+    if (is_array($label)) {
+        if (!empty($label)) {
+            $output .= '<label for="'.$htmlid.'" title="'.$label['help_tip'].'">'.$label['label'].'</label>'."\n";
+        }
+    } else {
+        if ($label != '') {
+            $output .= '<label for="'.$htmlid.'">'.$label.'</label>'."\n";
+        }
     }
 
     if ($modal && !enterprise_installed()) {
         $output .= "
-		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise publicenterprise_div' title='Community version'><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
     }
 
@@ -2616,38 +3656,57 @@ function html_print_checkbox(
 
 
 /**
- * Render a checkbox button input switch type. Extended version, use html_print_checkbox_switch() to simplify.
+ * Render a checkbox button input switch type.
+ * Extended version, use html_print_checkbox_switch() to simplify.
  *
- * @param string Input name.
- * @param string Input value.
- * @param string Set the button to be marked (optional, unmarked by default).
- * @param bool Disable the button  (optional, button enabled by default).
- * @param string Script to execute when onClick event is triggered (optional).
- * @param string Optional HTML attributes. It's a free string which will be
- * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param string  $name        Input name.
+ * @param integer $value       Input value.
+ * @param integer $checked     Input checked.
+ * @param boolean $disabled    Disable the button (optional,
+ *       button enabled by default).
+ * @param string  $script      Script to execute when onClick event
+ *       is triggered (optional).
+ * @param string  $attributes  Optional HTML attributes.
+ *   It's a free string which will be.
+ * @param boolean $return      Whether to return an output string or echo now
+ *      (optional, echo by default).
+ * @param string  $id          Input id.
+ * @param string  $classParent Class for label.
  *
- * @return string HTML code if return parameter is true.
+ * @return string Input html.
  */
-
-
-function html_print_checkbox_switch_extended($name, $value, $checked, $disabled, $script, $attributes, $return=false, $id='')
-{
+function html_print_checkbox_switch_extended(
+    $name,
+    $value,
+    $checked,
+    $disabled=false,
+    $script='',
+    $attributes='',
+    $return=false,
+    $id='',
+    $classParent=''
+) {
     static $idcounter = [];
 
-    // If duplicate names exist, it will start numbering. Otherwise it won't
+    // If duplicate names exist, it will start numbering. Otherwise it won't.
     if (isset($idcounter[$name])) {
         $idcounter[$name]++;
     } else {
         $idcounter[$name] = 0;
     }
 
-    $id_aux = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+    $id_aux = preg_replace(
+        '/[^a-z0-9\:\;\-\_]/i',
+        '',
+        $name.($idcounter[$name] ? $idcounter[$name] : '')
+    );
 
-    $output = '<label class="p-switch"><input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
+    $output = '<label class="p-switch '.$classParent.'">';
+    $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
     } else {
-        $output .= ' '.$id.'"';
+        $output .= ' id="'.$id.'"';
     }
 
     if ($script != '') {
@@ -3087,6 +4146,13 @@ function html_print_autocomplete_modules(
 
     ob_start();
 
+    $text_color = '';
+    $module_icon = 'images/search_module.png';
+    if ($config['style'] === 'pandora_black') {
+        $text_color = 'color: white';
+        $module_icon = 'images/brick.menu.png';
+    }
+
     html_print_input_text_extended(
         $name,
         $default,
@@ -3096,7 +4162,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url(images/search_module.png) no-repeat right;']
+        ['style' => 'background: url('.$module_icon.') no-repeat right; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
@@ -3205,7 +4271,7 @@ function html_print_result_div($text)
     $text = preg_replace('/\n/i', '<br>', $text);
     $text = preg_replace('/\s/i', '&nbsp;', $text);
 
-    $enclose = "<div id='result_div' style='width: 100%; height: 100%; overflow: auto; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+    $enclose = "<div id='result_div results_class'>";
     $enclose .= $text;
     $enclose .= '</div>';
     return $enclose;
@@ -3240,10 +4306,14 @@ function html_print_sort_arrows($params, $order_tag, $up='up', $down='down')
 
 /**
  * Print an input hidden with a new csrf token generated
+ *
+ * @param boolean $return If it is true return a string with the output instead to echo the output.
+ *
+ * @return void
  */
-function html_print_csrf_hidden()
+function html_print_csrf_hidden(bool $return=false)
 {
-    html_print_input_hidden('csrf_code', generate_csrf_code());
+    return html_print_input_hidden('csrf_code', generate_csrf_code(), $return);
 }
 
 
@@ -3275,6 +4345,8 @@ function html_print_csrf_error()
  * disabled: Disabled. Cannot be pressed.
  * id: Optional id for the switch.
  * class: Additional classes (string).
+ * value: Check or not (boolean).
+ * disabled: Enabled or disabled (boolean).
  *
  * @return string with HTML of button.
  */
@@ -3306,9 +4378,11 @@ function html_print_switch($attributes=[])
         $attributes['style'] = '';
     }
 
+    $disabled_class = (bool) ($attributes['disabled']) ? ' p-slider-disabled' : '';
+
     return "<label class='p-switch' style='".$attributes['style']."'>
 			<input type='checkbox' ".$html_expand.">
-			<span class='p-slider'></span>
+			<span class='p-slider".$disabled_class."'></span>
 		</label>";
 }
 
@@ -3369,8 +4443,15 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='')
  */
 function html_print_input($data, $wrapper='div', $input_only=false)
 {
+    global $config;
     if (is_array($data) === false) {
         return '';
+    }
+
+    enterprise_include_once('include/functions_metaconsole.php');
+
+    if ($config['style'] === 'pandora_black') {
+        $style = 'style="color: white"';
     }
 
     $output = '';
@@ -3378,7 +4459,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
     if ($data['label'] && $input_only === false) {
         $output = '<'.$wrapper.' id="'.$wrapper.'-'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
-        $output .= '<label class="'.$data['label_class'].'">';
+        $output .= '<label '.$style.' class="'.$data['label_class'].'">';
         $output .= $data['label'];
         $output .= '</label>';
 
@@ -3387,8 +4468,16 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         }
     }
 
+    // If wrapper has attributes.
+    // TODO. There is possible improve this handle of attributes.
+    if (isset($data['wrapper_attributes'])) {
+        $wrapper_attributes = $data['wrapper_attributes'];
+    } else {
+        $wrapper_attributes = '';
+    }
+
     if (isset($data['wrapper']) === true) {
-        $output = '<'.$data['wrapper'].' id="wr_'.$data['name'].'" ';
+        $output = '<'.$data['wrapper'].' '.$wrapper_attributes.' id="wr_'.$data['name'].'" ';
         $output .= ' class="'.$data['input_class'].'">';
     }
 
@@ -3406,7 +4495,27 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['function']) === true) ? $data['function'] : ''),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['autofocus']) === true) ? $data['autofocus'] : false),
+                ((isset($data['onKeyDown']) === true) ? $data['onKeyDown'] : ''),
+                ((isset($data['form']) === true) ? $data['form'] : ''),
+                ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['list']) === true) ? $data['list'] : '')
+            );
+        break;
+
+        case 'range':
+            $output .= html_print_input_range(
+                $data['name'],
+                $data['value'],
+                (isset($data['id']) ? $data['id'] : ''),
+                (isset($data['return']) ? $data['return'] : true),
+                (isset($data['min']) ? $data['min'] : 0),
+                (isset($data['max']) ? $data['max'] : 100),
+                (isset($data['step']) ? $data['step'] : 1),
+                (isset($data['class']) ? $data['class'] : ''),
+                (isset($data['oninput']) ? $data['oninput'] : '')
             );
         break;
 
@@ -3453,23 +4562,6 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
-        case 'text':
-            $output .= html_print_input_text(
-                $data['name'],
-                $data['value'],
-                ((isset($data['alt']) === true) ? $data['alt'] : ''),
-                ((isset($data['size']) === true) ? $data['size'] : 50),
-                ((isset($data['maxlength']) === true) ? $data['maxlength'] : 255),
-                ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['required']) === true) ? $data['required'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : ''),
-                ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['onChange']) === true) ? $data['onChange'] : ''),
-                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : '')
-            );
-        break;
-
         case 'email':
             $output .= html_print_input_email($data);
         break;
@@ -3483,7 +4575,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 $data['name'],
                 $data['value'],
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : false)
+                ((isset($data['class']) === true) ? $data['class'] : false),
+                false,
+                ((isset($data['id']) === true) ? $data['id'] : '')
             );
         break;
 
@@ -3552,7 +4646,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
                 ((isset($data['style']) === true) ? $data['style'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT)
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
 
@@ -3579,9 +4675,66 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['delete_groups']) === true) ? $data['delete_groups'] : false),
                 ((isset($data['include_groups']) === true) ? $data['include_groups'] : false),
                 ((isset($data['size']) === true) ? $data['size'] : false),
-                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false)
+                ((isset($data['simple_multiple_options']) === true) ? $data['simple_multiple_options'] : false),
+                ((isset($data['required']) === true) ? $data['required'] : false)
             );
         break;
+
+        case 'select_search':
+            $output .= html_print_select_search(
+                $data['fields'],
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['option_style']) === true) ? $data['option_style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['modal']) === true) ? $data['modal'] : false),
+                ((isset($data['message']) === true) ? $data['message'] : ''),
+                ((isset($data['dropdownAutoWidth']) === true) ? $data['dropdownAutoWidth'] : false)
+            );
+        break;
+
+        case 'select_metaconsole_nodes':
+            $output .= html_print_select_from_sql(
+                'SELECT `id`, `server_name` FROM `tmetaconsole_setup`',
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['multiple']) === true) ? $data['multiple'] : false),
+                ((isset($data['sort']) === true) ? $data['sort'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['style']) === true) ? $data['style'] : false),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
+                ((isset($data['class']) === true) ? $data['class'] : '')
+            );
+        break;
+
+        case 'select_for_unit':
+            $output .= html_print_extended_select_for_unit(
+                $data['name'],
+                ((isset($data['selected']) === true) ? $data['selected'] : ''),
+                ((isset($data['script']) === true) ? $data['script'] : ''),
+                ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
+                ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : '0'),
+                ((isset($data['size']) === true) ? $data['size'] : false),
+                ((isset($data['return']) === true) ? $data['return'] : false),
+                ((isset($data['select_style']) === true) ? $data['select_style'] : false),
+                ((isset($data['unique_name']) === true) ? $data['unique_name'] : true),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['no_change']) === true) ? $data['no_change'] : 0)
+            );
 
         case 'submit':
             $width = (isset($data['width']) === true) ? 'width: '.$data['width'] : 'width: 100%';
@@ -3615,7 +4768,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
         case 'interval':
             $output .= html_print_extended_select_for_time(
                 $data['name'],
-                $data['value'],
+                ((isset($data['value']) === true) ? $data['value'] : $data['selected']),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
                 ((isset($data['nothing']) === true) ? $data['nothing'] : ''),
                 ((isset($data['nothing_value']) === true) ? $data['nothing_value'] : 0),
@@ -3634,7 +4787,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['value']) === true) ? $data['value'] : ''),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
-                ((isset($data['class']) === true) ? $data['class'] : '')
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['id']) === true) ? $data['id'] : false)
             );
         break;
 
@@ -3676,6 +4831,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_multicheck($data);
         break;
 
+        case 'agent_autocomplete':
+            // Direct assignment of parameters.
+            $output .= ui_print_agent_autocomplete_input($data);
+        break;
+
         case 'autocomplete_agent':
             $agent_name = '';
             if (isset($data['id_agent_hidden']) === true
@@ -3708,17 +4868,34 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
+            $params['disabled'] = $data['disabled'];
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];
             $params['value'] = $agent_name;
             $params['javascript_is_function_select'] = true;
 
+            if (isset($data['get_only_string_modules']) === true
+                && $data['get_only_string_modules'] === true
+            ) {
+                $params['get_only_string_modules'] = $data['get_only_string_modules'];
+            }
+
             if (isset($data['module_input']) === true
                 && $data['module_input'] === true
             ) {
                 $params['selectbox_id'] = $data['module_name'];
                 $params['add_none_module'] = $data['module_none'];
+            }
+
+            if (isset($data['size']) === true) {
+                $params['size'] = $data['size'];
+            }
+
+            if (isset($data['from_wux']) === true
+                && $data['from_wux'] === true
+            ) {
+                $params['from_wux'] = 1;
             }
 
             $params['use_hidden_input_idagent'] = true;
@@ -3755,12 +4932,26 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                     0 => __('Select an Agent first'),
                 ];
             } else {
+                $string_filter = '';
+                if ($data['get_only_string_modules'] === true) {
+                    $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
+                }
+
+                if ($data['from_wux'] === true) {
+                    $string_filter = ' AND id_tipo_modulo = 25';
+                }
+
+                if (isset($data['filter_modules']) && !empty($data['filter_modules'])) {
+                    $string_filter = ' AND id_agente_modulo IN ('.implode(',', $data['filter_modules']).')';
+                }
+
                 $sql = sprintf(
                     'SELECT id_agente_modulo, nombre
                     FROM tagente_modulo
                     WHERE id_agente = %d
-                    AND delete_pending = 0',
-                    $data['agent_id']
+                    AND delete_pending = 0 %s',
+                    $data['agent_id'],
+                    $string_filter
                 );
 
                 if (is_metaconsole() === true) {
@@ -3818,6 +5009,31 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'select_multiple_filtered':
+            $output .= html_print_select_multiple_filtered(
+                $data['available'],
+                $data['selected'],
+                ((isset($data['name']) === true) ? $data['name'] : null),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['return']) === true) ? $data['return'] : true),
+                ((isset($data['group_filter']) === true) ? $data['group_filter'] : []),
+                ((isset($data['texts']) === true) ? $data['texts'] : []),
+                ((isset($data['sections']) === true) ? $data['sections'] : [])
+            );
+        break;
+
+        case 'select_multiple_modules_filtered':
+            $output .= html_print_select_multiple_modules_filtered($data);
+        break;
+
+        case 'datalist':
+            $output .= html_print_datalist(
+                $data['name'],
+                $data['value'],
+                ((isset($data['return']) === true) ? $data['return'] : true)
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -3868,10 +5084,13 @@ function html_print_input_multicheck(array $data):string
 /**
  * Print an autocomplete input filled out with Integria IMS users.
  *
- * @param string  $name    The name of ajax control, by default is "users".
- * @param string  $default The default value to show in the ajax control.
- * @param boolean $return  If it is true return a string with the output instead to echo the output.
- * @param string  $size    Size.
+ * @param string  $name     The name of ajax control, by default is "users".
+ * @param string  $default  The default value to show in the ajax control.
+ * @param boolean $return   If it is true return a string with the output instead to echo the output.
+ * @param string  $size     Size.
+ * @param boolean $disable  Disable the button (optional, button enabled by default).
+ * @param boolean $required Attribute required.
+ * @param string  $class    Text inpunt class.
  *
  * @return mixed If the $return is true, return the output as string.
  */
@@ -3881,16 +5100,26 @@ function html_print_autocomplete_users_from_integria(
     $return=false,
     $size='30',
     $disable=false,
-    $required=false
+    $required=false,
+    $class=null
 ) {
     global $config;
 
+    $user_icon = 'images/user_green.png';
+    if ($config['style'] === 'pandora_black') {
+        $user_icon = 'images/header_user.png';
+    }
+
     ob_start();
 
-    $attrs = ['style' => 'background: url(images/user_green.png) no-repeat right;'];
+    $attrs = ['style' => 'background: url('.$user_icon.') no-repeat right;'];
 
     if ($required) {
         $attrs['required'] = 'required';
+    }
+
+    if (empty($class) === false) {
+        $attrs['class'] = $class;
     }
 
     html_print_input_text_extended(
@@ -3980,8 +5209,16 @@ function html_print_autocomplete_users_from_integria(
 
 function html_print_tabs(array $tabs)
 {
+    global $config;
+
+    $bg_color = '';
+
+    if ($config['style'] === 'pandora_black') {
+        $bg_color = 'style="background-color: #222"';
+    }
+
     $result = '<div id="html-tabs">';
-    $result .= '<ul class="">';
+    $result .= '<ul class="" '.$bg_color.'>';
     foreach ($tabs as $key => $value) {
         $result .= "<li><a href='".$value['href']."' id='".$value['id']."'>";
         $result .= html_print_image(
@@ -3997,4 +5234,185 @@ function html_print_tabs(array $tabs)
     $result .= '</div>';
 
     return $result;
+}
+
+
+/**
+ * Create a datalist.
+ *
+ * @param string $id          Use custom id.
+ * @param string $values      Input values.
+ * @param string $returnparam Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_datalist(
+    $id,
+    $values,
+    $return=false
+) {
+    $result = '<datalist id="'.$id.'">';
+    foreach ($values as $key => $value) {
+        $result .= '<option value="'.$value.'">';
+    }
+
+    $result .= '</datalist>';
+
+    if ($return) {
+        return $result;
+    } else {
+        echo $result;
+    }
+}
+
+
+/**
+ * Print or return selector with search bar.
+ *
+ * @param string  $fields                  Select fields
+ * @param boolean $name                    Name of input field.
+ * @param array   $selected                Array with dropdown values. Example:
+ *                                         $fields["value"] = "label".
+ * @param string  $script                  Javascript onChange code.
+ * @param mixed   $nothing                 Label when nothing is selected.
+ * @param array   $nothing_value           Value when nothing is selected.
+ * @param string  $return                  Return string or dump to output.
+ * @param boolean $multiple                Enable multiple select.
+ * @param mixed   $sort                    Sort values or not (default false).
+ * @param boolean $class                   CSS classes to apply.
+ * @param boolean $disabled                Disabled or enabled.
+ * @param boolean $style                   CSS inline style.
+ * @param string  $option_style            CSS inline style in array format.
+ * @param string  $size                    Style, size (width) of element.
+ * @param boolean $simple_multiple_options Discovery simple multiple inputs.
+ * @param boolean $required                Required input.
+ * @param boolean $dropdownAutoWidth       Set dropdown auto width.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function html_print_select_search(
+    $fields=[],
+    $name=null,
+    $selected='',
+    $script='',
+    $nothing='',
+    $nothing_value=0,
+    $return=false,
+    $multiple=false,
+    $sort=false,
+    $class='',
+    $disabled=false,
+    $style=false,
+    $option_style=false,
+    $size=false,
+    $simple_multiple_options=false,
+    $required=false,
+    $dropdownAutoWidth=false
+) {
+    global $config;
+
+    $output = '';
+
+    $select2_css = 'select2.min';
+
+    if ($config['style'] === 'pandora_black') {
+        $select2_css = 'select2_dark.min';
+    }
+
+    ui_require_css_file($select2_css);
+    ui_require_javascript_file('select2.min');
+
+    if ($name === null) {
+        static $idcounter = [];
+        if (isset($idcounter[$name]) === true) {
+            $idcounter[$name]++;
+        } else {
+            $idcounter[$name] = 0;
+        }
+
+        $name = 'select'.$idcounter[$name];
+    }
+
+    if (empty($nothing) === false) {
+        $fields[$nothing_value] = $nothing;
+    }
+
+    $output .= html_print_select(
+        $fields,
+        $name,
+        $selected,
+        $script,
+        $nothing,
+        $nothing_value,
+        $return,
+        $multiple,
+        $sort,
+        $class,
+        $disabled,
+        $style,
+        $option_style,
+        $size,
+        false,
+        '',
+        false,
+        $simple_multiple_options,
+        $required
+    );
+
+    if (empty($size) === true) {
+        $size = '100%';
+    }
+
+    ob_start();
+    ?>
+    <style type="text/css">
+    .select2-search__field {
+        background: url('<?php echo ui_get_full_url('images/zoom.png'); ?>') no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+
+    </style>
+
+<script type="text/javascript">
+        $(document).ready(function() {
+            $('select[name="<?php echo $name; ?>"]').each(
+                function() {
+                    $(this).select2({
+                        multiple: <?php echo ($multiple) ? 'true' : 'false'; ?>,
+                        placeholder: "<?php echo __('Please select...'); ?>",
+                        debug: 0,
+                        width: '<?php echo $size; ?>',
+                        dropdownAutoWidth : '<?php echo $dropdownAutoWidth; ?>',
+                        templateResult: function(node) {
+                            if (!node.id) {
+                                return node.text;
+                            }
+                            return $('<span style="padding-left:' + (5 * node.level) + 'px;">' + node.text + '</span>');
+                        }
+                    });
+                }
+            );
+
+    <?php
+    if (empty($fields) === true) {
+        ?>
+            $('select[name="<?php echo $name; ?>"]').val(null).trigger("change");
+            $('select[name="<?php echo $name; ?>"] option[value=""]').each(function() {
+                $(this).remove();
+            });
+        <?php
+    }
+    ?>
+        });
+    </script>
+
+    <?php
+    $output .= ob_get_clean();
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }

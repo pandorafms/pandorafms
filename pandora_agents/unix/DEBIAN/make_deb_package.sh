@@ -2,7 +2,7 @@
 
 #Pandora FMS- http:#pandorafms.com
 # ==================================================
-# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 # Please see http:#pandorafms.org for full contribution list
 
 # This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.743-200130"
+pandora_version="7.0NG.755-210618"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -79,7 +79,10 @@ cp Linux/pandora_agent.conf temp_package/etc/pandora/
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
 # Relocate plugins to the final dir and delete 
-mv temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+cp temp_package/usr/share/pandora_agent/plugins/* temp_package/etc/pandora/plugins
+
+# Make sure the plugins have execution privileges
+chmod 755 temp_package/etc/pandora/plugins/*
 
 echo "Official plugins are placed on /etc/pandora/plugins" > temp_package/usr/share/pandora_agent/plugins/README
 

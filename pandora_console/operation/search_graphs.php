@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@ global $config;
 
 require_once 'include/functions_custom_graphs.php';
 
-$searchGraphs = check_acl($config['id_user'], 0, 'IR');
+$searchGraphs = check_acl($config['id_user'], 0, 'RR');
 
 if ($graphs === false || !$searchGraphs) {
     echo "<br><div class='nf'>".__('Zero results found')."</div>\n";

@@ -15,7 +15,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ global $config;
 require_once $config['homedir'].'/include/functions_notifications.php';
 
 // Load the header.
+$headerTitle = __('User notifications');
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
 if (get_parameter('change_label', 0)) {
@@ -64,7 +65,10 @@ echo '<div id="user-notifications-wrapper" class="white_box table_div table_thre
             <div class="table_th">'.__('Also receive an email').'</div>
         </div>';
 
-        $sources = notifications_get_all_sources();
+$sources = notifications_get_all_sources();
+
+$disabled_flag = false;
+
 foreach ($sources as $source) {
     echo '<div class="table_tbody">';
     $table_content = [
@@ -72,10 +76,23 @@ foreach ($sources as $source) {
         notifications_print_user_switch($source, $id, 'enabled'),
         notifications_print_user_switch($source, $id, 'also_mail'),
     ];
+
+    $notifications_enabled = notifications_print_user_switch($source, $id, 'enabled');
+    $notifications_also_mail = notifications_print_user_switch($source, $id, 'also_mail');
+
+    if ($notifications_enabled['disabled'] == 1 || $notifications_also_mail['disabled'] == 1) {
+        $disabled_flag = true;
+    }
+
     echo '<div class="table_td">'.$source['description'].'</div>';
-    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'enabled').'</div>';
-    echo '<div class="table_td">'.notifications_print_user_switch($source, $id, 'also_mail').'</div>';
+    echo '<div class="table_td">'.$notifications_enabled['switch'].'</div>';
+    echo '<div class="table_td">'.$notifications_also_mail['switch'].'</div>';
     echo '</div>';
+}
+
+if ((bool) $disabled_flag === true) {
+    $s = __('Controls have been disabled by the system administrator');
+    echo '<span class="bolder color_ff0">'.$s.'</span>';
 }
 
 echo '</div>';

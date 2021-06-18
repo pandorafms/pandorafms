@@ -1,6 +1,6 @@
 /* Misc utils for files.
 
-   Copyright (C) 2006 Artica ST.
+   Copyright (c) 2006-2021 Artica ST.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ namespace Pandora_File {
 	class Delete_Error : Pandora_File::File_Exception {
 	};
 
+	bool   dirExists (const string dirpath);
 	bool   fileExists (const string filename);
 	int    readFile   (const string filepath, string &result);
 	int    readBinFile (const string filepath, char **buffer);

@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -146,7 +146,7 @@ class WelcomeWindow extends Wizard
     public function run()
     {
         ui_require_css_file('new_installation_welcome_window');
-        echo '<div id="welcome_modal_window" style="display: none"; >';
+        echo '<div id="welcome_modal_window" class="invisible"; >';
 
         ?>
     <script type="text/javascript">
@@ -154,7 +154,7 @@ class WelcomeWindow extends Wizard
             target: $('#welcome_modal_window'),
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
             modal: {
-                title: "<?php echo __('Welcome to Pandora FMS'); ?>",
+                title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
                 cancel: '<?php echo __('Do not show anymore'); ?>',
                 ok: '<?php echo __('Close'); ?>'
             },
@@ -336,6 +336,7 @@ class WelcomeWindow extends Wizard
     public function loadWelcomeWindow()
     {
         global $config;
+
         $btn_configure_mail_class = 'pending';
         $btn_create_agent_class = 'pending';
         $btn_create_module_class = '';
@@ -420,7 +421,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_configure_mail',
-                'class'         => 'hole flex-row w100p '.$li_configure_mail_class,
+                'class'         => 'hole flex-row w98p '.$li_configure_mail_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -435,7 +436,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_configure_mail_class.'"',
+                            'attributes' => 'class="go '.$btn_configure_mail_class.' second_background"',
                             'name'       => 'btn_email_conf',
                             'id'         => 'btn_email_conf',
                         ],
@@ -454,7 +455,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_create_agent',
-                'class'         => 'learn_content_indented flex-row w100p '.$li_create_agent_class,
+                'class'         => 'learn_content_indented flex-row w98p '.$li_create_agent_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -469,7 +470,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_agent_class.'"',
+                            'attributes' => 'class="go '.$btn_create_agent_class.' second_background"',
                             'name'       => 'btn_create_agent',
                             'id'         => 'btn_create_agent',
                         ],
@@ -479,7 +480,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'learn_content_indented flex-row w100p '.$li_create_module_class,
+                'class'         => 'learn_content_indented flex-row w98p '.$li_create_module_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -494,7 +495,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_module_class.'"',
+                            'attributes' => 'class="go '.$btn_create_module_class.' second_background"',
                             'name'       => 'btn_create_module',
                             'id'         => 'btn_create_module',
                         ],
@@ -504,7 +505,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_monitor_actions',
-                'class'         => 'hole learn_content_indented flex-row w100p '.$li_create_alert_class,
+                'class'         => 'hole learn_content_indented flex-row w98p '.$li_create_alert_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -519,7 +520,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_alert_class.'"',
+                            'attributes' => 'class="go '.$btn_create_alert_class.' second_background"',
                             'name'       => 'btn_create_alert',
                             'id'         => 'btn_create_alert',
                         ],
@@ -529,7 +530,7 @@ class WelcomeWindow extends Wizard
             [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_discover',
-                'class'         => 'hole flex-row w100p '.$li_create_discovery_class,
+                'class'         => 'hole flex-row w98p '.$li_create_discovery_class,
                 'direct'        => 1,
                 'block_content' => [
                     [
@@ -544,7 +545,7 @@ class WelcomeWindow extends Wizard
                         'arguments' => [
                             'label'      => '',
                             'type'       => 'button',
-                            'attributes' => 'class="go '.$btn_create_discovery_class.'"',
+                            'attributes' => 'class="go '.$btn_create_discovery_class.' second_background"',
                             'name'       => 'btn_discover_devices',
                             'id'         => 'btn_discover_devices',
                         ],
@@ -557,7 +558,7 @@ class WelcomeWindow extends Wizard
             $inputs[] = [
                 'wrapper'       => 'div',
                 'block_id'      => 'div_not_working',
-                'class'         => 'hole flex-row w100p',
+                'class'         => 'hole flex-row w98p',
                 'direct'        => 1,
                 'block_content' => [
                     [

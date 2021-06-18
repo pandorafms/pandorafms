@@ -1,19 +1,38 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Favorite visual console.
+ *
+ * @category   Topology maps
+ * @package    Pandora FMS
+ * @subpackage Visual consoles
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 
 require_once $config['homedir'].'/include/functions_visual_map.php';
-
+// Breadcrumb.
+require_once $config['homedir'].'/include/class/HTML.class.php';
+ui_require_css_file('discovery');
 // ACL for the general permission
 $vconsoles_read   = check_acl($config['id_user'], 0, 'VR');
 $vconsoles_write  = check_acl($config['id_user'], 0, 'VW');
@@ -31,7 +50,8 @@ if (!$vconsoles_read && !$vconsoles_write && !$vconsoles_manage) {
     exit;
 }
 
-if (!$is_metaconsole) {
+
+if ($is_metaconsole === false) {
     $url_visual_console                 = 'index.php?sec=network&sec2=godmode/reporting/map_builder';
     $url_visual_console_favorite        = 'index.php?sec=network&sec2=godmode/reporting/visual_console_favorite';
     $url_visual_console_template        = 'index.php?sec=network&sec2=enterprise/godmode/reporting/visual_console_template';
@@ -41,46 +61,76 @@ if (!$is_metaconsole) {
     $url_visual_console_favorite        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_favorite';
     $url_visual_console_template        = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_template';
     $url_visual_console_template_wizard = 'index.php?sec=screen&sec2=screens/screens&action=visualmap_wizard';
-    $url_visual_console_manager         = 'index.php?sec=screen&sec2=enterprise/extensions/visual_console_manager';
 }
 
 $buttons['visual_console'] = [
     'active' => false,
-    'text'   => '<a href="'.$url_visual_console.'">'.html_print_image('images/visual_console.png', true, ['title' => __('Visual Console List')]).'</a>',
+    'text'   => '<a href="'.$url_visual_console.'">'.html_print_image(
+        'images/visual_console.png',
+        true,
+        [
+            'title' => __('Visual Console List'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 $buttons['visual_console_favorite'] = [
     'active' => true,
-    'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image('images/list.png', true, ['title' => __('Visual Favourite Console')]).'</a>',
+    'text'   => '<a href="'.$url_visual_console_favorite.'">'.html_print_image(
+        'images/list.png',
+        true,
+        [
+            'title' => __('Visual Favourite Console'),
+            'class' => 'invert_filter',
+        ]
+    ).'</a>',
 ];
 
 if ($is_enterprise !== ENTERPRISE_NOT_HOOK && $vconsoles_manage) {
     $buttons['visual_console_template'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image('images/templates.png', true, ['title' => __('Visual Console Template')]).'</a>',
+        'text'   => '<a href="'.$url_visual_console_template.'">'.html_print_image(
+            'images/templates.png',
+            true,
+            [
+                'title' => __('Visual Console Template'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
 
     $buttons['visual_console_template_wizard'] = [
         'active' => false,
-        'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image('images/wand.png', true, ['title' => __('Visual Console Template Wizard')]).'</a>',
+        'text'   => '<a href="'.$url_visual_console_template_wizard.'">'.html_print_image(
+            'images/wand.png',
+            true,
+            [
+                'title' => __('Visual Console Template Wizard'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>',
     ];
-
-    if ($is_metaconsole) {
-        $buttons['visual_console_manager'] = [
-            'active' => false,
-            'text'   => '<a href="'.$url_visual_console_manager.'">'.html_print_image('images/builder.png', true, ['title' => __('Visual Console Manager')]).'</a>',
-        ];
-    }
 }
 
-if (!$is_metaconsole) {
-    ui_print_page_header(
-        __('Reporting').' &raquo; '.__('Visual Favourite Console'),
+if ($is_metaconsole === false) {
+    ui_print_standard_header(
+        __('Favourite Visual Console'),
         'images/op_reporting.png',
         false,
-        'map_builder_favorite',
-        false,
-        $buttons
+        '',
+        true,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
     );
 } else {
     ui_meta_print_header(
@@ -122,7 +172,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $return_all_group,
             'ag_group',
             $ag_group,
-            'this.form.submit();',
+            '',
             '',
             0,
             false,
@@ -133,7 +183,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
         );
         echo "</li></ul></li><li class='second_elements'><ul><li>";
         echo __('Group Recursion');
-        html_print_checkbox('recursion', 1, $recursion, false, false, 'this.form.submit()');
+        html_print_checkbox('recursion', 1, $recursion, false, false, '');
         echo '</li><li>';
         echo "<input name='search_visual_console' type='submit' class='sub search' value='".__('Search')."'>";
         echo '</li></ul></li></ul>';
@@ -150,7 +200,7 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $ag_groups = [];
             $ag_groups = (array) $ag_group;
             if ($recursion) {
-                $ag_groups = groups_get_id_recursive($ag_group, true);
+                $ag_groups = groups_get_children_ids($ag_group, true);
             }
         } else if ($own_info['is_admin']) {
             $returnAllGroups = 1;
@@ -160,7 +210,13 @@ if (!$own_info['is_admin'] && !check_acl($config['id_user'], 0, 'AW')) {
             $filters['group'] = array_flip($ag_groups);
         }
 
-        $favorite_array = visual_map_get_user_layouts($config['id_user'], false, $filters, $returnAllGroups, true);
+        $favorite_array = visual_map_get_user_layouts(
+            $config['id_user'],
+            false,
+            $filters,
+            $returnAllGroups,
+            true
+        );
 
         echo "<div id='is_favourite'>";
         if ($favorite_array == false) {

@@ -1,17 +1,32 @@
 <?php
+/**
+ * Tactical View.
+ *
+ * @category   View
+ * @package    Pandora FMS
+ * @subpackage Monitoring.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
 
 require_once 'include/functions_events.php';
@@ -46,17 +61,27 @@ if ($config['realtimestats'] == 0) {
     $updated_time .= '</a>';
 } else {
     // $updated_info = __("Updated at realtime");
-        $updated_info = '';
+    $updated_info = '';
 }
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Tactical view'),
     '',
     false,
-    'tactical_view',
+    '',
     false,
-    $updated_time
+    (array) $updated_time,
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Views'),
+        ],
+    ]
 );
 
 // Currently this function makes loading this page is impossible. Change
@@ -115,23 +140,28 @@ if (!empty($all_data)) {
     $data['server_sanity'] = format_numeric((100 - $data['module_sanity']), 1);
 }
 
-echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 30em; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<table border=0 class="w100p"><tr>';
+echo '<td class="tactical_left_column" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$bg_color = 'background-color: #222';
+if ($config['style'] !== 'pandora_black') {
+    $bg_color = 'background-color: #fff';
+}
+
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'info_table no-td-borders td-bg-white';
+$table->class = 'info_table no-td-borders';
 $table->cellpadding = 2;
 $table->cellspacing = 2;
 $table->border = 0;
 $table->head = [];
 $table->data = [];
-$table->style = [];
+$table->style = [$bg_color];
 
 $stats = reporting_get_stats_indicators($data, 120, 10, false);
-$status = '<table class="status_tactical">';
+$status = '<table class="status_tactical bg_white">';
 foreach ($stats as $stat) {
     $status .= '<tr><td><b>'.$stat['title'].'</b>'.'</td><td>'.$stat['graph'].'</td></tr>';
 }
@@ -175,7 +205,7 @@ ui_toggle(
 
 echo '</td>';
 // Left column
-echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
+echo '<td class="w75p pdd_t_0px" id="rightcolumn">';
 
 // ---------------------------------------------------------------------
 // Last events information
@@ -209,7 +239,7 @@ if ($is_admin) {
     include $config['homedir'].'/godmode/servers/servers.build_table.php';
 }
 
-$out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies mrgn_top_15px" width=100%><tr><td>';
     $out .= '<fieldset class="databox tactical_set" id="total_event_graph">
 			<legend>'.__('Event graph').'</legend>'.html_print_image('images/spinner.gif', true, ['id' => 'spinner_total_event_graph']).'</fieldset>';
     $out .= '</td><td>';
@@ -235,7 +265,7 @@ echo '</tr></table>';
         parameters["page"] = "include/ajax/events";
         parameters["total_event_graph"] = 1;
 
-        $.ajax({type: "GET",url: "ajax.php",data: parameters,
+        $.ajax({type: "GET",url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",data: parameters,
             success: function(data) {
                 $("#spinner_total_event_graph").hide();
                 $("#total_event_graph").append(data);
@@ -245,7 +275,7 @@ echo '</tr></table>';
         delete parameters["total_event_graph"];
         parameters["graphic_event_group"] = 1;
 
-        $.ajax({type: "GET",url: "ajax.php",data: parameters,
+        $.ajax({type: "GET",url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",data: parameters,
             success: function(data) {
                 $("#spinner_graphic_event_group").hide();
                 $("#graphic_event_group").append(data);

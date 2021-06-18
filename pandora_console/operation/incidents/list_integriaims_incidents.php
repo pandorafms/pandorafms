@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,25 +18,25 @@ require_once 'include/functions_integriaims.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'IR')) {
-    // Doesn't have access to this page.
-    db_pandora_audit('ACL Violation', 'Trying to access IntegriaIMS ticket creation');
-    include 'general/noaccess.php';
-    exit;
-}
-
 // Header tabs.
 $onheader = integriaims_tabs('list_tab');
-ui_print_page_header(__('Integria IMS Tickets'), '', false, '', false, $onheader);
+ui_print_page_header(
+    __('Integria IMS Tickets'),
+    '',
+    false,
+    'integria_tab',
+    false,
+    $onheader
+);
 
 // Check if Integria integration enabled.
 if ($config['integria_enabled'] == 0) {
-    ui_print_error_message(__('Integria integration must be enabled in Pandora setup'));
+    ui_print_error_message(__('In order to access ticket management system, integration with Integria IMS must be enabled and properly configured'));
     return;
 }
 
 // Check connection to Integria IMS API.
-$has_connection = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_login', []);
+$has_connection = integria_api_call(null, null, null, null, 'get_login', []);
 
 if ($has_connection === false) {
     ui_print_error_message(__('Integria IMS API is not reachable'));
@@ -63,10 +63,10 @@ $delete_incident = get_parameter('delete_incident');
 if ($delete_incident) {
     // Call Integria IMS API method to delete an incident.
     $result_api_call_delete = integria_api_call(
-        $config['integria_hostname'],
-        $config['integria_user'],
-        $config['integria_pass'],
-        $config['integria_api_pass'],
+        null,
+        null,
+        null,
+        null,
         'delete_incident',
         [$delete_incident]
     );
@@ -179,7 +179,7 @@ $table->data[2][3] .= html_print_input_text_extended(
     50,
     false,
     '',
-    'style="margin-left:5px;" placeholder="'.__('Created to').'"',
+    'class="mrgn_lft_5px" placeholder="'.__('Created to').'"',
     true
 );
 
@@ -206,10 +206,10 @@ $decode_csv = base64_encode(json_encode($tickets_filters));
 
 
 // ---- PRINT TABLE FILTERS ----
-$integria_incidents_form = '<form method="post" action="'.$url.'" style="padding:0px;">';
+$integria_incidents_form = '<form method="post" action="'.$url.'" class="pdd_0px">';
 $integria_incidents_form .= html_print_table($table, true);
-$integria_incidents_form .= '<div style="width:100%; text-align:right;">';
-$integria_incidents_form .= '<div style="float:right; margin-left: 5px;">'.html_print_button(
+$integria_incidents_form .= '<div class="w100p right">';
+$integria_incidents_form .= '<div class="float-right mrgn_lft_5px">'.html_print_button(
     __('Export to CSV'),
     'csv_export',
     false,
@@ -259,9 +259,7 @@ $table->head[4] = __('Prior');
 $table->head[5] = __('Updated/Started');
 $table->head[6] = __('Creator');
 $table->head[7] = __('Owner');
-if (check_acl($config['id_user'], 0, 'IW') || check_acl($config['id_user'], 0, 'IM')) {
-    $table->head[8] = '';
-}
+$table->head[8] = '';
 
 $table->data = [];
 $i = 0;
@@ -277,7 +275,7 @@ foreach ($incidents_paginated as $key => $value) {
 
     $table->data[$i][0] = '#'.$array_get_incidents[$key][0];
     $table->data[$i][1] = '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/dashboard_detail_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
-    $table->data[$i][1] .= $array_get_incidents[$key][3];
+    $table->data[$i][1] .= ui_print_truncate_text($array_get_incidents[$key][3], 160, false);
     $table->data[$i][1] .= '</a>';
     $table->data[$i][2] = $group_incident[$array_get_incidents[$key][8]];
     $table->data[$i][3] = $status_incident[$array_get_incidents[$key][6]].' / '.$resolution_incident[$array_get_incidents[$key][12]];
@@ -287,18 +285,14 @@ foreach ($incidents_paginated as $key => $value) {
     $table->data[$i][7] = $array_get_incidents[$key][5];
     $table->data[$i][8] = '';
     $table->cellclass[$i][8] = 'action_buttons';
-    if (check_acl($config['id_user'], 0, 'IW')) {
-        $table->data[$i][8] .= '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
-        $table->data[$i][8] .= html_print_image('images/config.png', true, ['title' => __('Edit')]);
-        $table->data[$i][8] .= '</a>';
-    }
+    $table->data[$i][8] .= '<a href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident&incident_id='.$array_get_incidents[$key][0]).'">';
+    $table->data[$i][8] .= html_print_image('images/config.png', true, ['title' => __('Edit')]);
+    $table->data[$i][8] .= '</a>';
 
-    if (check_acl($config['id_user'], 0, 'IM')) {
-        $table->data[$i][8] .= '<a id="link_delete_incident" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&delete_incident='.$array_get_incidents[$key][0]).'"        
-        onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-        $table->data[$i][8] .= html_print_image('images/cross.png', true, ['title' => __('Delete')]);
-        $table->data[$i][8] .= '</a>';
-    }
+    $table->data[$i][8] .= '<a id="link_delete_incident" href="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&delete_incident='.$array_get_incidents[$key][0]).'"        
+    onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+    $table->data[$i][8] .= html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']);
+    $table->data[$i][8] .= '</a>';
 
     $i++;
 }
@@ -313,13 +307,11 @@ if (empty($table->data) === true) {
 }
 
 // Show button to create incident.
-if (check_acl($config['id_user'], 0, 'IR')) {
-    echo '<form method="POST" action="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident').'">';
-        echo '<div style="width: 100%; text-align:right;">';
-            html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub next"');
-        echo '</div>';
-    echo '</form>';
-}
+echo '<form method="POST" action="'.ui_get_full_url('index.php?sec=incident&sec2=operation/incidents/configure_integriaims_incident').'">';
+    echo '<div class="wi100p right">';
+        html_print_submit_button(__('Create'), 'create_new_incident', false, 'class="sub next"');
+    echo '</div>';
+echo '</form>';
 
 // Datapicker library for show calendar.
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');

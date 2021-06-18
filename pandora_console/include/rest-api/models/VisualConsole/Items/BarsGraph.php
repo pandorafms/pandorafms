@@ -190,11 +190,13 @@ final class BarsGraph extends Item
      *
      * @override Item::fetchDataFromDB.
      */
-    protected static function fetchDataFromDB(array $filter): array
-    {
+    protected static function fetchDataFromDB(
+        array $filter,
+        ?float $ratio=0
+    ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter);
+        $data = parent::fetchDataFromDB($filter, $ratio);
 
         /*
          * Retrieve extra data.
@@ -317,7 +319,10 @@ final class BarsGraph extends Item
             }
         }
 
-        $moduleData = \get_bars_module_data($moduleId);
+        $moduleData = \get_bars_module_data(
+            $moduleId,
+            ($typeGraph !== 'horizontal')
+        );
         if ($moduleData !== false && is_array($moduleData) === true) {
             array_pop($moduleData);
         }
@@ -340,57 +345,78 @@ final class BarsGraph extends Item
             $height = (int) $data['height'];
         }
 
-        if ($typeGraph === 'horizontal') {
-            $graph = \hbar_graph(
-                $moduleData,
-                $width,
-                $height,
-                $color,
-                [],
-                [],
+        if (empty($moduleData) === true) {
+            $image = ui_get_full_url(
                 'images/image_problem_area.png',
-                '',
-                '',
-                $waterMark,
-                $config['fontpath'],
-                $config['fontsize'],
-                '',
-                2,
-                $config['homeurl'],
-                $backGroundColor,
-                $gridColor,
-                null,
-                null,
-                true
-            );
-        } else {
-            $graph = \vbar_graph(
-                $moduleData,
-                $width,
-                $height,
-                $color,
-                [],
-                [],
-                \ui_get_full_url(
-                    'images/image_problem_area.png',
-                    false,
-                    false,
-                    false
-                ),
-                '',
-                '',
-                $waterMark,
-                $config['fontpath'],
-                $config['fontsize'],
-                '',
-                2,
-                $config['homeurl'],
-                $backGroundColor,
-                true,
                 false,
-                $gridColor,
-                true
+                false,
+                false
             );
+            $rc = file_get_contents($image);
+            if ($rc !== false) {
+                $graph = base64_encode($rc);
+            } else {
+                $graph = graph_nodata_image(
+                    // Width.
+                    $width,
+                    // Height.
+                    $height,
+                    // Type.
+                    'hbar',
+                    // Text.
+                    '',
+                    // Percent.
+                    false,
+                    // Base64.
+                    true
+                );
+            }
+        } else {
+            if ($typeGraph === 'horizontal') {
+                $graph = \hbar_graph(
+                    $moduleData,
+                    $width,
+                    $height,
+                    $color,
+                    [],
+                    [],
+                    'images/image_problem_area.png',
+                    '',
+                    '',
+                    $waterMark,
+                    $config['fontpath'],
+                    $config['fontsize'],
+                    '',
+                    2,
+                    $config['homeurl'],
+                    $backGroundColor,
+                    $gridColor,
+                    null,
+                    null,
+                    true
+                );
+            } else {
+                $options = [];
+                $options['generals']['rotate'] = true;
+                $options['generals']['forceTicks'] = true;
+                $options['generals']['arrayColors'] = $color;
+                $options['grid']['backgroundColor'] = $backGroundColor;
+                $options['y']['color'] = $backGroundColor;
+                $options['x']['color'] = $backGroundColor;
+
+                if ($ratio != 0) {
+                    $options['x']['font']['size'] = (($config['font_size'] * $ratio) + 1);
+                    $options['x']['font']['color'] = $gridColor;
+                    $options['y']['font']['size'] = (($config['font_size'] * $ratio) + 1);
+                    $options['y']['font']['color'] = $gridColor;
+                }
+
+                $options['generals']['pdf']['width'] = $width;
+                $options['generals']['pdf']['width'] = $width;
+                $options['generals']['pdf']['height'] = $height;
+                $options['x']['labelWidth'] = $sizeLabelTickWidth;
+                $graph = vbar_graph($moduleData, $options, 2);
+            }
         }
 
         // Restore connection.
@@ -483,16 +509,17 @@ final class BarsGraph extends Item
             $inputs[] = [
                 'label'     => __('Agent'),
                 'arguments' => [
-                    'type'               => 'autocomplete_agent',
-                    'name'               => 'agentAlias',
-                    'id_agent_hidden'    => $values['agentId'],
-                    'name_agent_hidden'  => 'agentId',
-                    'server_id_hidden'   => $values['metaconsoleId'],
-                    'name_server_hidden' => 'metaconsoleId',
-                    'return'             => true,
-                    'module_input'       => true,
-                    'module_name'        => 'moduleId',
-                    'module_none'        => false,
+                    'type'                    => 'autocomplete_agent',
+                    'name'                    => 'agentAlias',
+                    'id_agent_hidden'         => $values['agentId'],
+                    'name_agent_hidden'       => 'agentId',
+                    'server_id_hidden'        => $values['metaconsoleId'],
+                    'name_server_hidden'      => 'metaconsoleId',
+                    'return'                  => true,
+                    'module_input'            => true,
+                    'module_name'             => 'moduleId',
+                    'module_none'             => false,
+                    'get_only_string_modules' => true,
                 ],
             ];
 
@@ -500,14 +527,15 @@ final class BarsGraph extends Item
             $inputs[] = [
                 'label'     => __('Module'),
                 'arguments' => [
-                    'type'           => 'autocomplete_module',
-                    'fields'         => $fields,
-                    'name'           => 'moduleId',
-                    'selected'       => $values['moduleId'],
-                    'return'         => true,
-                    'sort'           => false,
-                    'agent_id'       => $values['agentId'],
-                    'metaconsole_id' => $values['metaconsoleId'],
+                    'type'                    => 'autocomplete_module',
+                    'fields'                  => $fields,
+                    'name'                    => 'moduleId',
+                    'selected'                => $values['moduleId'],
+                    'return'                  => true,
+                    'sort'                    => false,
+                    'agent_id'                => $values['agentId'],
+                    'metaconsole_id'          => $values['metaconsoleId'],
+                    'get_only_string_modules' => true,
                 ],
             ];
         }

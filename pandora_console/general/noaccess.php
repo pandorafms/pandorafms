@@ -29,7 +29,6 @@
 }
 .modalheadertex{
     color:#000;
-    font-family:Nunito;
     line-height: 40px;
     font-size: 23pt;
     margin-bottom:30px;
@@ -66,7 +65,6 @@
 }
 .modalokbuttontex{
     color:#82b92e;
-    font-family:Nunito;
     font-size:13pt;
 }
 .modalgobutto{
@@ -80,7 +78,6 @@
 }
 .modalgobuttontex{
 color:#82b92e;
-font-family:Nunito;
 font-size:10pt;
 }
 
@@ -136,8 +133,13 @@ font-size:10pt;
             <div class='modalcontenttex'>
                 <?php
                 echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.');
-                    echo '<br/> <br/>';
-                    echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
+                echo '<br/> <br/>';
+                echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
+                if ($config['logged'] == false) {
+                    if (session_status() === PHP_SESSION_ACTIVE) {
+                        session_destroy();
+                    }
+                }
                 ?>
                       
             </div>

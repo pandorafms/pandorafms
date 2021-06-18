@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.743
-%define release     200130
+%define version     7.0NG.755
+%define release     210618
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -48,7 +48,7 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
+cp -aRf . $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
 install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_console
@@ -57,6 +57,12 @@ install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/l
 rm -rf $RPM_BUILD_ROOT
 
 %post
+# Upgrading.
+if [ "$1" -eq "1" ]; then
+	echo "Updating the database schema."
+	/usr/bin/php %{prefix}/pandora_console/godmode/um_client/updateMR.php 2>/dev/null
+fi
+
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
 chmod +x /etc/init.d/pandora_websocket_engine
@@ -77,7 +83,7 @@ fi
 %preun
 
 # Upgrading
-if [ "$1" = "1" ]; then
+if [ "$1" -eq "1" ]; then
         exit 0
 fi
 
@@ -86,3 +92,4 @@ fi
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
+%attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console

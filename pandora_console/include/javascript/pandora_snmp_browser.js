@@ -1,3 +1,4 @@
+/* globals $,jQuery */
 // Load the SNMP tree via AJAX
 function snmpBrowse() {
   // Empty the SNMP tree
@@ -15,6 +16,7 @@ function snmpBrowse() {
 
   // Read the target IP and community
   var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
   var community = $("#text-community").val();
   var starting_oid = $("#text-starting_oid").val();
   var snmp_version = $("#snmp_browser_version").val();
@@ -31,6 +33,7 @@ function snmpBrowse() {
 
   var params = {};
   params["target_ip"] = target_ip;
+  params["target_port"] = target_port;
   params["community"] = community;
   params["starting_oid"] = starting_oid;
   params["snmp_browser_version"] = snmp_version;
@@ -41,8 +44,9 @@ function snmpBrowse() {
   params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
   params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
   params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  params["server_to_exec"] = server_to_exec;
   params["action"] = "snmptree";
-  params["page"] = "operation/snmpconsole/snmp_browser";
+  params["page"] = "include/ajax/snmp_browser.ajax";
 
   // Browse!
   jQuery.ajax({
@@ -50,13 +54,82 @@ function snmpBrowse() {
     type: "POST",
     url: (action = ajax_url),
     async: true,
-    timeout: 120000,
     success: function(data) {
       // Hide the spinner
       $("#spinner").css("display", "none");
 
       // Load the SNMP tree
       $("#snmp_browser").html(data);
+
+      // Manage click and select events.
+      snmp_browser_events_manage();
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      $("#spinner").css("display", "none");
+      $("#snmp_browser").html(
+        "<p>Status: " +
+          textStatus +
+          "</p><p>" +
+          "Error: " +
+          errorThrown +
+          "</p><p>" +
+          XMLHttpRequest.responseText +
+          "</p>"
+      );
+    }
+  });
+}
+
+function snmp_browser_events_manage() {
+  // Hide create buttons.
+  $("#snmp_create_buttons").hide();
+
+  $("input[id^=checkbox-create]").change(function() {
+    if ($(this).is(":checked")) {
+      $("#snmp_create_buttons").show();
+      var id_input = $(this).attr("id");
+      id_input = id_input.match("checkbox-create_([0-9]+)");
+      var checks = $("#ul_" + id_input[1])
+        .find("input")
+        .map(function() {
+          if (this.id.indexOf("checkbox-create_") != -1) {
+            return this.id;
+          }
+        })
+        .get();
+
+      checks.forEach(function(product, index) {
+        $("#" + product).prop("checked", "true");
+      });
+    } else {
+      var id_input = $(this).attr("id");
+
+      id_input = id_input.match("checkbox-create_([0-9]+)");
+      var checks = $("#ul_" + id_input[1])
+        .find("input")
+        .map(function() {
+          if (this.id.indexOf("checkbox-create_") != -1) {
+            return this.id;
+          }
+        })
+        .get();
+
+      checks.forEach(function(product, index) {
+        $("#" + product).prop("checked", false);
+      });
+    }
+
+    // Hide buttons if no ckbox is checked.
+    var checked = false;
+    $("input[id^=checkbox-create]").each(function() {
+      checked = $(this).is(":checked");
+      if (checked == true) {
+        return false;
+      }
+    });
+
+    if (checked == false) {
+      $("#snmp_create_buttons").hide();
     }
   });
 }
@@ -172,27 +245,26 @@ function snmpGet(oid) {
     custom_action = "";
   }
 
-  // Prepare the AJAX call
-  var params = [
-    "target_ip=" + target_ip,
-    "community=" + community,
-    "oid=" + oid,
-    "snmp_browser_version=" + snmp_version,
-    "snmp3_browser_auth_user=" + snmp3_auth_user,
-    "snmp3_browser_security_level=" + snmp3_security_level,
-    "snmp3_browser_auth_method=" + snmp3_auth_method,
-    "snmp3_browser_auth_pass=" + snmp3_auth_pass,
-    "snmp3_browser_privacy_method=" + snmp3_privacy_method,
-    "snmp3_browser_privacy_pass=" + snmp3_privacy_pass,
-    "server_to_exec=" + server_to_exec,
-    "action=" + "snmpget",
-    "custom_action=" + custom_action,
-    "page=operation/snmpconsole/snmp_browser"
-  ];
+  var params = {};
+
+  params["target_ip"] = target_ip;
+  params["community"] = community;
+  params["oid"] = oid;
+  params["snmp_browser_version"] = snmp_version;
+  params["snmp3_browser_auth_user"] = snmp3_auth_user;
+  params["snmp3_browser_security_level"] = snmp3_security_level;
+  params["snmp3_browser_auth_method"] = snmp3_auth_method;
+  params["snmp3_browser_auth_pass"] = snmp3_auth_pass;
+  params["snmp3_browser_privacy_method"] = snmp3_privacy_method;
+  params["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  params["server_to_exec"] = server_to_exec;
+  params["action"] = "snmpget";
+  params["custom_action"] = custom_action;
+  params["page"] = "include/ajax/snmp_browser.ajax";
 
   // SNMP get!
   jQuery.ajax({
-    data: params.join("&"),
+    data: params,
     type: "POST",
     url: (action = ajax_url),
     async: true,
@@ -224,7 +296,7 @@ function hideOIDData() {
 // Search the SNMP tree for a matching string
 function searchText() {
   var text = $("#text-search_text").val();
-  var regexp = new RegExp(text);
+  var regexp = new RegExp(text, "i");
   var search_matches_translation = $(
     "#hidden-search_matches_translation"
   ).val();
@@ -348,6 +420,7 @@ function searchNextMatch() {
   var id = $(".match:eq(" + search_index + ")").attr("id");
 
   // Scroll
+  var body = $("html, body");
   $("#snmp_browser").animate(
     {
       scrollTop:
@@ -355,7 +428,16 @@ function searchNextMatch() {
         $("#" + id).offset().top -
         $("#snmp_browser").offset().top
     },
-    1000
+    1000,
+    function() {
+      // Blink.
+      $("#" + id)
+        .fadeOut(100)
+        .fadeIn(100)
+        .fadeOut(100)
+        .fadeIn(100)
+        .focus();
+    }
   );
 
   // Save the search index
@@ -384,7 +466,16 @@ function searchPrevMatch() {
         $("#" + id).offset().top -
         $("#snmp_browser").offset().top
     },
-    1000
+    1000,
+    function() {
+      // Blink.
+      $("#" + id)
+        .fadeOut(100)
+        .fadeIn(100)
+        .fadeOut(100)
+        .fadeIn(100)
+        .focus();
+    }
   );
 
   // Save the search index
@@ -422,6 +513,7 @@ function checkSNMPVersion() {
 function snmpBrowserWindow() {
   // Keep elements in the form and the SNMP browser synced
   $("#text-target_ip").val($("#text-ip_target").val());
+  $("#target_port").val($("#text-tcp_port").val());
   $("#text-community").val($("#text-snmp_community").val());
   $("#snmp_browser_version").val($("#snmp_version").val());
   $("#text-snmp3_browser_auth_user").val($("#text-snmp3_auth_user").val());
@@ -448,7 +540,7 @@ function snmpBrowserWindow() {
         opacity: 0.5,
         background: "black"
       },
-      width: 920,
+      width: 1000,
       height: 500
     });
 }
@@ -463,4 +555,116 @@ function setOID() {
 
   // Close the SNMP browser
   $(".ui-dialog-titlebar-close").trigger("click");
+}
+
+/**
+ * Create module on selected module_target (agent, network component or policy).
+ *
+ * @param string module_target Target to create module.
+ * @param return_values Return snmp values.
+ */
+function snmp_browser_create_modules(module_target, return_post = true) {
+  var id_check = $("#ul_0")
+    .find("input")
+    .map(function() {
+      if (this.id.indexOf("checkbox-create_") != -1) {
+        if ($(this).is(":checked")) {
+          return this.id;
+        }
+      }
+    })
+    .get();
+
+  var target_ip = $("#text-target_ip").val();
+  var target_port = $("#target_port").val();
+  var community = $("#text-community").val();
+  var snmp_version = $("#snmp_browser_version").val();
+  var snmp3_auth_user = $("#text-snmp3_browser_auth_user").val();
+  var snmp3_security_level = $("#snmp3_browser_security_level").val();
+  var snmp3_auth_method = $("#snmp3_browser_auth_method").val();
+  var snmp3_auth_pass = $("#password-snmp3_browser_auth_pass").val();
+  var snmp3_privacy_method = $("#snmp3_browser_privacy_method").val();
+  var snmp3_privacy_pass = $("#password-snmp3_browser_privacy_pass").val();
+
+  var custom_action = $("#hidden-custom_action").val();
+  if (custom_action == undefined) {
+    custom_action = "";
+  }
+
+  var oids = [];
+  id_check.forEach(function(product, index) {
+    var oid = $("#" + product)
+      .siblings("a")
+      .attr("href");
+    if (oid.indexOf('javascript: snmpGet("') != -1) {
+      oid = oid.replace('javascript: snmpGet("', "");
+      oid = oid.replace('");', "");
+      oids.push(oid);
+    }
+  });
+
+  var snmp_conf = {};
+
+  snmp_conf["target_ip"] = target_ip;
+  snmp_conf["target_port"] = target_port;
+  snmp_conf["community"] = community;
+  snmp_conf["oids"] = oids;
+  snmp_conf["snmp_browser_version"] = snmp_version;
+  snmp_conf["snmp3_browser_auth_user"] = snmp3_auth_user;
+  snmp_conf["snmp3_browser_security_level"] = snmp3_security_level;
+  snmp_conf["snmp3_browser_auth_method"] = snmp3_auth_method;
+  snmp_conf["snmp3_browser_auth_pass"] = snmp3_auth_pass;
+  snmp_conf["snmp3_browser_privacy_method"] = snmp3_privacy_method;
+  snmp_conf["snmp3_browser_privacy_pass"] = snmp3_privacy_pass;
+  snmp_conf["module_target"] = module_target;
+  snmp_conf["custom_action"] = custom_action;
+
+  var snmp_data = [];
+
+  for (var snmp_data_name in snmp_conf) {
+    snmp_data.push({
+      name: snmp_data_name,
+      value: snmp_conf[snmp_data_name]
+    });
+  }
+
+  if (return_post) {
+    return snmp_data;
+  } else {
+    var params = {};
+
+    params["method"] = "snmp_browser_create_modules";
+    params["module_target"] = module_target;
+    params["page"] = "include/ajax/snmp_browser.ajax";
+    params["snmp_extradata"] = snmp_data;
+
+    $("input[name=create_modules_" + module_target + "]").removeClass(
+      "sub add"
+    );
+    $("input[name=create_modules_" + module_target + "]").addClass("sub spinn");
+
+    $("#dialog_error").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
+
+    $("#dialog_success").on("dialogclose", function(event) {
+      $("input[name=create_modules_" + module_target + "]").removeClass(
+        "sub spinn"
+      );
+      $("input[name=create_modules_" + module_target + "]").addClass("sub add");
+    });
+
+    $.ajax({
+      method: "post",
+      url: "ajax.php",
+      data: params,
+      dataType: "html",
+      success: function(data) {
+        snmp_show_result_message(data);
+      }
+    });
+  }
 }

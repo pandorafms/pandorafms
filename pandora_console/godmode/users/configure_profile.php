@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,11 +37,25 @@ if (!is_metaconsole()) {
     $buttons = [
         'user'    => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image('images/gm_users.png', true, ['title' => __('User management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
+                'images/gm_users.png',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
         'profile' => [
             'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image('images/profiles.png', true, ['title' => __('Profile management')]).'</a>',
+            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
+                'images/profiles.png',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
         ],
     ];
 
@@ -70,11 +84,6 @@ if ($id_profile || $new_profile) {
     if ($new_profile) {
         // Name
         $name = '';
-
-        // Incidents
-        $incident_view = 0;
-        $incident_edit = 0;
-        $incident_management = 0;
 
         // Agents
         $agent_view = 0;
@@ -121,7 +130,7 @@ if ($id_profile || $new_profile) {
         if ($profile === false) {
             ui_print_error_message(__('There was a problem loading profile')).'</table>';
             echo '</div>';
-            echo '<div style="clear:both">&nbsp;</div>';
+            echo '<div id="both">&nbsp;</div>';
             echo '</div>';
             echo '<div id="foot">';
             include 'general/footer.php';
@@ -133,11 +142,6 @@ if ($id_profile || $new_profile) {
 
         // Name
         $name = $profile['name'];
-
-        // Incidents
-        $incident_view = (bool) $profile['incident_view'];
-        $incident_edit = (bool) $profile['incident_edit'];
-        $incident_management = (bool) $profile['incident_management'];
 
         // Agents
         $agent_view = (bool) $profile['agent_view'];
@@ -179,11 +183,11 @@ if ($id_profile || $new_profile) {
 
         $id_audit = db_pandora_audit(
             'User management',
-            'Edit profile '.$name
+            'Edit profile '.io_safe_output($name)
         );
         enterprise_include_once('include/functions_audit.php');
 
-        $info = 'Name: '.$name.' Incident view: '.$incident_view.' Incident edit: '.$incident_edit.' Incident management: '.$incident_management.' Agent view: '.$agent_view.' Agent edit: '.$agent_edit.' Agent disable: '.$agent_disable.' Alert edit: '.$alert_edit.' Alert management: '.$alert_management.' User management: '.$user_management.' DB management: '.$db_management.' Event view: '.$event_view.' Event edit: '.$event_edit.' Event management: '.$event_management.' Report view: '.$report_view.' Report edit: '.$report_edit.' Report management: '.$report_management.' Network map view: '.$map_view.' Network map edit: '.$map_edit.' Network map management: '.$map_management.' Visual console view: '.$vconsole_view.' Visual console edit: '.$vconsole_edit.' Visual console management: '.$vconsole_management.' '.get_product_name().' Management: '.$pandora_management;
+        $info = 'Name: '.$name.' Agent view: '.$agent_view.' Agent edit: '.$agent_edit.' Agent disable: '.$agent_disable.' Alert edit: '.$alert_edit.' Alert management: '.$alert_management.' User management: '.$user_management.' DB management: '.$db_management.' Event view: '.$event_view.' Event edit: '.$event_edit.' Event management: '.$event_management.' Report view: '.$report_view.' Report edit: '.$report_edit.' Report management: '.$report_management.' Network map view: '.$map_view.' Network map edit: '.$map_edit.' Network map management: '.$map_management.' Visual console view: '.$vconsole_view.' Visual console edit: '.$vconsole_edit.' Visual console management: '.$vconsole_management.' '.get_product_name().' Management: '.$pandora_management;
 
         enterprise_hook('audit_pandora_enterprise', [$id_audit, $info]);
 
@@ -303,21 +307,6 @@ if ($id_profile || $new_profile) {
     $row['name'] = __('Manage visual console');
     $row['input'] = html_print_checkbox('vconsole_management', 1, $vconsole_management, true, false, 'autoclick_profile_users(\'vconsole_management\', \'vconsole_view\', \'vconsole_edit\')');
     $table->data['VM'] = $row;
-    $table->data[] = '<hr>';
-
-    // Incidents
-    $row = [];
-    $row['name'] = __('View incidents');
-    $row['input'] = html_print_checkbox('incident_view', 1, $incident_view, true);
-    $table->data['IR'] = $row;
-    $row = [];
-    $row['name'] = __('Edit incidents');
-    $row['input'] = html_print_checkbox('incident_edit', 1, $incident_edit, true, false, 'autoclick_profile_users(\'incident_edit\', \'incident_view\', \'false\')');
-    $table->data['IW'] = $row;
-    $row = [];
-    $row['name'] = __('Manage incidents');
-    $row['input'] = html_print_checkbox('incident_management', 1, $incident_management, true, false, 'autoclick_profile_users(\'incident_management\', \'incident_view\', \'incident_edit\');');
-    $table->data['IM'] = $row;
     $table->data[] = '<hr>';
 
     $disable_option = 'javascript: return false;';

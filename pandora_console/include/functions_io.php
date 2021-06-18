@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -116,6 +116,13 @@ function io_safe_input($value)
     // TICKET: 1223
     $valueHtmlEncode = str_replace('&deg;', '&#176;', $valueHtmlEncode);
 
+    // Fixed the ¿ charater.
+    $valueHtmlEncode = str_replace('&iquest;', '¿', $valueHtmlEncode);
+    // Fixed the ¡ charater.
+    $valueHtmlEncode = str_replace('&iexcl;', '¡', $valueHtmlEncode);
+    // Fixed the € charater.
+    $valueHtmlEncode = str_replace('&euro;', '€', $valueHtmlEncode);
+
     // Replace some characteres for html entities
     for ($i = 0; $i < 33; $i++) {
         $valueHtmlEncode = str_ireplace(
@@ -217,10 +224,10 @@ function io_safe_output_array(&$item, $key=false, $utf8=true)
  * plain ascii file, to render to console, or to put in any kind of data field
  * who doesn't make the HTML render by itself.
  *
- * @param mixed String or array of strings to be cleaned.
- * @param boolean                                        $utf8 Flag, set the output encoding in utf8, by default true.
+ * @param string|array $value String or array of strings to be cleaned.
+ * @param boolean      $utf8  Flag, set the output encoding in utf8, by default true.
  *
- * @return unknown_type
+ * @return mixed
  */
 function io_safe_output($value, $utf8=true)
 {
@@ -517,10 +524,13 @@ function io_json_mb_encode($string, $encode_options=0)
     $v = json_encode($string, $encode_options);
     $v = preg_replace_callback(
         "/\\\\u([0-9a-zA-Z]{4})/",
-        create_function(
-            '$matches',
-            'return mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16");'
-        ),
+        function ($matches) {
+            return mb_convert_encoding(
+                pack('H*', $matches[1]),
+                'UTF-8',
+                'UTF-16'
+            );
+        },
         $v
     );
     $v = preg_replace('/\\\\\//', '/', $v);
@@ -582,4 +592,33 @@ function io_output_password($password)
     }
 
     return io_safe_output($plaintext);
+}
+
+
+/**
+ * Clean html tags symbols for prevent use JS
+ *
+ * @param string $string String for safe.
+ *
+ * @return string
+ */
+function io_safe_html_tags(string $string)
+{
+    // Must have safe output for work properly.
+    $string = io_safe_output($string);
+    if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+        $output = strstr($string, '<', true);
+        $tmpOutput = strstr($string, '<');
+        $output .= strstr(substr($tmpOutput, 1), '>', true);
+        $tmpOutput = strstr($string, '>');
+        $output .= substr($tmpOutput, 1);
+        // If the string still contains tags symbols.
+        if (strpos($string, '<') !== false && strpos($string, '>') !== false) {
+            $output = io_safe_html_tags($output);
+        }
+    } else {
+        $output = $string;
+    }
+
+    return $output;
 }

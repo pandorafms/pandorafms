@@ -2,7 +2,7 @@
 
 // Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -65,7 +65,7 @@ if ($get_modules_downtime) {
     $downtime_module_ids = extract_column($downtime_modules, 'id_agent_module');
     $downtime_modules = array_fill_keys($downtime_module_ids, true);
 
-    $filter = ['id_agente' => $id_agent];
+    $filter = ['id_agente' => $id_agent, 'delete_pending' => 0];
     $modules = db_get_all_rows_filter('tagente_modulo', $filter);
     if (empty($modules)) {
         $modules = [];

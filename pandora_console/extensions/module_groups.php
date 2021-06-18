@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,7 +86,6 @@ function mainModuleGroups()
     );
     $info = $tree_group->getArray();
     $info = groupview_plain_groups($info);
-    $counter = count($info);
     $offset = get_parameter('offset', 0);
     $agent_group_search = get_parameter('agent_group_search', '');
     $module_group_search = get_parameter('module_group_search', '');
@@ -133,6 +132,8 @@ function mainModuleGroups()
     } else {
         $ids_group = -1;
     }
+
+    $counter = count($info);
 
     $condition_critical = modules_get_state_condition(AGENT_MODULE_STATUS_CRITICAL_ALERT);
     $condition_warning  = modules_get_state_condition(AGENT_MODULE_STATUS_WARNING_ALERT);
@@ -195,6 +196,7 @@ function mainModuleGroups()
                     ON ta.id_agente = tam.id_agente
                 WHERE ta.disabled = 0
                     AND tam.disabled = 0
+                    AND tam.id_modulo <> 0
                     AND tam.delete_pending = 0
                     AND ta.id_grupo IN (%s)
                 GROUP BY tam.id_agente_modulo
@@ -244,16 +246,27 @@ function mainModuleGroups()
         $array_data[$value['id_grupo']][$value['id_mg']] = $value;
     }
 
-    ui_print_page_header(
+    // Header.
+    ui_print_standard_header(
         __('Combined table of agent group and module group'),
         'images/module_group.png',
         false,
-        'module_groups_view',
+        '',
         false,
-        ''
+        [],
+        [
+            [
+                'link'  => '',
+                'label' => __('Monitoring'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Views'),
+            ],
+        ]
     );
 
-    echo "<table cellpadding='4' cellspacing='4' class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
+    echo "<table cellpadding='4' cellspacing='4' class='databox filters bolder margin-bottom-10' width='100%'>
 		<tr>";
     echo "<form method='post'
 		action='index.php?sec=view&sec2=extensions/module_groups'>";
@@ -335,7 +348,7 @@ function mainModuleGroups()
                         }
 
                         $data[$i][$j] = "<div style='".$cell_style.'background:'.$color.";'>";
-                        $data[$i][$j] .= "<a class='info_cell' rel='$rel' href='$url' style='color:white;font-size: 18px;'>";
+                        $data[$i][$j] .= "<a class='info_cell white font_18px' rel='$rel' href='$url'>";
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {
@@ -348,7 +361,7 @@ function mainModuleGroups()
                 }
             } else {
                 foreach ($value['gm'] as $k => $v) {
-                    $data[$i][$j] = "<div style='background:".$background_color."; min-width: 60px;max-width:5%;overflow:hidden; margin-left: auto; margin-right: auto; text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;'>";
+                    $data[$i][$j] = "<div class='module_gm_groups' style='background:".$background_color."'>";
                     $data[$i][$j] .= 0;
                     $data[$i][$j] .= '</div>';
                     $j++;
@@ -364,15 +377,15 @@ function mainModuleGroups()
 
         ui_pagination($counter);
 
-        echo "<div style='width:100%; overflow-x:auto;'>";
+        echo "<div class='w100p' style='overflow-x:auto;'>";
             html_print_table($table);
         echo '</div>';
 
         ui_pagination($counter);
 
-        echo "<div class='legend_basic' style='width: 98.6%'>";
+        echo "<div class='legend_basic w99p'>";
             echo '<table >';
-                echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>".__('Legend').'</b></td></tr>';
+                echo "<tr><td colspan='2' class='pdd_b_10px'><b>".__('Legend').'</b></td></tr>';
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_ALERTFIRED.";'></div></td><td>".__('Orange cell when the module group and agent have at least one alarm fired.').'</td></tr>';
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_CRITICAL.";'></div></td><td>".__('Red cell when the module group and agent have at least one module in critical status and the others in any status').'</td></tr>';
                 echo "<tr><td class='legend_square_simple'><div style='background-color: ".COL_WARNING.";'></div></td><td>".__('Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status').'</td></tr>';

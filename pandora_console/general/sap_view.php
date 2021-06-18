@@ -1,10 +1,10 @@
 <?php
 /**
- * Credential store
+ * Monitoring SAP View
  *
- * @category   HelperFeedBack
+ * @category   Operations
  * @package    Pandora FMS
- * @subpackage Help Feedback
+ * @subpackage Monitoring
  * @version    1.0.0
  * @license    See below
  *
@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ============================================================================
- * Copyright (c) 2005-2019 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

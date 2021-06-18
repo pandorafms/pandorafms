@@ -1,32 +1,86 @@
 <?php
-// Pandora FMS- http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2018 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+/**
+ * Tree view.
+ *
+ * @category   Tree
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
 global $config;
 
 require_once $config['homedir'].'/include/class/Tree.class.php';
-
+/**
+ * Tree group class.
+ */
 class TreeGroup extends Tree
 {
 
+    /**
+     * Propagate ACL.
+     *
+     * @var boolean
+     */
     protected $propagateCounters = true;
 
+    /**
+     * Display all groups.
+     *
+     * @var boolean
+     */
     protected $displayAllGroups = false;
 
 
-    public function __construct($type, $rootType='', $id=-1, $rootID=-1, $serverID=false, $childrenMethod='on_demand', $access='AR')
-    {
+    /**
+     * Construct.
+     *
+     * @param string  $type           Type.
+     * @param string  $rootType       Root.
+     * @param integer $id             Id.
+     * @param integer $rootID         Root Id.
+     * @param boolean $serverID       Server.
+     * @param string  $childrenMethod Method children.
+     * @param string  $access         Access ACL.
+     */
+    public function __construct(
+        $type,
+        $rootType='',
+        $id=-1,
+        $rootID=-1,
+        $serverID=false,
+        $childrenMethod='on_demand',
+        $access='AR'
+    ) {
         global $config;
 
-        parent::__construct($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
+        parent::__construct(
+            $type,
+            $rootType,
+            $id,
+            $rootID,
+            $serverID,
+            $childrenMethod,
+            $access
+        );
 
         $this->L1fieldName = 'id_group';
         $this->L1extraFields = [
@@ -42,18 +96,37 @@ class TreeGroup extends Tree
     }
 
 
+    /**
+     * Setter propagate counters.
+     *
+     * @param boolean $value True or ffalse.
+     *
+     * @return void
+     */
     public function setPropagateCounters($value)
     {
         $this->propagateCounters = (bool) $value;
     }
 
 
+    /**
+     * Setter all groups.
+     *
+     * @param boolean $value True or ffalse.
+     *
+     * @return void
+     */
     public function setDisplayAllGroups($value)
     {
         $this->displayAllGroups = (bool) $value;
     }
 
 
+    /**
+     * Get data.
+     *
+     * @return void
+     */
     protected function getData()
     {
         if ($this->id == -1) {
@@ -66,22 +139,36 @@ class TreeGroup extends Tree
     }
 
 
+    /**
+     * Filter search groups.
+     *
+     * @return string
+     */
     protected function getGroupSearchFilter()
     {
         return '';
     }
 
 
+    /**
+     * First level tree.
+     *
+     * @return void
+     */
     protected function getFirstLevel()
     {
         $processed_items = $this->getProcessedGroups();
 
-        if (!empty($processed_items)) {
-            // Filter by group name. This should be done after rerieving the items cause we need the possible items descendants
-            if (!empty($this->filter['searchGroup'])) {
-                // Save the groups which intersect with the user groups
-                $groups = db_get_all_rows_filter('tgrupo', ['nombre' => '%'.$this->filter['searchGroup'].'%']);
-                if ($groups == false) {
+        if (empty($processed_items) === false) {
+            // Filter by group name. This should be done after rerieving
+            // the items cause we need the possible items descendants.
+            if (empty($this->filter['searchGroup']) === false) {
+                // Save the groups which intersect with the user groups.
+                $groups = db_get_all_rows_filter(
+                    'tgrupo',
+                    ['nombre' => '%'.$this->filter['searchGroup'].'%']
+                );
+                if ($groups === false) {
                     $groups = [];
                 }
 
@@ -90,7 +177,7 @@ class TreeGroup extends Tree
                     $groups,
                     function ($userGroups, $group) use ($userGroupsACL) {
                         $group_id = $group['id_grupo'];
-                        if (isset($userGroupsACL[$group_id])) {
+                        if (isset($userGroupsACL[$group_id]) === true) {
                             $userGroups[$group_id] = $userGroupsACL[$group_id];
                         }
 
@@ -99,14 +186,22 @@ class TreeGroup extends Tree
                     []
                 );
 
-                $result = self::extractGroupsWithIDs($processed_items, $ids_hash);
+                $result = self::extractGroupsWithIDs(
+                    $processed_items,
+                    $ids_hash
+                );
 
                 $processed_items = ($result === false) ? [] : $result;
             }
 
-            // groupID filter. To access the view from tactical views f.e.
-            if (!empty($this->filter['groupID'])) {
-                $result = self::extractItemWithID($processed_items, $this->filter['groupID'], 'group', $this->strictACL);
+            // GroupID filter. To access the view from tactical views f.e.
+            if (empty($this->filter['groupID']) === false) {
+                $result = self::extractItemWithID(
+                    $processed_items,
+                    $this->filter['groupID'],
+                    'group',
+                    $this->strictACL
+                );
 
                 $processed_items = ($result === false) ? [] : [$result];
             }
@@ -116,56 +211,64 @@ class TreeGroup extends Tree
     }
 
 
+    /**
+     * Process group
+     *
+     * @return mixed
+     */
     protected function getProcessedGroups()
     {
         $processed_groups = [];
-        // Index and process the groups
+        // Index and process the groups.
         $groups = $this->getGroupCounters();
 
         // If user have not permissions in parent, set parent node to 0 (all)
-        // Avoid to do foreach for admins
-        if (!users_can_manage_group_all('AR')) {
+        // Avoid to do foreach for admins.
+        if (users_can_manage_group_all('AR') === false) {
             foreach ($groups as $id => $group) {
-                if (!isset($this->userGroups[$groups[$id]['parent']])) {
+                if (isset($this->userGroups[$groups[$id]['parent']]) === false) {
                     $groups[$id]['parent'] = 0;
                 }
             }
         }
 
-        // Build the group hierarchy
+        // Build the group hierarchy.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+            if (isset($groups[$id]['parent']) === true
+                && ($groups[$id]['parent'] != 0)
+            ) {
                 $parent = $groups[$id]['parent'];
-                // Parent exists
-                if (!isset($groups[$parent]['children'])) {
+                // Parent exists.
+                if (isset($groups[$parent]['children']) === false) {
                     $groups[$parent]['children'] = [];
                 }
 
-                // Store a reference to the group into the parent
+                // Store a reference to the group into the parent.
                 $groups[$parent]['children'][] = &$groups[$id];
-                // This group was introduced into a parent
+                // This group was introduced into a parent.
                 $groups[$id]['have_parent'] = true;
             }
         }
 
-        // Sort the children groups
+        // Sort the children groups.
         foreach ($groups as $id => $group) {
-            if (isset($groups[$id]['children'])) {
+            if (isset($groups[$id]['children']) === true) {
                 usort($groups[$id]['children'], ['Tree', 'cmpSortNames']);
             }
         }
 
-        // Filter groups and eliminates the reference to children groups out of her parent
+        // Filter groups and eliminates the reference to
+        // children groups out of her parent.
         $groups = array_filter(
             $groups,
             function ($group) {
                 return !$group['have_parent'];
             }
         );
-        // Propagate child counters to her parents
-        if ($this->propagateCounters) {
+        // Propagate child counters to her parents.
+        if ($this->propagateCounters === true) {
             self::processCounters($groups);
-            // Filter groups and eliminates the reference to empty groups
+            // Filter groups and eliminates the reference to empty groups.
             $groups = $this->deleteEmptyGroups($groups);
         } else {
             $groups = $this->deleteEmptyGroupsNotPropagate($groups);

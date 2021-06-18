@@ -48,6 +48,7 @@ if (is_ajax()) {
     $get_agent_status_tooltip = (bool) get_parameter('get_agent_status_tooltip');
     $get_agents_group_json = (bool) get_parameter('get_agents_group_json');
     $get_modules_group_json = (bool) get_parameter('get_modules_group_json');
+    $filter_modules_group_json = (bool) get_parameter('filter_modules_group_json');
     $get_modules_group_value_name_json = (bool) get_parameter('get_modules_group_value_name_json');
     $get_agent_modules_json_for_multiple_agents = (bool) get_parameter('get_agent_modules_json_for_multiple_agents');
     $get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter('get_agent_modules_alerts_json_for_multiple_agents');
@@ -281,6 +282,40 @@ if (is_ajax()) {
         } else {
             select_modules_for_agent_group($id_group, $id_agents, $selection);
         }
+    }
+
+    if ($filter_modules_group_json) {
+        $modules = (array) get_parameter('modules', []);
+        $existing_modules = [];
+
+        foreach ($modules as $def) {
+            $data = explode('|', $def);
+            $id_agent = $data[0];
+            $module_name = $data[1];
+
+            try {
+                $module = PandoraFMS\Module::search(
+                    [
+                        'id_agente' => $id_agent,
+                        'nombre'    => $module_name,
+                    ],
+                    1
+                );
+
+                if ($module !== null) {
+                    $existing_modules[] = [
+                        'id'   => $module->id_agente_modulo(),
+                        'text' => io_safe_output(
+                            $module->agent()->alias().' &raquo; '.$module->nombre()
+                        ),
+                    ];
+                }
+            } catch (Exception $e) {
+                continue;
+            }
+        }
+
+        echo json_encode($existing_modules);
     }
 
     if ($get_modules_group_value_name_json) {

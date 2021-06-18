@@ -915,7 +915,25 @@ function html_print_select(
             ui_require_javascript_file('select2.min');
         }
 
-        $output .= '<script>$("#'.$id.'").select2();</script>';
+        $output .= '<script type="text/javascript">';
+        $output .= '$("#'.$id.'").select2();';
+
+        if ($required !== false) {
+            $require_message = __('Please select an item from this list.');
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                e.currentTarget.setCustomValidity("");
+            });';
+
+            $output .= '$("#'.$id.'").on("invalid", function(e) {
+                if ($(e.currentTarget).val() == null) {
+                    e.currentTarget.setCustomValidity(
+                        "'.$require_message.'"
+                    );
+                }
+            });';
+        }
+
+        $output .= '</script>';
     }
 
     if ($return) {

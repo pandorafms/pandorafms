@@ -160,7 +160,7 @@ $pure = get_parameter('pure', 0);
 $schedule_report = get_parameter('schbutton', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
 
-if ($action == 'edit' && $idReport > 0) {
+if ($action === 'edit' && $idReport > 0) {
     $report_group = db_get_value(
         'id_group',
         'treport',
@@ -451,6 +451,14 @@ switch ($action) {
         } else {
             $resultOperationDB = false;
         }
+
+        header(
+            sprintf(
+                'Location: %sindex.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=%d',
+                $config['homeurl'],
+                $idReport
+            )
+        );
     break;
 
     case 'delete_items_pos':
@@ -514,6 +522,7 @@ switch ($action) {
         }
     break;
 
+    case 'copy_report':
     case 'delete_report':
     case 'list':
         $buttons = [
@@ -663,6 +672,81 @@ switch ($action) {
                 $result,
                 __('Successfully deleted'),
                 __('Could not be deleted')
+            );
+        }
+
+        if ($action === 'copy_report') {
+            $copy = false;
+            switch ($type_access_selected) {
+                case 'group_view':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                        // Owner can delete.
+                    } else {
+                        $copy = check_acl(
+                            $config['id_user'],
+                            $report['id_group'],
+                            'RM'
+                        );
+                    }
+                break;
+
+                case 'group_edit':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                        // Owner can delete.
+                    } else {
+                        $copy = check_acl(
+                            $config['id_user'],
+                            $report['id_group'],
+                            'RM'
+                        );
+                    }
+                break;
+
+                case 'user_edit':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                    }
+                break;
+
+                default:
+                    // Default.
+                break;
+            }
+
+            if (! $copy && !empty($type_access_selected)) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access report builder copy'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
+            $result = reports_copy_report($idReport);
+            if ($result !== false) {
+                db_pandora_audit(
+                    'Report management',
+                    'Copy report #'.$idReport
+                );
+            } else {
+                db_pandora_audit(
+                    'Report management',
+                    'Fail try to copy report #'.$idReport
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully copied'),
+                __('Could not be copied')
             );
         }
 
@@ -1100,6 +1184,27 @@ switch ($action) {
                         );
                         $data[$next] .= '</form>';
                     }
+
+                    $data[$next] .= '<form method="post" style="display: inline"; onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+                    $data[$next] .= html_print_input_hidden(
+                        'id_report',
+                        $report['id_report'],
+                        true
+                    );
+                    $data[$next] .= html_print_input_hidden(
+                        'action',
+                        'copy_report',
+                        true
+                    );
+                    $data[$next] .= html_print_input_image(
+                        'dup',
+                        'images/copy.png',
+                        1,
+                        '',
+                        true,
+                        ['title' => __('Duplicate')]
+                    );
+                    $data[$next] .= '</form> ';
 
                     if ($delete) {
                         $data[$next] .= '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
@@ -3349,7 +3454,7 @@ if ($resultOperationDB !== null) {
                 $textReportName,
                 'images/op_reporting.png',
                 false,
-                $helpers,
+                '',
                 false,
                 $buttons,
                 [

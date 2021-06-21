@@ -843,6 +843,7 @@ function processTreeSearch(settings) {
   filters.searchModule = settings.searchModule;
   filters.statusModule = settings.statusModule;
   filters.groupID = settings.searchGroup;
+  filters.searchHirearchy = 1;
 
   $.ajax({
     type: "POST",

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.755 Build 210618";
+my $version = "7.0NG.755 Build 210621";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3111,10 +3111,16 @@ sub cli_agent_update() {
 		# Add the address to the agent
 		if (defined $use_alias and $use_alias eq 'use_alias') {
 			foreach my $id (@id_agents) {
-				add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id->{'id_agente'});
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				}
 			}
 		} else {
-			add_new_address_agent ($dbh, $address_id, $id_agent);
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id_agent);
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id_agent);
+				}
 		}
 		
 		$field = 'direccion';

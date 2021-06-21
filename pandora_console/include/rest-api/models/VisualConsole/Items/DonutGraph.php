@@ -157,6 +157,14 @@ final class DonutGraph extends Item
 
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
+            if (empty($graphData) || $graphData === null) {
+                $aux = [];
+                $aux[0]['tag_name'] = 'No data to show';
+                $aux[0]['color'] = '#aa3333';
+                $aux[0]['value'] = 1;
+                $aux[0]['percent'] = 100;
+                $graphData = $aux;
+            }
 
             $data['html'] = \d3_donut_graph(
                 (int) $data['id'],

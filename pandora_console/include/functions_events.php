@@ -3576,7 +3576,12 @@ function events_page_responses($event, $childrens_ids=[])
             '',
             __('None'),
             -1,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 70%'
         );
         $data[2] .= html_print_button(
             __('Update'),

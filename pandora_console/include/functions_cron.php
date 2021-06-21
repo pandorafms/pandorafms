@@ -552,8 +552,6 @@ function cron_list_table()
                         continue;
                     }
 
-                    hd($args, true);
-                    hd('cron', true);
                     if (empty($args[1]) === false && (string) $args[1] !== '0') {
                         $agents_id = $args[1];
                     } else {
@@ -568,6 +566,7 @@ function cron_list_table()
                         }
                     }
 
+                    $report_type = $args[7];
                     $report_per_agent = $args[3];
                     $report_name = $args[4];
                     $email = $args[5];
@@ -578,6 +577,8 @@ function cron_list_table()
                     $data[2] .= '<br>- '.__('Report per agent').': '.$report_per_agent.'</a>';
                     $data[2] .= '<br>- '.__('Report name').': '.$report_name.'</a>';
                     $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>".$email.'</a>';
+                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
+
                 break;
 
                 case 'cron_task_execute_custom_script':

@@ -1412,6 +1412,14 @@ function graphic_combined_module(
         $labels  = [];
         $modules = [];
         foreach ($sources as $source) {
+            $id_agent = agents_get_module_id(
+                $source['id_agent_module']
+            );
+
+            if (!$id_agent) {
+                continue;
+            }
+
             if (is_metaconsole() === true) {
                 metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
@@ -1428,9 +1436,6 @@ function graphic_combined_module(
             array_push($modules, $modulepush);
             array_push($weights, $source['weight']);
             if ($source['label'] != '' || $params_combined['labels']) {
-                $id_agent = agents_get_module_id(
-                    $source['id_agent_module']
-                );
                 $agent_description = agents_get_description($id_agent);
                 $agent_group = agents_get_agent_group($id_agent);
                 $agent_address = agents_get_address($id_agent);

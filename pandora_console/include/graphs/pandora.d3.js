@@ -1651,7 +1651,6 @@ function print_phases_donut(recipient, phases, width, height) {
       .text(function(d) {
         return d.data.label;
       })
-      .style("font-family", "Verdana")
       .style("font-size", "15px")
       .append("tspan")
       .attr("dy", "1.2em")
@@ -1659,7 +1658,6 @@ function print_phases_donut(recipient, phases, width, height) {
       .text(function(d) {
         return d.data.label2 + "ms";
       })
-      .style("font-family", "Verdana")
       .style("font-size", "15px");
 
     function midAngle(d) {
@@ -1816,7 +1814,6 @@ function progress_bar_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", 20)
     .html(label)
@@ -1827,7 +1824,6 @@ function progress_bar_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", "#FFFFFF")
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", 14)
     .attr("text-anchor", "middle")
@@ -1938,7 +1934,6 @@ function progress_bubble_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -1949,7 +1944,6 @@ function progress_bubble_d3(
     .append("text")
     .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2080,7 +2074,6 @@ function print_circular_progress_bar(
   var labelText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -2090,7 +2083,6 @@ function print_circular_progress_bar(
   var numberText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2099,7 +2091,6 @@ function print_circular_progress_bar(
   var percentText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)
@@ -2249,7 +2240,6 @@ function print_interior_circular_progress_bar(
   var labelText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", textSize)
     .html(label)
@@ -2259,7 +2249,6 @@ function print_interior_circular_progress_bar(
   var numberText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", numberSize)
     .attr("text-anchor", "middle")
@@ -2268,7 +2257,6 @@ function print_interior_circular_progress_bar(
   var percentText = circle
     .append("text")
     .attr("fill", label_color)
-    .style("font-family", "arial")
     .style("font-weight", "bold")
     .style("font-size", unitSize)
     .text(unit)
@@ -2355,7 +2343,6 @@ function print_donut_graph(
       .attr("x", 15)
       .attr("y", 10)
       .text(m_d.tag_name)
-      .style("font-family", "smallfontFont")
       .style("font-size", "7pt");
   });
 

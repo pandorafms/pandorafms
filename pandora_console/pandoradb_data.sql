@@ -105,14 +105,14 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
-('custom_report_front_font', 'opensans.ttf'),
+('custom_report_front_font', 'lato.ttf'),
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
-('MR', 46),
+('MR', 47),
 ('identification_reminder', 1),
 ('identification_reminder_timestamp', 0),
-('current_package_enterprise', 754),
+('current_package', 755),
 ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.00097656250000":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}'),
 ('custom_docs_logo', 'default_docs.png'),
 ('custom_support_logo', 'default_support.png'),
@@ -226,7 +226,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES
-(1,'Documentation','http://wiki.pandorafms.com/'),
+(1,'Documentation','https://pandorafms.com/manual'),
 (2,'Enterprise Edition','http://pandorafms.com'),
 (3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
 (4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),

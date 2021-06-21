@@ -3969,6 +3969,9 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				$value =~ s/"$//;
 				
 				$macros{$macro_name} = $value;
+			} else {
+				# Empty variable.
+				$macros{$macro_name} = '';
 			}
 		}
 		$count--;

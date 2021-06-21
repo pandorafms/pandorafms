@@ -331,9 +331,9 @@ echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting
 
 echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters'>";
 echo '<tr>';
-echo "<td colspan='3'>".__('Filter group').'</td>';
+echo "<td colspan='1'>".__('Filter group').'</td>';
 echo '</tr><tr>';
-echo "<td colspan='3'>".html_print_select_groups(
+echo "<td colspan='1'>".html_print_select_groups(
     $config['id_user'],
     ($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RW'),
     true,

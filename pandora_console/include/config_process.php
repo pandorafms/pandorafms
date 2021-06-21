@@ -93,6 +93,8 @@ if (!isset($config['dbport'])) {
 require_once $ownDir.'constants.php';
 require_once $ownDir.'functions_db.php';
 require_once $ownDir.'functions.php';
+require_once $ownDir.'functions_io.php';
+
 
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default

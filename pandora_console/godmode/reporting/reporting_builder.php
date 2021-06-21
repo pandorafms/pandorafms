@@ -3349,7 +3349,7 @@ if ($resultOperationDB !== null) {
                 $textReportName,
                 'images/op_reporting.png',
                 false,
-                $helpers,
+                '',
                 false,
                 $buttons,
                 [

@@ -451,6 +451,14 @@ switch ($action) {
         } else {
             $resultOperationDB = false;
         }
+
+        header(
+            sprintf(
+                'Location: %sindex.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=%d',
+                $config['homeurl'],
+                $idReport
+            )
+        );
     break;
 
     case 'delete_items_pos':

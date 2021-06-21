@@ -90,3 +90,8 @@ godmode/update_manager/update_manager.online.php
 include/javascript/update_manager.js
 enterprise/include/functions_update_manager.php
 include/ajax/rolling_release.ajax.php
+include/help/en/help_event_alert.php
+include/help/es/help_event_alert.php
+enterprise/godmode/alerts/alert_events.php
+enterprise/godmode/alerts/alert_events_list.php
+enterprise/godmode/alerts/alert_events_rules.php

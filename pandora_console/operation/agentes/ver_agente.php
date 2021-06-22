@@ -328,6 +328,7 @@ if (is_ajax()) {
 
                 if ($module !== null) {
                     $text = '';
+                    $id = '';
                     if ($node !== null) {
                         $text = $node->server_name().' &raquo; ';
                         $id = $node->id().'|';

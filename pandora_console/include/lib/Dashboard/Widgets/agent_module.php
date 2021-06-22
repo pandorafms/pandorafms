@@ -299,9 +299,27 @@ class AgentModuleWidget extends Widget
         $values['mShowCommonModules'] = \get_parameter(
             'filtered-module-show-common-modules-'.$this->cellId
         );
-        $values['mModules'] = \get_parameter(
-            'filtered-module-modules-'.$this->cellId
+        $values['mModules'] = explode(
+            ',',
+            \get_parameter(
+                'filtered-module-modules-'.$this->cellId
+            )
         );
+
+        if (is_metaconsole() === true) {
+            $values['mModules'] = implode(
+                ',',
+                array_reduce(
+                    $values['mModules'],
+                    function ($carry, $item) {
+                        $d = explode('|', $item);
+                        $carry[] = $d[1];
+                        return $carry;
+                    },
+                    []
+                )
+            );
+        }
 
         return $values;
     }
@@ -620,6 +638,10 @@ class AgentModuleWidget extends Widget
             $reduceAllModules = array_reduce(
                 $all_modules,
                 function ($carry, $item) {
+                    if ($item === null) {
+                        return $carry;
+                    }
+
                     $carry[$item->name()] = null;
                     return $carry;
                 }
@@ -659,6 +681,10 @@ class AgentModuleWidget extends Widget
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
                 foreach ($modules as $module) {
+                    if ($module === null) {
+                        continue;
+                    }
+
                     if ((bool) is_metaconsole() === true) {
                         $reduceAllModules[$module->name()] = null;
                     }

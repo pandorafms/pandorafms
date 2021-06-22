@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 require_once 'include/functions_gis.php';
@@ -192,8 +194,13 @@ if (is_ajax()) {
 
     if ($get_modules_group_json) {
         $id_group = (int) get_parameter('id_module_group', 0);
-        $id_agents = get_parameter('id_agents');
+        $id_agents = get_parameter('id_agents', null);
         $selection = get_parameter('selection');
+
+        if ($id_agents === null) {
+            echo '[]';
+            return;
+        }
 
         if ((bool) is_metaconsole() === true) {
             if (count($id_agents) > 0) {
@@ -270,8 +277,14 @@ if (is_ajax()) {
                 // All modules.
                 $modules = array_reduce(
                     $modules[$tserver],
-                    function ($carry, $item) {
-                        $carry[] = $item;
+                    function ($carry, $item) use ($tserver) {
+                        $t = [];
+                        foreach ($item as $k => $v) {
+                            $t[$k] = $v;
+                        }
+
+                        $t['id_node'] = $tserver;
+                        $carry[] = $t;
                         return $carry;
                     },
                     []
@@ -290,10 +303,21 @@ if (is_ajax()) {
 
         foreach ($modules as $def) {
             $data = explode('|', $def);
-            $id_agent = $data[0];
-            $module_name = $data[1];
+            if (is_metaconsole() === true) {
+                $id_node = (int) $data[0];
+                $id_agent = (int) $data[1];
+                $module_name = $data[2];
+            } else {
+                $id_agent = $data[0];
+                $module_name = $data[1];
+            }
 
             try {
+                if (is_metaconsole() === true) {
+                    $node = new Node($id_node);
+                    $node->connect();
+                }
+
                 $module = PandoraFMS\Module::search(
                     [
                         'id_agente' => $id_agent,
@@ -303,14 +327,30 @@ if (is_ajax()) {
                 );
 
                 if ($module !== null) {
+                    $text = '';
+                    if ($node !== null) {
+                        $text = $node->server_name().' &raquo; ';
+                        $id = $node->id().'|';
+                    }
+
+                    $text .= $module->agent()->alias().' &raquo; '.$module->nombre();
+
+                    $id .= $module->id_agente_modulo();
                     $existing_modules[] = [
-                        'id'   => $module->id_agente_modulo(),
-                        'text' => io_safe_output(
-                            $module->agent()->alias().' &raquo; '.$module->nombre()
-                        ),
+                        'id'   => $id,
+                        'text' => io_safe_output($text),
                     ];
                 }
+
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
             } catch (Exception $e) {
+                if ($node !== null) {
+                    $node->disconnect();
+                }
+
                 continue;
             }
         }

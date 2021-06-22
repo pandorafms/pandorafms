@@ -1488,12 +1488,16 @@ function html_print_select_multiple_modules_filtered(array $data):string
         ]
     );
 
-    $all_modules = select_modules_for_agent_group(
-        $data['mModuleGroup'],
-        explode(',', $data['mAgents']),
-        $data['mShowCommonModules'],
-        false
-    );
+    if ($data['mAgents'] !== null) {
+        $all_modules = select_modules_for_agent_group(
+            $data['mModuleGroup'],
+            explode(',', $data['mAgents']),
+            $data['mShowCommonModules'],
+            false
+        );
+    } else {
+        $all_modules = [];
+    }
 
     if ($data['mShowSelectedOtherGroups']) {
         $selected_modules_ids = explode(',', $data['mModules']);

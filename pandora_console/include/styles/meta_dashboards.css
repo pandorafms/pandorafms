@@ -1,8 +1,10 @@
 div#page {
   width: auto;
+}
+li#select_multiple_modules_filtered {
+  width: 650px;
   margin: 0 auto;
 }
-
 .networkconsole {
   height: 100%;
 }

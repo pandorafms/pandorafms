@@ -1552,9 +1552,14 @@ function enterprise_hook($function_name, $parameters=false)
 
 
 /**
- * TODO: Document enterprise functions
+ * Include an enterprise file.
+ *
+ * @param string $filename  Enterprise file to be included.
+ * @param array  $variables Variables to be exported, as [varname => value].
+ *
+ * @return mixed
  */
-function enterprise_include($filename)
+function enterprise_include($filename, $variables=[])
 {
     global $config;
 
@@ -1576,6 +1581,10 @@ function enterprise_include($filename)
     }
 
     if (file_exists($filepath)) {
+        if (is_array($variables) === true) {
+            extract($variables);
+        }
+
         include $filepath;
         return true;
     }
@@ -1587,11 +1596,12 @@ function enterprise_include($filename)
 /**
  * Includes a file from enterprise section.
  *
- * @param string $filename Target file.
+ * @param string $filename  Enterprise file to be included.
+ * @param array  $variables Variables to be exported, as [varname => value].
  *
  * @return mixed Result code.
  */
-function enterprise_include_once($filename)
+function enterprise_include_once($filename, $variables=[])
 {
     global $config;
 
@@ -1613,6 +1623,10 @@ function enterprise_include_once($filename)
     }
 
     if (file_exists($filepath)) {
+        if (is_array($variables) === true) {
+            extract($variables);
+        }
+
         include_once $filepath;
         return true;
     }

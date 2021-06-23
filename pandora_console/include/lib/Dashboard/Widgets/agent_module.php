@@ -35,6 +35,7 @@ use PandoraFMS\Module;
  */
 class AgentModuleWidget extends Widget
 {
+    const MODULE_SEPARATOR = '|-|-|-|';
 
     /**
      * Name widget.
@@ -308,12 +309,17 @@ class AgentModuleWidget extends Widget
 
         if (is_metaconsole() === true) {
             $values['mModules'] = implode(
-                ',',
+                self::MODULE_SEPARATOR,
                 array_reduce(
                     $values['mModules'],
                     function ($carry, $item) {
                         $d = explode('|', $item);
-                        $carry[] = $d[1];
+                        if (isset($d[1]) === true) {
+                            $carry[] = $d[1];
+                        } else {
+                            $carry[] = $item;
+                        }
+
                         return $carry;
                     },
                     []
@@ -630,10 +636,20 @@ class AgentModuleWidget extends Widget
         }
 
         // Extract info all modules selected.
-        $target_modules = explode(',', $this->values['mModules']);
-        $all_modules = Module::search(
-            ['id_agente_modulo' => $target_modules]
+        $target_modules = explode(
+            self::MODULE_SEPARATOR,
+            $this->values['mModules']
         );
+        if (is_metaconsole() === true
+            && $this->values['mShowCommonModules'] === '0'
+        ) {
+            $all_modules = $target_modules;
+        } else {
+            $all_modules = Module::search(
+                ['id_agente_modulo' => $target_modules]
+            );
+        }
+
         if ($all_modules !== null) {
             $reduceAllModules = array_reduce(
                 $all_modules,
@@ -642,7 +658,12 @@ class AgentModuleWidget extends Widget
                         return $carry;
                     }
 
-                    $carry[$item->name()] = null;
+                    if (is_object($item) === true) {
+                        $carry[$item->name()] = null;
+                    } else {
+                        $carry[$item] = null;
+                    }
+
                     return $carry;
                 }
             );
@@ -675,9 +696,17 @@ class AgentModuleWidget extends Widget
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
 
-                $modules = $agent->searchModules(
-                    ['id_agente_modulo' => $target_modules]
-                );
+                if (is_metaconsole() === true
+                    && $this->values['mShowCommonModules'] === '1'
+                ) {
+                    $modules = $agent->searchModules(
+                        ['id_agente_modulo' => $target_modules]
+                    );
+                } else {
+                    $modules = $agent->searchModules(
+                        ['nombre' => array_keys($reduceAllModules)]
+                    );
+                }
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
                 foreach ($modules as $module) {

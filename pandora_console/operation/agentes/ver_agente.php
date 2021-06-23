@@ -263,12 +263,11 @@ if (is_ajax()) {
                 }
 
                 $modules = [];
-                $i = 1;
                 foreach ($final_modules as $module_name => $occurrences) {
                     if ($occurrences === $nodes_consulted) {
                         // Module already present in ALL nodes.
                         $modules[] = [
-                            'id_agente_modulo' => ($i++),
+                            'id_agente_modulo' => $module_name,
                             'nombre'           => $module_name,
                         ];
                     }

@@ -3961,9 +3961,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		for ($count = 1; defined ($custom_values[$count-1]); $count++) {
 			my $macro_name = '_snmp_f' . $count . '_';
 			my $order_field = $alert->{'order_'.$count};
-			#~ my $order_field = $order_field - 1;
-			
-			if ($custom_values[($order_field-1)] =~ m/= \S+: (.*)/) {
+			if ($custom_values[$count] =~ m/= \S+: (.*)/) {
 				my $value = $1;
 			
 				# Strip leading and trailing double quotes
@@ -3971,6 +3969,9 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				$value =~ s/"$//;
 				
 				$macros{$macro_name} = $value;
+			} else {
+				# Empty variable.
+				$macros{$macro_name} = '';
 			}
 		}
 		$count--;

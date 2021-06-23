@@ -331,18 +331,33 @@ if (is_ajax()) {
                     (int) $data[1]
                 );
 
-                if ($id_agent === false) {
-                    continue;
-                }
-
                 $mod = explode('&#x20;&raquo;&#x20;', $data[2]);
                 $module_name = $mod[1];
                 if (empty($module_name) === true) {
-                    $module_name = $data[2];
+                    // Common modules.
+                    $id_agent = db_get_value(
+                        'id_tagente',
+                        'tmetaconsole_agent',
+                        'id_agente',
+                        (int) $data[0]
+                    );
+
+                    $id_node = db_get_value(
+                        'id_tmetaconsole_setup',
+                        'tmetaconsole_agent',
+                        'id_agente',
+                        (int) $data[0]
+                    );
+
+                    $module_name = $data[1];
                 }
             } else {
                 $id_agent = $data[0];
                 $module_name = $data[1];
+            }
+
+            if ($id_agent === false) {
+                continue;
             }
 
             try {

@@ -5645,6 +5645,8 @@ Set the status of unknown modules.
 sub pandora_module_unknown ($$) {
 	my ($pa_config, $dbh) = @_;
 	
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime(time()));
+
 	# Warmup interval for unknown modules.
 	if ($pa_config->{'warmup_unknown_on'} == 1) {
 
@@ -5702,7 +5704,7 @@ sub pandora_module_unknown ($$) {
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
@@ -5749,7 +5751,7 @@ sub pandora_module_unknown ($$) {
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);

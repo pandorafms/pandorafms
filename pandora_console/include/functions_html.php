@@ -915,7 +915,7 @@ function html_print_select(
             ui_require_javascript_file('select2.min');
         }
 
-        $output .= '<script>$("#'.$id.'").select2();</script>';
+        $output .= '<script type="text/javascript">$("#'.$id.'").select2();</script>';
     }
 
     if ($return) {

@@ -275,20 +275,38 @@ if (is_ajax()) {
                 }
             } else {
                 // All modules.
-                $modules = array_reduce(
-                    $modules[$tserver],
-                    function ($carry, $item) use ($tserver) {
-                        $t = [];
-                        foreach ($item as $k => $v) {
-                            $t[$k] = $v;
-                        }
+                $return = [];
+                $nodes = [];
+                foreach ($agents as $tserver => $id_agents) {
+                    try {
+                        $nodes[$tserver] = new Node($tserver);
+                    } catch (Exception $e) {
+                        hd($e);
+                    }
 
-                        $t['id_node'] = $tserver;
-                        $carry[] = $t;
-                        return $carry;
-                    },
-                    []
-                );
+                    $return = array_reduce(
+                        $modules[$tserver],
+                        function ($carry, $item) use ($tserver, $nodes) {
+                            $t = [];
+                            foreach ($item as $k => $v) {
+                                $t[$k] = $v;
+                            }
+
+                            $t['id_node'] = $tserver;
+                            if ($nodes[$tserver] !== null) {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                                );
+                            }
+
+                            $carry[] = $t;
+                            return $carry;
+                        },
+                        $return
+                    );
+                }
+
+                $modules = $return;
             }
 
             echo json_encode($modules);
@@ -301,12 +319,27 @@ if (is_ajax()) {
         $modules = (array) get_parameter('modules', []);
         $existing_modules = [];
 
+        $avoid_duplicates = [];
         foreach ($modules as $def) {
             $data = explode('|', $def);
             if (is_metaconsole() === true) {
                 $id_node = (int) $data[0];
-                $id_agent = (int) $data[1];
-                $module_name = $data[2];
+                $id_agent = db_get_value(
+                    'id_tagente',
+                    'tmetaconsole_agent',
+                    'id_agente',
+                    (int) $data[1]
+                );
+
+                if ($id_agent === false) {
+                    continue;
+                }
+
+                $mod = explode('&#x20;&raquo;&#x20;', $data[2]);
+                $module_name = $mod[1];
+                if (empty($module_name) === true) {
+                    $module_name = $data[2];
+                }
             } else {
                 $id_agent = $data[0];
                 $module_name = $data[1];
@@ -337,6 +370,11 @@ if (is_ajax()) {
                     $text .= $module->agent()->alias().' &raquo; '.$module->nombre();
 
                     $id .= $module->id_agente_modulo();
+                    if ($avoid_duplicates[$id] === 1) {
+                        continue;
+                    }
+
+                    $avoid_duplicates[$id] = 1;
                     $existing_modules[] = [
                         'id'   => $id,
                         'text' => io_safe_output($text),

@@ -1441,7 +1441,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
         // Force_serialized.
         false,
         // Meta_fields.
-        $data['mMetaFields']
+        ($data['mMetaFields'] ?? is_metaconsole())
     );
 
     if ((empty($agents)) === true || $agents == -1) {

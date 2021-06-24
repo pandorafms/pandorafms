@@ -134,8 +134,8 @@ if (isset($config['custom_docs_url'])) {
 
     echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 } else if (!$custom_conf_enabled) {
-    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank">'.__('Docs').'</li>';
+    echo '<li><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
 }
 
 if (isset($config['custom_support_url'])) {

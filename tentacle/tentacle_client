@@ -1091,7 +1091,7 @@ This is released under the GNU Lesser General Public License.
 
 L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
 
-Protocol description and more info at: L<< https://pandorafms.com/docs/index.php?title=Pandora:Documentation_en:Tentacle >>
+Protocol description and more info at: L<< https://pandorafms.com/manual/en/documentation/08_technical_reference/09_tentacle >>
 
 =head1 COPYRIGHT
 

@@ -627,7 +627,7 @@ if (($create != '') || ($view != '')) {
             echo '<span>'.__('The previous configuration of plugins has been imported from the nodes. Please check that the definitions are correct.').'</br></br>'.'<b>'.__('Note:').'</b>'.__(
                 'These definitions will not be operational until you manually 
     			copy the files from the nodes to the atachment/plugin/ directory of the meta console.'
-            ).'</br></br>'.__('You can find more information at:')."<a href='https://wiki.pandorafms.com'>https://wiki.pandorafms.com</a>".'</span>';
+            ).'</br></br>'.__('You can find more information at:')."<a href='https://pandorafms.com/manual'>https://pandorafms.com/manual</a>".'</span>';
             echo '</div>';
             ?>
             <script type="text/javascript">

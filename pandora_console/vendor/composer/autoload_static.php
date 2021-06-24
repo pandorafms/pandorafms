@@ -396,6 +396,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterManager' => __DIR__ . '/../..' . '/enterprise/include/lib/ClusterViewer/ClusterManager.php',
         'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterWizard' => __DIR__ . '/../..' . '/enterprise/include/lib/ClusterViewer/ClusterWizard.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueue' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/MergeQueue.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueuePlan' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/MergeQueuePlan.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\Node' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/Node.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\PriorityPlan' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/PriorityPlan.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueue' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/SyncQueue.php',

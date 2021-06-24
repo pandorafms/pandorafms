@@ -2228,7 +2228,7 @@ function db_is_free_lock($lockname)
  *                 0 - already locked by another process.
  *                 NULL: something really bad happened
  */
-function db_get_lock($lockname, $expiration_time=86400)
+function db_get_lock(string $lockname, int $expiration_time=86400) :?int
 {
     global $config;
 
@@ -2253,7 +2253,11 @@ function db_get_lock($lockname, $expiration_time=86400)
         );
 
         $config['dbcache'] = $cache;
-        return $lock_status;
+        if ($lock_status === false) {
+            return null;
+        }
+
+        return (int) $lock_status;
     }
 
     $config['dbcache'] = $cache;

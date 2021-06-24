@@ -322,6 +322,7 @@ return array(
     'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterManager' => $baseDir . '/enterprise/include/lib/ClusterViewer/ClusterManager.php',
     'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterWizard' => $baseDir . '/enterprise/include/lib/ClusterViewer/ClusterWizard.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueue' => $baseDir . '/enterprise/include/lib/Metaconsole/MergeQueue.php',
+    'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueuePlan' => $baseDir . '/enterprise/include/lib/Metaconsole/MergeQueuePlan.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\Node' => $baseDir . '/enterprise/include/lib/Metaconsole/Node.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\PriorityPlan' => $baseDir . '/enterprise/include/lib/Metaconsole/PriorityPlan.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueue' => $baseDir . '/enterprise/include/lib/Metaconsole/SyncQueue.php',

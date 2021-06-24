@@ -808,7 +808,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.LICENSE.LIMITED',
                     'title'   => __('Limited mode.'),
                     'message' => io_safe_output($config['limited_mode']),
-                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
+                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
         } else {
@@ -834,7 +834,7 @@ class ConsoleSupervisor
                         $msg,
                         $days_to_expiry
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
+                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
         } else if ($days_to_expiry < 0) {
@@ -852,7 +852,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.LICENSE.EXPIRATION',
                     'title'   => $title,
                     'message' => $msg,
-                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/license'),
+                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
                 ]
             );
             return false;
@@ -929,7 +929,7 @@ class ConsoleSupervisor
                         'Directory %s is not writable. Please, configure corresponding permissions.',
                         $config['attachment_store']
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
                 ]
             );
             return;
@@ -951,7 +951,7 @@ class ConsoleSupervisor
                         'There are more than %d files in attachment, consider cleaning up attachment directory manually.',
                         $config['num_files_attachment']
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                 ]
             );
         } else {
@@ -985,7 +985,7 @@ class ConsoleSupervisor
                             'Remote configuration directory %s is not readable. Please, adjust configuration.',
                             $remote_config_dir
                         ),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
                     ]
                 );
                 return;
@@ -1004,7 +1004,7 @@ class ConsoleSupervisor
                             'Remote configuration directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/conf'
                         ),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
                     ]
                 );
             } else {
@@ -1022,7 +1022,7 @@ class ConsoleSupervisor
                             'Collections directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/collections'
                         ),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
                     ]
                 );
             } else {
@@ -1040,7 +1040,7 @@ class ConsoleSupervisor
                             'MD5 directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/md5'
                         ),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
                     ]
                 );
             } else {
@@ -1071,7 +1071,7 @@ class ConsoleSupervisor
                         $MAX_FILES_DATA_IN,
                         $remote_config_dir
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                 ]
             );
         } else {
@@ -1094,7 +1094,7 @@ class ConsoleSupervisor
                         $MAX_BADXML_FILES_DATA_IN,
                         $remote_config_dir
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                 ]
             );
         } else {
@@ -1186,7 +1186,7 @@ class ConsoleSupervisor
                                 $modules_queued,
                                 $queue['queued_modules']
                             ),
-                            'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'),
+                            'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
                         ]
                     );
                 } else {
@@ -1322,7 +1322,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.SERVER.STATUS.'.$server['id_server'],
                     'title'   => $msg,
                     'message' => $description,
-                    'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60'),
+                    'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
                 ]
             );
         }
@@ -1634,7 +1634,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.HISTORYDB',
                         'title'   => __('Historical database not available'),
                         'message' => __('Historical database is enabled, though not accessible with the current configuration.'),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=hist_db'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
                     ]
                 );
             } else {
@@ -1681,7 +1681,7 @@ class ConsoleSupervisor
                         'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
                         io_safe_output(get_product_name())
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                 ]
             );
         } else {
@@ -1741,7 +1741,7 @@ class ConsoleSupervisor
                             'Historical database maintenance problem.'
                         ),
                         'message' => __('Your historical database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.', get_product_name()),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=perf'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
             } else {
@@ -1780,7 +1780,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.HISTORYDB.MR',
                         'title'   => __('Historical database MR mismatch'),
                         'message' => __('Your historical database is not using the same schema as the main DB. This could produce anomalies while storing historical data.'),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=hist_db'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
                     ]
                 );
             } else {
@@ -1821,7 +1821,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
                         'title'   => __('Log collector cannot connect to ElasticSearch'),
                         'message' => __('ElasticSearch is not available using current configuration.'),
-                        'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=log'),
+                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );
             } else {
@@ -1891,7 +1891,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.METACONSOLE.DB_CONNECTION',
                     'title'   => __('Metaconsole DB is not available.'),
                     'message' => __('Cannot connect with Metaconsole DB using current configuration.'),
-                    'url'     => ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=enterprise'),
+                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=enterprise',
                 ]
             );
         }
@@ -1920,7 +1920,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.DOWNTIME',
                     'title'   => __('Scheduled downtime running.'),
                     'message' => __('A scheduled downtime is running. Some monitoring data won\'t be available while downtime is taking place.'),
-                    'url'     => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'),
+                    'url'     => '__url__/index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list',
                 ]
             );
             return;
@@ -2081,7 +2081,7 @@ class ConsoleSupervisor
                             date('M j, G:i:s ', $next_downtime_begin),
                             date('M j, G:i:s ', $next_downtime_end)
                         ),
-                        'url'     => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'),
+                        'url'     => '__url__/index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list',
                     ]
                 );
                 return;
@@ -2142,7 +2142,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.SECURITY.DEFAULT_PASSWORD',
                     'title'   => __('Default password for "Admin" user has not been changed'),
                     'message' => __('Please, change the default password since it is a commonly reported vulnerability.'),
-                    'url'     => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list'),
+                    'url'     => '__url__/index.php?sec=gusuarios&sec2=godmode/users/user_list',
                 ]
             );
         } else {
@@ -2178,7 +2178,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.MISC.FONTPATH',
                     'title'   => __('Default font doesn\'t exist'),
                     'message' => __('Your defined font doesn\'t exist or is not defined. Please, check font parameters in your config'),
-                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis'),
+                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis',
                 ]
             );
         } else {
@@ -2205,7 +2205,7 @@ class ConsoleSupervisor
                         'Your %s has the "develop_bypass" mode enabled. This is a developer mode and should be disabled in a production environment. This value is located in the main index.php file',
                         get_product_name()
                     ),
-                    'url'     => ui_get_full_url('index.php'),
+                    'url'     => '__url__/index.php',
                 ]
             );
         } else {
@@ -2228,7 +2228,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.MISC.EVENTSTORMPROTECTION',
                     'title'   => __('Event storm protection is enabled.'),
                     'message' => __('Some events may get lost while this mode is enabled. The server must be restarted after altering this setting.'),
-                    'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=general'),
+                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
                 ]
             );
         } else {
@@ -2255,7 +2255,7 @@ class ConsoleSupervisor
                                 'type'    => 'NOTIF.UPDATEMANAGER.OPENSETUP',
                                 'title'   => __('Failed to retrieve updates, please configure utility'),
                                 'message' => $message,
-                                'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=general'),
+                                'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
                             ]
                         );
                     }
@@ -2275,7 +2275,7 @@ class ConsoleSupervisor
                             get_product_name()
                         ),
                         'message' => __('There is a new update available. Please<a class="bolder" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
-                        'url'     => ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online'),
+                        'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online',
                     ]
                 );
             } else {
@@ -2313,7 +2313,7 @@ class ConsoleSupervisor
                         'There is one or more minor releases available. <a id="aviable_updates" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
-                    'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]
             );
         } else {
@@ -2362,7 +2362,7 @@ class ConsoleSupervisor
                     'type'    => 'NOTIF.CRON.CONFIGURED',
                     'title'   => __('DiscoveryConsoleTasks is not configured.'),
                     'message' => __($message_conf_cron),
-                    'url'     => ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist'),
+                    'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist',
                 ]
             );
         } else {
@@ -2462,7 +2462,7 @@ class ConsoleSupervisor
                             'type'    => 'NOTIF.SERVER.MISALIGNED',
                             'title'   => __($title_ver_misaligned),
                             'message' => __($message_ver_misaligned),
-                            'url'     => ui_get_full_url('index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online'),
+                            'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                         ]
                     );
                 }
@@ -2507,7 +2507,7 @@ class ConsoleSupervisor
                             'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
                             'title'   => __('AllowOverride is disabled'),
                             'message' => __($message),
-                            'url'     => ui_get_full_url('index.php'),
+                            'url'     => '__url__/index.php',
                         ]
                     );
                 }
@@ -2553,7 +2553,7 @@ class ConsoleSupervisor
                         'type'    => 'NOTIF.HAMASTER.MESSAGE',
                         'title'   => __('Desynchronized operation on the node '.$node['host']),
                         'message' => __($message),
-                        'url'     => ui_get_full_url('index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster'),
+                        'url'     => '__url__/index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster',
                     ]
                 );
             } else {

@@ -4781,23 +4781,23 @@ sub generate_status_event ($$$$$$$$) {
 		}
 		
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description = $pa_config->{"text_going_down_normal"};
+		$description = safe_output($pa_config->{"text_going_down_normal"});
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description = $pa_config->{"text_going_up_critical"};
+		$description = safe_output($pa_config->{"text_going_up_critical"});
 	# Warning
 	} elsif ($status == 2) {
 		
 		# From critical
 		if ($known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description = $pa_config->{"text_going_down_warning"};
+			$description = safe_output($pa_config->{"text_going_down_warning"});
 		}
 		# From normal or warning (after becoming unknown)
 		else {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description = $pa_config->{"text_going_up_warning"};
+			$description = safe_output($pa_config->{"text_going_up_warning"});
 		}
 	} else {
 		# Unknown status

@@ -4171,6 +4171,65 @@ function ui_forced_public_url()
 
 
 /**
+ * Returns a full built url for given section.
+ *
+ * @param  string $url
+ * @return void
+ */
+function ui_get_meta_url($url)
+{
+    global $config;
+
+    if (is_metaconsole() === true) {
+        return ui_get_full_url($url);
+    }
+
+    $mc_db_conn = \enterprise_hook(
+        'metaconsole_load_external_db',
+        [
+            [
+                'dbhost' => $config['replication_dbhost'],
+                'dbuser' => $config['replication_dbuser'],
+                'dbpass' => \io_output_password(
+                    $config['replication_dbpass']
+                ),
+                'dbname' => $config['replication_dbname'],
+            ],
+        ]
+    );
+
+    if ($mc_db_conn === NOERR) {
+        $public_url_meta = \db_get_value(
+            'value',
+            'tconfig',
+            'token',
+            'public_url',
+            false,
+            false
+        );
+
+        // Restore the default connection.
+        \enterprise_hook('metaconsole_restore_db');
+
+        if (empty($public_url_meta) === false
+            && $public_url_meta !== $config['metaconsole_base_url']
+        ) {
+            config_update_value(
+                'metaconsole_base_url',
+                $public_url_meta
+            );
+        }
+    }
+
+    if (isset($config['metaconsole_base_url']) === true) {
+        return $config['metaconsole_base_url'].'enterprise/meta/'.$url;
+    }
+
+    return $url;
+}
+
+
+/**
  * Returns a full URL in Pandora. (with the port and https in some systems)
  *
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup

@@ -328,30 +328,35 @@ $sql_cache = ['saved' => []];
 /**
  * Get the first value of the first row of a table in the database.
  *
- * @param string Field name to get
- * @param string Table to retrieve the data
- * @param string Field to filter elements
- * @param string Condition the field must have
+ * @param string  $field             Field name to get.
+ * @param string  $table             Table to retrieve the data.
+ * @param string  $field_search      Field to filter elements.
+ * @param string  $condition         Condition the field must have.
+ * @param boolean $search_history_db Search in historical db.
+ * @param boolean $cache             Enable cache or not.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function db_get_value($field, $table, $field_search=1, $condition=1, $search_history_db=false)
-{
+function db_get_value(
+    $field,
+    $table,
+    $field_search=1,
+    $condition=1,
+    $search_history_db=false,
+    $cache=true
+) {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_value($field, $table, $field_search, $condition, $search_history_db);
+        default:
+        return mysql_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
 
-            break;
         case 'postgresql':
-        return postgresql_db_get_value($field, $table, $field_search, $condition, $search_history_db);
+        return postgresql_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
 
-            break;
         case 'oracle':
-        return oracle_db_get_value($field, $table, $field_search, $condition, $search_history_db);
-
-            break;
+        return oracle_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
     }
 }
 
@@ -567,30 +572,32 @@ function db_get_sql($sql, $field=0, $search_history_db=false)
 /**
  * Get all the result rows using an SQL statement.
  *
- * @param string SQL statement to execute.
- * @param bool If want to search in history database also
- * @param bool If want to use cache (true by default)
+ * @param string  $sql               SQL statement to execute.
+ * @param boolean $search_history_db If want to search in history database also.
+ * @param boolean $cache             If want to use cache (true by default).
+ * @param mixed   $dbconnection      Use custom database connection (false default).
  *
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, $dbconnection=false)
-{
+function db_get_all_rows_sql(
+    $sql,
+    $search_history_db=false,
+    $cache=true,
+    $dbconnection=false
+) {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
+        default:
         return mysql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 
-            break;
         case 'postgresql':
         return postgresql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 
-            break;
         case 'oracle':
         return oracle_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
-
-            break;
     }
 }
 

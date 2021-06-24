@@ -617,7 +617,12 @@ if ($copy_command) {
 $is_management_allowed = is_management_allowed();
 if ($is_management_allowed === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alert commands information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=godmode/alerts/alert_commands&tab=command&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 

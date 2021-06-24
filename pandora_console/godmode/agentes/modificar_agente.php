@@ -112,7 +112,12 @@ ui_print_standard_header(
 
 if (is_management_allowed() === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. To delete an agent go to metaconsole.')
+        __(
+            'This node is configured with centralized mode. Go to %s to delete an agent',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 

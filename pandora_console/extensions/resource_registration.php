@@ -1082,8 +1082,15 @@ function resource_registration_extension_main()
 
     if (is_management_allowed() === false) {
         ui_print_warning_message(
-            __('This node is configured with centralized mode. Go to metaconsole to create a policy.')
+            __(
+                'This node is configured with centralized mode. Go to %s to create a policy.',
+                '<a target="_blank" href="'.ui_get_meta_url(
+                    'index.php?sec=advanced&sec2=advanced/policymanager'
+                ).'">'.__('metaconsole').'</a>'
+            )
         );
+
+        return;
     }
 
     echo '<div class=notify>';

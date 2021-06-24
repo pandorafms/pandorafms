@@ -160,15 +160,23 @@ function mysql_db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, 
 /**
  * Get the first value of the first row of a table in the database.
  *
- * @param string Field name to get
- * @param string Table to retrieve the data
- * @param string Field to filter elements
- * @param string Condition the field must have
+ * @param string  $field             Field name to get.
+ * @param string  $table             Table to retrieve the data.
+ * @param string  $field_search      Field to filter elements.
+ * @param string  $condition         Condition the field must have.
+ * @param boolean $search_history_db Search in historical db.
+ * @param boolean $cache             Enable cache or not.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $search_history_db=false)
-{
+function mysql_db_get_value(
+    $field,
+    $table,
+    $field_search=1,
+    $condition=1,
+    $search_history_db=false,
+    $cache=true
+) {
     if (is_int($condition)) {
         $sql = sprintf(
             'SELECT %s FROM %s WHERE %s = %d LIMIT 1',
@@ -195,7 +203,7 @@ function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $sear
         );
     }
 
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;

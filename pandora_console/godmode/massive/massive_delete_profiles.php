@@ -40,7 +40,12 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
 
 if (is_management_allowed() === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All profiles user information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All profiles user information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=advanced/users_setup&tab=profile&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 
     return;

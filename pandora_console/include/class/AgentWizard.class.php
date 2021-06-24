@@ -644,20 +644,6 @@ class AgentWizard extends HTML
                     'return'      => true,
                 ],
             ];
-
-            if (empty($this->idPolicy) === true) {
-                $inputs[] = [
-                    'label'     => __('Use agent IP'),
-                    'id'        => 'txt-use-agent-ip',
-                    'arguments' => [
-                        'name'        => 'use-agent-ip',
-                        'input_class' => 'flex-row',
-                        'type'        => 'checkbox',
-                        'class'       => '',
-                        'return'      => true,
-                    ],
-                ];
-            }
         }
 
         if ($this->actionType === 'wmi') {
@@ -5694,30 +5680,28 @@ class AgentWizard extends HTML
                     selectedBlock
                         .parent()
                         .removeClass("alpha50");
-                    if (selectedBlock.prop("checked")) {
+                        if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
-                        .each(function(){
-                            $(this).val('1');
-                        });
-                        // Set checked.
-                        $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                            .each(function() {
-                                $(this).prop("checked", true);
-                            });
-                        imageInfoModules.removeClass('hidden');
-                    } else {
+                            for (i = 0; i<=15; i++) {
+                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 1;
+                            }
+                            // Set checked.
+                            $("[id*=checkbox-sel_module_" + blockNumber + "]")
+                                .each(function() {
+                                    $(this).prop("checked", true);
+                                });
+                            imageInfoModules.removeClass('hidden');
+                        } else {
                         // Set to inactive the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
-                         .each(function(){
-                            $(this).val('0');
-                        });
-                        // Set unchecked.
-                        $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                            .each(function() {
-                                $(this).prop("checked", false);
-                            });
-                        imageInfoModules.addClass('hidden');
+                            for (i = 0; i<=15; i++) {
+                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 0;
+                            }
+                            // Set unchecked.
+                            $("[id*=checkbox-sel_module_" + blockNumber + "]")
+                                .each(function() {
+                                    $(this).prop("checked", false);
+                                });
+                            imageInfoModules.addClass('hidden');
                     }
                 } else if (type == 'module') {
                     // Getting the element.

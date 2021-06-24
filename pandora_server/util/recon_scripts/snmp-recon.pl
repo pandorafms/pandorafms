@@ -6,7 +6,7 @@ use strict;
 use warnings;
 
 # Default lib dir for RPM and DEB packages
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 
 use POSIX qw/strftime/;
 use Socket qw/inet_aton/;

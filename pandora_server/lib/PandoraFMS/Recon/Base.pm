@@ -12,7 +12,7 @@ use IO::Socket::INET;
 use POSIX qw/ceil/;
 use Socket qw/inet_aton/;
 
-use lib '/usr/lib/perl5';
+BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::Tools;
 use PandoraFMS::Recon::NmapParser;
 use PandoraFMS::Recon::Util;

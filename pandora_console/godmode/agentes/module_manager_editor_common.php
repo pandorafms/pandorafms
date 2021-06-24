@@ -1386,7 +1386,7 @@ $(document).ready (function () {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                 $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
                     $("select[name='id_tag_available[]']").append(value);

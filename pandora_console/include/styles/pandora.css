@@ -7496,6 +7496,10 @@ div.graph div.legend table {
   left: 0px;
 }
 
+#error_login .update_manager .center > input[type="text"] {
+  width: 97%;
+}
+
 .error_warning_licence {
   display: flex;
   align-items: center;

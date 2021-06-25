@@ -814,18 +814,6 @@ foreach ($info as $user_id => $user_info) {
                         '1',
                         true
                     );
-                    $data[6] .= html_print_input_image(
-                        'submit_delete_all',
-                        'images/cross_double.png',
-                        '',
-                        '',
-                        true,
-                        [
-                            'data-title'                     => __('Delete from all consoles'),
-                            'data-use_title_for_force_title' => '1',
-                            'class'                          => 'forced_title no-padding',
-                        ]
-                    );
                     $data[6] .= '</form>';
                 }
             } else {

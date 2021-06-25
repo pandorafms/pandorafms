@@ -982,7 +982,11 @@ if (! isset($config['id_user'])) {
         exit('</html>');
     } else {
         if (((bool) $user_in_db['is_admin'] === false)
-            && ((bool) $user_in_db['not_login'] === true)
+            && (            (bool) $user_in_db['not_login'] === true
+            || (is_metaconsole() === false
+            && has_metaconsole() === true
+            && is_management_allowed() === false
+            && (bool) $user_in_db['metaconsole_access_node'] === false))
         ) {
             // Logout.
             $_REQUEST = [];

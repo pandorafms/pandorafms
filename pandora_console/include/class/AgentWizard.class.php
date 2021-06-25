@@ -1172,7 +1172,7 @@ class AgentWizard extends HTML
             [
                 'arguments' => [
                     'type'   => 'hidden',
-                    'value'  => json_encode($candidateModules),
+                    'value'  => htmlspecialchars(json_encode($candidateModules)),
                     'return' => true,
                     'name'   => 'modules-definition',
                 ],

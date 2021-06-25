@@ -144,6 +144,11 @@ $module_option = (int) get_parameter('module_option', 1);
 
 $not_condition = (string) get_parameter('not_condition', '');
 
+$is_none = 'All';
+if ($not_condition !== '') {
+    $is_none = 'None';
+}
+
 // If option not_condition is enabled, the conditions of the queries are reversed.
 $condition_query = '=';
 if ($not_condition !== '') {
@@ -459,7 +464,13 @@ $table->data[0][1] .= html_print_select_groups(
     false,
     false,
     'id_grupo',
-    false
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    $not_condition
 );
 $table->data[0][1] .= '</div><div>';
 $table->data[0][1] .= html_print_input(
@@ -489,7 +500,7 @@ $table->data[0][3] = html_print_select(
     'status',
     $status,
     '',
-    __('All'),
+    __($is_none),
     -1,
     true,
     false,
@@ -517,7 +528,7 @@ if (!is_metaconsole()) {
     $rows_select = modules_get_modulegroups();
 }
 
-$table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1, true, false, true, '', false, 'width: 120px;');
+$table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __($is_none), -1, true, false, true, '', false, 'width: 120px;');
 
 $table->rowspan[0][6] = 3;
 $table->data[0][6] = html_print_submit_button(
@@ -554,7 +565,7 @@ if (empty($tags)) {
         'tag_filter',
         $tag_filter,
         '',
-        __('All'),
+        __($is_none),
         '',
         true,
         false,
@@ -633,7 +644,7 @@ if (enterprise_installed()) {
 
 $table->data[2][0] = '<span>'.__('Server type').'</span>';
 
-$table->data[2][1] = html_print_select($typemodules, 'moduletype', $moduletype, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
+$table->data[2][1] = html_print_select($typemodules, 'moduletype', $moduletype, '', __($is_none), '', true, false, true, '', false, 'width: 150px;');
 
 $monitor_options = [
     0 => __('All'),
@@ -732,7 +743,7 @@ $table->data[3][1] .= '<select id="datatype" name="datatype" ';
 
 $table->data[3][1] .= '>';
 
-$table->data[3][1] .= '<option name="datatype" value="">'.__('All').'</option>';
+$table->data[3][1] .= '<option name="datatype" value="">'.__($is_none).'</option>';
 
 
 foreach ($a as $valor) {
@@ -1941,6 +1952,12 @@ $table->data[4][0] .= __('Not condition');
 
         ?>
 <script type="text/javascript">
+
+if(!document.getElementById('not_condition_switch').checked){
+    console.log("pepe");
+    document.getElementById("select2-ag_group-container").innerHTML = "None";
+
+}
 
 $('#moduletype').click(function() {
     jQuery.get (

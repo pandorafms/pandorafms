@@ -436,6 +436,7 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
  * @param string  $size                    Style, size (width) of element.
  * @param boolean $simple_multiple_options Discovery simple multiple inputs.
  * @param boolean $required                Required input.
+ * @param string  $inverse                 Change All to None with inverse condition.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -462,7 +463,8 @@ function html_print_select_groups(
     $include_groups=false,
     $size=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $inverse=''
 ) {
     $output = '';
 
@@ -522,7 +524,11 @@ function html_print_select_groups(
         if (empty($selected) === false) {
             $fields = [ $selected => groups_get_name($selected) ];
         } else if ($returnAllGroup === true && $multiple === false) {
-            $fields = [ $selected => groups_get_name(null, true) ];
+            if ($selected === 0 && $inverse !== '') {
+                $fields = [ $selected => 'None' ];
+            } else {
+                $fields = [ $selected => groups_get_name(null, true) ];
+            }
         }
     } else {
         foreach ($selected as $k) {

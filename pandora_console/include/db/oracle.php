@@ -1004,10 +1004,10 @@ function oracle_db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function oracle_db_get_row_sql($sql, $search_history_db=false)
+function oracle_db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     $sql = 'SELECT * FROM ('.$sql.') WHERE rownum < 2';
-    $result = oracle_db_get_all_rows_sql($sql, $search_history_db);
+    $result = oracle_db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;

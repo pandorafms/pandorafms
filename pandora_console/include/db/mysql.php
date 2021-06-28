@@ -846,10 +846,10 @@ function mysql_db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function mysql_db_get_row_sql($sql, $search_history_db=false)
+function mysql_db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     $sql .= ' LIMIT 1';
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;

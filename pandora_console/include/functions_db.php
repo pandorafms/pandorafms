@@ -442,21 +442,21 @@ function db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function db_get_row_sql($sql, $search_history_db=false)
+function db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_row_sql($sql, $search_history_db);
+        return mysql_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_row_sql($sql, $search_history_db);
+        return postgresql_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
         case 'oracle':
-        return oracle_db_get_row_sql($sql, $search_history_db);
+        return oracle_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
     }
@@ -1378,6 +1378,7 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
 
     if ($rc !== false) {
         if (enterprise_hook('is_metaconsole') === true
+            && isset($config['centralized_management']) === true
             && (bool) $config['centralized_management'] === true
             && $dbconnection === ''
         ) {

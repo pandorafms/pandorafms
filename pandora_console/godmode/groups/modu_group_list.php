@@ -83,7 +83,7 @@ if (is_management_allowed() === false) {
         __(
             'This node is configured with centralized mode. All module groups information is read only. Go to %s to manage it.',
             '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=advanced/component_management'
+                'index.php?sec=advanced&sec2=advanced/component_management&tab=module_group'
             ).'">'.__('metaconsole').'</a>'
         )
     );

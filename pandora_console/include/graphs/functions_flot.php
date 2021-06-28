@@ -763,7 +763,8 @@ function flot_slicesbar_graph(
     $height = ((int) $height + 15);
 
     $style = 'width:'.$width.'%;';
-    $style .= 'height:'.$height.'px;';
+    // Fixed height size.
+    $style .= 'height: 100%;';
     $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
 
     $return .= "<div id='value_".$graph_id."' class='flot_container'></div>";

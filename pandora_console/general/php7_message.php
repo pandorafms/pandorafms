@@ -19,9 +19,9 @@
 global $config;
 
 if ($config['language'] == 'es') {
-    $url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Instalaci%C3%B3n_y_actualizaci%C3%B3n_PHP_7';
+    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
 } else {
-    $url_help = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:_PHP_7';
+    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
 }
 
 // Prints help dialog information

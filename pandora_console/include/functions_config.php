@@ -2374,7 +2374,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_docs_url'])) {
-        config_update_value('meta_custom_docs_url', 'http://wiki.pandorafms.com/index.php?title=Main_Page');
+        config_update_value('meta_custom_docs_url', 'https://pandorafms.com/manual/');
     }
 
     if (!isset($config['meta_custom_support_url'])) {

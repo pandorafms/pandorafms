@@ -8,7 +8,6 @@ li#select_multiple_modules_filtered {
 .networkconsole {
   height: 100%;
 }
-
 .networkconsole svg {
   height: 100%;
 }
@@ -24,11 +23,9 @@ li#select_multiple_modules_filtered {
   right: 50px;
   top: 20px;
 }
-
 .select-dashboard-width {
   width: 110%;
 }
-
 #menu_tab li.nomn form#form-select-dashboard {
   margin-top: 0px !important;
 }

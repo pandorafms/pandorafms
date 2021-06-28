@@ -133,6 +133,7 @@ div.target {
   display: flex;
   flex-direction: column;
   width: 100%;
+  box-sizing: border-box;
 }
 div.target.flex {
   border: 2px dashed #ddd;

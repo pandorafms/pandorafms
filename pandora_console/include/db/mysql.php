@@ -764,19 +764,23 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
             }
         }
 
-        if (is_null($value)) {
-            $query .= sprintf('%s IS NULL', $field);
+        if ($value === null) {
+            $not = (($negative === true) ? 'NOT' : '');
+            $query .= sprintf('%s IS %s NULL', $field, $negative);
         } else if (is_int($value) || is_bool($value)) {
-            $query .= sprintf('%s = %d', $field, $value);
+            $not = (($negative === true) ? '!' : '');
+            $query .= sprintf('%s %s= %d', $field, $not, $value);
         } else if (is_float($value) || is_double($value)) {
-            $query .= sprintf('%s = %f', $field, $value);
+            $not = (($negative === true) ? ' !' : '');
+            $query .= sprintf('%s %s= %f', $field, $not, $value);
         } else if (is_array($value)) {
-            $not = $negative ? ' NOT ' : '';
-            $query .= sprintf('%s %sIN ("%s")', $field, $not, implode('", "', $value));
+            $not = (($negative === true) ? 'NOT' : '');
+            $query .= sprintf('%s %s IN ("%s")', $field, $not, implode('", "', $value));
         } else {
             if ($value === '') {
-                // Search empty string
-                $query .= sprintf("%s = ''", $field);
+                // Search empty string.
+                $not = (($negative === true) ? '!' : '');
+                $query .= sprintf("%s %s= ''", $field, $not);
             } else if ($value[0] == '>') {
                 $value = substr($value, 1, (strlen($value) - 1));
                 $query .= sprintf("%s > '%s'", $field, $value);
@@ -789,9 +793,11 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
                     $query .= sprintf("%s < '%s'", $field, $value);
                 }
             } else if ($value[0] == '%') {
-                $query .= sprintf("%s LIKE '%s'", $field, $value);
+                $not = (($negative === true) ? ' NOT ' : '');
+                $query .= sprintf("%s %s LIKE '%s'", $field, $not, $value);
             } else {
-                $query .= sprintf("%s = '%s'", $field, $value);
+                $not = (($negative === true) ? '!' : '');
+                $query .= sprintf("%s %s= '%s'", $field, $not, $value);
             }
         }
 

@@ -508,6 +508,11 @@ var TreeController = {
 
           // Content
           $content.addClass("node-content");
+          var disabled = false;
+          if (element.disabled == true) {
+            disabled = true;
+            $content.addClass("disabled");
+          }
           switch (element.type) {
             case "group":
               if (
@@ -956,7 +961,10 @@ var TreeController = {
             }
           }
           // If exist the detail container, show the data
-          if (typeof controller.detailRecipient !== "undefined") {
+          if (
+            typeof controller.detailRecipient !== "undefined" &&
+            disabled == false
+          ) {
             if (element.type == "agent" || element.type == "module") {
               $content
                 .click(function(e) {
@@ -990,7 +998,8 @@ var TreeController = {
 
           if (
             typeof element.children != "undefined" &&
-            element.children.length > 0
+            element.children.length > 0 &&
+            element.disabled == false
           ) {
             $node.removeClass("leaf-empty").addClass("leaf-closed");
 
@@ -1027,8 +1036,9 @@ var TreeController = {
             element.searchChildren
           ) {
             if (
-              element.rootType == "group_edition" &&
-              typeof element.children == "undefined"
+              (element.rootType == "group_edition" &&
+                typeof element.children == "undefined") ||
+              element.disabled == true
             ) {
               $node.addClass("leaf-empty");
             } else {

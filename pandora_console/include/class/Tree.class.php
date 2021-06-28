@@ -160,6 +160,21 @@ class Tree
     }
 
 
+    /**
+     * Show disabled modules
+     *
+     * @return string Sql disabled.
+     */
+    protected function getDisabledFilter()
+    {
+        if (empty($this->filter['showDisabled'])) {
+            return ' tam.disabled = 0 AND ta.disabled = 0';
+        }
+
+        return ' 1 = 1';
+    }
+
+
     protected function getAgentStatusFilter($status=self::TV_DEFAULT_AGENT_STATUS)
     {
         if ($status == self::TV_DEFAULT_AGENT_STATUS) {
@@ -1094,6 +1109,7 @@ class Tree
         $agent_filter = 'AND ta.id_agente = '.$this->id;
         $tag_condition = $this->getTagCondition();
         $tag_join = empty($tag_condition) && (!$this->L3forceTagCondition) ? '' : $this->getTagJoin();
+        $show_disabled = $this->getDisabledFilter();
 
         if ($this->avoid_condition === true) {
             $condition = '';
@@ -1107,6 +1123,10 @@ class Tree
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
 			tam.parent_module_id AS parent, tatm.id AS alerts, tam.unit';
 
+        if ($show_disabled) {
+            $columns .= ', tam.disabled';
+        }
+
         $sql = "SELECT $columns
 			FROM tagente_modulo tam
 			$tag_join
@@ -1119,7 +1139,8 @@ class Tree
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
 			$inner
-			WHERE tam.disabled = 0 AND ta.disabled = 0
+            WHERE
+			$show_disabled
 				$condition
 				$agent_filter
 				$group_acl

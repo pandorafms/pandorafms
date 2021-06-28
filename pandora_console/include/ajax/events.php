@@ -1599,7 +1599,6 @@ if ($get_extended_event) {
                     page: "include/ajax/events",
                     get_comments: 1,
                     event: '.json_encode($event).',
-                    filter: '.json_encode($filter).'
                 },
                 dataType : "html",
                 success: function (data) {

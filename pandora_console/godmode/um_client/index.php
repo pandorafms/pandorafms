@@ -126,9 +126,6 @@ if (function_exists('enterprise_hook') === true) {
                 )
             );
             return;
-        } else {
-            hd('['.$license_data['licensed_to'].']', true);
-            hd(Manager::PANDORA_TRIAL_ISSUER, true);
         }
     } else {
         $license_data = [];

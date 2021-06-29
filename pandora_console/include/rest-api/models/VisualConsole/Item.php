@@ -1770,6 +1770,7 @@ class Item extends CachedModel
                     'gridColor',
                     'color',
                     'legendBackgroundColor',
+                    'legendColor',
                 ]
             ),
             null

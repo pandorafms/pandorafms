@@ -49,6 +49,7 @@ final class EventsHistory extends Item
         $return = parent::decode($data);
         $return['type'] = AUTO_SLA_GRAPH;
         $return['maxTime'] = static::extractMaxTime($data);
+        $return['legendColor'] = $this->extractLegendColor($data);
         return $return;
     }
 
@@ -65,6 +66,22 @@ final class EventsHistory extends Item
         return static::parseIntOr(
             static::issetInArray($data, ['maxTime', 'period']),
             null
+        );
+    }
+
+
+    /**
+     * Extract legend color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the grid color (not empty) or null.
+     */
+    private function extractLegendColor(array $data): string
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['legendColor', 'border_color']),
+            '#000000'
         );
     }
 
@@ -100,6 +117,7 @@ final class EventsHistory extends Item
         $linkedModule = static::extractLinkedModule($data);
         $agentId = static::parseIntOr($linkedModule['agentId'], null);
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
+        $legendColor = static::extractLegendColor($data);
 
         if ($agentId === null) {
             throw new \InvalidArgumentException('missing agent Id');
@@ -264,6 +282,18 @@ final class EventsHistory extends Item
                     'selected' => $values['maxTime'],
                     'return'   => true,
                     'sort'     => false,
+                ],
+            ];
+
+            // Legend color.
+            $inputs[] = [
+                'label'     => __('Legend color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'legendColor',
+                    'type'    => 'color',
+                    'value'   => $values['legendColor'],
+                    'return'  => true,
                 ],
             ];
 

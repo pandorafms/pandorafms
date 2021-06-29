@@ -434,6 +434,7 @@ class View extends \HTML
                 $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['maxTime'] = \get_parameter('maxTime');
+                $data['legendColor'] = \get_parameter('legendColor');
             break;
 
             case DONUT_GRAPH:

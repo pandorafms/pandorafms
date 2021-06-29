@@ -11,4 +11,6 @@ UPDATE `tuser_task_scheduled` SET
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:7;s:3:"PDF";s:15:"first_execution"')
     WHERE `id_user_task` = 2;
 
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
+
 COMMIT;

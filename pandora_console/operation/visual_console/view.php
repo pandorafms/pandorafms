@@ -77,6 +77,9 @@ $pure = (bool) get_parameter('pure', $config['pure']);
 // Refresh interval in seconds.
 $refr = (int) get_parameter('refr', $config['vc_refr']);
 
+$width = (int) get_parameter('width', 0);
+$height = (int) get_parameter('height', 0);
+
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
 $visualConsole = null;
@@ -200,7 +203,7 @@ $options['view']['active'] = true;
 
 if (is_metaconsole() === false) {
     if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
+        $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
             'images/full_screen.png',
             true,
             [
@@ -489,11 +492,47 @@ ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();
 
+$widthRatio = 0;
+if ($width > 0 && $pure == 1) {
+    $widthRatio = ($width / $visualConsoleData['width']);
+
+    if ($visualConsoleData['width'] > $height) {
+        ?>
+            <style type="text/css">
+            div#main_pure {
+                width: 100%;
+            }
+
+            div#visual-console-container {
+                width: 100% !important;
+            }
+            </style>
+        <?php
+    } else {
+        ?>
+            <style type="text/css">
+            div#main_pure {
+                width: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            div#visual-console-container {
+                width: 100% !important;
+            }
+            </style>
+        <?php
+    }
+}
+
 // Load Visual Console Items.
 $visualConsoleItems = VisualConsole::getItemsFromDB(
     $visualConsoleId,
-    $aclUserGroups
+    $aclUserGroups,
+    0,
+    $widthRatio
 );
+
 ui_require_css_file('modal');
 ui_require_css_file('form');
 ?>
@@ -506,6 +545,7 @@ ui_require_css_file('form');
     var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
     var controls = document.getElementById('vc-controls');
+
     autoHideElement(controls, 1000);
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
@@ -681,6 +721,19 @@ if ($edit_capable === true) {
     $('.link-create-item').click(function (event){
         var type = event.target.id.substr(7);
         visualConsoleManager.createItem(type);
+    });
+
+    $('#full_screen').click(function (e) {
+        e.preventDefault();
+
+        if (props.autoAdjust === true) {
+            var hrefAux = $('#full_screen').attr('href');
+            hrefAux += '&width=' + document.body.offsetWidth+'&height=' + screen.height;
+            $('#full_screen').attr('href', hrefAux);
+        }
+
+        window.location.href = $('#full_screen').attr('href');
+
     });
 
     /**

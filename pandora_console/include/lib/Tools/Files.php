@@ -44,11 +44,11 @@ class Files
      * @param string $filename Path to target zip file.
      * @param string $path     Directory to be zipped.
      *
-     * @return void
+     * @return integer The number of files added to the zip file.
      */
     public static function zip(string $filename, string $path)
     {
-        // Generate a collections zip for Metaconsole.
+        $added_files = 0;
         $zip = new \ZipArchive();
         $zip->open(
             $filename,
@@ -82,6 +82,7 @@ class Files
 
                 // Add current file to archive.
                 $zip->addFile($filePath, $relativePath);
+                $added_files++;
 
                 // Keep file permissions.
                 $zip->setExternalAttributesName(
@@ -93,6 +94,31 @@ class Files
         }
 
         $zip->close();
+
+        return $added_files;
+    }
+
+
+    /**
+     * Test if given file is zip file.
+     *
+     * @param string $file File.
+     *
+     * @return boolean
+     */
+    public static function testZip(string $file):bool
+    {
+        if (file_exists($file) === false) {
+            return false;
+        }
+
+        $zip = new \ZipArchive;
+        if ($zip->open($file, (\ZipArchive::RDONLY & \ZipArchive::ER_READ)) === true) {
+            $zip->close();
+            return true;
+        }
+
+        return false;
     }
 
 

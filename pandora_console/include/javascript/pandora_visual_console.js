@@ -737,6 +737,13 @@ function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
     )
     .done(handleSuccess("props"))
     .fail(handleFail);
+
+  var queryString = new URLSearchParams(window.location.search);
+  var widthScreen = 0;
+  if (queryString.get("width")) {
+    widthScreen = document.body.offsetWidth;
+  }
+
   // Visual Console items request.
   itemsJqXHR = jQuery
     // .get(apiPath + "/visual-consoles/" + vcId + "/items", null, "json")
@@ -748,7 +755,8 @@ function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
         size: size,
         visualConsoleId: vcId,
         id_user: typeof id_user == undefined ? id_user : null,
-        auth_hash: typeof hash == undefined ? hash : null
+        auth_hash: typeof hash == undefined ? hash : null,
+        widthScreen: widthScreen
       },
       "json"
     )

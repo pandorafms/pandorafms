@@ -194,7 +194,8 @@ final class Line extends Model
      */
     protected static function fetchDataFromDB(
         array $filter,
-        ?float $ratio=0
+        ?float $ratio=0,
+        ?float $widthRatio=0
     ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
@@ -209,6 +210,11 @@ final class Line extends Model
             $row['height'] = ($row['height'] * $ratio);
             $row['pos_x'] = ($row['pos_x'] * $ratio);
             $row['pos_y'] = ($row['pos_y'] * $ratio);
+        }
+
+        if ($widthRatio != 0) {
+            $row['width'] = ($row['width'] * $widthRatio);
+            $row['pos_x'] = ($row['pos_x'] * $widthRatio);
         }
 
         return $row;

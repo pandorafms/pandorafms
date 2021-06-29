@@ -1334,18 +1334,18 @@ UPDATE `tnotification_source` SET `enabled`=1 WHERE `description` = 'System&#x20
 -- 
 INSERT INTO `tlayout`
 VALUES
-    (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0),
-	(2,'Demo&#x20;visual console 2',0,'fondo-keep-alive.jpg',1080,1920,'#FFF',0),
-	(3,'Worldmap',0,'map_world.jpg',1080,1920,'white',0),
-	(4,'Europe',0,'map_europe_1.jpg',1080,1920,'white',0),
-	(5,'USA',0,'map_USA.jpg',1080,1920,'white',0),
-	(6,'Spain',0,'map_spain.jpg',1080,1920,'white',0),
-	(7,'Madrid',0,'map_madrid.jpg',1080,1920,'white',0),
-	(8,'Germany',0,'map_germany_1.jpg',1080,1920,'white',0),
-	(9,'France',0,'map_france.jpg',1080,1920,'white',0),
-	(10,'Catalonia',0,'map_catalonia.jpg',1080,1920,'white',0),
-	(11,'Basque&#x20;Country',0,'map_basque-country.jpg',1080,1920,'white',0),
-	(12,'Andalusia',0,'map_andalusia.jpg',1080,1920,'white',0)
+    (1, 'Demo&#x20;visual console', 0, 'fondo.jpg', 1080, 1920, 'white', 0, 0),
+	(2,'Demo&#x20;visual console 2',0,'fondo-keep-alive.jpg',1080,1920,'#FFF',0, 0),
+	(3,'Worldmap',0,'map_world.jpg',1080,1920,'white',0, 0),
+	(4,'Europe',0,'map_europe_1.jpg',1080,1920,'white',0, 0),
+	(5,'USA',0,'map_USA.jpg',1080,1920,'white',0, 0),
+	(6,'Spain',0,'map_spain.jpg',1080,1920,'white',0, 0),
+	(7,'Madrid',0,'map_madrid.jpg',1080,1920,'white',0, 0),
+	(8,'Germany',0,'map_germany_1.jpg',1080,1920,'white',0, 0),
+	(9,'France',0,'map_france.jpg',1080,1920,'white',0, 0),
+	(10,'Catalonia',0,'map_catalonia.jpg',1080,1920,'white',0, 0),
+	(11,'Basque&#x20;Country',0,'map_basque-country.jpg',1080,1920,'white',0, 0),
+	(12,'Andalusia',0,'map_andalusia.jpg',1080,1920,'white',0, 0)
 ;
 
 -- 

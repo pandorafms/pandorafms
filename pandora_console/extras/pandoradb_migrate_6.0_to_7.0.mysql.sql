@@ -1665,6 +1665,8 @@ UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^
 
 ALTER TABLE `tlayout` MODIFY COLUMN `is_favourite` int(10) unsigned NOT NULL DEFAULT '0';
 
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
+
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------

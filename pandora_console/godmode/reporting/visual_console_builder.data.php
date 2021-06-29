@@ -222,6 +222,9 @@ $table->data[5][1] .= '<span class="opt" style="visibility:hidden;">
 $table->data[6][0] = __('Favourite visual console');
 $table->data[6][1] = html_print_checkbox('is_favourite', 0, $is_favourite, true);
 
+$table->data[7][0] = __('Auto adjust to screen in fullscreen');
+$table->data[7][1] = html_print_checkbox('auto_adjust', 0, $auto_adjust, true);
+
 if ($action == 'new') {
     $textButtonSubmit = __('Save');
     $classButtonSubmit = 'sub wand';
@@ -424,6 +427,22 @@ $(document).ready (function () {
         }
         else{
             $("#hidden-is_favourite_sent").val(0);
+        }
+    });
+
+    if($("#checkbox-auto_adjust").is(":checked")) {
+        $("#hidden-auto_adjust_sent").val(1);
+    }
+    else{
+        $("#hidden-auto_adjust_sent").val(0);
+    }
+
+    $("#checkbox-auto_adjust").change(function(){
+        if($(this).is(":checked")) {
+            $("#hidden-auto_adjust_sent").val(1);
+        }
+        else{
+            $("#hidden-auto_adjust_sent").val(0);
         }
     });
     

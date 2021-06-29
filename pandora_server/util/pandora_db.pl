@@ -629,6 +629,9 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
     $conf->{'verbosity'} = '3' unless defined ($conf->{'verbosity'});
 
+	# Configure SSL.
+	set_ssl_opts($conf);
+
     # Dynamic interval configuration.                                                                                                                             
 	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});
 	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});

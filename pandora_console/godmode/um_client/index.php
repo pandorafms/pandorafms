@@ -69,6 +69,13 @@ if (empty($license) === true) {
     $license = 'PANDORA-FREE';
 }
 
+$mode_str = '';
+if ($mode === Manager::MODE_ONLINE) {
+    $mode_str = 'online';
+} else if ($mode === Manager::MODE_OFFLINE) {
+    $mode_str = 'offline';
+}
+
 if (function_exists('enterprise_hook') === true) {
     enterprise_include_once('/include/functions_license.php');
     $license_data = enterprise_hook('license_get_info');
@@ -93,13 +100,6 @@ if (function_exists('enterprise_hook') === true) {
         }
 
         if ($days_to_expiry < 0) {
-            $mode_str = '';
-            if ($mode === Manager::MODE_ONLINE) {
-                $mode_str = 'online';
-            } else if ($mode === Manager::MODE_OFFLINE) {
-                $mode_str = 'offline';
-            }
-
             ui_print_warning_message(
                 __(
                     'You cannot use update manager %s. This license has expired %d days ago. Please update your license or disable enterprise section by moving enterprise directory to another location and try again.',
@@ -108,6 +108,27 @@ if (function_exists('enterprise_hook') === true) {
                 )
             );
             return;
+        }
+
+        if (rtrim($license_data['licensed_to']) === Manager::PANDORA_TRIAL_ISSUER) {
+            if (function_exists('get_product_name') === true) {
+                $product_name = get_product_name();
+            } else {
+                $product_name = 'Pandora FMS';
+            }
+
+            ui_print_info_message(
+                __(
+                    'You cannot use update manager %s. This license is a trial license to test all %s features. Please update your license to unlock all %s features.',
+                    $mode_str,
+                    $product_name,
+                    $product_name
+                )
+            );
+            return;
+        } else {
+            hd('['.$license_data['licensed_to'].']', true);
+            hd(Manager::PANDORA_TRIAL_ISSUER, true);
         }
     } else {
         $license_data = [];

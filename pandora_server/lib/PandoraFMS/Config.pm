@@ -233,6 +233,9 @@ sub pandora_load_config {
 	$pa_config->{"dbhost"} = "localhost";
 	$pa_config->{'dbport'} = undef; # set to standard port of "dbengine" later
 	$pa_config->{"dbname"} = "pandora";
+	$pa_config->{"dbssl"} = 0;
+	$pa_config->{"dbsslcapath"} = "";
+	$pa_config->{"dbsslcafile"} = "";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
 	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
@@ -703,6 +706,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^dbname\s(.*)/i) { 
 			$pa_config->{'dbname'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^dbssl\s+([0-1])/i) { 
+			$pa_config->{'dbssl'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^dbsslcapath\s(.*)/i) { 
+			$pa_config->{'dbsslcapath'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^dbsslcafile\s(.*)/i) { 
+			$pa_config->{'dbsslcafile'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
 			$pa_config->{'dbuser'}= clean_blank($1); 
@@ -1281,6 +1293,9 @@ sub pandora_load_config {
 			$pa_config->{'dbport'} = 1521;
 		}
 	}
+
+	# Configure SSL.
+	set_ssl_opts($pa_config);
 
 	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
 		if ($pa_config->{"PID"} ne ""){

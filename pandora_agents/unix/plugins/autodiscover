@@ -24,6 +24,7 @@ import psutil
 
 global module_list
 module_list = []
+version = "1.1"
 
 
 #########################################################################################
@@ -382,7 +383,7 @@ def discover(osyst, servicelist):
         elif osyst == "Linux":
             lnx_service(servicelist, memcpu)
     else:
-        print ("\nPandora FMS Autodiscovery plugin.")
+        print ("\nPandora FMS Autodiscovery plugin v{}".format(version))
         print ("Checks the status of the services in list and monitors CPU and Memory for each of them.\n")
         print ("Usage:")
         print ("{} [options] [--usage]".format(argv[0]))

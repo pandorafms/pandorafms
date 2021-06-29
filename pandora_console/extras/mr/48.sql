@@ -1,5 +1,15 @@
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 UPDATE `tlink` SET `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 
 UPDATE pandora.tuser_task

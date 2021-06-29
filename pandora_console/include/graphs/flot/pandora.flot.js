@@ -806,11 +806,7 @@ function pandoraFlotSlicebar(
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
-        tickLength: 0,
-        font: {
-          size: font_size + 2,
-          family: font
-        }
+        tickLength: 0
       }
     ],
     yaxes: [
@@ -833,6 +829,10 @@ function pandoraFlotSlicebar(
   }
 
   $.plot($("#" + graph_id), datas, options);
+
+  // Added for correct handle of the font size.
+  // xaxes-yaxes object not handle font-size properly.
+  $(".flot-x-axis .flot-tick-label").css("font-size", font_size);
 
   if (match == null && not_interactive == 0) {
     // Events

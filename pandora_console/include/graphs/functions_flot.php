@@ -778,7 +778,7 @@ function flot_slicesbar_graph(
 
     $datacolor = [];
 
-    $fontsize = $config['font_size'];
+    $fontsize = ((int) $config['font_size'] + 2);
     $fontpath = $config['fontpath'];
 
     $return .= '<div id="extra_'.$graph_id.'" class="slicebar-box-hover-styles invisible" style="font-size:'.$fontsize.'"></div>';

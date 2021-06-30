@@ -113,9 +113,18 @@ class Files
         }
 
         $zip = new \ZipArchive;
-        if ($zip->open($file, (\ZipArchive::RDONLY & \ZipArchive::ER_READ)) === true) {
-            $zip->close();
-            return true;
+        if (defined('\ZipArchive::RDONLY') === true) {
+            // PHP >= 7.4.
+            if ($zip->open($file, (\ZipArchive::RDONLY)) === true) {
+                $zip->close();
+                return true;
+            }
+        } else {
+            // PHP < 7.4.
+            if ($zip->open($file, (\ZipArchive::CHECKCONS)) === true) {
+                $zip->close();
+                return true;
+            }
         }
 
         return false;

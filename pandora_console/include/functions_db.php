@@ -2241,7 +2241,10 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
     global $config;
 
     // Temporary disable to get a valid lock if any...
-    $cache = $config['dbcache'];
+    if (isset($config['dbcache']) === true) {
+        $cache = $config['dbcache'];
+    }
+
     $config['dbcache'] = false;
 
     $lock_status = db_get_value_sql(
@@ -2260,7 +2263,12 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
             )
         );
 
-        $config['dbcache'] = $cache;
+        if (isset($cache) === true) {
+            $config['dbcache'] = $cache;
+        } else {
+            unset($config['dbcache']);
+        }
+
         if ($lock_status === false) {
             return null;
         }
@@ -2268,7 +2276,12 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
         return (int) $lock_status;
     }
 
-    $config['dbcache'] = $cache;
+    if (isset($cache) === true) {
+        $config['dbcache'] = $cache;
+    } else {
+        unset($config['dbcache']);
+    }
+
     return 0;
 }
 
@@ -2285,7 +2298,11 @@ function db_get_lock(string $lockname, int $expiration_time=86400) :?int
 function db_release_lock($lockname)
 {
     global $config;
-    $cache = $config['dbcache'];
+    // Temporary disable to get a valid lock if any...
+    if (isset($config['dbcache']) === true) {
+        $cache = $config['dbcache'];
+    }
+
     $config['dbcache'] = false;
 
     $return = db_get_value_sql(
@@ -2295,7 +2312,11 @@ function db_release_lock($lockname)
         )
     );
 
-    $config['dbcache'] = $cache;
+    if (isset($cache) === true) {
+        $config['dbcache'] = $cache;
+    } else {
+        unset($config['dbcache']);
+    }
 
     return $return;
 

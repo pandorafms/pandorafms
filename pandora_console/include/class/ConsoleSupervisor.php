@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Tools\Files;
+
 global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
@@ -2645,13 +2647,15 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+        if (isset($config['clean_phantomjs_cache']) !== true
+            || (int) $config['clean_phantomjs_cache'] !== 1
+        ) {
             return;
         }
 
         $cache_dir = $config['homedir'].'/attachment/cache';
         if (is_dir($cache_dir) === true) {
-            rrmdir($cache_dir);
+            Files::rmrf($cache_dir);
         }
 
         // Clean process has ended.

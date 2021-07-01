@@ -315,9 +315,9 @@ class AgentModuleWidget extends Widget
                     function ($carry, $item) {
                         $d = explode('|', $item);
                         if (isset($d[1]) === true) {
-                            $carry[] = $d[1];
+                            $carry[] = \io_safe_output($d[1]);
                         } else {
-                            $carry[] = $item;
+                            $carry[] = \io_safe_output($item);
                         }
 
                         return $carry;
@@ -424,7 +424,7 @@ class AgentModuleWidget extends Widget
 
             foreach ($allModules as $module_name) {
                 $file_name = ui_print_truncate_text(
-                    $module_name,
+                    \io_safe_output($module_name),
                     'module_small',
                     false,
                     true,
@@ -466,7 +466,7 @@ class AgentModuleWidget extends Widget
                 }
 
                 $file_name = \ui_print_truncate_text(
-                    $row['agent_alias'],
+                    \io_safe_output($row['agent_alias']),
                     'agent_small',
                     false,
                     true,
@@ -636,13 +636,13 @@ class AgentModuleWidget extends Widget
         }
 
         // Extract info all modules selected.
-        $target_modules = explode(
-            self::MODULE_SEPARATOR,
-            $this->values['mModules']
-        );
-        if (is_metaconsole() === true
-            && $this->values['mShowCommonModules'] === '0'
-        ) {
+        $target_modules = $this->values['mModules'];
+        if (is_metaconsole() === true) {
+            $target_modules = explode(
+                self::MODULE_SEPARATOR,
+                $this->values['mModules']
+            );
+
             $all_modules = $target_modules;
         } else {
             $all_modules = Module::search(
@@ -661,7 +661,12 @@ class AgentModuleWidget extends Widget
                     if (is_object($item) === true) {
                         $carry[$item->name()] = null;
                     } else {
-                        $carry[$item] = null;
+                        if ((is_metaconsole() === true
+                            && $this->values['mShowCommonModules'] !== '1')
+                            || is_metaconsole() === false
+                        ) {
+                            $carry[$item] = null;
+                        }
                     }
 
                     return $carry;
@@ -699,9 +704,19 @@ class AgentModuleWidget extends Widget
                 if (is_metaconsole() === true
                     && $this->values['mShowCommonModules'] === '1'
                 ) {
+                    // MC should connect to nodes and retrieve information
+                    // from targets.
                     $modules = $agent->searchModules(
                         ['id_agente_modulo' => $target_modules]
                     );
+
+                    foreach ($modules as $module) {
+                        if ($module === null) {
+                            $reduceAllModules[] = null;
+                        } else {
+                            $reduceAllModules[$module->name()] = null;
+                        }
+                    }
                 } else {
                     $modules = $agent->searchModules(
                         ['nombre' => array_keys($reduceAllModules)]
@@ -712,10 +727,6 @@ class AgentModuleWidget extends Widget
                 foreach ($modules as $module) {
                     if ($module === null) {
                         continue;
-                    }
-
-                    if ((bool) is_metaconsole() === true) {
-                        $reduceAllModules[$module->name()] = null;
                     }
 
                     $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
@@ -729,7 +740,6 @@ class AgentModuleWidget extends Widget
             }
         }
 
-        ksort($reduceAllModules);
         $allModules = array_keys($reduceAllModules);
         if ($allModules === null) {
             $allModules = [];

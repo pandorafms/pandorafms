@@ -9,7 +9,7 @@ DBNAME=pandora
 DBUSER=pandora
 DBPASS=pandora
 DBPORT=3306
-S_VERSION='2021072801'
+S_VERSION='2021070101'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # Ansi color code variables
@@ -53,7 +53,7 @@ check_cmd_status () {
 
 check_pre_pandora () {
     export MYSQL_PWD=$DBPASS
-    
+
     echo -en "${cyan}Checking environment ... ${reset}"
     rpm -qa | grep pandora &>> /dev/null && local fail=true
     [ -d "$CONSOLE_PATH" ] && local fail=true
@@ -87,16 +87,15 @@ check_root_permissions () {
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
 
 # Centos Version
-if [ ! "$(grep -i centos /etc/redhat-release)" ]; then
-         printf "${red}Error this is not a Centos Base system, this installer is compatible with Centos systems only${reset}\n"
+if [ ! "$(grep -Ei 'centos|rocky' /etc/redhat-release)" ]; then
+         printf "\n ${red}Error this is not a Centos/Rocky Base system, this installer is compatible with Centos/Rocky systems only${reset}\n"
          exit 1
 fi
 
-execute_cmd "grep -i centos /etc/redhat-release" "Checking Centos" 'Error This is not a Centos Base system'
 
 echo -en "${cyan}Check Centos Version...${reset}"
-[ $(sed -nr 's/VERSION_ID+=\s*"([0-9])"$/\1/p' /etc/os-release) -eq '8' ]
-check_cmd_status 'Error OS version, Centos 8 is expected'
+[ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '8' ]
+check_cmd_status 'Error OS version, Centos/Rocky 8+ is expected'
 
 # initialice logfile
 execute_cmd "echo 'Starting community deployment' > $LOGFILE" "All installer activity is logged on $LOGFILE"
@@ -256,7 +255,7 @@ server_dependencies=" \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
     expect \
-	openssh-clients \
+        openssh-clients \
     http://firefly.artica.es/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     http://firefly.artica.es/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -511,46 +510,46 @@ chown pandora:apache /var/log/pandora
 chmod g+s /var/log/pandora
 
 cat > /etc/logrotate.d/pandora_server <<EO_LR
-/var/log/pandora/pandora_server.log 
+/var/log/pandora/pandora_server.log
 /var/log/pandora/web_socket.log
 /var/log/pandora/pandora_server.error {
-	su root apache
-	weekly
-	missingok
-	size 300000
-	rotate 3
-	maxage 90
-	compress
-	notifempty
-	copytruncate
-	create 660 pandora apache
+        su root apache
+        weekly
+        missingok
+        size 300000
+        rotate 3
+        maxage 90
+        compress
+        notifempty
+        copytruncate
+        create 660 pandora apache
 }
 
 /var/log/pandora/pandora_snmptrap.log {
-	su root apache
-	weekly
-	missingok
-	size 500000
-	rotate 1
-	maxage 30
-	notifempty
-	copytruncate
-	create 660 pandora apache
+        su root apache
+        weekly
+        missingok
+        size 500000
+        rotate 1
+        maxage 30
+        notifempty
+        copytruncate
+        create 660 pandora apache
 }
 
 EO_LR
 
 cat > /etc/logrotate.d/pandora_agent <<EO_LRA
 /var/log/pandora/pandora_agent.log {
-	su root apache
-	weekly
-	missingok
-	size 300000
-	rotate 3
-	maxage 90
-	compress
-	notifempty
-	copytruncate
+        su root apache
+        weekly
+        missingok
+        size 300000
+        rotate 3
+        maxage 90
+        compress
+        notifempty
+        copytruncate
 }
 
 EO_LRA

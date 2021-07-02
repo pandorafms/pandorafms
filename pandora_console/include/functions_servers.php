@@ -826,6 +826,19 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 0;
             break;
 
+            case SERVER_TYPE_ALERT:
+                $server['img'] = html_print_image(
+                    'images/alerts_extern.png',
+                    true,
+                    [
+                        'title' => __('Alert server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'alert';
+                $id_modulo = 0;
+            break;
+
             default:
                 $server['img'] = '';
                 $server['type'] = 'unknown';

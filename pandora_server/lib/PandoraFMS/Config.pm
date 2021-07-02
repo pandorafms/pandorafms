@@ -554,6 +554,10 @@ sub pandora_load_config {
 
 	$pa_config->{"event_inhibit_alerts"} = 0; # 7.0 737
 
+	$pa_config->{"alertserver"} = 0; # 7.0 756
+	$pa_config->{"alertserver_threads"} = 1; # 7.0 756
+	$pa_config->{"alertserver_warn"} = 180; # 7.0 756
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1263,6 +1267,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^fsnmp\s(.*)/i) {
 			$pa_config->{'fsnmp'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^alertserver\s+([0-9]*)/i){
+			$pa_config->{'alertserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^alertserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'alertserver_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^alertserver_warn\s+([0-9]*)/i) {
+			$pa_config->{'alertserver_warn'}= clean_blank($1); 
 		}
 
 		# Pandora HA extra

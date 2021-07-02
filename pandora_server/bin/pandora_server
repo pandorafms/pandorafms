@@ -31,6 +31,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::Core;
+use PandoraFMS::AlertServer;
 use PandoraFMS::DataServer;
 use PandoraFMS::NetworkServer;
 use PandoraFMS::SNMPServer;
@@ -147,6 +148,7 @@ sub pandora_startup () {
 	# Load servers
 	if (!is_metaconsole(\%Config)) {
 		pandora_reset_server (\%Config, $DBH);
+		push (@Servers, new PandoraFMS::AlertServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DiscoveryServer (\%Config, $DBH));

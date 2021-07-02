@@ -732,7 +732,11 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
+			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
+		} else {
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+		}
 		return;
 	}
 
@@ -772,8 +776,12 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
-			$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
+			pandora_queue_alert($pa_config, $dbh, $data, $alert, 1, $extra_macros);
+		} else {
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
+				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+		}
 		return;
 	}
 }
@@ -1003,6 +1011,26 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			);
 		}
 	}
+}
+
+##########################################################################
+=head2 C<< pandora_queue_alert (I<$pa_config>, I<$dbh>, I<$data>, I<$alert>, I<$extra_macros> >> 
+
+Queue the given alert for execution.
+
+=cut
+##########################################################################
+sub pandora_queue_alert ($$$$$;$) {
+	my ($pa_config, $dbh, $data, $alert, $alert_mode, $extra_macros) = @_;
+	my $json_macros = '{}';
+
+	eval {
+		local $SIG{__DIE__};
+		$json_macros = encode_json($extra_macros);
+	};
+
+	db_do ($dbh, "INSERT INTO talert_execution_queue (id_alert_template_module, data, alert_mode, extra_macros, utimestamp)
+		VALUES (?, ?, ?, ?, ?)", $alert->{'id_template_module'}, $data, $alert_mode, $json_macros, time());
 }
 
 ##########################################################################

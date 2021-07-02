@@ -97,14 +97,14 @@ function process_user_login($login, $pass, $api=false)
     if ($login_remote === false
         && ($config['fallback_local_auth']
         || is_user_admin($login)
-        || strtolower($config['auth']) == 'mysql')
+        || strtolower($config['auth']) == 'mysql'
+        || $api === true)
     ) {
         return process_user_login_local($login, $pass, $api);
     } else {
         return $login_remote;
     }
 
-    return false;
 }
 
 

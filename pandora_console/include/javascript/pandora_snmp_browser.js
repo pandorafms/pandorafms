@@ -171,7 +171,7 @@ function expandTreeNode(node) {
     .attr("src", src);
 
   // Show leaves
-  $("#ul_" + node).css("display", "");
+  $("#ul_" + node).css("display", "block");
 }
 
 // Expand an SNMP tree node

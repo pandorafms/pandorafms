@@ -395,7 +395,7 @@ $table_contact->data[] = $data;
 $data = [];
 $data[0] = '<b>'.__('Secondary groups').'</b>';
 $secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-if (!$secondary_groups) {
+if (empty($secondary_groups['for_select']) === true) {
     $data[1] = '<em>'.__('N/A').'</em>';
 } else {
     $secondary_links = [];

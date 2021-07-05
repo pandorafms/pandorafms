@@ -1,4 +1,13 @@
 START TRANSACTION;
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`id` serial,
@@ -10,6 +19,8 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`error` MEDIUMTEXT,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 
 SOURCE './procedures/updateSnmpAlerts.sql';
 
@@ -23,7 +34,5 @@ UPDATE `tuser_task_scheduled` SET
     `args` = REPLACE (`args`, 'a:8', 'a:9'),
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:7;s:3:"PDF";s:15:"first_execution"')
     WHERE `id_user_task` = 2;
-
-ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 
 COMMIT;

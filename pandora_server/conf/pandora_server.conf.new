@@ -698,3 +698,12 @@ ha_interval 30
 # Pandora FMS Database HA Tool monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
 ha_monitoring_interval 60
 
+# Enable (1) or disable (0) Pandora FMS Alert Server.
+alertserver 0
+
+# Pandora FMS Alert Server threads.
+alertserver_threads 4
+
+# Generate an hourly warning event if alert execution is being delayed more than alertserver_warn seconds.
+alertserver_warn 180
+

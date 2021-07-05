@@ -4059,3 +4059,16 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_management`;
+
+-- -----------------------------------------------------
+-- Table `talert_execution_queue`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

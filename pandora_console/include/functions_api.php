@@ -14532,6 +14532,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
         // Graph width (optional).
         $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+
+        // If recive value its from mail call.
+        $graph_font_size = $other['data'][5];
     } else {
         // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
@@ -14568,6 +14571,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'fullscale'          => false,
         'return_img_base_64' => true,
         'image_treshold'     => $graph_threshold,
+        'graph_font_size'    => $graph_font_size,
     ];
 
     // Format MIME RFC 2045 (line break 76 chars).

@@ -35,4 +35,6 @@ UPDATE `tuser_task_scheduled` SET
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:7;s:3:"PDF";s:15:"first_execution"')
     WHERE `id_user_task` = 2;
 
+UPDATE `tconfig` SET `centralized_management` = 0;
+
 COMMIT;

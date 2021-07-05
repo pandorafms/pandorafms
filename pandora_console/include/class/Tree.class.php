@@ -993,7 +993,6 @@ class Tree
 			$inner
 			GROUP BY g
 			ORDER BY $order_by_final";
-            hd($sql, true);
         return $sql;
     }
 

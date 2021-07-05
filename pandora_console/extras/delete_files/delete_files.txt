@@ -95,3 +95,4 @@ include/help/es/help_event_alert.php
 enterprise/godmode/alerts/alert_events.php
 enterprise/godmode/alerts/alert_events_list.php
 enterprise/godmode/alerts/alert_events_rules.php
+enterprise/godmode/alerts/configure_alert_rule.php

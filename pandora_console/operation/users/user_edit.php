@@ -438,24 +438,26 @@ if (is_metaconsole()) {
 } else {
     $autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
     $autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
+    $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+    $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
+    $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+    $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+    $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
+
+    if (enterprise_installed()) {
+        $autorefresh_list_out['general/sap_view'] = 'SAP view';
+    }
 }
 
-$autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
-$autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
 $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
-$autorefresh_list_out['operation/operation/services/services'] = 'Services';
+$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
-$autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
-$autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
 
-$autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
-$autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
-if (enterprise_installed()) {
-    $autorefresh_list_out['general/sap_view'] = 'SAP view';
-}
+
 
 if (!isset($autorefresh_list)) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");

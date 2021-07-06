@@ -2445,7 +2445,7 @@ class ConsoleSupervisor
                 if (strpos(
                     $server['version'],
                     $config['current_package']
-                ) === false
+                ) !== false
                 ) {
                     $missed++;
                     $title_ver_misaligned = __(

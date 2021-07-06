@@ -464,7 +464,7 @@ pre,
 
 /* update_manager.css */
 div#box_online * {
-  color: #000;
+  color: #fff;
 }
 
 /* discovery.css */
@@ -1158,4 +1158,16 @@ a.pandora_pagination,
 #header_table {
   padding-right: 35px;
   background-color: #222;
+}
+#box_online {
+  background-image: url("../../images/update_pandora_black.jpg") !important;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #000 !important;
+  padding: 40px 50px;
+  border: 1px solid #111 !important;
+  border-radius: 5px;
+  min-height: 600px;
+  background-size: contain;
+  box-shadow: 1px 1px 4px rgba(160, 160, 160, 0.514);
 }

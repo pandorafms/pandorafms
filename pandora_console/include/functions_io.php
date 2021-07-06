@@ -622,3 +622,82 @@ function io_safe_html_tags(string $string)
 
     return $output;
 }
+
+/**
+ * Execute io_safe_input againt each values in JSON.
+ *
+ * @param string json
+ *
+ * @return string json where each value is encoded
+ */
+function io_safe_input_json($json)
+{
+    $output_json = "";
+
+    if (empty($json)) {
+        return $output_json;
+    }
+
+    $array_json = json_decode($json, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        return $output_json;
+    }
+
+    foreach ($array_json as $key => $value) {
+        if (is_array($value)) {
+            $value_json = json_encode($value, JSON_UNESCAPED_UNICODE);
+            $array_json[$key] = json_decode(io_safe_input_json($value_json), true);
+        } else {
+            $array_json[$key] = io_safe_input($value);
+        }
+    }
+    $output_json = json_encode($array_json, JSON_UNESCAPED_UNICODE);
+
+    return $output_json;
+}
+
+/**
+ * Merge json value in $json_merge to $json
+ *
+ * @param string  json to be merged.
+ * @param string  json containing the values to merge.
+ * @param boolean limit the values to be merged to those with a key of 'value', true by default.  
+ *
+ * @retrun string merged json
+ *
+ * e.g.)
+ *   arg1 json: {"1":{"macro":"_field1_","desc":"DESCRIPTION","help":"HELP","value":"","hide":""}}
+ *   arg2 json: {"1":{"value":"xxxx"}}
+ *   -> return json: {"1":{"macro":"_field1_","desc":"DESCRIPTION","help":"HELP","value":"xxxx","hide":""}}
+ */
+function io_merge_json_value($json, $json_merge, $value_key_only=true)
+{
+    $output_json = "";
+
+    $array_json = json_decode($json, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        return $output_json;
+    }
+    $array_json_merge = json_decode($json_merge, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        return $output_json;
+    }
+
+    foreach ($array_json_merge as $key => $value) {
+        if (is_array($value) && !empty($array_json[$key])) {
+            $merged_json = io_merge_json_value(
+                json_encode($array_json[$key], JSON_UNESCAPED_UNICODE),
+                json_encode($value, JSON_UNESCAPED_UNICODE),
+                $value_key_only);
+            $array_json[$key] = json_decode($merged_json, true);
+        } else {
+            if (array_key_exists($key, $array_json) &&
+                ($value_key_only == false || $key == 'value')) {
+                $array_json[$key] = $array_json_merge[$key];
+            }
+        }
+    }
+    $output_json = json_encode($array_json, JSON_UNESCAPED_UNICODE);
+
+    return $output_json;
+}

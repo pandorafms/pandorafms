@@ -1926,7 +1926,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
-    echo '<div id="'.$uniq_name.'_default" class="wauto inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="wauto inline_flex">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -4803,7 +4803,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['style']) === true) ? $data['selected'] : false),
-                ((isset($data['unique']) === true) ? $data['unique'] : false)
+                ((isset($data['unique']) === true) ? $data['unique'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['readonly']) === true) ? $data['readonly'] : false),
+                ((isset($data['custom_fields']) === true) ? $data['custom_fields'] : false),
+                ((isset($data['style_icon']) === true) ? $data['style_icon'] : '')
             );
         break;
 

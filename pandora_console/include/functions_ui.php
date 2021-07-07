@@ -5669,7 +5669,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

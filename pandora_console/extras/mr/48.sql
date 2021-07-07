@@ -23,4 +23,6 @@ UPDATE `tuser_task_scheduled` SET
 
 ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 
+DELETE ta FROM `tagente` ta LEFT JOIN `tgrupo` tg on ta.`id_grupo` = tg.`id_grupo` WHERE tg.`id_grupo` IS NULL;
+
 COMMIT;

@@ -844,6 +844,8 @@ function processTreeSearch(settings) {
   filters.statusModule = settings.statusModule;
   filters.groupID = settings.searchGroup;
   filters.searchHirearchy = 1;
+  filters.show_not_init_agents = 1;
+  filters.show_not_init_modules = 1;
 
   $.ajax({
     type: "POST",

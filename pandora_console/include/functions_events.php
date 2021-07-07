@@ -4867,6 +4867,14 @@ function events_page_general($event)
     $data[1] = '<span class="break_word">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
 
+    // Show server name in metaconsole.
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $data = [];
+        $data[0] = __('Node');
+        $data[1] = '<span class="break_word">'.$event['server_name'].'</span>';
+        $table_general->data[] = $data;
+    }
+
     $data = [];
     $data[0] = __('Timestamp');
 

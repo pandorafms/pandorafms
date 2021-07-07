@@ -293,6 +293,7 @@ if (is_ajax()) {
                 'te.module_status',
                 'ta.alias as agent_name',
                 'tg.nombre as group_name',
+                'ta.direccion',
             ];
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as module_name';

@@ -952,9 +952,16 @@ if (enterprise_installed() === true) {
             'pandora_command_center',
             ENTERPRISE_DIR.'/include/javascript/'
         );
-        echo '<div class="view_events_merge_process_events">';
-        echo CommandCenterController::displayEventsProgress();
-        echo '</div>';
+
+        $commandCenter = 'CommandCenterController';
+        if (class_exists($commandCenter) === true) {
+            $events_merge_state = $commandCenter::displayEventsProgress();
+            if (empty($events_merge_state) === false) {
+                echo '<div class="view_events_merge_process_events">';
+                echo $events_merge_state;
+                echo '</div>';
+            }
+        }
 
         $tittle_error = __('Errors');
         echo '<div id="dialog-error-node-'.$config['metaconsole_node_id'].'" title="'.$tittle_error.'"></div>';

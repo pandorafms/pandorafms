@@ -49,6 +49,16 @@ enterprise_include_once('include/functions_metaconsole.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
+// Sometimes input is badly retrieved from caller...
+if (empty($_REQUEST) === true) {
+    $data = explode('&', urldecode(file_get_contents('php://input')));
+    foreach ($data as $d) {
+        $r = explode('=', $d, 2);
+        $_POST[$r[0]] = $r[1];
+        $_GET[$r[0]] = $r[1];
+    }
+}
+
 // Get the parameters and parse if necesary.
 $op = get_parameter('op');
 $op2 = get_parameter('op2');

@@ -735,7 +735,7 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
-    if (isset($params['only_image']) === true) {
+    if (isset($params['only_image']) === true && $params['vconsole'] !== true) {
         $params['backgroundColor'] = 'transparent';
     }
 

@@ -170,7 +170,7 @@ function flot_area_graph(
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($params['show_legend']) {
-        $return .= '<p id="legend_'.$graph_id.'" style="text-align:left; width: '.$params['width'].'px;"></p>';
+        $return .= '<p id="legend_'.$graph_id.'" class="legend_background" style="text-align:left; width: '.$params['width'].'px;"></p>';
     }
 
     if (isset($params['graph_combined']) === true && $params['graph_combined']

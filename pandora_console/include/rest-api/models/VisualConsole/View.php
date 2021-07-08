@@ -356,10 +356,15 @@ class View extends \HTML
 
             case MODULE_GRAPH:
                 $data['backgroundType'] = \get_parameter('backgroundType');
+                $type = \get_parameter('choosetype');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['customGraphId'] = \get_parameter('customGraphId');
+                if ($type === 'module') {
+                    $data['customGraphId'] = 0;
+                }
+
                 $data['graphType'] = \get_parameter('graphType');
                 $data['showLegend'] = \get_parameter_switch('showLegend');
                 $data['period'] = \get_parameter('period');

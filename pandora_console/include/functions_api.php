@@ -17283,7 +17283,7 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
         $agent = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $id_node]);
     }
 
-    $policy = policies_get_policy($id_policy, false, false);
+    $policy = policies_get_policy($id_policy);
 
     $policy_agent = (is_metaconsole()) ? db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent, 'id_node' => $id_node]) : db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
 

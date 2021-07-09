@@ -37,4 +37,6 @@ UPDATE `tuser_task_scheduled` SET
 
 UPDATE `tconfig` SET `centralized_management` = 0;
 
+DELETE ta FROM `tagente` ta LEFT JOIN `tgrupo` tg on ta.`id_grupo` = tg.`id_grupo` WHERE tg.`id_grupo` IS NULL;
+
 COMMIT;

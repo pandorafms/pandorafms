@@ -3984,7 +3984,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'plugin_pass'           => $other['data'][24],
         'plugin_parameter'      => $other['data'][25],
         'disabled_types_event'  => $disabled_types_event,
-        'macros'                => base64_decode($other['data'][27]),
+        'macros'                => base64_decode(str_replace('&#x20', '+', $other['data'][27])),
         'module_macros'         => $other['data'][28],
         'each_ff'               => $other['data'][29],
         'min_ff_event_normal'   => $other['data'][30],
@@ -3994,6 +3994,22 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
     ];
+
+    $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
+    if (empty($plugin)) {
+        returnError('id_not_found');
+        return;
+    }
+    $plugin_command_macros = $plugin['macros'];
+
+    if (!empty($values['macros'])) {
+        $macros = io_safe_input_json($values['macros']);
+        if (empty($macros)) {
+            returnError('JSON string in macros is invalid.');
+            exit;
+        }
+        $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
+    }
 
     if (! $values['descripcion']) {
         $values['descripcion'] = '';
@@ -4145,11 +4161,27 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
             $values[$field] = $other['data'][$cont];
 
             if ($field === 'macros') {
-                $values[$field] = base64_decode($values[$field]);
+                $values[$field] = base64_decode(str_replace('&#x20', '+', $values[$field]));
             }
         }
 
         $cont++;
+    }
+
+    $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
+    if (empty($plugin)) {
+        returnError('id_not_found');
+        return;
+    }
+    $plugin_command_macros = $plugin['macros'];
+
+    if (!empty($values['macros'])) {
+        $macros = io_safe_input_json($values['macros']);
+        if (empty($macros)) {
+            returnError('JSON string in macros is invalid.');
+            exit;
+        }
+        $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
     }
 
     $values['policy_linked'] = 0;
@@ -8317,7 +8349,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
-    if ($other['data'][22] == '') {
+    if ($other['data'][21] == '') {
         returnError('The plugin module could not be added. Id_plugin cannot be left blank.');
         return;
     }
@@ -8360,7 +8392,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
     $values['plugin_pass'] = $other['data'][23];
     $values['plugin_parameter'] = $other['data'][24];
     $values['disabled_types_event'] = $disabled_types_event;
-    $values['macros'] = base64_decode($other['data'][26]);
+    $values['macros'] = base64_decode(str_replace('&#x20', '+', $other['data'][26]));
     $values['module_macros'] = $other['data'][27];
     $values['each_ff'] = $other['data'][28];
     $values['min_ff_event_normal'] = $other['data'][29];
@@ -8373,6 +8405,22 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
             returnError('The plugin module could not be added. The module is already in the policy.');
             return;
         }
+    }
+
+    $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
+    if (empty($plugin)) {
+        returnError('id_not_found');
+        return;
+    }
+    $plugin_command_macros = $plugin['macros'];
+
+    if (!empty($values['macros'])) {
+        $macros = io_safe_input_json($values['macros']);
+        if (empty($macros)) {
+            returnError('JSON string in macros is invalid.');
+            exit;
+        }
+        $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
     }
 
     $success = enterprise_hook('policies_create_module', [$other['data'][0], $id, 4, $values, false]);

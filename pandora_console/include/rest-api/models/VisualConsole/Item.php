@@ -1777,6 +1777,7 @@ class Item extends CachedModel
                     'color',
                     'legendBackgroundColor',
                     'legendColor',
+                    'titleColor',
                 ]
             ),
             null
@@ -2098,6 +2099,10 @@ class Item extends CachedModel
 
                         case ICON:
                             $text = __('Icon');
+                        break;
+
+                        case ODOMETER:
+                            $text = __('Odometer');
                         break;
 
                         default:

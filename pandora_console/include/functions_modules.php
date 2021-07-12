@@ -3842,3 +3842,17 @@ function modules_get_state_condition($state, $prefix='tae')
     // If the state is not an expected state, return no condition
     return '1=1';
 }
+
+
+function modules_get_min_max_data($id_agent_module, $time_init=0)
+{
+    $table = modules_get_table_data($id_agent_module);
+    $data = db_get_all_rows_sql(
+        'SELECT min(datos) as min, max(datos) as max
+		FROM '.$table.'
+		WHERE id_agente_modulo = '.$id_agent_module.'
+			AND utimestamp >= '.$time_init
+    );
+
+    return $data;
+}

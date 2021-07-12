@@ -199,6 +199,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Models\\VisualConsole\\Items\\Percentile' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/Percentile.php',
         'Models\\VisualConsole\\Items\\SimpleValue' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/SimpleValue.php',
         'Models\\VisualConsole\\Items\\StaticGraph' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/StaticGraph.php',
+        'Models\\VisualConsole\\Items\\Odometer' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/Odometer.php',
         'Models\\VisualConsole\\View' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/View.php',
         'Mpdf\\Barcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode.php',
         'Mpdf\\Barcode\\AbstractBarcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/AbstractBarcode.php',

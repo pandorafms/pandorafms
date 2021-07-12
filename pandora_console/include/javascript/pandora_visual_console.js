@@ -517,6 +517,9 @@ function createVisualConsole(
         case "NETWORK_LINK":
           type = 21;
           break;
+        case "ODOMETER":
+          type = 22;
+          break;
         default:
           type = 0;
       }
@@ -1233,6 +1236,9 @@ function createOrUpdateVisualConsoleItem(
       break;
     case 21:
       nameType = "Network Link";
+      break;
+    case 22:
+      nameType = "Odometer";
       break;
 
     default:

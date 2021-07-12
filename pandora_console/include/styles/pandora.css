@@ -6548,7 +6548,7 @@ div.graph div.legend table {
 */
 
 .pdd_0px {
-  padding: 0px;
+  padding: 0px !important;
 }
 .pdd_4px {
   padding: 4px;

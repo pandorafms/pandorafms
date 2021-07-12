@@ -5100,15 +5100,22 @@ function ui_print_agent_autocomplete_input($parameters)
 		}
 		';
     } else if ($from_wux_transaction != '') {
+        if (is_metaconsole() === true) {
+            $inputNode = 'inputs.push ("server_id=" + $("#'.$input_id_server_id.'").val());';
+        } else {
+            $inputNode = '';
+        }
+
         $javascript_code_function_select = '
 		function function_select_'.$input_name.'(agent_name) {
 			$("#'.$selectbox_id.'").empty();
 			
 			var inputs = [];
 			inputs.push ("id_agent=" + $("#'.$hidden_input_idagent_id.'").val());
-			inputs.push ("get_agent_transactions=1");
+            inputs.push ("get_agent_transactions=1");
 			inputs.push ("page=enterprise/include/ajax/wux_transaction.ajax");
-			
+			'.$inputNode.'
+
 			jQuery.ajax ({
 				data: inputs.join ("&"),
 				type: "POST",

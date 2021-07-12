@@ -991,7 +991,7 @@ $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input invert_filter',
+        'class'       => 'input input_line email_icon_input',
         'placeholder' => __('E-mail'),
     ],
     true

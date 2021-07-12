@@ -386,6 +386,9 @@ final class Container extends Model
             case NETWORK_LINK:
             return Items\NetworkLink::class;
 
+            case ODOMETER:
+            return Items\Odometer::class;
+
             default:
             return Item::class;
         }

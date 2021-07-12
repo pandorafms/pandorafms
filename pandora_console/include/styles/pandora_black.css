@@ -36,7 +36,8 @@ textarea,
 select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
-.selection {
+.selection,
+button.sub {
   background-color: #111 !important;
   color: #fff !important;
 }

@@ -251,6 +251,13 @@ function agents_create_agent(
         return false;
     }
 
+    if (has_metaconsole() === true
+        && (bool) $config['metaconsole_agent_cache'] === true
+    ) {
+        // Force an update of the agent cache.
+        $values['update_module_count'] = 1;
+    }
+
     $id_agent = db_process_sql_insert('tagente', $values);
     if ($id_agent === false) {
         return false;

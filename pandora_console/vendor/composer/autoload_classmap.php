@@ -117,6 +117,7 @@ return array(
     'Models\\VisualConsole\\Items\\Percentile' => $baseDir . '/include/rest-api/models/VisualConsole/Items/Percentile.php',
     'Models\\VisualConsole\\Items\\SimpleValue' => $baseDir . '/include/rest-api/models/VisualConsole/Items/SimpleValue.php',
     'Models\\VisualConsole\\Items\\StaticGraph' => $baseDir . '/include/rest-api/models/VisualConsole/Items/StaticGraph.php',
+    'Models\\VisualConsole\\Items\\Odometer' => $baseDir . '/include/rest-api/models/VisualConsole/Items/Odometer.php',
     'Models\\VisualConsole\\View' => $baseDir . '/include/rest-api/models/VisualConsole/View.php',
     'Mpdf\\Barcode' => $vendorDir . '/mpdf/mpdf/src/Barcode.php',
     'Mpdf\\Barcode\\AbstractBarcode' => $vendorDir . '/mpdf/mpdf/src/Barcode/AbstractBarcode.php',

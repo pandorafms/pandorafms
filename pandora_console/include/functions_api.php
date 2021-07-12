@@ -3974,6 +3974,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         returnError('id_not_found');
         return;
     }
+
     $plugin_command_macros = $plugin['macros'];
 
     if (!empty($values['macros'])) {
@@ -3982,6 +3983,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
             returnError('JSON string in macros is invalid.');
             exit;
         }
+
         $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
     }
 
@@ -4147,6 +4149,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         returnError('id_not_found');
         return;
     }
+
     $plugin_command_macros = $plugin['macros'];
 
     if (!empty($values['macros'])) {
@@ -4155,6 +4158,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
             returnError('JSON string in macros is invalid.');
             exit;
         }
+
         $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
     }
 
@@ -8300,6 +8304,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
         returnError('id_not_found');
         return;
     }
+
     $plugin_command_macros = $plugin['macros'];
 
     if (!empty($values['macros'])) {
@@ -8308,6 +8313,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
             returnError('JSON string in macros is invalid.');
             exit;
         }
+
         $values['macros'] = io_merge_json_value($plugin_command_macros, $macros);
     }
 

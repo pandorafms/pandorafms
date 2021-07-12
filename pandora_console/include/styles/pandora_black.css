@@ -1159,3 +1159,7 @@ a.pandora_pagination,
   padding-right: 35px;
   background-color: #222;
 }
+
+.bg_ccc {
+  background-color: #50505050 !important;
+}

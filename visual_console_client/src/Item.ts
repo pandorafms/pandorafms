@@ -47,7 +47,8 @@ export const enum ItemType {
   BARS_GRAPH = 18,
   CLOCK = 19,
   COLOR_CLOUD = 20,
-  NETWORK_LINK = 21
+  NETWORK_LINK = 21,
+  ODOMETER = 22
 }
 
 // Base item properties. This interface should be extended by the item implementations.
@@ -213,6 +214,9 @@ export function titleItem(id: number): string {
       break;
     case ItemType.NETWORK_LINK:
       title = t("Network link");
+      break;
+    case ItemType.ODOMETER:
+      title = t("Odometer");
       break;
     default:
       title = t("Item");

@@ -2255,6 +2255,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_node_id` INT(10) NOT NULL default 0,
 	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
+	`title` TEXT default '',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;

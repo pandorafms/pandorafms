@@ -1,4 +1,8 @@
 START TRANSACTION;
+
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
+ALTER TABLE `tlayout_data` ADD COLUMN `title` TEXT default '';
+
 CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 	`id` int(10) unsigned NOT NULL auto_increment,
 	`id_alert_template_module` int(10) unsigned NOT NULL,

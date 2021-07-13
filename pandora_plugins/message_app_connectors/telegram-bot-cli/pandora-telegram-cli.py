@@ -132,6 +132,8 @@ def sendMedia(mssg, chatId, token, filepath):
         print(r)
 
 # Parse api config
+filecap=None
+
 if args.api_conf : 
     api = parse_api_conf(args.api_conf)
     # Parse graph config
@@ -155,14 +157,12 @@ if args.api_conf :
 
     if filename is not None:
         filecap=f"graph_{graph_cfg['module_id']}.{datetime.now().strftime('%s')}.png"
-    else:
-        filecap=None
         
 # Send message
 send(mssg=args.message, chatId=args.chat_id, token=args.token)
 
 if filecap is not None:
-    sendMedia(mssg=filecap, chatId=args.chat_id, token=args.token, filepath=filename)
+    sendMedia(mssg='', chatId=args.chat_id, token=args.token, filepath=filename)
     try:
         os.remove(filename)
     except Exception as e:

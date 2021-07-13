@@ -24,8 +24,6 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
-
 SOURCE './procedures/updateSnmpAlerts.sql';
 
 UPDATE `tlink` SET `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;

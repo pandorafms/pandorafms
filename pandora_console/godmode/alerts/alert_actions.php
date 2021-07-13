@@ -343,7 +343,7 @@ $table->align[3] = 'left';
 $table->align[4] = 'left';
 
 $filter = [];
-if (!is_user_admin($config['id_user']) && $group === 0) {
+if (!is_user_admin($config['id_user'])) {
     $filter['talert_actions.id_group'] = array_keys(
         users_get_groups(false, 'LM')
     );

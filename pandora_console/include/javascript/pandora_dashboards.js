@@ -809,6 +809,7 @@ function dashboardLoadWuxStats(settings) {
       page: settings.page,
       wux_transaction_stats: 1,
       id_agent: settings.id_agent,
+      server_id: settings.server_id,
       transaction: settings.transaction,
       view_all_stats: settings.view_all_stats,
       auth_class: settings.auth_class,

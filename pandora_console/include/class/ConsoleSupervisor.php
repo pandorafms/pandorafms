@@ -2394,6 +2394,10 @@ class ConsoleSupervisor
             return;
         }
 
+        // Only ask for messages once every 2 hours.
+        $future = (time() + 2 * SECONDS_1HOUR);
+        config_update_value('last_um_check', $future);
+
         $messages = update_manager_get_messages();
         if (is_array($messages) === true) {
             $source_id = get_notification_source_id(

@@ -3216,6 +3216,16 @@ class NetworkMap
             -1,
             true
         );
+
+        $table->data[0][2] = html_print_checkbox(
+            'group_recursion',
+            0,
+            false,
+            true,
+            false,
+            'choose_group_for_show_agents()'
+        ).__('Recursion');
+
         $table->data[1][0] = __('Agents');
         $table->data[1][1] = html_print_select(
             [-1 => __('None')],

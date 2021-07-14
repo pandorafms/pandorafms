@@ -4119,7 +4119,9 @@ function get_node_name_ov(data) {
 
 function choose_group_for_show_agents() {
   if (enterprise_installed) {
-    group = $("#group_for_show_agents option:selected").val();
+    var group = $("#group_for_show_agents option:selected").val();
+    var group_recursion =
+      $("#checkbox-group_recursion").prop("checked") === true ? 1 : 0;
 
     $("#agents_filter_group").attr("disabled", true);
     $("#spinner_group").css("display", "");
@@ -4135,6 +4137,7 @@ function choose_group_for_show_agents() {
       params.push("get_agents_in_group=1");
       params.push("id=" + networkmap_id);
       params.push("group=" + group);
+      params.push("group_recursion=" + group_recursion);
       params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
       jQuery.ajax({
         data: params.join("&"),

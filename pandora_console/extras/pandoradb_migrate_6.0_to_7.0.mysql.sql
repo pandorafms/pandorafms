@@ -4059,3 +4059,5 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 	`utimestamp` bigint(20) NOT NULL default '0',
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';

@@ -4843,7 +4843,7 @@ function events_page_general($event)
     if (isset($event['id_agente']) && $event['id_agente'] > 0) {
         enterprise_include_once('include/functions_agents.php');
         $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
-        if (!empty($secondary_groups_selected)) {
+        if (empty($secondary_groups_selected['for_select']) === false) {
             $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
         }
     }

@@ -523,6 +523,18 @@ class View extends \HTML
                 }
             break;
 
+            case BASIC_CHART:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['period'] = \get_parameter('period');
+                if ($itemId === 0) {
+                    $data['height'] = 150;
+                    $data['width'] = 300;
+                }
+            break;
+
             default:
                 // Not posible.
             break;

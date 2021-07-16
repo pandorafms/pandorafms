@@ -2105,6 +2105,10 @@ class Item extends CachedModel
                             $text = __('Odometer');
                         break;
 
+                        case BASIC_CHART:
+                            $text = __('Basic chart');
+                        break;
+
                         default:
                             // Lines could not be parents.
                         continue 2;

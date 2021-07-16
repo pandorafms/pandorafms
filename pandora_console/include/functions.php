@@ -4275,8 +4275,8 @@ function get_product_name()
 /**
  * Get the copyright notice.
  *
- * @return string If the installation is open, it will be 'Artica ST'.
- *         If the product name stored is empty, it returns 'Artica ST' too.
+ * @return string If the installation is open, it will be 'PandoraFMS.com'.
+ *         If the product name stored is empty, it returns 'PandoraFMS.com' too.
  */
 function get_copyright_notice()
 {

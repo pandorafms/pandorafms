@@ -1096,6 +1096,14 @@ function config_update_config()
                         $error_update[] = __('Custom support url');
                     }
 
+                    if (!config_update_value('meta_rb_product_name', (string) get_parameter('meta_rb_product_name'))) {
+                        $error_update[] = __('Custom product name');
+                    }
+
+                    if (!config_update_value('meta_rb_copyright_notice', (string) get_parameter('meta_rb_copyright_notice'))) {
+                        $error_update[] = __('Custom copyright notice');
+                    }
+
                     if (!config_update_value('legacy_vc', (int) get_parameter('legacy_vc'))) {
                         $error_update[] = __('Use the legacy Visual Console');
                     }
@@ -2379,6 +2387,14 @@ function config_process_config()
 
     if (!isset($config['meta_custom_support_url'])) {
         config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
+    }
+
+    if (!isset($config['meta_rb_product_name'])) {
+        config_update_value('meta_rb_product_name', get_product_name());
+    }
+
+    if (!isset($config['meta_rb_copyright_notice'])) {
+        config_update_value('meta_rb_copyright_notice', get_copyright_notice());
     }
 
     if (!isset($config['meta_custom_logo_white_bg'])) {

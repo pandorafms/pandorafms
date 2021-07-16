@@ -26,7 +26,6 @@
  * ============================================================================
  */
 
-
 // Get global data.
 // Constants.
 define('MIME_UNKNOWN', 0);
@@ -449,14 +448,17 @@ function filemanager_read_recursive_dir($dir, $relative_path='', $add_empty_dirs
 /**
  * The main function to show the directories and files.
  *
- * @param string  $real_directory     The string of dir as realpath.
- * @param string  $relative_directory The string of dir as relative path.
- * @param string  $url                The url to set in the forms and some links in the explorer.
- * @param string  $father             The directory father don't navigate bottom this.
- * @param boolean $editor             The flag to set the edition of text files.
- * @param string  $url_file           The url to put in the files instead the default. By default empty string and use the url of filemanager.
- * @param boolean $download_button    The flag to show download button, by default false.
- * @param string  $umask              The umask as hex values to set the new files or updload.
+ * @param string  $real_directory      The string of dir as realpath.
+ * @param string  $relative_directory  The string of dir as relative path.
+ * @param string  $url                 The url to set in the forms and some links in the explorer.
+ * @param string  $father              The directory father don't navigate bottom this.
+ * @param boolean $editor              The flag to set the edition of text files.
+ * @param boolean $readOnly            If true, only can read the files.
+ * @param string  $url_file            The url to put in the files instead the default. By default empty string and use the url of filemanager.
+ * @param boolean $download_button     The flag to show download button, by default false.
+ * @param string  $umask               The umask as hex values to set the new files or updload.
+ * @param boolean $homedir_filemanager Homedir filemanager.
+ * @param boolean $allowCreateText     If true, 'Create Text' button will be shown.
  */
 function filemanager_file_explorer(
     $real_directory,
@@ -468,11 +470,12 @@ function filemanager_file_explorer(
     $url_file='',
     $download_button=false,
     $umask='',
-    $homedir_filemanager=false
+    $homedir_filemanager=false,
+    $allowCreateText=true
 ) {
     global $config;
 
-    // Windows compatibility
+    // Windows compatibility.
     $real_directory = str_replace('\\', '/', $real_directory);
     $relative_directory = str_replace('\\', '/', $relative_directory);
     $father = str_replace('\\', '/', $father);
@@ -481,10 +484,7 @@ function filemanager_file_explorer(
         $homedir_filemanager = $config['homedir'];
     }
 
-    $hack_metaconsole = '';
-    if (defined('METACONSOLE')) {
-        $hack_metaconsole = '../../';
-    }
+    $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
 
     ?>
     <script type="text/javascript">
@@ -493,13 +493,13 @@ function filemanager_file_explorer(
             $("#create_folder").css("display", "block");
             check_opened_dialog('create_folder');
         }      
-
+        <?php if ($allowCreateText === true) : ?>
         function show_create_text_file() {
             actions_dialog('create_text_file');
             $("#create_text_file").css("display", "block");
             check_opened_dialog('create_text_file');
         }
-
+        <?php endif ?>
         function show_upload_file() {
             actions_dialog('upload_file');
             $("#upload_file").css("display", "block");
@@ -512,12 +512,13 @@ function filemanager_file_explorer(
                     $('#create_folder').dialog('close');
                 }
             }
-
+            <?php if ($allowCreateText === true) : ?>
             if(check_opened !== 'create_text_file'){
                 if (($("#create_text_file").hasClass("ui-dialog-content") && $('#create_text_file').dialog('isOpen') === true)) {
                     $('#create_text_file').dialog('close');
                 }
             }
+            <?php endif ?>
             if(check_opened !== 'upload_file'){
                 if (($("#upload_file").hasClass("ui-dialog-content") && $('#upload_file').dialog('isOpen')) === true) {
                     $('#upload_file').dialog('close');
@@ -532,11 +533,11 @@ function filemanager_file_explorer(
                 case 'create_folder':
                 title_action = "<?php echo __('Create a Directory'); ?>";
                     break;
-
+                <?php if ($allowCreateText === true) : ?>
                 case 'create_text_file':
                 title_action = "<?php echo __('Create a Text'); ?>";
                     break;
-
+                <?php endif ?>
                 case 'upload_file':
                 title_action = "<?php echo __('Upload Files'); ?>";
                     break;
@@ -567,25 +568,24 @@ function filemanager_file_explorer(
         }
     </script>
     <?php
-    // List files
-    if (! is_dir($real_directory)) {
+    // List files.
+    if (is_dir($real_directory) === false) {
         echo __('Directory %s doesn\'t exist!', $relative_directory);
         return;
     }
 
     $files = filemanager_list_dir($real_directory);
 
-    if (!empty($files)) {
+    if (empty($files) === false) {
         $table = new stdClass();
         $table->width = '100%';
         $table->id = 'table_filemanager';
-        if (!defined('METACONSOLE')) {
-            $table->class = 'info_table';
-            $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
-        }
 
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole() === true) {
             $table->class = 'databox_tactical';
+            $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
+        } else {
+            $table->class = 'info_table';
             $table->title = '<span>'.__('Index of %s', $relative_directory).'</span>';
         }
 
@@ -608,10 +608,12 @@ function filemanager_file_explorer(
         $table->head[4] = __('Actions');
 
         $prev_dir = explode('/', $relative_directory);
+        $count_prev_dir = count($prev_dir);
         $prev_dir_str = '';
-        for ($i = 0; $i < (count($prev_dir) - 1); $i++) {
+
+        for ($i = 0; $i < ($count_prev_dir - 1); $i++) {
             $prev_dir_str .= $prev_dir[$i];
-            if ($i < (count($prev_dir) - 2)) {
+            if ($i < ($count_prev_dir - 2)) {
                 $prev_dir_str .= '/';
             }
         }
@@ -670,7 +672,7 @@ function filemanager_file_explorer(
 
             if ($fileinfo['is_dir']) {
                 $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['server_unique_identifier']).'">'.$fileinfo['name'].'</a>';
-            } else if (!empty($url_file)) {
+            } else if (empty($url_file) === false) {
                 // Set the custom url file
                 $url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
 
@@ -702,12 +704,12 @@ function filemanager_file_explorer(
             }
 
                     // Actions buttons
-                    // Delete button
+                    // Delete button.
                     $data[4] = '';
                     $data[4] .= '<span style="display: flex">';
                     $typefile = array_pop(explode('.', $fileinfo['name']));
-            if (is_writable($fileinfo['realpath'])
-                && (! is_dir($fileinfo['realpath']) || count(scandir($fileinfo['realpath'])) < 3) && (!$readOnly)
+            if (is_writable($fileinfo['realpath'] === true)
+                && (is_dir($fileinfo['realpath'] === false) || count(scandir($fileinfo['realpath'])) < 3) && ($readOnly === false)
             ) {
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
                 $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -717,7 +719,7 @@ function filemanager_file_explorer(
 
                 $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
 
-                if ($relative_dir[0] == '/') {
+                if ($relative_dir[0] === '/') {
                     $relative_dir = substr($relative_dir, 1);
                 }
 
@@ -727,7 +729,7 @@ function filemanager_file_explorer(
                 $data[4] .= html_print_input_hidden('hash2', $hash2, true);
                 $data[4] .= '</form>';
 
-                if (($editor) && (!$readOnly)) {
+                if (($editor) && ($readOnly === false)) {
                     if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
                         && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
@@ -758,10 +760,12 @@ function filemanager_file_explorer(
         );
     }
 
-    if (!$readOnly) {
-        if (is_writable($real_directory)) {
-            // The buttons to make actions
-            $tabs_dialog = '<ul id="file_table_modal">
+    if ($readOnly === false) {
+        if (is_writable($real_directory) === true) {
+            // The buttons to make actions.
+            $tabs_dialog = '<ul id="file_table_modal">';
+
+            $tabs_dialog .= '
             <li class="create_folder">
                 <a href="javascript: show_form_create_folder();">'.html_print_image(
                 'images/create_directory.png',
@@ -772,18 +776,24 @@ function filemanager_file_explorer(
                 ]
             ).'<span>'.__('Create a Directory').'</span>
                 </a>
-            </li>
-            <li class="create_text_file">
-                <a href="javascript: show_create_text_file();">'.html_print_image(
-                'images/create_file.png',
-                true,
-                [
-                    'title' => __('Create a Text'),
-                    'class' => 'invert_filter',
-                ]
-            ).'<span>'.__('Create a Text').'</span>
-                </a>
-            </li>
+            </li>';
+
+            if ($allowCreateText === true) {
+                $tabs_dialog .= '
+                <li class="create_text_file">
+                    <a href="javascript: show_create_text_file();">'.html_print_image(
+                    'images/create_file.png',
+                    true,
+                    [
+                        'title' => __('Create a Text'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'<span>'.__('Create a Text').'</span>
+                    </a>
+                </li>';
+            }
+
+            $tabs_dialog .= '
             <li class="upload_file">
                 <a href="javascript: show_upload_file();">'.html_print_image(
                 'images/upload_file.png',
@@ -794,7 +804,9 @@ function filemanager_file_explorer(
                 ]
             ).'<span>'.__('Upload Files').'</span>
                 </a>
-            </li></ul>';
+            </li>';
+
+            $tabs_dialog .= '</ul>';
 
             echo '<div id="create_folder" class="invisible">'.$tabs_dialog.'
             <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).'</form></div>';
@@ -802,8 +814,10 @@ function filemanager_file_explorer(
             echo '<div id="upload_file" class="invisible"> '.$tabs_dialog.'
             <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
 
-            echo ' <div id="create_text_file" class="invisible">'.$tabs_dialog.'
-            <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
+            if ($allowCreateText === true) {
+                echo ' <div id="create_text_file" class="invisible">'.$tabs_dialog.'
+                <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
+            }
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 
@@ -818,16 +832,18 @@ function filemanager_file_explorer(
             );
             echo '</a>';
 
-            echo "<a href='javascript: show_create_text_file();'>";
-            echo html_print_image(
-                'images/create_file.png',
-                true,
-                [
-                    'title' => __('Create text'),
-                    'class' => 'invert_filter',
-                ]
-            );
-            echo '</a>';
+            if ($allowCreateText === true) {
+                echo "<a href='javascript: show_create_text_file();'>";
+                echo html_print_image(
+                    'images/create_file.png',
+                    true,
+                    [
+                        'title' => __('Create text'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                echo '</a>';
+            }
 
             echo "<a href='javascript: show_upload_file();'>";
             echo html_print_image(

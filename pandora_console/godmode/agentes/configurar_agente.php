@@ -976,6 +976,8 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
+    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+
 
     if ($fields === false) {
         $fields = [];
@@ -1205,7 +1207,16 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
-            enterprise_hook('update_agent', [$id_agente]);
+            // Create the secondary groups.
+            enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agente,
+                    explode(',', $secondary_groups),
+                    [],
+                ]
+            );
+
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',

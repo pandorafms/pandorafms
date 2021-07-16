@@ -1283,7 +1283,7 @@ function agents_get_group_agents(
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
-                $filter[] = $value;
+                $filter[$key] = $value;
             }
         }
     } else if ($filter !== true) {

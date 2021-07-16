@@ -7486,15 +7486,18 @@ div.graph div.legend table {
 .load_enterprise_div {
   display: flex;
   align-items: center;
-  padding-top: 20px;
-  padding-left: 50px;
-  padding-right: 50px;
+  width: 100%;
+  justify-content: space-around;
 }
 
 .update_manager {
   position: relative;
   top: 20px;
   left: 0px;
+}
+
+#error_login .update_manager .center > input[type="text"] {
+  width: 97%;
 }
 
 .error_warning_licence {

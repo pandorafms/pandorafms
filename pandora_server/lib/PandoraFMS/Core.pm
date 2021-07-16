@@ -5276,6 +5276,8 @@ sub pandora_process_policy_queue ($) {
 	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
 						$pa_config{'dbuser'}, $pa_config{'dbpass'});
 
+	my $dbh_metaconsole;
+	
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while($THRRUN == 1) {
@@ -5290,6 +5292,58 @@ sub pandora_process_policy_queue ($) {
 
 			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 			next unless (defined ($operation) && $operation ne '');
+
+			$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token(
+				$dbh, 'node_metaconsole', 0
+			);
+
+			# Only for nodes connected to a MC in centralised environment
+			# tsync_queue will have elements ONLY if env is centralised on MC.
+			if (!is_metaconsole($pa_config)
+				&& $pa_config->{"node_metaconsole"}
+			) {
+
+				if (!defined($dbh_metaconsole)) {
+					$dbh_metaconsole = enterprise_hook(
+						'get_metaconsole_dbh',
+						[$pa_config, $dbh]
+					);
+				}
+
+				$pa_config->{"metaconsole_node_id"} = pandora_get_tconfig_token(
+					$dbh, 'metaconsole_node_id', 0
+				);
+
+				if (!defined($dbh_metaconsole)) {
+					logger($pa_config,
+						"Node has no access to metaconsole, this is required in centralised environments.",
+						3
+					);
+
+					sleep($pa_config->{'server_threshold'});
+
+					# Skip.
+					next;
+				}
+
+				my $policies_updated = PandoraFMS::DB::get_db_value(
+					$dbh_metaconsole,
+					'SELECT count(*) as N FROM `tsync_queue` WHERE `table` IN ( "tpolicies", "tpolicy_alerts", "tpolicy_alerts_actions", "tpolicy_collections", "tpolicy_modules", "tpolicy_modules_inventory", "tpolicy_plugins" ) AND `target` = ?',
+						$pa_config->{"metaconsole_node_id"}
+				);
+
+				if (!defined($policies_updated) || "$policies_updated" ne "0") {
+					$policies_updated = 'unknown' unless defined($policies_updated);
+					logger($pa_config,
+						"Policy definitions are not up to date (missing changes - $policies_updated - from MC) waiting synchronizer.",
+						3
+					);
+
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
 				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
@@ -5306,8 +5360,8 @@ sub pandora_process_policy_queue ($) {
 			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
 		}};
 
-		# Check the queue each 5 seconds
-		sleep(5);
+		# Check the queue each server_threshold seconds
+		sleep($pa_config->{'server_threshold'});
 		
 	}
 

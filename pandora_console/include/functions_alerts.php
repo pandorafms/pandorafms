@@ -2824,19 +2824,20 @@ function alerts_ui_update_or_create_actions($update=true)
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
     $values['create_wu_integria'] = $create_wu_integria;
-    if ($update) {
-        $values['name'] = $name;
-        $values['id_alert_command'] = $id_alert_command;
-        // Only for Metaconsole, save the previous name for synchronization.
-        if (is_metaconsole()) {
-            $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
-        }
 
-        $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
+    $name_check = db_get_value('name', 'talert_actions', 'name', $name);
+    if ($name_check) {
+        $result = '';
     } else {
-        $name_check = db_get_value('name', 'talert_actions', 'name', $name);
-        if ($name_check) {
-            $result = '';
+        if ($update) {
+            $values['name'] = $name;
+            $values['id_alert_command'] = $id_alert_command;
+            // Only for Metaconsole, save the previous name for synchronization.
+            if (is_metaconsole()) {
+                $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
+            }
+
+            $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
         } else {
             $result = alerts_create_alert_action(
                 $name,

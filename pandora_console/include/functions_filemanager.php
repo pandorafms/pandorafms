@@ -26,6 +26,7 @@
  * ============================================================================
  */
 
+
 // Get global data.
 // Constants.
 define('MIME_UNKNOWN', 0);
@@ -120,6 +121,8 @@ if (function_exists('mime_content_type') === false) {
 
 global $config;
 
+require_once $config['homedir'].'/vendor/autoload.php';
+
 
 /**
  * Upload file.
@@ -132,14 +135,6 @@ global $config;
 function upload_file($upload_file_or_zip, $default_real_directory)
 {
     global $config;
-
-    $homedir_filemanager = trim($config['homedir']);
-    $sec2 = get_parameter('sec2');
-
-    if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-        $homedir_filemanager .= '/attachment/collection/';
-    }
-
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
     $config['filemanager']['message'] = null;
@@ -183,7 +178,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 if (empty($directory) === true) {
                     $nombre_archivo = $real_directory.'/'.$filename;
                 } else {
-                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
+                    $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
                 }
 
                 if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
@@ -205,38 +200,27 @@ function upload_file($upload_file_or_zip, $default_real_directory)
 
     // Upload zip.
     if ($upload_zip === true) {
-        if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
-            $filename       = $_FILES['file']['name'];
-            $filesize       = $_FILES['file']['size'];
+        if (isset($_FILES['file']) === true
+            && empty($_FILES['file']['name']) === false
+        ) {
+            $filename = $_FILES['file']['name'];
+            $filesize = $_FILES['file']['size'];
+            $filepath = $_FILES['file']['tmp_name'];
             $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
             $directory      = filemanager_safe_directory((string) get_parameter('directory'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
-                // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+                // Perform security check to determine whether received upload
+                // directory is part of the default path for caller uploader
+                // and user is not trying to access an external path (avoid
+                // execution of PHP files in directories that are not explicitly
+                // controlled by corresponding .htaccess).
                 ui_print_error_message(__('Security error'));
             } else {
-                // Copy file to directory and change name.
-                if (empty($directory) === true) {
-                    $nombre_archivo = $real_directory.'/'.$filename;
+                if (PandoraFMS\Tools\Files::unzip($filepath, $real_directory) === false) {
+                    ui_print_error_message(__('No he podido descomprimir tu archivo de mierda'));
                 } else {
-                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
-                }
-
-                if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
-                    ui_print_error_message(__('Attach error'));
-                } else {
-                    // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
-
-                    // Extract the zip file.
-                    $zip = new ZipArchive;
-                    $pathname = $homedir_filemanager.'/'.$directory.'/';
-
-                    if ($zip->open($nombre_archivo) === true) {
-                        $zip->extractTo($pathname);
-                        unlink($nombre_archivo);
-                    }
-
                     ui_print_success_message(__('Upload correct'));
                     $config['filemanager']['correct_upload_file'] = 1;
                 }
@@ -258,13 +242,6 @@ if (isset($_SERVER['CONTENT_LENGTH']) === true) {
 function create_text_file($default_real_directory)
 {
     global $config;
-
-    $homedir_filemanager = trim($config['homedir']);
-    $sec2 = get_parameter('sec2');
-
-    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
-        $homedir_filemanager .= '/attachment/collection/';
-    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -292,7 +269,7 @@ function create_text_file($default_real_directory)
             if (empty($directory) === true) {
                 $nombre_archivo = $real_directory.'/'.$filename;
             } else {
-                $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
+                $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
             }
 
             if (! @touch($nombre_archivo)) {
@@ -313,16 +290,12 @@ function create_text_file($default_real_directory)
 }
 
 
-$homedir_filemanager = trim($config['homedir']);
-$sec2 = get_parameter('sec2');
-if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-    $homedir_filemanager .= '/attachment/collection/';
-}
-
 // CREATE DIR.
 $create_dir = (bool) get_parameter('create_dir');
 if ($create_dir === true) {
     global $config;
+
+    $homedir_filemanager = io_safe_output($config['attachment_store']).'/collection';
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_create_dir'] = 0;

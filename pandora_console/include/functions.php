@@ -1745,8 +1745,9 @@ function has_metaconsole()
 
 
 /**
- * @brief Check if there is management operations are allowed in current context
- * (node // meta)
+ * Check if there is management operations are allowed in current context
+ *
+ * @param string $hkey Hash ke.
  *
  * @return boolean
  */
@@ -1769,19 +1770,6 @@ function is_central_policies()
 {
     global $config;
     return is_metaconsole() && $config['centralized_management'];
-}
-
-
-/**
- * @brief Check if there is centralized management in node environment. Usefull
- *             to reduce the policy functionallity on nodes.
- *
- * @return boolean
- */
-function is_central_policies_on_node()
-{
-    global $config;
-    return (!is_metaconsole()) && $config['centralized_management'];
 }
 
 
@@ -2259,13 +2247,16 @@ function check_login($output=true)
             return false;
         }
 
-        // No exists $config. Exit inmediatly
+        // No exists $config. Exit inmediatly.
         include 'general/noaccess.php';
         exit;
     }
 
-    if ((isset($_SESSION['id_usuario'])) and ($_SESSION['id_usuario'] != '')) {
-        if (is_user($_SESSION['id_usuario'])) {
+    if ((isset($_SESSION['id_usuario'])) && ($_SESSION['id_usuario'] != '')) {
+        if (is_user($_SESSION['id_usuario'])
+            || (isset($_SESSION['merge-request-user-trick']) === true
+            && $_SESSION['merge-request-user-trick'] === $_SESSION['id_usuario'])
+        ) {
             $config['id_user'] = $_SESSION['id_usuario'];
 
             return true;
@@ -2549,7 +2540,9 @@ function get_users_acl($id_user)
 {
     static $users_acl_cache = [];
 
-    if (is_array($users_acl_cache[$id_user])) {
+    if (isset($users_acl_cache[$id_user]) === true
+        && is_array($users_acl_cache[$id_user]) === true
+    ) {
         $rowdup = $users_acl_cache[$id_user];
     } else {
         $query = sprintf(
@@ -4353,6 +4346,8 @@ function pandora_xhprof_display_result($key='', $method='link')
     switch ($method) {
         case 'console':
             error_log("'{$new_url}'");
+        break;
+
         case 'link':
         default:
             echo "<a href='{$new_url}' target='_new'>Performance</a>\n";

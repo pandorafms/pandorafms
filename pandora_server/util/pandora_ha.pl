@@ -12,7 +12,6 @@ use Getopt::Std;
 use POSIX qw(setsid strftime :sys_wait_h);
 use threads;
 use threads::shared;
-use Storable;
 use File::Path qw(rmtree);
 
 # Default lib dir for Pandora FMS RPM and DEB packages.
@@ -336,7 +335,10 @@ sub ha_main($) {
         # Exit current eval.
         return;
       }
-    
+
+      # Synchronize database.
+      enterprise_hook('pandoraha_sync_node', [$conf, $dbh]);
+
       # Monitoring.
       enterprise_hook('pandoraha_monitoring', [$conf, $dbh]);
     

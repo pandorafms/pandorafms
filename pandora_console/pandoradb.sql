@@ -2751,8 +2751,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`last_event_replication` bigint(20) default '0',
 	`server_uid` text NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) ENGINE=InnoDB 
-COMMENT = 'Table to store metaconsole sources' 
+) ENGINE=InnoDB
+COMMENT = 'Table to store metaconsole sources'
 DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -4000,4 +4000,18 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`operation` text,
+	`table` text,
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

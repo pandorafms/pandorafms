@@ -10675,11 +10675,11 @@ function reporting_get_stats_agents_monitors($data)
     if ($mobile) {
         $urls = [];
         $urls['total_agents'] = 'index.php?page=agents';
-        $urls['monitor_checks'] = 'index.php?page=modules';
+        $urls['monitor_total'] = 'index.php?page=modules';
     } else {
         $urls = [];
         $urls['total_agents'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60';
-        $urls['monitor_checks'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
+        $urls['monitor_total'] = $config['homeurl'].'index.php?sec=view&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1';
     }
 
     // Agents and modules table
@@ -10701,8 +10701,8 @@ function reporting_get_stats_agents_monitors($data)
     }
 
     $tdata[3] = html_print_image('images/module.png', true, ['title' => __('Monitor checks'), 'class' => 'invert_filter'], false, false, false, true);
-    $tdata[4] = $data['monitor_checks'] <= 0 ? '-' : $data['monitor_checks'];
-    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_checks'].'">'.$tdata[4].'</a>';
+    $tdata[4] = $data['monitor_total'] <= 0 ? '-' : $data['monitor_total'];
+    $tdata[4] = '<a class="big_data" href="'.$urls['monitor_total'].'">'.$tdata[4].'</a>';
 
     /*
         Hello there! :)
@@ -10710,7 +10710,7 @@ function reporting_get_stats_agents_monitors($data)
         You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
     */
     if ($data['total_agents']) {
-        if (($data['monitor_checks'] / $data['total_agents'] > 100) && !enterprise_installed()) {
+        if (($data['monitor_total'] / $data['total_agents'] > 100) && !enterprise_installed()) {
             $tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' ><img data-title='".__('Enterprise version not installed')."' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
         }
     }

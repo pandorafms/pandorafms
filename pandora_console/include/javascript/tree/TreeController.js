@@ -1001,8 +1001,6 @@ var TreeController = {
               element.children.length > 0) ||
             element.disabled == false
           ) {
-            $node.removeClass("leaf-empty").addClass("leaf-closed");
-
             // Add children
             var $children = _processGroup($node, element.children);
             $node.data("children", $children);

@@ -962,7 +962,7 @@ var TreeController = {
           }
           // If exist the detail container, show the data
           if (
-            typeof controller.detailRecipient !== "undefined" &&
+            typeof controller.detailRecipient !== "undefined" ||
             disabled == false
           ) {
             if (element.type == "agent" || element.type == "module") {
@@ -997,8 +997,8 @@ var TreeController = {
           $node.addClass("leaf-empty");
 
           if (
-            typeof element.children != "undefined" &&
-            element.children.length > 0 &&
+            (typeof element.children != "undefined" &&
+              element.children.length > 0) ||
             element.disabled == false
           ) {
             $node.removeClass("leaf-empty").addClass("leaf-closed");
@@ -1032,13 +1032,13 @@ var TreeController = {
           }
 
           if (
-            typeof element.searchChildren != "undefined" &&
-            element.searchChildren
+            (typeof element.searchChildren != "undefined" &&
+              element.searchChildren) ||
+            element.disabled == true
           ) {
             if (
-              (element.rootType == "group_edition" &&
-                typeof element.children == "undefined") ||
-              element.disabled == true
+              element.rootType == "group_edition" &&
+              typeof element.children == "undefined"
             ) {
               $node.addClass("leaf-empty");
             } else {

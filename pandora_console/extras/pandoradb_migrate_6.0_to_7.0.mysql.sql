@@ -418,6 +418,8 @@ ALTER TABLE `tmetaconsole_setup` MODIFY COLUMN `meta_dbuser` text NULL,
 
 ALTER TABLE `tmetaconsole_setup` ADD COLUMN `server_uid` TEXT NOT NULL default '';
 
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `unified` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
+
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
 -- ---------------------------------------------------------------------

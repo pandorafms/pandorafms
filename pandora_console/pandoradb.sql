@@ -2747,8 +2747,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`auth_token` text,
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
-	`disabled` tinyint(1) unsigned NOT NULL default '0',
-	`last_event_replication` bigint(20) default '0',
+	`disabled` tinyint(1) unsigned NOT NULL default 0,
+	`unified` tinyint(1) unsigned NOT NULL default 0,
+	`last_event_replication` bigint(20) default 0,
 	`server_uid` text NOT NULL default '',
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB

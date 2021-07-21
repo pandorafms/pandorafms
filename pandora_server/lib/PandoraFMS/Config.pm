@@ -338,6 +338,7 @@ sub pandora_load_config {
 	$pa_config->{"mssql_driver"} = undef; # 745 
 	$pa_config->{"snmpconsole_lock"} = 0; # 755.
 	$pa_config->{"snmpconsole_period"} = 0; # 755.
+	$pa_config->{"snmpconsole_threshold"} = 0; # 755.
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0

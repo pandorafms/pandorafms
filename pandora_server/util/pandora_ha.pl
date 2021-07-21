@@ -181,7 +181,7 @@ sub ha_keep_pandora_running($$) {
   $Pandora_Service = $conf->{'pandora_service_cmd'};
 
   # Check if service is running
-  $control_command = "stauts-server";
+  $control_command = "status-server";
   if ($OSNAME eq "freebsd") {
     $control_command = "status_server";
   }

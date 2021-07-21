@@ -25,10 +25,6 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOAD ./procedures/updateSnmpAlerts.sql;
-CALL updateSnmpAlerts();
-DROP PROCEDURE updateSnmpAlerts;
-
 UPDATE `tlink` SET `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 
 UPDATE pandora.tuser_task

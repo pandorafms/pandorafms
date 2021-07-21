@@ -217,7 +217,12 @@ function fmModuleChange(uniqId) {
       if (data) {
         jQuery.each(data, function(id, value) {
           var option = $("<option></option>")
-            .attr("value", value["id_agente_modulo"])
+            .attr(
+              "value",
+              value["id_node"]
+                ? value["id_node"] + "|" + value["id_agente_modulo"]
+                : value["id_agente_modulo"]
+            )
             .html(value["nombre"]);
           $("#filtered-module-modules-" + uniqId).append(option);
         });

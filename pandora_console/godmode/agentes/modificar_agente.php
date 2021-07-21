@@ -110,9 +110,14 @@ ui_print_standard_header(
     ]
 );
 
-if (is_central_policies_on_node()) {
+if (is_management_allowed() === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. To delete an agent go to metaconsole.')
+        __(
+            'This node is configured with centralized mode. Go to %s to delete an agent',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 
@@ -912,7 +917,7 @@ if ($agents !== false) {
             echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent'), 'class' => 'invert_filter']).'</a>';
         }
 
-        if ($check_aw && !is_central_policies_on_node()) {
+        if ($check_aw && is_management_allowed() === true) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 

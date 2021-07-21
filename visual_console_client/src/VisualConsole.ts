@@ -37,6 +37,7 @@ import DonutGraph, { donutGraphPropsDecoder } from "./items/DonutGraph";
 import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 import Service, { servicePropsDecoder } from "./items/Service";
+import Odometer, { odometerPropsDecoder } from "./items/Odometer";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -85,6 +86,8 @@ function itemInstanceFrom(data: AnyObject) {
       return new ColorCloud(colorCloudPropsDecoder(data), meta);
     case ItemType.NETWORK_LINK:
       return new NetworkLink(networkLinkPropsDecoder(data), meta);
+    case ItemType.ODOMETER:
+      return new Odometer(odometerPropsDecoder(data), meta);
     default:
       throw new TypeError("item not found");
   }
@@ -135,6 +138,8 @@ function decodeProps(data: AnyObject) {
       return colorCloudPropsDecoder(data);
     case ItemType.NETWORK_LINK:
       return networkLinkPropsDecoder(data);
+    case ItemType.ODOMETER:
+      return odometerPropsDecoder(data);
     default:
       throw new TypeError("decoder not found");
   }
@@ -1277,7 +1282,8 @@ export default class VisualConsole {
     [ItemType.BARS_GRAPH]: BarsGraph,
     [ItemType.CLOCK]: Clock,
     [ItemType.COLOR_CLOUD]: ColorCloud,
-    [ItemType.NETWORK_LINK]: NetworkLink
+    [ItemType.NETWORK_LINK]: NetworkLink,
+    [ItemType.ODOMETER]: Odometer
   };
 
   /**
@@ -1329,6 +1335,9 @@ export default class VisualConsole {
         break;
       case ItemType.ICON:
         text = `${t("Icon")} - ${(item as Icon).props.imageSrc}`;
+        break;
+      case ItemType.ODOMETER:
+        text = t("Odometer");
         break;
       default:
         text = t("Item");

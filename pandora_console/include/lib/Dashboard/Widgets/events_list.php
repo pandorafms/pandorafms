@@ -535,6 +535,15 @@ class EventsListWidget extends Widget
             $filter['tag_without'] = base64_encode(
                 json_encode($filter['tag_without'])
             );
+
+            if (!empty($filter['id_agent_module'])) {
+                $name = \modules_get_modules_name(
+                    ' FROM tagente_modulo',
+                    ' WHERE id_agente_modulo = '.$filter['id_agent_module'],
+                    is_metaconsole()
+                );
+                $filter['module_search'] = $name[0]['nombre'];
+            }
         } else {
             // Filtering.
             $filter['event_view_hr'] = $hours;

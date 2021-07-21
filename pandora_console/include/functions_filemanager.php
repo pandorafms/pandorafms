@@ -26,6 +26,7 @@
  * ============================================================================
  */
 
+
 // Get global data.
 // Constants.
 define('MIME_UNKNOWN', 0);
@@ -120,6 +121,8 @@ if (function_exists('mime_content_type') === false) {
 
 global $config;
 
+require_once $config['homedir'].'/vendor/autoload.php';
+
 
 /**
  * Upload file.
@@ -132,14 +135,6 @@ global $config;
 function upload_file($upload_file_or_zip, $default_real_directory)
 {
     global $config;
-
-    $homedir_filemanager = trim($config['homedir']);
-    $sec2 = get_parameter('sec2');
-
-    if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-        $homedir_filemanager .= '/attachment/collection/';
-    }
-
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
     $config['filemanager']['message'] = null;
@@ -183,7 +178,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 if (empty($directory) === true) {
                     $nombre_archivo = $real_directory.'/'.$filename;
                 } else {
-                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
+                    $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
                 }
 
                 if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
@@ -205,38 +200,27 @@ function upload_file($upload_file_or_zip, $default_real_directory)
 
     // Upload zip.
     if ($upload_zip === true) {
-        if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
-            $filename       = $_FILES['file']['name'];
-            $filesize       = $_FILES['file']['size'];
+        if (isset($_FILES['file']) === true
+            && empty($_FILES['file']['name']) === false
+        ) {
+            $filename = $_FILES['file']['name'];
+            $filesize = $_FILES['file']['size'];
+            $filepath = $_FILES['file']['tmp_name'];
             $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
             $directory      = filemanager_safe_directory((string) get_parameter('directory'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
-                // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+                // Perform security check to determine whether received upload
+                // directory is part of the default path for caller uploader
+                // and user is not trying to access an external path (avoid
+                // execution of PHP files in directories that are not explicitly
+                // controlled by corresponding .htaccess).
                 ui_print_error_message(__('Security error'));
             } else {
-                // Copy file to directory and change name.
-                if (empty($directory) === true) {
-                    $nombre_archivo = $real_directory.'/'.$filename;
+                if (PandoraFMS\Tools\Files::unzip($filepath, $real_directory) === false) {
+                    ui_print_error_message(__('No he podido descomprimir tu archivo de mierda'));
                 } else {
-                    $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
-                }
-
-                if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
-                    ui_print_error_message(__('Attach error'));
-                } else {
-                    // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
-
-                    // Extract the zip file.
-                    $zip = new ZipArchive;
-                    $pathname = $homedir_filemanager.'/'.$directory.'/';
-
-                    if ($zip->open($nombre_archivo) === true) {
-                        $zip->extractTo($pathname);
-                        unlink($nombre_archivo);
-                    }
-
                     ui_print_success_message(__('Upload correct'));
                     $config['filemanager']['correct_upload_file'] = 1;
                 }
@@ -258,13 +242,6 @@ if (isset($_SERVER['CONTENT_LENGTH']) === true) {
 function create_text_file($default_real_directory)
 {
     global $config;
-
-    $homedir_filemanager = trim($config['homedir']);
-    $sec2 = get_parameter('sec2');
-
-    if ($sec2 == 'enterprise/godmode/agentes/collections' || $sec2 == 'advanced/collections') {
-        $homedir_filemanager .= '/attachment/collection/';
-    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
@@ -292,7 +269,7 @@ function create_text_file($default_real_directory)
             if (empty($directory) === true) {
                 $nombre_archivo = $real_directory.'/'.$filename;
             } else {
-                $nombre_archivo = $homedir_filemanager.'/'.$directory.'/'.$filename;
+                $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
             }
 
             if (! @touch($nombre_archivo)) {
@@ -313,16 +290,12 @@ function create_text_file($default_real_directory)
 }
 
 
-$homedir_filemanager = trim($config['homedir']);
-$sec2 = get_parameter('sec2');
-if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-    $homedir_filemanager .= '/attachment/collection/';
-}
-
 // CREATE DIR.
 $create_dir = (bool) get_parameter('create_dir');
 if ($create_dir === true) {
     global $config;
+
+    $homedir_filemanager = io_safe_output($config['attachment_store']).'/collection';
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_create_dir'] = 0;
@@ -330,7 +303,7 @@ if ($create_dir === true) {
 
     $directory = filemanager_safe_directory((string) get_parameter('directory', '/'));
     $hash      = (string) get_parameter('hash');
-    $testHash  = md5($directory.$config['dbpass']);
+    $testHash  = md5($directory.$config['server_unique_identifier']);
 
     if ($hash !== $testHash) {
          ui_print_error_message(__('Security error.'));
@@ -363,7 +336,7 @@ if ($delete_file === true) {
     $filename = (string) get_parameter('filename');
     $filename = io_safe_output($filename);
     $hash     = get_parameter('hash', '');
-    $testHash = md5($filename.$config['dbpass']);
+    $testHash = md5($filename.$config['server_unique_identifier']);
 
     if ($hash !== $testHash) {
         $config['filemanager']['message'] = ui_print_error_message(__('Security error'), '', true);
@@ -645,7 +618,7 @@ function filemanager_file_explorer(
 
         if (($prev_dir_str != '') && ($father != $relative_directory)) {
             $table->data[0][0] = html_print_image('images/go_previous.png', true, ['class' => 'invert_filter']);
-            $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['dbpass']).'">';
+            $table->data[0][1] = '<a href="'.$url.'&directory='.$prev_dir_str.'&hash2='.md5($prev_dir_str.$config['server_unique_identifier']).'">';
             $table->data[0][1] .= __('Parent directory');
             $table->data[0][1] .= '</a>';
 
@@ -696,7 +669,7 @@ function filemanager_file_explorer(
             }
 
             if ($fileinfo['is_dir']) {
-                $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']).'">'.$fileinfo['name'].'</a>';
+                $data[1] = '<a href="'.$url.'&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2='.md5($relative_directory.'/'.$fileinfo['name'].$config['server_unique_identifier']).'">'.$fileinfo['name'].'</a>';
             } else if (!empty($url_file)) {
                 // Set the custom url file
                 $url_file_clean = str_replace('[FILE_FULLPATH]', $fileinfo['realpath'], $url_file);
@@ -704,7 +677,7 @@ function filemanager_file_explorer(
                 $data[1] = '<a href="'.$url_file_clean.'">'.$fileinfo['name'].'</a>';
             } else {
                 $filename = base64_encode($relative_directory.'/'.$fileinfo['name']);
-                $hash = md5($filename.$config['dbpass']);
+                $hash = md5($filename.$config['server_unique_identifier']);
                 $data[1] = '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'">'.$fileinfo['name'].'</a>';
             }
 
@@ -739,7 +712,7 @@ function filemanager_file_explorer(
                 $data[4] .= '<form method="post" action="'.$url.'" style="">';
                 $data[4] .= '<input type="image" class="invert_filter" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
                 $data[4] .= html_print_input_hidden('filename', $fileinfo['realpath'], true);
-                $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['dbpass']), true);
+                $data[4] .= html_print_input_hidden('hash', md5($fileinfo['realpath'].$config['server_unique_identifier']), true);
                 $data[4] .= html_print_input_hidden('delete_file', 1, true);
 
                 $relative_dir = str_replace($homedir_filemanager, '', str_replace('\\', '/', dirname($fileinfo['realpath'])));
@@ -748,7 +721,7 @@ function filemanager_file_explorer(
                     $relative_dir = substr($relative_dir, 1);
                 }
 
-                $hash2 = md5($relative_dir.$config['dbpass']);
+                $hash2 = md5($relative_dir.$config['server_unique_identifier']);
 
                 $data[4] .= html_print_input_hidden('directory', $relative_dir, true);
                 $data[4] .= html_print_input_hidden('hash2', $hash2, true);
@@ -758,7 +731,7 @@ function filemanager_file_explorer(
                     if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg')
                         && ($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc') && ($fileinfo['mime'] != MIME_DIR)
                     ) {
-                        $hash = md5($fileinfo['realpath'].$config['dbpass']);
+                        $hash = md5($fileinfo['realpath'].$config['server_unique_identifier']);
                         $data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&hash=".$hash.'&location_file='.$fileinfo['realpath']."' style='float: left;'>".html_print_image('images/edit.png', true, ['style' => 'margin-top: 2px;', 'title' => __('Edit file'), 'class' => 'invert_filter']).'</a>';
                     }
                 }
@@ -766,7 +739,7 @@ function filemanager_file_explorer(
 
             if ((!$fileinfo['is_dir']) && ($download_button)) {
                 $filename = base64_encode($fileinfo['name']);
-                $hash = md5($filename.$config['dbpass']);
+                $hash = md5($filename.$config['server_unique_identifier']);
                 $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
                 $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
@@ -824,13 +797,13 @@ function filemanager_file_explorer(
             </li></ul>';
 
             echo '<div id="create_folder" class="invisible">'.$tabs_dialog.'
-            <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).'</form></div>';
+            <form method="post" action="'.$url.'">'.html_print_input_text('dirname', '', '', 30, 255, true).html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"', true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('create_dir', 1, true).html_print_input_hidden('hash', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).'</form></div>';
 
             echo '<div id="upload_file" class="invisible"> '.$tabs_dialog.'
-            <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['dbpass']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
+            <form method="post" action="'.$url.'" enctype="multipart/form-data">'.ui_print_help_tip(__('The zip upload in this dir, easy to upload multiple files.'), true).html_print_input_file('file', true, false).html_print_input_hidden('umask', $umask, true).html_print_checkbox('decompress', 1, false, true).__('Decompress').html_print_submit_button(__('Go'), 'go', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('hash2', md5($relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('upload_file_or_zip', 1, true).'</form></div>';
 
             echo ' <div id="create_text_file" class="invisible">'.$tabs_dialog.'
-            <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['dbpass']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
+            <form method="post" action="'.$url.'">'.html_print_input_text('name_file', '', '', 30, 50, true).html_print_submit_button(__('Create'), 'create', false, 'class="sub next"', true).html_print_input_hidden('real_directory', $real_directory, true).html_print_input_hidden('directory', $relative_directory, true).html_print_input_hidden('hash', md5($real_directory.$relative_directory.$config['server_unique_identifier']), true).html_print_input_hidden('umask', $umask, true).html_print_input_hidden('create_text_file', 1, true).'</form></div>';
 
             echo "<div style='width: ".$table->width.";' class='file_table_buttons'>";
 

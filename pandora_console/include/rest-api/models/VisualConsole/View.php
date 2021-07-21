@@ -97,7 +97,7 @@ class View extends \HTML
                     'img'  => 'event_responses_col.png',
                 ],
             ];
-        } else if ($type === BOX_ITEM || $type === COLOR_CLOUD) {
+        } else if ($type === BOX_ITEM || $type === COLOR_CLOUD || $type === ODOMETER) {
             $activetabs = 1;
             $tabs = [
                 [
@@ -434,6 +434,7 @@ class View extends \HTML
                 $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['maxTime'] = \get_parameter('maxTime');
+                $data['legendColor'] = \get_parameter('legendColor');
             break;
 
             case DONUT_GRAPH:
@@ -506,6 +507,19 @@ class View extends \HTML
                 if ($itemId === 0) {
                     $data['height'] = 100;
                     $data['width'] = 100;
+                }
+            break;
+
+            case ODOMETER:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['titleColor'] = \get_parameter('titleColor');
+                $data['title'] = \get_parameter('title');
+                if ($itemId === 0) {
+                    $data['height'] = 150;
+                    $data['width'] = 300;
                 }
             break;
 

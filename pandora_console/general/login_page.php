@@ -134,8 +134,8 @@ if (isset($config['custom_docs_url'])) {
 
     echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 } else if (!$custom_conf_enabled) {
-    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-    echo '<li><a href="http://wiki.pandorafms.com/" target="_blank">'.__('Docs').'</li>';
+    echo '<li><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
 }
 
 if (isset($config['custom_support_url'])) {
@@ -210,7 +210,7 @@ switch ($login_screen) {
     case 'login':
         if (!empty($page) && !empty($sec)) {
             foreach ($_POST as $key => $value) {
-                html_print_input_hidden(io_safe_input($key), $value);
+                html_print_input_hidden(io_safe_input($key), io_safe_input($value));
             }
         }
 
@@ -333,6 +333,9 @@ if ($config['enterprise_installed']) {
         echo '</div>';
     }
 }
+
+// CSRF validation.
+html_print_csrf_hidden();
 
     echo '</form></div>';
     echo '<div class="login_data">';
@@ -686,7 +689,7 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
                 });
 
                 $("#submit-hide-login-logout").click (function () {
-                    $("#login_logout").dialog('close');
+                    document.location = "<?php echo ui_get_full_url('index.php'); ?>";
                 });        
             });
         break;

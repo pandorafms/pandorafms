@@ -65,7 +65,10 @@ if ($get_modules_downtime) {
     $downtime_module_ids = extract_column($downtime_modules, 'id_agent_module');
     $downtime_modules = array_fill_keys($downtime_module_ids, true);
 
-    $filter = ['id_agente' => $id_agent, 'delete_pending' => 0];
+    $filter = [
+        'id_agente'      => $id_agent,
+        'delete_pending' => 0,
+    ];
     $modules = db_get_all_rows_filter('tagente_modulo', $filter);
     if (empty($modules)) {
         $modules = [];

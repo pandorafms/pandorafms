@@ -47,7 +47,8 @@ export const enum ItemType {
   BARS_GRAPH = 18,
   CLOCK = 19,
   COLOR_CLOUD = 20,
-  NETWORK_LINK = 21
+  NETWORK_LINK = 21,
+  ODOMETER = 22
 }
 
 // Base item properties. This interface should be extended by the item implementations.
@@ -213,6 +214,9 @@ export function titleItem(id: number): string {
       break;
     case ItemType.NETWORK_LINK:
       title = t("Network link");
+      break;
+    case ItemType.ODOMETER:
+      title = t("Odometer");
       break;
     default:
       title = t("Item");
@@ -613,13 +617,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         case "down":
           if (this.props.width > 0) {
             table.style.width = `${this.props.width}px`;
-            table.style.height = null;
+            table.style.height = "";
           }
           break;
         case "left":
         case "right":
           if (this.props.height > 0) {
-            table.style.width = null;
+            table.style.width = "";
             table.style.height = `${this.props.height}px`;
           }
           break;
@@ -963,13 +967,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         case "down":
           if (this.props.width > 0) {
             table.style.width = `${this.props.width}px`;
-            table.style.height = null;
+            table.style.height = "";
           }
           break;
         case "left":
         case "right":
           if (this.props.height > 0) {
-            table.style.width = null;
+            table.style.width = "";
             table.style.height = `${this.props.height}px`;
           }
           break;
@@ -1025,8 +1029,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       this.props.type != ItemType.LINE_ITEM &&
       this.props.type != ItemType.NETWORK_LINK
     ) {
-      this.childElementRef.style.width = width > 0 ? `${width}px` : null;
-      this.childElementRef.style.height = height > 0 ? `${height}px` : null;
+      this.childElementRef.style.width = width > 0 ? `${width}px` : "";
+      this.childElementRef.style.height = height > 0 ? `${height}px` : "";
     }
 
     if (this.props.label && this.props.label.length > 0) {
@@ -1038,11 +1042,11 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         switch (this.props.labelPosition) {
           case "up":
           case "down":
-            table.style.width = width > 0 ? `${width}px` : null;
+            table.style.width = width > 0 ? `${width}px` : "";
             break;
           case "left":
           case "right":
-            table.style.height = height > 0 ? `${height}px` : null;
+            table.style.height = height > 0 ? `${height}px` : "";
             break;
         }
       }

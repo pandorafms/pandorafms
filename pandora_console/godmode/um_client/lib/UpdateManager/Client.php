@@ -1433,6 +1433,10 @@ class Client
         error_reporting(E_ALL ^ E_NOTICE);
         set_error_handler(
             function ($errno, $errstr) {
+                if (preg_match('/Undefined index/', $errstr) > 1) {
+                    return;
+                }
+
                 throw new \Exception($errstr, $errno);
             }
         );

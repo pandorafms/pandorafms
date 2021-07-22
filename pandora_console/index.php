@@ -1040,6 +1040,30 @@ if (isset($_GET['bye'])) {
 
 clear_pandora_error_for_header();
 
+if ((bool) $config['node_deactivated'] === true) {
+    // Prevent access node if not merged.
+    include 'general/node_deactivated.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
 /*
  * ----------------------------------------------------------------------
     *  EXTENSIONS
@@ -1086,21 +1110,6 @@ if (get_parameter('login', 0) !== 0) {
         include_once 'general/php7_message.php';
     }
 }
-
-
-if ((bool) $config['maintenance_mode'] === true
-    && (bool) users_is_admin() === false
-) {
-    // Show maintenance web-page. For non-admin users only.
-    include 'general/maintenance.php';
-
-    while (ob_get_length() > 0) {
-        ob_end_flush();
-    }
-
-    exit('</html>');
-}
-
 
 // Header.
 if ($config['pure'] == 0) {

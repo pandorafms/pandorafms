@@ -1,5 +1,6 @@
 START TRANSACTION;
 
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `unified` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `title` TEXT default '';
 
@@ -24,8 +25,6 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-SOURCE './procedures/updateSnmpAlerts.sql';
-
 UPDATE `tlink` SET `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 
 UPDATE pandora.tuser_task
@@ -37,7 +36,7 @@ UPDATE `tuser_task_scheduled` SET
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:2;s:0:"";i:7;s:3:"PDF";s:15:"first_execution"')
     WHERE `id_user_task` = 2;
 
-UPDATE `tconfig` SET `value` = 0 WHERE `token` = `centralized_management`;
+UPDATE `tconfig` SET `value` = 0 WHERE `token` = 'centralized_management';
 
 DELETE ta FROM `tagente` ta LEFT JOIN `tgrupo` tg on ta.`id_grupo` = tg.`id_grupo` WHERE tg.`id_grupo` IS NULL;
 

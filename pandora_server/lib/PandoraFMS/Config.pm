@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.755";
-my $pandora_build = "210720";
+my $pandora_version = "7.0NG.756";
+my $pandora_build = "210722";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -338,6 +338,7 @@ sub pandora_load_config {
 	$pa_config->{"mssql_driver"} = undef; # 745 
 	$pa_config->{"snmpconsole_lock"} = 0; # 755.
 	$pa_config->{"snmpconsole_period"} = 0; # 755.
+	$pa_config->{"snmpconsole_threshold"} = 0; # 755.
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0

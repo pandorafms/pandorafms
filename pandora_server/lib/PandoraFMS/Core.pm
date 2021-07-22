@@ -1106,8 +1106,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
 	
-	print Dumper($field1);
-	
+		
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined

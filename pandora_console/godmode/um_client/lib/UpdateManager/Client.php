@@ -1340,7 +1340,7 @@ class Client
         error_reporting(E_ALL ^ E_NOTICE);
         set_error_handler(
             function ($errno, $errstr) {
-                if (preg_match('/Undefined index/', $errstr) > 1) {
+                if (preg_match('/Undefined index/i', $errstr) > 0) {
                     return;
                 }
 
@@ -1351,7 +1351,9 @@ class Client
         register_shutdown_function(
             function () {
                 $error = error_get_last();
-                if (null !== $error) {
+                if (null !== $error
+                    && preg_match('/Undefined index/i', $error['message']) !== 1
+                ) {
                     echo __('Failed to analyze package: %s', $error['message']);
                 }
             }
@@ -1433,7 +1435,7 @@ class Client
         error_reporting(E_ALL ^ E_NOTICE);
         set_error_handler(
             function ($errno, $errstr) {
-                if (preg_match('/Undefined index/', $errstr) > 1) {
+                if (preg_match('/Undefined index/i', $errstr) > 0) {
                     return;
                 }
 

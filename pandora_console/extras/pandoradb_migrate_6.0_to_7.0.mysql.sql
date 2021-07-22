@@ -1553,7 +1553,7 @@ ALTER TABLE `tagente_modulo` DROP COLUMN `ff_normal`,
 	MODIFY COLUMN `dynamic_next` bigint(20) NOT NULL DEFAULT '0',
 	MODIFY COLUMN `dynamic_two_tailed` tinyint(1) unsigned NULL DEFAULT '0';
 ALTER TABLE tagente_modulo MODIFY COLUMN `custom_string_1` MEDIUMTEXT;
-ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` varchar(200);
+ALTER TABLE `tagente_modulo` ADD COLUMN `debug_content` TEXT;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`

@@ -30,7 +30,7 @@
 /**
  * Do not display any ERROR
  */
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_NOTICE);
 
 // Display ALL errors
 // error_reporting(E_ERROR);

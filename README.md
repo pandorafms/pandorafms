@@ -10,7 +10,7 @@ For community support you can visit our forums at http://forums.pandorafms.org. 
 
 ### How to install Pandora FMS
 
-Installing Pandora FMS is a very easy task. Please visit our wiki and follow all the steps described for a quick and proper installation. http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Installing
+Installing Pandora FMS is a very easy task. Please visit our wiki and follow all the steps described for a quick and proper installation. https://pandorafms.com/manual/en/documentation/02_installation/01_installing
 
 ### What is Pandora FMS?
 

@@ -296,7 +296,7 @@ if ($new_user && $config['admin_can_add_user']) {
     // This attributes are inherited from global configuration
     $user_info['block_size'] = $config['block_size'];
 
-    if (enterprise_installed() && defined('METACONSOLE')) {
+    if (enterprise_installed() && is_metaconsole() === true) {
         $user_info['metaconsole_agents_manager'] = 0;
         $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;
@@ -439,6 +439,12 @@ if ($create_user) {
 
         if ($result) {
             $res = save_pass_history($id, $password_new);
+        } else {
+            $is_err = true;
+            $user_info = $values;
+            $password_new = '';
+            $password_confirm = '';
+            $new_user = true;
         }
 
         db_pandora_audit(
@@ -1244,20 +1250,6 @@ $default_event_filter .= html_print_select(
     false
 ).'</div>';
 
-$newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Disabled newsletter').'</p>';
-if ($user_info['middlename'] >= 0) {
-    $middlename = false;
-} else {
-    $middlename = true;
-}
-
-$newsletter .= html_print_checkbox_switch(
-    'middlename',
-    -1,
-    $middlename,
-    true
-).'</div>';
-
 if ($config['ehorus_user_level_conf']) {
     $ehorus = '<div class="label_select_simple"><p class="edit_user_labels">'.__('eHorus user access enabled').'</p>';
     $ehorus .= html_print_checkbox_switch(
@@ -1382,7 +1374,7 @@ echo '<div id="user_form">
     <div class="edit_user_autorefresh white_box"><p class="bolder">Extra info</p>'.$email.$phone.$not_login.$session_time.'</div>
 </div> 
 <div class="user_edit_second_row white_box">
-    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$newsletter.$double_authentication.'</div>
+    <div class="edit_user_options">'.$language.$access_or_pagination.$skin.$home_screen.$default_event_filter.$double_authentication.'</div>
 
     <div class="edit_user_timezone">'.$timezone;
 if (!is_metaconsole()) {

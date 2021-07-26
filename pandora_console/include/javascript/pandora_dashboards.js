@@ -388,7 +388,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: widgetId == 14 ? 750 : 450,
+        width: widgetId == 14 || widgetId == 2 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },
@@ -843,6 +843,7 @@ function processTreeSearch(settings) {
   filters.searchModule = settings.searchModule;
   filters.statusModule = settings.statusModule;
   filters.groupID = settings.searchGroup;
+  filters.searchHirearchy = 1;
 
   $.ajax({
     type: "POST",
@@ -1151,7 +1152,9 @@ function dashboardLoadVC(settings) {
     300 * 1000,
     handleUpdate,
     beforeUpdate,
-    settings.size
+    settings.size,
+    settings.id_user,
+    settings.hash
   );
 }
 

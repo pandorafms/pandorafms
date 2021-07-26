@@ -98,8 +98,12 @@ class ExternalTools extends HTML
                     // Define array for host the command/parameters pair data.
                     $this->pathCustomComm[$customValue] = [];
                     // Ensure the information.
-                    $this->pathCustomComm[$customValue]['command_custom'] = (string) get_parameter('command_custom_'.$customCommandId);
-                    $this->pathCustomComm[$customValue]['params_custom'] = (string) get_parameter('params_custom_'.$customCommandId);
+                    $this->pathCustomComm[$customValue]['command_custom'] = (string) get_parameter(
+                        'command_custom_'.$customCommandId
+                    );
+                    $this->pathCustomComm[$customValue]['params_custom'] = (string) get_parameter(
+                        'params_custom_'.$customCommandId
+                    );
                 }
             }
         }
@@ -139,7 +143,7 @@ class ExternalTools extends HTML
         global $config;
 
         $i = 0;
-        $sounds = $this->get_sounds();
+        $sounds = $this->getSounds();
 
         if ($this->updatePaths === true) {
             $external_tools_config = [];
@@ -170,7 +174,9 @@ class ExternalTools extends HTML
             if ($result === true) {
                 $result = config_update_value(
                     'external_tools_config',
-                    json_encode($external_tools_config)
+                    io_safe_input(
+                        json_encode($external_tools_config)
+                    )
                 );
             }
 
@@ -181,8 +187,12 @@ class ExternalTools extends HTML
             );
         } else {
             if (isset($config['external_tools_config']) === true) {
-                $external_tools_config_output = io_safe_output($config['external_tools_config']);
-                $external_tools_config = json_decode($external_tools_config_output, true);
+                $external_tools_config = json_decode(
+                    io_safe_output(
+                        $config['external_tools_config']
+                    ),
+                    true
+                );
                 // Setting paths.
                 $this->pathTraceroute = $external_tools_config['traceroute_path'];
                 $this->pathPing       = $external_tools_config['ping_path'];
@@ -221,6 +231,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -249,6 +261,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -277,6 +291,8 @@ class ExternalTools extends HTML
                         'style' => 'vertical-align: middle;',
                         'width' => '16',
                         'title' => __('Play sound'),
+                        'class' => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -326,6 +342,8 @@ class ExternalTools extends HTML
                         'title'   => __('Add new custom command'),
                         'onclick' => 'manageCommandLines(event)',
                         'id'      => 'img_add_button_custom_command',
+                        'class'   => 'invert_filter',
+
                     ]
                 ),
             ],
@@ -420,6 +438,7 @@ class ExternalTools extends HTML
                                 'title'   => __('Delete this custom command'),
                                 'onclick' => 'manageCommandLines(event)',
                                 'id'      => 'img_delete_button_custom_'.$index,
+                                'class'   => 'invert_filter',
                             ]
                         ),
                     ],
@@ -462,24 +481,18 @@ class ExternalTools extends HTML
             $ids[] = join(',', $address);
         }
 
+        // Must be an a IP at least for work.
+        if (empty($ids) === true) {
+            ui_print_message(__('The agent doesn`t have an IP yet'), 'error', true);
+            return;
+        }
+
         $ips = db_get_all_rows_sql(
             sprintf(
                 'SELECT ip FROM taddress WHERE id_a IN (%s)',
                 join(',', $ids)
             )
         );
-
-        // Must be an a IP at least for work.
-        if (empty($ips) === true) {
-            html_print_div(
-                [
-                    'class'   => 'error',
-                    'style'   => 'margin-top:5px',
-                    'content' => __('The agent hasn\'t got IP'),
-                ]
-            );
-            return;
-        }
 
         // Make the data for show in table.
         $ipsSelect = array_reduce(
@@ -686,16 +699,32 @@ class ExternalTools extends HTML
 
             // Only perform an execution if command is passed. Avoid errors.
             if (empty($command) === false) {
+                $resultCode = 0;
                 ob_start();
-                system($command);
+                system(io_safe_output($command), $resultCode);
                 $output .= ob_get_clean();
             } else {
-                $output .= __('No command for perform');
+                $output .= __('Command not response');
             }
 
             $output .= '</pre>';
+
+            if ($resultCode !== 0) {
+                throw new Exception(
+                    sprintf(
+                        '%s %s',
+                        __('The command failed and obtained the return code:'),
+                        $resultCode
+                    ),
+                    1
+                );
+            }
         } catch (\Throwable $th) {
-            $output = __('Something went wrong while perform the execution. Please check the configuration.');
+            $output = sprintf(
+                '%s %s',
+                $th->getMessage(),
+                __('Something went wrong while perform the execution. Please check the configuration.')
+            );
         }
 
         echo $output;
@@ -723,7 +752,7 @@ class ExternalTools extends HTML
                 true
             );
         } else {
-            if ($operation === COMMAND_SNMP) {
+            if ((int) $operation === COMMAND_SNMP) {
                 $snmp_obj = [
                     'ip_target'      => $ip,
                     'snmp_version'   => $snmp_version,
@@ -792,7 +821,7 @@ class ExternalTools extends HTML
                 }
 
                 html_print_table($table);
-            } else if ($operation === COMMAND_DIGWHOIS) {
+            } else if ((int) $operation === COMMAND_DIGWHOIS) {
                 echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
 
                 // Dig execution.
@@ -888,7 +917,7 @@ class ExternalTools extends HTML
      *
      * @return string Path.
      */
-    private function get_sounds()
+    private function getSounds()
     {
         global $config;
 
@@ -958,11 +987,13 @@ class ExternalTools extends HTML
                             if (parseInt(separatedId[2]) === 0) {
                                 $("#text-command_custom_"+fieldLines, "#"+thisNewId)
                                     .attr("name", "command_custom_"+fieldLinesAdded)
-                                    .attr("id", "text-command_custom_"+fieldLinesAdded);
+                                    .attr("id", "text-command_custom_"+fieldLinesAdded)
+                                    .val('');
                             } else if (parseInt(separatedId[2]) === 1) {
                                 $("#text-params_custom_"+fieldLines, "#"+thisNewId)
                                     .attr("id", "text-params_custom_"+fieldLinesAdded)
-                                    .attr("name", "params_custom_"+fieldLinesAdded);
+                                    .attr("name", "params_custom_"+fieldLinesAdded)
+                                    .val('');
                             } else if (parseInt(separatedId[2]) === 2) {
                                 $("#img_delete_button_custom_"+fieldLines, "#"+thisNewId)
                                     .attr("id", "img_delete_button_custom_"+fieldLinesAdded);
@@ -976,6 +1007,10 @@ class ExternalTools extends HTML
 
                         if (parseInt(lineNumber) >= 1 && lineCount > 1) {
                             $("#custom_row_" + lineNumber).remove();
+                        } else if (lineCount === 1) {
+                            $("#custom_row_" + lineNumber).find('input').each(function() {
+                                $(this).val('');
+                            });
                         }
 
                         if (lineCount === 1) {

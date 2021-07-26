@@ -1,17 +1,32 @@
 <?php
+/**
+ * Agents defined view.
+ *
+ * @category   Manage Agents.
+ * @package    Pandora FMS
+ * @subpackage Resources.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 check_login();
 
 // Take some parameters (GET).
@@ -76,18 +91,33 @@ $viewtab['active'] = false;
 $onheader = ['view' => $viewtab];
 
 // Header.
-ui_print_page_header(
+ui_print_standard_header(
     __('Agents defined in %s', get_product_name()),
     'images/agent.png',
     false,
     '',
     true,
-    $onheader
+    $onheader,
+    [
+        [
+            'link'  => '',
+            'label' => __('Resources'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('Manage agents'),
+        ],
+    ]
 );
 
-if (is_central_policies_on_node()) {
+if (is_management_allowed() === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. To delete an agent go to metaconsole.')
+        __(
+            'This node is configured with centralized mode. Go to %s to delete an agent',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 
@@ -746,9 +776,9 @@ if ($agents !== false) {
 
         if ($in_planned_downtime) {
             ui_print_help_tip(
-                __('Agent in planned downtime'),
+                __('Agent in scheduled downtime'),
                 false,
-                $config['image']['minireloj_16']
+                'images/minireloj-16.png'
             );
 
             echo '</em>';
@@ -887,7 +917,7 @@ if ($agents !== false) {
             echo html_print_image('images/lightbulb.png', true, ['alt' => __('Disable agent'), 'title' => __('Disable agent'), 'class' => 'invert_filter']).'</a>';
         }
 
-        if ($check_aw && !is_central_policies_on_node()) {
+        if ($check_aw && is_management_allowed() === true) {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";
 

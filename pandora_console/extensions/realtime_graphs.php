@@ -42,6 +42,10 @@ function pandora_realtime_graphs()
     global $config;
     check_login();
 
+    if ($config['style'] === 'pandora_black') {
+        ui_require_css_file('pandora_black', 'include/styles/', true);
+    }
+
     $id_network = get_parameter('id_network', 0);
     $action = get_parameter('action', 'list');
 
@@ -49,13 +53,24 @@ function pandora_realtime_graphs()
 
     $hide_header = get_parameter('hide_header', 0);
     if ($hide_header === 0) {
-        ui_print_page_header(
+        // Header.
+        ui_print_standard_header(
             __('Realtime graphs'),
             'images/extensions.png',
             false,
             'real_time_view',
             false,
-            $onheader
+            $onheader,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Monitoring'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Views'),
+                ],
+            ]
         );
     }
 
@@ -66,8 +81,8 @@ function pandora_realtime_graphs()
     $long_index = [];
     $no_data_image = '';
 
-    $canvas = '<div id="graph_container">';
-    $canvas .= '<div id="chartLegend"></div>';
+    $canvas = '<div id="graph_container" class="graph_container">';
+    $canvas .= '<div id="chartLegend" class="chartLegend"></div>';
 
     $width = 800;
     $height = 300;
@@ -239,7 +254,9 @@ function pandora_realtime_graphs()
 
     echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/pandora_snmp_browser.js').'"></script>';
     echo '<script type="text/javascript" src="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.js').'"></script>';
-    echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'"></style>';
+    if ($config['style'] !== 'pandora_black') {
+        echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'"></style>';
+    }
 
     // Store servers timezone offset to be retrieved from js.
     set_js_value('timezone_offset', date('Z', time()));

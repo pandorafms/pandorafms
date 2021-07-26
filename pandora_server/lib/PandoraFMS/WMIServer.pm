@@ -109,7 +109,7 @@ sub data_producer ($) {
 	} else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
 			FROM tagente, tagente_modulo, tagente_estado, tserver
-			WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0 AND server_type = ?)))
+			WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status <> 1 AND server_type = ?)))
 			AND tagente_modulo.id_agente = tagente.id_agente
 			AND tagente.disabled = 0
 			AND tagente_modulo.disabled = 0
@@ -160,6 +160,11 @@ sub data_consumer ($$) {
 	}
 	else {
 		$wmi_command = $pa_config->{'wmi_client'} . ' -N';
+	}
+
+	#Check ip_taget macro
+	if ($module->{'ip_target'} eq '_address_') {
+		$module->{'ip_target'} = get_db_value($dbh, "SELECT direccion FROM tagente WHERE id_agente=?", $module->{'id_agente'});
 	}
 	
 	# Use a custom namespace

@@ -178,7 +178,7 @@ function vbar_graph(
     if (isset($options['x']['title']['fontFamily']) === false) {
         $options['x']['title']['fontFamily'] = preg_replace(
             '/.ttf/',
-            'Font, Arial',
+            'Font, lato',
             $config['fontpath']
         );
     }
@@ -218,7 +218,9 @@ function vbar_graph(
 
     if (isset($options['x']['font']['color']) === false) {
         $options['x']['font']['color'] = '#545454';
-        if ($config['style'] === 'pandora_black') {
+        if ($options['pdf'] === true) {
+            $options['x']['font']['color'] = '#000';
+        } else if ($config['style'] === 'pandora_black') {
             $options['x']['font']['color'] = '#fff';
         }
     }
@@ -261,7 +263,7 @@ function vbar_graph(
     if (isset($options['y']['title']['fontFamily']) === false) {
         $options['y']['title']['fontFamily'] = preg_replace(
             '/.ttf/',
-            'Font, Arial',
+            'Font',
             $config['fontpath']
         );
     }
@@ -301,9 +303,10 @@ function vbar_graph(
 
     if (isset($options['y']['font']['color']) === false) {
         $options['y']['font']['color'] = '#545454';
-
-        if ($config['style'] === 'pandora_black') {
-            $options['y']['font']['color'] = '#222';
+        if ($options['pdf'] === true) {
+            $options['y']['font']['color'] = '#000';
+        } else if ($config['style'] === 'pandora_black') {
+            $options['y']['font']['color'] = '#fff';
         }
     }
 
@@ -359,7 +362,7 @@ function vbar_graph(
     if (isset($options['grid']['color']) === false) {
         $options['grid']['color'] = '#ffffff';
         if ($config['style'] === 'pandora_black') {
-            $options['grid']['color'] = '#222';
+            $options['grid']['color'] = '#111';
         }
     }
 
@@ -370,7 +373,7 @@ function vbar_graph(
                 '#ffffff',
             ],
         ];
-        if ($config['style'] === 'pandora_black') {
+        if ($config['style'] === 'pandora_black' && $ttl === 1) {
             $options['grid']['backgroundColor'] = [
                 'colors' => [
                     '#222',
@@ -714,7 +717,8 @@ function hbar_graph(
     $tick_color='white',
     $val_min=null,
     $val_max=null,
-    $base64=false
+    $base64=false,
+    $pdf=false
 ) {
     global $config;
     if ($water_mark !== false) {
@@ -742,7 +746,11 @@ function hbar_graph(
         return generator_chart_to_pdf('hbar', $params);
     }
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && $ttl === 1) {
+        $backgroundColor = '#222';
+    }
+
+    if ($config['style'] === 'pandora_black' && $ttl === 1) {
         $tick_color = '#fff';
     }
 
@@ -756,7 +764,8 @@ function hbar_graph(
         $backgroundColor,
         $tick_color,
         $val_min,
-        $val_max
+        $val_max,
+        $pdf
     );
 }
 
@@ -859,7 +868,8 @@ function ring_graph(
     $legend_position=false,
     $colors='',
     $hide_labels=false,
-    $background_color='white'
+    $background_color='white',
+    $pdf=false
 ) {
     if (empty($chart_data)) {
         return graph_nodata_image($width, $height, 'pie');
@@ -887,7 +897,7 @@ function ring_graph(
             'homeurl'          => $homeurl,
             'background_color' => $background_color,
             'legend_position'  => $legend_position,
-            'background_color' => $background_color,
+            'pdf'              => $pdf,
         ];
 
         return generator_chart_to_pdf('ring_graph', $params);
@@ -911,6 +921,7 @@ function ring_graph(
         $homeurl,
         $background_color,
         $legend_position,
-        $background_color
+        $background_color,
+        $pdf
     );
 }

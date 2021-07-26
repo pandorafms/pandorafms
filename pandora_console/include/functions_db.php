@@ -17,6 +17,8 @@
  * @subpackage DataBase
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Synchronizer;
+
 require_once $config['homedir'].'/include/functions_extensions.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -65,14 +67,41 @@ function get_dbconnection(array $setup)
 }
 
 
-function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $critical=true, $charset=null)
-{
+/**
+ * Connect bbdd.
+ *
+ * @param string  $host     Host.
+ * @param string  $db       Db.
+ * @param string  $user     User.
+ * @param string  $pass     Pass.
+ * @param string  $port     Port.
+ * @param boolean $critical Critical.
+ * @param string  $charset  Charset.
+ *
+ * @return mysqli|false
+ */
+function db_connect(
+    $host=null,
+    $db=null,
+    $user=null,
+    $pass=null,
+    $port=null,
+    $critical=true,
+    $charset=null
+) {
     global $config;
     static $error = 0;
 
     switch ($config['dbtype']) {
         case 'mysql':
-            $return = mysql_connect_db($host, $db, $user, $pass, $port, $charset);
+            $return = mysql_connect_db(
+                $host,
+                $db,
+                $user,
+                $pass,
+                $port,
+                $charset
+            );
         break;
 
         case 'postgresql':
@@ -85,9 +114,10 @@ function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $c
 
         default:
             $return = false;
+        break;
     }
 
-    // Something went wrong
+    // Something went wrong.
     if ($return === false) {
         if ($critical) {
             $url = explode('/', $_SERVER['REQUEST_URI']);
@@ -110,9 +140,12 @@ function db_connect($host=null, $db=null, $user=null, $pass=null, $port=null, $c
             include $config['homedir'].'../general/error_screen.php';
             exit;
         } else if ($error == 0) {
-            // Display the error once even if multiple connection attempts are made
+            // Display the error once even if multiple
+            // connection attempts are made.
             $error = 1;
-            ui_print_error_message(__('Error connecting to database %s at %s.', $db, $host));
+            ui_print_error_message(
+                __('Error connecting to database %s at %s.', $db, $host)
+            );
         }
     }
 
@@ -295,30 +328,35 @@ $sql_cache = ['saved' => []];
 /**
  * Get the first value of the first row of a table in the database.
  *
- * @param string Field name to get
- * @param string Table to retrieve the data
- * @param string Field to filter elements
- * @param string Condition the field must have
+ * @param string  $field             Field name to get.
+ * @param string  $table             Table to retrieve the data.
+ * @param string  $field_search      Field to filter elements.
+ * @param string  $condition         Condition the field must have.
+ * @param boolean $search_history_db Search in historical db.
+ * @param boolean $cache             Enable cache or not.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function db_get_value($field, $table, $field_search=1, $condition=1, $search_history_db=false)
-{
+function db_get_value(
+    $field,
+    $table,
+    $field_search=1,
+    $condition=1,
+    $search_history_db=false,
+    $cache=true
+) {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_value($field, $table, $field_search, $condition, $search_history_db);
+        default:
+        return mysql_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
 
-            break;
         case 'postgresql':
-        return postgresql_db_get_value($field, $table, $field_search, $condition, $search_history_db);
+        return postgresql_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
 
-            break;
         case 'oracle':
-        return oracle_db_get_value($field, $table, $field_search, $condition, $search_history_db);
-
-            break;
+        return oracle_db_get_value($field, $table, $field_search, $condition, $search_history_db, $cache);
     }
 }
 
@@ -374,7 +412,7 @@ function db_get_value_filter($field, $table, $filter, $where_join='AND', $search
  *
  * @param string SQL select statement to execute.
  *
- * @return the first value of the first row of a table result from query.
+ * @return mixed the first value of the first row of a table result from query.
  */
 function db_get_value_sql($sql, $dbconnection=false)
 {
@@ -404,21 +442,21 @@ function db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function db_get_row_sql($sql, $search_history_db=false)
+function db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_row_sql($sql, $search_history_db);
+        return mysql_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_row_sql($sql, $search_history_db);
+        return postgresql_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
         case 'oracle':
-        return oracle_db_get_row_sql($sql, $search_history_db);
+        return oracle_db_get_row_sql($sql, $search_history_db, $cache);
 
             break;
     }
@@ -534,30 +572,32 @@ function db_get_sql($sql, $field=0, $search_history_db=false)
 /**
  * Get all the result rows using an SQL statement.
  *
- * @param string SQL statement to execute.
- * @param bool If want to search in history database also
- * @param bool If want to use cache (true by default)
+ * @param string  $sql               SQL statement to execute.
+ * @param boolean $search_history_db If want to search in history database also.
+ * @param boolean $cache             If want to use cache (true by default).
+ * @param mixed   $dbconnection      Use custom database connection (false default).
  *
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, $dbconnection=false)
-{
+function db_get_all_rows_sql(
+    $sql,
+    $search_history_db=false,
+    $cache=true,
+    $dbconnection=false
+) {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
+        default:
         return mysql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 
-            break;
         case 'postgresql':
         return postgresql_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
 
-            break;
         case 'oracle':
         return oracle_db_get_all_rows_sql($sql, $search_history_db, $cache, $dbconnection);
-
-            break;
     }
 }
 
@@ -1320,20 +1360,55 @@ function db_process_sql($sql, $rettype='affected_rows', $dbconnection='', $cache
 {
     global $config;
 
+    $rc = false;
     switch ($config['dbtype']) {
         case 'mysql':
-        return @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
+        default:
+            $rc = @mysql_db_process_sql($sql, $rettype, $dbconnection, $cache);
+        break;
 
-            break;
         case 'postgresql':
-        return @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
+            $rc = @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
+        break;
 
-            break;
         case 'oracle':
-        return oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
-
-            break;
+            $rc = oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
+        break;
     }
+
+    if ($rc !== false) {
+        if (enterprise_hook('is_metaconsole') === true
+            && isset($config['centralized_management']) === true
+            && (bool) $config['centralized_management'] === true
+            && $dbconnection === ''
+        ) {
+            $errors = null;
+            try {
+                // Synchronize changes to nodes if needed.
+                $sync = new Synchronizer();
+                if ($sync !== null) {
+                    if ($sync->queue($sql) === false) {
+                        // Launch events per failed query.
+                        $errors = $sync->getLatestErrors();
+                        if ($errors !== null) {
+                            $errors = join(', ', $errors);
+                        } else {
+                            $errors = '';
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                $errors = $e->getMessage();
+            }
+
+            if ($errors !== null) {
+                // TODO: Generate pandora event.
+                error_log($errors);
+            }
+        }
+    }
+
+    return $rc;
 }
 
 
@@ -2110,6 +2185,48 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
 
 
 /**
+ * Checks if a lock is free or not.
+ *
+ * @param string $lockname Name.
+ *
+ * @return boolean Free or not.
+ */
+function db_is_free_lock($lockname)
+{
+    global $config;
+
+    $restore = false;
+    // Temporary disable to get a valid lock if any...
+    if (isset($config['dbcache']) === false) {
+        // Set.
+        $config['dbcache'] = false;
+    } else {
+        // Set and keep.
+        $cache = $config['dbcache'];
+        $config['dbcache'] = false;
+        $restore = true;
+    }
+
+    $lock_status = db_get_value_sql(
+        sprintf(
+            'SELECT IS_FREE_LOCK("%s")',
+            $lockname
+        )
+    );
+
+    if ($restore === true) {
+        // Restore.
+        $config['dbcache'] = $cache;
+    } else {
+        // Remove.
+        unset($config['dbcache']);
+    }
+
+    return (bool) $lock_status;
+}
+
+
+/**
  * Tries to get a lock with current name.
  *
  * @param string  $lockname        Lock name.
@@ -2119,8 +2236,17 @@ function db_check_minor_relase_available_to_um($package, $ent, $offline)
  *                 0 - already locked by another process.
  *                 NULL: something really bad happened
  */
-function db_get_lock($lockname, $expiration_time=86400)
+function db_get_lock(string $lockname, int $expiration_time=86400) :?int
 {
+    global $config;
+
+    // Temporary disable to get a valid lock if any...
+    if (isset($config['dbcache']) === true) {
+        $cache = $config['dbcache'];
+    }
+
+    $config['dbcache'] = false;
+
     $lock_status = db_get_value_sql(
         sprintf(
             'SELECT IS_FREE_LOCK("%s")',
@@ -2137,7 +2263,23 @@ function db_get_lock($lockname, $expiration_time=86400)
             )
         );
 
-        return $lock_status;
+        if (isset($cache) === true) {
+            $config['dbcache'] = $cache;
+        } else {
+            unset($config['dbcache']);
+        }
+
+        if ($lock_status === false) {
+            return null;
+        }
+
+        return (int) $lock_status;
+    }
+
+    if (isset($cache) === true) {
+        $config['dbcache'] = $cache;
+    } else {
+        unset($config['dbcache']);
     }
 
     return 0;
@@ -2155,10 +2297,183 @@ function db_get_lock($lockname, $expiration_time=86400)
  */
 function db_release_lock($lockname)
 {
-    return db_get_value_sql(
+    global $config;
+    // Temporary disable to get a valid lock if any...
+    if (isset($config['dbcache']) === true) {
+        $cache = $config['dbcache'];
+    }
+
+    $config['dbcache'] = false;
+
+    $return = db_get_value_sql(
         sprintf(
             'SELECT RELEASE_LOCK("%s")',
             $lockname
         )
     );
+
+    if (isset($cache) === true) {
+        $config['dbcache'] = $cache;
+    } else {
+        unset($config['dbcache']);
+    }
+
+    return $return;
+
+}
+
+
+/**
+ * Inserts multiples strings into database
+ *
+ * @param string $table  Table to insert into
+ * @param mixed  $values A single value or array of values to insert
+ *  (can be a multiple amount of rows).
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function db_process_sql_insert_multiple($table, $values, $only_query=false)
+{
+    global $config;
+    return mysql_db_process_sql_insert_multiple($table, $values, $only_query);
+}
+
+
+/**
+ * Update multiples strings into database
+ *
+ * @param string $table  Table to update into
+ * @param mixed  $values A single value or array of values to update
+ *  (can be a multiple amount of rows).
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function db_process_sql_update_multiple($table, $values, $only_query=false)
+{
+    global $config;
+    return mysql_db_process_sql_update_multiple($table, $values, $only_query);
+}
+
+
+/**
+ * Is lock table.
+ *
+ * @param string $table Name table is Lock.
+ *
+ * @return boolean
+ */
+function db_get_lock_table($table)
+{
+    global $config;
+
+    if (empty($table) === true) {
+        return false;
+    }
+
+    $sql = sprintf(
+        'SHOW OPEN TABLES
+        WHERE `Table` = %s
+            AND `Database` = %s
+            AND `In_use` > 0',
+        $table,
+        $config['dbname']
+    );
+
+    $result = db_process_sql($sql);
+
+    return (bool) $result['In_use'];
+}
+
+
+/**
+ * Lock table.
+ *
+ * @param string  $table Table Name.
+ * @param integer $mode  READ or WRITE.
+ *
+ * @return boolean
+ */
+function db_lock_table($table, $mode='WRITE')
+{
+    global $config;
+
+    if (empty($table) === true) {
+        return false;
+    }
+
+    $sql = sprintf(
+        'LOCK TABLE %s %s',
+        $table,
+        $mode
+    );
+
+    $result = db_process_sql($sql);
+
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
+}
+
+
+/**
+ * Lock tables.
+ *
+ * @param array $tables ['name_table','mode'];
+ *
+ * @return boolean
+ */
+function db_lock_tables($tables)
+{
+    global $config;
+
+    if (empty($tables) === true) {
+        return false;
+    }
+
+    $sql = 'LOCK TABLES ';
+
+    $count_tables = count($tables);
+    foreach ($tables as $v) {
+        if ($count_tables === 1) {
+            $sql .= sprintf(
+                '%s %s',
+                $v['table'],
+                $v['mode']
+            );
+        } else {
+            $sql .= sprintf(
+                '%s %s, ',
+                $v['table'],
+                $v['mode']
+            );
+        }
+
+        $count_tables--;
+    }
+
+    $result = db_process_sql($sql);
+
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
+}
+
+
+/**
+ * Unlock tables.
+ */
+function db_unlock_tables()
+{
+    $result = db_process_sql('UNLOCK TABLES');
+    if ($result !== false) {
+        $result = true;
+    }
+
+    return $result;
 }

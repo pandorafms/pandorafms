@@ -160,6 +160,21 @@ class Tree
     }
 
 
+    /**
+     * Show disabled modules
+     *
+     * @return string Sql disabled.
+     */
+    protected function getDisabledFilter()
+    {
+        if (empty($this->filter['showDisabled'])) {
+            return ' tam.disabled = 0 AND ta.disabled = 0';
+        }
+
+        return ' 1 = 1';
+    }
+
+
     protected function getAgentStatusFilter($status=self::TV_DEFAULT_AGENT_STATUS)
     {
         if ($status == self::TV_DEFAULT_AGENT_STATUS) {
@@ -279,8 +294,10 @@ class Tree
 
     protected function getTagJoin()
     {
-        return 'INNER JOIN ttag_module ttm
-			ON tam.id_agente_modulo = ttm.id_agente_modulo';
+        return 'INNER JOIN tagente_modulo tam 
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN ttag_module ttm
+			        ON tam.id_agente_modulo = ttm.id_agente_modulo';
     }
 
 
@@ -931,11 +948,16 @@ class Tree
         $agent_status_filter = $this->getAgentStatusFilter();
         $module_search_filter = $this->getModuleSearchFilter();
         $module_status_inner = '';
-        $module_status_filter = $this->getModuleStatusFilterFromTestado();
-        if (!empty($module_status_filter)) {
-            $module_status_inner = '
-				INNER JOIN tagente_estado tae
-					ON tae.id_agente_modulo = tam.id_agente_modulo';
+        $module_search_inner = '';
+        $module_search_filter = '';
+        if (!empty($this->filter['searchModule'])) {
+            $module_search_inner = '
+                INNER JOIN tagente_modulo tam
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagente_estado tae
+                    ON tae.id_agente_modulo = tam.id_agente_modulo';
+            $module_search_filter = "AND tam.disabled = 0
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM
@@ -944,13 +966,11 @@ class Tree
 					FROM tagente ta
 					LEFT JOIN tagent_secondary_group tasg
 						ON ta.id_agente = tasg.id_agent
-					INNER JOIN tagente_modulo tam
-						ON ta.id_agente = tam.id_agente
 					$inner_inside
 					$module_status_inner
 					$group_inner
+                    $module_search_inner
 					WHERE ta.disabled = 0
-						AND tam.disabled = 0
 						%s
 						$agent_search_filter
 						$agent_status_filter
@@ -1088,6 +1108,7 @@ class Tree
         $agent_filter = 'AND ta.id_agente = '.$this->id;
         $tag_condition = $this->getTagCondition();
         $tag_join = empty($tag_condition) && (!$this->L3forceTagCondition) ? '' : $this->getTagJoin();
+        $show_disabled = $this->getDisabledFilter();
 
         if ($this->avoid_condition === true) {
             $condition = '';
@@ -1101,6 +1122,10 @@ class Tree
 			tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos,
 			tam.parent_module_id AS parent, tatm.id AS alerts, tam.unit';
 
+        if ($show_disabled) {
+            $columns .= ', tam.disabled';
+        }
+
         $sql = "SELECT $columns
 			FROM tagente_modulo tam
 			$tag_join
@@ -1113,13 +1138,15 @@ class Tree
 			LEFT JOIN talert_template_modules tatm
 				ON tatm.id_agent_module = tam.id_agente_modulo
 			$inner
-			WHERE tam.disabled = 0 AND ta.disabled = 0
+            WHERE
+			$show_disabled
 				$condition
 				$agent_filter
 				$group_acl
 				$agent_search_filter
 				$agent_status_filter
 				$module_search_filter
+                $module_status_filter
 				$tag_condition
             GROUP BY tam.id_agente_modulo
             ORDER BY tam.nombre ASC, tam.id_agente_modulo ASC";

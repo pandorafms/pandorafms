@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210504';
-$pandora_version = 'v7.0NG.754';
+$build_version = 'PC210721';
+$pandora_version = 'v7.0NG.755';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -93,6 +93,8 @@ if (!isset($config['dbport'])) {
 require_once $ownDir.'constants.php';
 require_once $ownDir.'functions_db.php';
 require_once $ownDir.'functions.php';
+require_once $ownDir.'functions_io.php';
+
 
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default

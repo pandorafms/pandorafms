@@ -17,6 +17,9 @@
  * @param {function | null} onUpdate Callback which will be execuded when the Visual Console.
  * is updated. It will receive two arguments with the old and the new Visual Console's
  * data structure.
+ * @param {string|null} id_user User id given for public access.
+ * @param {string|null} hash Authorization hash given for public access.
+ *
  * @return {VisualConsole | null} The Visual Console instance or a null value.
  */
 // eslint-disable-next-line no-unused-vars
@@ -28,7 +31,9 @@ function createVisualConsole(
   updateInterval,
   onUpdate,
   beforeUpdate,
-  size
+  size,
+  id_user,
+  hash
 ) {
   if (container == null || props == null || items == null) return null;
   if (baseUrl == null) baseUrl = "";
@@ -46,6 +51,8 @@ function createVisualConsole(
           baseUrl,
           visualConsoleId,
           size,
+          id_user,
+          hash,
           function(error, data) {
             if (error) {
               //Remove spinner change VC.
@@ -69,7 +76,7 @@ function createVisualConsole(
                 "[API]",
                 error.message
               );
-              done();
+              abortable.abort();
               return;
             }
 
@@ -510,6 +517,9 @@ function createVisualConsole(
         case "NETWORK_LINK":
           type = 21;
           break;
+        case "ODOMETER":
+          type = 22;
+          break;
         default:
           type = 0;
       }
@@ -651,6 +661,8 @@ function createVisualConsole(
  * Fetch a Visual Console's structure and its items.
  * @param {string} baseUrl Base URL to build the API path.
  * @param {number} vcId Identifier of the Visual Console.
+ * @param {string|null} id_user User id given for public access.
+ * @param {string|null} hash Authorization hash given for public access.
  * @param {function} callback Function to be executed on request success or fail.
  * On success, the function will receive an object with the next properties:
  * - `props`: object with the Visual Console's data structure.
@@ -658,7 +670,7 @@ function createVisualConsole(
  * @return {Object} Cancellable. Object which include and .abort([statusText]) function.
  */
 // eslint-disable-next-line no-unused-vars
-function loadVisualConsoleData(baseUrl, vcId, size, callback) {
+function loadVisualConsoleData(baseUrl, vcId, size, id_user, hash, callback) {
   // var apiPath = baseUrl + "/include/rest-api";
   var apiPath = baseUrl + "/ajax.php";
   var vcJqXHR = null;
@@ -720,12 +732,21 @@ function loadVisualConsoleData(baseUrl, vcId, size, callback) {
       {
         page: "include/rest-api/index",
         getVisualConsole: 1,
-        visualConsoleId: vcId
+        visualConsoleId: vcId,
+        id_user: typeof id_user == undefined ? id_user : null,
+        auth_hash: typeof hash == undefined ? hash : null
       },
       "json"
     )
     .done(handleSuccess("props"))
     .fail(handleFail);
+
+  var queryString = new URLSearchParams(window.location.search);
+  var widthScreen = 0;
+  if (queryString.get("width")) {
+    widthScreen = document.body.offsetWidth;
+  }
+
   // Visual Console items request.
   itemsJqXHR = jQuery
     // .get(apiPath + "/visual-consoles/" + vcId + "/items", null, "json")
@@ -735,7 +756,10 @@ function loadVisualConsoleData(baseUrl, vcId, size, callback) {
         page: "include/rest-api/index",
         getVisualConsoleItems: 1,
         size: size,
-        visualConsoleId: vcId
+        visualConsoleId: vcId,
+        id_user: typeof id_user == undefined ? id_user : null,
+        auth_hash: typeof hash == undefined ? hash : null,
+        widthScreen: widthScreen
       },
       "json"
     )
@@ -1212,6 +1236,9 @@ function createOrUpdateVisualConsoleItem(
       break;
     case 21:
       nameType = "Network Link";
+      break;
+    case 22:
+      nameType = "Odometer";
       break;
 
     default:

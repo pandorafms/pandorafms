@@ -1,18 +1,37 @@
 <?php
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Login check
+/**
+ * Extension to manage a list of gateways and the node address where they should
+ * point to.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
 global $config;
 global $statusProcessInDB;
+
+use PandoraFMS\User;
 
 check_login();
 
@@ -132,6 +151,7 @@ switch ($activeTab) {
                 $height = '';
                 $visualConsoleName = '';
                 $is_favourite = 0;
+                $auto_adjust = 0;
             break;
 
             case 'update':
@@ -143,6 +163,7 @@ switch ($activeTab) {
                 $height = (int) get_parameter('height');
                 $visualConsoleName = (string) get_parameter('name');
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
+                $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
                 // ACL for the new visual console
                 // $vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
@@ -167,6 +188,7 @@ switch ($activeTab) {
                     'width'            => $width,
                     'height'           => $height,
                     'is_favourite'     => $is_favourite,
+                    'auto_adjust'      => $auto_adjust,
                 ];
 
                 $error = $_FILES['background_image']['error'];
@@ -334,6 +356,7 @@ switch ($activeTab) {
                 $width = $visualConsole['width'];
                 $height = $visualConsole['height'];
                 $is_favourite = $visualConsole['is_favourite'];
+                $auto_adjust = $visualConsole['auto_adjust'];
             break;
         }
     break;
@@ -753,8 +776,8 @@ if (!defined('METACONSOLE')) {
     $url_view = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$idVisualConsole.'&refr='.$view_refresh;
 }
 
-// Hash for auto-auth in public link
-$hash = md5($config['dbpass'].$idVisualConsole.$config['id_user']);
+// Hash for auto-auth in public link.
+$hash = User::generatePublicHash();
 
 $buttons = [];
 
@@ -810,14 +833,25 @@ $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
 
-if (!defined('METACONSOLE')) {
-    ui_print_page_header(
+if (is_metaconsole() === false) {
+    // Header.
+    ui_print_standard_header(
         $visualConsoleName,
         'images/visual_console.png',
         false,
         $tab_builder,
         false,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Topology maps'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Visual console'),
+            ],
+        ]
     );
 }
 

@@ -63,15 +63,8 @@ if ($agent === false) {
     return;
 }
 
-$is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-if ($is_extra === ENTERPRISE_NOT_HOOK) {
-    $is_extra = false;
-}
-
 if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')
-    && !$is_extra
 ) {
     db_pandora_audit(
         'ACL Violation',
@@ -137,7 +130,7 @@ if ($agent['disabled']) {
 
 if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     $agent_name .= '<em>&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';
@@ -145,7 +138,7 @@ if ($in_planned_downtime && !$agent['disabled'] && !$agent['quiet']) {
     || ($in_planned_downtime && !$agent['quiet'])
 ) {
     $agent_name .= '&nbsp;'.ui_print_help_tip(
-        __('Agent in planned downtime'),
+        __('Agent in scheduled downtime'),
         true,
         'images/minireloj-16.png'
     ).'</em>';

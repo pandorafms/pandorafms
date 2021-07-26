@@ -160,7 +160,7 @@ $pure = get_parameter('pure', 0);
 $schedule_report = get_parameter('schbutton', '');
 $pagination = (int) get_parameter('pagination', $config['block_size']);
 
-if ($action == 'edit' && $idReport > 0) {
+if ($action === 'edit' && $idReport > 0) {
     $report_group = db_get_value(
         'id_group',
         'treport',
@@ -271,6 +271,8 @@ if ($idReport != 0) {
         }
     }
 }
+
+$helpers = ($helpers ?? '');
 
 switch ($action) {
     case 'sort_items':
@@ -449,6 +451,14 @@ switch ($action) {
         } else {
             $resultOperationDB = false;
         }
+
+        header(
+            sprintf(
+                'Location: %sindex.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=%d',
+                $config['homeurl'],
+                $idReport
+            )
+        );
     break;
 
     case 'delete_items_pos':
@@ -512,6 +522,7 @@ switch ($action) {
         }
     break;
 
+    case 'copy_report':
     case 'delete_report':
     case 'list':
         $buttons = [
@@ -548,7 +559,7 @@ switch ($action) {
 
                 $subsection = $data_tab['subsection'];
                 $buttons = $data_tab['buttons'];
-                $helpers = $data_tab['helpers'];
+                $helpers = $data_tab['helper'];
             break;
         }
 
@@ -567,17 +578,24 @@ switch ($action) {
             // Print header.
             ui_meta_print_header(__('Reporting'), '', $buttons);
         } else {
-            // Page header for normal console.
-            ui_print_page_header(
-                __('Custom reporting'),
+            // Header.
+            ui_print_standard_header(
+                __('List of reports'),
                 'images/op_reporting.png',
                 false,
                 '',
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
 
@@ -654,6 +672,81 @@ switch ($action) {
                 $result,
                 __('Successfully deleted'),
                 __('Could not be deleted')
+            );
+        }
+
+        if ($action === 'copy_report') {
+            $copy = false;
+            switch ($type_access_selected) {
+                case 'group_view':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                        // Owner can delete.
+                    } else {
+                        $copy = check_acl(
+                            $config['id_user'],
+                            $report['id_group'],
+                            'RM'
+                        );
+                    }
+                break;
+
+                case 'group_edit':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                        // Owner can delete.
+                    } else {
+                        $copy = check_acl(
+                            $config['id_user'],
+                            $report['id_group'],
+                            'RM'
+                        );
+                    }
+                break;
+
+                case 'user_edit':
+                    if ($config['id_user'] == $report['id_user']
+                        || is_user_admin($config['id_user'])
+                    ) {
+                        $copy = true;
+                    }
+                break;
+
+                default:
+                    // Default.
+                break;
+            }
+
+            if (! $copy && !empty($type_access_selected)) {
+                db_pandora_audit(
+                    'ACL Violation',
+                    'Trying to access report builder copy'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
+            $result = reports_copy_report($idReport);
+            if ($result !== false) {
+                db_pandora_audit(
+                    'Report management',
+                    'Copy report #'.$idReport
+                );
+            } else {
+                db_pandora_audit(
+                    'Report management',
+                    'Fail try to copy report #'.$idReport
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully copied'),
+                __('Could not be copied')
             );
         }
 
@@ -1091,6 +1184,27 @@ switch ($action) {
                         );
                         $data[$next] .= '</form>';
                     }
+
+                    $data[$next] .= '<form method="post" style="display: inline"; onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+                    $data[$next] .= html_print_input_hidden(
+                        'id_report',
+                        $report['id_report'],
+                        true
+                    );
+                    $data[$next] .= html_print_input_hidden(
+                        'action',
+                        'copy_report',
+                        true
+                    );
+                    $data[$next] .= html_print_input_image(
+                        'dup',
+                        'images/copy.png',
+                        1,
+                        '',
+                        true,
+                        ['title' => __('Duplicate')]
+                    );
+                    $data[$next] .= '</form> ';
 
                     if ($delete) {
                         $data[$next] .= '<form method="post" class="inline_line" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
@@ -2100,6 +2214,20 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
+                                $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2486,7 +2614,7 @@ switch ($action) {
                             0
                         );
                         $values['exception_condition'] = (int) get_parameter(
-                            'radiobutton_exception_condition',
+                            'exception_condition',
                             0
                         );
                         $values['exception_condition_value'] = get_parameter(
@@ -2722,6 +2850,20 @@ switch ($action) {
                                 $es['users_groups'] = get_parameter('users_groups', 0);
                                 $es['select_by_group'] = get_parameter('select_by_group', 0);
                                 $description = get_parameter('description');
+                                $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'agents_inventory':
+                                $es['agent_server_filter'] = get_parameter('agent_server_filter');
+                                $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_status_filter'] = get_parameter('agent_status_filter');
+                                $es['agent_version_filter'] = get_parameter('agent_version_filter');
+                                $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
+                                $es['agent_group_filter'] = get_parameter('agent_group_filter');
+                                $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
+
                                 $values['external_source'] = json_encode($es);
                             break;
 
@@ -3145,17 +3287,24 @@ switch ($action) {
                 // Print header.
                 ui_meta_print_header(__('Reporting'), '', $buttons);
             } else {
-                // Page header for normal console.
-                ui_print_page_header(
+                // Header.
+                ui_print_standard_header(
                     $subsection,
                     'images/op_reporting.png',
                     false,
                     '',
                     false,
                     $buttons,
-                    false,
-                    '',
-                    60
+                    [
+                        [
+                            'link'  => '',
+                            'label' => __('Reporting'),
+                        ],
+                        [
+                            'link'  => '',
+                            'label' => __('Custom reports'),
+                        ],
+                    ]
                 );
             }
 
@@ -3209,7 +3358,7 @@ if ($enterpriseEnable) {
 $buttons['view'] = [
     'active' => false,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$idReport.'&pure='.$pure.'">'.html_print_image(
-        'images/operation.png',
+        'images/eye.png',
         true,
         [
             'title' => __('View report'),
@@ -3251,17 +3400,25 @@ if ($enterpriseEnable && defined('METACONSOLE')) {
 } else {
     $tab_builder = ($activeTab === 'item_editor') ? 'reporting_item_editor_tab' : '';
 
-    if ($action !== 'update' && !is_metaconsole()) {
-        ui_print_page_header(
+    if ($action !== 'update' && is_metaconsole() === false) {
+        // Header.
+        ui_print_standard_header(
             $textReportName,
             'images/op_reporting.png',
             false,
             $tab_builder,
             false,
             $buttons,
-            false,
-            '',
-            60
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Reporting'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Custom reports'),
+                ],
+            ]
         );
     }
 }
@@ -3291,17 +3448,25 @@ if ($resultOperationDB !== null) {
         $activeTab = 'list_items';
         $buttons[$activeTab]['active'] = true;
 
-        if (!is_metaconsole()) {
-            ui_print_page_header(
+        if (is_metaconsole() === false) {
+            // Header.
+            ui_print_standard_header(
                 $textReportName,
                 'images/op_reporting.png',
                 false,
-                $helpers,
+                '',
                 false,
                 $buttons,
-                false,
-                '',
-                60
+                [
+                    [
+                        'link'  => '',
+                        'label' => __('Reporting'),
+                    ],
+                    [
+                        'link'  => '',
+                        'label' => __('Custom reports'),
+                    ],
+                ]
             );
         }
     }

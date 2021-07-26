@@ -898,7 +898,7 @@ class HostDevices extends Wizard
                                 ],
                                 [
                                     'label'     => '<b>'.__('Networks (current)').':</b>'.ui_print_help_tip(
-                                        __('Plese upload a new file to overwrite this content.'),
+                                        __('Please upload a new file to overwrite this content.'),
                                         true
                                     ),
                                     'arguments' => [

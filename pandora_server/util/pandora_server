@@ -33,6 +33,8 @@ fi
 
 export PANDORA_HOME="/etc/pandora/pandora_server.conf"
 export PANDORA_DAEMON=/usr/bin/pandora_server
+export PANDORA_HA=/usr/bin/pandora_ha
+export PID_DIR=/var/run
 
 # Environment variables
 if [ -f /etc/pandora/pandora_server.env ]; then
@@ -83,6 +85,16 @@ function pidof_pandora () {
 	echo $PANDORA_PID
 }
 
+function pidof_pandora_ha () {
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	PANDORA_PID=`ps aux | grep "$PANDORA_HA -d -p $PID_DIR/pandora_ha.pid $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	echo $PANDORA_PID
+}
+
+
 # Main script
 
 if [ ! -f $PANDORA_DAEMON ]
@@ -94,6 +106,73 @@ fi
 
 case "$1" in
 	start)
+		PANDORA_PID=`pidof_pandora_ha`
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "$PANDORA_RB_PRODUCT_NAME Server is currently running on this machine with PID ($PANDORA_PID)."
+			rc_exit # running start on a service already running
+		fi
+
+		export PERL_LWP_SSL_VERIFY_HOSTNAME=0
+		$PANDORA_HA -d -p $PID_DIR/pandora_ha.pid $PANDORA_HOME
+		sleep 1
+
+		PANDORA_PID=`pidof_pandora_ha`
+		
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "$PANDORA_RB_PRODUCT_NAME Server is now running with PID $PANDORA_PID"
+			rc_status -v
+		else
+			echo "Cannot start $PANDORA_RB_PRODUCT_NAME HA. Aborted."
+			echo "Check $PANDORA_RB_PRODUCT_NAME log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
+			rc_failed 7 # program is not running
+		fi
+	;;
+		
+	stop)
+		PANDORA_PID=`pidof_pandora_ha`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "$PANDORA_RB_PRODUCT_NAME HA is not running, cannot stop it."
+			rc_exit # running stop on a service already stopped or not running
+		else
+			echo "Stopping $PANDORA_RB_PRODUCT_NAME HA"
+			kill $PANDORA_PID > /dev/null 2>&1
+			COUNTER=0
+
+			while [ $COUNTER -lt $MAXWAIT ]
+	 		do
+ 				_PID=`pidof_pandora_ha`
+				if [ "$_PID" != "$PANDORA_PID" ]
+ 				then
+					COUNTER=$MAXWAIT
+				fi
+				COUNTER=`expr $COUNTER + 1`
+				sleep 1
+			done
+		
+			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
+			# to be sure is really dead, and not pretending...
+			if [ "$_PID" = "$PANDORA_PID" ]
+			then
+				kill -9 $PANDORA_PID   > /dev/null 2>&1
+			fi
+			rc_status -v
+		fi
+	;;
+	status)
+		PANDORA_PID=`pidof_pandora_ha`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "$PANDORA_RB_PRODUCT_NAME HA is not running."
+			rc_failed 7 # program is not running
+		else
+			echo "$PANDORA_RB_PRODUCT_NAME HA is running with PID $PANDORA_PID."
+			rc_status
+		fi
+	;;
+	start-server)
 		PANDORA_PID=`pidof_pandora`
 		if [ ! -z "$PANDORA_PID" ]
 		then
@@ -118,7 +197,7 @@ case "$1" in
 		fi
 	;;
 		
-	stop)
+	stop-server)
 		PANDORA_PID=`pidof_pandora`
 		if [ -z "$PANDORA_PID" ]
 		then
@@ -149,7 +228,7 @@ case "$1" in
 			rc_status -v
 		fi
 	;;
-	status)
+	status-server)
 		PANDORA_PID=`pidof_pandora`
 		if [ -z "$PANDORA_PID" ]
 		then
@@ -160,12 +239,16 @@ case "$1" in
 			rc_status
 		fi
 	;;
+	force-reload-server|restart-server)
+		$0 stop-server
+		$0 start-server
+	;;
 	force-reload|restart)
 		$0 stop
 		$0 start
 		;;
 	*)
-		echo "Usage: pandora_server { start | stop | restart | status }"
+		echo "Usage: pandora_server { start | stop | restart | status | start-server | stop-server | restart-server }"
 		exit 1
 esac
 rc_exit

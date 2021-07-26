@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * User edit.
  *
- * @category   Extensions
+ * @category   Users
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -29,10 +28,11 @@
 
 global $config;
 
+$headerTitle = __('User detail editor');
 // Load the header.
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     date_default_timezone_set('UTC');
     include 'include/javascript/timezonepicker/includes/parser.inc';
 
@@ -81,32 +81,10 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['id_skin'] = get_parameter('skin', $user_info['id_skin']);
     $upd_info['default_event_filter'] = get_parameter('event_filter', null);
     $upd_info['block_size'] = get_parameter('block_size', $config['block_size']);
-    $upd_info['middlename'] = get_parameter_switch('newsletter_reminder', $user_info['middlename']);
+
     $default_block_size = get_parameter('default_block_size', 0);
     if ($default_block_size) {
         $upd_info['block_size'] = 0;
-    }
-
-    if ($upd_info['middlename'] == 1) {
-        // User wants to enable newsletter reminders.
-        if ($user_info['middlename'] > 0) {
-            // User has already registered!. No sense.
-            $upd_info['middlename'] = $user_info['middlename'];
-        } else {
-            // Force subscription reminder.
-            $upd_info['middlename'] = 0;
-        }
-    }
-
-    if ($upd_info['middlename'] == 0 || $upd_info['middlename'] == 0) {
-        // Switch is ON. user had not registered.
-        $newsletter_reminder_value = 1;
-    } else if ($upd_info['middlename'] < 1) {
-        // Switch is OFF. User do not want to register.
-        $newsletter_reminder_value = 0;
-    } else if ($upd_info['middlename'] > 0) {
-        // Switc is OFF. User is already registered!
-        $newsletter_reminder_value = 0;
     }
 
     $upd_info['section'] = get_parameter('section', $user_info['section']);
@@ -127,7 +105,8 @@ if (isset($_GET['modified']) && !$view_mode) {
     $upd_info['ehorus_user_level_pass'] = get_parameter('ehorus_user_level_pass');
     $upd_info['ehorus_user_level_enabled'] = get_parameter('ehorus_user_level_enabled', 0);
 
-
+    $upd_info['integria_user_level_user'] = get_parameter('integria_user_level_user');
+    $upd_info['integria_user_level_pass'] = get_parameter('integria_user_level_pass');
 
     $is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 
@@ -144,7 +123,7 @@ if (isset($_GET['modified']) && !$view_mode) {
         $upd_info['data_section'] = $visual_console;
     }
 
-    if (!empty($password_new)) {
+    if (empty($password_new) === false) {
         $correct_password = false;
 
         $user_credentials_check = process_user_login($config['id_user'], $current_password, true);
@@ -251,8 +230,21 @@ if ($status != -1) {
     );
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     echo '<div class="user_form_title">'.__('Edit my User').'</div>';
+}
+
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All users information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
+    );
 }
 
 
@@ -451,26 +443,6 @@ if (check_acl($config['id_user'], 0, 'ER')) {
     ).'</div>';
 }
 
-if (!$config['disabled_newsletter']) {
-    $newsletter = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Subscribed').': </p>';
-    if ($user_info['middlename'] > 0) {
-        $newsletter .= '<span>'.__('Already subscribed to %s newsletter', get_product_name()).'</span>';
-    } else {
-        $newsletter .= '<span><a href="javascript: force_run_newsletter();">'.__('Subscribe to our newsletter').'</a></span></div>';
-        $newsletter_reminder = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Newsletter Reminder').': </p>';
-        $newsletter_reminder .= html_print_switch(
-            [
-                'name'     => 'newsletter_reminder',
-                'value'    => $newsletter_reminder_value,
-                'disabled' => false,
-            ]
-        );
-    }
-
-    $newsletter_reminder .= '</div>';
-}
-
-
 
 $autorefresh_list_out = [];
 if (is_metaconsole()) {
@@ -648,10 +620,12 @@ foreach ($timezones as $timezone_name => $tz) {
 }
 
 if (is_metaconsole()) {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup').'&amp;tab=user_edit&amp;modified=1&amp;pure='.$config['pure'].'">';
 } else {
-    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;id='.$id.'&amp;pure='.$config['pure'].'">';
+    echo '<form name="user_mod" method="post" action="'.ui_get_full_url('index.php?sec=workspace&sec2=operation/users/user_edit').'&amp;modified=1&amp;pure='.$config['pure'].'">';
 }
+
+    html_print_input_hidden('id', $id, false, false, false, 'id');
 
     echo '<div id="user_form">
             <div class="user_edit_first_row">
@@ -662,7 +636,7 @@ if (is_metaconsole()) {
                 <div class="edit_user_autorefresh white_box">'.$autorefresh_show.$time_autorefresh.'</div>
             </div> 
             <div class="user_edit_second_row white_box">
-                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$newsletter.$newsletter_reminder.$double_authentication.'</div>
+                <div class="edit_user_options">'.$language.$size_pagination.$skin.$home_screen.$event_filter.$double_authentication.'</div>
                 <div class="edit_user_timezone">'.$timezone;
 
 
@@ -683,7 +657,7 @@ if (!is_metaconsole()) {
         </div>';
 
 if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
-    // eHorus user remote login
+    // EHorus user remote login.
     $table_remote = new StdClass();
     $table_remote->data = [];
     $table_remote->width = '100%';
@@ -692,13 +666,12 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $table_remote->size['name'] = '30%';
     $table_remote->style['name'] = 'font-weight: bold';
 
-
-    // Title
+    // Title.
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
     $table_remote->data['ehorus_user_level_conf'] = $row;
 
-    // Enable/disable eHorus for this user
+    // Enable/disable eHorus for this user.
     $row = [];
     $row['name'] = __('eHorus user acces enabled');
     $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
@@ -729,33 +702,81 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $row['control'] .= '<span id="test-ehorus-message" class="invisible"></span>';
     $table_remote->data['ehorus_test'] = $row;
 
-    echo '<div class="ehorus_user_conf">';
-
+    echo '<div class="ehorus_user_conf user_edit_fourth_row">';
     html_print_table($table_remote);
      echo '</div>';
 }
 
+if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
+    // Integria IMS user remote login.
+    $table_remote = new StdClass();
+    $table_remote->data = [];
+    $table_remote->width = '100%';
+    $table_remote->id = 'integria-remote-setup';
+    $table_remote->class = 'white_box';
+    $table_remote->size['name'] = '30%';
+    $table_remote->style['name'] = 'font-weight: bold';
 
-echo '<div class="edit_user_button">';
-if (!$config['user_can_update_info']) {
-    echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
-} else {
-    html_print_csrf_hidden();
-    html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+    // Integria IMS user level authentication.
+    // Title.
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
+    $table_remote->data['integria_user_level_conf'] = $row;
+
+    // Integria IMS user.
+    $row = [];
+    $row['name'] = __('User');
+    $row['control'] = html_print_input_text('integria_user_level_user', $user_info['integria_user_level_user'], '', 30, 100, true);
+    $table_remote->data['integria_user_level_user'] = $row;
+
+    // Integria IMS pass.
+    $row = [];
+    $row['name'] = __('Password');
+    $row['control'] = html_print_input_password('integria_user_level_pass', io_output_password($user_info['integria_user_level_pass']), '', 30, 100, true);
+    $table_remote->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $integria_host = db_get_value('value', 'tconfig', 'token', 'integria_hostname');
+    $integria_api_pass = db_get_value('value', 'tconfig', 'token', 'integria_api_pass');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(__('Start'), 'test-integria', false, 'integria_connection_test(&quot;'.$integria_host.'&quot;,'.$integria_api_pass.')', 'class="sub next"', true);
+    $row['control'] .= '&nbsp;<span id="test-integria-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="test-integria-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="test-integria-message" class="invisible"></span>';
+    $table_remote->data['integria_test'] = $row;
+
+    echo '<div class="integria_user_conf">';
+    html_print_table($table_remote);
+    echo '</div>';
 }
 
+
+if ($is_management_allowed === true) {
+    echo '<div class="edit_user_button">';
+    if (!$config['user_can_update_info']) {
+        echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
+    } else {
+        html_print_csrf_hidden();
+        html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+    }
+
     echo '</div>';
-    echo '</form>';
+}
+
+echo '</form>';
 
 echo '<div id="edit_user_profiles" class="white_box">';
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     echo '<p class="edit_user_labels">'.__('Profiles/Groups assigned to this user').'</p>';
 }
 
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'info_table';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->width = '100%';
     $table->class = 'databox data';
     $table->title = __('Profiles/Groups assigned to this user');
@@ -770,7 +791,7 @@ $table->head = [];
 $table->align = [];
 $table->style = [];
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $table->style[0] = 'font-weight: bold';
     $table->style[1] = 'font-weight: bold';
 }
@@ -821,7 +842,7 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     ?>
 
     <style>
@@ -1272,6 +1293,77 @@ function ehorus_connection_test(host, port) {
             else {
                 changeTestMessage(errorThrown);
             }
+            showMessage();
+        })
+        .always(function(xhr, textStatus) {
+            hideLoadingImage();
+        });
+    }
+
+function integria_connection_test(api_hostname, api_pass) {
+        var user = $('input#text-integria_user_level_user').val();
+        var pass = $('input#password-integria_user_level_pass').val();
+
+        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
+        var notFoundMessage = '<?php echo __('User not found'); ?>';
+        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
+        
+        var hideLoadingImage = function () {
+            $('#test-integria-spinner').hide();
+        }
+        var showLoadingImage = function () {
+            $('#test-integria-spinner').show();
+        }
+        var hideSuccessImage = function () {
+            $('#test-integria-success').hide();
+        }
+        var showSuccessImage = function () {
+            $('#test-integria-success').show();
+        }
+        var hideFailureImage = function () {
+            $('#test-integria-failure').hide();
+        }
+        var showFailureImage = function () {
+            $('#test-integria-failure').show();
+        }
+        var hideMessage = function () {
+            $('#test-integria-message').hide();
+        }
+        var showMessage = function () {
+            $('#test-integria-message').show();
+        }
+        var changeTestMessage = function (message) {
+            $('#test-integria-message').text(message);
+        }
+        
+        hideSuccessImage();
+        hideFailureImage();
+        hideMessage();
+        showLoadingImage();
+
+        $.ajax({
+            url: "ajax.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                page: 'godmode/setup/setup_integria',
+                operation: 'check_api_access',
+                integria_user: user,
+                integria_pass: pass,
+                api_hostname: api_hostname,
+                api_pass: api_pass,
+            }
+        })
+        .done(function(data, textStatus, xhr) {
+            if (data.login == '1') {
+                showSuccessImage();
+            } else {
+                showFailureImage();
+                showMessage();
+            }
+        })
+        .fail(function(xhr, textStatus, errorThrown) {
+            showFailureImage();
             showMessage();
         })
         .always(function(xhr, textStatus) {

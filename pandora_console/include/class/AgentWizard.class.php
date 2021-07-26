@@ -312,7 +312,7 @@ class AgentWizard extends HTML
         $this->idPolicy = get_parameter('id', '');
         $this->targetIp = get_parameter('targetIp', '');
 
-        if (!empty($this->idAgent)) {
+        if (empty($this->idAgent) === false) {
             $array_aux = db_get_all_rows_sql(
                 sprintf(
                     'SELECT ip FROM taddress ta
@@ -644,20 +644,6 @@ class AgentWizard extends HTML
                     'return'      => true,
                 ],
             ];
-
-            if (empty($this->idPolicy) === true) {
-                $inputs[] = [
-                    'label'     => __('Use agent IP'),
-                    'id'        => 'txt-use-agent-ip',
-                    'arguments' => [
-                        'name'        => 'use-agent-ip',
-                        'input_class' => 'flex-row',
-                        'type'        => 'checkbox',
-                        'class'       => '',
-                        'return'      => true,
-                    ],
-                ];
-            }
         }
 
         if ($this->actionType === 'wmi') {
@@ -1186,7 +1172,7 @@ class AgentWizard extends HTML
             [
                 'arguments' => [
                     'type'   => 'hidden',
-                    'value'  => json_encode($candidateModules),
+                    'value'  => htmlspecialchars(json_encode($candidateModules)),
                     'return' => true,
                     'name'   => 'modules-definition',
                 ],
@@ -1582,6 +1568,10 @@ class AgentWizard extends HTML
                 if ($candidate['execution_type'] === 0
                     || $candidate['execution_type'] === EXECUTION_TYPE_NETWORK
                 ) {
+                    if (substr($candidate['value'], 0, 1) !== '.') {
+                        $candidate['value'] = '.'.$candidate['value'];
+                    }
+
                     if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
                         $values['id_module'] = MODULE_DATA;
                         $values['module_interval'] = 1;
@@ -1687,28 +1677,43 @@ class AgentWizard extends HTML
                             )
                         );
 
-                        if ($fieldsPlugin !== false) {
-                            $fieldsPlugin = json_decode($fieldsPlugin, true);
-                            $i = 1;
-                            foreach ($infoMacros as $key => $value) {
-                                if (empty(preg_match('/_snmp_field/', $key)) === false) {
-                                    $new_macros = [];
-                                    foreach ($fieldsPlugin as $k => $v) {
-                                        if ($v['macro'] === preg_replace('/_snmp_field/', '', $key)) {
-                                            $fieldsPlugin[$k]['value'] = $this->replacementMacrosPlugin(
-                                                $value,
-                                                $infoMacros['macros']
-                                            );
-                                            $i++;
-                                            continue;
+                        if ($this->wizardSection === 'snmp_interfaces_explorer'
+                            && empty($candidate['macros']) === false
+                        ) {
+                            // Use definition provided.
+                            $values['id_plugin'] = $candidate['id_plugin'];
+                            $values['macros'] = base64_decode($candidate['macros']);
+                        } else {
+                            $fieldsPlugin = db_get_value_sql(
+                                sprintf(
+                                    'SELECT macros FROM tplugin WHERE id=%d',
+                                    (int) $infoMacros['server_plugin']
+                                )
+                            );
+
+                            if ($fieldsPlugin !== false) {
+                                $fieldsPlugin = json_decode($fieldsPlugin, true);
+                                $i = 1;
+                                foreach ($infoMacros as $key => $value) {
+                                    if (empty(preg_match('/_snmp_field/', $key)) === false) {
+                                        $new_macros = [];
+                                        foreach ($fieldsPlugin as $k => $v) {
+                                            if ($v['macro'] === preg_replace('/_snmp_field/', '', $key)) {
+                                                $fieldsPlugin[$k]['value'] = $this->replacementMacrosPlugin(
+                                                    $value,
+                                                    $infoMacros['macros']
+                                                );
+                                                $i++;
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        $values['id_plugin'] = $infoMacros['server_plugin'];
-                        $values['macros'] = json_encode($fieldsPlugin);
+                            $values['id_plugin'] = $infoMacros['server_plugin'];
+                            $values['macros'] = json_encode($fieldsPlugin);
+                        }
                     }
                 }
             } else if ($this->protocol === 'wmi') {
@@ -1947,6 +1952,10 @@ class AgentWizard extends HTML
                     || $candidate['execution_type'] === EXECUTION_TYPE_NETWORK
                 ) {
                     if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
+                        if (substr($candidate['value'], 0, 1) !== '.') {
+                            $candidate['value'] = '.'.$candidate['value'];
+                        }
+
                         $tmp->module_interval(300);
                         $tmp->id_modulo(MODULE_DATA);
                         $tmp->updateConfigurationData(
@@ -2086,7 +2095,7 @@ class AgentWizard extends HTML
                         $tmp->id_modulo(MODULE_PLUGIN);
 
                         if ($this->wizardSection === 'snmp_interfaces_explorer'
-                            && empty($candidate['macros']) === true
+                            && empty($candidate['macros']) === false
                         ) {
                             // Use definition provided.
                             $tmp->id_plugin($candidate['id_plugin']);
@@ -5671,30 +5680,28 @@ class AgentWizard extends HTML
                     selectedBlock
                         .parent()
                         .removeClass("alpha50");
-                    if (selectedBlock.prop("checked")) {
+                        if (selectedBlock.prop("checked")) {
                         // Set to active the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
-                        .each(function(){
-                            $(this).val('1');
-                        });
-                        // Set checked.
-                        $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                            .each(function() {
-                                $(this).prop("checked", true);
-                            });
-                        imageInfoModules.removeClass('hidden');
-                    } else {
+                            for (i = 0; i<=15; i++) {
+                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 1;
+                            }
+                            // Set checked.
+                            $("[id*=checkbox-sel_module_" + blockNumber + "]")
+                                .each(function() {
+                                    $(this).prop("checked", true);
+                                });
+                            imageInfoModules.removeClass('hidden');
+                        } else {
                         // Set to inactive the values of fields.
-                        $("[id*=hidden-module-active-"+blockNumber+"]")
-                         .each(function(){
-                            $(this).val('0');
-                        });
-                        // Set unchecked.
-                        $("[id*=checkbox-sel_module_" + blockNumber + "]")
-                            .each(function() {
-                                $(this).prop("checked", false);
-                            });
-                        imageInfoModules.addClass('hidden');
+                            for (i = 0; i<=15; i++) {
+                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 0;
+                            }
+                            // Set unchecked.
+                            $("[id*=checkbox-sel_module_" + blockNumber + "]")
+                                .each(function() {
+                                    $(this).prop("checked", false);
+                                });
+                            imageInfoModules.addClass('hidden');
                     }
                 } else if (type == 'module') {
                     // Getting the element.

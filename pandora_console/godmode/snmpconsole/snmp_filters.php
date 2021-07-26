@@ -32,14 +32,35 @@ $index_post = (int) get_parameter('index_post', 0);
 // Create/update header
 if ($edit_filter > -2) {
     if ($edit_filter > -1) {
-        ui_print_page_header(__('SNMP Console').' &raquo; '.__('Update filter'), 'images/op_snmp.png', false, '', false);
+        $activeFilterCaption = ' &raquo; '.__('Update filter');
     } else {
-        ui_print_page_header(__('SNMP Console').' &raquo; '.__('Create filter'), 'images/op_snmp.png', false, '', false);
+        $activeFilterCaption = ' &raquo; '.__('Create filter');
     }
 } else {
     // Overview header
-    ui_print_page_header(__('SNMP Console').' &raquo; '.__('Filter overview'), 'images/op_snmp.png', false, '', false);
+    $activeFilterCaption = ' &raquo; '.__('Filter overview');
 }
+
+// Header.
+ui_print_standard_header(
+    __('SNMP Console').$activeFilterCaption,
+    'images/op_snmp.png',
+    false,
+    '',
+    false,
+    [],
+    [
+        [
+            'link'  => '',
+            'label' => __('Monitoring'),
+        ],
+        [
+            'link'  => '',
+            'label' => __('SMNP'),
+        ],
+    ]
+);
+
 
 // Create/update filter
 if ($update_filter > -2) {

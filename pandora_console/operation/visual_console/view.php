@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Actual View script for Visual Consoles.
  *
- * @category   Extensions
+ * @category   Operation
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,6 +26,7 @@
  * ============================================================================
  */
 
+// Begin.
 global $config;
 
 // Login check.
@@ -77,6 +77,9 @@ $pure = (bool) get_parameter('pure', $config['pure']);
 // Refresh interval in seconds.
 $refr = (int) get_parameter('refr', $config['vc_refr']);
 
+$width = (int) get_parameter('width', 0);
+$height = (int) get_parameter('height', 0);
+
 // Load Visual Console.
 use Models\VisualConsole\Container as VisualConsole;
 $visualConsole = null;
@@ -93,14 +96,14 @@ try {
 
 $visualConsoleData = $visualConsole->toArray();
 $groupId = $visualConsoleData['groupId'];
-$visualConsoleName = $visualConsoleData['name'];
+$visualConsoleName = io_safe_input(strip_tags(io_safe_output($visualConsoleData['name'])));
 
 // ACL.
-$aclRead = check_acl_restricted_all($config['id_user'], $groupId, 'VR');
-$aclWrite = check_acl_restricted_all($config['id_user'], $groupId, 'VW');
-$aclManage = check_acl_restricted_all($config['id_user'], $groupId, 'VM');
+$aclRead   = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VR');
+$aclWrite  = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VW');
+$aclManage = (bool) check_acl_restricted_all($config['id_user'], $groupId, 'VM');
 
-if (!$aclRead && !$aclWrite && !$aclManage) {
+if ($aclRead === false && $aclWrite === false && $aclManage === false) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access visual console without group access'
@@ -121,9 +124,9 @@ $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode
     ]
 ).'</a>';
 
-if ($aclWrite || $aclManage) {
+if ($aclWrite === true || $aclManage === true) {
     $action = get_parameterBetweenListValues(
-        is_metaconsole() ? 'action2' : 'action',
+        (is_metaconsole() === true) ? 'action2' : 'action',
         [
             'new',
             'save',
@@ -167,7 +170,7 @@ if ($aclWrite || $aclManage) {
         ]
     ).'</a>';
 
-    if (enterprise_installed()) {
+    if (enterprise_installed() === true) {
         $options['wizard_services']['text'] = '<a href="'.$baseUrl.'&tab=wizard_services&id_visual_console='.$visualConsoleId.'">'.html_print_image(
             'images/wand_services.png',
             true,
@@ -198,9 +201,9 @@ $options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual
 ).'</a>';
 $options['view']['active'] = true;
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     if (!$config['pure']) {
-        $options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
+        $options['pure']['text'] = '<a id ="full_screen" href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&pure=1&refr='.$refr.'">'.html_print_image(
             'images/full_screen.png',
             true,
             [
@@ -208,13 +211,25 @@ if (!is_metaconsole()) {
                 'class' => 'invert_filter',
             ]
         ).'</a>';
-        ui_print_page_header(
+
+        // Header.
+        ui_print_standard_header(
             $visualConsoleName,
             'images/visual_console.png',
             false,
             'visual_console_view',
             false,
-            $options
+            $options,
+            [
+                [
+                    'link'  => '',
+                    'label' => __('Topology maps'),
+                ],
+                [
+                    'link'  => '',
+                    'label' => __('Visual console'),
+                ],
+            ]
         );
     }
 
@@ -250,6 +265,7 @@ if ($pure === false) {
         $class_line = 'line_item link-create-item';
         $class_cloud = 'color_cloud_min link-create-item';
         $class_nlink = 'network_link_min link-create-item';
+        $class_odometer = 'odometer_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
         if ($config['style'] === 'pandora_black') {
@@ -268,6 +284,7 @@ if ($pure === false) {
             $class_line = 'line_item_white link-create-item';
             $class_cloud = 'color_cloud_min_white link-create-item';
             $class_nlink = 'network_link_min_white link-create-item';
+            $class_odometer = 'odometer_min_white link-create-item';
             $class_delete = 'delete_item_white delete_min_white';
             $class_copy = 'copy_item_white';
         }
@@ -347,6 +364,11 @@ if ($pure === false) {
             __('Network link'),
             $class_nlink
         );
+        visual_map_print_button_editor_refactor(
+            'ODOMETER',
+            __('Odometer'),
+            $class_odometer
+        );
         enterprise_include_once('include/functions_visual_map_editor.php');
         enterprise_hook(
             'enterprise_visual_map_editor_print_toolbox_refactor'
@@ -368,7 +390,7 @@ if ($pure === false) {
         echo '</div>';
         echo '</div>';
 
-        if ($aclWrite || $aclManage) {
+        if ($aclWrite === true || $aclManage === true) {
             echo html_print_checkbox_switch('edit-mode', 1, false, true);
         }
 
@@ -394,7 +416,7 @@ if ($pure === true) {
 
     // Quit fullscreen.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $urlNoFull = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=0&id_visualmap='.$visualConsoleId.'&refr='.$refr;
     } else {
         $urlNoFull = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$visualConsoleId.'&refr='.$refr;
@@ -407,7 +429,7 @@ if ($pure === true) {
 
     // Countdown.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         echo '<div class="vc-refr-meta">';
     } else {
         echo '<div class="vc-refr">';
@@ -432,11 +454,13 @@ if ($pure === true) {
 
     // Console name.
     echo '<li class="nomn">';
-    if (is_metaconsole()) {
-        echo '<div class="vc-title-meta">'.$visualConsoleName.'</div>';
-    } else {
-        echo '<div class="vc-title">'.$visualConsoleName.'</div>';
-    }
+
+    html_print_div(
+        [
+            'class'   => (is_metaconsole() === true) ? 'vc-title-meta' : 'vc-title',
+            'content' => $visualConsoleName,
+        ]
+    );
 
     echo '</li>';
 
@@ -465,7 +489,7 @@ if ($pure === true) {
 
 // Check groups can access user.
 $aclUserGroups = [];
-if (!users_can_manage_group_all('AR')) {
+if (users_can_manage_group_all('AR') === false) {
     $aclUserGroups = array_keys(users_get_groups(false, 'AR'));
 }
 
@@ -475,11 +499,47 @@ ui_require_javascript_file('pandora_visual_console');
 include_javascript_d3();
 visual_map_load_client_resources();
 
+$widthRatio = 0;
+if ($width > 0 && $pure == 1) {
+    $widthRatio = ($width / $visualConsoleData['width']);
+
+    if ($visualConsoleData['width'] > $height) {
+        ?>
+            <style type="text/css">
+            div#main_pure {
+                width: 100%;
+            }
+
+            div#visual-console-container {
+                width: 100% !important;
+            }
+            </style>
+        <?php
+    } else {
+        ?>
+            <style type="text/css">
+            div#main_pure {
+                width: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            div#visual-console-container {
+                width: 100% !important;
+            }
+            </style>
+        <?php
+    }
+}
+
 // Load Visual Console Items.
 $visualConsoleItems = VisualConsole::getItemsFromDB(
     $visualConsoleId,
-    $aclUserGroups
+    $aclUserGroups,
+    0,
+    $widthRatio
 );
+
 ui_require_css_file('modal');
 ui_require_css_file('form');
 ?>
@@ -489,9 +549,10 @@ ui_require_css_file('form');
 <script type="text/javascript">
     var container = document.getElementById("visual-console-container");
     var props = <?php echo (string) $visualConsole; ?>;
-    var items = <?php echo '['.implode($visualConsoleItems, ',').']'; ?>;
+    var items = <?php echo '['.implode(',', $visualConsoleItems).']'; ?>;
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
     var controls = document.getElementById('vc-controls');
+
     autoHideElement(controls, 1000);
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
@@ -667,6 +728,19 @@ if ($edit_capable === true) {
     $('.link-create-item').click(function (event){
         var type = event.target.id.substr(7);
         visualConsoleManager.createItem(type);
+    });
+
+    $('#full_screen').click(function (e) {
+        e.preventDefault();
+
+        if (props.autoAdjust === true) {
+            var hrefAux = $('#full_screen').attr('href');
+            hrefAux += '&width=' + document.body.offsetWidth+'&height=' + screen.height;
+            $('#full_screen').attr('href', hrefAux);
+        }
+
+        window.location.href = $('#full_screen').attr('href');
+
     });
 
     /**

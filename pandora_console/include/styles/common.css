@@ -1,7 +1,6 @@
 /* Debug styles */
 pre.debug,
 div.backtrace {
-  font-family: monospace;
   text-align: left;
   padding: 10px;
   margin: 5px;
@@ -44,6 +43,10 @@ div.database_debug_title {
 }
 .right {
   clear: right;
+  float: right;
+}
+.relative.right {
+  clear: none;
   float: right;
 }
 .clear {

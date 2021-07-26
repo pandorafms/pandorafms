@@ -1,22 +1,32 @@
 <?php
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
 /**
- * @package    Include
- * @subpackage Modules
+ * Functions for modules.
+ *
+ * @category   Functions script.
+ * @package    Pandora FMS
+ * @subpackage Modules.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
  */
 
+// Begin.
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_tags.php';
@@ -208,7 +218,16 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         $new_module = $module;
 
         // Rewrite different values
-        $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        if ($module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_PROC
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_STRING
+            || $module['id_tipo_modulo'] == MODULE_TYPE_REMOTE_CMD_INC
+        ) {
+            $new_module['ip_target'] = $module['ip_target'];
+        } else {
+            $new_module['ip_target'] = agents_get_address($id_destiny_agent);
+        }
+
         $new_module['policy_linked'] = 0;
         $new_module['id_policy_module'] = 0;
 
@@ -368,7 +387,7 @@ function modules_change_disabled($id_agent_module, $new_value=1)
  *
  * @param mixed Agent module id to be deleted. Accepts an array with ids.
  *
- * @return True if the module was deleted. False if not.
+ * @return boolean True if the module was deleted. False if not.
  */
 function modules_delete_agent_module($id_agent_module)
 {
@@ -436,6 +455,16 @@ function modules_delete_agent_module($id_agent_module)
         }
     }
 
+    // Remove module from service child list.
+    enterprise_include_once('include/functions_services.php');
+    \enterprise_hook(
+        'service_elements_removal_tool',
+        [
+            $id_agent_module,
+            SERVICE_ELEMENT_MODULE,
+        ]
+    );
+
     alerts_delete_alert_agent_module(0, $where);
 
     db_process_sql_delete('tgraph_source', $where);
@@ -457,6 +486,130 @@ function modules_delete_agent_module($id_agent_module)
         $where
     );
     db_process_sql_delete('ttag_module', $where);
+
+    $id_borrar_modulo = $id_agent_module;
+
+    enterprise_include_once('include/functions_config_agents.php');
+    enterprise_hook(
+        'config_agents_delete_module_in_conf',
+        [
+            modules_get_agentmodule_agent($id_borrar_modulo),
+            modules_get_agentmodule_name($id_borrar_modulo),
+        ]
+    );
+
+    // Init transaction.
+    $error = 0;
+
+    // First delete from tagente_modulo -> if not successful, increment
+    // error. NOTICE that we don't delete all data here, just marking for deletion
+    // and delete some simple data.
+    $values = [
+        'nombre'         => 'pendingdelete',
+        'disabled'       => 1,
+        'delete_pending' => 1,
+    ];
+    $result = db_process_sql_update(
+        'tagente_modulo',
+        $values,
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    } else {
+        // Set flag to update module status count.
+        db_process_sql(
+            'UPDATE tagente
+			SET update_module_count = 1, update_alert_count = 1
+			WHERE id_agente = '.$id_agent
+        );
+    }
+
+    $result = db_process_sql_delete(
+        'tagente_estado',
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    $result = db_process_sql_delete(
+        'tagente_datos_inc',
+        ['id_agente_modulo' => $id_borrar_modulo]
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    if (alerts_delete_alert_agent_module(
+        false,
+        ['id_agent_module' => $id_borrar_modulo]
+    ) === false
+    ) {
+        $error++;
+    }
+
+    $result = db_process_delete_temp(
+        'ttag_module',
+        'id_agente_modulo',
+        $id_borrar_modulo
+    );
+    if ($result === false) {
+        $error++;
+    }
+
+    // Trick to detect if we are deleting a synthetic module (avg or arithmetic)
+    // If result is empty then module doesn't have this type of submodules.
+    $ops_json = enterprise_hook(
+        'modules_get_synthetic_operations',
+        [$id_borrar_modulo]
+    );
+    $result_ops_synthetic = json_decode($ops_json);
+    if (!empty($result_ops_synthetic)) {
+        $result = enterprise_hook(
+            'modules_delete_synthetic_operations',
+            [$id_borrar_modulo]
+        );
+        if ($result === false) {
+            $error++;
+        }
+    } else {
+        $result_components = enterprise_hook(
+            'modules_get_synthetic_components',
+            [$id_borrar_modulo]
+        );
+        $count_components = 1;
+        if (!empty($result_components)) {
+            // Get number of components pending to delete to know when it's needed to update orders.
+            $num_components = count($result_components);
+            $last_target_module = 0;
+            foreach ($result_components as $id_target_module) {
+                $update_orders = false;
+                // Detects change of component or last component to update orders.
+                if (($count_components == $num_components)
+                    || ($last_target_module != $id_target_module)
+                ) {
+                    $update_orders = true;
+                }
+
+                $result = enterprise_hook(
+                    'modules_delete_synthetic_operations',
+                    [
+                        $id_target_module,
+                        $id_borrar_modulo,
+                        $update_orders,
+                    ]
+                );
+
+                if ($result === false) {
+                    $error++;
+                }
+
+                $count_components++;
+                $last_target_module = $id_target_module;
+            }
+        }
+    }
 
     return true;
 }
@@ -567,7 +720,7 @@ function modules_update_agent_module(
  * Creates a module in an agent.
  *
  * @param integer $id_agent   Agent id.
- * @param integer $name       Module name id.
+ * @param string  $name       Module name id.
  * @param array   $values     Extra values for the module.
  * @param boolean $disableACL Disable the ACL checking, for default false.
  * @param mixed   $tags       Array with tag's ids or false.
@@ -575,33 +728,34 @@ function modules_update_agent_module(
  * @return New module id if the module was created. False if not.
  */
 function modules_create_agent_module(
-    $id_agent,
-    $name,
-    $values=false,
-    $disableACL=false,
+    int $id_agent,
+    string $name,
+    array $values=[],
+    bool $disableACL=false,
     $tags=false
 ) {
     global $config;
 
-    if (!$disableACL) {
-        if (!users_is_admin() && (empty($id_agent)
-            || !users_access_to_agent($id_agent, 'AW'))
+    if ((bool) $disableACL === false) {
+        if ((bool) users_is_admin() === false
+            && (empty($id_agent) === true
+            || users_access_to_agent($id_agent, 'AW') === false)
         ) {
             return false;
         }
     }
 
-    if (empty($name)) {
+    if (empty($name) === true) {
         return ERR_INCOMPLETE;
     }
 
     // Check for non valid characters in module name.
-    if (mb_ereg_match('[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]', io_safe_output($name)) !== false) {
+    if (mb_ereg_match(
+        '[\xc2\xa1\xc2\xbf\xc3\xb7\xc2\xba\xc2\xaa]',
+        io_safe_output($name)
+    ) !== false
+    ) {
         return ERR_GENERIC;
-    }
-
-    if (! is_array($values)) {
-        $values = [];
     }
 
     $values['nombre'] = $name;
@@ -616,27 +770,37 @@ function modules_create_agent_module(
         ]
     );
 
-    if ($exists) {
+    if ($exists === true) {
         return ERR_EXIST;
     }
 
     // Encrypt passwords.
-    if (isset($values['plugin_pass'])) {
-        // Avoid two times encryption
+    if (isset($values['plugin_pass']) === true) {
+        // Avoid two times encryption.
         $plugin_pass = io_safe_output($values['plugin_pass']);
 
         $values['plugin_pass'] = io_input_password($plugin_pass);
     }
 
     // Encrypt SNMPv3 passwords.
-    if (isset($values['id_tipo_modulo']) && ($values['id_tipo_modulo'] >= 15
-        && $values['id_tipo_modulo'] <= 18)
-        && isset($values['tcp_send']) && ($values['tcp_send'] == 3)
-        && isset($values['custom_string_2'])
+    if (isset($values['id_tipo_modulo']) === true
+        && ((int) $values['id_tipo_modulo'] >= MODULE_TYPE_REMOTE_SNMP
+        && (int) $values['id_tipo_modulo'] <= MODULE_TYPE_REMOTE_SNMP_PROC)
+        && isset($values['tcp_send']) === true
+        && ((int) $values['tcp_send'] === 3)
+        && isset($values['custom_string_2']) === true
     ) {
         $values['custom_string_2'] = io_input_password(
             $values['custom_string_2']
         );
+    }
+
+    // Only for Web server modules.
+    if (isset($values['id_tipo_modulo']) === true
+        && ($values['id_tipo_modulo'] >= MODULE_TYPE_WEB_ANALYSIS
+        && $values['id_tipo_modulo'] <= MODULE_TYPE_WEB_CONTENT_STRING)
+    ) {
+        $values['debug_content'] = io_safe_input($values['debug_content']);
     }
 
     $id_agent_module = db_process_sql_insert('tagente_modulo', $values);
@@ -646,7 +810,7 @@ function modules_create_agent_module(
     }
 
     $return_tag = true;
-    if (($tags !== false) || (empty($tags))) {
+    if (($tags !== false) || (empty($tags) === true)) {
         $return_tag = tags_insert_module_tag($id_agent_module, $tags);
     }
 
@@ -659,10 +823,10 @@ function modules_create_agent_module(
         return ERR_DB;
     }
 
-    if (isset($values['id_tipo_modulo'])
-        && ($values['id_tipo_modulo'] == 21
-        || $values['id_tipo_modulo'] == 22
-        || $values['id_tipo_modulo'] == 23)
+    if (isset($values['id_tipo_modulo']) === true
+        && ((int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_PROC
+        || (int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_DATA
+        || (int) $values['id_tipo_modulo'] === MODULE_TYPE_ASYNC_STRING)
     ) {
         // Async modules start in normal status.
         $status = AGENT_MODULE_STATUS_NORMAL;
@@ -706,8 +870,8 @@ function modules_create_agent_module(
     }
 
     // Update module status count if the module is not created disabled.
-    if ((!isset($values['disabled']) || $values['disabled'] == 0) && $values['id_modulo'] > 0) {
-        if ($status == 0) {
+    if (isset($values['disabled']) === false || (int) $values['disabled'] === 0) {
+        if ((int) $status === AGENT_MODULE_STATUS_NORMAL) {
             db_process_sql(
                 'UPDATE tagente
                 SET total_count=total_count+1, normal_count=normal_count+1
@@ -2242,12 +2406,14 @@ function modules_get_agentmodule_data(
     $module_name = modules_get_agentmodule_name($id_agent_module);
     $agent_id = modules_get_agentmodule_agent($id_agent_module);
     $agent_name = modules_get_agentmodule_agent_name($id_agent_module);
+    $agent_alias = modules_get_agentmodule_agent_alias($id_agent_module);
     $module_type = modules_get_agentmodule_type($id_agent_module);
 
     foreach ($values as $key => $data) {
         $values[$key]['module_name'] = $module_name;
         $values[$key]['agent_id'] = $agent_id;
         $values[$key]['agent_name'] = $agent_name;
+        $values[$key]['agent_alias'] = $agent_alias;
         $values[$key]['module_type'] = $module_type;
     }
 
@@ -2265,6 +2431,7 @@ function modules_get_agentmodule_data(
                 'module_name' => $values[$key]['module_name'],
                 'agent_id'    => $values[$key]['agent_id'],
                 'agent_name'  => $values[$key]['agent_name'],
+                'agent_alias' => $values[$key]['agent_alias'],
                 'module_type' => $values[$key]['module_type'],
             ];
         }
@@ -2362,7 +2529,7 @@ function modules_get_agentmodule_data_for_humans($module)
         }
     } else {
         $data_macro = modules_get_unit_macro($module['datos'], $module['unit']);
-        if ($data_macro) {
+        if ($data_macro !== false) {
             $salida = $data_macro;
         } else {
             $salida = ui_print_module_string_value(
@@ -3674,4 +3841,18 @@ function modules_get_state_condition($state, $prefix='tae')
 
     // If the state is not an expected state, return no condition
     return '1=1';
+}
+
+
+function modules_get_min_max_data($id_agent_module, $time_init=0)
+{
+    $table = modules_get_table_data($id_agent_module);
+    $data = db_get_all_rows_sql(
+        'SELECT min(datos) as min, max(datos) as max
+		FROM '.$table.'
+		WHERE id_agente_modulo = '.$id_agent_module.'
+			AND utimestamp >= '.$time_init
+    );
+
+    return $data;
 }

@@ -73,7 +73,7 @@ if (! check_acl($config['id_user'], 0, 'RW')
     exit;
 }
 
-if ($edit_graph) {
+if ($edit_graph === true) {
     $graphInTgraph = db_get_row_sql(
         'SELECT * FROM tgraph WHERE id_graph = '.$id_graph
     );
@@ -113,18 +113,18 @@ if ($edit_graph) {
 // -----------------------
 // CREATE/EDIT GRAPH FORM
 // -----------------------
-$url = 'index.php?sec=reporting&sec2=godmode/reporting/graph_builder';
-if ($edit_graph) {
-    $output = "<form method='post' action='".$url.'&edit_graph=1&update_graph=1&id='.$id_graph."'>";
+$url = 'index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1';
+if ($edit_graph === true) {
+    $output = "<form method='post' action='".$url.'&update_graph=1&id='.$id_graph."'>";
 } else {
-    $output = "<form method='post' action='".$url."&edit_graph=1&add_graph=1'>";
+    $output = "<form method='post' action='".$url."&add_graph=1'>";
 }
 
 $output .= "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
 $output .= '<tr>';
 $output .= "<td class='datos'><b>".__('Name').'</b></td>';
 $output .= "<td class='datos'><input type='text' name='name' size='25' ";
-if ($edit_graph) {
+if ($edit_graph === true) {
     $output .= "value='".$graphInTgraph['name']."' ";
 }
 
@@ -179,7 +179,7 @@ $output .= '</td></tr>';
 $output .= '<tr>';
 $output .= "<td class='datos2'><b>".__('Description').'</b></td>';
 $output .= "<td class='datos2' colspan=3><textarea name='description' class='height_45px' cols=55 rows=2>";
-if ($edit_graph) {
+if ($edit_graph === true) {
     $output .= $graphInTgraph['description'];
 }
 
@@ -291,15 +291,30 @@ $output .= '</tr>';
 
 $output .= '</table>';
 
-if ($edit_graph) {
-    $output .= "<div class='w100p'>";
-    $output .= "<input type=submit name='store' class='sub upd right' value='".__('Update')."'>";
-    $output .= '</div>';
-} else {
-    $output .= "<div class='w100p'>";
-    $output .= "<input type=submit name='store' class='sub next right' value='".__('Create')."'>";
-    $output .= '</div>';
-}
+$stringButton = ($edit_graph === true) ? __('Update') : __('Create');
+
+$output .= html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => "<input type=submit name='store' class='sub next right databox' value='".$stringButton."'>",
+    ],
+    true
+);
+
+$output .= html_print_div(
+    [
+        'class'   => 'w100p',
+        'content' => html_print_button(
+            __('Go back'),
+            'go_back',
+            false,
+            'window.location.href = \'index.php?sec=reporting&sec2=godmode/reporting/graphs\'',
+            'class="sub cancel right"',
+            true
+        ),
+    ],
+    true
+);
 
 $output .= '</form>';
 

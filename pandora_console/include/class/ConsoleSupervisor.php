@@ -26,13 +26,15 @@
  * ============================================================================
  */
 
+use PandoraFMS\Tools\Files;
+
 global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
 require_once $config['homedir'].'/include/functions_io.php';
 require_once $config['homedir'].'/include/functions_notifications.php';
 require_once $config['homedir'].'/include/functions_servers.php';
-require_once $config['homedir'].'/include/functions_update_manager.php';
+require_once $config['homedir'].'/godmode/um_client/vendor/autoload.php';
 
 // Enterprise includes.
 enterprise_include_once('include/functions_metaconsole.php');
@@ -1238,9 +1240,9 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration';
+                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
                 if ($config['language'] == 'es') {
-                    $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion';
+                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
                 }
 
                 $this->notify(
@@ -1355,9 +1357,9 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration#master';
+            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
             if ($config['language'] == 'es') {
-                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#master';
+                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
             }
 
             $this->notify(
@@ -1395,7 +1397,7 @@ class ConsoleSupervisor
         $PHPsafe_mode = ini_get('safe_mode');
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
-        $PHPmemory_limit_min = config_return_in_bytes('500M');
+        $PHPmemory_limit_min = config_return_in_bytes('800M');
         $PHPSerialize_precision = ini_get('serialize_precision');
 
         // PhantomJS status.
@@ -1511,7 +1513,7 @@ class ConsoleSupervisor
                     ),
                     'message' => sprintf(
                         __('Recommended value is: %s'),
-                        sprintf(__('%s or greater'), '500M')
+                        sprintf(__('%s or greater'), '800M')
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
                     'url'     => $url,
                 ]
@@ -1539,9 +1541,9 @@ class ConsoleSupervisor
         }
 
         if (!isset($result_ejecution) || $result_ejecution == '') {
-            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration#Phantomjs';
+            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#Phantomjs';
             if ($config['language'] == 'es') {
-                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Configuracion#Phantomjs';
+                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
             }
 
             $this->notify(
@@ -1557,9 +1559,9 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 7) {
-            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:_PHP_7';
+            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
             if ($config['language'] == 'es') {
-                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Instalaci%C3%B3n_y_actualizaci%C3%B3n_PHP_7';
+                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
             }
 
             $this->notify(
@@ -2300,9 +2302,9 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = 'http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29';
+            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
             if ($config['language'] == 'es') {
-                $url = 'http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29';
+                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
             }
 
             $this->notify(
@@ -2388,38 +2390,24 @@ class ConsoleSupervisor
         }
 
         // Avoid contact for messages too much often.
-        if (isset($config['last_um_check'])
+        if (isset($config['last_um_check']) === true
             && time() < $config['last_um_check']
         ) {
             return;
         }
 
-        // Only ask for messages once a day.
+        // Only ask for messages once every 2 hours.
         $future = (time() + 2 * SECONDS_1HOUR);
         config_update_value('last_um_check', $future);
 
-        $params = [
-            'pandora_uid' => $config['pandora_uid'],
-            'timezone'    => $config['timezone'],
-            'language'    => $config['language'],
-        ];
-
-        $result = update_manager_curl_request('get_messages', $params);
-
-        try {
-            if ($result['success'] === true) {
-                $messages = json_decode($result['update_message'], true);
-            }
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-        };
-
-        if (is_array($messages)) {
+        $messages = update_manager_get_messages();
+        if (is_array($messages) === true) {
             $source_id = get_notification_source_id(
                 'Official&#x20;communication'
             );
+
             foreach ($messages as $message) {
-                if (!isset($message['url'])) {
+                if (isset($message['url']) === false) {
                     $message['url'] = '#';
                 }
 
@@ -2462,7 +2450,7 @@ class ConsoleSupervisor
             foreach ($server_version_list as $server) {
                 if (strpos(
                     $server['version'],
-                    $config['current_package_enterprise']
+                    $config['current_package']
                 ) === false
                 ) {
                     $missed++;
@@ -2601,9 +2589,9 @@ class ConsoleSupervisor
                 $config['homedir']
             );
 
-            $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_EN:General_Quick_Guide#Solving_problems._Where_to_look_and_who_to_ask';
+            $url = 'https://pandorafms.com/manual/en/quickguides/general_quick_guide#solving_problems_where_to_look_and_who_to_ask';
             if ($config['language'] == 'es') {
-                $url = 'https://wiki.pandorafms.com/index.php?title=Pandora:QuickGuides_ES:Guia_Rapida_General#Soluci.C3.B3n_de_problemas._D.C3.B3nde_mirar.2C_a_qui.C3.A9n_preguntar';
+                $url = 'https://pandorafms.com//manual/es/quickguides/general_quick_guide#solucion_de_problemas_donde_mirar_a_quien_preguntar';
             }
 
             $this->notify(
@@ -2663,13 +2651,15 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+        if (isset($config['clean_phantomjs_cache']) !== true
+            || (int) $config['clean_phantomjs_cache'] !== 1
+        ) {
             return;
         }
 
         $cache_dir = $config['homedir'].'/attachment/cache';
         if (is_dir($cache_dir) === true) {
-            rrmdir($cache_dir);
+            Files::rmrf($cache_dir);
         }
 
         // Clean process has ended.

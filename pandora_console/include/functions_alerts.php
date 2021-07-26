@@ -2755,7 +2755,7 @@ function alerts_ui_update_or_create_actions($update=true)
         $al_action = alerts_get_alert_action($id);
         if ($al_action !== false) {
             if ($al_action['id_group'] == 0) {
-                if (! check_acl($config['id_user'], 0, 'PM')) {
+                if (! check_acl($config['id_user'], 0, 'PM') && ! check_acl($config['id_user'], 0, 'LM')) {
                     db_pandora_audit(
                         'ACL Violation',
                         'Trying to access Alert Management'
@@ -2824,19 +2824,21 @@ function alerts_ui_update_or_create_actions($update=true)
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
     $values['create_wu_integria'] = $create_wu_integria;
-    if ($update) {
-        $values['name'] = $name;
-        $values['id_alert_command'] = $id_alert_command;
-        // Only for Metaconsole, save the previous name for synchronization.
-        if (is_metaconsole()) {
-            $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
-        }
 
-        $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
+    // If this alert has the same name, not valid.
+    $name_check = db_get_row('talert_actions', 'name', $name);
+    if (empty($name_check) === false && (int) $name_check['id'] !== (int) $id) {
+        $result = '';
     } else {
-        $name_check = db_get_value('name', 'talert_actions', 'name', $name);
-        if ($name_check) {
-            $result = '';
+        if ($update) {
+            $values['name'] = $name;
+            $values['id_alert_command'] = $id_alert_command;
+            // Only for Metaconsole, save the previous name for synchronization.
+            if (is_metaconsole()) {
+                $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
+            }
+
+            $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
         } else {
             $result = alerts_create_alert_action(
                 $name,

@@ -508,6 +508,11 @@ var TreeController = {
 
           // Content
           $content.addClass("node-content");
+          var disabled = false;
+          if (element.disabled == true) {
+            disabled = true;
+            $content.addClass("disabled");
+          }
           switch (element.type) {
             case "group":
               if (
@@ -644,7 +649,7 @@ var TreeController = {
                 $content.append($statusImage);
               }
               var image_tooltip =
-                '<span><img src="' +
+                '<span><img class="invert_filter" src="' +
                 (controller.baseURL.length > 0 ? controller.baseURL : "") +
                 'images/help.png" class="img_help" title="' +
                 element.name +
@@ -653,7 +658,7 @@ var TreeController = {
                 '"/></span> ';
 
               var $serviceDetailImage = $(
-                '<img src="' +
+                '<img class="invert_filter" src="' +
                   (controller.baseURL.length > 0 ? controller.baseURL : "") +
                   'images/tree_service_map.png" /> '
               );
@@ -956,7 +961,10 @@ var TreeController = {
             }
           }
           // If exist the detail container, show the data
-          if (typeof controller.detailRecipient !== "undefined") {
+          if (
+            typeof controller.detailRecipient !== "undefined" ||
+            disabled == false
+          ) {
             if (element.type == "agent" || element.type == "module") {
               $content
                 .click(function(e) {
@@ -989,11 +997,10 @@ var TreeController = {
           $node.addClass("leaf-empty");
 
           if (
-            typeof element.children != "undefined" &&
-            element.children.length > 0
+            (typeof element.children != "undefined" &&
+              element.children.length > 0) ||
+            element.disabled == false
           ) {
-            $node.removeClass("leaf-empty").addClass("leaf-closed");
-
             // Add children
             var $children = _processGroup($node, element.children);
             $node.data("children", $children);
@@ -1023,8 +1030,9 @@ var TreeController = {
           }
 
           if (
-            typeof element.searchChildren != "undefined" &&
-            element.searchChildren
+            (typeof element.searchChildren != "undefined" &&
+              element.searchChildren) ||
+            element.disabled == true
           ) {
             if (
               element.rootType == "group_edition" &&

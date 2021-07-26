@@ -95,7 +95,7 @@ if (!$agents || !$searchAgents) {
         );
 
         if ($in_planned_downtime) {
-            $cellName .= '<em>'.ui_print_help_tip(__('Agent in planned downtime'), true, 'images/minireloj-16.png');
+            $cellName .= '<em>'.ui_print_help_tip(__('Agent in scheduled downtime'), true, 'images/minireloj-16.png');
             $cellName .= '</em>';
         }
 

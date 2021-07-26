@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,5) default NULL,
+	`datos` double(50,5) default NULL,
 	`utimestamp` bigint(20) default '0',
 	KEY `data_index1` (`id_agente_modulo`, `utimestamp`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,5) default NULL,
+	`datos` double(50,5) default NULL,
 	`utimestamp` int(20) unsigned default '0',
 	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -583,6 +583,19 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `talert_execution_queue`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `tattachment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tattachment` (
@@ -681,7 +694,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -1049,9 +1062,6 @@ CREATE TABLE IF NOT EXISTS `torigen` (
 CREATE TABLE IF NOT EXISTS `tperfil` (
 	`id_perfil` int(10) unsigned NOT NULL auto_increment,
 	`name` TEXT NOT NULL,
-	`incident_edit` tinyint(1) NOT NULL DEFAULT 0,
-	`incident_view` tinyint(1) NOT NULL DEFAULT 0,
-	`incident_management` tinyint(1) NOT NULL DEFAULT 0,
 	`agent_view` tinyint(1) NOT NULL DEFAULT 0,
 	`agent_edit` tinyint(1) NOT NULL DEFAULT 0,
 	`alert_edit` tinyint(1) NOT NULL DEFAULT 0,
@@ -1267,6 +1277,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`ehorus_user_level_user` VARCHAR(60),
 	`ehorus_user_level_pass` VARCHAR(45),
 	`ehorus_user_level_enabled` TINYINT(1),
+	`integria_user_level_user` VARCHAR(60),
+	`integria_user_level_pass` VARCHAR(45),
 	CONSTRAINT `fk_filter_id` FOREIGN KEY (`id_filter`) REFERENCES tevent_filter (`id_filter`) ON DELETE SET NULL,
 	UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1627,6 +1639,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
 	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
+	`auto_adjust` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1670,6 +1683,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
+	`title` TEXT default '',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2263,6 +2277,11 @@ CREATE TABLE IF NOT EXISTS  `talert_snmp_action` (
 	`al_field13` text NOT NULL,
 	`al_field14` text NOT NULL,
 	`al_field15` text NOT NULL,
+	`al_field16` text NOT NULL,
+	`al_field17` text NOT NULL,
+	`al_field18` text NOT NULL,
+	`al_field19` text NOT NULL,
+	`al_field20` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2732,8 +2751,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`last_event_replication` bigint(20) default '0',
 	`server_uid` text NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) ENGINE=InnoDB 
-COMMENT = 'Table to store metaconsole sources' 
+) ENGINE=InnoDB
+COMMENT = 'Table to store metaconsole sources'
 DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -3271,7 +3290,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3324,7 +3343,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event_history` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(22,5) default NULL,
+	`data` double(50,5) default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3981,4 +4000,18 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`operation` text,
+	`table` text,
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

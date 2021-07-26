@@ -28,7 +28,6 @@
 .modalheadertex{
     color:white;
     position:relative;
-    font-family:Nunito;
     font-size:13pt;
     top:8px;
 }
@@ -70,7 +69,6 @@
 }
 .modalwikibuttontex{
     color:#ffffff;
-    font-family:Nunito;
     font-size:10pt;
     position:relative;
     top:6px;
@@ -135,7 +133,7 @@ img.modalclose {
         if (isset($config['custom_docs_url_alt'])) {
             $docs_url = $config['custom_docs_url_alt'];
         } else {
-            $docs_url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration';
+            $docs_url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
         }
 
         echo '

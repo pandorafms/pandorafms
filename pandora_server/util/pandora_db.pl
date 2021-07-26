@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.754 PS210504";
+my $version = "7.0NG.755 Build 210721";
 
 # Pandora server configuration
 my %conf;
@@ -548,7 +548,7 @@ sub pandora_compactdb ($$$) {
 sub pandora_init_pdb ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nDB Tool $version Copyright (c) 2004-2018 " . pandora_get_initial_copyright_notice() . "\n");
+	log_message ('', "Pandora FMS DB Tool v$version\n\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at official web\n\n");
 	
@@ -628,6 +628,9 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
     $conf->{'verbosity'} = '3' unless defined ($conf->{'verbosity'});
+
+	# Configure SSL.
+	set_ssl_opts($conf);
 
     # Dynamic interval configuration.                                                                                                                             
 	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});

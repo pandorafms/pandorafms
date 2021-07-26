@@ -37,8 +37,8 @@ select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
 .selection {
-  background-color: #111;
-  color: #fff;
+  background-color: #111 !important;
+  color: #fff !important;
 }
 
 div#head,
@@ -55,9 +55,12 @@ table.databox,
 input.sub,
 .introjs-tooltip,
 button.sub,
-.bg_general {
+.bg_general,
+.show_result_interpreter,
+div#rules::after table.agent_info_table thead > tr:first-child th,
+table.agent_info_table tr {
   background-color: #222 !important;
-  color: #fff;
+  color: #fff !important;
 }
 
 input[readonly] {
@@ -232,7 +235,8 @@ div#foot {
 }
 
 /* Overwrite inline styles */
-.textodialogo td .white_important {
+.textodialogo td .white_important,
+.multi-select-container {
   color: #fff !important;
 }
 
@@ -244,19 +248,29 @@ div#foot {
 /* events.css */
 table.table_modal_alternate tr:nth-child(odd) td {
   background-color: #222 !important;
+  color: #fff;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 table.table_modal_alternate tr:nth-child(even) td {
   background-color: #111 !important;
+  color: #fff;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 /* events.css */
 table.black_table_modal_alternate tr:nth-child(odd) td {
   background-color: #222 !important;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 table.black_table_modal_alternate tr:nth-child(even) td {
   background-color: #111 !important;
+  border-bottom: 1px solid #707070;
+  border-top: 1px solid #707070;
 }
 
 /* tables.css */
@@ -337,7 +351,7 @@ ul.tree-group
 /* login.css */
 div.login_nick input,
 div.login_pass input {
-  background-color: #fff !important;
+  background-color: #111 !important;
 }
 
 /* user edit */
@@ -387,7 +401,6 @@ table#diagnostic_info tbody td div {
   color: #fff;
 }
 
-.ui-widget-content.ui-autocomplete,
 .ui-widget-content.ui-autocomplete a {
   color: #333;
 }
@@ -532,10 +545,6 @@ div#form_activate_licence #code {
   border-color: #707070;
 }
 
-div.data_container:not(:hover) {
-  box-shadow: 2px 2px 10px #80ba27;
-}
-
 input[type="submit"].submit-next:hover,
 button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
 input[type="button"].submit-next:hover {
@@ -565,7 +574,6 @@ form#modal_form_feedback input[type="email"] {
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #ccc;
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-weight: lighter;
   padding: 0px 0px 2px 0px;
   box-sizing: border-box;
@@ -587,7 +595,6 @@ form#modal_form_feedback ul.wizard li > textarea {
   width: 600px;
   height: 15em;
   display: inline-block;
-  font-family: monospace;
 }
 
 #categories_library .card_category a:hover {
@@ -643,7 +650,8 @@ form ul.form_flex {
   background: #222 !important;
 }
 
-.invert_filter {
+.invert_filter,
+.labels {
   filter: invert(100%);
 }
 
@@ -884,7 +892,7 @@ div#dashboard-controls {
   text-align: center;
   text-anchor: middle;
   fill: #fff;
-  font-family: Verdana;
+  color: #fff;
 }
 
 .tickLabel {
@@ -915,7 +923,6 @@ div.integria_details_description textarea {
   font-weight: bold;
   line-height: 20px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   text-decoration: none;
   text-transform: capitalize;
@@ -929,7 +936,6 @@ div.integria_details_description textarea {
 }
 
 .table.group_modules_status_box tr td {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 11pt;
   text-decoration: none;
@@ -966,6 +972,8 @@ div.integria_details_description textarea {
 }
 fieldset {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 input,
@@ -978,25 +986,176 @@ select,
 .white_box,
 .white-box-content {
   border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .white_table_graph_header {
   border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 table.databox {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .info_table > tbody > tr {
   border-bottom: 1px solid #303030;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .status_tactical {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
 }
 
 .status_tactical,
 .tactical_set {
   border-color: #707070;
+  background-color: #222 !important;
+  color: #fff !important;
+}
+
+li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
+  border: 1px solid #707070;
+  background-color: #222 !important;
+  color: #fff !important;
+}
+.chartLegend {
+  width: 100%;
+  position: relative;
+  height: 30px;
+}
+
+.chartLegend table {
+  position: absolute;
+  right: 0px;
+}
+
+.graph_container {
+  width: 800px;
+  margin: 20px auto;
+  border-radius: 3px;
+}
+
+table.alternate tr:nth-child(2n + 1) td {
+  background-color: #222;
+}
+
+table.alternate tr:nth-child(2n) td {
+  background-color: #111;
+}
+
+.header_title {
+  font-weight: 600;
+  font-size: 10.5pt;
+  color: #fff;
+}
+.header_subtitle {
+  font-size: 10pt;
+  color: #a0a0a0;
+  font-weight: 300;
+}
+.new_task p,
+.new_task div {
+  font-weight: initial;
+}
+
+.flot-base {
+  background-color: #222;
+}
+li > input[type="number"],
+li > input[type="text"]:not(.search_input),
+li > input[type="email"],
+li > input[type="password"] {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ccc;
+  font-weight: inherit;
+  padding: 0px 0px 2px 0px;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #9b9b9b;
+  font-weight: bold;
+}
+
+input.search_input {
+  background-image: url("../../images/input_zoom.disabled.png");
+}
+
+.agents_modules_table,
+.agents_modules_table td,
+.agents_modules_table th {
+  border: 1px solid #707070;
+}
+
+.white-table-graph-content {
+  width: auto;
+}
+ul.subsubmenu li {
+  border-color: #707070 !important;
+  border-style: solid;
+  border-width: 1px;
+}
+
+a.pandora_pagination,
+.filter_summary > div,
+.border_bt,
+.pagination .page_number {
+  border: 1px solid #707070 !important;
+}
+
+.dt-button.buttons-csv.buttons-html5 {
+  filter: invert(100%);
+  background-color: transparent;
+}
+
+.info_table.events > tbody > tr > td {
+  border-bottom: 2px solid #707070;
+}
+
+.info_table tr th,
+.databox.data > tbody > tr > td {
+  border-bottom: 1px solid #707070 !important;
+}
+
+.databox.data > tbody > tr > td:first-child {
+  border-left: 1px solid;
+}
+.databox.data > tbody > tr > td:last-child,
+.header_table_inner {
+  border-right: 1px solid #707070 !important;
+}
+
+.results-found,
+#result_items.agents_modules_table,
+.show_result_interpreter,
+#menu_tab li.nomn_high {
+  background-color: #111 !important;
+  color: #fff;
+}
+
+#graph_container {
+  background-color: #111 !important;
+  color: #fff;
+}
+
+#elasticsearch_editor,
+#elasticsearch_view {
+  filter: invert(100%);
+}
+
+#header_table {
+  padding-right: 35px;
+  background-color: #222;
 }

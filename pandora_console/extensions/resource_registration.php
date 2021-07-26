@@ -1,29 +1,43 @@
 <?php
+/**
+ * Resource registration.
+ *
+ * @category   Extensions
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-// Remember the hard-coded values
-/*
-    -- id_modulo now uses tmodule
-    -- ---------------------------
-    -- 1 - Data server modules (agent related modules)
-    -- 2 - Network server modules
-    -- 4 - Plugin server
-    -- 5 - Predictive server
-    -- 6 - WMI server
-    -- 7 - WEB Server (enteprise)
-
-    In the xml is the tag "module_source"
-*/
+/**
+ * Remember the hard-coded values.
+ *  -- id_modulo now uses tmodule.
+ *  -- ---------------------------.
+ *  -- 1 - Data server modules (agent related modules)
+ *  -- 2 - Network server modules
+ *  -- 4 - Plugin server
+ *  -- 5 - Predictive server
+ *  -- 6 - WMI server
+ *  -- 7 - WEB Server (enteprise)
+ *  In the xml is the tag "module_source"
+ */
 
 require_once $config['homedir'].'/include/functions_agents.php';
 enterprise_include_once('include/functions_local_components.php');
@@ -1033,8 +1047,8 @@ function process_upload_xml($xml)
 
     // Extract policies.
     if ($hook_enterprise === true) {
-        $centralized_management = !is_central_policies_on_node();
-        if ($centralized_management) {
+        $centralized_management = is_management_allowed();
+        if ($centralized_management === true) {
             process_upload_xml_policy($xml, $group_filter);
         }
     }
@@ -1066,9 +1080,17 @@ function resource_registration_extension_main()
         return;
     }
 
-    $centralized_management = !is_central_policies_on_node();
-    if (!$centralized_management) {
-        ui_print_warning_message(__('This node is configured with centralized mode. Go to metaconsole to create a policy.'));
+    if (is_management_allowed() === false) {
+        ui_print_warning_message(
+            __(
+                'This node is configured with centralized mode. Go to %s to create a policy.',
+                '<a target="_blank" href="'.ui_get_meta_url(
+                    'index.php?sec=advanced&sec2=advanced/policymanager'
+                ).'">'.__('metaconsole').'</a>'
+            )
+        );
+
+        return;
     }
 
     echo '<div class=notify>';
@@ -1077,7 +1099,7 @@ function resource_registration_extension_main()
 
     echo '<br /><br />';
 
-    // Upload form
+    // Upload form.
     echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
         echo '<table class="databox" id="table1" width="98%" border="0" cellpadding="4" cellspacing="4">';
             echo '<tr>';
@@ -1091,11 +1113,12 @@ function resource_registration_extension_main()
         echo '</table>';
     echo '</form>';
 
-    if (!isset($_FILES['resource_upload']['tmp_name'])) {
+    if (isset($_FILES['resource_upload']['tmp_name']) === false) {
         return;
     }
 
     $xml = simplexml_load_file($_FILES['resource_upload']['tmp_name'], null, LIBXML_NOCDATA);
+
     if ($xml === false) {
         ui_print_error_message(
             __('Error uploading resource. Check if the selected file is a valid resource template in .ptr format')

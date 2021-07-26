@@ -15,7 +15,7 @@ global $config;
 
 check_login();
 
-$gis_w = check_acl($config['id_user'], 0, 'MW');
+$gis_w = check_acl($config['id_user'], 0, 'MW', false, true, true);
 $gis_m = check_acl($config['id_user'], 0, 'MM');
 $access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
@@ -490,7 +490,7 @@ if (users_can_manage_group_all('MM') === true) {
 $table->data[2][0] = __('Group');
 $table->data[2][1] = html_print_select_groups(
     false,
-    'IW',
+    'AR',
     $return_all_group,
     'map_group_id',
     $map_group_id,

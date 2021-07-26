@@ -1,17 +1,32 @@
 <?php
+/**
+ * Common editor fields.
+ *
+ * @category   Module manager
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
@@ -19,7 +34,10 @@ require_once $config['homedir'].'/include/graphs/functions_d3.php';
 include_javascript_d3();
 
 
-global $config;function prepend_table_simple($row, $id=false)
+global $config;
+
+
+function prepend_table_simple($row, $id=false)
 {
     global $table_simple;
 
@@ -90,6 +108,7 @@ function add_component_selection($id_network_component_type)
     $data[0] = __('Using module component').' ';
 
     $component_groups = network_components_get_groups($id_network_component_type);
+
     $data[1] = '<span id="component_group" class="left">';
     $data[1] .= html_print_select(
         $component_groups,
@@ -581,8 +600,12 @@ if ($moduletype == MODULE_DATA) {
     $table_advanced->colspan[1][1] = 2;
     $interval_factor = 1;
     if (isset($id_agente)) {
-        $agent_interval = agents_get_interval($id_agente);
-        $interval_factor = ($interval / $agent_interval);
+        $agent_interval = (float) agents_get_interval($id_agente);
+        if ($agent_interval > 0) {
+            $interval = (float) $interval;
+            $interval_factor = ($interval / $agent_interval);
+        }
+
         $table_advanced->data[1][1] = human_time_description_raw($interval).' ('.sprintf(__('Agent interval x %s'), $interval_factor).') ';
     } else {
         $table_advanced->data[1][1] = sprintf(__('Agent interval x %s'), $interval_factor);
@@ -1363,7 +1386,7 @@ $(document).ready (function () {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                 $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
                     $("select[name='id_tag_available[]']").append(value);
@@ -1420,14 +1443,14 @@ $(document).ready (function () {
                    ){
                     if (language == 'es'){
                      window.open(
-                         'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                         'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
                          '_blank',
                          'width=800,height=600'
                             );
                    }
                    else{
                     window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1440,14 +1463,14 @@ $(document).ready (function () {
                  ){
                      if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
                          '_blank',
                          'width=800,height=600'
                          );
                      }
                      else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1462,14 +1485,14 @@ $(document).ready (function () {
                  ){
                      if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                          '_blank',
                          'width=800,height=600'
                          );
                      }
                      else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitorins#monitoring_through_network_modules_with_snmp',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1484,14 +1507,14 @@ $(document).ready (function () {
                    ){
                        if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
                          '_blank',
                          'width=800,height=600'
                          );
                        }
                        else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1504,14 +1527,14 @@ $(document).ready (function () {
                    ){
                        if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
                          '_blank',
                          'width=800,height=600'
                          );
                        }
                        else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1574,10 +1597,6 @@ $(document).ready (function () {
     });
 
     disabled_two_tailed(disabledBecauseInPolicy);
-    $('#checkbox-dynamic_two_tailed').change (function() {
-        disabled_two_tailed(disabledBecauseInPolicy);
-    });
-
 
     //Dynamic_options_advance;
     $('.hide_dinamic').hide();
@@ -1646,15 +1665,10 @@ function disabled_status (disabledBecauseInPolicy) {
 }
 
 function disabled_two_tailed (disabledBecauseInPolicy) {
-    if($('#checkbox-dynamic_two_tailed').prop('checked')){
-        $('#text-dynamic_max').prop('readonly', false);
-        $('#text-dynamic_max').removeClass('readonly');
-    }
-    else{
-        if (disabledBecauseInPolicy == 0){
-            $('#text-dynamic_max').prop('readonly', true);
-            $('#text-dynamic_max').addClass('readonly');
-        }
+    if (disabledBecauseInPolicy == 1){
+            $('#text-dynamic_max')
+                .prop('readonly', true)
+                .addClass('readonly');
     }
 }
 

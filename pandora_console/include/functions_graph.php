@@ -735,6 +735,10 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
+    if (isset($params['only_image']) === true) {
+        $params['backgroundColor'] = 'transparent';
+    }
+
     if (isset($params['percentil']) === false) {
         $params['percentil'] = null;
     }
@@ -825,10 +829,17 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
+    $font_size = $config['font_size'];
+
+    // If is metaconsole set 10pt size value.
+    if (is_metaconsole()) {
+        $font_size = '10';
+    }
+
     $params['grid_color'] = '#C1C1C1';
     $params['legend_color'] = '#636363';
-    $params['font'] = $config['fontpath'];
-    $params['font_size']  = $config['font_size'];
+    $params['font'] = 'lato';
+    $params['font_size']  = $font_size;
     $params['short_data'] = $config['short_module_graph_data'];
 
     if ($params['only_image']) {
@@ -1330,7 +1341,7 @@ function graphic_combined_module(
     $params['grid_color']   = '#C1C1C1';
     $params['legend_color'] = '#636363';
 
-    $params['font'] = $config['fontpath'];
+    $params['font'] = 'lato';
     $params['font_size'] = $config['font_size'];
 
     $params['short_data'] = $config['short_module_graph_data'];
@@ -1401,6 +1412,14 @@ function graphic_combined_module(
         $labels  = [];
         $modules = [];
         foreach ($sources as $source) {
+            $id_agent = agents_get_module_id(
+                $source['id_agent_module']
+            );
+
+            if (!$id_agent) {
+                continue;
+            }
+
             if (is_metaconsole() === true) {
                 metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
@@ -1417,9 +1436,6 @@ function graphic_combined_module(
             array_push($modules, $modulepush);
             array_push($weights, $source['weight']);
             if ($source['label'] != '' || $params_combined['labels']) {
-                $id_agent = agents_get_module_id(
-                    $source['id_agent_module']
-                );
                 $agent_description = agents_get_description($id_agent);
                 $agent_group = agents_get_agent_group($id_agent);
                 $agent_address = agents_get_address($id_agent);
@@ -1530,9 +1546,13 @@ function graphic_combined_module(
     }
 
     $long_index = '';
-    if ($config['style'] === 'pandora_black') {
+
+    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    ) {
         $background_color = '#222';
         $params['legend_color'] = '#fff';
+    } else if ($params['pdf']) {
+        $params['legend_color'] = '#000';
     }
 
     switch ($params_combined['stacked']) {
@@ -2262,7 +2282,11 @@ function graphic_combined_module(
                     $ttl,
                     $homeurl,
                     $background_color,
-                    '#c1c1c1'
+                    '#c1c1c1',
+                    null,
+                    null,
+                    false,
+                    $params['pdf']
                 );
             }
 
@@ -2282,10 +2306,10 @@ function graphic_combined_module(
                 $options['generals']['forceTicks'] = true;
                 $options['x']['labelWidth'] = ($params['pdf'] === true) ? 30 : $sizeLabelTickWidth;
                 $options['generals']['arrayColors'] = $color;
-                $options['grid']['backgroundColor'] = 'transparent';
                 $options['grid']['backgroundColor'] = $background_color;
                 $options['y']['color'] = $background_color;
                 $options['x']['color'] = $background_color;
+                $options['pdf'] = $params['pdf'];
 
                 $output = vbar_graph($graph_values, $options, $ttl);
             }
@@ -2382,7 +2406,8 @@ function graphic_combined_module(
                 false,
                 $color,
                 false,
-                $background_color
+                $background_color,
+                $params['pdf']
             );
         break;
     }
@@ -2978,9 +3003,9 @@ function grafico_incidente_prioridad()
 {
     global $config;
 
-    $integria_ticket_count_by_priority_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
+    $integria_ticket_count_by_priority_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
 
-    $integria_priorities_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incident_priorities', '', false, 'json');
+    $integria_priorities_map_json = integria_api_call(null, null, null, null, 'get_incident_priorities', '', false, 'json');
 
     $integria_ticket_count_by_priority = json_decode($integria_ticket_count_by_priority_json, true);
     $integria_priorities_map = json_decode($integria_priorities_map_json, true);
@@ -3023,9 +3048,9 @@ function graph_incidents_status()
 {
     global $config;
 
-    $integria_ticket_count_by_status_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['estado', 30], false, '', '|;|');
+    $integria_ticket_count_by_status_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['estado', 30], false, '', '|;|');
 
-    $integria_status_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents_status', '', false, 'json');
+    $integria_status_map_json = integria_api_call(null, null, null, null, 'get_incidents_status', '', false, 'json');
 
     $integria_ticket_count_by_status = json_decode($integria_ticket_count_by_status_json, true);
     $integria_status_map = json_decode($integria_status_map_json, true);
@@ -3068,9 +3093,9 @@ function graphic_incident_group()
 {
     global $config;
 
-    $integria_ticket_count_by_group_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
+    $integria_ticket_count_by_group_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
 
-    $integria_group_map_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_groups', '', false, 'json');
+    $integria_group_map_json = integria_api_call(null, null, null, null, 'get_groups', '', false, 'json');
 
     $integria_ticket_count_by_group = json_decode($integria_ticket_count_by_group_json, true);
     $integria_group_map = json_decode($integria_group_map_json, true);
@@ -3114,7 +3139,7 @@ function graphic_incident_user()
 {
     global $config;
 
-    $integria_ticket_count_by_user_json = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
+    $integria_ticket_count_by_user_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
 
     $integria_ticket_count_by_user = json_decode($integria_ticket_count_by_user_json, true);
 
@@ -3816,6 +3841,7 @@ function graph_custom_sql_graph(
             $options['generals']['forceTicks'] = true;
             $options['generals']['arrayColors'] = $color;
             $options['x']['labelWidth'] = 75;
+            $options['pdf'] = $only_image;
             if ($ttl === 2) {
                 $options['x']['labelWidth'] = 35;
                 $options['backgroundColor'] = 'transparent';
@@ -3824,7 +3850,6 @@ function graph_custom_sql_graph(
                 $options['x']['color'] = 'transparent';
                 $options['generals']['pdf']['width'] = $width;
                 $options['generals']['pdf']['height'] = $height;
-
                 $output .= '<img src="data:image/jpg;base64,';
                 $output .= vbar_graph($data, $options, $ttl);
                 $output .= '" />';

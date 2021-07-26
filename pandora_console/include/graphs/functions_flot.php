@@ -145,11 +145,14 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black') {
+    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';
         $params['backgroundColor'] = '#222';
         $params['legend_color'] = '#fff';
+    } else if ($params['pdf']) {
+        $params['legend_color'] = '#000';
     }
 
     // Parent layer.
@@ -482,15 +485,13 @@ function flot_custom_pie_chart(
     $ttl,
     $homeurl,
     $background_color,
-    $legend_position
+    $legend_position,
+    $pdf
 ) {
     global $config;
-    if ($config['style'] === 'pandora_black') {
-        $background_color = 'black_theme';
-    }
 
     // TODO
-    // include_javascript_dependencies_flot_graph();
+    // include_javascript_dependencies_flot_graph();.
     $total_modules = $graph_values['total_modules'];
     unset($graph_values['total_modules']);
 
@@ -546,18 +547,23 @@ function flot_custom_pie_chart(
 }
 
 
-// Returns a 3D column chart
-function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='', $font_size=7, $background_color='white', $tick_color='white', $val_min=null, $val_max=null)
+// Returns a 3D column chart.
+function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='', $font_size=7, $background_color='white', $tick_color='white', $val_min=null, $val_max=null, $pdf=false)
 {
     global $config;
 
-    // include_javascript_dependencies_flot_graph();
+    if ($pdf === true) {
+        $background_color = 'white';
+        $tick_color = '#000';
+    }
+
+    // Include_javascript_dependencies_flot_graph().
     $return = '';
 
     $stacked_str = '';
     $multicolor = true;
 
-    // Get a unique identifier to graph
+    // Get a unique identifier to graph.
     $graph_id = uniqid('graph_');
     $graph_id2 = uniqid('graph_');
 
@@ -573,11 +579,11 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
     }
 
     // Set a weird separator to serialize and unserialize passing data
-    // from php to javascript
+    // from php to javascript.
     $separator = ';;::;;';
     $separator2 = ':,:,,,:,:';
 
-    // Transform data from our format to library format
+    // Transform data from our format to library format.
     $labels = [];
     $a = [];
     $vars = [];
@@ -614,10 +620,10 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
         $val_max = $max;
     }
 
-    // Store serialized data to use it from javascript
+    // Store serialized data to use it from javascript.
     $labels = implode($separator, $labels);
 
-    // Store data series in javascript format
+    // Store data series in javascript format.
     $jsvars = '';
     $jsseries = [];
 
@@ -633,7 +639,7 @@ function flot_hcolumn_chart($graph_data, $width, $height, $water_mark, $font='',
 
     $jsseries = implode(',', $jsseries);
 
-    // Javascript code
+    // Javascript code.
     $return .= "<script type='text/javascript'>";
     $return .= "pandoraFlotHBars('$graph_id', '$values', '$labels', $max, '$water_mark', '$separator', '$separator2', '$font', $font_size, '$background_color', '$tick_color', $val_min, $val_max)";
     $return .= '</script>';
@@ -683,14 +689,6 @@ function flot_vcolumn_chart(array $options)
     $options['graphId'] = $graphId;
 
     // If pandora_black theme its enabled then change grid colors.
-    /*
-        if ($config['style'] === 'pandora_black') {
-        $options['grid']['backgroundColor']['colors'][0] = 'transparent';
-        $options['grid']['backgroundColor']['colors'][1] = 'transparent';
-        $options['y']['color'] = 'transparent';
-        $options['x']['color'] = 'transparent';
-    }*/
-
     $settings = base64_encode(json_encode($options));
 
     // Javascript code.
@@ -780,7 +778,7 @@ function flot_slicesbar_graph(
 
     $datacolor = [];
 
-    $fontsize = $config['font_size'];
+    $fontsize = ((int) $config['font_size'] + 2);
     $fontpath = $config['fontpath'];
 
     $return .= '<div id="extra_'.$graph_id.'" class="slicebar-box-hover-styles invisible" style="font-size:'.$fontsize.'"></div>';

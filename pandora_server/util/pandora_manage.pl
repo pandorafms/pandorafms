@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.754 PS210504";
+my $version = "7.0NG.755 Build 210721";
 
 # save program name for logging
 my $progname = basename($0);
@@ -192,12 +192,11 @@ sub help_screen{
 	help_screen_line('--add_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
 	help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
 	help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
-	help_screen_line('--create_profile', "<profile_name> <incident_view> <incident_edit> <incident_management> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Create profile');
-	help_screen_line('--update_profile', "<profile_name> <incident_view> <incident_edit> <incident_management> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Modify profile');
+	help_screen_line('--create_profile', "<profile_name> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Create profile');
+	help_screen_line('--update_profile', "<profile_name> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Modify profile');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
-	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
@@ -563,14 +562,14 @@ sub pandora_create_user_profile ($$$$) {
 ##########################################################################
 ## Create profile.
 ##########################################################################
-sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$$$$) {
-        my ($dbh, $profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$) {
+        my ($dbh, $profile_name, $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
 
-		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,incident_view,incident_edit,incident_management,agent_view,agent_edit,agent_disable,alert_edit,alert_management,user_management,db_management,event_view,event_edit,event_management,report_view,report_edit,report_management,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management,pandora_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-		safe_input($profile_name), $incident_view,$incident_edit, $incident_management, $agent_view,
+		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,agent_view,agent_edit,agent_disable,alert_edit,alert_management,user_management,db_management,event_view,event_edit,event_management,report_view,report_edit,report_management,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management,pandora_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+		safe_input($profile_name), $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
@@ -579,14 +578,14 @@ sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$$$$) {
 ##########################################################################
 #### Update profile.
 ###########################################################################
-sub pandora_update_profile ($$$$$$$$$$$$$$$$$$$$$$$$$) {
-	my ($dbh, $profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+sub pandora_update_profile ($$$$$$$$$$$$$$$$$$$$$$) {
+	my ($dbh, $profile_name, $agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
 
-		return db_update ($dbh, 'UPDATE tperfil SET incident_view = ?, incident_edit = ?, incident_management = ?, agent_view = ?, agent_edit = ?, agent_disable = ?, alert_edit = ?, alert_management = ?, user_management = ?, db_management = ?, event_view = ?, event_edit = ?, event_management = ?, report_view = ?, report_edit = ?, report_management = ?, map_view = ?, map_edit = ?, map_management = ?, vconsole_view = ?, vconsole_edit = ?, vconsole_management = ?, pandora_management = ? WHERE name=?;',
-		$incident_view,$incident_edit, $incident_management, $agent_view,
+		return db_update ($dbh, 'UPDATE tperfil SET agent_view = ?, agent_edit = ?, agent_disable = ?, alert_edit = ?, alert_management = ?, user_management = ?, db_management = ?, event_view = ?, event_edit = ?, event_management = ?, report_view = ?, report_edit = ?, report_management = ?, map_view = ?, map_edit = ?, map_management = ?, vconsole_view = ?, vconsole_edit = ?, vconsole_management = ?, pandora_management = ? WHERE name=?;',
+		$agent_view,
 		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management, safe_input($profile_name));
@@ -3112,10 +3111,16 @@ sub cli_agent_update() {
 		# Add the address to the agent
 		if (defined $use_alias and $use_alias eq 'use_alias') {
 			foreach my $id (@id_agents) {
-				add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id->{'id_agente'});
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id->{'id_agente'});
+				}
 			}
 		} else {
-			add_new_address_agent ($dbh, $address_id, $id_agent);
+				my $ag_addr_id = get_agent_addr_id($dbh, $address_id, $id_agent);
+				if($ag_addr_id == -1) {
+					add_new_address_agent ($dbh, $address_id, $id_agent);
+				}
 		}
 		
 		$field = 'direccion';
@@ -4008,7 +4013,7 @@ sub cli_add_profile() {
 ##############################################################################
 
 sub cli_create_profile() {
-	my ($profile_name,$incident_view,$incident_edit,$incident_management,$agent_view,
+	my ($profile_name,$agent_view,
 	$agent_edit,$agent_disable,$alert_edit,$alert_management,$user_management,$db_management,
 	$event_view,$event_edit,$event_management,$report_view,$report_edit,$report_management,
 	$map_view,$map_edit,$map_management,$vconsole_view,$vconsole_edit,$vconsole_management,$pandora_management) = @ARGV[2..25];
@@ -4016,7 +4021,7 @@ sub cli_create_profile() {
 	my $id_profile = get_profile_id($dbh,$profile_name);
 	non_exist_check($id_profile,'profile',$profile_name);
 
-	pandora_create_profile ($dbh, $profile_name, $incident_view, $incident_edit, $incident_management, $agent_view,
+	pandora_create_profile ($dbh, $profile_name, $agent_view,
 	$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 	$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 	$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
@@ -4028,7 +4033,7 @@ sub cli_create_profile() {
 ##############################################################################
 #
 sub cli_update_profile() {
-	my ($profile_name,$incident_view,$incident_edit,$incident_management,$agent_view,
+	my ($profile_name,$agent_view,
 	$agent_edit,$agent_disable,$alert_edit,$alert_management,$user_management,$db_management,
 	$event_view,$event_edit,$event_management,$report_view,$report_edit,$report_management,
 	$map_view,$map_edit,$map_management,$vconsole_view,$vconsole_edit,$vconsole_management,$pandora_management) = @ARGV[2..25];
@@ -4036,7 +4041,7 @@ sub cli_update_profile() {
 	my $id_profile = get_profile_id($dbh,$profile_name);
 	exist_check($id_profile,'profile',$profile_name);
 
-	pandora_update_profile ($dbh, $profile_name, $incident_view, $incident_edit, $incident_management, $agent_view,
+	pandora_update_profile ($dbh, $profile_name, $agent_view,
 	$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
 	$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
 	$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
@@ -6048,18 +6053,6 @@ sub cli_disable_double_auth () {
 }
 
 ###############################################################################
-# Synchronize metaconsole users
-# Related option: --meta_synch_user
-###############################################################################
-sub cli_meta_synch_user() {
-	my ($user_name,$server_name,$profile_mode,$group,$profiles,$create_groups) = @ARGV[2..7];
-
-	my $result = api_call(\%conf,'set', 'meta_synch_user', undef, undef, "$user_name|$server_name|$profile_mode|$group|$profiles|$create_groups");
-	print "$result \n\n ";
-
-}
-
-###############################################################################
 # Enable user
 # Related option: --enable_user
 ###############################################################################
@@ -7371,10 +7364,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_double_auth') {
 			param_check($ltotal, 1);
 			cli_disable_double_auth();
-		}
-		elsif ($param eq '--meta_synch_user') {
-			param_check($ltotal, 6, 4);
-			cli_meta_synch_user();
 		}
 		elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);

@@ -23,6 +23,7 @@ use warnings;
 use threads;
 use threads::shared;
 use Thread::Semaphore;
+use Time::HiRes qw(usleep);
 
 # Default lib dir for RPM and DEB packages
 BEGIN { push @INC, '/usr/lib/perl5'; }
@@ -88,15 +89,35 @@ sub run ($$$$$) {
 
 	# Launch consumer threads
 	for (1..$self->getNumThreads ()) {
-		my $thr = threads->create (\&PandoraFMS::ProducerConsumerServer::data_consumer, $self,
-		              $task_queue, $pending_tasks, $sem, $task_sem);
+		my $thr = threads->create ({'exit' => 'thread_only'},
+			sub {
+				my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
+				local $SIG{'KILL'} = sub {
+					$RUN = 0;
+					$task_sem->up();
+					$sem->up();
+					exit 0;
+				};
+				PandoraFMS::ProducerConsumerServer::data_consumer->(@_);
+			}, $self, $task_queue, $pending_tasks, $sem, $task_sem
+		);
 		return unless defined ($thr);
 		$self->addThread ($thr->tid ());
 	}
 
 	# Launch producer thread
-	my $thr = threads->create (\&PandoraFMS::ProducerConsumerServer::data_producer, $self,
-	              $task_queue, $pending_tasks, $sem, $task_sem);
+	my $thr = threads->create ({'exit' => 'thread_only'},
+		sub {
+			my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
+			local $SIG{'KILL'} = sub {
+				$RUN = 0;
+				$task_sem->up();
+				$sem->up();
+				exit 0;
+			};
+			PandoraFMS::ProducerConsumerServer::data_producer->(@_);
+		}, $self, $task_queue, $pending_tasks, $sem, $task_sem
+	);
 	return unless defined ($thr);
 	$self->addThread ($thr->tid ());
 }
@@ -124,6 +145,7 @@ sub data_producer ($$$$$) {
 			foreach my $task (@tasks) {
 				$sem->down;
 				
+				last if ($RUN == 0);
 				if (defined $pending_tasks->{$task}) {
 					$sem->up;
 					next;
@@ -137,11 +159,12 @@ sub data_producer ($$$$$) {
 				$sem->up;
 			}
 
+			last if ($RUN == 0);
 			# Update queue size for statistics
 			$self->setQueueSize (scalar @{$task_queue});
 
 			threads->yield;
-			sleep ($pa_config->{'server_threshold'});
+			usleep (int(1e6 * $self->getPeriod()));
 		}
 	};
 	
@@ -151,6 +174,7 @@ sub data_producer ($$$$$) {
 	
 	$task_sem->up($self->getNumThreads ());
 	db_disconnect ($dbh);
+	exit 0;
 }
 
 ###############################################################################
@@ -168,12 +192,12 @@ sub data_consumer ($$$$$) {
 		$self->setDBH ($dbh);
 
 		while ($RUN == 1) {
-
 			# Wait for data
 			$self->logThread('[CONSUMER] Waiting for data.');
 			$task_sem->down;
 
 			$sem->down;
+			last if ($RUN == 0);
 			my $task = shift (@{$task_queue});
 			$sem->up;
 
@@ -198,6 +222,7 @@ sub data_consumer ($$$$$) {
 	}
 
 	db_disconnect ($dbh);
+	exit 0;
 }
 
 ###############################################################################

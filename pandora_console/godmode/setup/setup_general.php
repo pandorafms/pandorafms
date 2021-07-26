@@ -34,9 +34,11 @@ check_login();
 
 if (is_ajax()) {
     $test_address = get_parameter('test_address', '');
+    $params = get_parameter('params', '');
 
     $res = send_test_email(
-        $test_address
+        $test_address,
+        $params
     );
 
     echo $res;
@@ -420,7 +422,7 @@ $table->data[$i++][1] = html_print_select(
 $config['past_planned_downtimes'] = isset(
     $config['past_planned_downtimes']
 ) ? $config['past_planned_downtimes'] : 1;
-$table->data[$i][0] = __('Allow create planned downtimes in the past');
+$table->data[$i][0] = __('Allow create scheduled downtimes in the past');
 $table->data[$i++][1] = html_print_checkbox_switch(
     'past_planned_downtimes',
     1,
@@ -641,15 +643,15 @@ echo '<legend>'.__('Mail configuration').'</legend>';
         $table_mail_test->width = '100%';
         $table_mail_test->class = 'databox filters';
         $table_mail_test->data = [];
-        $table_mail_test->style[0] = 'font-weight: bold';
-        $table_mail_test->colspan[1][0] = 2;
+        $table_mail_test->style[0] = 'font-weight: bold;';
+        $table_mail_test->style[1] = 'font-weight: bold;display: flex;height: 54px;align-items: center;padding-left: 15px;';
 
         $table_mail_test->data[0][0] = __('Address');
         $table_mail_test->data[0][1] = html_print_input_text(
             'email_test_address',
             '',
             '',
-            40,
+            35,
             100,
             true
         );
@@ -661,7 +663,9 @@ echo '<legend>'.__('Mail configuration').'</legend>';
             '',
             'class="sub next"',
             true
-        ).'&nbsp&nbsp<span id="email_test_sent_message" class="invisible">Email sent</span><span id="email_test_failure_message" class=invisible">Email could not be sent</span>';
+        );
+
+        $table_mail_test->data[1][1] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
 
         echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).'</div>';
     }
@@ -703,22 +707,41 @@ function show_email_test(id) {
 }
 
 function perform_email_test () {
+    $('#email_test_sent_message').hide();
+    $('#email_test_failure_message').hide();
+
     var test_address = $('#text-email_test_address').val();
+    params = {
+        email_smtpServer : $('#text-email_smtpServer').val(),
+        email_smtpPort : $('#text-email_smtpPort').val(),
+        email_username : $('#text-email_username').val(),
+        email_password : $('#password-email_password').val(),
+        email_encryption : $( "#email_encryption option:selected" ).val(),
+        email_from_dir : $('#text-email_from_dir').val(),
+        email_from_name : $('#text-email_from_name').val()
+    };
 
     $.ajax({
         type: "POST",
         url: "ajax.php",
-        data: "page=godmode/setup/setup_general&test_address="+test_address,
-        dataType: "html",
+        data : {
+                    page: "godmode/setup/setup_general",
+                    test_address: test_address,
+                    params: params
+                },
+        dataType: "json",
         success: function(data) {
             if (parseInt(data) === 1) {
                 $('#email_test_sent_message').show();
+                $('#email_test_failure_message').hide();
             } else {
                 $('#email_test_failure_message').show();
+                $('#email_test_sent_message').hide();
             }
         },
         error: function() {
             $('#email_test_failure_message').show();
+            $('#email_test_sent_message').hide();
         },
     });
 }

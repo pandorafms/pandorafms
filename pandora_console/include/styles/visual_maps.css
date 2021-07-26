@@ -413,6 +413,19 @@ input.color_cloud_min_white[disabled] {
   background: url(../../images/color_cloud_item.png) no-repeat center;
 }
 
+input.odometer_min {
+  background: url(../../images/odometer.png) no-repeat center;
+}
+input.odometer_min[disabled] {
+  background: url(../../images/odometer.disabled.png) no-repeat center;
+}
+input.odometer_min_white {
+  background: url(../../images/odometer.disabled.png) no-repeat center;
+}
+input.odometer_min_white[disabled] {
+  background: url(../../images/odometer.png) no-repeat center;
+}
+
 div#cont {
   position: fixed;
   max-height: 320px;
@@ -422,12 +435,10 @@ div#cont {
 
 div.label strong {
   color: inherit;
-  font-family: inherit;
 }
 
 div.label strong span {
   color: inherit;
-  font-family: inherit;
 }
 
 /*.termframe{

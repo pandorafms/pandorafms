@@ -13,6 +13,8 @@
 // GNU General Public License for more details.
 global $config;
 
+use PandoraFMS\User;
+
 // Login check
 require_once $config['homedir'].'/include/functions_visual_map.php';
 ui_require_css_file('visual_maps');
@@ -122,7 +124,9 @@ $options['consoles_list']['text'] = '<a href="index.php?sec=network&sec2=godmode
 if ($vconsole_write || $vconsole_manage) {
     $url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
 
-    $hash = md5($config['dbpass'].$id_layout.$config['id_user']);
+    // Hash for auto-auth in public link.
+    $hash = User::generatePublicHash();
+
 
     $options['public_link']['text'] = '<a href="'.ui_get_full_url(
         'operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$id_layout.'&id_user='.$config['id_user']

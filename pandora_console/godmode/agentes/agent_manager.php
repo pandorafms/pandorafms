@@ -230,7 +230,7 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    if (!is_central_policies_on_node()) {
+    if (is_management_allowed() === true) {
         $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
             'images/cross.png',
             true,
@@ -392,9 +392,9 @@ $table_os .= '</span></div></div></div>';
 
 // Network server.
 $servers = servers_get_names();
-if (!array_key_exists($server_name, $servers)) {
-    $server_Name = 0;
-    // Set the agent have not server.
+// Set the agent have not server.
+if (array_key_exists($server_name, $servers) === false) {
+    $server_name = 0;
 }
 
 $table_server = '<div class="label_select"><p class="input_label">'.__('Server').'</p>';
@@ -500,7 +500,7 @@ if (enterprise_installed()) {
         false,
         // Delete_groups.
         // Do not show the primary group in this selection.
-        array_merge($secondary_groups_selected['plain'], [$agent['id_grupo']])
+        array_merge(($secondary_groups_selected['plain'] ?? []), [$agent['id_grupo']])
         // Include_groups.
         // Size.
         // Simple_multiple_options.
@@ -1004,9 +1004,9 @@ echo '<div class="action-buttons agent_manager" style="width: '.$table->width.'"
 
 // The context help about the learning mode.
 if ($modo == 0) {
-    echo "<span id='modules_not_learning_mode_context_help pdd_r_10px' '>";
+    echo "<span id='modules_not_learning_mode_context_help' class='pdd_r_10px'>";
 } else {
-    echo "<span id='modules_not_learning_mode_context_help invisible'>";
+    echo "<span id='modules_not_learning_mode_context_help' class='invisible'>";
 }
 
 echo clippy_context_help('modules_not_learning_mode');

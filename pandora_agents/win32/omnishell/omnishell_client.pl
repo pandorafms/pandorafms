@@ -63,7 +63,7 @@ my $config = read_configuration({},' ', [
 
 if (!defined($ConfFile) || !-e $ConfFile) {
   print $HELP;
-  exit 1;
+  exit 0;
 }
 
 if(!-d dirname($ConfFile).'\commands') {
@@ -87,7 +87,7 @@ if ($@) {
   if (is_enabled($config->{'debug'})) {
     print STDERR $@."\n";
   }
-  exit 1;
+  exit 0;
 }
 
 exit 0;

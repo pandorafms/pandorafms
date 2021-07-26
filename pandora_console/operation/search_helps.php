@@ -13,12 +13,10 @@
 // GNU General Public License for more details.
 global $config;
 
-$totalHelps = check_acl($config['id_user'], 0, 'IR');
-
 if ($helps === false || !$searchHelps) {
     echo "<br><div class='nf'>".__('Zero results found.').sprintf(
         __('You can find more help in the <a class="underline" href="%s">wiki</a>'),
-        'http://wiki.pandorafms.com/index.php?search='.$config['search_keywords']
+        'https://pandorafms.com/manual/start?do=search&id=start&q='.$config['search_keywords']
     )."</div>\n";
 } else {
     $table->width = '98%';

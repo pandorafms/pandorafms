@@ -39,7 +39,7 @@ $offset = (int) get_parameter('offset', 0);
 
 // See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = (int) get_parameter('id_agente');
-$groups = users_get_groups($config['id_user'], 'IR');
+$groups = users_get_groups($config['id_user'], 'AR');
 $filter = ' AND id_agent = '.$id_agent;
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=incident&id_agente='.$id_agent;
 
@@ -55,7 +55,7 @@ $params = [
     agents_get_name($id_agent),
 ];
 
-$result = integria_api_call($config['integria_hostname'], $config['integria_user'], $config['integria_pass'], $config['integria_api_pass'], 'get_incidents', $params, false, 'json', ',');
+$result = integria_api_call(null, null, null, null, 'get_incidents', $params, false, 'json', ',');
 
 $result = json_decode($result, true);
 

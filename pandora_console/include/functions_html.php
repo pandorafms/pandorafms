@@ -915,7 +915,25 @@ function html_print_select(
             ui_require_javascript_file('select2.min');
         }
 
-        $output .= '<script>$("#'.$id.'").select2();</script>';
+        $output .= '<script type="text/javascript">';
+        $output .= '$("#'.$id.'").select2();';
+
+        if ($required !== false) {
+            $require_message = __('Please select an item from this list.');
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                e.currentTarget.setCustomValidity("");
+            });';
+
+            $output .= '$("#'.$id.'").on("invalid", function(e) {
+                if ($(e.currentTarget).val() == null) {
+                    e.currentTarget.setCustomValidity(
+                        "'.$require_message.'"
+                    );
+                }
+            });';
+        }
+
+        $output .= '</script>';
     }
 
     if ($return) {
@@ -1331,8 +1349,14 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'include/javascript/',
             true
         );
+        ui_require_css_file(
+            'multiselect_filtered',
+            'include/styles/',
+            true
+        );
     } else {
         ui_require_javascript_file('multiselect_filtered');
+        ui_require_css_file('multiselect_filtered');
     }
 
     $uniqId = $data['uniqId'];
@@ -1417,7 +1441,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
         // Force_serialized.
         false,
         // Meta_fields.
-        $data['mMetaFields']
+        ($data['mMetaFields'] ?? is_metaconsole())
     );
 
     if ((empty($agents)) === true || $agents == -1) {
@@ -1464,12 +1488,16 @@ function html_print_select_multiple_modules_filtered(array $data):string
         ]
     );
 
-    $all_modules = select_modules_for_agent_group(
-        $data['mModuleGroup'],
-        explode(',', $data['mAgents']),
-        $data['mShowCommonModules'],
-        false
-    );
+    if ($data['mAgents'] !== null) {
+        $all_modules = select_modules_for_agent_group(
+            $data['mModuleGroup'],
+            explode(',', $data['mAgents']),
+            $data['mShowCommonModules'],
+            false
+        );
+    } else {
+        $all_modules = [];
+    }
 
     if ($data['mShowSelectedOtherGroups']) {
         $selected_modules_ids = explode(',', $data['mModules']);
@@ -2765,6 +2793,8 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'lang',
         'tabindex',
         'title',
+        'data-title',
+        'data-use_title_for_force_title',
         'xml:lang',
         'onclick',
         'ondblclick',
@@ -4304,10 +4334,14 @@ function html_print_sort_arrows($params, $order_tag, $up='up', $down='down')
 
 /**
  * Print an input hidden with a new csrf token generated
+ *
+ * @param boolean $return If it is true return a string with the output instead to echo the output.
+ *
+ * @return void
  */
-function html_print_csrf_hidden()
+function html_print_csrf_hidden(bool $return=false)
 {
-    html_print_input_hidden('csrf_code', generate_csrf_code());
+    return html_print_input_hidden('csrf_code', generate_csrf_code(), $return);
 }
 
 
@@ -5078,10 +5112,13 @@ function html_print_input_multicheck(array $data):string
 /**
  * Print an autocomplete input filled out with Integria IMS users.
  *
- * @param string  $name    The name of ajax control, by default is "users".
- * @param string  $default The default value to show in the ajax control.
- * @param boolean $return  If it is true return a string with the output instead to echo the output.
- * @param string  $size    Size.
+ * @param string  $name     The name of ajax control, by default is "users".
+ * @param string  $default  The default value to show in the ajax control.
+ * @param boolean $return   If it is true return a string with the output instead to echo the output.
+ * @param string  $size     Size.
+ * @param boolean $disable  Disable the button (optional, button enabled by default).
+ * @param boolean $required Attribute required.
+ * @param string  $class    Text inpunt class.
  *
  * @return mixed If the $return is true, return the output as string.
  */
@@ -5091,7 +5128,8 @@ function html_print_autocomplete_users_from_integria(
     $return=false,
     $size='30',
     $disable=false,
-    $required=false
+    $required=false,
+    $class=null
 ) {
     global $config;
 
@@ -5106,6 +5144,10 @@ function html_print_autocomplete_users_from_integria(
 
     if ($required) {
         $attrs['required'] = 'required';
+    }
+
+    if (empty($class) === false) {
+        $attrs['class'] = $class;
     }
 
     html_print_input_text_extended(

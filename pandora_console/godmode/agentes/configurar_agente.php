@@ -1494,7 +1494,7 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
-    $ff_type = (int) get_parameter('ff_type', $module['ff_type']);
+    $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
@@ -1668,46 +1668,29 @@ if ($update_module) {
         'module_macros'         => $module_macros,
     ];
 
-    if (preg_match('/http_auth_user/m', $values['plugin_parameter'])) {
-        $http_user_conf = true;
-    }
 
-    if (preg_match('/http_auth_pass/m', $values['plugin_parameter'])) {
-        $http_pass_conf = true;
-    }
+    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+        $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
+        $values['plugin_parameter'] = '';
 
-    if (!$http_user_conf || !$http_pass_conf) {
-        if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
-            $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
-
-            $values['plugin_parameter'] = '';
-
-            foreach ($plugin_parameter_split as $key => $value) {
-                if ($key == 1) {
-                    if ($http_user) {
-                        if ($http_user_conf) {
-                            continue;
-                        }
-
-                        $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
-                    }
-
-                    if ($http_pass) {
-                        if ($http_user_pass) {
-                            continue;
-                        }
-
-                        $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
-                    }
-
-                    $values['plugin_parameter'] .= $value.'&#x0a;';
-                } else {
-                    $values['plugin_parameter'] .= $value.'&#x0a;';
+        foreach ($plugin_parameter_split as $key => $value) {
+            if ($key == 1) {
+                if ($http_user) {
+                    $values['plugin_parameter'] .= 'http_auth_user&#x20;'.$http_user.'&#x0a;';
                 }
+
+                if ($http_pass) {
+                    $values['plugin_parameter'] .= 'http_auth_pass&#x20;'.$http_pass.'&#x0a;';
+                }
+
+                $values['plugin_parameter'] .= $value.'&#x0a;';
+            } else {
+                $values['plugin_parameter'] .= $value.'&#x0a;';
             }
         }
     }
+
 
     // In local modules, the interval is updated by agent.
     $module_kind = (int) get_parameter('moduletype');
@@ -2112,106 +2095,8 @@ if ($delete_module) {
         exit;
     }
 
-    enterprise_include_once('include/functions_config_agents.php');
-    enterprise_hook('config_agents_delete_module_in_conf', [modules_get_agentmodule_agent($id_borrar_modulo), modules_get_agentmodule_name($id_borrar_modulo)]);
-
-    // Init transaction.
-    $error = 0;
-
-    // First delete from tagente_modulo -> if not successful, increment
-    // error. NOTICE that we don't delete all data here, just marking for deletion
-    // and delete some simple data.
-    $values = [
-        'nombre'         => 'pendingdelete',
-        'disabled'       => 1,
-        'delete_pending' => 1,
-    ];
-    $result = db_process_sql_update(
-        'tagente_modulo',
-        $values,
-        ['id_agente_modulo' => $id_borrar_modulo]
-    );
-    if ($result === false) {
-        $error++;
-    } else {
-        // Set flag to update module status count.
-        db_process_sql(
-            'UPDATE tagente
-			SET update_module_count = 1, update_alert_count = 1
-			WHERE id_agente = '.$module_data['id_agente']
-        );
-    }
-
-    $result = db_process_sql_delete(
-        'tagente_estado',
-        ['id_agente_modulo' => $id_borrar_modulo]
-    );
-    if ($result === false) {
-        $error++;
-    }
-
-    $result = db_process_sql_delete(
-        'tagente_datos_inc',
-        ['id_agente_modulo' => $id_borrar_modulo]
-    );
-    if ($result === false) {
-        $error++;
-    }
-
-    if (alerts_delete_alert_agent_module(
-        false,
-        ['id_agent_module' => $id_borrar_modulo]
-    ) === false
-    ) {
-        $error++;
-    }
-
-    $result = db_process_delete_temp(
-        'ttag_module',
-        'id_agente_modulo',
-        $id_borrar_modulo
-    );
-    if ($result === false) {
-        $error++;
-    }
-
-    // Trick to detect if we are deleting a synthetic module (avg or arithmetic)
-    // If result is empty then module doesn't have this type of submodules.
-    $ops_json = enterprise_hook('modules_get_synthetic_operations', [$id_borrar_modulo]);
-    $result_ops_synthetic = json_decode($ops_json);
-    if (!empty($result_ops_synthetic)) {
-        $result = enterprise_hook('modules_delete_synthetic_operations', [$id_borrar_modulo]);
-        if ($result === false) {
-            $error++;
-        }
-    } else {
-        $result_components = enterprise_hook('modules_get_synthetic_components', [$id_borrar_modulo]);
-        $count_components = 1;
-        if (!empty($result_components)) {
-            // Get number of components pending to delete to know when it's needed to update orders.
-            $num_components = count($result_components);
-            $last_target_module = 0;
-            foreach ($result_components as $id_target_module) {
-                // Detects change of component or last component to update orders.
-                if (($count_components == $num_components)
-                    || ($last_target_module != $id_target_module)
-                ) {
-                    $update_orders = true;
-                } else {
-                    $update_orders = false;
-                }
-
-                $result = enterprise_hook('modules_delete_synthetic_operations', [$id_target_module, $id_borrar_modulo, $update_orders]);
-
-                if ($result === false) {
-                    $error++;
-                }
-
-                $count_components++;
-                $last_target_module = $id_target_module;
-            }
-        }
-    }
+    // Also call base function to delete modules madafakas de los cojones.
+    modules_delete_agent_module($id_borrar_modulo);
 
     // Check for errors.
     if ($error != 0) {

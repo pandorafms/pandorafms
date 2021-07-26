@@ -24,15 +24,6 @@ require_once 'include/functions_ui.php';
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'IR')) {
-    db_pandora_audit(
-        'ACL Violation',
-        'Trying to access netflow setup'
-    );
-    include 'general/noaccess.php';
-    return;
-}
-
 $update = (bool) get_parameter('update');
 
 $table->width = '100%';

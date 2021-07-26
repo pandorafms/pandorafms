@@ -1085,7 +1085,7 @@ function snmp_browser_print_container(
             true
         );
 
-        if (enterprise_installed()) {
+        if (is_management_allowed() === true && enterprise_installed()) {
             $output .= html_print_submit_button(
                 __('Create policy modules'),
                 'create_modules_policy',
@@ -1187,7 +1187,7 @@ function snmp_browser_create_modules_snmp(
         }
     }
 
-     $fail_modules = [];
+    $fail_modules = [];
 
     foreach ($targets_oids as $key => $target_oid) {
         $oid = snmp_browser_get_oid(
@@ -1243,7 +1243,7 @@ function snmp_browser_create_modules_snmp(
                         'min'                   => 0,
                         'tcp_send'              => $snmp_version,
                         'tcp_rcv'               => '',
-                        'tcp_port'              => 0,
+                        'tcp_port'              => $target_port,
                         'snmp_oid'              => $oid['numeric_oid'],
                         'snmp_community'        => $community,
                         'id_module_group'       => 3,

@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Sent / Received messages view.
  *
- * @category   Extensions
+ * @category   Workspace
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -27,23 +26,24 @@
  * ============================================================================
  */
 
+// Begin.
 require_once 'include/functions_messages.php';
 
 global $config;
 
 $delete_msg = get_parameter('delete_message', 0);
 $multiple_delete = get_parameter('multiple_delete', 0);
-$show_sent = get_parameter('show_sent', 0);
+$show_sent = (bool) get_parameter('show_sent', false);
 $mark_unread = get_parameter('mark_unread', 0);
 
 $active_list = true;
 $active_sent = false;
-if ($show_sent !== 0) {
+if ($show_sent === true) {
     $active_list = false;
     $active_sent = true;
 }
 
-
+$tabSelectedMessage = ($show_sent === true) ? __('Sent messages') : __('Received messages');
 
 $buttons['message_list'] = [
     'active' => $active_list,
@@ -67,14 +67,25 @@ $buttons['create_message'] = [
     ).'</a>',
 ];
 
-if (!is_ajax()) {
-    ui_print_page_header(
-        __('Messages'),
+if (is_ajax() === false) {
+    // Header.
+    ui_print_standard_header(
+        $tabSelectedMessage,
         'images/email_mc.png',
         false,
         '',
         false,
-        $buttons
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => __('Workspace'),
+            ],
+            [
+                'link'  => '',
+                'label' => __('Messages'),
+            ],
+        ]
     );
 }
 
@@ -86,7 +97,7 @@ if ($mark_unread) {
 if ($delete_msg) {
     $id = (int) get_parameter('id');
 
-    if ($show_sent) {
+    if ($show_sent === true) {
         $result = messages_delete_message_sent($id);
     } else {
         $result = messages_delete_message($id);
@@ -104,7 +115,7 @@ if ($multiple_delete) {
     $ids = (array) get_parameter('delete_multiple_messages', []);
 
     foreach ($ids as $id) {
-        if ($show_sent) {
+        if ($show_sent === true) {
             $result = messages_delete_message_sent($id);
         } else {
             $result = messages_delete_message($id);
@@ -122,7 +133,7 @@ if ($multiple_delete) {
     );
 }
 
-if ($show_sent) {
+if ($show_sent === true) {
     // Sent view.
     $num_messages = messages_get_count_sent($config['id_user']);
     if ($num_messages > 0 && !is_ajax()) {
@@ -142,7 +153,7 @@ if ($show_sent) {
     }
 }
 
-if (empty($messages)) {
+if (empty($messages) === true) {
     ui_print_info_message(
         [
             'no_close' => true,
@@ -175,7 +186,7 @@ if (empty($messages)) {
 
     $table->head[5] = html_print_checkbox('all_delete_messages', 0, false, true, false);
     $table->head[0] = __('Status');
-    if ($show_sent) {
+    if ($show_sent === true) {
         $table->head[1] = __('Destination');
     } else {
         $table->head[1] = __('Sender');
@@ -194,7 +205,7 @@ if (empty($messages)) {
 
         $data[0] = '';
         if ($message['read'] == 1) {
-            if ($show_sent) {
+            if ($show_sent === true) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
                 $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Click to read'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
@@ -204,7 +215,7 @@ if (empty($messages)) {
                 $data[0] .= '</a>';
             }
         } else {
-            if ($show_sent) {
+            if ($show_sent === true) {
                 $data[0] .= '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;show_sent=1&amp;id_message='.$message_id.'">';
                 $data[0] .= html_print_image('images/email_inbox.png', true, ['border' => 0, 'title' => __('Message unread - click to read'), 'class' => 'invert_filter']);
                 $data[0] .= '</a>';
@@ -215,7 +226,7 @@ if (empty($messages)) {
             }
         }
 
-        if ($show_sent) {
+        if ($show_sent === true) {
             $dest_user = get_user_fullname($message['dest']);
             if (!$dest_user) {
                 $dest_user = $message['dest'];
@@ -231,7 +242,7 @@ if (empty($messages)) {
             $data[1] = $orig_user;
         }
 
-        if ($show_sent) {
+        if ($show_sent === true) {
             $data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&show_sent=1&amp;id_message='.$message_id.'">';
         } else {
             $data[2] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id.'">';
@@ -252,7 +263,7 @@ if (empty($messages)) {
         );
 
         $table->cellclass[][4] = 'action_buttons';
-        if ($show_sent) {
+        if ($show_sent === true) {
             $data[4] = '<a href="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
                 onClick="javascript:if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['title' => __('Delete'), 'class' => 'invert_filter']).'</a>';
         } else {
@@ -264,8 +275,8 @@ if (empty($messages)) {
     }
 }
 
-if (!empty($messages)) {
-    if ($show_sent) {
+if (empty($messages) === false) {
+    if ($show_sent === true) {
         echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list&show_sent=1">';
     } else {
         echo '<form method="post" action="index.php?sec=message_list&amp;sec2=operation/messages/message_list">';

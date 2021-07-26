@@ -251,6 +251,13 @@ function agents_create_agent(
         return false;
     }
 
+    if (has_metaconsole() === true
+        && (bool) $config['metaconsole_agent_cache'] === true
+    ) {
+        // Force an update of the agent cache.
+        $values['update_module_count'] = 1;
+    }
+
     $id_agent = db_process_sql_insert('tagente', $values);
     if ($id_agent === false) {
         return false;
@@ -2417,6 +2424,30 @@ function agents_delete_agent($id_agents, $disableACL=false)
             $id_agent
         );
 
+        // Process a controlled module ellimination, keeping the old behaviour
+        // a couple of lines below this section.
+        try {
+            $filter = ['id_agente' => $id_agent];
+            $modules = [];
+            $rows = \db_get_all_rows_filter(
+                'tagente_modulo',
+                $filter
+            );
+
+            if (is_array($rows) === true) {
+                foreach ($rows as $row) {
+                    $modules[] = PandoraFMS\Module::build($row);
+                }
+            }
+
+            foreach ($modules as $module) {
+                $module->delete();
+            }
+        } catch (Exception $e) {
+            // Ignore.
+            error_log($e->getMessage().' in '.$e->getFile().':'.$e->getLine());
+        }
+
         // The status of the module
         db_process_delete_temp('tagente_estado', 'id_agente', $id_agent);
 
@@ -2456,15 +2487,27 @@ function agents_delete_agent($id_agents, $disableACL=false)
                 $target_filter
             );
 
-            foreach ($commands as $command) {
-                $rcmd_id = $command['rcmd_id'];
-                $rcmd = new RCMDFile($rcmd_id);
+            if (is_array($commands) === true) {
+                foreach ($commands as $command) {
+                    $rcmd_id = $command['rcmd_id'];
+                    $rcmd = new RCMDFile($rcmd_id);
 
-                $command_targets = [];
+                    $command_targets = [];
 
-                $command_targets = $rcmd->getTargets(false, $target_filter);
-                $rcmd->deleteTargets(array_keys($command_targets));
+                    $command_targets = $rcmd->getTargets(false, $target_filter);
+                    $rcmd->deleteTargets(array_keys($command_targets));
+                }
             }
+
+            // Remove agents from service child list.
+            enterprise_include_once('include/functions_services.php');
+            \enterprise_hook(
+                'service_elements_removal_tool',
+                [
+                    $id_agent,
+                    SERVICE_ELEMENT_AGENT,
+                ]
+            );
         }
 
         // tagente_datos_inc

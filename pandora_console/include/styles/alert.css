@@ -2,6 +2,10 @@
   display: inline-block;
 }
 
+#rules {
+  display: block;
+}
+
 li#li-buttons-alert-list > div {
   margin-left: 10px;
 }
@@ -58,7 +62,6 @@ ul.sample {
 }
 
 span.rule-title {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: normal;
   font-size: 2em;
   text-align: center;
@@ -130,13 +133,17 @@ div.target {
   display: flex;
   flex-direction: column;
   width: 100%;
+  box-sizing: border-box;
 }
 div.target.flex {
-  display: block;
   border: 2px dashed #ddd;
   margin-left: 0em;
   margin-top: 10px;
   padding: 1em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: fit-content;
 }
 
 .fields,
@@ -186,10 +193,10 @@ div#rules.show {
   padding-right: 1em;
   margin: 0 0.5em 0.5em 0px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
   background-color: #333;
   word-break: break-all;
+  height: fit-content;
 }
 
 .field.opacityElements {
@@ -213,6 +220,11 @@ div#rules.show {
 
 .variable {
   background-color: #82b92e;
+}
+
+.variable:empty::before {
+  content: "empty";
+  font-style: italic;
 }
 
 .modifier {
@@ -268,7 +280,6 @@ div#rules.show {
   background-color: #424242;
   border: 0px;
   color: #fff;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   font-weight: 600;
 }
 #rules select.click-list-elements.fields-elements-log {

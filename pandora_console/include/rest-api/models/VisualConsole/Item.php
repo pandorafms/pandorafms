@@ -765,7 +765,8 @@ class Item extends CachedModel
      */
     protected static function fetchDataFromDB(
         array $filter,
-        ?float $ratio=0
+        ?float $ratio=0,
+        ?float $widthRatio=0
     ): array {
         // Load side libraries.
         global $config;
@@ -803,6 +804,11 @@ class Item extends CachedModel
             $row['height'] = ($row['height'] * $ratio);
             $row['pos_x'] = ($row['pos_x'] * $ratio);
             $row['pos_y'] = ($row['pos_y'] * $ratio);
+        }
+
+        if ($widthRatio != 0) {
+            $row['width'] = ($row['width'] * $widthRatio);
+            $row['pos_x'] = ($row['pos_x'] * $widthRatio);
         }
 
         return $row;
@@ -1071,14 +1077,12 @@ class Item extends CachedModel
 
         $mobile_navigation = false;
 
-        if (isset($_SERVER['PHP_SELF']) === true
-            && (strstr($_SERVER['PHP_SELF'], 'mobile/') !== false
-            || strstr($_SERVER['HTTP_REFERER'], 'mobile/') !== false)
+        if (strstr(($_SERVER['PHP_SELF'] ?? ''), 'mobile/') !== false
+            || strstr(($_SERVER['HTTP_REFERER'] ?? ''), 'mobile/') !== false
         ) {
             $mobile_navigation = true;
         }
 
-        error_log(obhd($_SERVER['PHP_SELF']));
         // Load side libraries.
         include_once $config['homedir'].'/include/functions_ui.php';
         if (\is_metaconsole() === true) {
@@ -1772,6 +1776,8 @@ class Item extends CachedModel
                     'gridColor',
                     'color',
                     'legendBackgroundColor',
+                    'legendColor',
+                    'titleColor',
                 ]
             ),
             null
@@ -2093,6 +2099,10 @@ class Item extends CachedModel
 
                         case ICON:
                             $text = __('Icon');
+                        break;
+
+                        case ODOMETER:
+                            $text = __('Odometer');
                         break;
 
                         default:

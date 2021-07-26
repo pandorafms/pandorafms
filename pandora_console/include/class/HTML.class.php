@@ -867,6 +867,7 @@ class HTML
         }
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {
@@ -1002,6 +1003,7 @@ class HTML
         $output .= '</div>';
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {
@@ -1073,6 +1075,7 @@ class HTML
         $output .= '</div>';
 
         $output .= '<ul class="wizard">'.$output_submit.'</ul>';
+        $output .= html_print_csrf_hidden(true);
         $output .= '</form>';
         $output .= '<script>'.$js.'</script>';
         if ($rawjs) {

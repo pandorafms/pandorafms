@@ -220,7 +220,8 @@ echo '<head>'."\n";
 // This starts the page head. In the callback function,
 // $page['head'] array content will be processed into the head.
 ob_start('ui_process_page_head');
-
+// Avoid clickjacking.
+header('X-Frame-Options: SAMEORIGIN');
 // Enterprise main.
 enterprise_include_once('index.php');
 
@@ -245,6 +246,8 @@ $page = $sec2;
 // Reference variable for old time sake.
 $sec = get_parameter_get('sec');
 $sec = safe_url_extraclean($sec);
+// CSRF Validation.
+$validatedCSRF = validate_csrf_code();
 
 $process_login = false;
 
@@ -318,7 +321,7 @@ if (! isset($config['id_user'])) {
                         // Code.
                         $code = (string) get_parameter_post('auth_code');
 
-                        if (!empty($code)) {
+                        if (empty($code) === false) {
                             $result = validate_double_auth_code($nick, $code);
 
                             if ($result === true) {
@@ -330,7 +333,7 @@ if (! isset($config['id_user'])) {
                                 // Error message.
                                 $config['auth_error'] = __('Invalid code');
 
-                                if (!isset($_SESSION['prepared_login_da']['attempts'])) {
+                                if (isset($_SESSION['prepared_login_da']['attempts']) === false) {
                                     $_SESSION['prepared_login_da']['attempts'] = 0;
                                 }
 
@@ -468,6 +471,18 @@ if (! isset($config['id_user'])) {
                     break;
                 }
             }
+        }
+
+        // CSRF Validation not pass in login.
+        if ($validatedCSRF === false) {
+            $process_error_message = __(
+                '%s cannot verify the origin of the request. Try again, please.',
+                get_product_name()
+            );
+
+            include_once 'general/login_page.php';
+            // Finish the execution.
+            exit('</html>');
         }
 
         if (($nick_in_db !== false) && $expired_pass) {
@@ -746,16 +761,17 @@ if (! isset($config['id_user'])) {
             enterprise_include_once('include/functions_reset_pass.php');
         }
 
-        $correct_pass_change = (boolean) get_parameter('correct_pass_change', 0);
-        $reset = (boolean) get_parameter('reset', 0);
-        $first = (boolean) get_parameter('first', 0);
-        $reset_hash = get_parameter('reset_hash', '');
+        // Boolean parameters.
+        $correct_pass_change = (boolean) get_parameter('correct_pass_change', false);
+        $reset               = (boolean) get_parameter('reset', false);
+        $first               = (boolean) get_parameter('first', false);
+        // Strings.
+        $reset_hash          = get_parameter('reset_hash');
+        $pass1               = get_parameter_post('pass1');
+        $pass2               = get_parameter_post('pass2');
+        $id_user             = get_parameter_post('id_user');
 
-        $pass1 = get_parameter_post('pass1');
-        $pass2 = get_parameter_post('pass2');
-        $id_user = get_parameter_post('id_user');
-
-        if ($reset_hash != '') {
+        if (empty($reset_hash) === false) {
             $hash_data = explode(':::', $reset_hash);
             $id_user = $hash_data[0];
             $codified_hash = $hash_data[1];
@@ -763,45 +779,61 @@ if (! isset($config['id_user'])) {
             $db_reset_pass_entry = db_get_value_filter('reset_time', 'treset_pass', ['id_user' => $id_user, 'cod_hash' => $id_user.':::'.$codified_hash]);
         }
 
-        if ($correct_pass_change && !empty($pass1) && !empty($pass2) && !empty($id_user) && $db_reset_pass_entry) {
-            delete_reset_pass_entry($id_user);
+        if ($correct_pass_change === true
+            && empty($pass1) === false
+            && empty($pass2) === false
+            && empty($id_user) === false
+            && $db_reset_pass_entry !== false
+        ) {
+            // The CSRF does not be validated.
+            if ($validatedCSRF === false) {
+                $process_error_message = __(
+                    '%s cannot verify the origin of the request. Try again, please.',
+                    get_product_name()
+                );
 
-            $correct_reset_pass_process = '';
-            $process_error_message = '';
+                include_once 'general/login_page.php';
+                // Finish the execution.
+                exit('</html>');
+            } else {
+                delete_reset_pass_entry($id_user);
+                $correct_reset_pass_process = '';
+                $process_error_message = '';
 
-            if ($pass1 == $pass2) {
-                $res = update_user_password($id_user, $pass1);
-                if ($res) {
-                    db_process_sql_insert(
-                        'tsesion',
-                        [
-                            'id_sesion'   => '',
-                            'id_usuario'  => $id_user,
-                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                            'accion'      => 'Reset&#x20;change',
-                            'descripcion' => 'Successful reset password process ',
-                            'fecha'       => date('Y-m-d H:i:s'),
-                            'utimestamp'  => time(),
-                        ]
-                    );
+                if ($pass1 === $pass2) {
+                    $res = update_user_password($id_user, $pass1);
+                    if ($res) {
+                        db_process_sql_insert(
+                            'tsesion',
+                            [
+                                'id_sesion'   => '',
+                                'id_usuario'  => $id_user,
+                                'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                'accion'      => 'Reset&#x20;change',
+                                'descripcion' => 'Successful reset password process ',
+                                'fecha'       => date('Y-m-d H:i:s'),
+                                'utimestamp'  => time(),
+                            ]
+                        );
 
-                    $correct_reset_pass_process = __('Password changed successfully');
+                        $correct_reset_pass_process = __('Password changed successfully');
 
-                    register_pass_change_try($id_user, 1);
+                        register_pass_change_try($id_user, 1);
+                    } else {
+                        register_pass_change_try($id_user, 0);
+
+                        $process_error_message = __('Failed to change password');
+                    }
                 } else {
                     register_pass_change_try($id_user, 0);
 
-                    $process_error_message = __('Failed to change password');
+                    $process_error_message = __('Passwords must be the same');
                 }
-            } else {
-                register_pass_change_try($id_user, 0);
 
-                $process_error_message = __('Passwords must be the same');
+                include_once 'general/login_page.php';
             }
-
-            include_once 'general/login_page.php';
         } else {
-            if ($reset_hash != '') {
+            if (empty($reset_hash) === false) {
                 $process_error_message = '';
 
                 if ($db_reset_pass_entry) {
@@ -818,23 +850,35 @@ if (! isset($config['id_user'])) {
                     include_once 'general/login_page.php';
                 }
             } else {
-                if (!$reset) {
+                if ($reset === false) {
                     include_once 'general/login_page.php';
                 } else {
-                    $user_reset_pass = get_parameter('user_reset_pass', '');
+                    $user_reset_pass = get_parameter('user_reset_pass');
                     $error = '';
                     $mail = '';
                     $show_error = false;
 
-                    if (!$first) {
-                        if ($user_reset_pass == '') {
+                    if ($first === false) {
+                        // The CSRF does not be validated.
+                        if ($validatedCSRF === false) {
+                            $process_error_message = __(
+                                '%s cannot verify the origin of the request. Try again, please.',
+                                get_product_name()
+                            );
+
+                            include_once 'general/login_page.php';
+                            // Finish the execution.
+                            exit('</html>');
+                        }
+
+                        if (empty($user_reset_pass) === true) {
                             $reset = false;
                             $error = __('Id user cannot be empty');
                             $show_error = true;
                         } else {
                             $check_user = check_user_id($user_reset_pass);
 
-                            if (!$check_user) {
+                            if ($check_user === false) {
                                 $reset = false;
                                 register_pass_change_try($user_reset_pass, 0);
                                 $error = __('Error in reset password request');
@@ -867,9 +911,9 @@ if (! isset($config['id_user'])) {
                         $body .= '<p />';
                         $body .= '<em>'.__('Please do not reply to this email.').'</em>';
 
-                        $result = send_email_to_user($mail, $body, $subject);
+                        $result = (bool) send_email_to_user($mail, $body, $subject);
 
-                        if (!$result) {
+                        if ($result === false) {
                             $process_error_message = __('Error at sending the email');
                         } else {
                             send_token_to_db($user_reset_pass, $cod_hash);
@@ -938,7 +982,11 @@ if (! isset($config['id_user'])) {
         exit('</html>');
     } else {
         if (((bool) $user_in_db['is_admin'] === false)
-            && ((bool) $user_in_db['not_login'] === true)
+            && (            (bool) $user_in_db['not_login'] === true
+            || (is_metaconsole() === false
+            && has_metaconsole() === true
+            && is_management_allowed() === false
+            && (bool) $user_in_db['metaconsole_access_node'] === false))
         ) {
             // Logout.
             $_REQUEST = [];
@@ -1011,15 +1059,9 @@ if ($process_login) {
     unset($_SESSION['new_update']);
 
     include_once 'include/functions_update_manager.php';
-    enterprise_include_once('include/functions_update_manager.php');
 
     if ($config['autoupdate'] == 1) {
-        if (enterprise_installed()) {
-            $result = update_manager_check_online_enterprise_packages_available();
-        } else {
-            $result = update_manager_check_online_free_packages_available();
-        }
-
+        $result = update_manager_check_updates_available();
         if ($result) {
             $_SESSION['new_update'] = 'new';
         }
@@ -1044,6 +1086,21 @@ if (get_parameter('login', 0) !== 0) {
         include_once 'general/php7_message.php';
     }
 }
+
+
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
 
 // Header.
 if ($config['pure'] == 0) {
@@ -1078,8 +1135,6 @@ session_write_close();
 if ($config['pure'] == 0) {
     echo '<div id="main">';
 }
-
-
 
 // Page loader / selector.
 if ($searchPage) {
@@ -1123,9 +1178,15 @@ if ($searchPage) {
             include 'general/noaccess.php';
         } else {
             $sec = $main_sec;
-            if (file_exists($page)) {
-                if (! extensions_is_extension($page)) {
-                    include_once $page;
+            if (file_exists($page) === true) {
+                if ((bool) extensions_is_extension($page) === false) {
+                    try {
+                        include_once $page;
+                    } catch (Exception $e) {
+                        ui_print_error_message(
+                            $e->getMessage().' in '.$e->getFile().':'.$e->getLine()
+                        );
+                    }
                 } else {
                     if ($sec[0] == 'g') {
                         extensions_call_godmode_function(basename($page));
@@ -1140,7 +1201,7 @@ if ($searchPage) {
     } else {
         // Home screen chosen by the user.
         $home_page = '';
-        if (isset($config['id_user'])) {
+        if (isset($config['id_user']) === true) {
             $user_info = users_get_user_by_id($config['id_user']);
             $home_page = io_safe_output($user_info['section']);
             $home_url = $user_info['data_section'];
@@ -1174,7 +1235,8 @@ if ($searchPage) {
                 break;
 
                 case 'Dashboard':
-                    $str = 'sec=reporting&sec2=operation/dashboard/dashboard&dashboardId='.$home_url.'&d_from_main_page=1';
+                    $_GET['specialSec2'] = sprintf('operation/dashboard/dashboard&dashboardId=%s', $home_url);
+                    $str = sprintf('sec=reporting&sec2=%s&d_from_main_page=1', $_GET['specialSec2']);
                     parse_str($str, $res);
                     foreach ($res as $key => $param) {
                         $_GET[$key] = $param;
@@ -1210,7 +1272,7 @@ if ($searchPage) {
                 break;
             }
 
-            if (isset($_GET['sec2'])) {
+            if (isset($_GET['sec2']) === true) {
                 $file = $_GET['sec2'].'.php';
                 // Make file path absolute to prevent accessing remote files.
                 $file = __DIR__.'/'.$file;
@@ -1219,7 +1281,7 @@ if ($searchPage) {
                 $_GET['sec'] = ($main_sec == false) ? $_GET['sec'] : $main_sec;
 
                 // Third condition is aimed to prevent from traversal attack.
-                if (!file_exists($file)
+                if (file_exists($file) === false
                     || ($_GET['sec2'] != 'general/logon_ok' && enterprise_hook(
                         'enterprise_acl',
                         [
@@ -1276,6 +1338,7 @@ if ($config['pure'] == 0) {
     // Container div.
     echo '</div>';
     echo '<div id="both"></div>';
+    echo '</div>';
 
     echo '<div id="foot">';
     include 'general/footer.php';
@@ -1362,36 +1425,6 @@ require 'include/php_to_js_values.php';
             return rv;
         };
     })();
-    
-    function force_run_register () {
-        jQuery.post ("ajax.php",
-            {
-                "page": "general/register",
-                "load_wizards": 'registration'
-            },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                show_registration_wizard();
-            },
-            "html"
-        );
-    }
-
-    function force_run_newsletter () {
-        jQuery.post ("ajax.php",
-            {
-                "page": "general/register",
-                "load_wizards": 'newsletter'
-            },
-            function (data) {
-                $('#wiz_container').empty ()
-                    .html (data);
-                show_newsletter_wizard ();
-            },
-            "html"
-        );
-    }
 
     function first_time_identification () {
         jQuery.post ("ajax.php",

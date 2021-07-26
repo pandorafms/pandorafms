@@ -26,6 +26,10 @@
   justify-content: center;
 }
 
+#img-full-screen {
+  width: 12em;
+}
+
 #full_screen_refresh_box,
 #slc-refresh-rate,
 #img-full-screen {
@@ -45,6 +49,7 @@
 
 .agent_alerts_header_pure {
   position: absolute;
+  z-index: 500;
 }
 
 .agents_alerts_header form > ul > li {

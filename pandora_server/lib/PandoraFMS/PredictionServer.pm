@@ -115,7 +115,7 @@ sub data_producer ($) {
 			WHERE ((server_name = ?)
 				OR (server_name = ANY(SELECT name
 					FROM tserver
-					WHERE status = 0 AND server_type = ?))
+					WHERE status <> 1 AND server_type = ?))
 				OR ((server_name = 0 OR server_name IS NULL) AND 1=?)
 				)
 				AND tagente_modulo.id_agente = tagente.id_agente

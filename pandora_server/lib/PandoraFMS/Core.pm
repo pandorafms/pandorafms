@@ -1651,7 +1651,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
-		my $api_path = $config_api_path . "/integria/include/api.php";
+		my $api_path = $config_api_path . "/include/api.php";
 		
 		# Field 2 (Integria IMS API pass)
 		my $api_pass = $config_api_pass;
@@ -6458,7 +6458,7 @@ sub pandora_sync_agents_integria ($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my @agents_string = '';
 	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
@@ -6506,7 +6506,7 @@ sub pandora_get_integria_ticket_types($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my $call_api = $api_path . '?' .
 		'user=' . $config_integria_user . '&' .

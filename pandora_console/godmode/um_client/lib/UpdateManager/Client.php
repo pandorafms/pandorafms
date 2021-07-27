@@ -941,7 +941,7 @@ class Client
             $queries = preg_split("/(;\n)|(;\n\r)/", $sql);
             foreach ($queries as $query) {
                 if (empty($query) !== true) {
-                    if (preg_match('/^\s*LOAD\s+(.*)$/i', $query, $matches) > 0) {
+                    if (preg_match('/^\s*SOURCE\s+(.*)$/i', $query, $matches) > 0) {
                         $filepath = dirname($mr_file).'/'.$matches[1];
                         if (file_exists($filepath) === true) {
                             $query = file_get_contents($filepath);

@@ -1673,7 +1673,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->productPath.'/extras/mr/'.$mr,
+                            $this->extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

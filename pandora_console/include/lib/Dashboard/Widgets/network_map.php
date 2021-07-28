@@ -285,7 +285,6 @@ class NetworkMapWidget extends Widget
             null,
             null,
             true,
-            false,
             $return_all_group
         );
 

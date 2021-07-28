@@ -171,8 +171,9 @@ sub ha_keep_pandora_running($$) {
     'SELECT count(*) AS "delayed"
      FROM  tserver
      WHERE ((status = -1) OR ( (unix_timestamp() - unix_timestamp(keepalive)) > (server_keepalive+1) AND status != 0 ))
-       AND server_type != ? AND name = ?',
+       AND server_type NOT IN (?, ?) AND name = ?',
     PandoraFMS::Tools::SATELLITESERVER,
+    PandoraFMS::Tools::MFSERVER,
     $conf->{'servername'}
   );
 

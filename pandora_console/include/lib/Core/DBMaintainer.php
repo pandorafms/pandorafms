@@ -721,6 +721,7 @@ final class DBMaintainer
                         $umc->updateMR($path);
                     } catch (\Exception $e) {
                         // TODO: Send an event to notify errors.
+                        $this->lastError = $e->getMessage();
                         $return = false;
                     }
                 } else {

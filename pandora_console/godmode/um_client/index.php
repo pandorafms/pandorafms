@@ -388,7 +388,7 @@ if (empty($config['update_manager_proxy_server']) === false
     || empty($config['update_manager_proxy_password']) === false
 ) {
     $proxy = [
-        'server'   => $config['update_manager_proxy_server'],
+        'host'     => $config['update_manager_proxy_server'],
         'port'     => $config['update_manager_proxy_port'],
         'user'     => $config['update_manager_proxy_user'],
         'password' => $config['update_manager_proxy_password'],

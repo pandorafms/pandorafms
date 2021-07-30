@@ -4033,7 +4033,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		# Assign values to _snmp_fx_ macros.
 		my $count;
 		for ($count = 0; defined ($custom_values[$count]); $count++) {
-			my $macro_name = '_snmp_f' . $count . '_';
+			my $macro_name = '_snmp_f' . ($count+1) . '_';
 			my $target = $custom_values[$count];
 
 			if (!defined($target)) {

@@ -4702,9 +4702,9 @@ sub get_module_status ($$$) {
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
 				if ($warning_min == 0) {
-					return 1 if ($data > $warning_max);
+					return 2 if ($data > $warning_max);
 				}elsif ($warning_max == 0) {
-					return 1 if ($data <= $warning_min);
+					return 2 if ($data <= $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
 					return 2 if ($data <= $warning_max && $warning_max < $warning_min);

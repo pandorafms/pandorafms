@@ -3751,7 +3751,7 @@ function graph_custom_sql_graph(
                         0,
                         floor($SQL_GRAPH_MAX_LABEL_SIZE / 2)
                     );
-                    $label .= '...';
+                    $label .= '...<br>';
                     $label .= substr(
                         $first_label,
                         floor(-$SQL_GRAPH_MAX_LABEL_SIZE / 2)

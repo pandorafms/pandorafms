@@ -545,7 +545,7 @@ if (is_array($config['extensions'])) {
             if (array_key_exists('fatherId', $extension_menu)) {
                 // Check that extension father ID exists previously on the menu.
                 if ((strlen($extension_menu['fatherId']) > 0)) {
-                    if (array_key_exists('subfatherId', $extension_menu)) {
+                    if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
                         if ((strlen($extension_menu['subfatherId']) > 0)) {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = $extension_menu['name'];

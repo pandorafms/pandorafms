@@ -159,7 +159,7 @@ function users_extension_main_god($god=true)
 }
 
 
-extensions_add_operation_menu_option(__('Users connected'), 'workspace', 'users/icon.png', 'v1r1', '', 'UM');
+extensions_add_operation_menu_option(__('Users connected'), 'workspace', 'users/icon.png', 'v1r1', null, 'UM');
 
 extensions_add_godmode_function('users_extension_main_god');
 extensions_add_main_function('users_extension_main');

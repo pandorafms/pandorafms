@@ -500,7 +500,10 @@ if (enterprise_installed()) {
         false,
         // Delete_groups.
         // Do not show the primary group in this selection.
-        array_merge(($secondary_groups_selected['plain'] ?? []), [$agent['id_grupo']])
+        array_merge(
+            (empty($secondary_groups_selected['plain']) === false) ? $secondary_groups_selected['plain'] : [],
+            [$agent['id_grupo']]
+        )
         // Include_groups.
         // Size.
         // Simple_multiple_options.

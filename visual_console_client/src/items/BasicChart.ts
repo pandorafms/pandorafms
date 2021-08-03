@@ -16,6 +16,9 @@ export type BasicChartProps = {
   type: ItemType.BASIC_CHART;
   html: string;
   period: number | null;
+  value: number | null;
+  status: string;
+  moduleNameColor: string;
 } & ItemProps &
   WithModuleProps &
   LinkedVisualConsoleProps;
@@ -43,6 +46,11 @@ export function basicChartPropsDecoder(
       ? data.html
       : decodeBase64(data.encodedHtml),
     period: parseIntOr(data.period, null),
+    value: parseFloat(data.value),
+    status: stringIsEmpty(data.status) ? "#B2B2B2" : data.status,
+    moduleNameColor: stringIsEmpty(data.moduleNameColor)
+      ? "#3f3f3f"
+      : data.moduleNameColor,
     ...modulePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...linkedVCPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -51,9 +59,41 @@ export function basicChartPropsDecoder(
 export default class BasicChart extends Item<BasicChartProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
+    const header = document.createElement("div");
+
+    header.style.height = "40%";
+    header.style.width = "100%";
+    header.style.display = "flex";
+
+    const moduleName = document.createElement("h2");
+    moduleName.textContent = this.props.moduleName;
+    moduleName.style.margin = "0";
+    moduleName.style.padding = "0";
+    moduleName.style.height = "100%";
+    moduleName.style.width = "80%";
+    moduleName.style.display = "flex";
+    moduleName.style.alignItems = "center";
+    moduleName.style.fontSize = `2.5vmin`;
+    moduleName.style.marginLeft = "3%";
+    moduleName.style.color = `${this.props.moduleNameColor}`;
+    header.appendChild(moduleName);
+
+    const moduleValue = document.createElement("h2");
+    moduleValue.textContent = `${this.props.value}`;
+    moduleValue.style.margin = "0";
+    moduleValue.style.padding = "0";
+    moduleValue.style.height = "100%";
+    moduleValue.style.width = "20%";
+    moduleValue.style.display = "flex";
+    moduleValue.style.alignItems = "center";
+    moduleValue.style.justifyContent = "center";
+    moduleValue.style.fontSize = `2.5vmin`;
+    moduleValue.style.color = this.props.status;
+    moduleValue.style.textDecoration = "none !important";
+    header.appendChild(moduleValue);
 
     element.innerHTML = this.props.html;
-    element.className = "module-graph";
+    element.className = "basic-chart";
     if (
       this.props.agentDisabled === true ||
       this.props.moduleDisabled === true
@@ -86,12 +126,45 @@ export default class BasicChart extends Item<BasicChartProps> {
     }
 
     element.innerHTML = this.props.html;
+    element.insertBefore(header, element.firstChild);
 
     return element;
   }
 
   protected updateDomElement(element: HTMLElement): void {
+    const header = document.createElement("div");
+    header.style.height = "40%";
+    header.style.width = "100%";
+    header.style.display = "flex";
+
+    const moduleName = document.createElement("h2");
+    moduleName.textContent = this.props.moduleName;
+    moduleName.style.margin = "0";
+    moduleName.style.padding = "0";
+    moduleName.style.height = "100%";
+    moduleName.style.width = "80%";
+    moduleName.style.display = "flex";
+    moduleName.style.alignItems = "center";
+    moduleName.style.fontSize = `2.5vmin`;
+    moduleName.style.marginLeft = "3%";
+    moduleName.style.color = `${this.props.moduleNameColor}`;
+    header.appendChild(moduleName);
+
+    const moduleValue = document.createElement("h2");
+    moduleValue.textContent = `${this.props.value}`;
+    moduleValue.style.margin = "0";
+    moduleValue.style.padding = "0";
+    moduleValue.style.height = "100%";
+    moduleValue.style.width = "20%";
+    moduleValue.style.display = "flex";
+    moduleValue.style.alignItems = "center";
+    moduleValue.style.justifyContent = "center";
+    moduleValue.style.fontSize = `2.5vmin`;
+    moduleValue.style.color = this.props.status;
+    header.appendChild(moduleValue);
+
     element.innerHTML = this.props.html;
+    element.insertBefore(header, element.firstChild);
 
     // Remove the overview graph.
     const legendP = element.getElementsByTagName("p");

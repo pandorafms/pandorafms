@@ -47,7 +47,10 @@ final class BasicChart extends Item
     {
         $return = parent::decode($data);
         $return['type'] = BASIC_CHART;
-        $return['period'] = static::extractPeriod($data);
+        $return['period'] = $this->extractPeriod($data);
+        $return['value'] = $this->extractValue($data);
+        $return['status'] = $this->extractStatus($data);
+        $return['moduleNameColor'] = $this->extractModuleNameColor($data);
 
         return $return;
     }
@@ -65,6 +68,60 @@ final class BasicChart extends Item
         return static::parseIntOr(
             static::issetInArray($data, ['period']),
             null
+        );
+    }
+
+
+    /**
+     * Extract value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing value or null.
+     */
+    private static function extractValue(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                ['value']
+            ),
+            '0'
+        );
+    }
+
+
+    /**
+     * Extract status value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing status value or null.
+     */
+    private static function extractStatus(array $data)
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray(
+                $data,
+                ['status']
+            ),
+            COL_UNKNOWN
+        );
+    }
+
+
+    /**
+     * Extract label color value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return mixed String representing the grid color (not empty) or null.
+     */
+    private static function extractModuleNameColor(array $data): string
+    {
+        return static::notEmptyStringOr(
+            static::issetInArray($data, ['moduleNameColor', 'border_color']),
+            '#3f3f3f'
         );
     }
 
@@ -134,7 +191,7 @@ final class BasicChart extends Item
          */
 
         $width = (int) $data['width'];
-        $height = (int) $data['height'];
+        $height = ((int) $data['height'] * 0.6);
 
         // Module graph.
         if ($moduleId === null) {
@@ -165,6 +222,7 @@ final class BasicChart extends Item
             'show_title'         => false,
             'dashboard'          => true,
             'server_id'          => $metaconsoleId,
+            'basic_chart'        => true,
         ];
 
         if ($imageOnly !== false) {
@@ -179,40 +237,9 @@ final class BasicChart extends Item
             \metaconsole_restore_db();
         }
 
-        $module_data = db_get_row_sql(
-            'SELECT * FROM tagente_modulo
-            WHERE id_agente_modulo = '.$moduleId
-        );
+        $data['value'] = \modules_get_last_value($moduleId);
+        $data['status'] = \modules_get_color_status(modules_get_agentmodule_last_status($moduleId));
 
-        $data_module_graph = [];
-        $data_module_graph['history_db'] = db_search_in_history_db(
-            $date_array['start_date']
-        );
-        $data_module_graph['agent_name'] = modules_get_agentmodule_agent_name(
-            $moduleId
-        );
-        $data_module_graph['agent_alias'] = modules_get_agentmodule_agent_alias(
-            $moduleId
-        );
-        $data_module_graph['agent_id'] = $module_data['id_agente'];
-        $data_module_graph['module_name'] = $module_data['nombre'];
-        $data_module_graph['id_module_type'] = $module_data['id_tipo_modulo'];
-        $data_module_graph['module_type'] = modules_get_moduletype_name(
-            $data_module_graph['id_module_type']
-        );
-        $data_module_graph['uncompressed'] = is_module_uncompressed(
-            $data_module_graph['module_type']
-        );
-        $data_module_graph['w_min'] = $module_data['min_warning'];
-        $data_module_graph['w_max'] = $module_data['max_warning'];
-        $data_module_graph['w_inv'] = $module_data['warning_inverse'];
-        $data_module_graph['c_min'] = $module_data['min_critical'];
-        $data_module_graph['c_max'] = $module_data['max_critical'];
-        $data_module_graph['c_inv'] = $module_data['critical_inverse'];
-        $data_module_graph['unit'] = $module_data['unit'];
-
-        // hd($data_module_graph, true);
-        // hd($date_array, true);
         return $data;
     }
 
@@ -228,7 +255,6 @@ final class BasicChart extends Item
      */
     public static function getFormInputs(array $values): array
     {
-        hd('entraaaaaaaaaaaaaa siiiiiiiiiii', true);
         // Default values.
         $values = static::getDefaultGeneralValues($values);
 
@@ -236,7 +262,7 @@ final class BasicChart extends Item
         $inputs = Item::getFormInputs($values);
 
         if (is_array($inputs) !== true) {
-            throw new Exception(
+            throw new \Exception(
                 '[BasicChart]::getFormInputs parent class return is not an array'
             );
         }
@@ -271,7 +297,6 @@ final class BasicChart extends Item
                 'label'     => __('Module'),
                 'arguments' => [
                     'type'           => 'autocomplete_module',
-                    'fields'         => $fields,
                     'name'           => 'moduleId',
                     'selected'       => $values['moduleId'],
                     'return'         => true,
@@ -290,6 +315,18 @@ final class BasicChart extends Item
                     'value'         => $values['period'],
                     'nothing'       => __('None'),
                     'nothing_value' => 0,
+                ],
+            ];
+
+            // module name color.
+            $inputs[] = [
+                'label'     => __('Module name color'),
+                'arguments' => [
+                    'wrapper' => 'div',
+                    'name'    => 'moduleNameColor',
+                    'type'    => 'color',
+                    'value'   => $values['moduleNameColor'],
+                    'return'  => true,
                 ],
             ];
 

@@ -829,6 +829,10 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
+    if (isset($params['basic_chart']) === false) {
+        $params['basic_chart'] = false;
+    }
+
     $font_size = $config['font_size'];
 
     // If is metaconsole set 10pt size value.

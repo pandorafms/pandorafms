@@ -529,9 +529,10 @@ class View extends \HTML
                 $data['agentAlias'] = \get_parameter('agentAlias');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['period'] = \get_parameter('period');
+                $data['moduleNameColor'] = \get_parameter('moduleNameColor');
                 if ($itemId === 0) {
-                    $data['height'] = 150;
-                    $data['width'] = 300;
+                    $data['height'] = 110;
+                    $data['width'] = 375;
                 }
             break;
 

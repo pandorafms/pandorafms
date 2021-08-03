@@ -1778,6 +1778,7 @@ class Item extends CachedModel
                     'legendBackgroundColor',
                     'legendColor',
                     'titleColor',
+                    'moduleNameColor',
                 ]
             ),
             null

@@ -547,6 +547,16 @@ div.module-graph {
   justify-content: center;
 }
 
+div.basic-chart {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 div.module-graph .gauge_d3_class {
   flex: 1 1 100px;
   float: none !important;

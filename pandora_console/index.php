@@ -996,6 +996,7 @@ if (! isset($config['id_user'])) {
             $iduser = $_SESSION['id_usuario'];
             unset($_SESSION['id_usuario']);
             unset($iduser);
+            $login_screen = 'disabled_access_node';
             include_once 'general/login_page.php';
             while (ob_get_length() > 0) {
                 ob_end_flush();

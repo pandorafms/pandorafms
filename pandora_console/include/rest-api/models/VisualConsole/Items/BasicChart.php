@@ -232,13 +232,14 @@ final class BasicChart extends Item
         $imgbase64 .= \grafico_modulo_sparse($params);
 
         $data['html'] = $imgbase64;
+
+        $data['value'] = \modules_get_last_value($moduleId);
+        $data['status'] = \modules_get_color_status(modules_get_agentmodule_last_status($moduleId));
+
         // Restore connection.
         if ($nodeConnected === true) {
             \metaconsole_restore_db();
         }
-
-        $data['value'] = \modules_get_last_value($moduleId);
-        $data['status'] = \modules_get_color_status(modules_get_agentmodule_last_status($moduleId));
 
         return $data;
     }

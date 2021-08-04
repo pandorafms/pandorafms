@@ -59,37 +59,20 @@ export function basicChartPropsDecoder(
 export default class BasicChart extends Item<BasicChartProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
-    const header = document.createElement("div");
 
-    header.style.height = "40%";
-    header.style.width = "100%";
-    header.style.display = "flex";
+    const header = document.createElement("div");
+    header.className = "basic-chart-header";
 
     const moduleName = document.createElement("h2");
+    moduleName.className = "basic-chart-header-name";
     moduleName.textContent = this.props.moduleName;
-    moduleName.style.margin = "0";
-    moduleName.style.padding = "0";
-    moduleName.style.height = "100%";
-    moduleName.style.width = "80%";
-    moduleName.style.display = "flex";
-    moduleName.style.alignItems = "center";
-    moduleName.style.fontSize = `2.5vmin`;
-    moduleName.style.marginLeft = "3%";
     moduleName.style.color = `${this.props.moduleNameColor}`;
     header.appendChild(moduleName);
 
     const moduleValue = document.createElement("h2");
+    moduleValue.className = "basic-chart-header-value";
     moduleValue.textContent = `${this.props.value}`;
-    moduleValue.style.margin = "0";
-    moduleValue.style.padding = "0";
-    moduleValue.style.height = "100%";
-    moduleValue.style.width = "20%";
-    moduleValue.style.display = "flex";
-    moduleValue.style.alignItems = "center";
-    moduleValue.style.justifyContent = "center";
-    moduleValue.style.fontSize = `2.5vmin`;
     moduleValue.style.color = this.props.status;
-    moduleValue.style.textDecoration = "none !important";
     header.appendChild(moduleValue);
 
     element.innerHTML = this.props.html;
@@ -133,33 +116,17 @@ export default class BasicChart extends Item<BasicChartProps> {
 
   protected updateDomElement(element: HTMLElement): void {
     const header = document.createElement("div");
-    header.style.height = "40%";
-    header.style.width = "100%";
-    header.style.display = "flex";
+    header.className = "basic-chart-header";
 
     const moduleName = document.createElement("h2");
+    moduleName.className = "basic-chart-header-name";
     moduleName.textContent = this.props.moduleName;
-    moduleName.style.margin = "0";
-    moduleName.style.padding = "0";
-    moduleName.style.height = "100%";
-    moduleName.style.width = "80%";
-    moduleName.style.display = "flex";
-    moduleName.style.alignItems = "center";
-    moduleName.style.fontSize = `2.5vmin`;
-    moduleName.style.marginLeft = "3%";
     moduleName.style.color = `${this.props.moduleNameColor}`;
     header.appendChild(moduleName);
 
     const moduleValue = document.createElement("h2");
+    moduleValue.className = "basic-chart-header-value";
     moduleValue.textContent = `${this.props.value}`;
-    moduleValue.style.margin = "0";
-    moduleValue.style.padding = "0";
-    moduleValue.style.height = "100%";
-    moduleValue.style.width = "20%";
-    moduleValue.style.display = "flex";
-    moduleValue.style.alignItems = "center";
-    moduleValue.style.justifyContent = "center";
-    moduleValue.style.fontSize = `2.5vmin`;
     moduleValue.style.color = this.props.status;
     header.appendChild(moduleValue);
 

@@ -2295,17 +2295,19 @@ function modules_get_agentmodule_data(
     $search_in_history_db = db_search_in_history_db($datelimit);
 
     switch ($module['id_tipo_modulo']) {
-        // generic_data_string
+            // Generic_data_string.
         case 3:
-            // remote_tcp_string
+            // Remote_tcp_string.
         case 10:
-            // remote_snmp_string
+            // Remote_snmp_string.
         case 17:
-            // async_string
+            // Async_string.
         case 36:
-            // remote_cmd_string
+            // Remote_cmd_string.
         case 23:
-            // Free search is a json with value and exact modifier
+            // Web content string.
+        case 33:
+            // Free search is a json with value and exact modifier.
             $freesearch = json_decode($freesearch, true);
             $freesearch_sql = '';
             if (isset($freesearch['value']) && !empty($freesearch['value'])) {

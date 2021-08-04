@@ -996,6 +996,7 @@ if (! isset($config['id_user'])) {
             $iduser = $_SESSION['id_usuario'];
             unset($_SESSION['id_usuario']);
             unset($iduser);
+            $login_screen = 'disabled_access_node';
             include_once 'general/login_page.php';
             while (ob_get_length() > 0) {
                 ob_end_flush();
@@ -1039,6 +1040,30 @@ if (isset($_GET['bye'])) {
 }
 
 clear_pandora_error_for_header();
+
+if ((bool) $config['node_deactivated'] === true) {
+    // Prevent access node if not merged.
+    include 'general/node_deactivated.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
 
 /*
  * ----------------------------------------------------------------------
@@ -1086,21 +1111,6 @@ if (get_parameter('login', 0) !== 0) {
         include_once 'general/php7_message.php';
     }
 }
-
-
-if ((bool) $config['maintenance_mode'] === true
-    && (bool) users_is_admin() === false
-) {
-    // Show maintenance web-page. For non-admin users only.
-    include 'general/maintenance.php';
-
-    while (ob_get_length() > 0) {
-        ob_end_flush();
-    }
-
-    exit('</html>');
-}
-
 
 // Header.
 if ($config['pure'] == 0) {

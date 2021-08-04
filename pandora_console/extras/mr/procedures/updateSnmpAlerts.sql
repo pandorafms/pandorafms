@@ -1,4 +1,3 @@
-DELIMITER //
 CREATE PROCEDURE updateSnmpAlerts()
 BEGIN
   DECLARE tokenId INT DEFAULT 0;
@@ -33,7 +32,4 @@ BEGIN
       UPDATE tconfig SET value = 1 WHERE token = 'update_snmp_alerts_procedure_already_run';
     END IF;
   END IF;
-END//
-DELIMITER ;
-CALL updateSnmpAlerts();
-DROP PROCEDURE updateSnmpAlerts;
+END

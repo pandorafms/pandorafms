@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # **********************************************************************
-# Pandora FMS Server Daemon launcher for FreeBSD
-# (c) 2010 Junichi Satoh <junichi@rworks.jp>
+# Pandora FMS Server Daemon launcher through pandora_ha for FreeBSD
+# (c) 2010-2021 Junichi Satoh <junichi@rworks.jp>
 # (c) 2014 Koichiro Kikuchi <koichiro@rworks.jp>
 #
 # **********************************************************************
@@ -13,63 +13,51 @@
 
 # Add the following lines to /etc/rc.conf to enable pandora_server:
 # pandora_server_enable (bool):  Set to "YES" to enable pandora_server (default: NO)
-# pandora_server_profiles (str): Define your profiles here (default: "")
 #
 
 . "/etc/rc.subr"
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
-
-name="pandora_server"
+name="pandora_ha"
 rcvar=pandora_server_enable
 
 : ${pandora_server_enable:=NO}
 : ${pandora_server_configfile:=/usr/local/etc/pandora/pandora_server.conf}
 
-command=/usr/local/bin/${name}
-command_args="-D"
+command=/usr/local/bin/pandora_ha
+command_pandora=/usr/local/bin/pandora_server
 command_interpreter=/usr/local/bin/perl
-_pidprefix=/var/run/$name
+_pidprefix=/var/run/pandora_ha
+_pidprefix_pandora=/var/run/pandora_server
 pidfile=${_pidprefix}.pid
+pidfile_pandora=${_pidprefix_pandora}.pid
 required_files="$pandora_server_configfile"
+extra_commands="status_server start_server stop_server restart_server"
+
+stop_postcmd=stop_postcmd
+
+status_server_cmd=control_pandora_server
+start_server_cmd=control_pandora_server
+stop_server_cmd=control_pandora_server
+restart_server_cmd=control_pandora_server
 
 load_rc_config $name
 
-if [ "$2" ]; then
-	profile="$2"
-	if [ "$pandora_server_profiles" ]; then
-		pidfile="${_pidprefix}.${profile}.pid"
-		eval pandora_server_configfile="\${pandora_server_${profile}_configfile:-}"
-		if [ -z "$pandora_server_configfile" ]; then
-			echo "You must define a configuration file (pandora_server_${profile}_configfile)"
-			exit 1
-		fi
-		required_files="$pandora_server_configfile"
-		eval pandora_server_enable="\${pandora_server_${profile}_enable:-$pandora_server_enable}"
-		eval pandora_server_flags="\${pandora_server_${profile}_flags:-$pandora_server_flags}"
-		eval pidfile="\${pandora_server_${profile}_pidfile:-$pidfile}"
-	else
-		echo "$0: extra argument ignored"
-	fi
-elif [ "${pandora_server_profiles}" ] && [ "$1" ]; then
-	for profile in ${pandora_server_profiles}; do
-		eval _enable="\${pandora_server_${profile}_enable}"
-		case "${_enable:-${pandora_server_enable}}" in
-		[Yy][Ee][Ss]);;
-		*) continue;;
-		esac
-		echo "===> pandora_server profile: ${profile}"
-		/usr/local/etc/rc.d/pandora_server $1 ${profile}
-		retcode="$?"
-		if [ "0${retcode}" -ne 0 ]; then
-			failed="${profile} (${retcode}) ${failed:-}"
-		else
-			success="${profile} ${success:-}"
-		fi
-	done
-	exit 0
-fi
+control_pandora_server() {
+	local name command pidfile
+	name="pandora_server"
+	command=$command_pandora
+	pidfile=$pidfile_pandora
+	pandora_server_flags="-D $pandora_server_flags -P $pidfile_pandora $pandora_server_configfile"
+	pandora_arg=`echo $rc_arg | sed 's/_server//g'`
+	unset "${pandora_arg}_cmd" "${pandora_arg}_precmd" "${pandora_arg}_postcmd"
+	run_rc_command $pandora_arg
+}
 
-pandora_server_flags="$pandora_server_flags -P $pidfile $pandora_server_configfile"
+stop_postcmd()
+{
+        rm -f $pidfile
+}
+
+pandora_ha_flags="-d -p $pidfile $pandora_server_configfile"
 
 run_rc_command "$1"

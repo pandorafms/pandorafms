@@ -1753,10 +1753,26 @@ function has_metaconsole()
  */
 function is_management_allowed($hkey='')
 {
+    return ( (is_metaconsole() && is_centrallised())
+        || (!is_metaconsole() && !is_centrallised())
+        || (!is_metaconsole() && is_centrallised()) && $hkey == generate_hash_to_api());
+}
+
+
+/**
+ * Return true if is a centrallised environment.
+ *
+ * @return boolean
+ */
+function is_centrallised()
+{
     global $config;
-    return ( (is_metaconsole() && $config['centralized_management'])
-        || (!is_metaconsole() && !$config['centralized_management'])
-        || (!is_metaconsole() && $config['centralized_management']) && $hkey == generate_hash_to_api());
+
+    if (isset($config['centralized_management']) === false) {
+        return false;
+    }
+
+    return (bool) $config['centralized_management'];
 }
 
 
@@ -1768,8 +1784,7 @@ function is_management_allowed($hkey='')
  */
 function is_central_policies()
 {
-    global $config;
-    return is_metaconsole() && $config['centralized_management'];
+    return is_metaconsole() && is_centrallised();
 }
 
 

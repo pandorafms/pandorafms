@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Tools\Files;
+
 global $config;
 
 require_once $config['homedir'].'/include/functions_db.php';
@@ -2394,6 +2396,10 @@ class ConsoleSupervisor
             return;
         }
 
+        // Only ask for messages once every 2 hours.
+        $future = (time() + 2 * SECONDS_1HOUR);
+        config_update_value('last_um_check', $future);
+
         $messages = update_manager_get_messages();
         if (is_array($messages) === true) {
             $source_id = get_notification_source_id(
@@ -2645,13 +2651,15 @@ class ConsoleSupervisor
     {
         global $config;
 
-        if ((int) $config['clean_phantomjs_cache'] !== 1) {
+        if (isset($config['clean_phantomjs_cache']) !== true
+            || (int) $config['clean_phantomjs_cache'] !== 1
+        ) {
             return;
         }
 
         $cache_dir = $config['homedir'].'/attachment/cache';
         if (is_dir($cache_dir) === true) {
-            rrmdir($cache_dir);
+            Files::rmrf($cache_dir);
         }
 
         // Clean process has ended.

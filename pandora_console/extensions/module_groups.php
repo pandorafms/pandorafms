@@ -30,7 +30,7 @@
 global $config;
 
 check_login();
-// ACL Check
+// ACL Check.
 if (!check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
         'ACL Violation',
@@ -56,12 +56,12 @@ if (is_ajax()) {
 }
 
 
- /**
-  * The main function of module groups and the enter point to
-  * execute the code.
-  *
-  * @return void
-  */
+/**
+ * The main function of module groups and the enter point to
+ * execute the code.
+ *
+ * @return void
+ */
 function mainModuleGroups()
 {
     global $config;
@@ -94,7 +94,7 @@ function mainModuleGroups()
     $user_groups = users_get_groups($config['user'], 'AR');
     $info = array_filter(
         $info,
-        function ($v, $k) use ($user_groups) {
+        function ($v) use ($user_groups) {
             return $user_groups[$v['id']] != null;
         },
         ARRAY_FILTER_USE_BOTH
@@ -102,7 +102,7 @@ function mainModuleGroups()
 
     $info = array_filter(
         $info,
-        function ($v, $k) use ($agent_group_search) {
+        function ($v) use ($agent_group_search) {
             return preg_match(
                 '/'.$agent_group_search.'/i',
                 $v['name']
@@ -111,7 +111,7 @@ function mainModuleGroups()
         ARRAY_FILTER_USE_BOTH
     );
 
-    if (!empty($info)) {
+    if (empty($info) === false) {
         $groups_view = ($is_not_paginated) ? $info : array_slice(
             $info,
             $offset,
@@ -156,7 +156,7 @@ function mainModuleGroups()
 
     $array_module_group = array_filter(
         $array_module_group,
-        function ($v, $k) use ($module_group_search) {
+        function ($v) use ($module_group_search) {
             return preg_match('/'.$module_group_search.'/i', $v);
         },
         ARRAY_FILTER_USE_BOTH
@@ -332,13 +332,16 @@ function mainModuleGroups()
                             // Orange when the cell for this model group and agent has at least one alert fired.
                         } else if ($array_data[$key][$k]['critical_module_count'] != 0) {
                             $color = COL_CRITICAL;
-                            // Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+                            // Red when the cell for this model group and agent
+                            // has at least one module in critical state and the rest in any state.
                         } else if ($array_data[$key][$k]['warning_module_count'] != 0) {
                             $color = COL_WARNING;
-                            // Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
+                            // Yellow when the cell for this model group and agent
+                            // has at least one in warning state and the rest in green state.
                         } else if ($array_data[$key][$k]['unknown_module_count'] != 0) {
                             $color = COL_UNKNOWN;
-                            // Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
+                            // Grey when the cell for this model group and agent
+                            // has at least one module in unknown state and the rest in any state.
                         } else if ($array_data[$key][$k]['normal_module_count'] != 0) {
                             $color = COL_NORMAL;
                             // Green when the cell for this model group and agent has OK state all modules.
@@ -348,7 +351,7 @@ function mainModuleGroups()
                         }
 
                         $data[$i][$j] = "<div style='".$cell_style.'background:'.$color.";'>";
-                        $data[$i][$j] .= "<a class='info_cell white font_18px' rel='$rel' href='$url'>";
+                        $data[$i][$j] .= '<a class="info_cell white font_18px" rel="'.$rel.'" href="'.$url.'">';
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {

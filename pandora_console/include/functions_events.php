@@ -1151,7 +1151,12 @@ function events_get_all(
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
-                $_tmp .= ' AND ( ';
+                if ($tags[0] === $id_tag) {
+                    $_tmp .= ' AND ( ';
+                } else {
+                    $_tmp .= ' OR ( ';
+                }
+
                 $_tmp .= sprintf(
                     ' tags LIKE "%s" OR',
                     $tags_names[$id_tag]

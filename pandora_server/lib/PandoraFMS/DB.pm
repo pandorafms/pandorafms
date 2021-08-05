@@ -69,6 +69,7 @@ our @EXPORT = qw(
 		get_alert_template_module_id
 		get_alert_template_name
 		get_command_id
+		get_console_api_url
 		get_db_rows
 		get_db_rows_limit
 		get_db_single_row
@@ -214,6 +215,30 @@ sub db_disconnect ($) {
 	my $dbh = shift;
 
 	$dbh->disconnect();
+}
+
+########################################################################
+## Return local console API url. 
+########################################################################
+sub get_console_api_url ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	# Only if console_api_url was not defined
+	if( !defined($pa_config->{"console_api_url"}) ) {
+		my $console_api_url = PandoraFMS::Config::pandora_get_tconfig_token(
+			$dbh, 'public_url', ''
+		);
+
+		my $include_api = 'include/api.php';
+		# If public_url is empty in database
+		if ( $console_api_url eq '' ) {
+			$pa_config->{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
+			logger($pa_config, "Assuming default path for API url: " . $pa_config->{"console_api_url"}, 3);
+		} else {
+			$pa_config->{"console_api_url"} = $console_api_url . $include_api;	
+		}
+	}
+	return $pa_config->{'console_api_url'};
 }
 
 ########################################################################

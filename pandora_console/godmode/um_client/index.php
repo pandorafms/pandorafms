@@ -70,6 +70,10 @@ if (empty($license) === true) {
 }
 
 $mode_str = '';
+if (isset($mode) === false) {
+    $mode = null;
+}
+
 if ($mode === Manager::MODE_ONLINE) {
     $mode_str = 'online';
 } else if ($mode === Manager::MODE_OFFLINE) {

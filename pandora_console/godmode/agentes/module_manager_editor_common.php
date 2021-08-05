@@ -108,6 +108,7 @@ function add_component_selection($id_network_component_type)
     $data[0] = __('Using module component').' ';
 
     $component_groups = network_components_get_groups($id_network_component_type);
+
     $data[1] = '<span id="component_group" class="left">';
     $data[1] .= html_print_select(
         $component_groups,
@@ -1385,7 +1386,7 @@ $(document).ready (function () {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                 $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
                     $("select[name='id_tag_available[]']").append(value);

@@ -11,8 +11,28 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-function mysql_connect_db($host=null, $db=null, $user=null, $pass=null, $port=null, $charset=null)
-{
+
+
+/**
+ * Connect db
+ *
+ * @param string $host    Host.
+ * @param string $db      Db.
+ * @param string $user    User.
+ * @param string $pass    Pass.
+ * @param string $port    Port.
+ * @param string $charset Charset.
+ *
+ * @return mysqli|false
+ */
+function mysql_connect_db(
+    $host=null,
+    $db=null,
+    $user=null,
+    $pass=null,
+    $port=null,
+    $charset=null
+) {
     global $config;
 
     if ($host === null) {
@@ -140,15 +160,23 @@ function mysql_db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, 
 /**
  * Get the first value of the first row of a table in the database.
  *
- * @param string Field name to get
- * @param string Table to retrieve the data
- * @param string Field to filter elements
- * @param string Condition the field must have
+ * @param string  $field             Field name to get.
+ * @param string  $table             Table to retrieve the data.
+ * @param string  $field_search      Field to filter elements.
+ * @param string  $condition         Condition the field must have.
+ * @param boolean $search_history_db Search in historical db.
+ * @param boolean $cache             Enable cache or not.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $search_history_db=false)
-{
+function mysql_db_get_value(
+    $field,
+    $table,
+    $field_search=1,
+    $condition=1,
+    $search_history_db=false,
+    $cache=true
+) {
     if (is_int($condition)) {
         $sql = sprintf(
             'SELECT %s FROM %s WHERE %s = %d LIMIT 1',
@@ -175,7 +203,7 @@ function mysql_db_get_value($field, $table, $field_search=1, $condition=1, $sear
         );
     }
 
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;
@@ -369,6 +397,10 @@ function mysql_db_process_sql($sql, $rettype='affected_rows', $dbconnection='', 
 
     if ($sql == '') {
         return false;
+    }
+
+    if (isset($config['dbcache']) === true) {
+        $cache = $config['dbcache'];
     }
 
     if ($cache && ! empty($sql_cache[$sql_cache['id']][$sql])) {
@@ -814,10 +846,10 @@ function mysql_db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function mysql_db_get_row_sql($sql, $search_history_db=false)
+function mysql_db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     $sql .= ' LIMIT 1';
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;
@@ -1505,4 +1537,119 @@ function db_run_sql_file($location)
         $config['db_run_sql_file_error'] = $mysqli->error;
         return false;
     }
+}
+
+
+/**
+ * Inserts multiples strings into database.
+ *
+ * @param string  $table      Table to insert into.
+ * @param mixed   $values     A single value or array of values to insert
+ *      (can be a multiple amount of rows).
+ * @param boolean $only_query Sql string.
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function mysql_db_process_sql_insert_multiple($table, $values, $only_query)
+{
+    // Empty rows or values not processed.
+    if (empty($values) === true || is_array($values) === false) {
+        return false;
+    }
+
+    $query = sprintf('INSERT INTO `%s`', $table);
+
+    $j = 1;
+    $max_total = count($values);
+    foreach ($values as $key => $value) {
+        $fields = [];
+        $values_str = '';
+        $i = 1;
+        $max = count($value);
+        foreach ($value as $k => $v) {
+            if ($j === 1) {
+                // Add the correct escaping to values.
+                $field = sprintf('`%s`', $k);
+                array_push($fields, $field);
+            }
+
+            if (isset($v) === false) {
+                $values_str .= 'NULL';
+            } else if (is_int($v) || is_bool($v)) {
+                $values_str .= sprintf('%d', $v);
+            } else if (is_float($v) || is_double($v)) {
+                $values_str .= sprintf('%f', $v);
+            } else {
+                $values_str .= sprintf("'%s'", $v);
+            }
+
+            if ($i < $max) {
+                $values_str .= ',';
+            }
+
+            $i++;
+        }
+
+        if ($j === 1) {
+            $query .= sprintf(' (%s) VALUES', implode(', ', $fields));
+        }
+
+        $query .= ' ('.$values_str.')';
+
+        if ($j < $max_total) {
+            $query .= ',';
+        }
+
+        $j++;
+    }
+
+    if ($only_query === true) {
+        $result = $query;
+    } else {
+        $result = db_process_sql($query);
+    }
+
+    return $result;
+}
+
+
+/**
+ * Updates multiples strings into database.
+ *
+ * @param string  $table      Table to update into.
+ * @param mixed   $values     A single value or array of values to update
+ *       (can be a multiple amount of rows).
+ * @param boolean $only_query Sql string.
+ *
+ * @return mixed False in case of error or invalid values passed.
+ * Affected rows otherwise.
+ */
+function mysql_db_process_sql_update_multiple($table, $values, $only_query)
+{
+    // Empty rows or values not processed.
+    if (empty($values) === true || is_array($values) === false) {
+        return false;
+    }
+
+    $res = [];
+    foreach ($values as $field => $update) {
+        $query = sprintf('UPDATE `%s` SET', $table);
+        $query .= sprintf(' `%s` = CASE `%s`', $field, $field);
+        foreach ($update as $where => $set) {
+            $query .= sprintf(' WHEN "%s" THEN  "%s"', $where, $set);
+        }
+
+        $query .= sprintf(' ELSE `%s` END', $field);
+        $query .= sprintf(' WHERE `%s` IN (%s)', $field, '"'.implode('","', array_keys($update)).'"');
+
+        if ($only_query === true) {
+            $res[] = $query;
+        } else {
+            $res['table'] = $table;
+            $res['fields'][$field] = db_process_sql($query);
+        }
+    }
+
+    return $res;
 }

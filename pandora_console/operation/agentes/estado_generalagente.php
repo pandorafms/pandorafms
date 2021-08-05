@@ -63,15 +63,8 @@ if ($agent === false) {
     return;
 }
 
-$is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-if ($is_extra === ENTERPRISE_NOT_HOOK) {
-    $is_extra = false;
-}
-
 if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')
     && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')
-    && !$is_extra
 ) {
     db_pandora_audit(
         'ACL Violation',

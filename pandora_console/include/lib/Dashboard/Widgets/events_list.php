@@ -529,11 +529,11 @@ class EventsListWidget extends Widget
         if ($customFilter !== false) {
             $filter = $customFilter;
             $filter['tag_with'] = base64_encode(
-                json_encode($filter['tag_with'])
+                io_safe_output($filter['tag_with'])
             );
 
             $filter['tag_without'] = base64_encode(
-                json_encode($filter['tag_without'])
+                io_safe_output($filter['tag_without'])
             );
 
             if (!empty($filter['id_agent_module'])) {

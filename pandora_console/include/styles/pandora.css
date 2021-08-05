@@ -8303,3 +8303,9 @@ div.stat-win-spinner img {
 .line_height_12pt {
   line-height: 12pt;
 }
+.line_height_0pt {
+  line-height: 10pt !important;
+}
+#license_error_msg_dialog {
+  min-height: 350px !important;
+}

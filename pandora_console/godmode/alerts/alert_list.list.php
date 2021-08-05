@@ -1120,6 +1120,12 @@ function show_add_action(id_alert) {
                 opacity: 0.5,
                 background: "black"
             },
+            open: function() {
+                $("#action_select, #action_select").select2({
+                    tags: true,
+                    dropdownParent: $("#add_action-div-" + id_alert)
+                });
+            },
             width: 500,
             height: 300
         })

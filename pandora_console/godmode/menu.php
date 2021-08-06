@@ -250,20 +250,20 @@ if (check_acl($config['id_user'], 0, 'LW')
 $sub = [];
 if (check_acl($config['id_user'], 0, 'EW') || check_acl($config['id_user'], 0, 'EM')) {
     // Custom event fields
-    $sub['godmode/events/events&amp;section=filter']['text'] = __('Event filters');
-    $sub['godmode/events/events&amp;section=filter']['id'] = 'Event filters';
+    $sub['godmode/events/events&section=filter']['text'] = __('Event filters');
+    $sub['godmode/events/events&section=filter']['id'] = 'Event filters';
 }
 
 if (check_acl($config['id_user'], 0, 'PM')) {
-    $sub['godmode/events/events&amp;section=fields']['text'] = __('Custom events');
-    $sub['godmode/events/events&amp;section=fields']['id'] = 'Custom events';
-    $sub['godmode/events/events&amp;section=responses']['text'] = __('Event responses');
-    $sub['godmode/events/events&amp;section=responses']['id'] = 'Event responses';
+    $sub['godmode/events/events&section=fields']['text'] = __('Custom events');
+    $sub['godmode/events/events&section=fields']['id'] = 'Custom events';
+    $sub['godmode/events/events&section=responses']['text'] = __('Event responses');
+    $sub['godmode/events/events&section=responses']['id'] = 'Event responses';
 }
 
 if (!empty($sub)) {
     $menu_godmode['geventos']['text'] = __('Events');
-    $menu_godmode['geventos']['sec2'] = 'godmode/events/events&amp;section=filter';
+    $menu_godmode['geventos']['sec2'] = 'godmode/events/events&section=filter';
     $menu_godmode['geventos']['id'] = 'god-events';
     $menu_godmode['geventos']['sub'] = $sub;
 }
@@ -303,7 +303,7 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
 if (check_acl($config['id_user'], 0, 'PM')) {
     // Setup
     $menu_godmode['gsetup']['text'] = __('Setup');
-    $menu_godmode['gsetup']['sec2'] = 'godmode/setup/setup&section=general';
+    $menu_godmode['gsetup']['sec2'] = 'general';
     $menu_godmode['gsetup']['id'] = 'god-setup';
 
     $sub = [];
@@ -315,50 +315,50 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $sub['general']['subtype'] = 'nolink';
     $sub2 = [];
 
-    $sub2['godmode/setup/setup&amp;section=general']['text'] = __('General Setup');
-    $sub2['godmode/setup/setup&amp;section=general']['id'] = 'General Setup';
-    $sub2['godmode/setup/setup&amp;section=general']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=general']['text'] = __('General Setup');
+    $sub2['godmode/setup/setup&section=general']['id'] = 'General Setup';
+    $sub2['godmode/setup/setup&section=general']['refr'] = 0;
 
     enterprise_hook('password_submenu');
     enterprise_hook('enterprise_submenu');
     enterprise_hook('historydb_submenu');
     enterprise_hook('log_collector_submenu');
 
-    $sub2['godmode/setup/setup&amp;section=auth']['text'] = __('Authentication');
-    $sub2['godmode/setup/setup&amp;section=auth']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=auth']['text'] = __('Authentication');
+    $sub2['godmode/setup/setup&section=auth']['refr'] = 0;
 
-    $sub2['godmode/setup/setup&amp;section=perf']['text'] = __('Performance');
-    $sub2['godmode/setup/setup&amp;section=perf']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=perf']['text'] = __('Performance');
+    $sub2['godmode/setup/setup&section=perf']['refr'] = 0;
 
-    $sub2['godmode/setup/setup&amp;section=vis']['text'] = __('Visual styles');
-    $sub2['godmode/setup/setup&amp;section=vis']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=vis']['text'] = __('Visual styles');
+    $sub2['godmode/setup/setup&section=vis']['refr'] = 0;
 
     if (check_acl($config['id_user'], 0, 'AW')) {
         if ($config['activate_netflow']) {
-            $sub2['godmode/setup/setup&amp;section=net']['text'] = __('Netflow');
-            $sub2['godmode/setup/setup&amp;section=net']['refr'] = 0;
+            $sub2['godmode/setup/setup&section=net']['text'] = __('Netflow');
+            $sub2['godmode/setup/setup&section=net']['refr'] = 0;
         }
     }
 
-    $sub2['godmode/setup/setup&amp;section=ehorus']['text'] = __('eHorus');
-    $sub2['godmode/setup/setup&amp;section=ehorus']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
+    $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
 
-    $sub2['godmode/setup/setup&amp;section=integria']['text'] = __('Integria IMS');
-    $sub2['godmode/setup/setup&amp;section=integria']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=integria']['text'] = __('Integria IMS');
+    $sub2['godmode/setup/setup&section=integria']['refr'] = 0;
 
     enterprise_hook('module_library_submenu');
 
-    $sub2['godmode/setup/setup&amp;section=notifications']['text'] = __('Notifications');
-    $sub2['godmode/setup/setup&amp;section=notifications']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=notifications']['text'] = __('Notifications');
+    $sub2['godmode/setup/setup&section=notifications']['refr'] = 0;
 
-    $sub2['godmode/setup/setup&amp;section=websocket_engine']['text'] = __('Websocket Engine');
-    $sub2['godmode/setup/setup&amp;section=websocket_engine']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=websocket_engine']['text'] = __('Websocket Engine');
+    $sub2['godmode/setup/setup&section=websocket_engine']['refr'] = 0;
 
-    $sub2['godmode/setup/setup&amp;section=external_tools']['text'] = __('External Tools');
-    $sub2['godmode/setup/setup&amp;section=external_tools']['refr'] = 0;
+    $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
+    $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;
 
     if ($config['activate_gis']) {
-        $sub2['godmode/setup/setup&amp;section=gis']['text'] = __('Map conections GIS');
+        $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
     }
 
     $sub['general']['sub2'] = $sub2;

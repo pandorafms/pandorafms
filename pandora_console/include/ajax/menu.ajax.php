@@ -41,6 +41,8 @@ if ($get_sec_pages) {
         $pages = menu_get_sec_pages($sec, $menu_hash);
     }
 
+    $pages = menu_pepare_acl_select_data($pages, $sec);
+
     echo json_encode($pages);
     return;
 }

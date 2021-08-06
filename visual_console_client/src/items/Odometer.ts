@@ -115,6 +115,12 @@ export default class Odometer extends Item<OdometerProps> {
       "visual-console-container"
     ) as HTMLElement;
 
+    if (backgroundColor === null) {
+      backgroundColor = document.getElementById(
+        `visual-console-container-${this.props.cellId}`
+      ) as HTMLElement;
+    }
+
     if (backgroundColor.style.backgroundColor == "") {
       backgroundColor.style.backgroundColor = "#fff";
     }

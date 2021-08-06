@@ -1144,6 +1144,11 @@ function dashboardLoadVC(settings) {
     return item;
   });
 
+  settings.items.map(function(item) {
+    item["cellId"] = settings.cellId;
+    return item;
+  });
+
   createVisualConsole(
     container,
     settings.props,

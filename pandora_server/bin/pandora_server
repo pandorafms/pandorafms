@@ -31,6 +31,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::Core;
+use PandoraFMS::AlertServer;
 use PandoraFMS::DataServer;
 use PandoraFMS::NetworkServer;
 use PandoraFMS::SNMPServer;
@@ -76,6 +77,36 @@ sub pandora_shutdown () {
 
 	# Stop the netflow daemon
 	pandora_stop_netflow_daemon ();
+
+	# Stop server threads.
+	stop_server_threads();
+
+	# Wait threads.
+	my $max_wait = 10;
+	my $waiting = 1;
+	my $start_waiting = time();
+	while ($waiting eq 1) {
+		$waiting = 0;
+		foreach my $thr (threads->list()) {
+			#my $tid = shift @{$self->{'_threads'}};
+			#my $thr = threads->object($tid);
+
+			if (defined($thr)) {
+				if ($thr->is_joinable()) {
+					$thr->join();
+				} else {
+					$thr->kill('KILL');
+					if (time() - $start_waiting < $max_wait) {
+						$waiting = 1;
+					} else {
+						# Some discovery external scripts tasks.
+						$thr->detach();
+					}
+				}
+			}
+		}
+		sleep (1);
+	}
 	
 	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 1);
 	db_disconnect ($DBH);
@@ -110,13 +141,14 @@ sub pandora_startup () {
 	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
 		
 	# Start the event replication thread. Do not start with start_server_thread, this thread may exit on its own.
-	threads->create(\&pandora_process_event_replication, \%Config) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
+	start_server_thread(\&pandora_process_event_replication, [\%Config]) if($Config{'__enterprise_enabled'} == 1 && $Config{'event_replication'} == 1);
 
 	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
 	if (!is_metaconsole(\%Config)) {
 		pandora_reset_server (\%Config, $DBH);
+		push (@Servers, new PandoraFMS::AlertServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DiscoveryServer (\%Config, $DBH));
@@ -588,15 +620,7 @@ sub main() {
 
 	# Only if console_api_url was not defined
 	if( !defined($Config{"console_api_url"}) ) {
-		my $console_api_url = pandora_get_tconfig_token ($DBH, 'public_url', '');
-		my $include_api = 'include/api.php';
-		# If public_url is empty in database
-		if ( $console_api_url eq '' ) {
-			$Config{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
-			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
-		} else {
-			$Config{"console_api_url"} = $console_api_url . $include_api;	
-		}
+		$Config{"console_api_url"} = get_console_api_url(\%Config, $DBH);
 	}
 
 	# Definition of configuration file
@@ -657,6 +681,7 @@ sub main() {
 			print CFG "console_pass " .$Config{"console_pass"} . "\n";
 
 			close (CFG);
+
 		} else {
 			logger(\%Config, "[WARNING] Error with configuration file when define `console_pass`: $!", 3);
 		}
@@ -701,6 +726,7 @@ sub main() {
 					print CFG "\n# Console User (created for API use)\n";
 					print CFG "console_user " . $Config{"console_user"} . "\n";
 					close (CFG);
+
 				} else {
 					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
 				}
@@ -717,6 +743,12 @@ sub main() {
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
 		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	} else {
+		# Test successful.
+		pandora_set_tconfig_token($DBH, 'internal_user_pass',
+			pandora_input_password(\%Config, $Config{"console_pass"})
+		);
+		pandora_set_tconfig_token($DBH, 'internal_user', $Config{"console_user"});
 	}
 
 	# Generate 'going up' events
@@ -774,7 +806,9 @@ sub main() {
 
 			db_do ($DBH,
 				"UPDATE tserver SET status = -1
-				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive"
+				WHERE UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(keepalive) > 2*server_keepalive
+				AND status != 0 AND server_type != ?",
+				PandoraFMS::Tools::SATELLITESERVER
 			);
 
 			# Set the master server

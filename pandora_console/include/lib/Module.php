@@ -88,7 +88,8 @@ class Module extends Entity
      * @param array   $params Search parameters (fields from tagente_modulo).
      * @param integer $limit  Limit results to N rows.
      *
-     * @return array|null of PandoraFMS\Module found or null if not found.
+     * @return object|array|null PandoraFMS\Module found if limited, array of Modules
+     *                           or null if not found.
      * @throws \Exception On error.
      */
     public static function search(
@@ -160,13 +161,24 @@ class Module extends Entity
             $obj->{$k}($v);
         }
 
-        if ($obj->nombre() === 'delete_pending') {
+        if ($obj->nombre() === 'delete_pending'
+            || $obj->nombre() === 'pendingdelete'
+        ) {
             return null;
         }
 
         // Customize certain fields.
-        $obj->status = new ModuleStatus($obj->id_agente_modulo());
-        $obj->moduleType = new ModuleType($obj->id_tipo_modulo());
+        try {
+            $obj->status = new ModuleStatus($obj->id_agente_modulo());
+        } catch (\Exception $e) {
+            $obj->status = null;
+        }
+
+        try {
+            $obj->moduleType = new ModuleType($obj->id_tipo_modulo());
+        } catch (\Exception $e) {
+            $obj->moduleType = null;
+        }
 
         // Include some enterprise dependencies.
         enterprise_include_once('include/functions_config_agents.php');

@@ -46,12 +46,16 @@ sub new ($$$;$) {
 		_num_threads => 1,
 		_threads => [],
 		_queue_size => 0,
-		_errstr => ''
+		_errstr => '',
+		_period => 0
 	};
 	
 	# Share variables that may be set from different threads
 	share ($self->{'_queue_size'});
 	share ($self->{'_errstr'});
+
+	# Set the default period.
+	$self->{'_period'} = $self->{'_pa_config'}->{'server_threshold'};
 		
 	bless $self, $class;
 	return $self;
@@ -68,7 +72,12 @@ sub run ($$) {
 	$self->setServerID ();
 
 	for (1..$self->{'_num_threads'}) {
-		my $thr = threads->create (\&{$func}, $self);
+		my $thr = threads->create ({'exit' => 'thread_only'},
+			sub {
+				local $SIG{'KILL'} = sub  { exit 0; };
+				$func->(@_);
+			}, $self
+		);
 		return unless defined ($thr);
 		push (@{$self->{'_threads'}}, $thr->tid ());
 	}
@@ -183,6 +192,24 @@ sub getErrStr ($) {
 	my $self = shift;
 	
 	return $self->{'_errstr'};
+}
+
+########################################################################################
+# Get period.
+########################################################################################
+sub getPeriod ($) {
+	my $self = shift;
+	
+	return $self->{'_period'};
+}
+
+########################################################################################
+# Set period.
+########################################################################################
+sub setPeriod ($$) {
+	my ($self, $period) = @_;
+	
+	$self->{'_period'} = $period;
 }
 
 ########################################################################################
@@ -301,12 +328,12 @@ sub stop ($) {
 		                       0, $self->{'_server_type'}, 0, 0);
 	};
 
-	# Detach server threads
+	# Sigkill all server threads
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object($tid);
 		next unless defined ($thr);
 
-   		$thr->detach();
+   	$thr->kill('KILL');
 	}
 }
 

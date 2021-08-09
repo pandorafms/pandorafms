@@ -45,11 +45,10 @@ input[type="button"].submit-next:hover {
 }
 
 div.submit_buttons_container {
-  position: absolute;
+  position: relative;
   margin: 10px auto 0px;
   bottom: 0px;
   width: 90%;
-  position: relative;
   clear: both;
   height: 4em;
 }

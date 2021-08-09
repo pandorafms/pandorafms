@@ -56,6 +56,10 @@ if (is_metaconsole()) {
     enterprise_include_once('include/functions_license.php');
 }
 
+if ($renew_license_result !== null) {
+    echo $renew_license_result;
+}
+
 if ($update_settings) {
     if (!is_metaconsole()) {
         // Node.
@@ -80,14 +84,23 @@ foreach ($rows as $row) {
     $settings->{$row['key']} = $row['value'];
 }
 
-echo '<script type="text/javascript">';
+?>
+<script type="text/javascript">
+var texts = {
+    error_connecting: '<?php echo __('Error while connecting to licence server.'); ?>',
+    error_license: '<?php echo __('Invalid response while validating license.'); ?>',
+    error_unknown: '<?php echo __('Unknown error'); ?>',
+}
+
+<?php
 if (enterprise_installed()) {
     print_js_var_enteprise();
 }
+?>
 
-echo '</script>';
-
-echo '<form method="post">';
+</script>
+<?php
+echo '<form method="post" id="form-license">';
 // Retrieve UM url configured (or default).
 $url = get_um_url();
 
@@ -147,8 +160,8 @@ if (enterprise_installed() || defined('DESTDIR')) {
 }
 
 if (is_metaconsole()) {
-    ui_require_css_file('pandora_enterprise', '../../'.ENTERPRISE_DIR.'/include/styles/');
-    ui_require_css_file('register', '../../include/styles/');
+    ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');
+    ui_require_css_file('register', 'include/styles/');
 } else {
     ui_require_css_file('pandora');
     ui_require_css_file('pandora_enterprise', ENTERPRISE_DIR.'/include/styles/');

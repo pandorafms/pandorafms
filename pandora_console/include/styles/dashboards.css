@@ -249,7 +249,6 @@ li#div-textarea label {
 .container-center > .parent_graph p table tr td:not(:first-child) span {
   color: rgb(99, 99, 99);
   font-size: 8px;
-  font-family: smallfontFont;
 }
 
 .container-gauges-dashboard .gauge_d3_class {
@@ -291,7 +290,6 @@ li#div-textarea label {
   font-weight: bold;
   line-height: 20px;
   color: #3f3f3f;
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   text-decoration: none;
   text-transform: capitalize;
@@ -318,7 +316,6 @@ li#div-textarea label {
 }
 
 .div_groups_status table tr td span b {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 11pt;
   margin-left: 10px;
@@ -337,7 +334,6 @@ table.widget_maps_status tr td:first-child {
 }
 
 table.widget_maps_status tr td a {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 9pt;
   text-decoration: none;
@@ -375,7 +371,6 @@ table.group_modules_status_box tr {
 }
 
 table.group_modules_status_box tr td {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 11pt;
   text-decoration: none;
@@ -398,7 +393,6 @@ table.group_modules_status_box tr td div {
 }
 
 table.group_modules_status_box tr td span a {
-  font-family: "lato-lighter", "Open Sans", sans-serif;
   letter-spacing: 0.03pt;
   font-size: 11pt;
   text-decoration: none;
@@ -413,6 +407,7 @@ table.widget_agent_module tbody tr td {
 
 .container-center .widget-histogram-chart .flot-text .flot-x-axis div {
   white-space: nowrap;
+  font-family: inherit !important;
 }
 
 li#search_input_widget {
@@ -500,7 +495,6 @@ div#main_pure {
 }
 
 #form-config-widget .info_box tbody tr td {
-  font-family: "lato-bolder", "Open Sans", sans-serif;
   font-size: 8pt;
 }
 
@@ -537,12 +531,10 @@ div#main_pure {
 
 .visual-console-container-dashboard div.label strong {
   color: inherit;
-  font-family: inherit;
 }
 
 .visual-console-container-dashboard div.label strong span {
   color: inherit;
-  font-family: inherit;
 }
 
 /* Mobile trick */

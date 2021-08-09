@@ -64,7 +64,7 @@ sed "s/.*error_reporting =.*/error_reporting = E_ALL \& \~E_DEPRECATED \& \~E_NO
 sed "s/.*max_execution_time =.*/max_execution_time = 0/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
 sed "s/.*max_input_time =.*/max_input_time = -1/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
 sed "s/.*upload_max_filesize =.*/upload_max_filesize = 800M/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
-sed "s/.*memory_limit =.*/memory_limit = 500M/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
+sed "s/.*memory_limit =.*/memory_limit = 800M/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
 sed "s/.*post_max_size =.*/post_max_size = 100M/" /etc/php.ini > /tmp/php.ini && mv /tmp/php.ini /etc/php.ini
 
 cd /var/www/html/pandora_console && mv -f install.php install.php.done

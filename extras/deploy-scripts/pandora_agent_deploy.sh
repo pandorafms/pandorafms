@@ -68,7 +68,7 @@ check_root_permissions () {
 
 install_autodiscover () {
     local arch=$1
-    wget https://pandorafms.com/library/wp-content/uploads/2020/04/autodiscover-linux.zip
+    wget http://firefly.artica.es/projects/autodiscover-linux.zip
     unzip autodiscover-linux.zip
     chmod +x $arch/autodiscover 
     mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover

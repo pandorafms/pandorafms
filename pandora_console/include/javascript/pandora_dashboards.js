@@ -388,7 +388,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: widgetId == 14 ? 750 : 450,
+        width: widgetId == 14 || widgetId == 2 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },
@@ -809,6 +809,7 @@ function dashboardLoadWuxStats(settings) {
       page: settings.page,
       wux_transaction_stats: 1,
       id_agent: settings.id_agent,
+      server_id: settings.server_id,
       transaction: settings.transaction,
       view_all_stats: settings.view_all_stats,
       auth_class: settings.auth_class,
@@ -843,6 +844,7 @@ function processTreeSearch(settings) {
   filters.searchModule = settings.searchModule;
   filters.statusModule = settings.statusModule;
   filters.groupID = settings.searchGroup;
+  filters.searchHirearchy = 1;
 
   $.ajax({
     type: "POST",
@@ -1140,6 +1142,11 @@ function dashboardLoadVC(settings) {
 
   settings.items.map(function(item) {
     item["receivedAt"] = receivedAt;
+    return item;
+  });
+
+  settings.items.map(function(item) {
+    item["cellId"] = settings.cellId;
     return item;
   });
 

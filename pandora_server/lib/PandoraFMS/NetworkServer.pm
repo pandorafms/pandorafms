@@ -112,7 +112,7 @@ sub data_producer ($) {
     } else {
 		@rows = get_db_rows ($dbh, 'SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, tagente_estado.last_execution_try, tagente_estado.current_interval + tagente_estado.last_execution_try AS time_left, last_execution_try
 		FROM tagente, tagente_modulo, tagente_estado
-		WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0 AND server_type = ?))) 
+		WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status <> 1 AND server_type = ?))) 
 		AND tagente_modulo.id_agente = tagente.id_agente
 		AND tagente.disabled = 0
 		AND tagente_modulo.disabled = 0
@@ -480,7 +480,7 @@ sub exec_network_module ($$$$) {
 	}
 
 	# Use the agent address by default
-	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
+	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto'|| $ip_target eq '_address_') {
 		$ip_target = $agent_row->{'direccion'};
 	}
 

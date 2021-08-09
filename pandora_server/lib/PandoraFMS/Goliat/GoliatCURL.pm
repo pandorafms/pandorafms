@@ -254,6 +254,8 @@ sub g_http_task {
 					utf8::decode($match_string);
 				}
 
+				$match_string = quotemeta($match_string);
+
 				if ( $as_string =~ m/$match_string/i ){
 					$total_valid_requests++;
 				} else {

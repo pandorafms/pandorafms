@@ -2,8 +2,8 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     7.0NG.754
-%define release     210608
+%define version     7.0NG.756
+%define release     210809
 %define httpd_name      httpd
 # User and Group under which Apache is running
 %define httpd_name  apache2
@@ -58,6 +58,12 @@ fi
 rm -rf $RPM_BUILD_ROOT
 
 %post
+# Upgrading.
+if [ "$1" -eq "1" ]; then
+	echo "Updating the database schema."
+	/usr/bin/php %{prefix}/pandora_console/godmode/um_client/updateMR.php 2>/dev/null
+fi
+
 # Install pandora_websocket_engine service.
 cp -pf %{prefix}/pandora_console/pandora_websocket_engine /etc/init.d/
 chmod +x /etc/init.d/pandora_websocket_engine
@@ -79,7 +85,7 @@ cp -aRf %{prefix}/pandora_console/pandora_console_logrotate_suse /etc/logrotate.
 %preun
 
 # Upgrading
-if [ "$1" = "1" ]; then
+if [ "$1" -eq "1" ]; then
         exit 0
 fi
 

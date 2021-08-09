@@ -22,6 +22,8 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+require_once __DIR__.'/../um_client/vendor/autoload.php';
+
 $php_version = phpversion();
 $php_version_array = explode('.', $php_version);
 if ($php_version_array[0] < 7) {
@@ -77,11 +79,13 @@ switch ($tab) {
     break;
 
     case 'offline':
-        include $config['homedir'].'/godmode/update_manager/update_manager.offline.php';
+        $mode = \UpdateManager\UI\Manager::MODE_OFFLINE;
+        include $config['homedir'].'/godmode/um_client/index.php';
     break;
 
     case 'online':
     default:
-        include $config['homedir'].'/godmode/update_manager/update_manager.online.php';
+        $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
+        include $config['homedir'].'/godmode/um_client/index.php';
     break;
 }

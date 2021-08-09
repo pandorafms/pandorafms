@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.754-210608"
+pandora_version="7.0NG.756-210809"
 
 package_cpan=0
 package_pandora=1
@@ -114,6 +114,7 @@ then
 	cp -aRf conf/pandora_* temp_package/usr/share/pandora_server/conf/
 	cp -aRf conf/tentacle_* temp_package/usr/share/tentacle_server/conf/
 	cp -aRf util temp_package/usr/share/pandora_server/
+	cp -aRf util/pandora_ha.pl temp_package/usr/bin/pandora_ha
 	cp -aRf lib/* temp_package/usr/lib/perl5/
 	cp -aRf AUTHORS COPYING README temp_package/usr/share/pandora_server/
 	

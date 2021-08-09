@@ -915,7 +915,25 @@ function html_print_select(
             ui_require_javascript_file('select2.min');
         }
 
-        $output .= '<script>$("#'.$id.'").select2();</script>';
+        $output .= '<script type="text/javascript">';
+        $output .= '$("#'.$id.'").select2();';
+
+        if ($required !== false) {
+            $require_message = __('Please select an item from this list.');
+            $output .= '$("#'.$id.'").on("change", function(e) {
+                e.currentTarget.setCustomValidity("");
+            });';
+
+            $output .= '$("#'.$id.'").on("invalid", function(e) {
+                if ($(e.currentTarget).val() == null) {
+                    e.currentTarget.setCustomValidity(
+                        "'.$require_message.'"
+                    );
+                }
+            });';
+        }
+
+        $output .= '</script>';
     }
 
     if ($return) {
@@ -1331,8 +1349,14 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'include/javascript/',
             true
         );
+        ui_require_css_file(
+            'multiselect_filtered',
+            'include/styles/',
+            true
+        );
     } else {
         ui_require_javascript_file('multiselect_filtered');
+        ui_require_css_file('multiselect_filtered');
     }
 
     $uniqId = $data['uniqId'];
@@ -1417,7 +1441,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
         // Force_serialized.
         false,
         // Meta_fields.
-        $data['mMetaFields']
+        ($data['mMetaFields'] ?? is_metaconsole())
     );
 
     if ((empty($agents)) === true || $agents == -1) {
@@ -1464,12 +1488,16 @@ function html_print_select_multiple_modules_filtered(array $data):string
         ]
     );
 
-    $all_modules = select_modules_for_agent_group(
-        $data['mModuleGroup'],
-        explode(',', $data['mAgents']),
-        $data['mShowCommonModules'],
-        false
-    );
+    if ($data['mAgents'] !== null) {
+        $all_modules = select_modules_for_agent_group(
+            $data['mModuleGroup'],
+            explode(',', $data['mAgents']),
+            $data['mShowCommonModules'],
+            false
+        );
+    } else {
+        $all_modules = [];
+    }
 
     if ($data['mShowSelectedOtherGroups']) {
         $selected_modules_ids = explode(',', $data['mModules']);
@@ -2337,12 +2365,13 @@ function html_print_div(
 /**
  * Render an anchor <a> html element.
  *
- * @param array   $options Parameters
+ * @param array   $options Parameters.
  *                - id: string.
  *                - style: string.
  *                - title: string.
  *                - href: string.
  *                - content: string.
+ *                - onClick: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
@@ -2359,6 +2388,7 @@ function html_print_anchor(
         'style',
         'class',
         'title',
+        'onClick',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();

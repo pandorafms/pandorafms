@@ -459,10 +459,6 @@ function config_update_config()
                             $error_update[] = __('Enable Update Manager');
                         }
 
-                        if (!config_update_value('disabled_newsletter', get_parameter('disabled_newsletter'))) {
-                            $error_update[] = __('Disabled newsletter');
-                        }
-
                         if (!config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'))) {
                             $error_update[] = __('Ipam Ocuppied Manager Critical');
                         }
@@ -2247,7 +2243,7 @@ function config_process_config()
     if (!isset($config['fontpath'])) {
         config_update_value(
             'fontpath',
-            'opensans.ttf'
+            'lato.ttf'
         );
     }
 
@@ -2362,7 +2358,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_docs_url'])) {
-        config_update_value('custom_docs_url', 'http://wiki.pandorafms.com/');
+        config_update_value('custom_docs_url', 'https://pandorafms.com/manual');
     }
 
     if (!isset($config['custom_support_url'])) {
@@ -2378,7 +2374,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_docs_url'])) {
-        config_update_value('meta_custom_docs_url', 'http://wiki.pandorafms.com/index.php?title=Main_Page');
+        config_update_value('meta_custom_docs_url', 'https://pandorafms.com/manual/');
     }
 
     if (!isset($config['meta_custom_support_url'])) {
@@ -3130,7 +3126,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'opensans.ttf');
+        config_update_value('custom_report_front_font', 'lato.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {
@@ -3253,20 +3249,6 @@ function config_process_config()
 
     if (!isset($config['ehorus_req_timeout'])) {
         config_update_value('ehorus_req_timeout', 5);
-    }
-
-    if (is_metaconsole()) {
-        if (!isset($config['metaconsole_deploy_collection'])) {
-            config_update_value('metaconsole_deploy_collection', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_inventory_plugin'])) {
-            config_update_value('metaconsole_deploy_inventory_plugin', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_plugin_server'])) {
-            config_update_value('metaconsole_deploy_plugin_server', 0);
-        }
     }
 
     // Integria.

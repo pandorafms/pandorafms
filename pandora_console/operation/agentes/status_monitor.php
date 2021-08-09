@@ -1467,7 +1467,7 @@ if (!empty($result)) {
                     true,
                     [
                         'title' => $row['tags'],
-                        'class' => 'tag_row',
+                        'class' => 'tag_row invert_filter',
                     ]
                 );
             }

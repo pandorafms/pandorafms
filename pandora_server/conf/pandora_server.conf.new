@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.754
+# Version 7.0NG.756
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -67,6 +67,18 @@ dbhost 127.0.0.1
 # Default value depends on the dbengine (mysql: 3306)
 #dbport 3306
 
+# dbssl: Enable (1) or disable (0) SSL for the database connection.
+
+dbssl 0
+
+# dbsslcafile: Path to a file in PEM format that contains a list of trusted SSL certificate authorities.
+
+# dbsslcafile
+
+# dbsslcapath: Path to a directory that contains trusted SSL certificate authority certificates in PEM format.
+
+# dbsslcapath
+
 # By default, parent agent will not be updated
 
 #update_parent 0
@@ -90,6 +102,12 @@ snmpconsole 0
 
 snmpconsole_threads 1
 
+# If set to 1, traps from the same source will never be processed in parallel. 0 by default.
+#snmpconsole_lock 0
+
+# Time between consecutive reads of the SNMP log file in seconds. Defaults to server_threshold.
+#snmpconsole_threshold 5
+
 # Attempt to translate variable bindings when processing SNMP traps. 1 enabled, 0 disabled. 0 by default. (ENTERPRISE ONLY).
 
 translate_variable_bindings 0
@@ -110,7 +128,7 @@ snmp_pdu_address 0
 
 #snmp_trapd manual
 
-# SNMP Trap forwarding. Go to http://wiki.pandorafms.com for more information.
+# SNMP Trap forwarding. Go to https://pandorafms.com/manual/ for more information.
 #snmp_forward_trap 1
 #snmp_forward_ip 192.168.1.145
 #snmp_forward_version 1
@@ -614,7 +632,7 @@ warmup_unknown_interval 300
 enc_dir /usr/share/pandora_server/enc/
 
 # The number of times dynamic_min and dynamic_max will be recalculated per dynamic_interval.
-# Go to http://wiki.pandorafms.com/ for more information.
+# Go to https://pandorafms.com/manual/ for more information.
 dynamic_updates 5
 #dynamic_warning
 #dynamic_constant
@@ -679,4 +697,13 @@ ha_interval 30
 
 # Pandora FMS Database HA Tool monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
 ha_monitoring_interval 60
+
+# Enable (1) or disable (0) Pandora FMS Alert Server.
+alertserver 0
+
+# Pandora FMS Alert Server threads.
+alertserver_threads 4
+
+# Generate an hourly warning event if alert execution is being delayed more than alertserver_warn seconds.
+alertserver_warn 180
 

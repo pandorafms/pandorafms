@@ -180,6 +180,7 @@ class TreeService extends Tree
         } else if ($this->type == 'services') {
             $this->getSecondLevel();
         } else if ($this->type == 'agent') {
+            $this->filter['showDisabled'] = true;
             $this->getThirdLevel();
         }
 
@@ -433,6 +434,7 @@ class TreeService extends Tree
 
                     $tmp['showEventsBtn'] = 1;
                     $tmp['eventAgent'] = $item->agent()->id_agente();
+                    $tmp['disabled'] = (bool) $item->agent()->disabled();
                 break;
 
                 case SERVICE_ELEMENT_MODULE:
@@ -495,6 +497,7 @@ class TreeService extends Tree
                     $tmp['showGraphs'] = 1;
                     $tmp['showEventsBtn'] = 1;
                     $tmp['eventAgent'] = $item->module()->id_agente();
+                    $tmp['disabled'] = $item->module()->disabled();
 
                     $html = '<img src="';
                     $html .= ui_get_full_url(
@@ -524,6 +527,7 @@ class TreeService extends Tree
                     $tmp['alias'] = $item->service()->name();
                     $tmp['description'] = $item->service()->description();
                     $tmp['elementDescription'] = $item->description();
+                    $tmp['disabled'] = $item->service()->disabled();
 
                     if ($this->connectedToNode === false
                         && is_metaconsole() === true

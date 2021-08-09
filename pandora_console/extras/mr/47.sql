@@ -21,4 +21,7 @@ PREPARE pr_oum755 FROM @st_oum755;
 EXECUTE pr_oum755;
 DEALLOCATE PREPARE pr_oum755;
 
+UPDATE `tconfig` set value = 'lato.ttf' WHERE token LIKE 'custom_report_front_font';
+UPDATE `tconfig` set value = 'lato.ttf' WHERE token LIKE 'fontpath';
+
 COMMIT;

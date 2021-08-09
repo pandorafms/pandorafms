@@ -3251,20 +3251,6 @@ function config_process_config()
         config_update_value('ehorus_req_timeout', 5);
     }
 
-    if (is_metaconsole()) {
-        if (!isset($config['metaconsole_deploy_collection'])) {
-            config_update_value('metaconsole_deploy_collection', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_inventory_plugin'])) {
-            config_update_value('metaconsole_deploy_inventory_plugin', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_plugin_server'])) {
-            config_update_value('metaconsole_deploy_plugin_server', 0);
-        }
-    }
-
     // Integria.
     if (!isset($config['integria_user_level_conf'])) {
         config_update_value('integria_user_level_conf', 0);

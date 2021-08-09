@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.755 Build 210712";
+my $version = "7.0NG.756 Build 210809";
 
 # save program name for logging
 my $progname = basename($0);
@@ -197,7 +197,6 @@ sub help_screen{
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
-	help_screen_line('--meta_synch_user', "<user_name1,user_name2..> <server_name> [<profile_mode> <group_name>\n\t <profile1,profile2..> <create_groups>]", 'Synchronize metaconsole users');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
@@ -6054,18 +6053,6 @@ sub cli_disable_double_auth () {
 }
 
 ###############################################################################
-# Synchronize metaconsole users
-# Related option: --meta_synch_user
-###############################################################################
-sub cli_meta_synch_user() {
-	my ($user_name,$server_name,$profile_mode,$group,$profiles,$create_groups) = @ARGV[2..7];
-
-	my $result = api_call(\%conf,'set', 'meta_synch_user', undef, undef, "$user_name|$server_name|$profile_mode|$group|$profiles|$create_groups");
-	print "$result \n\n ";
-
-}
-
-###############################################################################
 # Enable user
 # Related option: --enable_user
 ###############################################################################
@@ -7377,10 +7364,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--disable_double_auth') {
 			param_check($ltotal, 1);
 			cli_disable_double_auth();
-		}
-		elsif ($param eq '--meta_synch_user') {
-			param_check($ltotal, 6, 4);
-			cli_meta_synch_user();
 		}
 		elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);

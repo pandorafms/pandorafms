@@ -281,11 +281,11 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       $.each(data, function(i, val) {
         var s = js_html_entity_decode(val);
 
+        s = s.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+        i = i.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
         $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", i)
-            .attr("title", s)
+          $('<option value="' + i + '" title="' + s + '"></option>').text(val)
         );
 
         all_common_modules.push(i);
@@ -385,12 +385,11 @@ function agent_changed_by_multiple_agents_with_alerts(
         }
       }
       jQuery.each(data, function(i, val) {
-        s = js_html_entity_decode(val);
-        $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", val)
-        );
+        var s = js_html_entity_decode(val);
+
+        s = s.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
+        $("#module").append($('<option value="' + s + '"></option>').text(val));
         $("#module").fadeIn("normal");
       });
       if (selected != undefined) $("#module").attr("value", selected);
@@ -481,12 +480,22 @@ function alert_templates_changed_by_multiple_agents_with_alerts(
         }
       }
       jQuery.each(data, function(i, val) {
-        s = js_html_entity_decode(val);
+        var decoded_val = js_html_entity_decode(val);
+
+        decoded_val = decoded_val
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&apos;");
+
         $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", val)
+          $(
+            '<option value="' +
+              decoded_val +
+              '" title="' +
+              decoded_val +
+              '"></option>'
+          ).text(val)
         );
+
         $("#module").fadeIn("normal");
       });
       if (selected != undefined) $("#module").attr("value", selected);

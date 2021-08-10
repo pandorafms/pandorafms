@@ -414,10 +414,32 @@ class TopNWidget extends Widget
             $quantity
         );
 
-        $modules = @db_get_all_rows_sql(
-            $sql,
-            $search_in_history_db
-        );
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+
+            $modules = [];
+
+            foreach ($servers as $server) {
+                if (metaconsole_connect(null, $server['id']) !== NOERR) {
+                    continue;
+                }
+
+                $modules = array_merge(
+                    $modules,
+                    @db_get_all_rows_sql(
+                        $sql,
+                        $search_in_history_db
+                    )
+                );
+
+                metaconsole_restore_db();
+            }
+        } else {
+            $modules = @db_get_all_rows_sql(
+                $sql,
+                $search_in_history_db
+            );
+        }
 
         if (empty($modules) === true) {
             $output .= '<div class="container-center">';

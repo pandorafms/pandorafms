@@ -5564,7 +5564,7 @@ div#bullets_modules div {
 
 /* Agent details in agent view */
 div#status_pie path {
-  stroke-width: 8px;
+  stroke-width: 0px;
 }
 div#status_pie {
   margin-bottom: 2em;

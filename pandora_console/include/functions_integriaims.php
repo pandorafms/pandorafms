@@ -199,7 +199,7 @@ function integria_api_call($api_hostname=null, $user=null, $user_pass=null, $api
         'user_pass' => $user_pass,
         'pass'      => $api_pass,
         'op'        => $operation,
-        'params'    => html_entity_decode($params),
+        'params'    => io_safe_output($params),
     ];
 
     if ($return_type !== '') {

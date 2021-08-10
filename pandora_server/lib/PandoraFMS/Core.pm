@@ -1424,11 +1424,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 

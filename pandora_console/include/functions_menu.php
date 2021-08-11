@@ -667,12 +667,10 @@ function menu_get_sec_pages($sec, $menu_hash=false)
         foreach ($menu[$sec]['sub'] as $k => $v) {
             // Avoid special cases of standalone windows.
             if (preg_match('/^javascript:/', $k) || preg_match('/\.php/', $k)) {
-                continue;
+                if ($sec !== 'links') {
+                    continue;
+                }
             }
-
-            // If this value has various parameters, we only get the first.
-            $k = explode('&', $k);
-            $k = $k[0];
 
             $sec2_array[$k] = $v['text'];
         }
@@ -704,6 +702,7 @@ function menu_get_sec2_pages($sec, $sec2, $menu_hash=false)
     }
 
     $sec3_array = [];
+    $sec2 = io_safe_output($sec2);
 
     if (isset($menu[$sec]['sub']) && isset($menu[$sec]['sub'][$sec2]['sub2'])) {
         // Get the sec2 of the subsections.
@@ -728,10 +727,6 @@ function menu_sec2_in_sec($sec, $sec2)
 {
     $sec2_array = menu_get_sec_pages($sec);
 
-    // If this value has various parameters, we only get the first.
-    $sec2 = explode('&', $sec2);
-    $sec2 = $sec2[0];
-
     if ($sec2_array != null && in_array($sec2, array_keys($sec2_array))) {
         return true;
     }
@@ -744,13 +739,36 @@ function menu_sec3_in_sec2($sec, $sec2, $sec3)
 {
     $sec3_array = menu_get_sec2_pages($sec, $sec2, $menu_hash = false);
 
-    // If this value has various parameters, we only get the first.
-    $sec3 = explode('&', $sec3);
-    $sec3 = $sec3[0];
-
     if ($sec3_array != null && in_array($sec3, array_keys($sec3_array))) {
         return true;
     }
 
     return false;
+}
+
+
+/**
+ * Prepare menu data for enterprise acl conf.
+ *
+ * @param  array  $pages
+ * @param  string $sec
+ * @return string $pages
+ */
+function menu_pepare_acl_select_data($pages, $sec)
+{
+    $exclude_pages = ['discovery' => 'godmode/servers/discovery'];
+
+    foreach ($exclude_pages as $exclude_sec => $sec2) {
+        if ($sec === $exclude_sec) {
+            if (is_array($sec2) === true) {
+                foreach ($sec2 as $value) {
+                    unset($pages[$value]);
+                }
+            }
+
+            unset($pages[$sec2]);
+        }
+    }
+
+    return $pages;
 }

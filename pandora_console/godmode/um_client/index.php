@@ -381,6 +381,20 @@ if (is_array($config) === true) {
     }
 }
 
+$proxy = null;
+if (empty($config['update_manager_proxy_server']) === false
+    || empty($config['update_manager_proxy_port']) === false
+    || empty($config['update_manager_proxy_user']) === false
+    || empty($config['update_manager_proxy_password']) === false
+) {
+    $proxy = [
+        'host'     => $config['update_manager_proxy_server'],
+        'port'     => $config['update_manager_proxy_port'],
+        'user'     => $config['update_manager_proxy_user'],
+        'password' => $config['update_manager_proxy_password'],
+    ];
+}
+
 $ui = new Manager(
     ((is_array($config) === true) ? $pandora_url : 'http://'.$_SERVER['SERVER_ADDR'].'/'),
     ((is_array($config) === true) ? ui_get_full_url('ajax.php') : ''),
@@ -400,6 +414,7 @@ $ui = new Manager(
         'registration_code'      => $puid,
         'remote_config'          => $remote_config,
         'propagate_updates'      => $is_metaconsole,
+        'proxy'                  => $proxy,
         'set_maintenance_mode'   => function () {
             if (function_exists('config_update_value') === true) {
                 config_update_value('maintenance_mode', 1);

@@ -327,6 +327,12 @@ if (is_array($config) === true) {
         ) {
             ui_print_error_message(__('Update manager online requires registration.'));
         }
+
+        if ($mode === Manager::MODE_OFFLINE) {
+            ui_print_warning_message(
+                __('Applying offline patches may make your console unusable, we recommend to completely backup your files before applying any patch.')
+            );
+        }
     }
 
     $url_update_manager = $config['url_update_manager'];

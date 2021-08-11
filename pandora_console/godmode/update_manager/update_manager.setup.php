@@ -30,6 +30,7 @@
 global $config;
 
 require_once __DIR__.'/../../include/functions_users.php';
+require_once __DIR__.'/../../include/functions_update_manager.php';
 
 check_login();
 

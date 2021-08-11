@@ -941,7 +941,7 @@ class Client
             $queries = preg_split("/(;\n)|(;\n\r)/", $sql);
             foreach ($queries as $query) {
                 if (empty($query) !== true) {
-                    if (preg_match('/^\s*LOAD\s+(.*)$/i', $query, $matches) > 0) {
+                    if (preg_match('/^\s*SOURCE\s+(.*)$/i', $query, $matches) > 0) {
                         $filepath = dirname($mr_file).'/'.$matches[1];
                         if (file_exists($filepath) === true) {
                             $query = file_get_contents($filepath);
@@ -1342,14 +1342,14 @@ class Client
             function ($errno, $errstr) {
                 throw new \Exception($errstr, $errno);
             },
-            E_ERROR
+            (E_ALL ^ E_NOTICE)
         );
 
         register_shutdown_function(
             function () {
                 $error = error_get_last();
                 if (null !== $error
-                    && $error['type'] === E_ERROR
+                    && $error['type'] === (E_ALL ^ E_NOTICE)
                 ) {
                     echo __('Failed to analyze package: %s', $error['message']);
                 }
@@ -1434,7 +1434,7 @@ class Client
             function ($errno, $errstr) {
                 throw new \Exception($errstr, $errno);
             },
-            E_ERROR
+            (E_ALL ^ E_NOTICE)
         );
 
         if ($package === null) {

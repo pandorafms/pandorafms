@@ -5564,7 +5564,7 @@ div#bullets_modules div {
 
 /* Agent details in agent view */
 div#status_pie path {
-  stroke-width: 8px;
+  stroke-width: 0px;
 }
 div#status_pie {
   margin-bottom: 2em;
@@ -7208,7 +7208,7 @@ div.graph div.legend table {
 }
 
 .bg_82B92E {
-  background-color: #82b92e;
+  background-color: #82b92e !important;
 }
 
 .bg_B2B2B2 {
@@ -7233,13 +7233,13 @@ div.graph div.legend table {
   background-color: #eee;
 }
 .bg_ffd {
-  background-color: #ffd036;
+  background-color: #ffd036 !important;
 }
 .bg_ff5 {
-  background-color: #ff5653;
+  background-color: #ff5653 !important;
 }
 .bg_ff9 {
-  background-color: #ff9e39;
+  background-color: #ff9e39 !important;
 }
 .bg_lightgray {
   background-color: lightgray;
@@ -8302,4 +8302,10 @@ div.stat-win-spinner img {
 }
 .line_height_12pt {
   line-height: 12pt;
+}
+.line_height_0pt {
+  line-height: 10pt !important;
+}
+#license_error_msg_dialog {
+  min-height: 350px !important;
 }

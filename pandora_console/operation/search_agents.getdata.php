@@ -195,8 +195,10 @@ if ($searchAgents) {
             t1.comentarios COLLATE utf8_general_ci LIKE '%%".$stringSearchSQL."%%' OR
             t1.id_agente = $aux";
 
-        if (count($id) >= 2) {
-            for ($i = 1; $i < count($id); $i++) {
+        $idCount = count($id);
+
+        if ($idCount >= 2) {
+            for ($i = 1; $i < $idCount; $i++) {
                 $aux = $id[$i]['id_agent'];
                 $search_sql .= " OR t1.id_agente = $aux";
             }

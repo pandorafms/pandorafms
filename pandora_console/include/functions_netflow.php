@@ -600,7 +600,7 @@ function netflow_get_stats(
     global $config, $nfdump_date_format;
 
     // Requesting remote data.
-    if (defined('METACONSOLE') && $connection_name != '') {
+    if (is_metaconsole() === true && empty($connection_name) === false) {
         $data = metaconsole_call_remote_api($connection_name, 'netflow_get_stats', "$start_date|$end_date|".base64_encode(json_encode($filter))."|$aggregate|$max|$absolute|".(int) $address_resolution);
         return json_decode($data, true);
     }
@@ -612,7 +612,7 @@ function netflow_get_stats(
     // Execute nfdump.
     exec($command, $string);
 
-    if (! is_array($string)) {
+    if (is_array($string) === false) {
         return [];
     }
 
@@ -1062,7 +1062,7 @@ function netflow_draw_item(
 ) {
     $aggregate = $filter['aggregate'];
     $interval = ($end_date - $start_date);
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $width = 950;
     } else {
         $width = 850;
@@ -1084,12 +1084,13 @@ function netflow_draw_item(
                 $connection_name,
                 $address_resolution
             );
-            if (empty($data)) {
+
+            if (empty($data) === true) {
                 break;
             }
 
-            if ($output == 'HTML' || $output == 'PDF') {
-                $html .= graph_netflow_aggregate_area(
+            if ($output === 'HTML' || $output === 'PDF') {
+                return graph_netflow_aggregate_area(
                     $data,
                     $interval,
                     $width,
@@ -1098,9 +1099,8 @@ function netflow_draw_item(
                     ($output === 'HTML'),
                     $end_date
                 );
-                return $html;
-            } else if ($output == 'XML') {
-                $xml .= '<aggregate>'.$aggregate."</aggregate>\n";
+            } else if ($output === 'XML') {
+                $xml = '<aggregate>'.$aggregate."</aggregate>\n";
                 $xml .= '<resolution>'.$interval_length."</resolution>\n";
                 $xml .= netflow_aggregate_area_xml($data);
                 return $xml;
@@ -1119,18 +1119,19 @@ function netflow_draw_item(
                 $connection_name,
                 $address_resolution
             );
-            if (empty($data)) {
+
+            if (empty($data) === true) {
                 break;
             }
 
-            if ($output == 'HTML' || $output == 'PDF') {
-                $html .= "<div class='w100p overflow'>";
+            if ($output === 'HTML' || $output === 'PDF') {
+                $html = "<div class='w100p overflow'>";
                 $html .= netflow_data_table($data, $start_date, $end_date, $aggregate);
                 $html .= '</div>';
 
                 return $html;
-            } else if ($output == 'XML') {
-                $xml .= '<aggregate>'.$aggregate."</aggregate>\n";
+            } else if ($output === 'XML') {
+                $xml = '<aggregate>'.$aggregate."</aggregate>\n";
                 $xml .= '<resolution>'.$interval_length."</resolution>\n";
                 // Same as netflow_aggregate_area_xml.
                 $xml .= netflow_aggregate_area_xml($data);
@@ -1159,7 +1160,8 @@ function netflow_draw_item(
                 $connection_name,
                 $address_resolution
             );
-            if (empty($data_pie)) {
+
+            if (empty($data_pie) === true) {
                 break;
             }
 
@@ -1222,51 +1224,56 @@ function netflow_draw_item(
                 $connection_name,
                 $address_resolution
             );
-            switch ($aggregate) {
-                case 'srcip':
-                case 'srcport':
-                    $address_type = 'source_address';
-                    $port_type = 'source_port';
-                    $type = __('Sent');
-                break;
 
-                default:
-                case 'dstip':
-                case 'dstport':
-                    $address_type = 'destination_address';
-                    $port_type = 'destination_port';
-                    $type = __('Received');
-                break;
-            }
+            if (empty($data_stats) === false) {
+                switch ($aggregate) {
+                    case 'srcip':
+                    case 'srcport':
+                        $address_type = 'source_address';
+                        $port_type = 'source_port';
+                        $type = __('Sent');
+                    break;
 
-            $data_graph = [
-                'name'     => __('Host detailed traffic').': '.$type,
-                'children' => [],
-            ];
-            $id = -1;
+                    default:
+                    case 'dstip':
+                    case 'dstport':
+                        $address_type = 'destination_address';
+                        $port_type = 'destination_port';
+                        $type = __('Received');
+                    break;
+                }
 
-            foreach ($data_stats as $sdata) {
-                $data_graph['children'][] = [
-                    'id'       => $i++,
-                    'name'     => $sdata['agg'],
-                    'children' => [
-                        [
-                            'id'              => $i++,
-                            'name'            => $sdata['agg'],
-                            'value'           => $sdata['data'],
-                            'tooltip_content' => network_format_bytes($sdata['data']),
-                        ],
-                    ],
+                $data_graph = [
+                    'name'     => __('Host detailed traffic').': '.$type,
+                    'children' => [],
                 ];
+                $id = -1;
+
+                foreach ($data_stats as $sdata) {
+                    $data_graph['children'][] = [
+                        'id'       => $id++,
+                        'name'     => $sdata['agg'],
+                        'children' => [
+                            [
+                                'id'              => $id++,
+                                'name'            => $sdata['agg'],
+                                'value'           => $sdata['data'],
+                                'tooltip_content' => network_format_bytes($sdata['data']),
+                            ],
+                        ],
+                    ];
+                }
+
+                return graph_netflow_host_traffic($data_graph, 'auto', 400);
             }
-        return graph_netflow_host_traffic($data_graph, 'auto', 400);
+        break;
 
         default:
             // Nothing to do.
         break;
     }
 
-    if ($output == 'HTML' || $output == 'PDF') {
+    if ($output === 'HTML' || $output === 'PDF') {
         return graph_nodata_image(300, 110, 'data');
     }
 }

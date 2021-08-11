@@ -4,3 +4,6 @@ python3 pandora-telegram-cli.py -t 1412764845:AAG-OxOKISOXwhITLFFNm6oq5YD2KI72fT
 
 # Pandora FMS command definition example
 python3 pandora-telegram-cli.py -t _field1_ -c _field2_ -m" _field3_"
+
+# New
+python3 pandora-telegram-cli.py -m 'test message for telegram new bot script' -t 1874294647:AAHRBk4YDf1QZXh_WuZ8m7ONrAQoKbTW6eQ -c -261593656 --api_conf "user=admin,pass=pandora,api_pass=pandora,api_url=http://192.168.80.44:8080/pandora_console/include/api.php" --module_graph "module_id=402, interval=3600" --tmp_dir /tmp

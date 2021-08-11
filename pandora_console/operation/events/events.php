@@ -1498,7 +1498,7 @@ try {
     $active_filters_div .= '<div class="label box-shadow">'.__('Current filter').'</div>';
     $active_filters_div .= '<div id="current_filter" class="content">';
     if ($loaded_filter !== false) {
-        $active_filters_div .= io_safe_output($loaded_filter['id_name']);
+        $active_filters_div .= htmlentities(io_safe_output($loaded_filter['id_name']));
     } else {
         $active_filters_div .= __('Not set.');
     }

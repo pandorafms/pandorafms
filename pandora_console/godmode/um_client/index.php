@@ -231,6 +231,21 @@ if (is_ajax() !== true) {
             }
         }
     }
+
+    $PHPmemory_limit_min = config_return_in_bytes('800M');
+    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+    if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== -1) {
+        $msg = __(
+            '\'%s\' recommended value is %s or greater. Please, change it on your PHP configuration file (php.ini) or contact with administrator',
+            'memory_limit',
+            '800M'
+        );
+        if (function_exists('ui_print_warning_message') === true) {
+            ui_print_warning_message($msg);
+        } else {
+            echo $msg;
+        }
+    }
 }
 
 // Load styles.
@@ -363,21 +378,6 @@ if (is_array($config) === true) {
                 }
             }
         );
-    }
-}
-
-$PHPmemory_limit_min = config_return_in_bytes('800M');
-$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
-if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
-    $msg = __(
-        '\'%s\' recommended value is %s or greater. Please, change it on your PHP configuration file (php.ini) or contact with administrator',
-        'memory_limit',
-        '800M'
-    );
-    if (function_exists('ui_print_warning_message') === true) {
-        ui_print_warning_message($msg);
-    } else {
-        echo $msg;
     }
 }
 

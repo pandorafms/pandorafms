@@ -135,6 +135,10 @@ if ($id) {
     $create_wu_integria = $action['create_wu_integria'];
 }
 
+if (users_can_manage_group_all('LW') === false && !$id) {
+    $group = users_get_first_group(false, 'LW', false);
+}
+
 // Hidden div with help hint to fill with javascript.
 html_print_div(
     [
@@ -623,9 +627,6 @@ $(document).ready (function () {
                 $("#group option").each(function(index, value) {
                     var current_group = $(value).val();
                 });
-                if (data.id_group != 0 && $("#group").val() != data.id_group) {
-                    $("#group").val(0);
-                }
 
                 var integria_custom_fields_values = [];
                 var integria_custom_fields_rvalues = [];

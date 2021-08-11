@@ -2365,12 +2365,13 @@ function html_print_div(
 /**
  * Render an anchor <a> html element.
  *
- * @param array   $options Parameters
+ * @param array   $options Parameters.
  *                - id: string.
  *                - style: string.
  *                - title: string.
  *                - href: string.
  *                - content: string.
+ *                - onClick: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
@@ -2387,6 +2388,7 @@ function html_print_anchor(
         'style',
         'class',
         'title',
+        'onClick',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();

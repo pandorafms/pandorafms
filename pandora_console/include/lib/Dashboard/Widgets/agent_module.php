@@ -413,7 +413,7 @@ class AgentModuleWidget extends Widget
         array $visualData,
         array $allModules
     ):string {
-        $style = 'display:flex; width:100%; height:100%; margin: 10px;';
+        $style = 'display:flex; width:100%; margin: 10px;';
         $table_data = '<div style="'.$style.'">';
         $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 
@@ -645,9 +645,18 @@ class AgentModuleWidget extends Widget
 
             $all_modules = $target_modules;
         } else {
-            $all_modules = Module::search(
-                ['id_agente_modulo' => $target_modules]
-            );
+            if (is_array($target_modules) === true
+                || is_numeric($target_modules) === true
+            ) {
+                $all_modules = Module::search(
+                    ['id_agente_modulo' => $target_modules]
+                );
+            } else {
+                // From previous definitions.
+                $all_modules = Module::search(
+                    ['id_agente_modulo' => explode(',', $target_modules)]
+                );
+            }
         }
 
         if ($all_modules !== null) {

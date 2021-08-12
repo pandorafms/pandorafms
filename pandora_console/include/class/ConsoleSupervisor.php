@@ -365,7 +365,6 @@ class ConsoleSupervisor
         /*
          * Check external components.
          *  NOTIF.EXT.ELASTICSEARCH
-         *  NOTIF.EXT.LOGSTASH
          *
          */
 

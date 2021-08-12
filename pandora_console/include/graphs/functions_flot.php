@@ -760,11 +760,23 @@ function flot_slicesbar_graph(
     $graph_id = uniqid('graph_');
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
-    $height = ((int) $height + 15);
+    if (is_numeric($height) === true) {
+        $height = ((int) $height + 15);
+    }
 
     $style = 'width:'.$width.'%;';
+
     // Fixed height size.
-    $style .= 'height: 100%;';
+    if (empty($height) === true) {
+        $style .= 'height: 100%;';
+    } else {
+        if (is_numeric($height) === true) {
+            $style .= 'height: '.$height.'px;';
+        } else {
+            $style .= 'height: '.$height.';';
+        }
+    }
+
     $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
 
     $return .= "<div id='value_".$graph_id."' class='flot_container'></div>";

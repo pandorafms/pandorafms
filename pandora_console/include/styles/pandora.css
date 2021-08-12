@@ -285,8 +285,6 @@ input[type="image"] {
 table,
 img {
   border: 0px;
-  width: auto;
-  height: auto;
 }
 
 table pre {

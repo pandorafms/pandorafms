@@ -2359,12 +2359,17 @@ class ConsoleSupervisor
                 $message_conf_cron .= __('Please, make sure process is not locked.');
             }
 
+            $url = '__url__/index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist';
+            if (is_metaconsole() === true) {
+                $url = '__url__index.php?sec=extensions&sec2=enterprise/extensions/cron';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.CRON.CONFIGURED',
                     'title'   => __('DiscoveryConsoleTasks is not configured.'),
                     'message' => __($message_conf_cron),
-                    'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist',
+                    'url'     => $url,
                 ]
             );
         } else {

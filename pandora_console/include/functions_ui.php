@@ -4438,19 +4438,27 @@ function ui_print_standard_header(
         true
     );
     // Create the header.
-    $output = ui_print_page_header(
-        $title,
-        $icon,
-        true,
-        $help,
-        $godmode,
-        $options,
-        false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        $headerInformation->printHeader(true)
-    );
+    if (is_metaconsole() === true) {
+        $output = ui_meta_print_header(
+            $title,
+            false,
+            $options
+        );
+    } else {
+        $output = ui_print_page_header(
+            $title,
+            $icon,
+            true,
+            $help,
+            $godmode,
+            $options,
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            $headerInformation->printHeader(true)
+        );
+    }
 
     if ($return !== true) {
         echo $output;

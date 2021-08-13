@@ -998,6 +998,18 @@ if (is_metaconsole() !== true) {
     }
 }
 
+if (enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'execute_event_responses',
+    ]
+) === false
+) {
+    $readonly = true;
+}
+
 /*
  * Load filter form.
  */

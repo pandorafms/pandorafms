@@ -1295,6 +1295,14 @@ if ($get_extended_event) {
         && isset($config['event_replication'])
         && $config['event_replication'] == 1
         && $config['show_events_in_local'] == 1
+        || enterprise_hook(
+            'enterprise_acl',
+            [
+                $config['id_user'],
+                'eventos',
+                'execute_event_responses',
+            ]
+        ) === false
     ) {
         $readonly = true;
     }

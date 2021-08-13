@@ -494,9 +494,10 @@ function menu_add_extras(&$menu)
 
     $menu_extra['gservers']['sub']['godmode/servers/manage_recontask_form']['text'] = __('Manage recontask');
 
+    $menu_extra['gagente']['sub']['godmode/category/edit_category']['text'] = __('Manage module categories');
+
     $menu_extra['gmodules']['sub']['godmode/modules/manage_network_templates_form']['text'] = __('Module templates management');
     $menu_extra['gmodules']['sub']['enterprise/godmode/modules/manage_inventory_modules_form']['text'] = __('Inventory modules management');
-    $menu_extra['gmodules']['sub']['godmode/tag/edit_tag']['text'] = __('Tags management');
 
     $menu_extra['gagente']['sub']['godmode/agentes/configurar_agente']['text'] = __('Agents management');
 
@@ -509,6 +510,7 @@ function menu_add_extras(&$menu)
     $menu_extra['network']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Builder visual console');
 
     $menu_extra['eventos']['sub']['godmode/events/events']['text'] = __('Administration events');
+    $menu_extra['eventos']['sub']['execute_event_responses']['text'] = __('Execute event responses');
 
     $menu_extra['reporting']['sub']['operation/reporting/reporting_viewer']['text'] = __('View reporting');
     $menu_extra['reporting']['sub']['operation/reporting/graph_viewer']['text'] = __('Graph viewer');
@@ -520,7 +522,8 @@ function menu_add_extras(&$menu)
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_editor']['text'] = __('Manage graph templates');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_item_editor']['text'] = __('Graph template items');
     $menu_extra['reporting']['sub']['enterprise/godmode/reporting/graph_template_wizard']['text'] = __('Graph template wizard');
-
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=wizard&action=wizard']['text'] = __('Templates wizard');
+    $menu_extra['reporting']['sub']['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
     if ($config['activate_gis']) {
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }
@@ -528,7 +531,6 @@ function menu_add_extras(&$menu)
     $menu_extra['workspace']['sub']['operation/incidents/incident_statistics']['text'] = __('Incidents statistics');
     $menu_extra['workspace']['sub']['operation/messages/message_edit']['text'] = __('Manage messages');
 
-    $menu_extra['gagente']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
     $menu_extra['gagente']['sub']['godmode/groups/configure_modu_group']['text'] = __('Manage module groups');
     $menu_extra['gagente']['sub']['godmode/agentes/configure_field']['text'] = __('Manage custom field');
 
@@ -546,6 +548,9 @@ function menu_add_extras(&$menu)
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
     $menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
+
+    $menu_extra['gusuarios']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
+    $menu_extra['gusuarios']['sub']['godmode/tag/edit_tag']['text'] = __('Tags management');
 
     // Duplicate extensions as sec=extension to check it from url.
     foreach ($menu as $k => $m) {

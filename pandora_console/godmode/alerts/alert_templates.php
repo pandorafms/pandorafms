@@ -259,9 +259,14 @@ if ($delete_template) {
     );
 }
 
-if (is_central_policies_on_node() === true) {
+if (is_management_allowed() === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alert templates information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=godmode/alerts/alert_templates&tab=template'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 
@@ -409,7 +414,7 @@ foreach ($templates as $template) {
     $data[1] = ui_print_group_icon($template['id_group'], true);
     $data[3] = alerts_get_alert_templates_type_name($template['type']);
 
-    if (is_central_policies_on_node() === false
+    if (is_management_allowed() === true
         && check_acl($config['id_user'], $template['id_group'], 'LM')
     ) {
         $table->cellclass[][4] = 'action_buttons';
@@ -469,7 +474,7 @@ if (isset($data) === true) {
     );
 }
 
-if (is_central_policies_on_node() === false) {
+if (is_management_allowed() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

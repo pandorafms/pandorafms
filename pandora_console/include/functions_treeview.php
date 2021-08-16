@@ -511,12 +511,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     enterprise_include_once('meta/include/functions_ui_meta.php');
     include_graphs_dependencies();
 
-    $is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-    if ($is_extra === ENTERPRISE_NOT_HOOK) {
-        $is_extra = false;
-    }
-
     $user_access_node = can_user_access_node();
 
     if (is_metaconsole()) {
@@ -550,7 +544,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR', false)
         && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
-        && !$is_extra
     ) {
         db_pandora_audit(
             'ACL Violation',

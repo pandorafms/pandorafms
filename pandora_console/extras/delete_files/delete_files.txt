@@ -82,6 +82,14 @@ include/lib/WSManager.php
 include/lib/WebSocketServer.php
 include/lib/WebSocketUser.php
 operation/network/network_explorer.php
+enterprise/meta/advanced/synchronizing.php
+enterprise/meta/advanced/synchronizing.os.php
+enterprise/meta/advanced/synchronizing.module_groups.php
+enterprise/meta/advanced/synchronizing.component.php
+enterprise/meta/advanced/synchronizing.alert.php
+enterprise/meta/advanced/synchronizing.user.php
+enterprise/meta/advanced/synchronizing.tag.php
+enterprise/meta/advanced/synchronizing.group.php
 operation/visual_console/pure_ajax.php
 include/ajax/update_manager.ajax.php
 godmode/update_manager/update_manager.css
@@ -90,8 +98,11 @@ godmode/update_manager/update_manager.online.php
 include/javascript/update_manager.js
 enterprise/include/functions_update_manager.php
 include/ajax/rolling_release.ajax.php
+extensions/plugin_registration.php
+enterprise/include/functions_plugins.php
 include/help/en/help_event_alert.php
 include/help/es/help_event_alert.php
 enterprise/godmode/alerts/alert_events.php
 enterprise/godmode/alerts/alert_events_list.php
 enterprise/godmode/alerts/alert_events_rules.php
+enterprise/godmode/alerts/configure_alert_rule.php

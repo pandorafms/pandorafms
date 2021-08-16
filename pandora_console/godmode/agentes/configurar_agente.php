@@ -1494,7 +1494,7 @@ if ($update_module || $create_module) {
     $ff_event_normal = (int) get_parameter('ff_event_normal');
     $ff_event_warning = (int) get_parameter('ff_event_warning');
     $ff_event_critical = (int) get_parameter('ff_event_critical');
-    $ff_type = (int) get_parameter('ff_type', $module['ff_type']);
+    $ff_type = (int) get_parameter('ff_type');
     $each_ff = (int) get_parameter('each_ff', $module['each_ff']);
     $ff_timeout = (int) get_parameter('ff_timeout');
     $unit = (string) get_parameter('unit');
@@ -2368,7 +2368,7 @@ switch ($tab) {
             
             var aget_id_os = '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>';
             
-            if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() &&
+            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() &&
              '<?php echo agents_get_os(modules_get_agentmodule_agent(get_parameter('id_agent_module'))); ?>' == 19){
                 
                 event.preventDefault();
@@ -2402,7 +2402,7 @@ switch ($tab) {
             
             var module_type_snmp =  '<?php echo modules_get_agentmodule_type(get_parameter('id_agent_module')); ?>';
             
-            if('<?php echo html_entity_decode(modules_get_agentmodule_name(get_parameter('id_agent_module'))); ?>' != $('#text-name').val() && (
+            if('<?php echo modules_get_agentmodule_name(get_parameter('id_agent_module')); ?>' != $('#text-name').val() && (
                 module_type_snmp == 15 || module_type_snmp == 16 || module_type_snmp == 17 || module_type_snmp == 18)){
                     
                     event.preventDefault();

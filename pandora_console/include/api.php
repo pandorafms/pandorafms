@@ -29,17 +29,35 @@
 // Begin.
 require_once 'config.php';
 require_once 'functions_api.php';
-require '../vendor/autoload.php';
 global $config;
 
 define('DEBUG', 0);
 define('VERBOSE', 0);
 
+// Load extra classes.
+require_once $config['homedir'].'/vendor/autoload.php';
+
+// Enterprise support.
+if (file_exists($config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php') === true) {
+    include_once $config['homedir'].'/'.ENTERPRISE_DIR.'/load_enterprise.php';
+}
+
 // TESTING THE UPDATE MANAGER.
 enterprise_include_once('load_enterprise.php');
 enterprise_include_once('include/functions_enterprise_api.php');
+enterprise_include_once('include/functions_metaconsole.php');
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
+
+// Sometimes input is badly retrieved from caller...
+if (empty($_REQUEST) === true) {
+    $data = explode('&', urldecode(file_get_contents('php://input')));
+    foreach ($data as $d) {
+        $r = explode('=', $d, 2);
+        $_POST[$r[0]] = $r[1];
+        $_GET[$r[0]] = $r[1];
+    }
+}
 
 // Get the parameters and parse if necesary.
 $op = get_parameter('op');
@@ -85,8 +103,21 @@ if ($info == 'version') {
     exit;
 }
 
-if (isInACL($ipOrigin)) {
-    if (empty($apiPassword) || (!empty($apiPassword) && $api_password === $apiPassword)) {
+if (empty($apiPassword) === true
+    || (empty($apiPassword) === false && $api_password === $apiPassword)
+    && (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
+    || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true)
+) {
+    // Allow internal direct node -> metaconsole connection
+    // or node -> own console connection.
+    $config['__internal_call'] = true;
+    $config['id_usuario'] = 'admin';
+    // Compat.
+    $config['id_user'] = 'admin';
+    $correctLogin = true;
+} else if ((bool) isInACL($ipOrigin) === true) {
+    // External access.
+    if (empty($apiPassword) === true || (empty($apiPassword) === false && $api_password === $apiPassword)) {
         $user_in_db = process_user_login($user, $password, true);
         if ($user_in_db !== false) {
             $config['id_usuario'] = $user_in_db;
@@ -262,7 +293,7 @@ if ($correctLogin) {
                     break;
 
                     case 'event':
-                        // Preventive check for users if not available write events
+                        // Preventive check for users if not available write events.
                         if (! check_acl($config['id_user'], $event['id_grupo'], 'EW')) {
                             return false;
                         }

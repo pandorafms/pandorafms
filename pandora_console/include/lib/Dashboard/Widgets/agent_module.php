@@ -35,6 +35,7 @@ use PandoraFMS\Module;
  */
 class AgentModuleWidget extends Widget
 {
+    const MODULE_SEPARATOR = '|-|-|-|';
 
     /**
      * Name widget.
@@ -299,9 +300,32 @@ class AgentModuleWidget extends Widget
         $values['mShowCommonModules'] = \get_parameter(
             'filtered-module-show-common-modules-'.$this->cellId
         );
-        $values['mModules'] = \get_parameter(
-            'filtered-module-modules-'.$this->cellId
+        $values['mModules'] = explode(
+            ',',
+            \get_parameter(
+                'filtered-module-modules-'.$this->cellId
+            )
         );
+
+        if (is_metaconsole() === true) {
+            $values['mModules'] = implode(
+                self::MODULE_SEPARATOR,
+                array_reduce(
+                    $values['mModules'],
+                    function ($carry, $item) {
+                        $d = explode('|', $item);
+                        if (isset($d[1]) === true) {
+                            $carry[] = \io_safe_output($d[1]);
+                        } else {
+                            $carry[] = \io_safe_output($item);
+                        }
+
+                        return $carry;
+                    },
+                    []
+                )
+            );
+        }
 
         return $values;
     }
@@ -389,7 +413,7 @@ class AgentModuleWidget extends Widget
         array $visualData,
         array $allModules
     ):string {
-        $style = 'display:flex; width:100%; height:100%; margin: 10px;';
+        $style = 'display:flex; width:100%; margin: 10px;';
         $table_data = '<div style="'.$style.'">';
         $table_data .= '<table class="widget_agent_module transparent mrgn_0px" cellpadding="1" cellspacing="0" border="0">';
 
@@ -400,7 +424,7 @@ class AgentModuleWidget extends Widget
 
             foreach ($allModules as $module_name) {
                 $file_name = ui_print_truncate_text(
-                    $module_name,
+                    \io_safe_output($module_name),
                     'module_small',
                     false,
                     true,
@@ -442,7 +466,7 @@ class AgentModuleWidget extends Widget
                 }
 
                 $file_name = \ui_print_truncate_text(
-                    $row['agent_alias'],
+                    \io_safe_output($row['agent_alias']),
                     'agent_small',
                     false,
                     true,
@@ -612,15 +636,48 @@ class AgentModuleWidget extends Widget
         }
 
         // Extract info all modules selected.
-        $target_modules = explode(',', $this->values['mModules']);
-        $all_modules = Module::search(
-            ['id_agente_modulo' => $target_modules]
-        );
+        $target_modules = $this->values['mModules'];
+        if (is_metaconsole() === true) {
+            $target_modules = explode(
+                self::MODULE_SEPARATOR,
+                $this->values['mModules']
+            );
+
+            $all_modules = $target_modules;
+        } else {
+            if (is_array($target_modules) === true
+                || is_numeric($target_modules) === true
+            ) {
+                $all_modules = Module::search(
+                    ['id_agente_modulo' => $target_modules]
+                );
+            } else {
+                // From previous definitions.
+                $all_modules = Module::search(
+                    ['id_agente_modulo' => explode(',', $target_modules)]
+                );
+            }
+        }
+
         if ($all_modules !== null) {
             $reduceAllModules = array_reduce(
                 $all_modules,
                 function ($carry, $item) {
-                    $carry[$item->name()] = null;
+                    if ($item === null) {
+                        return $carry;
+                    }
+
+                    if (is_object($item) === true) {
+                        $carry[$item->name()] = null;
+                    } else {
+                        if ((is_metaconsole() === true
+                            && $this->values['mShowCommonModules'] !== '1')
+                            || is_metaconsole() === false
+                        ) {
+                            $carry[$item] = null;
+                        }
+                    }
+
                     return $carry;
                 }
             );
@@ -653,14 +710,32 @@ class AgentModuleWidget extends Widget
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
 
-                $modules = $agent->searchModules(
-                    ['id_agente_modulo' => $target_modules]
-                );
+                if (is_metaconsole() === true
+                    && $this->values['mShowCommonModules'] === '1'
+                ) {
+                    // MC should connect to nodes and retrieve information
+                    // from targets.
+                    $modules = $agent->searchModules(
+                        ['id_agente_modulo' => $target_modules]
+                    );
+
+                    foreach ($modules as $module) {
+                        if ($module === null) {
+                            $reduceAllModules[] = null;
+                        } else {
+                            $reduceAllModules[$module->name()] = null;
+                        }
+                    }
+                } else {
+                    $modules = $agent->searchModules(
+                        ['nombre' => array_keys($reduceAllModules)]
+                    );
+                }
 
                 $visualData[$agent_id]['modules'] = $reduceAllModules;
                 foreach ($modules as $module) {
-                    if ((bool) is_metaconsole() === true) {
-                        $reduceAllModules[$module->name()] = null;
+                    if ($module === null) {
+                        continue;
                     }
 
                     $visualData[$agent_id]['modules'][$module->name()] = $module->getStatus()->estado();
@@ -674,7 +749,6 @@ class AgentModuleWidget extends Widget
             }
         }
 
-        ksort($reduceAllModules);
         $allModules = array_keys($reduceAllModules);
         if ($allModules === null) {
             $allModules = [];

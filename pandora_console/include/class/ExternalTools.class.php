@@ -752,7 +752,7 @@ class ExternalTools extends HTML
                 true
             );
         } else {
-            if ($operation === COMMAND_SNMP) {
+            if ((int) $operation === COMMAND_SNMP) {
                 $snmp_obj = [
                     'ip_target'      => $ip,
                     'snmp_version'   => $snmp_version,
@@ -821,7 +821,7 @@ class ExternalTools extends HTML
                 }
 
                 html_print_table($table);
-            } else if ($operation === COMMAND_DIGWHOIS) {
+            } else if ((int) $operation === COMMAND_DIGWHOIS) {
                 echo '<h3>'.__('Domain and IP information for ').$ip.'</h3>';
 
                 // Dig execution.

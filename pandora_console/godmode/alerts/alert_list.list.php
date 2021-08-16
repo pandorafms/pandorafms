@@ -708,7 +708,7 @@ foreach ($simple_alerts as $alert) {
 
         $data[3] .= '<div id="add_action-div-'.$alert['id'].'" class="invisible left">';
             $data[3] .= '<form id="add_action_form-'.$alert['id'].'" method="post">';
-                $data[3] .= '<table class="databox_color w100p">';
+                $data[3] .= '<table class="databox_color w100p bg_color222">';
                     $data[3] .= html_print_input_hidden('add_action', 1, true);
                     $data[3] .= html_print_input_hidden('id_alert_module', $alert['id'], true);
 

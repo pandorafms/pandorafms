@@ -170,7 +170,7 @@ function flot_area_graph(
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($params['show_legend']) {
-        $return .= '<p id="legend_'.$graph_id.'" style="text-align:left; width: '.$params['width'].'px;"></p>';
+        $return .= '<p id="legend_'.$graph_id.'" class="legend_background" style="text-align:left; width: '.$params['width'].'px;"></p>';
     }
 
     if (isset($params['graph_combined']) === true && $params['graph_combined']
@@ -763,7 +763,8 @@ function flot_slicesbar_graph(
     $height = ((int) $height + 15);
 
     $style = 'width:'.$width.'%;';
-    $style .= 'height:'.$height.'px;';
+    // Fixed height size.
+    $style .= 'height: 100%;';
     $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
 
     $return .= "<div id='value_".$graph_id."' class='flot_container'></div>";
@@ -778,7 +779,7 @@ function flot_slicesbar_graph(
 
     $datacolor = [];
 
-    $fontsize = $config['font_size'];
+    $fontsize = ((int) $config['font_size'] + 2);
     $fontpath = $config['fontpath'];
 
     $return .= '<div id="extra_'.$graph_id.'" class="slicebar-box-hover-styles invisible" style="font-size:'.$fontsize.'"></div>';

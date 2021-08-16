@@ -218,7 +218,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 ui_print_error_message(__('Security error'));
             } else {
                 if (PandoraFMS\Tools\Files::unzip($filepath, $real_directory) === false) {
-                    ui_print_error_message(__('No he podido descomprimir tu archivo de mierda'));
+                    ui_print_error_message(__('It was impossible to uncompress your file'));
                 } else {
                     unlink($_FILES['file']['tmp_name']);
                     ui_print_success_message(__('Upload correct'));

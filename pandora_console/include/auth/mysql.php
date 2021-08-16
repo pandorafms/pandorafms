@@ -319,7 +319,7 @@ function process_user_login_remote($login, $pass, $api=false)
                         defined('METACONSOLE')
                     );
 
-                    if ($return === 'error_permissions') {
+                    if ($result === 'error_permissions') {
                         $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
                         return false;
                     }
@@ -735,7 +735,14 @@ function ldap_process_user_login($login, $password)
     }
 
     // Connect to the LDAP server
-    $ds = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+    if (stripos($config['ldap_server'], 'ldap://') !== false
+        || stripos($config['ldap_server'], 'ldaps://') !== false
+        || stripos($config['ldap_server'], 'ldapi://') !== false
+    ) {
+        $ds = @ldap_connect($config['ldap_server'].':'.$config['ldap_port']);
+    } else {
+        $ds = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+    }
 
     if (!$ds) {
         $config['auth_error'] = 'Error connecting to LDAP server';
@@ -1393,7 +1400,7 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
     }
 
     if (!empty($ldap_admin_pass)) {
-        $ldap_admin_pass = ' -w '.$ldap_admin_pass;
+        $ldap_admin_pass = ' -w '.escapeshellarg($ldap_admin_pass);
     }
 
     $dn = " -b '".$dn."'";

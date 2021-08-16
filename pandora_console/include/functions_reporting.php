@@ -1845,14 +1845,25 @@ function reporting_event_report_group(
     }
 
     $id_meta = 0;
+    $node_historical_event_enbled = '';
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+
+        // Check if node historical event is enable.
+        $sql = sprintf(
+            'SELECT value
+            FROM tconfig
+            WHERE token LIKE "history_event_enabled"'
+        );
+
+        $result = db_get_row_sql($sql);
+        $node_historical_event_enbled = $result['value'];
     }
 
     $history = false;
-    if ($config['history_event_enabled']) {
+    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
         $history = true;
     }
 

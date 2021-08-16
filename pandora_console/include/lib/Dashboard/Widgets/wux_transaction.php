@@ -259,7 +259,7 @@ class WuxWidget extends Widget
             'label'     => __('Wux transaction'),
             'arguments' => [
                 'type'           => 'autocomplete_module',
-                'fields'         => $fields,
+                'fields'         => [],
                 'name'           => 'transactionId',
                 'selected'       => $values['transactionId'],
                 'return'         => true,

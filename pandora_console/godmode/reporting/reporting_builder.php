@@ -1759,6 +1759,9 @@ switch ($action) {
                                 $values['time_in_ok_status'] = get_parameter(
                                     'time_in_ok_status'
                                 );
+                                $values['time_in_warning_status'] = get_parameter(
+                                    'time_in_warning_status'
+                                );
                                 $values['time_in_unknown_status'] = get_parameter(
                                     'time_in_unknown_status'
                                 );
@@ -1776,6 +1779,9 @@ switch ($action) {
                                 );
                                 $values['checks_in_ok_status'] = get_parameter(
                                     'checks_in_ok_status'
+                                );
+                                $values['checks_in_warning_status'] = get_parameter(
+                                    'checks_in_warning_status'
                                 );
                                 $values['unknown_checks'] = get_parameter(
                                     'unknown_checks'
@@ -1895,6 +1901,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -1917,6 +1927,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(
@@ -2559,6 +2573,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -2581,6 +2599,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(

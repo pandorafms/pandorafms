@@ -896,6 +896,8 @@ ALTER TABLE `treport_content_template` ADD COLUMN `landscape` tinyint(1) UNSIGNE
 ALTER TABLE `treport_content_template` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content_template` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
+ALTER TABLE `treport_content_template` ADD COLUMN `time_in_warning_status` TINYINT(1) DEFAULT '0';
+ALTER TABLE `treport_content_template` ADD COLUMN `checks_in_warning_status` TINYINT(1) DEFAULT '0';
 
 -- ----------------------------------------------------------------------
 -- Table `tnews`
@@ -1773,6 +1775,8 @@ ALTER TABLE `treport_content` ADD COLUMN `pagebreak` tinyint(1) UNSIGNED NOT NUL
 ALTER TABLE `treport_content` ADD COLUMN `compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` ADD COLUMN `graph_render` tinyint(1) UNSIGNED NOT NULL default 0;
 ALTER TABLE `treport_content` MODIFY `external_source` MEDIUMTEXT;
+ALTER TABLE `treport_content` ADD COLUMN `time_in_warning_status` TINYINT(1) DEFAULT '0';
+ALTER TABLE `treport_content` ADD COLUMN `checks_in_warning_status` TINYINT(1) DEFAULT '0';
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_relationship`

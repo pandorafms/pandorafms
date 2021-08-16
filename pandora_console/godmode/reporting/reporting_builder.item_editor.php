@@ -162,12 +162,14 @@ $filter_exclude = '';
 $total_time = true;
 $time_failed = true;
 $time_in_ok_status = true;
+$time_in_warning_status = false;
 $time_in_unknown_status = true;
 $time_of_not_initialized_module = true;
 $time_of_downtime = true;
 $total_checks = true;
 $checks_failed = true;
 $checks_in_ok_status = true;
+$checks_in_warning_status = true;
 $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
@@ -673,12 +675,14 @@ switch ($action) {
                     $total_time = $item['total_time'];
                     $time_failed = $item['time_failed'];
                     $time_in_ok_status = $item['time_in_ok_status'];
+                    $time_in_warning_status = $item['time_in_warning_status'];
                     $time_in_unknown_status = $item['time_in_unknown_status'];
                     $time_of_not_initialized_module = $item['time_of_not_initialized_module'];
                     $time_of_downtime = $item['time_of_downtime'];
                     $total_checks = $item['total_checks'];
                     $checks_failed = $item['checks_failed'];
                     $checks_in_ok_status = $item['checks_in_ok_status'];
+                    $checks_in_warning_status = $item['checks_in_warning_status'];
                     $unknown_checks = $item['unknown_checks'];
                     $agent_max_value = $item['agent_max_value'];
                     $agent_min_value = $item['agent_min_value'];
@@ -2311,6 +2315,14 @@ $class = 'databox filters';
             <td>
             <p class="mrgn_right_30px">
                 <?php
+                echo __('Time in warning status').'<br>';
+                html_print_checkbox_switch('time_in_warning_status', 1, $time_in_warning_status);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p class="mrgn_right_30px">
+                <?php
                 echo __('Time in unknown status').'<br>';
                 html_print_checkbox_switch(
                     'time_in_unknown_status',
@@ -2416,6 +2428,18 @@ $class = 'databox filters';
                     'checks_in_ok_status',
                     1,
                     $checks_in_ok_status
+                );
+                ?>
+                </p>
+            </td>
+            <td>
+            <p class="mrgn_right_30px">
+                <?php
+                echo __('Checks in Warning status');
+                html_print_checkbox(
+                    'checks_in_warning_status',
+                    1,
+                    $checks_in_warning_status
                 );
                 ?>
                 </p>

@@ -1599,7 +1599,6 @@ if ($get_extended_event) {
                     page: "include/ajax/events",
                     get_comments: 1,
                     event: '.json_encode($event).',
-                    filter: '.json_encode($filter).'
                 },
                 dataType : "html",
                 success: function (data) {
@@ -1914,7 +1913,7 @@ if ($get_events_fired) {
     $idGroup = get_parameter('id_group');
     $agents = get_parameter('agents', null);
 
-    $query = ' AND id_evento >= '.$id;
+    $query = ' AND id_evento > '.$id;
 
     $type = [];
     $alert = get_parameter('alert_fired');

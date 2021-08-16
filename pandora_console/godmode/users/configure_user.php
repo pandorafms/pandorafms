@@ -296,7 +296,7 @@ if ($new_user && $config['admin_can_add_user']) {
     // This attributes are inherited from global configuration
     $user_info['block_size'] = $config['block_size'];
 
-    if (enterprise_installed() && defined('METACONSOLE')) {
+    if (enterprise_installed() && is_metaconsole() === true) {
         $user_info['metaconsole_agents_manager'] = 0;
         $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;

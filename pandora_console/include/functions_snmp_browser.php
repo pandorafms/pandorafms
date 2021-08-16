@@ -1085,7 +1085,7 @@ function snmp_browser_print_container(
             true
         );
 
-        if (enterprise_installed()) {
+        if (is_management_allowed() === true && enterprise_installed()) {
             $output .= html_print_submit_button(
                 __('Create policy modules'),
                 'create_modules_policy',

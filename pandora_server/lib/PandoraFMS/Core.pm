@@ -732,7 +732,11 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
+			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
+		} else {
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+		}
 		return;
 	}
 
@@ -772,8 +776,12 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
-			$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
+			pandora_queue_alert($pa_config, $dbh, $data, $alert, 1, $extra_macros);
+		} else {
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
+				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+		}
 		return;
 	}
 }
@@ -1003,6 +1011,26 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			);
 		}
 	}
+}
+
+##########################################################################
+=head2 C<< pandora_queue_alert (I<$pa_config>, I<$dbh>, I<$data>, I<$alert>, I<$extra_macros> >> 
+
+Queue the given alert for execution.
+
+=cut
+##########################################################################
+sub pandora_queue_alert ($$$$$;$) {
+	my ($pa_config, $dbh, $data, $alert, $alert_mode, $extra_macros) = @_;
+	my $json_macros = '{}';
+
+	eval {
+		local $SIG{__DIE__};
+		$json_macros = encode_json($extra_macros);
+	};
+
+	db_do ($dbh, "INSERT INTO talert_execution_queue (id_alert_template_module, data, alert_mode, extra_macros, utimestamp)
+		VALUES (?, ?, ?, ?, ?)", $alert->{'id_template_module'}, $data, $alert_mode, $json_macros, time());
 }
 
 ##########################################################################
@@ -1396,11 +1424,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -1623,7 +1651,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
-		my $api_path = $config_api_path . "/integria/include/api.php";
+		my $api_path = $config_api_path . "/include/api.php";
 		
 		# Field 2 (Integria IMS API pass)
 		my $api_pass = $config_api_pass;
@@ -3955,15 +3983,66 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			$alert_data .= " Custom: $trap_custom_oid";
 		}
 
-		# Assign default values to the _snmp_fx_ macros from variable bindings
-		my $count;
-		my @custom_values = split ("\t", $trap_custom_oid);
-		for ($count = 1; defined ($custom_values[$count-1]); $count++) {
-			my $macro_name = '_snmp_f' . $count . '_';
-			my $order_field = $alert->{'order_'.$count};
-			#~ my $order_field = $order_field - 1;
+		# Parse variables data.
+		my @custom_values = split("\t", $trap_custom_oid);
+
+		# Evaluate variable filters
+		my $filter_match = 1;
+		for (my $i = 1; $i <= 20; $i++) {
+			my $order_field = $alert->{'order_'.$i} - 1;
+
+			# Only values greater than 0 allowed.
+			next if $order_field < 0;
+
+			my $filter_name = '_snmp_f' . $i . '_';
+			my $filter_regex = safe_output ($alert->{$filter_name});
+			my $field_value = $custom_values[$order_field];
+
+			# No filter for the current binding var
+			next if ($filter_regex eq '');
 			
-			if ($custom_values[($order_field-1)] =~ m/= \S+: (.*)/) {
+			# The referenced binding var does not exist
+			if (! defined ($field_value)) {
+				$filter_match = 0;
+				last;
+			}
+			
+			# Evaluate the filter
+			eval {
+				local $SIG{__DIE__};
+				if ($field_value !~ m/$filter_regex/) {
+					$filter_match = 0;
+				}
+			};
+
+			# Probably an invalid regexp
+			if ($@) {
+				# Filter is ignored.
+				logger($pa_config, "Invalid regex in SNMP alert #".$alert->{'id_as'}.": [".$filter_regex."]", 3);
+				# Invalid regex are ignored, test next variables.
+				next;
+			}
+			
+			# The filter did not match
+			last if ($filter_match == 0);
+		}
+		
+		# A filter did not match
+		next if ($filter_match == 0);
+
+		# Assign values to _snmp_fx_ macros.
+		my $count;
+		for ($count = 0; defined ($custom_values[$count]); $count++) {
+			my $macro_name = '_snmp_f' . ($count+1) . '_';
+			my $target = $custom_values[$count];
+
+			if (!defined($target)) {
+				# Ignore emtpy data.
+				$macros{$macro_name} = '';
+				next;
+			}
+
+			if ($target =~ m/= \S+: (.*)/) {
 				my $value = $1;
 			
 				# Strip leading and trailing double quotes
@@ -3971,6 +4050,9 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				$value =~ s/"$//;
 				
 				$macros{$macro_name} = $value;
+			} else {
+				# Empty variable.
+				$macros{$macro_name} = '';
 			}
 		}
 		$count--;
@@ -3980,40 +4062,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		# All variables
 		$macros{'_snmp_argv_'} = $trap_custom_oid;
-
-		# Evaluate _snmp_fx_ filters
-		my $filter_match = 1;
-		for (my $i = 1; $i <= 10; $i++) {
-			my $filter_name = '_snmp_f' . $i . '_';
-			my $filter_value = safe_output ($alert->{$filter_name});
-
-			# No filter for the current binding var
-			next if ($filter_value eq '');
-			
-			# The referenced binding var does not exist
-			if (! defined ($macros{$filter_name})) {
-				$filter_match = 0;
-				last;
-			}
-			
-			# Evaluate the filter
-			eval {
-				if ($macros{$filter_name} !~ m/$filter_value/) {
-					$filter_match = 0;
-				}
-			};
-			
-			# Probably an invalid regexp
-			if ($@) {
-				last;
-			}
-			
-			# The filter did not match
-			last if ($filter_match == 0);
-		}
-		
-		# A filter did not match
-		next if ($filter_match == 0);
 		
 		# Replace macros
 		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
@@ -4673,9 +4721,9 @@ sub get_module_status ($$$) {
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
 				if ($warning_min == 0) {
-					return 1 if ($data > $warning_max);
+					return 2 if ($data > $warning_max);
 				}elsif ($warning_max == 0) {
-					return 1 if ($data <= $warning_min);
+					return 2 if ($data <= $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
 					return 2 if ($data <= $warning_max && $warning_max < $warning_min);
@@ -5247,6 +5295,8 @@ sub pandora_process_policy_queue ($) {
 	my $dbh = db_connect ($pa_config{'dbengine'}, $pa_config{'dbname'}, $pa_config{'dbhost'}, $pa_config{'dbport'},
 						$pa_config{'dbuser'}, $pa_config{'dbpass'});
 
+	my $dbh_metaconsole;
+	
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while($THRRUN == 1) {
@@ -5261,6 +5311,58 @@ sub pandora_process_policy_queue ($) {
 
 			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 			next unless (defined ($operation) && $operation ne '');
+
+			$pa_config->{"node_metaconsole"} = pandora_get_tconfig_token(
+				$dbh, 'node_metaconsole', 0
+			);
+
+			# Only for nodes connected to a MC in centralised environment
+			# tsync_queue will have elements ONLY if env is centralised on MC.
+			if (!is_metaconsole($pa_config)
+				&& $pa_config->{"node_metaconsole"}
+			) {
+
+				if (!defined($dbh_metaconsole)) {
+					$dbh_metaconsole = enterprise_hook(
+						'get_metaconsole_dbh',
+						[$pa_config, $dbh]
+					);
+				}
+
+				$pa_config->{"metaconsole_node_id"} = pandora_get_tconfig_token(
+					$dbh, 'metaconsole_node_id', 0
+				);
+
+				if (!defined($dbh_metaconsole)) {
+					logger($pa_config,
+						"Node has no access to metaconsole, this is required in centralised environments.",
+						3
+					);
+
+					sleep($pa_config->{'server_threshold'});
+
+					# Skip.
+					next;
+				}
+
+				my $policies_updated = PandoraFMS::DB::get_db_value(
+					$dbh_metaconsole,
+					'SELECT count(*) as N FROM `tsync_queue` WHERE `table` IN ( "tpolicies", "tpolicy_alerts", "tpolicy_alerts_actions", "tpolicy_collections", "tpolicy_modules", "tpolicy_modules_inventory", "tpolicy_plugins" ) AND `target` = ?',
+						$pa_config->{"metaconsole_node_id"}
+				);
+
+				if (!defined($policies_updated) || "$policies_updated" ne "0") {
+					$policies_updated = 'unknown' unless defined($policies_updated);
+					logger($pa_config,
+						"Policy definitions are not up to date (missing changes - $policies_updated - from MC) waiting synchronizer.",
+						3
+					);
+
+					sleep($pa_config->{'server_threshold'});
+					# Skip.
+					next;
+				}
+			}
 
 			if($operation->{'operation'} eq 'apply' || $operation->{'operation'} eq 'apply_db') {
 				enterprise_hook('pandora_apply_policy', [$dbh, $pa_config, $operation->{'id_policy'}, $operation->{'id_agent'}, $operation->{'id'}, $operation->{'operation'}]);
@@ -5277,8 +5379,8 @@ sub pandora_process_policy_queue ($) {
 			enterprise_hook('pandora_finish_queue_operation', [$dbh, $operation->{'id'}]);
 		}};
 
-		# Check the queue each 5 seconds
-		sleep(5);
+		# Check the queue each server_threshold seconds
+		sleep($pa_config->{'server_threshold'});
 		
 	}
 
@@ -5645,6 +5747,8 @@ Set the status of unknown modules.
 sub pandora_module_unknown ($$) {
 	my ($pa_config, $dbh) = @_;
 	
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime(time()));
+
 	# Warmup interval for unknown modules.
 	if ($pa_config->{'warmup_unknown_on'} == 1) {
 
@@ -5702,7 +5806,7 @@ sub pandora_module_unknown ($$) {
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
@@ -5749,7 +5853,7 @@ sub pandora_module_unknown ($$) {
 			# Generate alerts
 			if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0 && pandora_cps_enabled($agent, $module) == 0) {
 				my $extra_macros = { _modulelaststatuschange_ => $module->{'last_status_change'}};
-				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $extra_macros, undef, 0, 'unknown');
+				pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, $timestamp, $extra_macros, 0, 'unknown');
 			}
 			else {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
@@ -6373,7 +6477,7 @@ sub pandora_sync_agents_integria ($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my @agents_string = '';
 	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
@@ -6421,7 +6525,7 @@ sub pandora_get_integria_ticket_types($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my $call_api = $api_path . '?' .
 		'user=' . $config_integria_user . '&' .

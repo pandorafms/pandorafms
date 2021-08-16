@@ -101,11 +101,16 @@ if (!$is_in_group && $al_action['id_group'] != 0) {
     exit;
 }
 
-$is_central_policies_on_node = is_central_policies_on_node();
+$is_management_allowed = is_management_allowed();
 
-if ($is_central_policies_on_node === true) {
+if ($is_management_allowed === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alert actions information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_action&tab=action&pure=0&id='.$id
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 
@@ -128,6 +133,10 @@ if ($id) {
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
     $create_wu_integria = $action['create_wu_integria'];
+}
+
+if (users_can_manage_group_all('LW') === false && !$id) {
+    $group = users_get_first_group(false, 'LW', false);
 }
 
 // Hidden div with help hint to fill with javascript.
@@ -178,7 +187,7 @@ $table->data[0][1] = html_print_input_text(
     '',
     '',
     '',
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 );
 
 if (io_safe_output($name) == 'Monitoring Event') {
@@ -214,7 +223,7 @@ $table->data[1][1] = '<div class="w250px inline">'.html_print_select_groups(
     false,
     true,
     '',
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 ).'</div>';
 $table->colspan[1][1] = 2;
 
@@ -248,10 +257,10 @@ $table->data[2][1] = html_print_select_from_sql(
     true,
     false,
     false,
-    ($is_central_policies_on_node | $disabled)
+    (!$is_management_allowed | $disabled)
 );
 $table->data[2][1] .= ' ';
-if ($is_central_policies_on_node === false
+if ($is_management_allowed === true
     && check_acl($config['id_user'], 0, 'PM') && !$disabled
 ) {
     $table->data[2][1] .= __('Create Command');
@@ -275,7 +284,7 @@ $table->data[3][1] = html_print_extended_select_for_time(
     false,
     true,
     '',
-    ($is_central_policies_on_node | $disabled),
+    (!$is_management_allowed | $disabled),
     false,
     '',
     false,
@@ -359,7 +368,7 @@ echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/ale
 $table_html = html_print_table($table, true);
 
 echo $table_html;
-if ($is_central_policies_on_node === false) {
+if ($is_management_allowed === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);
@@ -618,9 +627,6 @@ $(document).ready (function () {
                 $("#group option").each(function(index, value) {
                     var current_group = $(value).val();
                 });
-                if (data.id_group != 0 && $("#group").val() != data.id_group) {
-                    $("#group").val(0);
-                }
 
                 var integria_custom_fields_values = [];
                 var integria_custom_fields_rvalues = [];

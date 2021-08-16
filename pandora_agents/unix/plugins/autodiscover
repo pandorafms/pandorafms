@@ -12,12 +12,19 @@
 #
 ###################################################
 
-from sys import argv, path, stderr, exit
+from sys import argv
+from sys import path
+from sys import stderr
+from sys import exit
+from subprocess import Popen
+from subprocess import PIPE
+from subprocess import DEVNULL
+from subprocess import getstatusoutput
 import psutil
-from subprocess import *
 
 global module_list
 module_list = []
+version = "1.1"
 
 
 #########################################################################################
@@ -116,7 +123,7 @@ def service_module(name, value, parent=None):
             "value"             :   value,
             "module_parent"     :   parent,
         }]
-    #print ("service_module END "+str(now(0,1)))        
+    #print ("service_module END "+str(now(0,1)))
     return (module)
 
 def get_memcpu (process, servicename):
@@ -169,7 +176,7 @@ def win_service(servicelist, option=False, memcpu=False):
             if output != None and output["modules"]:
                 modules += PSCheck.check_service(srvc.strip(), option, memcpu)["modules"]
                 module_list.append(srvc)
-                winprocess = output["name"]
+                #winprocess = output["name"]
                 #if memcpu == True:
                 #    modules += get_memcpu(winprocess) ## Only available for parent service ATM.
             else:
@@ -189,18 +196,19 @@ def lnx_service(services_list, memcpu=False):
         status = None
         if sysctl == 0: 
             ### Systemd available
-            syscall = Popen(["systemctl", "is-active", srvc], stdout=PIPE,
+            syscall = Popen(["systemctl", "show", "-pLoadState", "-pActiveState", srvc], stdout=PIPE,
                                 stdin=DEVNULL, universal_newlines=True)
             result = syscall.communicate()
-            result = result[0].strip().lower()
-            if result == "active":
-                modules += service_module(srvc, 1)
-                status = 1
-            elif result == "inactive":
-                modules += service_module(srvc, 0)
-                status = 0
-            elif result == "unknown":
+            srvstatus= result[0].strip().lower().split("\n")
+            if srvstatus[0] == "loadstate=not-found":
                 next
+            else:
+                if srvstatus[1] == "activestate=active":
+                    modules += service_module(srvc, 1)
+                    status = 1
+                elif srvstatus[1] == "activestate=inactive":
+                    modules += service_module(srvc, 0)
+                    status = 0
         elif sysctl != 0 and servic == 0: 
             ### Systemd not available, switch to service command
             syscall = Popen(["service", srvc, "status"], stdout=PIPE,
@@ -375,14 +383,14 @@ def discover(osyst, servicelist):
         elif osyst == "Linux":
             lnx_service(servicelist, memcpu)
     else:
-        print ("\nPandora FMS Autodiscovery plugin.")
+        print ("\nPandora FMS Autodiscovery plugin v{}".format(version))
         print ("Checks the status of the services in list and monitors CPU and Memory for each of them.\n")
         print ("Usage:")
         print ("{} [options] [--usage]".format(argv[0]))
         print ("--help")
         print ("\tPrints this help screen")
         print ("--default")
-        print ("\tRuns this tool with default monitoring.".format(argv[0]))
+        print ("\tRuns this tool with default monitoring.")
         print ("\tServices monitored by default for {}:".format(osyst))
         print ("\t",", ".join(servicelist))
         print ("--list \"<srvc1,srvc2,srvc3>\"")

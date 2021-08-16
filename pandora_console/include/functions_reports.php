@@ -275,13 +275,12 @@ function reports_get_content($id_report_content, $filter=false, $fields=false)
 
 
 /**
- * Get all the contents of a report.
+ * Creates the contents of a report.
  *
  * @param int Report id to get contents.
- * @param array Extra filters for the contents.
- * @param array Fields to be fetched. All fields by default
+ * @param array values to be created.
  *
- * @return array All the contents of a report.
+ * @return boolean true id succed, false otherwise.
  */
 function reports_create_content($id_report, $values)
 {
@@ -305,7 +304,11 @@ function reports_create_content($id_report, $values)
 
     switch ($config['dbtype']) {
         case 'mysql':
-            unset($values['`order`']);
+            if (isset($values['`order`'])) {
+                unset($values['`order`']);
+            } else {
+                unset($values['order']);
+            }
 
             $order = (int) db_get_value('MAX(`order`)', 'treport_content', 'id_report', $id_report);
             $values['`order`'] = ($order + 1);
@@ -662,7 +665,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
         $types['sql_graph_hbar'] = [
             'optgroup' => __('Graphs'),
-            'name'     => __('SQL horizonal bar graph'),
+            'name'     => __('SQL horizontal bar graph'),
         ];
     }
 
@@ -720,15 +723,15 @@ function reports_get_report_types($template=false, $not_editor=false)
 
     $types['avg_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Avg. Value'),
+        'name'     => __('Avg. value'),
     ];
     $types['max_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Max. Value'),
+        'name'     => __('Max. value'),
     ];
     $types['min_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Min. Value'),
+        'name'     => __('Min. value'),
     ];
     $types['monitor_report'] = [
         'optgroup' => __('Modules'),
@@ -906,4 +909,101 @@ function reports_get_report_types($template=false, $not_editor=false)
     }
 
     return $types;
+}
+
+
+function reports_copy_report($id_report)
+{
+    $report = reports_get_report($id_report);
+
+    // Unset original report id_report.
+    unset($report['id_report']);
+
+    $original_name = $report['name'];
+    $original_group = $report['id_group'];
+
+    $copy_name = io_safe_input(sprintf(__('copy of %s'), io_safe_output($original_name)));
+
+    $copy_report = reports_create_report($copy_name, $original_group, $report);
+
+    if ($copy_report !== false) {
+        $original_contents = reports_get_contents($id_report);
+        if (empty($original_contents) === false) {
+            foreach ($original_contents as $original_content) {
+                $original_content['id_report'] = $copy_report;
+                $original_id_rc = $original_content['id_rc'];
+                unset($original_content['id_rc']);
+                $result_content = db_process_sql_insert('treport_content', $original_content);
+
+                if ($result_content === false) {
+                    $result = false;
+                    break;
+                }
+
+                switch (io_safe_output($original_content['type'])) {
+                    case 'SLA':
+                    case 'SLA_monthly':
+                    case 'SLA_weekly':
+                    case 'SLA_hourly':
+                    case 'availability_graph':
+
+                        $slas = db_get_all_rows_field_filter('treport_content_sla_combined', 'id_report_content', $original_id_rc);
+                        if ($slas === false) {
+                            $slas = [];
+                        }
+
+                        foreach ($slas as $sla) {
+                            unset($sla['id']);
+
+                            // Set id report to copy id.
+                            $sla['id_report_content'] = $result_content;
+                            $sla_copy = db_process_sql_insert('treport_content_sla_combined', $sla);
+
+                            if ($sla_copy === false) {
+                                reports_delete_content($result_content);
+                                $result = false;
+                                break;
+                            }
+                        }
+                    break;
+
+                    case 'general':
+                    case 'top_n':
+                    case 'availability':
+                    case 'exception':
+
+                        $items = db_get_all_rows_field_filter('treport_content_item', 'id_report_content', $original_id_rc);
+                        if ($items === false) {
+                            $items = [];
+                        }
+
+                        foreach ($items as $item) {
+                            unset($item['id']);
+
+                            // Set id report to copy id.
+                            $item['id_report_content'] = $result_content;
+                            $item_copy = db_process_sql_insert('treport_content_item', $item);
+
+                            if ($item_copy === false) {
+                                reports_delete_content($result_content);
+                                $result = false;
+                                break;
+                            }
+                        }
+                    break;
+
+                    default:
+                        // Empty default.
+                    break;
+                }
+            }
+        }
+    }
+
+    if ($result === false) {
+        reports_delete_report($copy_report);
+        return false;
+    }
+
+    return true;
 }

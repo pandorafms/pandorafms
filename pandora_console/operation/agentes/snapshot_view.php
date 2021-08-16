@@ -79,13 +79,16 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
         if ($refresh > 0) {
             $query = ui_get_url_refresh(false);
             echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
+            if ($config['style'] === 'pandora_black') {
+                echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+            }
         }
         ?>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title><?php echo __('%s Snapshot data view for module (%s)', get_product_name(), $label); ?></title>
         <script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
     </head>
-    <body class='bg_000 grey'>
+    <body class=''>
         <?php
         echo "<h2 class='center' id='title_snapshot_view'>";
             echo __('Current data at %s', $last_timestamp);

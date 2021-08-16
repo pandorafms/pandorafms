@@ -644,14 +644,14 @@ echo '<legend>'.__('Mail configuration').'</legend>';
         $table_mail_test->class = 'databox filters';
         $table_mail_test->data = [];
         $table_mail_test->style[0] = 'font-weight: bold;';
-        $table_mail_test->style[1] = 'font-weight: bold;display: flex;height: 54px;align-items: center;';
+        $table_mail_test->style[1] = 'font-weight: bold;display: flex;height: 54px;align-items: center;padding-left: 15px;';
 
         $table_mail_test->data[0][0] = __('Address');
         $table_mail_test->data[0][1] = html_print_input_text(
             'email_test_address',
             '',
             '',
-            40,
+            35,
             100,
             true
         );

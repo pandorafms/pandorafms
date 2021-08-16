@@ -12,20 +12,19 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 global $config;
-global $agent_w;
 
 check_login();
 ui_require_css_file('first_task');
 ?>
 <?php ui_print_info_message(['no_close' => true, 'message' => __('There are no services defined yet.') ]); ?>
-
-<?php if ($agent_w) { ?>
+<?php if ((bool) $agent_w === true) { ?>
     <div class="new_task">
         <div class="image_task">
             <?php echo html_print_image('images/first_task/icono_grande_servicios.png', true, ['title' => __('Services')]); ?>
         </div>
         <div class="text_task">
-            <h3> <?php echo __('Create Services'); ?></h3><p id="description_task"> 
+            <h3> <?php echo __('Create Services'); ?></h3>
+            <p id="description_task"> 
                 <?php
                 echo __(
                     "A service is a way to group your IT resources based on their functionalities. 
@@ -36,8 +35,7 @@ ui_require_css_file('first_task');
 							His company consists of three big departments: A management, an on-line shop and support."
                 );
                 ?>
-                                                                                            </p>
-            
+            </p>
             <form action="index.php?sec=estado&sec2=enterprise/godmode/services/services.service&action=new_service" method="post">
                 <input type="submit" class="button_task" value="<?php echo __('Create Services'); ?>" />
             </form>

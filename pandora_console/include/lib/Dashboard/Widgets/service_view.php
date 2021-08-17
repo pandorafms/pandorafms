@@ -237,6 +237,9 @@ class ServiceViewWidget extends Widget
         $inputs = parent::getFormInputs();
 
         $values = $this->values;
+        if (empty($values['type']) === true) {
+            $values['type'] = 'tree';
+        }
 
         // Type services view.
         $fields = [
@@ -288,7 +291,7 @@ class ServiceViewWidget extends Widget
         $size = parent::getSize();
         $output = '';
 
-        if ($values['type'] === 'tree') {
+        if ($values['type'] === 'tree' || empty($values['type'])) {
             if (check_acl($config['id_user'], 0, 'AR') === 0) {
                 $output .= '<div class="container-center">';
                 $output .= \ui_print_error_message(
@@ -347,8 +350,8 @@ class ServiceViewWidget extends Widget
             }
 
             $order = [
-                'field'  => 'name'.$order_collation,
-                'field2' => 'name'.$order_collation,
+                'field'  => 'name',
+                'field2' => 'name',
                 'order'  => 'ASC',
             ];
 
@@ -362,7 +365,7 @@ class ServiceViewWidget extends Widget
             );
 
             $output .= '<div class="white_box mgn_btt_20px mrgn_top_20px pddng_50px services_table" >';
-            $output .= '<div id="table_services">';
+            $output .= '<div id="table_services_dashboard">';
             foreach ($services as $service) {
                 switch ($service['status']) {
                     case SERVICE_STATUS_NORMAL:
@@ -383,17 +386,18 @@ class ServiceViewWidget extends Widget
                     break;
                 }
 
-                // hd($service);
-                $output .= '<a id="service_'.$service['id'].'" style="background-color: '.$color.'; color: #fff;" class="table_services_item_link" href="index.php?'.'sec=network&'.'sec2=enterprise/operation/services/services&tab=service_map&'.'id_service='.$service['id'].'">
-                    <div class="table_services_item" style="display:flex">
+                $output .= '<a id="service_'.$service['id'].'" style="background-color: '.$color.'; color: #fff;" class="table_services_item_link_dashboard" href="index.php?'.'sec=network&'.'sec2=enterprise/operation/services/services&tab=service_map&'.'id_service='.$service['id'].'">
+                    <div class="table_services_item">
                     <div style="width:50px; text-align:center;">';
-                    \ui_print_group_icon($service['id_group'], false, 'groups_small_white', '', false);
+                $output .= \ui_print_group_icon($service['id_group'], true, 'groups_small_white', '', false);
 
                 $output .= '</div>
-                    <div class="tooltip" style="color: #fff">'.$service['description'].'
+                    <div class="tooltip" style="color: #fff;position: relative;opacity: 1">'.$service['description'].'
                     </div>
-                    <div class="tooltip" style="color: #fff">'.\html_print_image('images/help_w.png', true, ['class' => 'img_help', 'title' => __($service['name']), 'id' => $id], false, $is_relative && is_metaconsole()).'
-                    </div>
+                    <div class="tooltip" style="color: #fff;position: relative;opacity: 1">';
+                $output .= \html_print_image('images/help_w.png', true, ['class' => 'img_help', 'title' => __($service['name']), 'id' => $service['id']]);
+
+                $output .= '</div>
                     </div>
                     </a>';
             }

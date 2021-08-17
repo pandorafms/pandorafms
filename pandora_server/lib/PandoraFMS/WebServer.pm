@@ -28,6 +28,8 @@ use File::Temp qw(tempfile);
 use HTML::Entities;
 use POSIX qw(strftime);
 
+use Encode;
+
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
@@ -207,7 +209,7 @@ sub data_consumer ($$) {
 	$task = subst_alert_macros ($task, \%macros);
 	
 	# Goliat has some trouble parsing conf files without the newlines
-	$fh->print ("\n\n" . $task . "\n\n");
+	$fh->print ("\n\n" . encode_utf8($task) . "\n\n");
 	close ($fh);
 
 	# Global vars needed by Goliat

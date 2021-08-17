@@ -118,6 +118,7 @@ function flot_area_graph(
     $array_events_alerts
 ) {
     global $config;
+    global $is_mobile;
 
     // Get a unique identifier to graph.
     $graph_id = uniqid('graph_');
@@ -145,7 +146,7 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
     ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';

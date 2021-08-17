@@ -26,6 +26,8 @@ load_rc_config $name
 : ${tentacle_server_config="/usr/local/etc/tentacle/${name}.conf"}
 : ${tentacle_server_pidfile="/var/run/${name}.pid"}
 
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
 command=/usr/local/bin/${name}
 command_interpreter=/usr/local/bin/perl
 tentacle_server_user=${tentacle_server_user:-"pandora"}

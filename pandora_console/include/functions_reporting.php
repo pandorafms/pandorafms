@@ -858,7 +858,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'histogram_data':
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_module_histogram_graph(
                     $report,

@@ -2199,7 +2199,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2846,7 +2845,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':

@@ -433,10 +433,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                     $mini
                 );
             break;
-
-            case 'histogram_data':
-                reporting_enterprise_html_histogram_data($table, $item, $mini);
-            break;
         }
 
         if ($item['type'] == 'agent_module') {

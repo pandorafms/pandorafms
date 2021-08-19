@@ -360,7 +360,6 @@ switch ($action) {
                     $failover_type = $item['failover_type'];
                 break;
 
-                case 'histogram_data':
                 case 'module_histogram_graph':
                     $description = $item['description'];
                     $period = $item['period'];
@@ -840,7 +839,6 @@ switch ($action) {
                 case 'database_serialized':
                 case 'last_value':
                 case 'monitor_report':
-                case 'histogram_data':
                 case 'min_value':
                 case 'max_value':
                 case 'avg_value':
@@ -4434,7 +4432,6 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
-            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4488,7 +4485,6 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
-            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -4574,7 +4570,6 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
-            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4623,7 +4618,6 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
-            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -5651,7 +5645,6 @@ function chooseType() {
             $("#row_summary").show();
             break;
 
-        case 'histogram_data':
         case 'module_histogram_graph':
             $("#row_description").show();
             $("#row_period").show();

@@ -404,7 +404,8 @@ $(document).ready (function () {
             "get_agent_modules_json" : 1,
             "get_id_and_name" : 1,
             "disabled" : 0,
-            "id_agent" : id_agent
+            "id_agent" : id_agent,
+            "safe_name": 1,
         };
 
         var tags_to_search = $('#tags').val();
@@ -434,7 +435,7 @@ $(document).ready (function () {
                     jQuery.each (data, function (i, val) {
                         option = $("<option></option>")
                             .attr ("value", val["id_agente_modulo"])
-                            .append (val["nombre"]);
+                            .append (val["safe_name"]);
                         $("#target_modules").append (option);
                     });
                     

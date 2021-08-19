@@ -817,7 +817,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $events_graph .= graph_graphic_agentevents(
         $id_agente,
         '340px;margin:0',
-        45,
+        '130px',
         SECONDS_1DAY,
         '',
         true,

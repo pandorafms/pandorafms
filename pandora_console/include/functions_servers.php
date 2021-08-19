@@ -57,7 +57,7 @@ function servers_get_server($id_server, $filter=false, $fields=false)
 /**
  * Get all the server availables.
  *
- * @return All the servers available.
+ * @return array the servers available.
  */
 function servers_get_names()
 {
@@ -826,6 +826,19 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 0;
             break;
 
+            case SERVER_TYPE_ALERT:
+                $server['img'] = html_print_image(
+                    'images/alerts_extern.png',
+                    true,
+                    [
+                        'title' => __('Alert server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'alert';
+                $id_modulo = 0;
+            break;
+
             default:
                 $server['img'] = '';
                 $server['type'] = 'unknown';
@@ -1318,4 +1331,23 @@ function servers_get_server_string_name(int $server)
         default:
         return __('N/A');
     }
+}
+
+
+/**
+ * Return server name master where status is activated.
+ *
+ * @return string
+ */
+function servers_get_master()
+{
+    $sql = 'SELECT `name` FROM tserver WHERE `status` = 1 order by `master` desc';
+
+    $result = db_get_value_sql($sql);
+
+    if ($result === false) {
+        $result = '';
+    }
+
+    return $result;
 }

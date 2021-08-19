@@ -133,7 +133,7 @@ img.modalclose {
         if (isset($config['custom_docs_url_alt'])) {
             $docs_url = $config['custom_docs_url_alt'];
         } else {
-            $docs_url = 'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Configuration';
+            $docs_url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
         }
 
         echo '

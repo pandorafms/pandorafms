@@ -418,6 +418,8 @@ ALTER TABLE `tmetaconsole_setup` MODIFY COLUMN `meta_dbuser` text NULL,
 
 ALTER TABLE `tmetaconsole_setup` ADD COLUMN `server_uid` TEXT NOT NULL default '';
 
+ALTER TABLE `tmetaconsole_setup` ADD COLUMN `unified` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
+
 -- ---------------------------------------------------------------------
 -- Table `tprofile_view`
 -- ---------------------------------------------------------------------
@@ -1026,6 +1028,7 @@ ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
+ALTER TABLE `tmetaconsole_event` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1438,13 +1441,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 47);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 48);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 755);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 756);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -1496,7 +1499,7 @@ ALTER TABLE tplanned_downtime_agents ADD COLUMN `manually_disabled` tinyint(1) D
 -- ---------------------------------------------------------------------
 UPDATE `tlink` SET `link` = 'http://library.pandorafms.com/' WHERE `name` = 'Module library';
 UPDATE `tlink` SET `name` = 'Enterprise Edition' WHERE `id_link` = 0000000002;
-UPDATE `tlink` SET `name` = 'Documentation', `link` = 'http://wiki.pandorafms.com/' WHERE `id_link` = 0000000001;
+UPDATE `tlink` SET `name` = 'Documentation', `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 UPDATE `tlink` SET `link` = 'http://forums.pandorafms.com/index.php?board=22.0' WHERE `id_link` = 0000000004;
 UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WHERE `id_link` = 0000000003;
 
@@ -1664,6 +1667,8 @@ ALTER TABLE tlayout MODIFY `name` varchar(600) NOT NULL;
 UPDATE tlayout SET is_favourite = 1 WHERE name REGEXP '^&#40;' OR name REGEXP '^\\[';
 
 ALTER TABLE `tlayout` MODIFY COLUMN `is_favourite` int(10) unsigned NOT NULL DEFAULT '0';
+
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_data`
@@ -2253,6 +2258,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
 	`linked_layout_status_as_service_critical` FLOAT(20, 3) NOT NULL default 0,
 	`linked_layout_node_id` INT(10) NOT NULL default 0,
 	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
+	`title` TEXT default '',
 	PRIMARY KEY(`id`),
 	FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
@@ -2344,6 +2350,8 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+
+ALTER TABLE `tevento` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_extended`
@@ -2562,7 +2570,7 @@ ALTER TABLE `tnetflow_filter` MODIFY COLUMN `router_ip` text NOT NULL;
 UPDATE tuser_task set parameters = 'a:5:{i:0;a:6:{s:11:\"description\";s:28:\"Report pending to be created\";s:5:\"table\";s:7:\"treport\";s:8:\"field_id\";s:9:\"id_report\";s:10:\"field_name\";s:4:\"name\";s:4:\"type\";s:3:\"int\";s:9:\"acl_group\";s:8:\"id_group\";}i:1;a:2:{s:11:\"description\";s:46:\"Send to email addresses (separated by a comma)\";s:4:\"type\";s:4:\"text\";}i:2;a:2:{s:11:\"description\";s:7:\"Subject\";s:8:\"optional\";i:1;}i:3;a:3:{s:11:\"description\";s:7:\"Message\";s:4:\"type\";s:4:\"text\";s:8:\"optional\";i:1;}i:4;a:2:{s:11:\"description\";s:11:\"Report Type\";s:4:\"type\";s:11:\"report_type\";}}' where function_name = "cron_task_generate_report";
 INSERT IGNORE INTO tuser_task VALUES (8, 'cron_task_generate_csv_log', 'a:1:{i:0;a:2:{s:11:"description";s:14:"Send to e-mail";s:4:"type";s:4:"text";}}', 'Send csv log');
 UPDATE `tuser_task` SET `parameters`='a:4:{i:0;a:6:{s:11:"description";s:28:"Report pending to be created";s:5:"table";s:7:"treport";s:8:"field_id";s:9:"id_report";s:10:"field_name";s:4:"name";s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_group";}i:1;a:2:{s:11:"description";s:426:"Save to disk in path<a href="javascript:" class="tip" style="" ><img src="http://172.16.0.2/pandora_console/images/tip_help.png" data-title="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" data-use_title_for_force_title="1" class="forced_title" alt="The Apache user should have read-write access on this folder. E.g. /var/www/html/pandora_console/attachment" /></a>";s:4:"type";s:6:"string";}i:2;a:2:{s:11:"description";s:16:"File nane prefix";s:4:"type";s:6:"string";}i:3;a:2:{s:11:"description";s:11:"Report Type";s:4:"type";s:11:"report_type";}}' WHERE `id`=3;
-UPDATE pandora.tuser_task
+UPDATE `tuser_task`
 SET parameters='a:7:{i:0;a:7:{s:11:"description";s:30:"Template pending to be created";s:5:"table";s:16:"treport_template";s:8:"field_id";s:9:"id_report";s:10:"field_name";s:4:"name";s:8:"required";b:1;s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_group";}i:1;a:7:{s:11:"description";s:6:"Agents";s:5:"table";s:7:"tagente";s:8:"field_id";s:9:"id_agente";s:10:"field_name";s:6:"nombre";s:8:"multiple";b:1;s:4:"type";s:3:"int";s:9:"acl_group";s:8:"id_grupo";}i:2;a:2:{s:11:"description";s:16:"Report per agent";s:10:"select_two";b:1;}i:3;a:2:{s:11:"description";s:11:"Report name";s:4:"type";s:6:"string";}i:4;a:2:{s:11:"description";s:47:"Send to e-mail addresses (separated by a comma)";s:4:"type";s:4:"text";}i:5;a:2:{s:11:"description";s:7:"Subject";s:8:"optional";i:1;}i:6;a:3:{s:11:"description";s:7:"Message";s:4:"type";s:4:"text";s:8:"optional";i:1;}}i:7;a:2:{s:11:"description";s:11:"Report Type";s:4:"type";s:11:"report_type";}}' WHERE id=2;
 DELETE FROM `tuser_task` WHERE id = 6;
 
@@ -2736,7 +2744,7 @@ CREATE TABLE `tremote_command_target` (
   FOREIGN KEY (`rcmd_id`) REFERENCES `tremote_command`(`id`)
     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-=========
+
 -- ---------------------------------------------------------------------
 -- Table `trecon_script`
 -- ---------------------------------------------------------------------
@@ -4040,6 +4048,33 @@ DELETE FROM `tconfig` WHERE `token` = 'ipam_installed';
 
 DELETE FROM `tconfig` WHERE `token` = 'ipam_recon_script_id';
 
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`operation` text,
+	`table` text,
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_management`;
+
+-- -----------------------------------------------------
+-- Table `talert_execution_queue`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

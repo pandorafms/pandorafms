@@ -1,17 +1,33 @@
 <?php
+/**
+ * Lateral Main Menu.
+ *
+ * @category   Main Menu.
+ * @package    Pandora FMS.
+ * @subpackage OpenSource.
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-if (! isset($config['id_user'])) {
+// Begin.
+if (isset($config['id_user']) === false) {
     include 'general/login_page.php';
     exit();
 }
@@ -20,9 +36,9 @@ if (! isset($config['id_user'])) {
 <script type="text/javascript" language="javascript">
 
 $(document).ready(function(){    
-    var menuType_value = "<?php echo $config['menu_type']; ?>";
+    var menuType_value = "<?php echo $_SESSION['menu_type']; ?>";
 
-    if (menuType_value == 'classic') {
+    if (menuType_value === 'classic') {
         $('ul.submenu').css('left', '214px');    
     }
     else{
@@ -34,26 +50,22 @@ $(document).ready(function(){
 <?php
 $autohidden_menu = 0;
 
-if (isset($config['autohidden_menu']) && $config['autohidden_menu']) {
+if (isset($config['autohidden_menu']) === true && (bool) $config['autohidden_menu'] === true) {
     $autohidden_menu = 1;
 }
 
-// Menu container prepared to autohide menu
-if ($config['menu_type'] == 'classic') {
-    echo '<div id="menu_full" class="menu_full_classic">';
-} else {
-    echo '<div id="menu_full" class="menu_full_collapsed">';
-}
+// Start of full lateral menu.
+echo sprintf('<div id="menu_full" class="menu_full_%s">', $menuTypeClass);
 
 $custom_logo = 'images/custom_logo/'.$config['custom_logo'];
 $custom_logo_collapsed = 'images/custom_logo/'.$config['custom_logo_collapsed'];
 
-if (!defined('PANDORA_ENTERPRISE')) {
+if (defined('PANDORA_ENTERPRISE') === false) {
     $logo_title = get_product_name().' Opensource';
     $custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
     $custom_logo_collapsed = 'images/custom_logo/pandora_logo_green_collapsed.png';
 } else {
-    if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo)) {
+    if (file_exists(ENTERPRISE_DIR.'/'.$custom_logo) === true) {
         $custom_logo = ENTERPRISE_DIR.'/'.$custom_logo;
     }
 
@@ -61,54 +73,48 @@ if (!defined('PANDORA_ENTERPRISE')) {
 }
 
 echo '<div class="logo_green"><a href="index.php?sec=main">';
-if (isset($config['custom_logo'])) {
-    if ($config['menu_type'] == 'classic') {
-        echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:block']);
-    } else {
-        echo html_print_image($custom_logo, true, ['border' => '0', 'width' => '215', 'alt' => $logo_title, 'class' => 'logo_full', 'style' => 'display:none']);
-    }
+
+if (isset($config['custom_logo']) === true) {
+    echo html_print_image(
+        $custom_logo,
+        true,
+        [
+            'border' => '0',
+            'width'  => '215',
+            'alt'    => $logo_title,
+            'class'  => 'logo_full',
+            'style'  => ($menuCollapsed === true) ? 'display:none' : 'display:block',
+        ]
+    );
 }
 
-if (isset($config['custom_logo_collapsed'])) {
-    if ($config['menu_type'] == 'classic') {
-        echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:none']);
-    } else {
-        echo html_print_image($custom_logo_collapsed, true, ['border' => '0', 'width' => '60', 'alt' => $logo_title, 'class' => 'logo_icon', 'style' => 'display:block']);
-    }
+if (isset($config['custom_logo_collapsed']) === true) {
+    echo html_print_image(
+        $custom_logo_collapsed,
+        true,
+        [
+            'border' => '0',
+            'width'  => '60',
+            'alt'    => $logo_title,
+            'class'  => 'logo_icon',
+            'style'  => ($menuCollapsed === true) ? 'display:block' : 'display:none',
+        ]
+    );
 }
 
 echo '</a></div>';
 
-// echo '<div class="tit bg titop">:: '.__('Operation').' ::</div>';
 require 'operation/menu.php';
-
-// Check all enterprise ACL used in godmenu items to print menu headers
-if (check_acl($config['id_user'], 0, 'AW')
-    || check_acl($config['id_user'], 0, 'PM')
-    || check_acl($config['id_user'], 0, 'LM')
-    || check_acl($config['id_user'], 0, 'UM')
-    || check_acl($config['id_user'], 0, 'LW')
-    || check_acl($config['id_user'], 0, 'EW')
-    || check_acl($config['id_user'], 0, 'DW')
-) {
-    // echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
-}
-
 require 'godmode/menu.php';
 
-if ($config['menu_type'] == 'classic') {
-    echo '<div id="button_collapse" class="button_classic button_collapse"></div>';
-} else {
-    echo '<div id="button_collapse" class="button_collapsed button_collapse"></div>';
-}
+echo sprintf('<div id="button_collapse" class="button_%s button_collapse"></div>', $menuTypeClass);
 
-// require ("links_menu.php");
 echo '</div>';
-// menu_container
+// Menu_container.
 ui_require_jquery_file('cookie');
 
 $config_fixed_header = false;
-if (isset($config['fixed_header'])) {
+if (isset($config['fixed_header']) === true) {
     $config_fixed_header = $config['fixed_header'];
 }
 ?>

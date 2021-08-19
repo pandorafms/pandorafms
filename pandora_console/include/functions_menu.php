@@ -30,7 +30,7 @@
 global $config;
 
 // Set variable to store menu type (classic or collapsed).
-if (!empty(get_parameter('menuType'))) {
+if (is_ajax() === true && empty(get_parameter('menuType')) === false) {
     $_SESSION['menu_type'] = get_parameter('menuType', 'classic');
     return;
 }
@@ -108,7 +108,7 @@ function menu_print_menu(&$menu)
 
         $submenu = false;
 
-        if ($config['menu_type'] == 'classic') {
+        if ($_SESSION['menu_type'] === 'classic') {
             $classes = [
                 'menu_icon',
                 'no_hidden_menu',
@@ -413,7 +413,7 @@ function menu_print_menu(&$menu)
         $length = strlen(__($main['text']));
         $padding_top = ( $length >= 18) ? 6 : 12;
 
-        if ($config['menu_type'] == 'classic') {
+        if ($_SESSION['menu_type'] === 'classic') {
             $output .= '<div id="title_menu" class="title_menu_classic">'.$main['text'].'</div>';
         } else {
             $output .= '<div id="title_menu" class="title_menu_collapsed">'.$main['text'].'</div>';

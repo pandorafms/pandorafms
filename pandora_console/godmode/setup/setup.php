@@ -306,7 +306,7 @@ switch ($section) {
     case 'external_tools':
         $buttons['external_tools']['active'] = true;
         $subpage = ' &raquo '.__('External Tools');
-        $help_header = 'External_Tools';
+        $help_header = '';
     break;
 
     case 'enterprise':

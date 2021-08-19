@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Tests\\' => array($baseDir . '/tests'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'PandoraFMS\\Enterprise\\' => array($baseDir . '/enterprise/include/lib'),
     'PandoraFMS\\' => array($baseDir . '/include/lib'),

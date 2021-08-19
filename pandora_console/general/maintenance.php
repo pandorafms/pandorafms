@@ -31,9 +31,8 @@ ui_require_css_file('maintenance');
 ?>
 <html>
 <body>
-    <h1>Ups ...</h1>
-    <div class="responsive">
 
+    <div class="responsive center padding-6">
         <p><?php echo __('Maintenance tasks in progress'); ?></p>
         <br>
         <br>

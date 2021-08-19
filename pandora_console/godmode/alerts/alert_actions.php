@@ -213,9 +213,15 @@ if ($delete_action) {
     );
 }
 
-if (is_central_policies_on_node() === true) {
+$is_management_allowed = is_management_allowed();
+if ($is_management_allowed === false) {
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alert actions information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=godmode/alerts/alert_actions&tab=action&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
     );
 }
 
@@ -320,7 +326,7 @@ $table->head = [];
 $table->head[0] = __('Name');
 $table->head[1] = __('Command');
 $table->head[2] = __('Group');
-if (is_central_policies_on_node() === false) {
+if (is_management_allowed() === true) {
     $table->head[3] = __('Copy');
     $table->head[4] = __('Delete');
 }
@@ -337,7 +343,7 @@ $table->align[3] = 'left';
 $table->align[4] = 'left';
 
 $filter = [];
-if (!is_user_admin($config['id_user']) && $group === 0) {
+if (!is_user_admin($config['id_user'])) {
     $filter['talert_actions.id_group'] = array_keys(
         users_get_groups(false, 'LM')
     );
@@ -406,7 +412,7 @@ foreach ($actions as $action) {
     $data[3] = '';
     $data[4] = '';
 
-    if (is_central_policies_on_node() === false
+    if (is_management_allowed() === true
         && check_acl($config['id_user'], $action['id_group'], 'LM')
     ) {
         $table->cellclass[] = [
@@ -459,7 +465,7 @@ if (isset($data)) {
     ui_print_info_message(['no_close' => true, 'message' => __('No alert actions configured') ]);
 }
 
-if (is_central_policies_on_node() === false) {
+if (is_management_allowed() === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
     html_print_submit_button(__('Create'), 'create', false, 'class="sub next"');

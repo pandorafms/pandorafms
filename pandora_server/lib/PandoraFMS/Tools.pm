@@ -55,6 +55,7 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
+	ALERTSERVER
 	DATASERVER
 	NETWORKSERVER
 	SNMPCONSOLE
@@ -189,6 +190,7 @@ use constant WUXSERVER => 17;
 use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
 use constant MIGRATIONSERVER => 20;
+use constant ALERTSERVER => 21;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -2519,6 +2521,7 @@ sub get_server_name {
 	return "SYSLOGSERVER" if ($server_type eq SYSLOGSERVER);
 	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
+	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
 
 	return "UNKNOWN";
 }

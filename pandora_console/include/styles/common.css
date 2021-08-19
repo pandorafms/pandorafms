@@ -45,6 +45,10 @@ div.database_debug_title {
   clear: right;
   float: right;
 }
+.relative.right {
+  clear: none;
+  float: right;
+}
 .clear {
   clear: both;
 }

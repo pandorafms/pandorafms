@@ -416,11 +416,11 @@ ul li {
 }
 
 .menu_full_classic .title_menu_classic {
-  display: flex;
+  display: flex !important;
 }
 
 .menu_full_collapsed .title_menu_collapsed {
-  display: none;
+  display: none !important;
 }
 
 .button_classic {

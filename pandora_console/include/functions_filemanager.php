@@ -139,6 +139,13 @@ function upload_file($upload_file_or_zip, $default_real_directory)
     $config['filemanager']['correct_upload_file'] = 0;
     $config['filemanager']['message'] = null;
 
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+
+    if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
+        $homedir_filemanager .= io_safe_output($config['attachment_store']).'/collection';
+    }
+
     check_login();
 
     if (! check_acl($config['id_user'], 0, 'AW')) {
@@ -295,7 +302,11 @@ $create_dir = (bool) get_parameter('create_dir');
 if ($create_dir === true) {
     global $config;
 
-    $homedir_filemanager = io_safe_output($config['attachment_store']).'/collection';
+    $homedir_filemanager = trim($config['homedir']);
+    $sec2 = get_parameter('sec2');
+    if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
+        $homedir_filemanager .= io_safe_output($config['attachment_store']).'/collection';
+    }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_create_dir'] = 0;

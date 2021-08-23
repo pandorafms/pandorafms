@@ -76,7 +76,7 @@ echo '<h4>'.__('Index of %s', $directory).'</h4>';
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 $create_text_file   = (bool) get_parameter('create_text_file');
 
-$default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
+$default_real_directory = realpath($config['homedir'].'/');
 
 if ($upload_file_or_zip === true) {
     upload_file($upload_file_or_zip, $default_real_directory);

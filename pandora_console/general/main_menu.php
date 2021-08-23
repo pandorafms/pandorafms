@@ -38,7 +38,7 @@ if (isset($config['id_user']) === false) {
 $(document).ready(function(){    
     var menuType_value = "<?php echo $_SESSION['menu_type']; ?>";
 
-    if (menuType_value === 'classic') {
+    if (menuType_value === '' || menuType_value === 'classic') {
         $('ul.submenu').css('left', '214px');    
     }
     else{

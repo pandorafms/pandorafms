@@ -151,6 +151,7 @@ final class DBMaintainer
      */
     private function connect()
     {
+        // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         if ($this->connected === true) {
             return true;
         }
@@ -183,6 +184,17 @@ final class DBMaintainer
 
             $this->connected = true;
         }
+    }
+
+
+    /**
+     * Return dbh object.
+     *
+     * @return mysqli
+     */
+    public function getDBH()
+    {
+        return $this->dbh;
     }
 
 
@@ -319,7 +331,7 @@ final class DBMaintainer
     /**
      * Verifies tables against running db.
      *
-     * @return boolean Applied or not.
+     * @return array Of differences.
      */
     public function verifyTables()
     {
@@ -691,41 +703,60 @@ final class DBMaintainer
      */
     private function applyDump(string $path, bool $transactional=false)
     {
+        global $config;
+
         if (file_exists($path) === true) {
             if ($transactional === true) {
-                global $config;
+                if (class_exists('UpdateManager\Client') === true) {
+                    $return = true;
+                    try {
+                        $umc = new \UpdateManager\Client(
+                            [
+                                'homedir'      => $config['homedir'],
+                                'dbconnection' => $this->dbh,
+                            ]
+                        );
 
-                // Adapt to PandoraFMS classic way to do things...
-                $backup_dbhost = $config['dbhost'];
-                $backup_dbuser = $config['dbuser'];
-                $backup_dbpass = $config['dbpass'];
-                $backup_dbname = $config['dbname'];
-                $backup_dbport = $config['dbport'];
-                $backup_mysqli = $config['mysqli'];
+                        // Throws exceptions on error.
+                        $umc->updateMR($path);
+                    } catch (\Exception $e) {
+                        // TODO: Send an event to notify errors.
+                        $this->lastError = $e->getMessage();
+                        $return = false;
+                    }
+                } else {
+                    // Adapt to PandoraFMS classic way to do things...
+                    $backup_dbhost = $config['dbhost'];
+                    $backup_dbuser = $config['dbuser'];
+                    $backup_dbpass = $config['dbpass'];
+                    $backup_dbname = $config['dbname'];
+                    $backup_dbport = $config['dbport'];
+                    $backup_mysqli = $config['mysqli'];
 
-                $config['dbhost'] = $this->host;
-                $config['dbuser'] = $this->user;
-                $config['dbpass'] = $this->pass;
-                $config['dbname'] = $this->name;
-                $config['dbport'] = $this->port;
+                    $config['dbhost'] = $this->host;
+                    $config['dbuser'] = $this->user;
+                    $config['dbpass'] = $this->pass;
+                    $config['dbname'] = $this->name;
+                    $config['dbport'] = $this->port;
 
-                // Not using mysqli in > php 7 is a completely non-sense.
-                $config['mysqli'] = true;
+                    // Not using mysqli in > php 7 is a completely non-sense.
+                    $config['mysqli'] = true;
 
-                // MR are loaded in transactions.
-                include_once $config['homedir'].'/include/db/mysql.php';
-                $return = db_run_sql_file($path);
-                if ($return === false) {
-                    $this->lastError = $config['db_run_sql_file_error'];
+                    // MR are loaded in transactions.
+                    include_once $config['homedir'].'/include/db/mysql.php';
+                    $return = db_run_sql_file($path);
+                    if ($return === false) {
+                        $this->lastError = $config['db_run_sql_file_error'];
+                    }
+
+                    // Revert global variable.
+                    $config['dbhost'] = $backup_dbhost;
+                    $config['dbuser'] = $backup_dbuser;
+                    $config['dbpass'] = $backup_dbpass;
+                    $config['dbname'] = $backup_dbname;
+                    $config['dbport'] = $backup_dbport;
+                    $config['mysqli'] = $backup_mysqli;
                 }
-
-                // Revert global variable.
-                $config['dbhost'] = $backup_dbhost;
-                $config['dbuser'] = $backup_dbuser;
-                $config['dbpass'] = $backup_dbpass;
-                $config['dbname'] = $backup_dbname;
-                $config['dbport'] = $backup_dbport;
-                $config['mysqli'] = $backup_mysqli;
 
                 return (bool) $return;
             } else {

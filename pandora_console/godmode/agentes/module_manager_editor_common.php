@@ -108,6 +108,7 @@ function add_component_selection($id_network_component_type)
     $data[0] = __('Using module component').' ';
 
     $component_groups = network_components_get_groups($id_network_component_type);
+
     $data[1] = '<span id="component_group" class="left">';
     $data[1] .= html_print_select(
         $component_groups,
@@ -214,7 +215,7 @@ $table_simple->colspan[3][1] = 3;
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended(
     'name',
-    io_safe_input(html_entity_decode($name, ENT_QUOTES, 'UTF-8')),
+    $name,
     'text-name',
     '',
     45,
@@ -1385,7 +1386,7 @@ $(document).ready (function () {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                 $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
                     $("select[name='id_tag_available[]']").append(value);
@@ -1442,14 +1443,14 @@ $(document).ready (function () {
                    ){
                     if (language == 'es'){
                      window.open(
-                         'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Operacion&printable=yes#Tipos_de_m.C3.B3dulos',
+                         'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
                          '_blank',
                          'width=800,height=600'
                             );
                    }
                    else{
                     window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Operations&printable=yes#Types_of_Modules',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1462,14 +1463,14 @@ $(document).ready (function () {
                  ){
                      if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_ICMP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
                          '_blank',
                          'width=800,height=600'
                          );
                      }
                      else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#ICMP_Monitoring',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1484,14 +1485,14 @@ $(document).ready (function () {
                  ){
                      if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizando_con_m.C3.B3dulos_de_red_tipo_SNMP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                          '_blank',
                          'width=800,height=600'
                          );
                      }
                      else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#Monitoring_by_Network_Modules_with_SNMP',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitorins#monitoring_through_network_modules_with_snmp',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1506,14 +1507,14 @@ $(document).ready (function () {
                    ){
                        if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_remota&printable=yes#Monitorizaci.C3.B3n_TCP',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
                          '_blank',
                          'width=800,height=600'
                          );
                        }
                        else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Remote_Monitoring&printable=yes#TCP_Monitoring',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
                          '_blank',
                          'width=800,height=600'
                          );
@@ -1526,14 +1527,14 @@ $(document).ready (function () {
                    ){
                        if(language == 'es'){
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Monitorizacion_web&printable=yes#Creaci.C3.B3n_de_m.C3.B3dulos_web',
+                        'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
                          '_blank',
                          'width=800,height=600'
                          );
                        }
                        else{
                         window.open(
-                        'https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Web_Monitoring&printable=yes#Creating_Web_Modules',
+                        'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
                          '_blank',
                          'width=800,height=600'
                          );

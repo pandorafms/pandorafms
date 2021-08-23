@@ -471,6 +471,35 @@ function cron_list_table()
             );
 
             switch ($function_name) {
+                case 'cron_task_generate_csv_log':
+                case 'cron_task_call_user_function':
+                    // Ignore.
+                    $data[0]  = '<a href="'.$url;
+                    $data[0] .= 'force_run=1&id_console_task='.$task['id'].'">';
+                    $data[0] .= html_print_image(
+                        'images/target.png',
+                        true,
+                        [
+                            'title' => __('Force run'),
+                            'class' => 'invert_filter',
+                        ]
+                    );
+                    $data[0] .= '</a>';
+
+                    $data[1] = $task['id_usuario'];
+                    $data[2] = db_get_value(
+                        'name',
+                        'tuser_task',
+                        'id',
+                        $task['id_user_task']
+                    );
+                    $args = unserialize($task['args']);
+
+                    if ($function_name === 'cron_task_call_user_function') {
+                        $data[2] .= ' ('.$args['function_name'].')';
+                    }
+                break;
+
                 case 'cron_task_generate_report':
                     if ($write_perms || $manage_pandora) {
                         $data[0]  = '<a href="'.$url;
@@ -552,11 +581,24 @@ function cron_list_table()
                         continue;
                     }
 
-                    $agents_id = $args[1];
-                    $id_group = $args[2];
-                    $report_per_agent = $args[0];
-                    $report_name = $args[3];
-                    $email = $args[4];
+                    if (empty($args[1]) === false && (string) $args[1] !== '0') {
+                        $agents_id = $args[1];
+                    } else {
+                        if (empty($args[2]) === false) {
+                            $agents_id = sprintf(
+                                '(%s) %s',
+                                __('regex'),
+                                $args[2]
+                            );
+                        } else {
+                            $agents_id = __('None');
+                        }
+                    }
+
+                    $report_type = $args[7];
+                    $report_per_agent = $args[3];
+                    $report_name = $args[4];
+                    $email = $args[5];
                     $data[2] .= '<br>- '.__('Template').': ';
                     $data[2] .= '<a href="'.ui_get_full_url('index.php?sec=reporting&sec2=enterprise/godmode/reporting/reporting_builder.template&action=edit&id_template='.$args[0]).'">';
                     $data[2] .= $template['name'].'</a>';
@@ -564,6 +606,8 @@ function cron_list_table()
                     $data[2] .= '<br>- '.__('Report per agent').': '.$report_per_agent.'</a>';
                     $data[2] .= '<br>- '.__('Report name').': '.$report_name.'</a>';
                     $data[2] .= '<br>- '.__('Email').": <a href='mailto:".$email."'>".$email.'</a>';
+                    $data[2] .= '<br>- '.__('Report type').': '.$report_type;
+
                 break;
 
                 case 'cron_task_execute_custom_script':

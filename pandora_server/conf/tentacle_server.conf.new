@@ -1,6 +1,6 @@
 ##########################################################################
 # Tentacle Server Parameters
-# See https://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Tentacle
+# See https://pandorafms.com/manual/en/documentation/08_technical_reference/09_tentacle
 # for protocol description.
 # Tentacle have IANA assigned port tpc/41121 as official port.
 ##########################################################################

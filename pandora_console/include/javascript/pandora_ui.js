@@ -444,6 +444,7 @@ function load_modal(settings) {
 function confirmDialog(settings) {
   var randomStr = uniqId();
   var hideOkButton = "";
+  var hideCancelButton = "";
 
   if (settings.size == undefined) {
     settings.size = 350;
@@ -455,6 +456,18 @@ function confirmDialog(settings) {
   // You can hide the OK button.
   if (settings.hideOkButton != undefined) {
     hideOkButton = "invisible_important ";
+  }
+  // You can hide the Cancel button.
+  if (settings.hideCancelButton != undefined) {
+    hideCancelButton = "invisible_important ";
+  }
+
+  if (settings.strOKButton == undefined) {
+    settings.strOKButton = "Ok";
+  }
+
+  if (settings.strCancelButton == undefined) {
+    settings.strCancelButton = "Cancel";
   }
 
   if (typeof settings.message == "function") {
@@ -478,17 +491,22 @@ function confirmDialog(settings) {
       buttons: [
         {
           id: "cancel_btn_dialog",
-          text: "Cancel",
+          text: settings.cancelText
+            ? settings.cancelText
+            : settings.strCancelButton,
           class:
+            hideCancelButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
           click: function() {
-            $(this).dialog("close");
-            $(this).remove();
+            if (typeof settings.notCloseOnDeny == "undefined") {
+              $(this).dialog("close");
+              $(this).remove();
+            }
             if (typeof settings.onDeny == "function") settings.onDeny();
           }
         },
         {
-          text: "Ok",
+          text: settings.strOKButton,
           class:
             hideOkButton +
             "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
@@ -559,6 +577,9 @@ function generalShowMsg(data, idMsg) {
 function infoMessage(data, idMsg) {
   var title = data.title;
   var err_messge = data.text;
+  // False or null: Show all buttons and classic behaviour,
+  // if true, show an OK button and message from data.text.
+  var simple = data.simple;
 
   if (idMsg == null) {
     idMsg = uniqId();
@@ -571,6 +592,41 @@ function infoMessage(data, idMsg) {
 
   $("#err_msg").empty();
   $("#err_msg").html("\n\n" + err_messge);
+
+  var buttons = [];
+
+  if (simple == null || simple == false) {
+    buttons = [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+        text: "Retry",
+        click: function(e) {
+          handleConnection();
+        }
+      },
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
+        text: "Close",
+        click: function() {
+          $(this).dialog("close");
+        }
+      }
+    ];
+  } else {
+    $("#" + idMsg).append($("#err_msg"));
+    buttons = [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+        text: "Ok",
+        click: function(e) {
+          $("#" + idMsg).dialog("close");
+        }
+      }
+    ];
+  }
 
   $("#" + idMsg)
     .dialog({
@@ -585,24 +641,7 @@ function infoMessage(data, idMsg) {
         collision: "fit"
       },
       title: data.title,
-      buttons: [
-        {
-          class:
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
-          text: "Retry",
-          click: function(e) {
-            handleConnection();
-          }
-        },
-        {
-          class:
-            "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-cancel",
-          text: "Close",
-          click: function() {
-            $(this).dialog("close");
-          }
-        }
-      ],
+      buttons: buttons,
 
       open: function(event, ui) {
         $(".ui-widget-overlay").addClass("error-modal-opened");

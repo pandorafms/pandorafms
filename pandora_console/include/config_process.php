@@ -20,8 +20,8 @@
 /**
  * Pandora build version and version
  */
-$build_version = 'PC210614';
-$pandora_version = 'v7.0NG.755';
+$build_version = 'PC210823';
+$pandora_version = 'v7.0NG.756';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -93,6 +93,8 @@ if (!isset($config['dbport'])) {
 require_once $ownDir.'constants.php';
 require_once $ownDir.'functions_db.php';
 require_once $ownDir.'functions.php';
+require_once $ownDir.'functions_io.php';
+
 
 // We need a timezone BEFORE calling config_process_config.
 // If not we will get ugly warnings. Set Europe/Madrid by default
@@ -304,7 +306,7 @@ switch ($config['dbtype']) {
 
 // ======================================================================
 // Menu display mode.
-if (isset($_SESSION['meny_type']) === true && $_SESSION['menu_type']) {
+if (isset($_SESSION['meny_type']) === true && empty($_SESSION['menu_type']) === false) {
     $config['menu_type'] = $_SESSION['menu_type'];
 } else {
     $config['menu_type'] = 'classic';

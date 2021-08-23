@@ -22,6 +22,8 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+require_once __DIR__.'/../um_client/vendor/autoload.php';
+
 $php_version = phpversion();
 $php_version_array = explode('.', $php_version);
 if ($php_version_array[0] < 7) {
@@ -35,12 +37,10 @@ $buttons['setup'] = [
     'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">'.html_print_image('images/gm_setup.png', true, ['title' => __('Options'), 'class' => 'invert_filter']).'</a>',
 ];
 
-if (enterprise_installed()) {
-    $buttons['offline'] = [
-        'active' => ($tab == 'offline') ? true : false,
-        'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
-    ];
-}
+$buttons['offline'] = [
+    'active' => ($tab == 'offline') ? true : false,
+    'text'   => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=offline">'.html_print_image('images/box.png', true, ['title' => __('Offline update manager'), 'class' => 'invert_filter']).'</a>',
+];
 
 $buttons['online'] = [
     'active' => ($tab == 'online') ? true : false,
@@ -58,6 +58,7 @@ switch ($tab) {
     break;
 
     case 'online':
+    default:
         $title = __('Update manager » Online');
     break;
 }
@@ -77,11 +78,13 @@ switch ($tab) {
     break;
 
     case 'offline':
-        include $config['homedir'].'/godmode/update_manager/update_manager.offline.php';
+        $mode = \UpdateManager\UI\Manager::MODE_OFFLINE;
+        include $config['homedir'].'/godmode/um_client/index.php';
     break;
 
     case 'online':
     default:
-        include $config['homedir'].'/godmode/update_manager/update_manager.online.php';
+        $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
+        include $config['homedir'].'/godmode/um_client/index.php';
     break;
 }

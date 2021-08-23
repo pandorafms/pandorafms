@@ -23,13 +23,8 @@ ui_require_css_file('order_interpreter');
 // Global errors/warnings checking.
 config_check();
 
+echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
-
-if ($config['menu_type'] == 'classic') {
-    echo '<div id="header_table" class="header_table_classic">';
-} else {
-    echo '<div id="header_table" class="header_table_collapsed">';
-}
 ?>
     <div id="header_table_inner">        
         <?php
@@ -77,9 +72,9 @@ if ($config['menu_type'] == 'classic') {
         if ($check_minor_release_available) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] == 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_es:Actualizacion#Versi.C3.B3n_7.0NG_.28_Rolling_Release_.29">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="http://wiki.pandorafms.com/index.php?title=Pandora:Documentation_en:Anexo_Upgrade#Version_7.0NG_.28_Rolling_Release_.29">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }

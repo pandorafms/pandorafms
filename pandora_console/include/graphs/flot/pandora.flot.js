@@ -169,6 +169,11 @@ function pandoraFlotPieCustom(
   var label_conf;
   var show_legend = true;
 
+  // Set default value if not come like a number.
+  if (isNaN(width) === true) {
+    width = 451;
+  }
+
   if (width <= 450) {
     show_legend = false;
     label_conf = {
@@ -221,6 +226,9 @@ function pandoraFlotPieCustom(
   ) {
     conf_pie.series.pie.label = { show: false };
   }
+
+  // Avoid issues with 0 width values.
+  $("#" + graph_id).width(width);
 
   var plot = $.plot($("#" + graph_id), data, conf_pie);
   if (no_data == data.length) {
@@ -806,11 +814,7 @@ function pandoraFlotSlicebar(
         tickFormatter: xFormatter,
         color: "",
         tickSize: intervaltick,
-        tickLength: 0,
-        font: {
-          size: font_size + 2,
-          family: font
-        }
+        tickLength: 0
       }
     ],
     yaxes: [
@@ -833,6 +837,10 @@ function pandoraFlotSlicebar(
   }
 
   $.plot($("#" + graph_id), datas, options);
+
+  // Added for correct handle of the font size.
+  // xaxes-yaxes object not handle font-size properly.
+  $(".flot-x-axis .flot-tick-label").css("font-size", font_size);
 
   if (match == null && not_interactive == 0) {
     // Events

@@ -86,6 +86,8 @@ if ($getVisualConsole === true) {
 
     $size = get_parameter('size', []);
 
+    $width = get_parameter('widthScreen', 0);
+
     $ratio = 0;
     if (isset($size) === true
         && is_array($size) === true
@@ -107,10 +109,16 @@ if ($getVisualConsole === true) {
         }
     }
 
+    $widthRatio = 0;
+    if ($visualConsoleData['autoAdjust'] === true && $width > 0) {
+        $widthRatio = ($width / $visualConsoleData['width']);
+    }
+
     $vcItems = VisualConsole::getItemsFromDB(
         $visualConsoleId,
         $aclUserGroups,
-        $ratio
+        $ratio,
+        $widthRatio
     );
 
     echo '['.implode(',', $vcItems).']';

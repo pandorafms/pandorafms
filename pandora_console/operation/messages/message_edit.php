@@ -127,7 +127,7 @@ if ($read_message) {
         $dst_name = $message['id_usuario_destino'];
     }
 
-    if (isset($user_name) !== true || empty($user_name) === true) {
+    if (empty($message['id_usuario_origen']) === true) {
         echo '<h1>Notification</h1>';
     } else {
         echo '<h1>Conversation with '.$user_name.'</h1>';
@@ -138,32 +138,37 @@ if ($read_message) {
     $conversation = messages_get_conversation($message);
 
     ui_require_css_file('message_edit');
-    foreach ($conversation as $row) {
-        $date = $row['date'];
 
-        if ($date === null) {
-            $date = date(
-                $config['date_format'],
-                $message['timestamp']
-            ).' '.$user_name;
+    if (empty($message['id_usuario_origen']) !== true) {
+        foreach ($conversation as $row) {
+            $date = $row['date'];
+
+            if ($date === null) {
+                $date = date(
+                    $config['date_format'],
+                    $message['timestamp']
+                ).' '.$user_name;
+            }
+
+            $parsed_message = nl2br(htmlspecialchars(trim(io_safe_output($row['message']))));
+
+            echo '<div class="container">';
+            echo '  <p>'.$parsed_message.'</p>';
+            echo '<span class="time-left">'.$date.'</span>';
+            echo '</div>';
         }
 
-        $parsed_message = nl2br(htmlspecialchars(trim(io_safe_output($row['message']))));
-
-        echo '<div class="container">';
-        echo '  <p>'.$parsed_message.'</p>';
-        echo '<span class="time-left">'.$date.'</span>';
-        echo '</div>';
+        $order = [
+            "\r\n",
+            "\n",
+            "\r",
+        ];
+        $replace = '<br />';
+        $parsed_message = str_replace($order, $replace, $message['mensaje']);
+    } else {
+        // Direct message from System.
+        echo io_safe_output($message['mensaje']);
     }
-
-
-    $order = [
-        "\r\n",
-        "\n",
-        "\r",
-    ];
-    $replace = '<br />';
-    $parsed_message = str_replace($order, $replace, $message['mensaje']);
 
     // Prevent RE: RE: RE:.
     if (strstr($message['subject'], 'RE:')) {
@@ -197,12 +202,15 @@ if ($read_message) {
         'form="delete_message" class="sub delete"'
     );
     echo '&nbsp';
-    html_print_submit_button(
-        __('Reply'),
-        'reply',
-        false,
-        'form="reply_message" class="sub next"'
-    );
+    if (empty($message['id_usuario_origen']) !== true) {
+        html_print_submit_button(
+            __('Reply'),
+            'reply',
+            false,
+            'form="reply_message" class="sub next"'
+        );
+    }
+
     echo '</div>';
 
     return;

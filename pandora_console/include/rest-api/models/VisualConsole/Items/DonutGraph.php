@@ -89,11 +89,12 @@ final class DonutGraph extends Item
      */
     protected static function fetchDataFromDB(
         array $filter,
-        ?float $ratio=0
+        ?float $ratio=0,
+        ?float $widthRatio=0
     ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter, $ratio);
+        $data = parent::fetchDataFromDB($filter, $ratio, $widthRatio);
 
         /*
          * Retrieve extra data.
@@ -157,6 +158,14 @@ final class DonutGraph extends Item
 
         if ($isString === true) {
             $graphData = \get_donut_module_data($moduleId);
+            if (empty($graphData) || $graphData === null) {
+                $aux = [];
+                $aux[0]['tag_name'] = 'No data to show';
+                $aux[0]['color'] = '#aa3333';
+                $aux[0]['value'] = 1;
+                $aux[0]['percent'] = 100;
+                $graphData = $aux;
+            }
 
             $data['html'] = \d3_donut_graph(
                 (int) $data['id'],

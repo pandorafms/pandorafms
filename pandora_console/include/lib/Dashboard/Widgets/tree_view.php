@@ -418,28 +418,30 @@ class TreeViewWidget extends Widget
             AGENT_MODULE_STATUS_NOT_INIT     => __('Not init'),
         ];
 
-        $inputs[] = [
-            'label'     => __('Modules status'),
-            'arguments' => [
-                'type'     => 'select',
-                'fields'   => $fields,
-                'name'     => 'moduleStatus',
-                'selected' => $values['moduleStatus'],
-                'return'   => true,
-            ],
-        ];
+        if (is_metaconsole() === false) {
+            $inputs[] = [
+                'label'     => __('Modules status'),
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'moduleStatus',
+                    'selected' => $values['moduleStatus'],
+                    'return'   => true,
+                ],
+            ];
 
-        // Filter modules.
-        $inputs[] = [
-            'label'     => __('Filter modules'),
-            'arguments' => [
-                'name'   => 'filterModule',
-                'type'   => 'text',
-                'value'  => $values['filterModule'],
-                'return' => true,
-                'size'   => 0,
-            ],
-        ];
+            // Filter modules.
+            $inputs[] = [
+                'label'     => __('Filter modules'),
+                'arguments' => [
+                    'name'   => 'filterModule',
+                    'type'   => 'text',
+                    'value'  => $values['filterModule'],
+                    'return' => true,
+                    'size'   => 0,
+                ],
+            ];
+        }
 
         return $inputs;
     }

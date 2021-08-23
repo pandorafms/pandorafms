@@ -1,0 +1,60 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.responsive {
+  max-width: 100%;
+  height: auto;
+}
+
+html {
+  font-size: 18px;
+  font-family: "lato-bolder", "Open Sans", sans-serif;
+}
+
+h1 {
+  font-size: 80px;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #83b92f;
+}
+
+p a {
+  font-size: 1rem;
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1.5px;
+  font-weight: lighter;
+  color: #333;
+}
+
+body {
+  text-align: center;
+  padding: 30px;
+  font: 20px Helvetica, sans-serif;
+  color: #333;
+  line-height: 1;
+}
+
+#article {
+  display: block;
+  text-align: left;
+  width: 650px;
+  margin: 0 auto;
+}
+
+a {
+  color: #dc8100;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #333;
+  text-decoration: none;
+}

@@ -2,8 +2,8 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     7.0NG.755
-%define release     210614
+%define version     7.0NG.756
+%define release     210823
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -71,6 +71,7 @@ install -m 0755 bin/tentacle_server $RPM_BUILD_ROOT%{_bindir}/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
+cp -aRf util/pandora_ha.pl $RPM_BUILD_ROOT/usr/bin/pandora_ha
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 
 install -m 0755 util/pandora_server $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
@@ -202,6 +203,7 @@ exit 0
 %{_bindir}/pandora_exec
 %{_bindir}/pandora_server
 %{_bindir}/tentacle_server
+%{_bindir}/pandora_ha
 
 %dir %{_sysconfdir}/pandora
 %dir %{_localstatedir}/spool/pandora

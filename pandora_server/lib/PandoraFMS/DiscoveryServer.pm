@@ -148,7 +148,7 @@ sub data_producer ($) {
         OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
   } else {
     @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
-      WHERE (id_recon_server = ? OR id_recon_server = ANY(SELECT id_server FROM tserver WHERE status = 0 AND server_type = ?))
+      WHERE (id_recon_server = ? OR id_recon_server = ANY(SELECT id_server FROM tserver WHERE status <> 1 AND server_type = ?))
       AND disabled = 0
       AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
         OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id, DISCOVERYSERVER);

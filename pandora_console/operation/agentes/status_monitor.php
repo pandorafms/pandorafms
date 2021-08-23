@@ -1954,7 +1954,6 @@ $table->data[4][0] .= __('Not condition');
 <script type="text/javascript">
 
 if(!document.getElementById('not_condition_switch').checked){
-    console.log("pepe");
     document.getElementById("select2-ag_group-container").innerHTML = "None";
 
 }

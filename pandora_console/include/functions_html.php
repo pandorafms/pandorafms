@@ -631,6 +631,7 @@ function html_print_select_groups(
                                     inclusions: '<?php echo $json_inclusions; ?>',
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
+                                    not_condition: "<?php echo $inverse; ?>",
                                     returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 

@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Enterprise\Metaconsole\Node;
+
 global $config;
 
 require_once 'include/functions_gis.php';
@@ -48,6 +50,7 @@ if (is_ajax()) {
     $get_agent_status_tooltip = (bool) get_parameter('get_agent_status_tooltip');
     $get_agents_group_json = (bool) get_parameter('get_agents_group_json');
     $get_modules_group_json = (bool) get_parameter('get_modules_group_json');
+    $filter_modules_group_json = (bool) get_parameter('filter_modules_group_json');
     $get_modules_group_value_name_json = (bool) get_parameter('get_modules_group_value_name_json');
     $get_agent_modules_json_for_multiple_agents = (bool) get_parameter('get_agent_modules_json_for_multiple_agents');
     $get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter('get_agent_modules_alerts_json_for_multiple_agents');
@@ -191,8 +194,13 @@ if (is_ajax()) {
 
     if ($get_modules_group_json) {
         $id_group = (int) get_parameter('id_module_group', 0);
-        $id_agents = get_parameter('id_agents');
+        $id_agents = get_parameter('id_agents', null);
         $selection = get_parameter('selection');
+
+        if ($id_agents === null) {
+            echo '[]';
+            return;
+        }
 
         if ((bool) is_metaconsole() === true) {
             if (count($id_agents) > 0) {
@@ -255,32 +263,152 @@ if (is_ajax()) {
                 }
 
                 $modules = [];
-                $i = 1;
                 foreach ($final_modules as $module_name => $occurrences) {
                     if ($occurrences === $nodes_consulted) {
                         // Module already present in ALL nodes.
                         $modules[] = [
-                            'id_agente_modulo' => ($i++),
+                            'id_agente_modulo' => $module_name,
                             'nombre'           => $module_name,
                         ];
                     }
                 }
             } else {
                 // All modules.
-                $modules = array_reduce(
-                    $modules[$tserver],
-                    function ($carry, $item) {
-                        $carry[] = $item;
-                        return $carry;
-                    },
-                    []
-                );
+                $return = [];
+                $nodes = [];
+                foreach ($agents as $tserver => $id_agents) {
+                    try {
+                        $nodes[$tserver] = new Node($tserver);
+                    } catch (Exception $e) {
+                        hd($e);
+                    }
+
+                    $return = array_reduce(
+                        $modules[$tserver],
+                        function ($carry, $item) use ($tserver, $nodes) {
+                            $t = [];
+                            foreach ($item as $k => $v) {
+                                $t[$k] = $v;
+                            }
+
+                            $t['id_node'] = $tserver;
+                            if ($nodes[$tserver] !== null) {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                                );
+                            }
+
+                            $carry[] = $t;
+                            return $carry;
+                        },
+                        $return
+                    );
+                }
+
+                $modules = $return;
             }
 
             echo json_encode($modules);
         } else {
             select_modules_for_agent_group($id_group, $id_agents, $selection);
         }
+    }
+
+    if ($filter_modules_group_json) {
+        $modules = (array) get_parameter('modules', []);
+        $existing_modules = [];
+
+        $avoid_duplicates = [];
+        foreach ($modules as $def) {
+            $data = explode('|', $def);
+            if (is_metaconsole() === true) {
+                $id_node = (int) $data[0];
+                $id_agent = db_get_value(
+                    'id_tagente',
+                    'tmetaconsole_agent',
+                    'id_agente',
+                    (int) $data[1]
+                );
+
+                $mod = explode('&#x20;&raquo;&#x20;', $data[2]);
+                $module_name = $mod[1];
+                if (empty($module_name) === true) {
+                    // Common modules.
+                    $id_agent = db_get_value(
+                        'id_tagente',
+                        'tmetaconsole_agent',
+                        'id_agente',
+                        (int) $data[0]
+                    );
+
+                    $id_node = db_get_value(
+                        'id_tmetaconsole_setup',
+                        'tmetaconsole_agent',
+                        'id_agente',
+                        (int) $data[0]
+                    );
+
+                    $module_name = $data[1];
+                }
+            } else {
+                $id_agent = $data[0];
+                $module_name = $data[1];
+            }
+
+            if ($id_agent === false) {
+                continue;
+            }
+
+            try {
+                if (is_metaconsole() === true) {
+                    $node = new Node($id_node);
+                    $node->connect();
+                }
+
+                $module = PandoraFMS\Module::search(
+                    [
+                        'id_agente' => $id_agent,
+                        'nombre'    => $module_name,
+                    ],
+                    1
+                );
+
+                if ($module !== null) {
+                    $text = '';
+                    $id = '';
+                    if ($node !== null) {
+                        $text = $node->server_name().' &raquo; ';
+                        $id = $node->id().'|';
+                    }
+
+                    $text .= $module->agent()->alias().' &raquo; '.$module->nombre();
+
+                    $id .= $module->id_agente_modulo();
+                    if ($avoid_duplicates[$id] === 1) {
+                        continue;
+                    }
+
+                    $avoid_duplicates[$id] = 1;
+                    $existing_modules[] = [
+                        'id'   => $id,
+                        'text' => io_safe_output($text),
+                    ];
+                }
+
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
+            } catch (Exception $e) {
+                if ($node !== null) {
+                    $node->disconnect();
+                }
+
+                continue;
+            }
+        }
+
+        echo json_encode($existing_modules);
     }
 
     if ($get_modules_group_value_name_json) {
@@ -1222,15 +1350,9 @@ $agent = db_get_row('tagente', 'id_agente', $id_agente);
 // Get group for this id_agente.
 $id_grupo = $agent['id_grupo'];
 
-$is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-if ($is_extra === ENTERPRISE_NOT_HOOK) {
-    $is_extra = false;
-}
-
 $all_groups = agents_get_all_groups_agent($id_agente, $id_grupo);
 
-if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente) && !$is_extra) {
+if (! check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && ! check_acl_one_of_groups($config['id_user'], $all_groups, 'AW', $id_agente)) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access (read) to agent '.agents_get_name($id_agente)
@@ -1283,7 +1405,7 @@ $tab = get_parameter('tab', 'main');
 // Manage tab.
 $managetab = [];
 
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') || $is_extra) {
+if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
     $managetab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.html_print_image(
         'images/setup.png',
         true,

@@ -106,6 +106,9 @@ def get_graph_by_moduleid (baseUrl,pUser, pPass, apiPass, moduleId, graphInterva
         if graph.text == "Id does not exist in database.":
             print (f"Error requested Pandora api url, status code: {graph.text}. skipping graph generation")
             return None
+        if graph.text == "The user has not enough permissions for perform this action.":
+            print (f"Error requested Pandora api url, status code: {graph.text} Skiping graph generation")
+            return None
         
     except:
         print("Error requested api url. skipping graph generation")

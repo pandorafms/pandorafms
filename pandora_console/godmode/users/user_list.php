@@ -1,17 +1,32 @@
 <?php
+/**
+ * Users.
+ *
+ * @category   Users
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -184,7 +199,7 @@ switch ($sortField) {
 $buttons[$tab]['active'] = true;
 
 // Header.
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     user_meta_print_header();
     $sec = 'advanced';
 } else {
@@ -268,7 +283,7 @@ if ((bool) get_parameter('user_del', false) === true) {
         );
 
         // Delete the user in all the consoles.
-        if (defined('METACONSOLE') && isset($_GET['delete_all'])) {
+        if (is_metaconsole() === true && isset($_GET['delete_all'])) {
             $servers = metaconsole_get_servers();
             foreach ($servers as $server) {
                 // Connect to the remote console.
@@ -379,8 +394,21 @@ $table->data[0][4] = html_print_submit_button(
     true
 );
 
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All users information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
+    );
+}
 
-if (defined('METACONSOLE')) {
+
+if (is_metaconsole() === true) {
     $table->width = '96%';
     $form_filter = "<form class='filters_form' method='post'>";
     $form_filter .= html_print_table($table, true);
@@ -427,21 +455,24 @@ $table->head[2] = __('Last contact').ui_get_sorting_arrows($url_up_last, $url_do
 $table->head[3] = __('Admin');
 $table->head[4] = __('Profile / Group');
 $table->head[5] = __('Description');
-$table->head[6] = '<span title="Operations">'.__('Op.').'</span>';
-if (!defined('METACONSOLE')) {
+if ($is_management_allowed === true) {
+    $table->head[6] = '<span title="Operations">'.__('Op.').'</span>';
+}
+
+if (is_metaconsole() === false) {
     $table->align[2] = '';
     $table->size[2] = '150px';
 }
 
 $table->align[3] = 'left';
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->size[6] = '110px';
 } else {
     $table->size[6] = '85px';
 }
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $table->valign[0] = 'top';
     $table->valign[1] = 'top';
     $table->valign[2] = 'top';
@@ -527,18 +558,22 @@ foreach ($info as $user_id => $user_info) {
 
     // User profiles.
     if ($user_is_admin || $user_id == $config['id_user'] || isset($group_um[0])) {
-        $user_profiles = db_get_all_rows_field_filter('tusuario_perfil', 'id_usuario', $user_id);
+        $user_profiles = db_get_all_rows_field_filter(
+            'tusuario_perfil',
+            'id_usuario',
+            $user_id
+        );
     } else {
         $user_profiles_aux = users_get_user_profile($user_id);
         $user_profiles = [];
         foreach ($group_um as $key => $value) {
-            if (isset($user_profiles_aux[$key])) {
+            if (isset($user_profiles_aux[$key]) === true) {
                 $user_profiles[$key] = $user_profiles_aux[$key];
                 unset($user_profiles_aux[$key]);
             }
         }
 
-        if (!empty($user_profiles_aux)) {
+        if (empty($user_profiles_aux) === false) {
             $user_info['not_delete'] = 1;
         }
 
@@ -572,7 +607,13 @@ foreach ($info as $user_id => $user_info) {
 
     $iterator++;
 
-    if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || (!$user_info['is_admin'] && (!isset($user_info['edit']) || isset($group_um[0]) || (isset($user_info['edit']) && $user_info['edit'])))) {
+    if ($is_management_allowed === true
+        && ($user_is_admin
+        || $config['id_user'] == $user_info['id_user']
+        || (!$user_info['is_admin'] && (!isset($user_info['edit'])
+        || isset($group_um[0]) || (isset($user_info['edit'])
+        && $user_info['edit']))))
+    ) {
         $data[0] = '<a href="#" onclick="document.forms[\'edit_user_form_'.$user_info['id_user'].'\'].submit();">'.$user_id.'</a>';
     } else {
         $data[0] = $user_id;
@@ -639,8 +680,12 @@ foreach ($info as $user_id => $user_info) {
             $total_profile++;
         }
 
-        if (isset($user_info['not_delete'])) {
-            $data[4] .= __('Other profiles are also assigned.').ui_print_help_tip(__('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'), true);
+        if (isset($user_info['not_delete']) === true) {
+            $data[4] .= __('Other profiles are also assigned.');
+            $data[4] .= ui_print_help_tip(
+                __('Other profiles you cannot manage are also assigned. These profiles are not shown. You cannot enable/disable or delete this user.'),
+                true
+            );
         }
 
         $data[4] .= '</div>';
@@ -650,100 +695,83 @@ foreach ($info as $user_id => $user_info) {
 
     $data[5] = ui_print_string_substr($user_info['comments'], 24, true);
 
-    $table->cellclass[][6] = 'action_buttons';
-    $data[6] = '';
-    if ($user_is_admin || $config['id_user'] == $user_info['id_user'] || isset($group_um[0]) || (!$user_info['is_admin'] && (!isset($user_info['edit']) || (isset($user_info['edit']) && $user_info['edit'])))) {
-        // Disable / Enable user.
-        if (isset($user_info['not_delete']) === false) {
-            if ($user_info['disabled'] == 0) {
-                $toDoString = __('Disable');
-                $toDoAction = '1';
-                $toDoImage  = 'images/lightbulb.png';
-            } else {
-                $toDoString = __('Enable');
-                $toDoAction = '0';
-                $toDoImage  = 'images/lightbulb_off.png';
+    if ($is_management_allowed === true) {
+        $table->cellclass[][6] = 'action_buttons';
+        $data[6] = '';
+        if ($user_is_admin
+            || $config['id_user'] == $user_info['id_user']
+            || isset($group_um[0])
+            || (!$user_info['is_admin'] && (!isset($user_info['edit'])
+            || (isset($user_info['edit']) && $user_info['edit'])))
+        ) {
+            // Disable / Enable user.
+            if (isset($user_info['not_delete']) === false) {
+                if ($user_info['disabled'] == 0) {
+                    $toDoString = __('Disable');
+                    $toDoAction = '1';
+                    $toDoImage  = 'images/lightbulb.png';
+                } else {
+                    $toDoString = __('Enable');
+                    $toDoAction = '0';
+                    $toDoImage  = 'images/lightbulb_off.png';
+                }
+
+                $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+                $data[6] .= html_print_input_hidden(
+                    'id',
+                    $user_info['id_user'],
+                    true
+                );
+                $data[6] .= html_print_input_hidden(
+                    'disable_user',
+                    $toDoAction,
+                    true
+                );
+                $data[6] .= html_print_input_image(
+                    'submit_disable_enable',
+                    $toDoImage,
+                    '',
+                    '',
+                    true,
+                    [
+                        'data-title'                     => $toDoString,
+                        'data-use_title_for_force_title' => '1',
+                        'class'                          => 'forced_title no-padding',
+                    ]
+                );
+                $data[6] .= '</form>';
             }
 
-            $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+            // Edit user.
+            $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'" id="edit_user_form_'.$user_info['id_user'].'" class="inline">';
             $data[6] .= html_print_input_hidden(
-                'id',
+                'id_user',
                 $user_info['id_user'],
                 true
             );
             $data[6] .= html_print_input_hidden(
-                'disable_user',
-                $toDoAction,
-                true
-            );
-            $data[6] .= html_print_input_image(
-                'submit_disable_enable',
-                $toDoImage,
-                '',
-                '',
-                true,
-                [
-                    'data-title'                     => $toDoString,
-                    'data-use_title_for_force_title' => '1',
-                    'class'                          => 'forced_title no-padding',
-                ]
-            );
-            $data[6] .= '</form>';
-        }
-
-        // Edit user.
-        $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'" id="edit_user_form_'.$user_info['id_user'].'" class="inline">';
-        $data[6] .= html_print_input_hidden(
-            'id_user',
-            $user_info['id_user'],
-            true
-        );
-        $data[6] .= html_print_input_hidden(
-            'edit_user',
-            '1',
-            true
-        );
-        $data[6] .= html_print_input_image(
-            'submit_edit_user',
-            'images/config.png',
-            '',
-            'padding:0',
-            true,
-            [
-                'data-title'                     => __('Edit'),
-                'data-use_title_for_force_title' => '1',
-                'class'                          => 'forced_title no-padding',
-            ]
-        );
-        $data[6] .= '</form>';
-
-        if ($config['admin_can_delete_user'] && $user_info['id_user'] != $config['id_user'] && isset($user_info['not_delete']) === false) {
-            $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
-            $data[6] .= html_print_input_hidden(
-                'delete_user',
-                $user_info['id_user'],
-                true
-            );
-            $data[6] .= html_print_input_hidden(
-                'user_del',
+                'edit_user',
                 '1',
                 true
             );
             $data[6] .= html_print_input_image(
-                'submit_delete_user',
-                'images/cross.png',
+                'submit_edit_user',
+                'images/config.png',
                 '',
                 'padding:0',
                 true,
                 [
-                    'data-title'                     => __('Delete'),
+                    'data-title'                     => __('Edit'),
                     'data-use_title_for_force_title' => '1',
                     'class'                          => 'forced_title no-padding',
                 ]
             );
             $data[6] .= '</form>';
 
-            if (is_metaconsole() === true) {
+            if ($config['admin_can_delete_user']
+                && $user_info['id_user'] != $config['id_user']
+                && isset($user_info['not_delete']) === false
+            ) {
                 $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
                 $data[6] .= html_print_input_hidden(
                     'delete_user',
@@ -755,24 +783,42 @@ foreach ($info as $user_id => $user_info) {
                     '1',
                     true
                 );
-                $data[6] .= html_print_input_hidden(
-                    'delete_all',
-                    '1',
-                    true
-                );
                 $data[6] .= html_print_input_image(
-                    'submit_delete_all',
-                    'images/cross_double.png',
+                    'submit_delete_user',
+                    'images/cross.png',
                     '',
-                    '',
+                    'padding:0',
                     true,
                     [
-                        'data-title'                     => __('Delete from all consoles'),
+                        'data-title'                     => __('Delete'),
                         'data-use_title_for_force_title' => '1',
                         'class'                          => 'forced_title no-padding',
                     ]
                 );
                 $data[6] .= '</form>';
+
+                if (is_metaconsole() === true) {
+                    $data[6] .= '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
+                    $data[6] .= html_print_input_hidden(
+                        'delete_user',
+                        $user_info['id_user'],
+                        true
+                    );
+                    $data[6] .= html_print_input_hidden(
+                        'user_del',
+                        '1',
+                        true
+                    );
+                    $data[6] .= html_print_input_hidden(
+                        'delete_all',
+                        '1',
+                        true
+                    );
+                    $data[6] .= '</form>';
+                }
+            } else {
+                $data[6] .= '';
+                // Delete button not in this mode.
             }
         } else {
             $data[6] .= '';
@@ -788,13 +834,15 @@ ui_pagination(count($info), false, 0, 0, false, 'offset', true, 'pagination-bott
 
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 unset($table);
-if ($config['admin_can_add_user'] !== false) {
-    echo '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'">';
-    html_print_input_hidden('new_user', 1);
-    html_print_submit_button(__('Create user'), 'crt', false, 'class="sub next"');
-    echo '</form>';
-} else {
-    echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
+if ($is_management_allowed === true) {
+    if ($config['admin_can_add_user'] !== false) {
+        echo '<form method="post" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_user&pure='.$pure.'">';
+        html_print_input_hidden('new_user', 1);
+        html_print_submit_button(__('Create user'), 'crt', false, 'class="sub next"');
+        echo '</form>';
+    } else {
+        echo '<i>'.__("The current authentication scheme doesn't support creating users on %s", get_product_name()).'</i>';
+    }
 }
 
 echo '</div>';

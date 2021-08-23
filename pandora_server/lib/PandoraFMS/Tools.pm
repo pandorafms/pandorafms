@@ -55,6 +55,7 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
+	ALERTSERVER
 	DATASERVER
 	NETWORKSERVER
 	SNMPCONSOLE
@@ -189,6 +190,7 @@ use constant WUXSERVER => 17;
 use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
 use constant MIGRATIONSERVER => 20;
+use constant ALERTSERVER => 21;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -915,8 +917,9 @@ sub float_equal {
 # Tries to load the PandoraEnterprise module. Must be called once before
 # enterprise_hook ().
 ################################################################################
-sub enterprise_load ($) {
+sub enterprise_load ($;$) {
 	my $pa_config = shift;
+	my $muted = shift;
 	
 	# Check dependencies
 	
@@ -944,7 +947,7 @@ sub enterprise_load ($) {
 	}
 	
 	# Initialize the enterprise module.
-	PandoraFMS::Enterprise::init($pa_config);
+	PandoraFMS::Enterprise::init($pa_config, $muted);
 	
 	return 1;
 }
@@ -2518,6 +2521,7 @@ sub get_server_name {
 	return "SYSLOGSERVER" if ($server_type eq SYSLOGSERVER);
 	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
+	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
 
 	return "UNKNOWN";
 }

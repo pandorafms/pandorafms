@@ -735,7 +735,7 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
-    if (isset($params['only_image']) === true) {
+    if (isset($params['only_image']) === true && $params['vconsole'] !== true) {
         $params['backgroundColor'] = 'transparent';
     }
 
@@ -829,7 +829,11 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
-    $font_size = $config['font_size'];
+    if (isset($params['graph_font_size']) === true) {
+        $font_size = $params['graph_font_size'];
+    } else {
+        $font_size = $config['font_size'];
+    }
 
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {
@@ -1412,6 +1416,14 @@ function graphic_combined_module(
         $labels  = [];
         $modules = [];
         foreach ($sources as $source) {
+            $id_agent = agents_get_module_id(
+                $source['id_agent_module']
+            );
+
+            if (!$id_agent) {
+                continue;
+            }
+
             if (is_metaconsole() === true) {
                 metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
@@ -1428,9 +1440,6 @@ function graphic_combined_module(
             array_push($modules, $modulepush);
             array_push($weights, $source['weight']);
             if ($source['label'] != '' || $params_combined['labels']) {
-                $id_agent = agents_get_module_id(
-                    $source['id_agent_module']
-                );
                 $agent_description = agents_get_description($id_agent);
                 $agent_group = agents_get_agent_group($id_agent);
                 $agent_address = agents_get_address($id_agent);

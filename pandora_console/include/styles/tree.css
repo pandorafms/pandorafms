@@ -179,3 +179,7 @@ div#tree-controller-recipient {
 .tree-node > .node-content > div + div:not(.tree-node-counters) {
   margin-left: 3px;
 }
+
+.tree-node .disabled {
+  filter: opacity(0.3);
+}

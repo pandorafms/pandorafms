@@ -11,6 +11,7 @@ import Item, { ItemType, ItemProps, itemBasePropsDecoder } from "../Item";
 export type EventsHistoryProps = {
   type: ItemType.AUTO_SLA_GRAPH;
   maxTime: number | null;
+  legendColor: string;
   html: string;
 } & ItemProps &
   WithModuleProps;
@@ -35,6 +36,7 @@ export function eventsHistoryPropsDecoder(
     ...itemBasePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     type: ItemType.AUTO_SLA_GRAPH,
     maxTime: parseIntOr(data.maxTime, null),
+    legendColor: data.legendColor,
     html: !stringIsEmpty(data.html)
       ? data.html
       : decodeBase64(data.encodedHtml),
@@ -67,6 +69,11 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
       }
     }
 
+    var flotText = element.getElementsByClassName(
+      "noresizevc"
+    ) as HTMLCollectionOf<HTMLElement>;
+    flotText[0].style.color = this.props.legendColor;
+
     return element;
   }
 
@@ -82,5 +89,10 @@ export default class EventsHistory extends Item<EventsHistoryProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
+
+    var flotText = element.getElementsByClassName(
+      "noresizevc"
+    ) as HTMLCollectionOf<HTMLElement>;
+    flotText[0].style.color = this.props.legendColor;
   }
 }

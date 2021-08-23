@@ -219,8 +219,19 @@ class Agent extends Entity
 
             if ($rs === false) {
                 global $config;
+                $error = $config['dbconnection']->error;
+                if (empty($error) === true) {
+                    if (empty($updates['intervalo']) === true) {
+                        $error = 'Missing agent interval';
+                    } else if (empty($updates['id_group']) === true) {
+                        $error = 'Missing id_group';
+                    } else if (empty($updates['id_group']) === true) {
+                        $error = 'Missing id_group';
+                    }
+                }
+
                 throw new \Exception(
-                    __METHOD__.' error: '.$config['dbconnection']->error
+                    __METHOD__.' error: '.$error
                 );
             }
 

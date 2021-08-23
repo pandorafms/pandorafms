@@ -44,7 +44,7 @@ require_once $config['homedir'].'/include/functions_ui.php';
 // Check access.
 check_login();
 
-
+enterprise_include_once('/include/class/CommandCenter.class.php');
 
 $event_a = check_acl($config['id_user'], 0, 'ER');
 $event_w = check_acl($config['id_user'], 0, 'EW');
@@ -391,10 +391,14 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric(
-                            $tmp->data,
-                            $config['graph_precision']
-                        );
+                        if (is_numeric($tmp->data) === true) {
+                            $tmp->data = format_numeric(
+                                $tmp->data,
+                                $config['graph_precision']
+                            );
+                        } else {
+                            $tmp->data = ui_print_truncate_text($tmp->data, 10);
+                        }
 
                         $tmp->instructions = events_get_instructions($item);
 
@@ -942,6 +946,32 @@ if ($pure) {
     <?php
 }
 
+if (enterprise_installed() === true) {
+    if (isset($config['merge_process_events']) === true
+        && empty($config['merge_process_events']) === false
+    ) {
+        ui_require_css_file('command_center', ENTERPRISE_DIR.'/include/styles/');
+
+        ui_require_javascript_file(
+            'pandora_command_center',
+            ENTERPRISE_DIR.'/include/javascript/'
+        );
+
+        $commandCenter = 'CommandCenterController';
+        if (class_exists($commandCenter) === true) {
+            $events_merge_state = $commandCenter::displayEventsProgress();
+            if (empty($events_merge_state) === false) {
+                echo '<div class="view_events_merge_process_events">';
+                echo $events_merge_state;
+                echo '</div>';
+            }
+        }
+
+        $tittle_error = __('Errors');
+        echo '<div id="dialog-error-node-'.$config['metaconsole_node_id'].'" title="'.$tittle_error.'"></div>';
+    }
+}
+
 // Error div for ajax messages.
 echo "<div id='show_message_error'>";
 echo '</div>';
@@ -1472,7 +1502,7 @@ try {
     $active_filters_div .= '<div class="label box-shadow">'.__('Current filter').'</div>';
     $active_filters_div .= '<div id="current_filter" class="content">';
     if ($loaded_filter !== false) {
-        $active_filters_div .= io_safe_output($loaded_filter['id_name']);
+        $active_filters_div .= htmlentities(io_safe_output($loaded_filter['id_name']));
     } else {
         $active_filters_div .= __('Not set.');
     }

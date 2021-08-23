@@ -986,43 +986,21 @@ if ($create_alert || $update_alert) {
     echo html_print_select(get_priorities(), 'priority', $priority, '', '', '0', false, false, false);
     echo '</td></tr>';
 
-    // Alert type (e-mail, event etc.)
+    // Alert type (e-mail, event etc.).
     echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
-
-    switch ($config['dbtype']) {
-        case 'mysql':
-        case 'postgresql':
-            html_print_select_from_sql(
-                'SELECT id, name
-				FROM talert_actions
-				ORDER BY name',
-                'alert_type',
-                $alert_type,
-                '',
-                '',
-                0,
-                false,
-                false,
-                false
-            );
-        break;
-
-        case 'oracle':
-            html_print_select_from_sql(
-                'SELECT id, dbms_lob.substr(name,4000,1) as name
-				FROM talert_actions
-				ORDER BY dbms_lob.substr(name,4000,1)',
-                'alert_type',
-                $alert_type,
-                '',
-                '',
-                0,
-                false,
-                false,
-                false
-            );
-        break;
-    }
+    html_print_select_from_sql(
+        'SELECT id, name
+        FROM talert_actions
+        ORDER BY name',
+        'alert_type',
+        $alert_type,
+        '',
+        '',
+        0,
+        false,
+        false,
+        false
+    );
 
     echo '</td></tr>';
     echo '<tr><td class="datos">'.__('Position').'</td><td class="datos">';
@@ -1482,7 +1460,6 @@ function time_changed () {
 
 $(document).ready (function () {
     $('#time_threshold').change (time_changed);
-    
     $("input[name=all_delete_box]").change (function() {
         if ($(this).is(":checked")) {
             $("input[name='delete_ids[]']").check();
@@ -1491,9 +1468,9 @@ $(document).ready (function () {
             $("input[name='delete_ids[]']").uncheck();
         }
     });
-    
+
     $("#alert_type").change (function () {
-        values = Array ();        
+        values = Array ();
         values.push ({
             name: "page",
             value: "godmode/alerts/alert_commands"
@@ -1506,7 +1483,6 @@ $(document).ready (function () {
             name: "id_action",
             value: this.value
         });
-        
         values.push ({
             name: "get_recovery_fields",
             value: "0"
@@ -1515,43 +1491,27 @@ $(document).ready (function () {
             values,
             function (data, status) {
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
-                
                 original_command = js_html_entity_decode (data["command"]);
                 command_description = js_html_entity_decode (data["description"]);
                 for (i = 1; i <= max_fields; i++) {
                     var old_value = '';
-                    // Only keep the value if is provided from hidden (first time)
-                    
+                    // Only keep the value if is provided from hidden (first time).
                     var id_field = $("[name=field" + i + "_value]").attr('id');
-                    
+
                     if (id_field == "hidden-field" + i + "_value") {
                         old_value = $("[name=field" + i + "_value]").val();
                     }
-                    
+
                     // If the row is empty, hide de row
                     if (data["fields_rows"][i] == '') {
                         $('#table_macros-field' + i).hide();
                     }
                     else {
                         $('#table_macros-field' + i).replaceWith(data["fields_rows"][i]);
-                        
-                        // The row provided has a predefined class. We delete it
+
+                        // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-
-                        //Remove this to put the help message in alert commands, to do it more general
-                        // Add help hint only in first field
-                        /*if (i == 1) {
-                            var td_content =
-                                $('#table_macros-field' + i)
-                                    .find('td').eq(0);
-                            
-                            td_content
-                                .html(
-                                    td_content.html() +
-                                    $('#help_snmp_alert_hint').html()
-                                );
-                        }*/
 
                         $("[name=field" + i + "_value]").val(old_value);
                         $('#table_macros-field').show();
@@ -1561,17 +1521,17 @@ $(document).ready (function () {
             "json"
         );
     });
-    
-    // Charge the fields of the action 
+
+    // Charge the fields of the action.
     $("#alert_type").trigger('change');
-    
+
     $("#submit-delete_button").click (function () {
         confirmation = confirm("<?php echo __('Are you sure?'); ?>");
         if (!confirmation) {
             return;
         }
     });
-    
+
     var added_config = {
         "selector": "textarea.tiny-mce-editor",
         "plugins": "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",

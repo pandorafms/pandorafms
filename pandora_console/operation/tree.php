@@ -156,7 +156,7 @@ if (is_metaconsole() === false) {
         $header_title,
         'images/extensions.png',
         false,
-        'tree_view',
+        '',
         false,
         $tabs,
         [

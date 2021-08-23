@@ -1120,6 +1120,12 @@ function show_add_action(id_alert) {
                 opacity: 0.5,
                 background: "black"
             },
+            open: function() {
+                $("#action_select, #action_select").select2({
+                    tags: true,
+                    dropdownParent: $("#add_action-div-" + id_alert)
+                });
+            },
             width: 500,
             height: 300
         })
@@ -1149,6 +1155,12 @@ function show_display_update_action(id_module_action, alert_id, alert_id_agent_m
                     overlay: {
                         opacity: 0.5,
                         background: "black"
+                    },
+                    open: function() {
+                        $("#action_select_ajax, #action_select_ajax").select2({
+                            tags: true,
+                            dropdownParent: $("#update_action-div")
+                        });
                     },
                     width: 500,
                     height: 300

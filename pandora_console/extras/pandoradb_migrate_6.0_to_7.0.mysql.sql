@@ -1028,6 +1028,7 @@ ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
+ALTER TABLE `tmetaconsole_event` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -2349,6 +2350,8 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+
+ALTER TABLE `tevento` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_extended`

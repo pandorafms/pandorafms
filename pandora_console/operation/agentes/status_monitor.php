@@ -147,6 +147,7 @@ $not_condition = (string) get_parameter('not_condition', '');
 $is_none = 'All';
 if ($not_condition !== '') {
     $is_none = 'None';
+    $not_condition = 'NOT';
 }
 
 // If option not_condition is enabled, the conditions of the queries are reversed.
@@ -370,12 +371,12 @@ if (!empty($ag_custom_fields)) {
 // Filter by tag.
 if ($tag_filter !== 0) {
     if (is_metaconsole()) {
-        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo '.$not_condition.' IN (
+        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
 				WHERE ttag_module.id_tag '.$not_condition.' IN ('.$tag_filter.'))';
     } else {
-        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo '.$not_condition.' IN (
+        $sql_conditions .= ' AND tagente_modulo.id_agente_modulo IN (
 				SELECT ttag_module.id_agente_modulo
 				FROM ttag_module
 				WHERE ttag_module.id_tag '.$condition_query.' '.$tag_filter.')';
@@ -2057,9 +2058,22 @@ function refresh_pagination_callback (module_id, id_agent, server_name,module_na
     });
 }
 
+
 function changeNotConditionStatus() {
     let chkbox =document.getElementById('not_condition_switch');
     if(chkbox.checked) {
+        /*
+        $('#status').select2().on("select2:open", function(e) { 
+            var a = $('#select2-status-results > li');
+            console.log($(".select2-results__option")[0].textContent);
+            $(".select2-results__option")[1].textContent = "None";
+        });*/
+        $('#status').select2().on("select2:open", function(e) { 
+            console.log(e);
+              //  $("#select2-status-results > li")[1].innerHTML = "none";
+
+        });
+
         document.getElementById("select2-status-container").innerHTML = "None";
         document.getElementById("select2-moduletype-container").innerHTML = "None";
         document.getElementById("select2-ag_group-container").innerHTML = "None";
@@ -2067,6 +2081,7 @@ function changeNotConditionStatus() {
         document.getElementById("select2-tag_filter-container").innerHTML = "None";
         $('select[name=datatypebox] > option:first-child').val('None');
         $('#datatypebox option:first').text('None');
+
     }else {
         document.getElementById("select2-status-container").innerHTML = "All";
         document.getElementById("select2-moduletype-container").innerHTML = "All";
@@ -2079,6 +2094,7 @@ function changeNotConditionStatus() {
     }
 
 }
+
 
 let chkbox =document.getElementById('not_condition_switch');
 let value_swtich = "<?php echo $not_condition; ?>";

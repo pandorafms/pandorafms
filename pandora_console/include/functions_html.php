@@ -601,7 +601,9 @@ function html_print_select_groups(
     </style>
 
     <script type="text/javascript">
+
         $(document).ready(function() {
+
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
                     $(this).select2({
@@ -631,7 +633,7 @@ function html_print_select_groups(
                                     inclusions: '<?php echo $json_inclusions; ?>',
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
-                                    not_condition: "<?php echo $inverse; ?>",
+                                    not_condition: $('#not_condition_switch').prop('checked'),
                                     returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
@@ -788,7 +790,7 @@ function html_print_select(
         $required = 'required';
     }
 
-    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {

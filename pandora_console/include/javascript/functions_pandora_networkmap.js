@@ -965,8 +965,7 @@ function load_interfaces(selected_links) {
     $("#relations_table-no_relations").css("display", "none");
     $("#relations_table-loading").css("display", "");
 
-    var template_relation_row = $("#relations_table-template_row");
-    template_relation_row.clone();
+    var template_relation_row = $("#relations_table-template_row").clone;
 
     $(template_relation_row).css("display", "");
     $(template_relation_row).attr("class", "relation_link_row");
@@ -1113,6 +1112,10 @@ function load_interfaces(selected_links) {
         ");"
     );
     $("#relations_table tbody").append(template_relation_row);
+
+    // Update input for transform in select2.
+    $("#interface_source_" + i).select2();
+    $("#interface_target_" + i).select2();
 
     template_relation_row = null;
   });

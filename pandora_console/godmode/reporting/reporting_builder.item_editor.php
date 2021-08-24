@@ -5159,7 +5159,6 @@ function addSLARow() {
                         $("input[name=id_agent_failover]").val('');
                         $("input[name=id_server]").val('');
                         $("input[name=agent_sla]").val('');
-                        $("input[name=agent_sla]").css("background","url('<?php echo $autocompleteImage; ?>') right center no-repeat")
                         $("input[name=agent_failover]").val('');
                         $("#id_agent_module_sla").empty();
                         $("#id_agent_module_sla").attr('disabled', 'true');

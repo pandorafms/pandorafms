@@ -305,6 +305,9 @@ function events_get_column_name($field, $table_alias=false)
                 return __('Severity mini');
             }
 
+        case 'direccion':
+        return __('Agent IP');
+
         default:
         return __($field);
     }

@@ -965,7 +965,7 @@ function load_interfaces(selected_links) {
     $("#relations_table-no_relations").css("display", "none");
     $("#relations_table-loading").css("display", "");
 
-    var template_relation_row = $("#relations_table-template_row").clone;
+    var template_relation_row = $("#relations_table-template_row").clone();
 
     $(template_relation_row).css("display", "");
     $(template_relation_row).attr("class", "relation_link_row");

@@ -39,11 +39,14 @@ if (is_ajax() === true && empty(get_parameter('menuType')) === false) {
 /**
  * Prints a complete menu structure.
  *
- * @param array Menu structure to print.
+ * @param array $menu Menu structure to print.
+ *
+ * @return void
  */
 function menu_print_menu(&$menu)
 {
     global $config;
+    global $menuTypeClass;
     static $idcounter = 0;
 
     echo '<div class="menu">';
@@ -108,7 +111,7 @@ function menu_print_menu(&$menu)
 
         $submenu = false;
 
-        if ($_SESSION['menu_type'] === 'classic') {
+        if ($menuTypeClass === 'classic') {
             $classes = [
                 'menu_icon',
                 'no_hidden_menu',
@@ -120,12 +123,12 @@ function menu_print_menu(&$menu)
             ];
         }
 
-        if (isset($main['sub'])) {
+        if (isset($main['sub']) === true) {
             $classes[] = '';
             $submenu = true;
         }
 
-        if (!isset($main['refr'])) {
+        if (isset($main['refr']) === false) {
             $main['refr'] = 0;
         }
 
@@ -409,23 +412,14 @@ function menu_print_menu(&$menu)
 
         // Print out the first level.
         $output .= '<li title="'.$main['text'].'" class="'.implode(' ', $classes).' '.$seleccionado.'" id="icon_'.$id.'">';
-                        // onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
-        $length = strlen(__($main['text']));
-        $padding_top = ( $length >= 18) ? 6 : 12;
 
-        if ($_SESSION['menu_type'] === 'classic') {
-            $output .= '<div id="title_menu" class="title_menu_classic">'.$main['text'].'</div>';
-        } else {
-            $output .= '<div id="title_menu" class="title_menu_collapsed">'.$main['text'].'</div>';
-        }
+        $output .= sprintf('<div id="title_menu" class="title_menu_%s">%s</div>', $menuTypeClass, $main['text']);
 
-        // Add the notification ball if defined
-        if (isset($main['notification'])) {
+        // Add the notification ball if defined.
+        if (isset($main['notification']) === true) {
             $output .= '<div class="notification_ball">'.$main['notification'].'</div>';
         }
 
-        $padding_top = 0;
-        $length = 0;
         if ($submenu_output != '') {
             // WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS.
             if ($visible || in_array('selected', $classes)) {
@@ -436,10 +430,7 @@ function menu_print_menu(&$menu)
                 $visible = false;
             }
 
-            // $output .= '<ul id="subicon_'.$id.'" class="submenu'.($visible ? '' : ' invisible').'">';
-            $output .= '<ul id="subicon_'.$id.'" class="submenu">';
-            $output .= $submenu_output;
-            $output .= '</ul>';
+            $output .= sprintf('<ul id="subicon_%s" class="submenu">%s</ul>', $id, $submenu_output);
         }
 
         $config['count_main_menu']++;

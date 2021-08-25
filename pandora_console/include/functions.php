@@ -1585,7 +1585,7 @@ function enterprise_include($filename, $variables=[])
             extract($variables);
         }
 
-        include $filepath;
+        include_once $filepath;
         return true;
     }
 

@@ -2336,7 +2336,7 @@ class ConsoleSupervisor
 
         // Check if DiscoveryCronTasks is running. Warn user if not.
         if ($config['cron_last_run'] == 0
-            || (get_system_time() - $config['cron_last_run']) > 3600
+            || (get_system_time() - $config['cron_last_run']) > SECONDS_10MINUTES
         ) {
             $message_conf_cron = __('DiscoveryConsoleTasks is not running properly');
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {

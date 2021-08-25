@@ -3080,14 +3080,15 @@ $class = 'databox filters';
         </tr>
 
         <?php
-        $server_fields = [];
+        if (is_metaconsole()) {
+            $server_fields = [];
             $server_fields[0] = __('All');
 
             $servers = metaconsole_get_servers();
 
-        foreach ($servers as $key => $server) {
-            $server_fields[$key] = $server['server_name'];
-        }
+            foreach ($servers as $key => $server) {
+                $server_fields[$key] = $server['server_name'];
+            }
 
             $server_filter_markup = '
             <tr id="row_agent_server_filter" class="datos">
@@ -3106,10 +3107,9 @@ $class = 'databox filters';
                 'min-width: 180px'
             ).'</td></tr>';
 
-            if (is_metaconsole()) {
-                echo $server_filter_markup;
-            }
-            ?>
+            echo $server_filter_markup;
+        }
+        ?>
 
         <tr id="row_agent_group_filter" class="datos">
             <td class="bolder">

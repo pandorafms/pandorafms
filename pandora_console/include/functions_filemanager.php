@@ -139,11 +139,11 @@ function upload_file($upload_file_or_zip, $default_real_directory)
     $config['filemanager']['correct_upload_file'] = 0;
     $config['filemanager']['message'] = null;
 
-    $homedir_filemanager = trim($config['homedir']);
     $sec2 = get_parameter('sec2');
-
     if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-        $homedir_filemanager .= io_safe_output($config['attachment_store']).'/collection';
+        $homedir_filemanager = io_safe_output($config['attachment_store']).'/collection';
+    } else {
+        $homedir_filemanager = io_safe_output($config['homedir']);
     }
 
     check_login();
@@ -178,14 +178,18 @@ function upload_file($upload_file_or_zip, $default_real_directory)
             $umask          = io_safe_output((string) get_parameter('umask'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
-                // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+                // Perform security check to determine whether received upload
+                // directory is part of the default path for caller uploader and
+                // user is not trying to access an external path (avoid
+                // execution of PHP files in directories that are not explicitly
+                // controlled by corresponding .htaccess).
                 ui_print_error_message(__('Security error'));
             } else {
                 // Copy file to directory and change name.
                 if (empty($directory) === true) {
                     $nombre_archivo = $real_directory.'/'.$filename;
                 } else {
-                    $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
+                    $nombre_archivo = $real_directory.'/'.$directory.'/'.$filename;
                 }
 
                 if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
@@ -270,13 +274,17 @@ function create_text_file($default_real_directory)
         $umask          = (string) get_parameter('umask');
 
         if (strpos($real_directory, $default_real_directory) !== 0) {
-            // Perform security check to determine whether received upload directory is part of the default path for caller uploader and user is not trying to access an external path (avoid execution of PHP files in directories that are not explicitly controlled by corresponding .htaccess).
+            // Perform security check to determine whether received upload
+            // directory is part of the default path for caller uploader and
+            // user is not trying to access an external path (avoid execution
+            // of PHP files in directories that are not explicitly controlled by
+            // corresponding .htaccess).
             ui_print_error_message(__('Security error'));
         } else {
             if (empty($directory) === true) {
                 $nombre_archivo = $real_directory.'/'.$filename;
             } else {
-                $nombre_archivo = $default_real_directory.'/'.$directory.'/'.$filename;
+                $nombre_archivo = $real_directory.'/'.$directory.'/'.$filename;
             }
 
             if (! @touch($nombre_archivo)) {
@@ -302,17 +310,18 @@ $create_dir = (bool) get_parameter('create_dir');
 if ($create_dir === true) {
     global $config;
 
-    $homedir_filemanager = trim($config['homedir']);
     $sec2 = get_parameter('sec2');
     if ($sec2 === 'enterprise/godmode/agentes/collections' || $sec2 === 'advanced/collections') {
-        $homedir_filemanager .= io_safe_output($config['attachment_store']).'/collection';
+        $homedir_filemanager = io_safe_output($config['attachment_store']).'/collection';
+    } else {
+        $homedir_filemanager = io_safe_output($config['homedir']);
     }
 
     $config['filemanager'] = [];
     $config['filemanager']['correct_create_dir'] = 0;
     $config['filemanager']['message'] = null;
 
-    $directory = filemanager_safe_directory((string) get_parameter('directory', '/'));
+    $directory = filemanager_safe_directory((string) get_parameter('directory'));
     $hash      = (string) get_parameter('hash');
     $testHash  = md5($directory.$config['server_unique_identifier']);
 
@@ -323,12 +332,23 @@ if ($create_dir === true) {
 
         if (empty($dirname) === false) {
             // Create directory.
-            @mkdir(
-                $homedir_filemanager.'/'.$directory.'/'.$dirname
-            );
-            $config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
+            try {
+                // If directory exists, add an slash at end.
+                if (empty($directory) === false) {
+                    $directory .= '/';
+                }
 
-            $config['filemanager']['correct_create_dir'] = 1;
+                $result = mkdir($homedir_filemanager.'/'.$directory.$dirname);
+
+                if ($result === true) {
+                    $config['filemanager']['message'] = ui_print_success_message(__('Directory created'), '', true);
+                    $config['filemanager']['correct_create_dir'] = 1;
+                } else {
+                    throw new Exception(__('Something gone wrong creating directory'));
+                }
+            } catch (Exception $ex) {
+                $config['filemanager']['message'] = ui_print_error_message($ex->getMessage(), '', true);
+            }
         } else {
             $config['filemanager']['message'] = ui_print_error_message(__('Error creating file with empty name'), '', true);
         }

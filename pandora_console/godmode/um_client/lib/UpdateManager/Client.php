@@ -666,6 +666,7 @@ class Client
             $target = __('console update %d', $request['version']);
         }
 
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
         curl_setopt(
             $ch,
             CURLOPT_PROGRESSFUNCTION,

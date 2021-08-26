@@ -47,16 +47,17 @@ if (isset($config['filemanager']['message']) === true) {
     $config['filemanager']['message'] = null;
 }
 
-$directory = (string) get_parameter('directory');
-if (empty($directory) === true) {
-    $directory = 'images';
-} else {
-    $directory = str_replace('\\', '/', $directory);
-    $directory = filemanager_safe_directory($directory, 'images');
-}
-
 // Add custom directories here.
 $fallback_directory = 'images';
+// Get directory.
+$directory = (string) get_parameter('directory');
+if (empty($directory) === true) {
+    $directory = $fallback_directory;
+} else {
+    $directory = str_replace('\\', '/', $directory);
+    $directory = filemanager_safe_directory($directory, $fallback_directory);
+}
+
 // Banned directories.
 $banned_directories['include']      = true;
 $banned_directories['godmode']      = true;

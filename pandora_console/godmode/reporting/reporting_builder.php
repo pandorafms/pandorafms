@@ -3370,7 +3370,7 @@ $buttons['view'] = [
 $buttons[$activeTab]['active'] = true;
 
 if ($idReport != 0) {
-    $textReportName = $report['name'];
+    $textReportName = (empty($reportName) === false) ? $reportName : $report['name'];
 } else {
     $temp = $buttons['main'];
     $buttons = null;

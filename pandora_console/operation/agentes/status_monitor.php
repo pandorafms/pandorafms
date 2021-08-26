@@ -2062,18 +2062,6 @@ function refresh_pagination_callback (module_id, id_agent, server_name,module_na
 function changeNotConditionStatus() {
     let chkbox =document.getElementById('not_condition_switch');
     if(chkbox.checked) {
-        /*
-        $('#status').select2().on("select2:open", function(e) { 
-            var a = $('#select2-status-results > li');
-            console.log($(".select2-results__option")[0].textContent);
-            $(".select2-results__option")[1].textContent = "None";
-        });*/
-        $('#status').select2().on("select2:open", function(e) { 
-            console.log(e);
-              //  $("#select2-status-results > li")[1].innerHTML = "none";
-
-        });
-
         document.getElementById("select2-status-container").innerHTML = "None";
         document.getElementById("select2-moduletype-container").innerHTML = "None";
         document.getElementById("select2-ag_group-container").innerHTML = "None";
@@ -2081,6 +2069,10 @@ function changeNotConditionStatus() {
         document.getElementById("select2-tag_filter-container").innerHTML = "None";
         $('select[name=datatypebox] > option:first-child').val('None');
         $('#datatypebox option:first').text('None');
+        $('select[name=status] > option:first-child').text('None');
+        $('select[name=moduletype] > option:first-child').text('None');
+        $('select[name=modulegroup] > option:first-child').text('None');
+        $('select[name=tag_filter] > option:first-child').text('None');
 
     }else {
         document.getElementById("select2-status-container").innerHTML = "All";
@@ -2089,8 +2081,10 @@ function changeNotConditionStatus() {
         document.getElementById("select2-modulegroup-container").innerHTML = "All";
         document.getElementById("select2-tag_filter-container").innerHTML = "All";
         $('#datatypebox option:first').text('All');
-
-
+        $('select[name=status] > option:first-child').text('All');
+        $('select[name=moduletype] > option:first-child').text('All');
+        $('select[name=modulegroup] > option:first-child').text('All');
+        $('select[name=tag_filter] > option:first-child').text('All');
     }
 
 }

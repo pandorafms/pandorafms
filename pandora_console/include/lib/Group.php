@@ -386,7 +386,7 @@ class Group extends Entity
         $search = get_parameter('search', '');
         $step = get_parameter('step', 1);
         $limit = get_parameter('limit', false);
-        $not_condition = get_parameter('not_condition', '');
+        $not_condition = get_parameter('not_condition', false);
         $exclusions = get_parameter('exclusions', '[]');
         $inclusions = get_parameter('inclusions', '[]');
 
@@ -432,7 +432,7 @@ class Group extends Entity
         $return = self::prepareGroups($groups);
 
         // When not_condition is select firts option text change All to None.
-        if ($not_condition === 'on') {
+        if ($not_condition === 'true') {
             $return[0]['text'] = 'None';
         }
 

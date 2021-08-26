@@ -427,7 +427,7 @@ install () {
 		[ -d "$SYSTEMD_DIR" ] || mkdir -p "$SYSTEMD_DIR"
 		cat > $SYSTEMD_DIR/pandora_ha.service <<-EOF
 [Unit]
-Description=Pandora FMS Database HA Tool
+Description=Pandora FMS Daemon Watchdog
 
 [Service]
 Type=forking

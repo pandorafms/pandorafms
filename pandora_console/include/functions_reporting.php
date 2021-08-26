@@ -2302,7 +2302,8 @@ function reporting_agents_inventory($report, $content)
     $search_sql = '';
 
     if ($es_custom_fields != '') {
-        $search_sql .= ' AND id_os = '.$es_custom_fields;
+        // Search custom field.
+        // $search_sql .= ' AND id_os = '.$es_custom_fields;
     }
 
     if (in_array('0', $es_os_filter) === false) {

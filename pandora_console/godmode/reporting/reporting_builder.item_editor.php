@@ -748,6 +748,7 @@ switch ($action) {
                     $selected_agent_group_filter = $es['agent_group_filter'];
                     $selected_agents_inventory_display_options = $es['agents_inventory_display_options'];
                     $selected_agent_os_filter = $es['agent_os_filter'];
+                    $selected_agent_custom_fields = $es['agent_custom_fields'];
                     $selected_agent_custom_field_filter = $es['agent_custom_field_filter'];
                     $selected_agent_status_filter = $es['agent_status_filter'];
                     $selected_agent_module_search_filter = $es['agent_module_search_filter'];
@@ -3160,6 +3161,28 @@ $class = 'databox filters';
         <tr id="row_custom_field"   class="datos">
             <td class="bolder">
                 <?php
+                echo __('Agent custom field');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_select_from_sql(
+                    'SELECT id_field, name FROM tagent_custom_fields',
+                    'agent_custom_fields[]',
+                    $selected_agent_custom_fields,
+                    '',
+                    __('All'),
+                    '0',
+                    false,
+                    true
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_custom_field_filter"   class="datos">
+            <td class="bolder">
+                <?php
                 echo __('Agent custom field filter');
                 ?>
             </td>
@@ -5485,6 +5508,7 @@ function chooseType() {
     $("#row_agent_server_filter").hide();
     $("#row_agent_group_filter").hide();
     $("#row_os").hide();
+    $("#row_custom_field_filter").hide();
     $("#row_custom_field").hide();
     $("#row_agent_status").hide();
     $("#row_agent_version").hide();
@@ -6038,10 +6062,25 @@ function chooseType() {
             $("#row_group").show();
             $("#row_os").show();
             $("#row_custom_field").show();
+            $("#row_custom_field_filter").show();
             $("#row_agent_status").show();
             $("#row_agent_version").show();
             $("#row_agent_remote_conf").show();
             $("#row_module_free_search").show();
+
+            if ($('#agent_custom_fields :selected').length > 0) {
+                $('#text-agent_custom_field_filter').removeAttr('disabled');
+            } else {
+                $('#text-agent_custom_field_filter').prop('disabled', true);
+            }
+
+            $("#agent_custom_fields").change(function(e) {
+                if ($('#agent_custom_fields :selected').length > 0) {
+                    $('#text-agent_custom_field_filter').removeAttr('disabled');
+                } else {
+                    $('#text-agent_custom_field_filter').prop('disabled', true);
+                }
+            });
 
             break;
 

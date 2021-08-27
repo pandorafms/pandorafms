@@ -282,12 +282,15 @@ if (check_acl($config['id_user'], 0, 'AW') || check_acl($config['id_user'], 0, '
         $sub['godmode/servers/modificar_server']['id'] = 'Manage servers';
     }
 
-    // This subtabs are only for Pandora Admin
+    // This subtabs are only for Pandora Admin.
     if (check_acl($config['id_user'], 0, 'PM')) {
         enterprise_hook('ha_cluster');
 
         $sub['godmode/servers/plugin']['text'] = __('Plugins');
         $sub['godmode/servers/plugin']['id'] = 'Plugins';
+
+        $sub['godmode/servers/plugin_registration']['text'] = __('Register Plugin');
+        $sub['godmode/servers/plugin_registration']['id'] = 'register_plugin';
 
         enterprise_hook('export_target_submenu');
 
@@ -522,10 +525,8 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $menu_godmode['messages']['id'] = 'god-um_messages';
 
     $sub = [];
-    if ($config['enterprise_installed']) {
-        $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
-        $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
-    }
+    $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
+    $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
 
     $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update Manager online');
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';

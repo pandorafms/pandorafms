@@ -319,7 +319,7 @@ function process_user_login_remote($login, $pass, $api=false)
                         defined('METACONSOLE')
                     );
 
-                    if ($return === 'error_permissions') {
+                    if ($result === 'error_permissions') {
                         $config['auth_error'] = __('Problems with configuration permissions. Please contact with Administrator');
                         return false;
                     }
@@ -344,25 +344,12 @@ function process_user_login_remote($login, $pass, $api=false)
         && (isset($config['ad_advanced_config'])
         && $config['ad_advanced_config'])
     ) {
-        if (defined('METACONSOLE')) {
-            enterprise_include_once('include/functions_metaconsole.php');
-            enterprise_include_once('meta/include/functions_groups_meta.php');
-
-            $return = groups_meta_synchronizing();
-
-            if ($return['group_create_err'] > 0 || $return['group_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the group synchronizing');
-                return false;
-            }
-
-            $return = meta_tags_synchronizing();
-            if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the tag synchronizing');
-                return false;
-            }
+        if (is_management_allowed() === false) {
+            $config['auth_error'] = __('Please, login into metaconsole first');
+            return false;
         }
 
-        // Create the user
+        // Create the user.
         if (enterprise_hook(
             'prepare_permissions_groups_of_user_ad',
             [
@@ -377,53 +364,47 @@ function process_user_login_remote($login, $pass, $api=false)
             ]
         ) === false
         ) {
-            $config['auth_error'] = __(
-                'User not found in database 
-					or incorrect password'
-            );
-
+            $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         }
     } else if ($config['auth'] === 'ldap') {
-        if (defined('METACONSOLE')) {
-            enterprise_include_once('include/functions_metaconsole.php');
-            enterprise_include_once('meta/include/functions_groups_meta.php');
-
-            $return = groups_meta_synchronizing();
-
-            if ($return['group_create_err'] > 0 || $return['group_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the group synchronizing');
-                return false;
-            }
-
-            $return = meta_tags_synchronizing();
-            if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the tag synchronizing');
-                return false;
-            }
+        if (is_management_allowed() === false) {
+            $config['auth_error'] = __('Please, login into metaconsole first');
+            return false;
         }
 
         $permissions = fill_permissions_ldap($sr);
-        if (empty($permissions)) {
+        if (empty($permissions) === true) {
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
         } else {
             $user_info['fullname'] = $sr['cn'][0];
             $user_info['email'] = $sr['mail'][0];
 
-            // Create the user
-            $create_user = create_user_and_permisions_ldap($login, $pass, $user_info, $permissions, defined('METACONSOLE'));
+            // Create the user.
+            $create_user = create_user_and_permisions_ldap(
+                $login,
+                $pass,
+                $user_info,
+                $permissions,
+                is_metaconsole()
+            );
         }
     } else {
         $user_info = [
             'fullname' => $login,
             'comments' => 'Imported from '.$config['auth'],
         ];
-        if (is_metaconsole() && $config['auth'] === 'ad') {
+        if (is_metaconsole() === true && $config['auth'] === 'ad') {
             $user_info['metaconsole_access_node'] = $config['ad_adv_user_node'];
         }
 
-        // Create the user in the local database
+        if (is_management_allowed() === false) {
+            $config['auth_error'] = __('Please, login into metaconsole first');
+            return false;
+        }
+
+        // Create the user in the local database.
         if (create_user($login, $pass, $user_info) === false) {
             $config['auth_error'] = __('User not found in database or incorrect password');
             return false;
@@ -436,61 +417,6 @@ function process_user_login_remote($login, $pass, $api=false)
             false,
             $config['default_assign_tags']
         );
-        // TODO: Check the creation in the nodes
-        if (is_metaconsole()) {
-            enterprise_include_once('include/functions_metaconsole.php');
-            enterprise_include_once('meta/include/functions_groups_meta.php');
-
-            $return = groups_meta_synchronizing();
-
-            if ($return['group_create_err'] > 0 || $return['group_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the group synchronizing');
-                return false;
-            }
-
-            $return = meta_tags_synchronizing();
-            if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
-                $config['auth_error'] = __('Fail the tag synchronizing');
-                return false;
-            }
-
-            $servers = metaconsole_get_servers();
-            foreach ($servers as $server) {
-                $perfil_maestro = db_get_row(
-                    'tperfil',
-                    'id_perfil',
-                    $config['default_remote_profile']
-                );
-
-                if (metaconsole_connect($server) == NOERR) {
-                    if (!profile_exist($perfil_maestro['name'])) {
-                        unset($perfil_maestro['id_perfil']);
-                        $id_profile = db_process_sql_insert('tperfil', $perfil_maestro);
-                    } else {
-                        $id_profile = db_get_value('id_perfil', 'tperfil', 'name', $perfil_maestro['name']);
-                    }
-
-                    if ($config['auth'] === 'ad') {
-                        unset($user_info['metaconsole_access_node']);
-                        $user_info['not_login'] = (int) !$config['ad_adv_user_node'];
-                    }
-
-                    if (create_user($login, $pass, $user_info) === false) {
-                        continue;
-                    }
-
-                    profile_create_user_profile(
-                        $login,
-                        $id_profile,
-                        $config['default_remote_group'],
-                        false,
-                        $config['default_assign_tags']
-                    );
-                }
-
-                metaconsole_restore_db();
-            }
-        }
     }
 
     return $login;
@@ -809,7 +735,14 @@ function ldap_process_user_login($login, $password)
     }
 
     // Connect to the LDAP server
-    $ds = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+    if (stripos($config['ldap_server'], 'ldap://') !== false
+        || stripos($config['ldap_server'], 'ldaps://') !== false
+        || stripos($config['ldap_server'], 'ldapi://') !== false
+    ) {
+        $ds = @ldap_connect($config['ldap_server'].':'.$config['ldap_port']);
+    } else {
+        $ds = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+    }
 
     if (!$ds) {
         $config['auth_error'] = 'Error connecting to LDAP server';
@@ -1467,7 +1400,7 @@ function local_ldap_search($ldap_host, $ldap_port=389, $ldap_version=3, $dn, $ac
     }
 
     if (!empty($ldap_admin_pass)) {
-        $ldap_admin_pass = ' -w '.$ldap_admin_pass;
+        $ldap_admin_pass = ' -w '.escapeshellarg($ldap_admin_pass);
     }
 
     $dn = " -b '".$dn."'";

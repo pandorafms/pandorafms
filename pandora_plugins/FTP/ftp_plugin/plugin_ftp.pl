@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use Data::Dumper; 
 use Net::FTP;
+use Net::SFTP::Foreign;
 use Time::HiRes qw ( gettimeofday );
 
 my $archivo_cfg = $ARGV[0];
@@ -115,6 +116,14 @@ sub load_external_setup ($)
         if ($parametro =~ m/^conf\_ftp\_host\s(.*)/i) {
             $plugin_setup{"conf_ftp_host"} = $1;
         }
+
+        if ($parametro =~ m/^conf\_ftp\_port\s(.*)/i) {
+            $plugin_setup{"conf_ftp_port"} = $1;
+        }
+
+        if ($parametro =~ m/^conf\_ftp\_sftp\s(.*)/i) {
+            $plugin_setup{"conf_ftp_sftp"} = $1;
+        }
         
         if ($parametro =~ m/^conf\_ftp\_putfile\s(.*)/i) {
 			$plugin_setup{"conf_ftp_putfile"} = $1;
@@ -184,20 +193,38 @@ load_external_setup ($archivo_cfg);
 #-------------------------------------------------------------------------
 # Start session in FTP server
 #--------------------------------------------------------------------------
-
-my $ftp = Net::FTP->new($plugin_setup{"conf_ftp_host"}) or die("Unable to connect to server: $!");#Connect FTP server
-$ftp->login($plugin_setup{"conf_ftp_user"},$plugin_setup{"conf_ftp_pass"}) or die("Failed Login: $!");# Login at FTP server
+my $ftp;
+if (($plugin_setup{"conf_ftp_sftp"}) && ( $plugin_setup{"conf_ftp_sftp"} == 1)){
+    if ($plugin_setup{"conf_ftp_port"}){
+    #port => $plugin_setup{"port"}, 
+        $ftp = Net::SFTP::Foreign->new(host => $plugin_setup{"conf_ftp_host"}, port => $plugin_setup{"conf_ftp_port"}, stderr_discard => 1, user => $plugin_setup{"conf_ftp_user"} , password => $plugin_setup{"conf_ftp_pass"},expect_log_user => 'false');
+        if($ftp->error){
+            die($ftp->error);
+        }
+    }else{
+        $ftp = Net::SFTP::Foreign->new(host => $plugin_setup{"conf_ftp_host"}, stderr_discard => 1, user => $plugin_setup{"conf_ftp_user"} , password => $plugin_setup{"conf_ftp_pass"},expect_log_user => 'false');
+        if($ftp->error){
+            die($ftp->error);
+        } 
+    }
+} else {
+    if ($plugin_setup{"conf_ftp_port"}){
+        $ftp = Net::FTP->new(host => $plugin_setup{"conf_ftp_host"},port => $plugin_setup{"conf_ftp_port"}) or die("Unable to connect to server: $!");#Connect FTP server
+    }else{
+        $ftp = Net::FTP->new($plugin_setup{"conf_ftp_host"}) or die("Unable to connect to server: $!");#Connect FTP server
+    }
+    $ftp->login($plugin_setup{"conf_ftp_user"},$plugin_setup{"conf_ftp_pass"}) or die("Failed Login: $!");# Login at FTP server
 #print_module ( "Disp_FTP_$plugin_setup{conf_ftp_host}" , "generic_proc", 1, " Determines whether FTP login to $plugin_setup{conf_ftp_host}  has been successful or not" );
+}
 #-------------------------------------------------------------------------
 # Returns the module that shows the time and transfer rate.(Upload a file)
 #--------------------------------------------------------------------------
 
 	my $clock0 = gettimeofday();
-	$ftp->put($plugin_setup{"conf_ftp_putfile"},$plugin_setup{"conf_ftp_putname"});# Upload file at FTP server
+	$ftp->put($plugin_setup{"conf_ftp_putfile"},$plugin_setup{"conf_ftp_putname"}) or die("Cannot upload file to server");# Upload file at FTP server
 	my $clock1 = gettimeofday();
 	my $clockd = $clock1 - $clock0;# Calculate upload transfer time
-	$ftp->size($plugin_setup{"conf_ftp_putname"});# File size
-    my $putrate = $ftp->size($plugin_setup{"conf_ftp_putname"})/$clockd;# Calculate rate transfer
+    my $putrate = $ftp->stat($plugin_setup{"conf_ftp_putname"})->size/$clockd;# Calculate rate transfer
     my $time_puftp=sprintf("%.2f",$clockd);
     my $rate_puftp=sprintf("%.2f",$putrate);
 
@@ -212,8 +239,8 @@ $ftp->login($plugin_setup{"conf_ftp_user"},$plugin_setup{"conf_ftp_pass"}) or di
 	$ftp->get($plugin_setup{"conf_ftp_getfile"},$plugin_setup{"conf_ftp_getname"});
 	my $clock3 = gettimeofday();
 	my $clockg = $clock3 - $clock2;
-	$ftp->size($plugin_setup{"conf_ftp_getname"});
-    my $getrate = $ftp->size($plugin_setup{"conf_ftp_getname"})/$clockg;
+	#$ftp->stat($plugin_setup{"conf_ftp_getname"})->size;
+    my $getrate = $ftp->stat($plugin_setup{"conf_ftp_getname"})->size/$clockg;
     my $time_getftp=sprintf("%.2f",$clockg);
     my $rate_getftp=sprintf("%.2f",$getrate);
     

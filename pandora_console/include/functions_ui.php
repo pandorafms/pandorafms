@@ -1869,7 +1869,7 @@ function ui_process_page_head($string, $bitfield)
     } else {
         $config['jquery'] = array_merge(
             [
-                'jquery'    => 'include/javascript/jquery-3.3.1.min.js',
+                'jquery'    => 'include/javascript/jquery.current.js',
                 'pandora'   => 'include/javascript/jquery.pandora.js',
                 'jquery-ui' => 'include/javascript/jquery-ui.min.js',
             ],
@@ -3277,6 +3277,7 @@ function ui_print_datatable(array $parameters)
         $pagination_options = [
             [
                 $parameters['default_pagination'],
+                5,
                 10,
                 25,
                 100,
@@ -3287,6 +3288,7 @@ function ui_print_datatable(array $parameters)
             ],
             [
                 $parameters['default_pagination'],
+                5,
                 10,
                 25,
                 100,
@@ -4169,6 +4171,65 @@ function ui_forced_public_url()
 
 
 /**
+ * Returns a full built url for given section.
+ *
+ * @param  string $url
+ * @return void
+ */
+function ui_get_meta_url($url)
+{
+    global $config;
+
+    if (is_metaconsole() === true) {
+        return ui_get_full_url($url);
+    }
+
+    $mc_db_conn = \enterprise_hook(
+        'metaconsole_load_external_db',
+        [
+            [
+                'dbhost' => $config['replication_dbhost'],
+                'dbuser' => $config['replication_dbuser'],
+                'dbpass' => \io_output_password(
+                    $config['replication_dbpass']
+                ),
+                'dbname' => $config['replication_dbname'],
+            ],
+        ]
+    );
+
+    if ($mc_db_conn === NOERR) {
+        $public_url_meta = \db_get_value(
+            'value',
+            'tconfig',
+            'token',
+            'public_url',
+            false,
+            false
+        );
+
+        // Restore the default connection.
+        \enterprise_hook('metaconsole_restore_db');
+
+        if (empty($public_url_meta) === false
+            && $public_url_meta !== $config['metaconsole_base_url']
+        ) {
+            config_update_value(
+                'metaconsole_base_url',
+                $public_url_meta
+            );
+        }
+    }
+
+    if (isset($config['metaconsole_base_url']) === true) {
+        return $config['metaconsole_base_url'].'enterprise/meta/'.$url;
+    }
+
+    return $url;
+}
+
+
+/**
  * Returns a full URL in Pandora. (with the port and https in some systems)
  *
  * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
@@ -4377,19 +4438,27 @@ function ui_print_standard_header(
         true
     );
     // Create the header.
-    $output = ui_print_page_header(
-        $title,
-        $icon,
-        true,
-        $help,
-        $godmode,
-        $options,
-        false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        $headerInformation->printHeader(true)
-    );
+    if (is_metaconsole() === true) {
+        $output = ui_meta_print_header(
+            $title,
+            false,
+            $options
+        );
+    } else {
+        $output = ui_print_page_header(
+            $title,
+            $icon,
+            true,
+            $help,
+            $godmode,
+            $options,
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            $headerInformation->printHeader(true)
+        );
+    }
 
     if ($return !== true) {
         echo $output;
@@ -4986,11 +5055,7 @@ function ui_print_agent_autocomplete_input($parameters)
         $metaconsole_enabled = $parameters['metaconsole_enabled'];
     } else {
         // If metaconsole_enabled param is not setted then pick source configuration.
-        if (defined('METACONSOLE')) {
-            $metaconsole_enabled = true;
-        } else {
-            $metaconsole_enabled = false;
-        }
+        $metaconsole_enabled = is_metaconsole();
     }
 
     $get_only_string_modules = false;
@@ -5100,15 +5165,22 @@ function ui_print_agent_autocomplete_input($parameters)
 		}
 		';
     } else if ($from_wux_transaction != '') {
+        if (is_metaconsole() === true) {
+            $inputNode = 'inputs.push ("server_id=" + $("#'.$input_id_server_id.'").val());';
+        } else {
+            $inputNode = '';
+        }
+
         $javascript_code_function_select = '
 		function function_select_'.$input_name.'(agent_name) {
 			$("#'.$selectbox_id.'").empty();
 			
 			var inputs = [];
 			inputs.push ("id_agent=" + $("#'.$hidden_input_idagent_id.'").val());
-			inputs.push ("get_agent_transactions=1");
+            inputs.push ("get_agent_transactions=1");
 			inputs.push ("page=enterprise/include/ajax/wux_transaction.ajax");
-			
+			'.$inputNode.'
+
 			jQuery.ajax ({
 				data: inputs.join ("&"),
 				type: "POST",
@@ -5396,14 +5468,11 @@ function ui_print_agent_autocomplete_input($parameters)
 						server_name = ui.item.ip;
 					}
 					
-					
 					if (('.((int) $use_input_id_server).')
 						|| ('.((int) $print_input_id_server).')) {
 						server_id = ui.item.id_server;
 					}
-					
-					
-					
+
 					//Put the name
 					$(this).val(agent_name);
 					

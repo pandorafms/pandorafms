@@ -710,6 +710,8 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
 ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
+ALTER TABLE `tevent_alert` ADD COLUMN `last_evaluation` bigint(20) NOT NULL default 0;
+ALTER TABLE `tevent_alert` ADD COLUMN `pool_occurrences` int unsigned not null default 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`

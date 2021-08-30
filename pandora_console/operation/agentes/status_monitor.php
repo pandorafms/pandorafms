@@ -2060,13 +2060,10 @@ function refresh_pagination_callback (module_id, id_agent, server_name,module_na
 
 
 function changeNotConditionStatus() {
+
     let chkbox =document.getElementById('not_condition_switch');
     if(chkbox.checked) {
-        document.getElementById("select2-status-container").innerHTML = "None";
-        document.getElementById("select2-moduletype-container").innerHTML = "None";
-        document.getElementById("select2-ag_group-container").innerHTML = "None";
-        document.getElementById("select2-modulegroup-container").innerHTML = "None";
-        document.getElementById("select2-tag_filter-container").innerHTML = "None";
+
         $('select[name=datatypebox] > option:first-child').val('None');
         $('#datatypebox option:first').text('None');
         $('select[name=status] > option:first-child').text('None');
@@ -2074,17 +2071,39 @@ function changeNotConditionStatus() {
         $('select[name=modulegroup] > option:first-child').text('None');
         $('select[name=tag_filter] > option:first-child').text('None');
 
+        $("#status").select2().val(["None"]).trigger("change");
+        $("#moduletype").select2().val(["None"]).trigger("change");
+        $("#modulegroup").select2().val(["None"]).trigger("change");
+        $("#tag_filter").select2().val(["None"]).trigger("change");
+
+
+        document.getElementById("select2-status-container").innerHTML = "None";
+        document.getElementById("select2-moduletype-container").innerHTML = "None";
+        document.getElementById("select2-ag_group-container").innerHTML = "None";
+        document.getElementById("select2-modulegroup-container").innerHTML = "None";
+        document.getElementById("select2-tag_filter-container").innerHTML = "None";
+
     }else {
-        document.getElementById("select2-status-container").innerHTML = "All";
-        document.getElementById("select2-moduletype-container").innerHTML = "All";
-        document.getElementById("select2-ag_group-container").innerHTML = "All";
-        document.getElementById("select2-modulegroup-container").innerHTML = "All";
-        document.getElementById("select2-tag_filter-container").innerHTML = "All";
+        $('select[name=datatypebox] > option:first-child').val('All');
         $('#datatypebox option:first').text('All');
         $('select[name=status] > option:first-child').text('All');
         $('select[name=moduletype] > option:first-child').text('All');
         $('select[name=modulegroup] > option:first-child').text('All');
         $('select[name=tag_filter] > option:first-child').text('All');
+
+        $('#datatypebox option:first').text('All');
+
+        $("#status").select2().val(["All"]).trigger("change");
+        $("#moduletype").select2().val(["All"]).trigger("change");
+        $("#modulegroup").select2().val(["All"]).trigger("change");
+        $("#tag_filter").select2().val(["All"]).trigger("change");
+
+
+        document.getElementById("select2-status-container").innerHTML = "All";
+        document.getElementById("select2-moduletype-container").innerHTML = "All";
+        document.getElementById("select2-ag_group-container").innerHTML = "All";
+        document.getElementById("select2-modulegroup-container").innerHTML = "All";
+        document.getElementById("select2-tag_filter-container").innerHTML = "All";
     }
 
 }

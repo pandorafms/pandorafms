@@ -4273,7 +4273,7 @@ function get_product_name()
             return $config['rb_product_name_alt'];
         }
 
-        return 'Pandora FMS';
+        return 'Barivion';
     }
 
     return $stored_name;

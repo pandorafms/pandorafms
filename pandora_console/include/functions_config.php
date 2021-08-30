@@ -2342,7 +2342,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title_header'])) {
-        config_update_value('custom_title_header', __('Pandora FMS'));
+        config_update_value('custom_title_header', get_product_name());
     }
 
     if (!isset($config['custom_subtitle_header'])) {
@@ -2350,7 +2350,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title_header'])) {
-        config_update_value('meta_custom_title_header', __('PandoraFMS Metaconsole'));
+        config_update_value('meta_custom_title_header', get_product_name().__('Metaconsole'));
     }
 
     if (!isset($config['meta_custom_subtitle_header'])) {
@@ -2358,7 +2358,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', __('PANDORA FMS'));
+        config_update_value('custom_title1_login', strtoupper(get_product_name()));
     }
 
     if (!isset($config['custom_title2_login'])) {
@@ -2410,7 +2410,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
-        config_update_value('meta_custom_title1_login', __('PANDORA FMS NEXT GENERATION'));
+        config_update_value('meta_custom_title1_login', strtoupper(get_product_name()).' '.__('NEXT GENERATION'));
     }
 
     if (!isset($config['meta_custom_title2_login'])) {

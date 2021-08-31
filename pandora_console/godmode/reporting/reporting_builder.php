@@ -2219,6 +2219,7 @@ switch ($action) {
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_custom_fields'] = get_parameter('agent_custom_fields');
                                 $es['agent_status_filter'] = get_parameter('agent_status_filter');
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');
@@ -2858,6 +2859,7 @@ switch ($action) {
                                 $es['agents_inventory_display_options'] = get_parameter('agents_inventory_display_options');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
                                 $es['agent_os_filter'] = get_parameter('agent_os_filter');
+                                $es['agent_custom_fields'] = get_parameter('agent_custom_fields');
                                 $es['agent_status_filter'] = get_parameter('agent_status_filter');
                                 $es['agent_version_filter'] = get_parameter('agent_version_filter');
                                 $es['agent_module_search_filter'] = get_parameter('agent_module_search_filter');

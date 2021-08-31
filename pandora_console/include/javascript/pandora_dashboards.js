@@ -1169,6 +1169,10 @@ function dashboardLoadVC(settings) {
 // eslint-disable-next-line no-unused-vars
 function dashboardShowEventDialog(settings) {
   settings = JSON.parse(atob(settings));
+  var dialog_exist = $("div[aria-describedby='event_details_window']");
+  if (dialog_exist.length == 1) {
+    $("div[aria-describedby='event_details_window']").remove();
+  }
   $.ajax({
     method: "post",
     url: settings.ajaxUrl,

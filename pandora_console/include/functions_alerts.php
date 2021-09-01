@@ -2825,8 +2825,9 @@ function alerts_ui_update_or_create_actions($update=true)
     $values['action_threshold'] = $action_threshold;
     $values['create_wu_integria'] = $create_wu_integria;
 
-    $name_check = db_get_value('name', 'talert_actions', 'name', $name);
-    if ($name_check) {
+    // If this alert has the same name, not valid.
+    $name_check = db_get_row('talert_actions', 'name', $name);
+    if (empty($name_check) === false && (int) $name_check['id'] !== (int) $id) {
         $result = '';
     } else {
         if ($update) {

@@ -529,11 +529,11 @@ class EventsListWidget extends Widget
         if ($customFilter !== false) {
             $filter = $customFilter;
             $filter['tag_with'] = base64_encode(
-                json_encode($filter['tag_with'])
+                io_safe_output($filter['tag_with'])
             );
 
             $filter['tag_without'] = base64_encode(
-                json_encode($filter['tag_without'])
+                io_safe_output($filter['tag_without'])
             );
 
             if (!empty($filter['id_agent_module'])) {
@@ -761,11 +761,6 @@ class EventsListWidget extends Widget
             $output .= "<div id='event_response_window'></div>";
             $output .= "<div id='event_response_command_window' title='";
             $output .= \__('Parameters')."'></div>";
-            $output .= \ui_require_javascript_file(
-                'pandora_events',
-                'include/javascript/',
-                true
-            );
         } else {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(

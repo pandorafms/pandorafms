@@ -1424,11 +1424,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -1651,7 +1651,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 
 		# Field 1 (Integria IMS API path)
-		my $api_path = $config_api_path . "/integria/include/api.php";
+		my $api_path = $config_api_path . "/include/api.php";
 		
 		# Field 2 (Integria IMS API pass)
 		my $api_pass = $config_api_pass;
@@ -3683,7 +3683,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 	my $event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
 
 	# Do not write to the event file
 	return $event_id if ($pa_config->{'event_file'} eq '');
@@ -3983,13 +3983,66 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			$alert_data .= " Custom: $trap_custom_oid";
 		}
 
-		# Assign default values to the _snmp_fx_ macros from variable bindings
+		# Parse variables data.
+		my @custom_values = split("\t", $trap_custom_oid);
+
+		# Evaluate variable filters
+		my $filter_match = 1;
+		for (my $i = 1; $i <= 20; $i++) {
+			my $order_field = $alert->{'order_'.$i} - 1;
+
+			# Only values greater than 0 allowed.
+			next if $order_field < 0;
+
+			my $filter_name = '_snmp_f' . $i . '_';
+			my $filter_regex = safe_output ($alert->{$filter_name});
+			my $field_value = $custom_values[$order_field];
+
+			# No filter for the current binding var
+			next if ($filter_regex eq '');
+			
+			# The referenced binding var does not exist
+			if (! defined ($field_value)) {
+				$filter_match = 0;
+				last;
+			}
+			
+			# Evaluate the filter
+			eval {
+				local $SIG{__DIE__};
+				if ($field_value !~ m/$filter_regex/) {
+					$filter_match = 0;
+				}
+			};
+
+			# Probably an invalid regexp
+			if ($@) {
+				# Filter is ignored.
+				logger($pa_config, "Invalid regex in SNMP alert #".$alert->{'id_as'}.": [".$filter_regex."]", 3);
+				# Invalid regex are ignored, test next variables.
+				next;
+			}
+			
+			# The filter did not match
+			last if ($filter_match == 0);
+		}
+		
+		# A filter did not match
+		next if ($filter_match == 0);
+
+		# Assign values to _snmp_fx_ macros.
 		my $count;
-		my @custom_values = split ("\t", $trap_custom_oid);
-		for ($count = 1; defined ($custom_values[$count-1]); $count++) {
-			my $macro_name = '_snmp_f' . $count . '_';
-			my $order_field = $alert->{'order_'.$count};
-			if ($custom_values[$count] =~ m/= \S+: (.*)/) {
+		for ($count = 0; defined ($custom_values[$count]); $count++) {
+			my $macro_name = '_snmp_f' . ($count+1) . '_';
+			my $target = $custom_values[$count];
+
+			if (!defined($target)) {
+				# Ignore emtpy data.
+				$macros{$macro_name} = '';
+				next;
+			}
+
+			if ($target =~ m/= \S+: (.*)/) {
 				my $value = $1;
 			
 				# Strip leading and trailing double quotes
@@ -4009,40 +4062,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 		# All variables
 		$macros{'_snmp_argv_'} = $trap_custom_oid;
-
-		# Evaluate _snmp_fx_ filters
-		my $filter_match = 1;
-		for (my $i = 1; $i <= 10; $i++) {
-			my $filter_name = '_snmp_f' . $i . '_';
-			my $filter_value = safe_output ($alert->{$filter_name});
-
-			# No filter for the current binding var
-			next if ($filter_value eq '');
-			
-			# The referenced binding var does not exist
-			if (! defined ($macros{$filter_name})) {
-				$filter_match = 0;
-				last;
-			}
-			
-			# Evaluate the filter
-			eval {
-				if ($macros{$filter_name} !~ m/$filter_value/) {
-					$filter_match = 0;
-				}
-			};
-			
-			# Probably an invalid regexp
-			if ($@) {
-				last;
-			}
-			
-			# The filter did not match
-			last if ($filter_match == 0);
-		}
-		
-		# A filter did not match
-		next if ($filter_match == 0);
 		
 		# Replace macros
 		$alert->{'al_field1'} = subst_alert_macros ($alert->{'al_field1'}, \%macros);
@@ -4702,9 +4721,9 @@ sub get_module_status ($$$) {
 			# (-inf, warning_min), [warning_max, +inf)
 			else {
 				if ($warning_min == 0) {
-					return 1 if ($data > $warning_max);
+					return 2 if ($data > $warning_max);
 				}elsif ($warning_max == 0) {
-					return 1 if ($data <= $warning_min);
+					return 2 if ($data <= $warning_min);
 				} else {
 					return 2 if ($data < $warning_min || $data >= $warning_max);
 					return 2 if ($data <= $warning_max && $warning_max < $warning_min);
@@ -6458,7 +6477,7 @@ sub pandora_sync_agents_integria ($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my @agents_string = '';
 	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
@@ -6506,7 +6525,7 @@ sub pandora_get_integria_ticket_types($) {
 	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
 	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
 
-	my $api_path = $config_api_path . "/integria/include/api.php";
+	my $api_path = $config_api_path . "/include/api.php";
 
 	my $call_api = $api_path . '?' .
 		'user=' . $config_integria_user . '&' .

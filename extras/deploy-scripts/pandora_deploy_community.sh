@@ -151,7 +151,7 @@ execute_cmd "yum install -y $extra_repos" "Installing extra repositories"
 execute_cmd "yum-config-manager --enable remi-php73" "Configuring PHP"
 
 # Install percona Database
-[ -f /etc/resolv.conf ] && rm -rf /etc/my.cnf
+[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf
 execute_cmd "yum install -y Percona-Server-server-57" "Installing Percona Server"
 
 # Console dependencies
@@ -429,6 +429,7 @@ sed -i -e "s/^max_input_time.*/max_input_time = -1/g" /etc/php.ini
 sed -i -e "s/^max_execution_time.*/max_execution_time = 0/g" /etc/php.ini
 sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
+sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">

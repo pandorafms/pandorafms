@@ -70,6 +70,10 @@ if (empty($license) === true) {
 }
 
 $mode_str = '';
+if (isset($mode) === false) {
+    $mode = null;
+}
+
 if ($mode === Manager::MODE_ONLINE) {
     $mode_str = 'online';
 } else if ($mode === Manager::MODE_OFFLINE) {
@@ -227,6 +231,21 @@ if (is_ajax() !== true) {
             }
         }
     }
+
+    $PHPmemory_limit_min = config_return_in_bytes('800M');
+    $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
+    if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== -1) {
+        $msg = __(
+            '\'%s\' recommended value is %s or greater. Please, change it on your PHP configuration file (php.ini) or contact with administrator',
+            'memory_limit',
+            '800M'
+        );
+        if (function_exists('ui_print_warning_message') === true) {
+            ui_print_warning_message($msg);
+        } else {
+            echo $msg;
+        }
+    }
 }
 
 // Load styles.
@@ -308,6 +327,12 @@ if (is_array($config) === true) {
         ) {
             ui_print_error_message(__('Update manager online requires registration.'));
         }
+
+        if ($mode === Manager::MODE_OFFLINE) {
+            ui_print_warning_message(
+                __('Applying offline patches may make your console unusable, we recommend to completely backup your files before applying any patch.')
+            );
+        }
     }
 
     $url_update_manager = $config['url_update_manager'];
@@ -362,19 +387,18 @@ if (is_array($config) === true) {
     }
 }
 
-$PHPmemory_limit_min = config_return_in_bytes('800M');
-$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
-if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
-    $msg = __(
-        '\'%s\' recommended value is %s or greater. Please, change it on your PHP configuration file (php.ini) or contact with administrator',
-        'memory_limit',
-        '800M'
-    );
-    if (function_exists('ui_print_warning_message') === true) {
-        ui_print_warning_message($msg);
-    } else {
-        echo $msg;
-    }
+$proxy = null;
+if (empty($config['update_manager_proxy_server']) === false
+    || empty($config['update_manager_proxy_port']) === false
+    || empty($config['update_manager_proxy_user']) === false
+    || empty($config['update_manager_proxy_password']) === false
+) {
+    $proxy = [
+        'host'     => $config['update_manager_proxy_server'],
+        'port'     => $config['update_manager_proxy_port'],
+        'user'     => $config['update_manager_proxy_user'],
+        'password' => $config['update_manager_proxy_password'],
+    ];
 }
 
 $ui = new Manager(
@@ -396,6 +420,7 @@ $ui = new Manager(
         'registration_code'      => $puid,
         'remote_config'          => $remote_config,
         'propagate_updates'      => $is_metaconsole,
+        'proxy'                  => $proxy,
         'set_maintenance_mode'   => function () {
             if (function_exists('config_update_value') === true) {
                 config_update_value('maintenance_mode', 1);

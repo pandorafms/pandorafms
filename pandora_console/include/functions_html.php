@@ -436,6 +436,7 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
  * @param string  $size                    Style, size (width) of element.
  * @param boolean $simple_multiple_options Discovery simple multiple inputs.
  * @param boolean $required                Required input.
+ * @param string  $inverse                 Change All to None with inverse condition.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -462,7 +463,8 @@ function html_print_select_groups(
     $include_groups=false,
     $size=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $inverse=''
 ) {
     $output = '';
 
@@ -522,7 +524,11 @@ function html_print_select_groups(
         if (empty($selected) === false) {
             $fields = [ $selected => groups_get_name($selected) ];
         } else if ($returnAllGroup === true && $multiple === false) {
-            $fields = [ $selected => groups_get_name(null, true) ];
+            if ($selected === 0 && $inverse !== '') {
+                $fields = [ $selected => 'None' ];
+            } else {
+                $fields = [ $selected => groups_get_name(null, true) ];
+            }
         }
     } else {
         foreach ($selected as $k) {
@@ -595,7 +601,9 @@ function html_print_select_groups(
     </style>
 
     <script type="text/javascript">
+
         $(document).ready(function() {
+
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
                     $(this).select2({
@@ -625,6 +633,7 @@ function html_print_select_groups(
                                     inclusions: '<?php echo $json_inclusions; ?>',
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
+                                    not_condition: $('#not_condition_switch').prop('checked'),
                                     returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
@@ -781,7 +790,7 @@ function html_print_select(
         $required = 'required';
     }
 
-    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -2365,12 +2374,13 @@ function html_print_div(
 /**
  * Render an anchor <a> html element.
  *
- * @param array   $options Parameters
+ * @param array   $options Parameters.
  *                - id: string.
  *                - style: string.
  *                - title: string.
  *                - href: string.
  *                - content: string.
+ *                - onClick: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
@@ -2387,6 +2397,7 @@ function html_print_anchor(
         'style',
         'class',
         'title',
+        'onClick',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();

@@ -2276,7 +2276,7 @@ function config_process_config()
     }
 
     if (!isset($config['disable_help'])) {
-        config_update_value('disable_help', false);
+        config_update_value('disable_help', true);
     }
 
     if (!isset($config['fixed_header'])) {
@@ -2366,11 +2366,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_docs_url'])) {
-        config_update_value('custom_docs_url', 'https://pandorafms.com/manual');
+        config_update_value('custom_docs_url', '');
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', 'https://support.pandorafms.com');
+        config_update_value('custom_support_url', '');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2382,11 +2382,11 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_docs_url'])) {
-        config_update_value('meta_custom_docs_url', 'https://pandorafms.com/manual/');
+        config_update_value('meta_custom_docs_url', '');
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
+        config_update_value('meta_custom_support_url', '');
     }
 
     if (!isset($config['meta_rb_product_name'])) {
@@ -2474,11 +2474,11 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'pandora@pandorafms.org');
+        config_update_value('email_from_dir', 'x@x.x');
     }
 
     if (!isset($config['email_from_name'])) {
-        config_update_value('email_from_name', 'Pandora FMS');
+        config_update_value('email_from_name', get_product_name());
     }
 
     if (!isset($config['email_smtpServer'])) {

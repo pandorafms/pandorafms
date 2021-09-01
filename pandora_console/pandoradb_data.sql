@@ -226,11 +226,11 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES
-(1,'Documentation','https://pandorafms.com/manual'),
-(2,'Enterprise Edition','http://pandorafms.com'),
-(3,'Report a bug','https://github.com/pandorafms/pandorafms/issues'),
-(4,'Suggest new feature','http://forums.pandorafms.com/index.php?board=22.0'),
-(5,'Module library','http://library.pandorafms.com/');
+(1,'Documentation',''),
+(2,'Enterprise Edition',''),
+(3,'Report a bug',''),
+(4,'Suggest new feature',''),
+(5,'Module library','');
 
 UNLOCK TABLES;
 

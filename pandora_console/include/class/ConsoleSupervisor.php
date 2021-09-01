@@ -1240,10 +1240,7 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
-                if ($config['language'] == 'es') {
-                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
-                }
+                $url = '';
 
                 $this->notify(
                     [
@@ -1357,10 +1354,7 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
-            }
+            $url = '';
 
             $this->notify(
                 [
@@ -1541,10 +1535,7 @@ class ConsoleSupervisor
         }
 
         if (!isset($result_ejecution) || $result_ejecution == '') {
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#Phantomjs';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
-            }
+            $url = '';
 
             $this->notify(
                 [
@@ -1559,16 +1550,13 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 7) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
-            }
+            $url = '';
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
+                    'message' => __('For a correct operation of '.get_product_name().', PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );
@@ -2302,10 +2290,7 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
-            }
+            $url = '';
 
             $this->notify(
                 [
@@ -2584,20 +2569,17 @@ class ConsoleSupervisor
         global $config;
 
         if (file_exists($config['homedir'].'/pandora_console.log')) {
-            $title_pandoraconsole_old_log = __(
-                'Pandora FMS console log file changed location',
+            $title_pandoraconsole_old_log = get_product_name().' '.__(
+                'console log file changed location',
                 $config['homedir']
             );
             $message_pandoraconsole_old_log = __(
-                'Pandora FMS console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                get_product_name().' console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );
 
-            $url = 'https://pandorafms.com/manual/en/quickguides/general_quick_guide#solving_problems_where_to_look_and_who_to_ask';
-            if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com//manual/es/quickguides/general_quick_guide#solucion_de_problemas_donde_mirar_a_quien_preguntar';
-            }
+            $url = '';
 
             $this->notify(
                 [
@@ -2623,12 +2605,12 @@ class ConsoleSupervisor
         global $config;
 
         if (file_exists($config['homedir'].'/audit.log')) {
-            $title_audit_old_log = __(
-                'Pandora FMS audit log file changed location',
+            $title_audit_old_log = get_product_name().' '.__(
+                'audit log file changed location',
                 $config['homedir']
             );
-            $message_audit_old_log = __(
-                'Pandora FMS audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+            $message_audit_old_log = get_product_name().' '.__(
+                'audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );

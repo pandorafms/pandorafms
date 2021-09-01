@@ -4290,7 +4290,7 @@ function get_copyright_notice()
 {
     $stored_name = enterprise_hook('enterprise_get_copyright_notice');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        return 'PandoraFMS.com';
+        return 'Barivion';
     }
 
     return $stored_name;

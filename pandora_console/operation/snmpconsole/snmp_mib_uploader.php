@@ -65,23 +65,17 @@ if (isset($config['filemanager']['message'])) {
     $config['filemanager']['message'] = null;
 }
 
-$directory = (string) get_parameter('directory', SNMP_DIR_MIBS);
+$directory = (string) get_parameter('directory');
 $directory = str_replace('\\', '/', $directory);
 
-// Add custom directories here
-$fallback_directory = 'attachment/mibs';
+// Add custom directories here.
+$fallback_directory = SNMP_DIR_MIBS;
 
-// A miminal security check to avoid directory traversal
-if (preg_match('/\.\./', $directory)) {
+if (empty($directory) === true) {
     $directory = $fallback_directory;
-}
-
-if (preg_match('/^\//', $directory)) {
-    $directory = $fallback_directory;
-}
-
-if (preg_match('/^manager/', $directory)) {
-    $directory = $fallback_directory;
+} else {
+    $directory = str_replace('\\', '/', $directory);
+    $directory = filemanager_safe_directory($directory, $fallback_directory);
 }
 
 $banned_directories['include'] = true;
@@ -91,12 +85,9 @@ $banned_directories['reporting'] = true;
 $banned_directories['general'] = true;
 $banned_directories[ENTERPRISE_DIR] = true;
 
-if (isset($banned_directories[$directory])) {
+if (isset($banned_directories[$directory]) === true) {
     $directory = $fallback_directory;
 }
-
-// Current directory
-$available_directories[$directory] = $directory;
 
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
@@ -107,11 +98,11 @@ $create_text_file = (bool) get_parameter('create_text_file');
 
 $default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
 
-if ($upload_file_or_zip) {
+if ($upload_file_or_zip === true) {
     upload_file($upload_file_or_zip, $default_real_directory);
 }
 
-if ($create_text_file) {
+if ($create_text_file === true) {
     create_text_file($default_real_directory);
 }
 

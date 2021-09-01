@@ -651,14 +651,17 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		if (defined($data)) {
 			# Data contains the number of occurrences of correlated alert.
 			if ($data < $alert->{'pool_occurrences'}) {
-				# Less occurrences than previous execution, recovered.
-				# 4 Recover the alert
-				return 4;
+				# Less occurrences than previous execution, alert ceased.
+				# 3 Alert ceased
+				return 3;
 			} elsif ($data eq $alert->{'pool_occurrences'}) {
 				# Same occurrences as previous execution, nothing new, but present in pool.
 				# 1 Do not execute the alert.
 				return 1;
-			}
+			} elsif ($data eq 0) {
+				# 4 Recover the alert
+				return 4;
+			} # else fire the alert, at the end of this sub.
 
 		} else {
 			my $rc = enterprise_hook (

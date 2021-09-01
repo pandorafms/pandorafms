@@ -129,21 +129,12 @@ if ($idAgent != 0) {
 
     $id_group = agents_get_agent_group($idAgent);
 
-    $is_extra = enterprise_hook(
-        'policies_is_agent_extra_policy',
-        [$id_agente]
-    );
-
-    if ($is_extra === ENTERPRISE_NOT_HOOK) {
-        $is_extra = false;
-    }
-
-    // All groups is calculated in ver_agente.php. Avoid to calculate it again
+    // All groups is calculated in ver_agente.php. Avoid to calculate it again.
     if (!isset($all_groups)) {
         $all_groups = agents_get_all_groups_agent($idAgent, $id_group);
     }
 
-    if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && !check_acl_one_of_groups($config['id_user'], $id_group, 'AW') && !$is_extra) {
+    if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR') && !check_acl_one_of_groups($config['id_user'], $id_group, 'AW')) {
         db_pandora_audit('ACL Violation', 'Trying to access alert view');
         include 'general/noaccess.php';
         exit;

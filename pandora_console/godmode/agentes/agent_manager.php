@@ -230,7 +230,7 @@ if (!$new_agent && $alias != '') {
     $agent_options_update = 'agent_options_update';
 
     // Delete link from here.
-    if (!is_central_policies_on_node()) {
+    if (is_management_allowed() === true) {
         $table_agent_name .= "<a onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\" href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$id_agente."&search=&offset=0&sort_field=&sort=none'>".html_print_image(
             'images/cross.png',
             true,
@@ -349,7 +349,14 @@ if (isset($groups[$grupo]) || $new_agent) {
 }
 
 $table_primary_group .= '<div class="label_select_child_icons"><span id="group_preview">';
-$table_primary_group .= ui_print_group_icon($grupo, true);
+if ($id_agente === 0) {
+    $hidden  = 'display: none;';
+} else {
+    $hidden = '';
+}
+
+$table_primary_group .= ui_print_group_icon($grupo, true, 'groups_small', $hidden);
+
 $table_primary_group .= '</span></div></div></div>';
 
 $table_interval = '<div class="label_select"><p class="input_label">'.__('Interval').'</p>';
@@ -392,9 +399,9 @@ $table_os .= '</span></div></div></div>';
 
 // Network server.
 $servers = servers_get_names();
-if (!array_key_exists($server_name, $servers)) {
-    $server_Name = 0;
-    // Set the agent have not server.
+// Set the agent have not server.
+if (array_key_exists($server_name, $servers) === false) {
+    $server_name = 0;
 }
 
 $table_server = '<div class="label_select"><p class="input_label">'.__('Server').'</p>';
@@ -500,7 +507,10 @@ if (enterprise_installed()) {
         false,
         // Delete_groups.
         // Do not show the primary group in this selection.
-        array_merge(($secondary_groups_selected['plain'] ?? []), [$agent['id_grupo']])
+        array_merge(
+            (empty($secondary_groups_selected['plain']) === false) ? $secondary_groups_selected['plain'] : [],
+            [$agent['id_grupo']]
+        )
         // Include_groups.
         // Size.
         // Simple_multiple_options.
@@ -1243,6 +1253,9 @@ ui_require_jquery_file('bgiframe');
         });
 
         $("select#id_os").pandoraSelectOS ();
+        $('select#grupo').pandoraSelectGroupIcon ();
+
+        
 
         var checked = $("#checkbox-cascade_protection").is(":checked");
         if (checked) {

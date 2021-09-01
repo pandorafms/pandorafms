@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.755"
-PI_BUILD="210714"
+PI_VERSION="7.0NG.756"
+PI_BUILD="210901"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -407,6 +407,11 @@ install () {
 			mv ${sh_script}.new $sh_script
 			chmod a+x $sh_script
 		done
+		# install pandora_ha
+		INSTALL_DIR="$DESTDIR$PREFIX/bin/"
+		echo ">Installing the pandora_ha binary to $INSTALL_DIR..."
+		cp -f $DESTDIR$PANDORA_HOME/util/pandora_ha.pl "$INSTALL_DIR/pandora_ha"
+		chmod +x "$INSTALL_DIR/pandora_ha"
 		;;
 	*)
 		SYSTEMD_DIR=$DESTDIR/etc/systemd/system
@@ -422,7 +427,7 @@ install () {
 		[ -d "$SYSTEMD_DIR" ] || mkdir -p "$SYSTEMD_DIR"
 		cat > $SYSTEMD_DIR/pandora_ha.service <<-EOF
 [Unit]
-Description=Pandora FMS Database HA Tool
+Description=Pandora FMS Daemon Watchdog
 
 [Service]
 Type=forking

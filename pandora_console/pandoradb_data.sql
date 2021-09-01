@@ -202,7 +202,7 @@ INSERT INTO `tlanguage` VALUES ('en_GB','English (UK)');
 INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('ar','العربية');
 INSERT INTO `tlanguage` VALUES ('cs','Česky');
-INSERT INTO `tlanguage` VALUES ('de','Deutch');
+INSERT INTO `tlanguage` VALUES ('de','Deutsch');
 INSERT INTO `tlanguage` VALUES ('el','Ελληνικά');
 INSERT INTO `tlanguage` VALUES ('fr','Français');
 INSERT INTO `tlanguage` VALUES ('it','Italiano');

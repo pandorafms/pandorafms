@@ -761,11 +761,6 @@ class EventsListWidget extends Widget
             $output .= "<div id='event_response_window'></div>";
             $output .= "<div id='event_response_command_window' title='";
             $output .= \__('Parameters')."'></div>";
-            $output .= \ui_require_javascript_file(
-                'pandora_events',
-                'include/javascript/',
-                true
-            );
         } else {
             $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(

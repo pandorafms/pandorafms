@@ -1869,7 +1869,7 @@ function ui_process_page_head($string, $bitfield)
     } else {
         $config['jquery'] = array_merge(
             [
-                'jquery'    => 'include/javascript/jquery-3.3.1.min.js',
+                'jquery'    => 'include/javascript/jquery.current.js',
                 'pandora'   => 'include/javascript/jquery.pandora.js',
                 'jquery-ui' => 'include/javascript/jquery-ui.min.js',
             ],
@@ -4438,19 +4438,27 @@ function ui_print_standard_header(
         true
     );
     // Create the header.
-    $output = ui_print_page_header(
-        $title,
-        $icon,
-        true,
-        $help,
-        $godmode,
-        $options,
-        false,
-        '',
-        GENERIC_SIZE_TEXT,
-        '',
-        $headerInformation->printHeader(true)
-    );
+    if (is_metaconsole() === true) {
+        $output = ui_meta_print_header(
+            $title,
+            false,
+            $options
+        );
+    } else {
+        $output = ui_print_page_header(
+            $title,
+            $icon,
+            true,
+            $help,
+            $godmode,
+            $options,
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            $headerInformation->printHeader(true)
+        );
+    }
 
     if ($return !== true) {
         echo $output;

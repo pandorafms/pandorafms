@@ -305,6 +305,9 @@ function events_get_column_name($field, $table_alias=false)
                 return __('Severity mini');
             }
 
+        case 'direccion':
+        return __('Agent IP');
+
         default:
         return __($field);
     }
@@ -3581,7 +3584,12 @@ function events_page_responses($event, $childrens_ids=[])
             '',
             __('None'),
             -1,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 70%'
         );
         $data[2] .= html_print_button(
             __('Update'),
@@ -4871,6 +4879,14 @@ function events_page_general($event)
     $data[0] = __('Event name');
     $data[1] = '<span class="break_word">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
+
+    // Show server name in metaconsole.
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $data = [];
+        $data[0] = __('Node');
+        $data[1] = '<span class="break_word">'.$event['server_name'].'</span>';
+        $table_general->data[] = $data;
+    }
 
     $data = [];
     $data[0] = __('Timestamp');

@@ -3043,6 +3043,7 @@ class NetworkMap
         $table->data = [];
         $table->rowstyle['template_row'] = 'display: none;';
         $table->data['template_row']['node_source'] = '';
+        // Inputs must be not select2, cause duplication make issues.
         $table->data['template_row']['interface_source'] = html_print_select(
             [],
             'interface_source',
@@ -3050,7 +3051,21 @@ class NetworkMap
             '',
             __('None'),
             0,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
         );
         $table->data['template_row']['interface_target'] = html_print_select(
             [],
@@ -3059,7 +3074,21 @@ class NetworkMap
             '',
             __('None'),
             0,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
         );
 
         $table->data['template_row']['node_target'] = '';

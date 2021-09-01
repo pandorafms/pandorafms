@@ -887,6 +887,8 @@ if (is_ajax()) {
 
         $tags = (array) get_parameter('tags', []);
 
+        $safe_name = (bool) get_parameter('safe_name', false);
+
         // Filter.
         $filter = [];
         if ($disabled !== -1) {
@@ -1024,6 +1026,9 @@ if (is_ajax()) {
 
         foreach ($agent_modules as $key => $module) {
             $agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
+            if ($safe_name == true) {
+                $agent_modules[$key]['safe_name'] = $module['nombre'];
+            }
         }
 
         $get_order_json = (bool) get_parameter('get_order_json', false);

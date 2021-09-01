@@ -740,7 +740,7 @@ function filemanager_file_explorer(
             if ((!$fileinfo['is_dir']) && ($download_button)) {
                 $filename = base64_encode($fileinfo['name']);
                 $hash = md5($filename.$config['server_unique_identifier']);
-                $data[4] .= '<a href="include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
+                $data[4] .= '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
                 $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
             }

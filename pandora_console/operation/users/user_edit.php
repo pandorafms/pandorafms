@@ -235,7 +235,7 @@ if (is_metaconsole() === true) {
 }
 
 $is_management_allowed = true;
-if (is_management_allowed() === false) {
+if (is_metaconsole() === false && is_management_allowed() === false) {
     $is_management_allowed = false;
     ui_print_warning_message(
         __(

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 ###############################################################################
-# Pandora FMS Database HA
+# Pandora FMS Daemon Watchdog
 ###############################################################################
 # Copyright (c) 2018-2021 Artica Soluciones Tecnologicas S.L
 ###############################################################################
@@ -105,7 +105,7 @@ sub ha_daemonize($) {
 sub ha_init_pandora($) {
   my $conf = shift;
   
-  log_message($conf, '', "\nPandora FMS Database HA Tool " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
+  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
   
   getopts('dp:', \%Opts);
 

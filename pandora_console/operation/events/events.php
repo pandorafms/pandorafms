@@ -293,6 +293,7 @@ if (is_ajax()) {
                 'te.module_status',
                 'ta.alias as agent_name',
                 'tg.nombre as group_name',
+                'ta.direccion',
             ];
             if (!is_metaconsole()) {
                 $fields[] = 'am.nombre as module_name';
@@ -391,10 +392,14 @@ if (is_ajax()) {
                             true
                         );
 
-                        $tmp->data = format_numeric(
-                            $tmp->data,
-                            $config['graph_precision']
-                        );
+                        if (is_numeric($tmp->data) === true) {
+                            $tmp->data = format_numeric(
+                                $tmp->data,
+                                $config['graph_precision']
+                            );
+                        } else {
+                            $tmp->data = ui_print_truncate_text($tmp->data, 10);
+                        }
 
                         $tmp->instructions = events_get_instructions($item);
 

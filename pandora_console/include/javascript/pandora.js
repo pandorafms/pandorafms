@@ -1333,9 +1333,13 @@ function defineTinyMCE(added_config) {
     theme_advanced_buttons1: buttons1,
     theme_advanced_toolbar_location: "top",
     theme_advanced_toolbar_align: "left",
-    theme_advanced_statusbar_location: "none",
+    theme_advanced_statusbar_location: "bottom",
+    theme_advanced_resizing: true,
     convert_urls: false,
-    element_format: "html"
+    element_format: "html",
+    object_resizing: true,
+    autoresize_bottom_margin: 50,
+    autoresize_on_init: true
   });
 
   if (!isEmptyObject(added_config)) {
@@ -1385,6 +1389,8 @@ function removeTinyMCE(elementID) {
 function addTinyMCE(elementID) {
   if (elementID.length > 0 && !isEmptyObject(tinyMCE))
     tinyMCE.EditorManager.execCommand("mceAddControl", true, elementID);
+  tinyMCE.EditorManager.execCommand("mceAutoResize");
+  tinymce.EditorManager.execCommand("mceTableSizingMode", false, "responsive");
 }
 
 function toggle_full_value(id) {

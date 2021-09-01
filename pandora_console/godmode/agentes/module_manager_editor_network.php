@@ -443,7 +443,13 @@ $data[1] = html_print_input_text_extended(
     $largeClassDisabledBecauseInPolicy,
     true
 );
-$data[1] .= ui_print_help_tip(__('As far as possible, to avoid potential problems, use single quotation marks or escape double quotation marks.'), true);
+$data[1] .= ui_print_help_tip(
+    __(
+        'Please use single quotation marks when necessary. '."\n".'
+If double quotation marks are needed, please escape them with a backslash (")'
+    ),
+    true
+);
 $table_simple->colspan['row-cmd-row-1'][1] = 3;
 push_table_simple($data, 'row-cmd-row-1');
 

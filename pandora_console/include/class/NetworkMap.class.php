@@ -3443,7 +3443,7 @@ class NetworkMap
             ).'" />'."\n";
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
-            $output .= 'class="border_1px_dd';
+            $output .= 'class="border_1px_dd" style="';
 
             if ($this->fullSize) {
                 $output .= ' width:100%';

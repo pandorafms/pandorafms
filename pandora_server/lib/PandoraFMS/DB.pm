@@ -917,7 +917,7 @@ sub get_db_value_limit ($$$;@) {
 
 ##########################################################################
 ## Get a single row returned by an SQL query as a hash reference. Returns
-## -1 on error.
+## hash or undef on error.
 ##########################################################################
 sub get_db_single_row ($$;@) {
 	my ($dbh, $query, @values) = @_;

@@ -278,7 +278,31 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
+our @ServerTypes = qw (
+	dataserver
+	networkserver
+	snmpconsole
+	reconserver
+	pluginserver
+	predictionserver
+	wmiserver
+	exportserver
+	inventoryserver
+	webserver
+	eventserver
+	icmpserver
+	snmpserver
+	satelliteserver
+	transactionalserver
+	mfserver
+	syncserver
+	wuxserver
+	syslogserver
+	provisioningserver
+	migrationserver
+	alertserver
+	correlationserver
+);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -624,19 +648,33 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	}
 	# Correlated alert
 	else {
-		my $rc = enterprise_hook (
-			'evaluate_correlated_alert',
-			[
-				$pa_config,
-				$dbh,
-				$alert,
-				$correlatedItems,
-				$event,
-				$log
-			]
-		);
+		if (defined($data)) {
+			# Data contains the number of occurrences of correlated alert.
+			if ($data < $alert->{'pool_occurrences'}) {
+				# Less occurrences than previous execution, recovered.
+				# 4 Recover the alert
+				return 4;
+			} elsif ($data eq $alert->{'pool_occurrences'}) {
+				# Same occurrences as previous execution, nothing new, but present in pool.
+				# 1 Do not execute the alert.
+				return 1;
+			}
 
-		return $status unless (defined ($rc) && $rc == 1);
+		} else {
+			my $rc = enterprise_hook (
+				'evaluate_correlated_alert',
+				[
+					$pa_config,
+					$dbh,
+					$alert,
+					$correlatedItems,
+					$event,
+					$log
+				]
+			);
+
+			return $status unless (defined ($rc) && $rc == 1);
+		}
 	}
 	
 	# Check min and max alert limits

@@ -2524,6 +2524,7 @@ sub get_server_name {
 	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
 	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
+	return "CORRELATIONSERVER" if ($server_type eq CORRELATIONSERVER);
 
 	return "UNKNOWN";
 }

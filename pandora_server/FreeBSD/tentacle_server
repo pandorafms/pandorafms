@@ -2,7 +2,7 @@
 
 # **********************************************************************
 # Tentacle Server Daemon launcher for FreeBSD
-# (c) 2010-2012 Junichi Satoh <junichi@rworks.jp>
+# (c) 2010-2021 Junichi Satoh <junichi@rworks.jp>
 #
 # **********************************************************************
 
@@ -21,17 +21,25 @@ name="tentacle_server"
 rcvar=tentacle_server_enable
 
 # read configuration and set defaults
-tentacle_server_enable=${tentacle_server_enable:-"NO"}
-tentacle_server_flags=${tentacle_server_flags:-'-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d'}
-tentacle_server_user=${tentacle_server_user:-"pandora"}
 load_rc_config $name
+: ${tentacle_server_enable="NO"}
+: ${tentacle_server_config="/usr/local/etc/tentacle/${name}.conf"}
+: ${tentacle_server_pidfile="/var/run/${name}.pid"}
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
 command=/usr/local/bin/${name}
 command_interpreter=/usr/local/bin/perl
+tentacle_server_user=${tentacle_server_user:-"pandora"}
+#
+# Use tentacle_server.conf by default.
+tentacle_server_flags="-F ${tentacle_server_config}"
+#
+# Each parameters can also be specified as arguments like this:
+#tentacle_server_flags=${tentacle_server_flags:-'-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d'}
+#
 procname=$command
-pidfile=/var/run/$name.pid
+pidfile=${tentacle_server_pidfile}
 
 start_postcmd=start_postcmd
 stop_postcmd=stop_postcmd

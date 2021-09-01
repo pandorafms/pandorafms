@@ -12,10 +12,6 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
     );
 
     public static $prefixLengthsPsr4 = array (
-        'T' => 
-        array (
-            'Tests\\' => 6,
-        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -39,10 +35,6 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
     );
 
     public static $prefixDirsPsr4 = array (
-        'Tests\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/tests',
-        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -175,6 +167,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Egulias\\EmailValidator\\Warning\\QuotedString' => __DIR__ . '/..' . '/egulias/email-validator/EmailValidator/Warning/QuotedString.php',
         'Egulias\\EmailValidator\\Warning\\TLD' => __DIR__ . '/..' . '/egulias/email-validator/EmailValidator/Warning/TLD.php',
         'Egulias\\EmailValidator\\Warning\\Warning' => __DIR__ . '/..' . '/egulias/email-validator/EmailValidator/Warning/Warning.php',
+        'Enterprise\\Models\\VisualConsole\\Items\\Service' => __DIR__ . '/../..' . '/enterprise/include/rest-api/models/VisualConsole/Items/Service.php',
         'FPDF_TPL' => __DIR__ . '/..' . '/setasign/fpdi/fpdf_tpl.php',
         'FPDI' => __DIR__ . '/..' . '/setasign/fpdi/fpdi.php',
         'FilterASCII85' => __DIR__ . '/..' . '/setasign/fpdi/filters/FilterASCII85.php',
@@ -199,6 +192,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'Models\\VisualConsole\\Items\\Percentile' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/Percentile.php',
         'Models\\VisualConsole\\Items\\SimpleValue' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/SimpleValue.php',
         'Models\\VisualConsole\\Items\\StaticGraph' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/StaticGraph.php',
+        'Models\\VisualConsole\\Items\\Odometer' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/Items/Odometer.php',
         'Models\\VisualConsole\\View' => __DIR__ . '/../..' . '/include/rest-api/models/VisualConsole/View.php',
         'Mpdf\\Barcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode.php',
         'Mpdf\\Barcode\\AbstractBarcode' => __DIR__ . '/..' . '/mpdf/mpdf/src/Barcode/AbstractBarcode.php',
@@ -397,6 +391,24 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'PandoraFMS\\Dashboard\\Cell' => __DIR__ . '/../..' . '/include/lib/Dashboard/Cell.php',
         'PandoraFMS\\Dashboard\\Manager' => __DIR__ . '/../..' . '/include/lib/Dashboard/Manager.php',
         'PandoraFMS\\Dashboard\\Widget' => __DIR__ . '/../..' . '/include/lib/Dashboard/Widget.php',
+        'PandoraFMS\\Enterprise\\Agent' => __DIR__ . '/../..' . '/enterprise/include/lib/Agent.php',
+        'PandoraFMS\\Enterprise\\Cluster' => __DIR__ . '/../..' . '/enterprise/include/lib/Cluster.php',
+        'PandoraFMS\\Enterprise\\ClusterModule' => __DIR__ . '/../..' . '/enterprise/include/lib/ClusterModule.php',
+        'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterManager' => __DIR__ . '/../..' . '/enterprise/include/lib/ClusterViewer/ClusterManager.php',
+        'PandoraFMS\\Enterprise\\ClusterViewer\\ClusterWizard' => __DIR__ . '/../..' . '/enterprise/include/lib/ClusterViewer/ClusterWizard.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueue' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/MergeQueue.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\MergeQueuePlan' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/MergeQueuePlan.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\Node' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/Node.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\PriorityPlan' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/PriorityPlan.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueue' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/SyncQueue.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueueItem' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/SyncQueueItem.php',
+        'PandoraFMS\\Enterprise\\Metaconsole\\Synchronizer' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/Synchronizer.php',
+        'PandoraFMS\\Enterprise\\Policy' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy.php',
+        'PandoraFMS\\Enterprise\\Policy\\Inventory' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy/Inventory.php',
+        'PandoraFMS\\Enterprise\\Policy\\Module' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy/Module.php',
+        'PandoraFMS\\Enterprise\\Policy\\Queue' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy/Queue.php',
+        'PandoraFMS\\Enterprise\\Service' => __DIR__ . '/../..' . '/enterprise/include/lib/Service.php',
+        'PandoraFMS\\Enterprise\\ServiceElement' => __DIR__ . '/../..' . '/enterprise/include/lib/ServiceElement.php',
         'PandoraFMS\\Entity' => __DIR__ . '/../..' . '/include/lib/Entity.php',
         'PandoraFMS\\Event' => __DIR__ . '/../..' . '/include/lib/Event.php',
         'PandoraFMS\\Group' => __DIR__ . '/../..' . '/include/lib/Group.php',
@@ -404,6 +416,7 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'PandoraFMS\\ModuleStatus' => __DIR__ . '/../..' . '/include/lib/ModuleStatus.php',
         'PandoraFMS\\ModuleType' => __DIR__ . '/../..' . '/include/lib/ModuleType.php',
         'PandoraFMS\\PublicLogin' => __DIR__ . '/../..' . '/include/lib/PublicLogin.php',
+        'PandoraFMS\\Tools\\Files' => __DIR__ . '/../..' . '/include/lib/Tools/Files.php',
         'PandoraFMS\\User' => __DIR__ . '/../..' . '/include/lib/User.php',
         'PandoraFMS\\View' => __DIR__ . '/../..' . '/include/lib/View.php',
         'PandoraFMS\\Websockets\\WSManager' => __DIR__ . '/../..' . '/include/lib/Websockets/WSManager.php',

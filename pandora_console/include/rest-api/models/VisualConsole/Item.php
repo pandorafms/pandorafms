@@ -1517,6 +1517,20 @@ class Item extends CachedModel
             $result['border_color'] = $border_color;
         }
 
+        $id_custom_graph = static::parseIntOr(
+            static::issetInArray(
+                $data,
+                [
+                    'customGraphId',
+                    'id_custom_graph',
+                ]
+            ),
+            null
+        );
+        if ($id_custom_graph !== null) {
+            $result['id_custom_graph'] = $id_custom_graph;
+        }
+
         $linked_layout_node_id = static::parseIntOr(
             static::issetInArray(
                 $data,
@@ -1777,6 +1791,7 @@ class Item extends CachedModel
                     'color',
                     'legendBackgroundColor',
                     'legendColor',
+                    'titleColor',
                 ]
             ),
             null
@@ -2098,6 +2113,10 @@ class Item extends CachedModel
 
                         case ICON:
                             $text = __('Icon');
+                        break;
+
+                        case ODOMETER:
+                            $text = __('Odometer');
                         break;
 
                         default:

@@ -97,7 +97,7 @@ class View extends \HTML
                     'img'  => 'event_responses_col.png',
                 ],
             ];
-        } else if ($type === BOX_ITEM || $type === COLOR_CLOUD) {
+        } else if ($type === BOX_ITEM || $type === COLOR_CLOUD || $type === ODOMETER) {
             $activetabs = 1;
             $tabs = [
                 [
@@ -356,10 +356,15 @@ class View extends \HTML
 
             case MODULE_GRAPH:
                 $data['backgroundType'] = \get_parameter('backgroundType');
+                $type = \get_parameter('choosetype');
                 $data['agentId'] = \get_parameter('agentId');
                 $data['metaconsoleId'] = \get_parameter('metaconsoleId');
                 $data['moduleId'] = \get_parameter('moduleId');
                 $data['customGraphId'] = \get_parameter('customGraphId');
+                if ($type === 'module') {
+                    $data['customGraphId'] = 0;
+                }
+
                 $data['graphType'] = \get_parameter('graphType');
                 $data['showLegend'] = \get_parameter_switch('showLegend');
                 $data['period'] = \get_parameter('period');
@@ -507,6 +512,19 @@ class View extends \HTML
                 if ($itemId === 0) {
                     $data['height'] = 100;
                     $data['width'] = 100;
+                }
+            break;
+
+            case ODOMETER:
+                $data['agentId'] = \get_parameter('agentId');
+                $data['metaconsoleId'] = \get_parameter('metaconsoleId');
+                $data['agentAlias'] = \get_parameter('agentAlias');
+                $data['moduleId'] = \get_parameter('moduleId');
+                $data['titleColor'] = \get_parameter('titleColor');
+                $data['title'] = \get_parameter('title');
+                if ($itemId === 0) {
+                    $data['height'] = 150;
+                    $data['width'] = 300;
                 }
             break;
 

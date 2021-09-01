@@ -308,6 +308,7 @@ table.black_table_modal_alternate tr:nth-child(even) td {
 .action_buttons input[type="image"],
 .action_button_img {
   filter: brightness(4.5) contrast(50%);
+  background-color: transparent !important;
 }
 
 a.pandora_pagination {
@@ -398,7 +399,7 @@ table#diagnostic_info tbody td div {
 }
 .ui-widget-content,
 .ui-widget-content a {
-  color: #fff;
+  color: #fff !important;
 }
 
 .ui-widget-content.ui-autocomplete a {
@@ -657,7 +658,8 @@ form ul.form_flex {
 
 .graph_conteiner_inside,
 .container_table,
-.second_background {
+.second_background,
+.bg_color222 {
   background-color: #222;
 }
 
@@ -1170,4 +1172,8 @@ a.pandora_pagination,
   min-height: 600px;
   background-size: contain;
   box-shadow: 1px 1px 4px rgba(160, 160, 160, 0.514);
+}
+.legend_background {
+  background-color: #222;
+  color: #fff !important;
 }

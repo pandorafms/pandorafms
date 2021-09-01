@@ -47,16 +47,17 @@ if (isset($config['filemanager']['message']) === true) {
     $config['filemanager']['message'] = null;
 }
 
-$directory = (string) get_parameter('directory');
-if (empty($directory) === true) {
-    $directory = 'images';
-} else {
-    $directory = str_replace('\\', '/', $directory);
-    $directory = filemanager_safe_directory($directory, 'images');
-}
-
 // Add custom directories here.
 $fallback_directory = 'images';
+// Get directory.
+$directory = (string) get_parameter('directory');
+if (empty($directory) === true) {
+    $directory = $fallback_directory;
+} else {
+    $directory = str_replace('\\', '/', $directory);
+    $directory = filemanager_safe_directory($directory, $fallback_directory);
+}
+
 // Banned directories.
 $banned_directories['include']      = true;
 $banned_directories['godmode']      = true;
@@ -76,7 +77,7 @@ echo '<h4>'.__('Index of %s', $directory).'</h4>';
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 $create_text_file   = (bool) get_parameter('create_text_file');
 
-$default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
+$default_real_directory = realpath($config['homedir'].'/');
 
 if ($upload_file_or_zip === true) {
     upload_file($upload_file_or_zip, $default_real_directory);

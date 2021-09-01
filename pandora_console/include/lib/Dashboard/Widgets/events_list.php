@@ -613,6 +613,8 @@ class EventsListWidget extends Widget
             'tg.nombre as group_name',
         ];
 
+        $home_url = $config['homeurl'];
+
         if ((bool) \is_metaconsole() === false
             || $this->nodeId > 0
         ) {
@@ -624,6 +626,12 @@ class EventsListWidget extends Widget
             $fields[] = 'ts.server_name as server_name';
             $fields[] = 'te.id_agentmodule';
             $fields[] = 'te.server_id';
+        }
+
+        // If its node, get direccion value and contruct rute.
+        if ($this->nodeId !== null && $this->nodeId > 0) {
+            $result = db_get_all_rows_sql('SELECT direccion FROM tagente WHERE id_agente = '.$this->nodeId.'');
+            $home_url = 'http://'.$result[0]['direccion'].'/pandora_console';
         }
 
         $events = \events_get_all(
@@ -684,8 +692,8 @@ class EventsListWidget extends Widget
                 $agent_alias = \agents_get_alias($event['id_agente']);
 
                 if ($agent_alias !== '') {
-                    $data[1] = '<a href="'.$config['homeurl'];
-                    $data[1] .= 'index.php?sec=estado';
+                    $data[1] = '<a href="'.$home_url;
+                    $data[1] .= '/index.php?sec=estado';
                     $data[1] .= '&sec2=operation/agentes/ver_agente';
                     $data[1] .= '&id_agente='.$event['id_agente'];
                     $data[1] .= '" title="'.$event['evento'].'">';

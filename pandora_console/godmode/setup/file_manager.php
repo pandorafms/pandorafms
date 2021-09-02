@@ -97,5 +97,6 @@ filemanager_file_explorer(
     '',
     false,
     '',
+    false,
     false
 );

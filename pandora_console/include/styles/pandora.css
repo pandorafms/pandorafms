@@ -1,11 +1,8 @@
 /**
  *
- * Name: Default theme
+ * Pandora Stylesheet
  *
- * Extension to manage a list of gateways and the node address where they should
- * point to.
- *
- * @category   Extensions
+ * @category   Stylesheet
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -4969,7 +4966,6 @@ input:checked + .p-slider:before {
 
 #file_table_modal {
   display: flex;
-  justify-content: space-between;
   margin-bottom: 40px;
 }
 

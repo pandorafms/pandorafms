@@ -304,6 +304,7 @@ sub pandora_load_config {
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
 	$pa_config->{"correlationserver"} = 1; # 757
+	$pa_config->{"correlation_threads"} = 1; # 757
 	$pa_config->{"correlation_threshold"} = 30; # 757
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
@@ -791,6 +792,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^correlationserver\s+([0-9]*)/i) {
 			$pa_config->{'correlationserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^correlation_threads\s+([0-9]*)/i) {
+			$pa_config->{'correlation_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^correlation_threshold\s+([0-9]*)/i) {
 			$pa_config->{'correlation_threshold'}= clean_blank($1);

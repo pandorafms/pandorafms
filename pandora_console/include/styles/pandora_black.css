@@ -1163,7 +1163,7 @@ a.pandora_pagination,
 }
 #box_online {
   background-image: url("../../images/update_pandora_black.jpg") !important;
-  background-position: center center;
+  background-position: left, left !important;
   background-repeat: no-repeat;
   background-color: #000 !important;
   padding: 40px 50px;

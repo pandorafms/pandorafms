@@ -250,7 +250,7 @@ function create_text_file($default_real_directory)
         return;
     }
 
-    $filename = io_safe_output(get_parameter('name_file'));
+    $filename = filemanager_safe_directory((string) get_parameter('name_file'));
 
     if (empty($filename) === false) {
         $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
@@ -981,8 +981,8 @@ function filemanager_safe_directory(
     $directory = io_safe_output($directory);
     $forbiddenAttempting = false;
 
-    if ((bool) preg_match('/(\.){1,2}/', $directory) !== false) {
-        $directory = preg_replace('/(\.){1,2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+    if ((bool) preg_match('/(\.){2}/', $directory) !== false) {
+        $directory = preg_replace('/(\.){2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
         $forbiddenAttempting = true;
     }
 

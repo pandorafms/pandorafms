@@ -3964,6 +3964,7 @@ function html_print_image(
             'onkeypress',
             'onkeydown',
             'onkeyup',
+            'onload',
             'pos_tree',
         ];
 

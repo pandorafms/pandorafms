@@ -628,12 +628,6 @@ class EventsListWidget extends Widget
             $fields[] = 'te.server_id';
         }
 
-        // If its node, get direccion value and contruct rute.
-        if ($this->nodeId !== null && $this->nodeId > 0) {
-            $result = db_get_all_rows_sql('SELECT direccion FROM tagente WHERE id_agente = '.$this->nodeId.'');
-            $home_url = 'http://'.$result[0]['direccion'].'/pandora_console';
-        }
-
         $events = \events_get_all(
             // Fields.
             $fields,
@@ -683,6 +677,14 @@ class EventsListWidget extends Widget
             $table->data = [];
             $table->size = [];
             $table->rowclass = [];
+
+            // If its node, get direccion value and construct rute.
+            if ($this->nodeId !== null && $this->nodeId > 0) {
+                metaconsole_restore_db();
+                $result = db_get_all_rows_sql('SELECT server_url FROM tmetaconsole_setup WHERE id = '.$this->nodeId.'');
+                $home_url = $result[0]['server_url'];
+                metaconsole_connect(null, $this->nodeId);
+            }
 
             foreach ($events as $event) {
                 $data = [];

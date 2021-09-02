@@ -527,7 +527,6 @@ function menu_add_extras(&$menu)
 
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_action']['text'] = __('Manage alert actions');
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_command']['text'] = __('Manage commands');
-    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_correlation']['text'] = __('Manage event alerts');
 
     $menu_extra['gservers']['sub']['enterprise/godmode/servers/manage_export_form']['text'] = __('Manage export targets');
 
@@ -551,7 +550,9 @@ function menu_add_extras(&$menu)
 
         foreach ($m['sub'] as $kk => $mm) {
             if (isset($mm['sec'])) {
-                $menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
+                if (empty($menu[$mm['sec']]['sub'][$kk]['text']) === true) {
+                    $menu_extra[$mm['sec']]['sub'][$kk]['text'] = $mm['text'];
+                }
             }
         }
     }

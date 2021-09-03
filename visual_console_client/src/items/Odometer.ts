@@ -212,7 +212,7 @@ export default class Odometer extends Item<OdometerProps> {
     } else {
       h2.textContent = this.truncateTitle(this.props.title);
     }
-    h2.style.fontSize = `12px`;
+    h2.style.fontSize = `${anchoB * 0.06}px`;
     h2.style.color = `${this.props.titleColor}`;
     h2.style.lineHeight = "0";
 

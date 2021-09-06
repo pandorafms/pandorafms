@@ -58,18 +58,6 @@ if (empty($directory) === true) {
     $directory = filemanager_safe_directory($directory, $fallback_directory);
 }
 
-// Banned directories.
-$banned_directories['include']      = true;
-$banned_directories['godmode']      = true;
-$banned_directories['operation']    = true;
-$banned_directories['reporting']    = true;
-$banned_directories['general']      = true;
-$banned_directories[ENTERPRISE_DIR] = true;
-
-if (isset($banned_directories[$directory]) === true) {
-    $directory = $fallback_directory;
-}
-
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
 echo '<h4>'.__('Index of %s', $directory).'</h4>';
@@ -80,11 +68,11 @@ $create_text_file   = (bool) get_parameter('create_text_file');
 $default_real_directory = realpath($config['homedir'].'/');
 
 if ($upload_file_or_zip === true) {
-    upload_file($upload_file_or_zip, $default_real_directory);
+    upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
 }
 
 if ($create_text_file === true) {
-    create_text_file($default_real_directory);
+    create_text_file($default_real_directory, $real_directory);
 }
 
 filemanager_file_explorer(

@@ -780,11 +780,11 @@ sub md5check {
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
 
-	# Clean any string and ready to be printed in screen/file
-	$message = safe_output ($message);
-
 	$level = 1 unless defined ($level);
 	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
+
+	# Clean any string and ready to be printed in screen/file
+	$message = safe_output ($message);
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";

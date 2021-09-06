@@ -16733,6 +16733,12 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if (is_array($other) === true) {
+        $group_id = $other['data'][0];
+    } else {
+        $group_id = $other['data'];
+    }
+
     $sql = sprintf(
         'SELECT id_grupo
         FROM tgrupo WHERE nombre = "'.$other['data'].'"'

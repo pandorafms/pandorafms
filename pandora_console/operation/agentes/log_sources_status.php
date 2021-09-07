@@ -19,20 +19,21 @@ check_login();
 ?>
 <script type="text/javascript">
 
-function get_last_contact(source) {
+function get_last_contact(source, agent_id) {
     var params = {};
-        params["get_last_contact"] = 1;
-        params["page"] = "enterprise/include/ajax/log_viewer.ajax";
-        params["source"] = source;
+    params["get_last_contact"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+    params["source"] = source;
+    params["agent_id"] = agent_id;
 
-        jQuery.ajax ({
-            data: params,
-            dataType: "html",
-            type: "POST",
-            url: "ajax.php",
-            success: function (data) {
-            }
-        });
+    jQuery.ajax ({
+        data: params,
+        dataType: "html",
+        type: "POST",
+        url: "ajax.php",
+        success: function (data) {
+        }
+    });
 }
 
 </script>
@@ -75,7 +76,7 @@ foreach ($logs as $log) {
             'border' => '0',
             'width'  => '20px',
             'heigth' => '20px',
-            'onload' => "get_last_contact('".$log['source']."')",
+            'onload' => "get_last_contact('".$log['source']."', '".$agent_id."')",
         ]
     );
 

@@ -66,16 +66,26 @@ function snmpBrowse() {
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
       $("#spinner").css("display", "none");
-      $("#snmp_browser").html(
-        "<p>Status: " +
+      var htmlError = "";
+
+      if (XMLHttpRequest.responseText) {
+        htmlError =
+          "<p><b>Status:</b> " +
           textStatus +
           "</p><p>" +
-          "Error: " +
-          errorThrown +
-          "</p><p>" +
           XMLHttpRequest.responseText +
-          "</p>"
-      );
+          "</p>";
+      } else {
+        htmlError =
+          "<p><b>Status:</b> " +
+          textStatus +
+          "</p><p>" +
+          "<b>Error:</b> " +
+          errorThrown +
+          "</p>";
+      }
+
+      $("#snmp_browser").html(htmlError);
     }
   });
 }

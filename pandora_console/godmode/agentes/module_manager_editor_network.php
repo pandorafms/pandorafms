@@ -446,7 +446,7 @@ $data[1] = html_print_input_text_extended(
 $data[1] .= ui_print_help_tip(
     __(
         'Please use single quotation marks when necessary. '."\n".'
-If double quotation marks are needed, please escape them with a backslash (")'
+If double quotation marks are needed, please escape them with a backslash (\&quot;)'
     ),
     true
 );

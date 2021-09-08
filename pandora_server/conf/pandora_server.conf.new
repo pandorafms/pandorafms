@@ -482,10 +482,6 @@ eventserver 0
 
 correlationserver 0
 
-# Number of threads for Correlation Server (PANDORA FMS ENTERPRISE ONLY).
-
-correlation_threads 1
-
 # Time in seconds to re-evaluate correlation alerts pool (PANDORA FMS ENTERPRISE ONLY).
 
 correlation_threshold 30

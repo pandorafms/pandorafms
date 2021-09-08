@@ -7855,9 +7855,10 @@ div.graph div.legend table {
 }
 
 .model_log_viewer {
-  position: absolute;
-  bottom: 5px;
-  right: 0;
+  margin-top: 5px;
+  float: right;
+  margin-bottom: 0px;
+  margin-right: 0px;
 }
 
 .container_left_class {

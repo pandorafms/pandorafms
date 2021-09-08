@@ -765,7 +765,7 @@ if (is_ajax()) {
 
             $result = [];
             foreach ($last_modules_set as $module_name => $module_data) {
-                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
+                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true, false, '...');
 
                 $module_data_processed = array_map(
                     function ($item) {
@@ -863,10 +863,12 @@ if (is_ajax()) {
                         io_safe_output($nameModule['nombre']),
                         'module_medium',
                         false,
-                        true
+                        true,
+                        false,
+                        '...'
                     );
                 } else {
-                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true, false, '...');
                 }
             }
         }

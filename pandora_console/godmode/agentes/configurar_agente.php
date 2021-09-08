@@ -2095,7 +2095,7 @@ if ($delete_module) {
         exit;
     }
 
-    // Also call base function to delete modules madafakas de los cojones.
+    // Also call base function to delete modules.
     modules_delete_agent_module($id_borrar_modulo);
 
     // Check for errors.

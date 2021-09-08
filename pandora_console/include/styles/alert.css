@@ -134,7 +134,6 @@ div.target {
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
-  min-height: 750px;
 }
 div.target.flex {
   border: 2px dashed #ddd;

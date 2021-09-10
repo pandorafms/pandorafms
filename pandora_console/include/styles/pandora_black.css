@@ -63,6 +63,27 @@ table.agent_info_table tr {
   color: #fff !important;
 }
 
+#um-next:hover,
+#um-last:hover {
+  border: 1px solid #888 !important;
+}
+#um-next,
+#um-last {
+  background-color: #111 !important;
+  color: #fff !important;
+  font-weight: 500;
+  border-radius: 5px;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 15px;
+  border: 1px solid #333 !important;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10pt;
+}
+
 input[readonly] {
   background-color: #444 !important;
   color: #a2a2a2 !important;

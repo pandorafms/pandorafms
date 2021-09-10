@@ -105,7 +105,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('show_vc', 1),
 ('inventory_changes_blacklist', '1,2,20,21'),
 ('custom_report_front', 0),
-('custom_report_front_font', 'lato.ttf'),
+('custom_report_front_font', 'Lato-Regular.ttf'),
 ('custom_report_front_logo', 'images/pandora_logo_white.jpg'),
 ('custom_report_front_header', ''),
 ('custom_report_front_footer', ''),
@@ -202,7 +202,7 @@ INSERT INTO `tlanguage` VALUES ('en_GB','English (UK)');
 INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('ar','العربية');
 INSERT INTO `tlanguage` VALUES ('cs','Česky');
-INSERT INTO `tlanguage` VALUES ('de','Deutch');
+INSERT INTO `tlanguage` VALUES ('de','Deutsch');
 INSERT INTO `tlanguage` VALUES ('el','Ελληνικά');
 INSERT INTO `tlanguage` VALUES ('fr','Français');
 INSERT INTO `tlanguage` VALUES ('it','Italiano');

@@ -416,7 +416,7 @@ if ($filter_standby == 'standby_on') {
     $filter_alert['disabled'] = $filter;
 }
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     include_once $config['homedir'].'/enterprise/meta/include/functions_alerts_meta.php';
     if ($idAgent != 0) {
         $alerts['alerts_simple'] = alerts_meta_get_alerts($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user);

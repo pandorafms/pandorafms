@@ -996,6 +996,7 @@ if (! isset($config['id_user'])) {
             $iduser = $_SESSION['id_usuario'];
             unset($_SESSION['id_usuario']);
             unset($iduser);
+            $login_screen = 'disabled_access_node';
             include_once 'general/login_page.php';
             while (ob_get_length() > 0) {
                 ob_end_flush();
@@ -1111,16 +1112,35 @@ if (get_parameter('login', 0) !== 0) {
     }
 }
 
-// Header.
-if ($config['pure'] == 0) {
-    echo '<div id="container"><div id="head">';
-    include 'general/header.php';
 
-    if ($config['menu_type'] == 'classic') {
-        echo '</div><div id="page" class="page_classic"><div id="menu">';
-    } else {
-        echo '</div><div id="page" class="page_collapsed"><div id="menu">';
+if ((bool) $config['maintenance_mode'] === true
+    && (bool) users_is_admin() === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include 'general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
     }
+
+    exit('</html>');
+}
+
+
+// Pure.
+if ($config['pure'] == 0) {
+    // Menu container prepared to autohide menu.
+    $menuCollapsed = (isset($_SESSION['menu_type']) === true && $_SESSION['menu_type'] !== 'classic');
+    $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
+    // Container.
+    echo '<div id="container">';
+    // Header.
+    echo '<div id="head">';
+    include 'general/header.php';
+    echo '</div>';
+    // Main menu.
+    echo sprintf('<div id="page" class="page_%s">', $menuTypeClass);
+    echo '<div id="menu">';
 
     include 'general/main_menu.php';
     echo '</div>';
@@ -1329,11 +1349,15 @@ if ($config['pure'] == 0) {
     // Main pure.
 }
 
-echo '<div id="wiz_container">';
-echo '</div>';
+html_print_div(
+    ['id' => 'wiz_container'],
+    true
+);
 
-echo '<div id="um_msg_receiver">';
-echo '</div>';
+html_print_div(
+    ['id' => 'um_msg_receiver'],
+    true
+);
 
 // Connection lost alert.
 ui_require_javascript_file('connection_check');

@@ -2559,12 +2559,19 @@ function reporting_html_last_value($table, $item, $pdf=0)
             'Y-m-d H:i:s',
             $item['data']['utimestamp']
         );
-        $table_data->data[1][2] = remove_right_zeros(
-            number_format(
-                $item['data']['datos'],
-                $config['graph_precision']
-            )
-        );
+
+        if (is_numeric($item['data']['datos']) === true) {
+            $dataDatos = remove_right_zeros(
+                number_format(
+                    $item['data']['datos'],
+                    $config['graph_precision']
+                )
+            );
+        } else {
+            $dataDatos = trim($item['data']['datos']);
+        }
+
+        $table_data->data[1][2] = $dataDatos;
 
         switch ($item['data']['estado']) {
             case AGENT_MODULE_STATUS_CRITICAL_BAD:

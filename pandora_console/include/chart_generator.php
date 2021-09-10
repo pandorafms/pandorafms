@@ -95,7 +95,7 @@ if (check_login(false) === false) {
     <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
     <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
     <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js'></script>
-    <script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
+    <script language="javascript" type='text/javascript' src='javascript/jquery.current.js'></script>
 </head>
 <body>
     <h1>Access is not granted</h1>
@@ -153,7 +153,7 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
         <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
         <script language="javascript" type='text/javascript' src='javascript/pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/pandora_ui.js'></script>
-        <script language="javascript" type='text/javascript' src='javascript/jquery-3.3.1.min.js'></script>
+        <script language="javascript" type='text/javascript' src='javascript/jquery.current.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery.pandora.js'></script>
         <script language="javascript" type='text/javascript' src='javascript/jquery-ui.min.js'></script>
         <script language="javascript" type="text/javascript" src="graphs/flot/jquery.flot.js"></script>

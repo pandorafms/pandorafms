@@ -511,6 +511,11 @@ function tags_update_policy_module_tag($id_policy_module, $tags, $autocommit=fal
         }
     }
 
+    if ($errn > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 

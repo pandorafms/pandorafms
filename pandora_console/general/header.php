@@ -23,13 +23,8 @@ ui_require_css_file('order_interpreter');
 // Global errors/warnings checking.
 config_check();
 
+echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
-
-if ($config['menu_type'] == 'classic') {
-    echo '<div id="header_table" class="header_table_classic">';
-} else {
-    echo '<div id="header_table" class="header_table_collapsed">';
-}
 ?>
     <div id="header_table_inner">        
         <?php

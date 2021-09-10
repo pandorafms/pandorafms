@@ -69,9 +69,9 @@ function treeview_printModuleTable($id_module, $server_data=false, $no_head=fals
 
     // Module name
     if ($module['disabled']) {
-        $cellName = '<em>'.ui_print_truncate_text(io_safe_output($module['nombre']), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;').ui_print_help_tip(__('Disabled'), true).'<em>';
+        $cellName = '<em>'.ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;').ui_print_help_tip(__('Disabled'), true).'<em>';
     } else {
-        $cellName = ui_print_truncate_text(io_safe_output($module['nombre']), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;');
+        $cellName = ui_print_truncate_text($module['nombre'], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]', 'text-transform: uppercase;');
     }
 
     $row = [];
@@ -511,12 +511,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     enterprise_include_once('meta/include/functions_ui_meta.php');
     include_graphs_dependencies();
 
-    $is_extra = enterprise_hook('policies_is_agent_extra_policy', [$id_agente]);
-
-    if ($is_extra === ENTERPRISE_NOT_HOOK) {
-        $is_extra = false;
-    }
-
     $user_access_node = can_user_access_node();
 
     if (is_metaconsole()) {
@@ -550,7 +544,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
 
     if (! check_acl_one_of_groups($config['id_user'], $groups, 'AR', false)
         && ! check_acl_one_of_groups($config['id_user'], $groups, 'AW', false)
-        && !$is_extra
     ) {
         db_pandora_audit(
             'ACL Violation',
@@ -824,7 +817,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $events_graph .= graph_graphic_agentevents(
         $id_agente,
         '340px;margin:0',
-        45,
+        '130px',
         SECONDS_1DAY,
         '',
         true,

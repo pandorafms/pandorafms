@@ -3187,6 +3187,7 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
                 $module_description = $module['descripcion'];
                 $db_status = modules_get_agentmodule_status($module_id);
                 $module_value = modules_get_last_value($module_id);
+                $last_contact = modules_get_last_contact($module_id);
                 modules_get_status($module_id, $db_status, $module_value, $status, $title);
                 $status_image = ui_print_status_image($status, $title, true);
 
@@ -3267,6 +3268,7 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
                 $agent_interfaces[$interface_name]['status_module_name'] = $module_name;
                 $agent_interfaces[$interface_name]['ip'] = $ip_target;
                 $agent_interfaces[$interface_name]['mac'] = $mac;
+                $agent_interfaces[$interface_name]['last_contact'] = $last_contact;
 
                 if ($interface_traffic_modules !== false) {
                     $agent_interfaces[$interface_name]['traffic'] = [];

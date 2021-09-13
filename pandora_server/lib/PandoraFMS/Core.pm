@@ -924,6 +924,13 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 		return;
 	}
 
+	# Additional execution information for the console.
+	my $custom_data = {
+		'actions'	=> [],
+		'forced'	=> $forced_alert ? 1 : 0,
+		'recovered'	=> $alert_mode == RECOVERED_ALERT ? 1 : 0
+	};
+
 	# Critical_instructions, warning_instructions, unknown_instructions
 	my $critical_instructions = get_db_value ($dbh, 'SELECT critical_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
 	my $warning_instructions = get_db_value ($dbh, 'SELECT warning_instructions FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
@@ -950,6 +957,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			}
 			
 			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
+			push(@{$custom_data->{'actions'}}, safe_output($action->{'name'}));
 		} else {
 			if (defined ($module)) {
 				logger ($pa_config, "Skipping action " . safe_output($action->{'name'}) . " for alert '" . safe_output($alert->{'name'}) . "' module '" . safe_output($module->{'nombre'}) . "'.", 10);
@@ -986,7 +994,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				'',
 				$critical_instructions,
 				$warning_instructions,
-				$unknown_instructions
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
 			);
 		} else {
 			pandora_event (
@@ -1007,7 +1016,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 				'',
 				$critical_instructions,
 				$warning_instructions,
-				$unknown_instructions
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
 			);
 		}
 	}

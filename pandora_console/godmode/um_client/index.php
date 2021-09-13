@@ -87,7 +87,8 @@ if (function_exists('enterprise_hook') === true) {
         $days_to_expiry = ((strtotime($license_data['expiry_date']) - time()) / (60 * 60 * 24));
 
         if ((int) $license_data['limit_mode'] === 0) {
-            $limit = db_get_value('count(*)', 'tagente', 'disabled', 0);
+            $agent_table = (is_metaconsole() === true) ? 'tmetaconsole_agent' : 'tagente';
+            $limit = db_get_value('count(*)', $agent_table, 'disabled', 0);
         } else {
             $limit = db_get_value('count(*)', 'tagente_modulo', 'disabled', 0);
         }

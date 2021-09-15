@@ -403,19 +403,6 @@ END {
   stop();
 }
 
-###############################################################################
-# Aux. get module id
-###############################################################################
-my %module_id;
-sub __get_module_id {
-  my ($dbh, $module_type) = @_;
-
-  if (!defined($module_id{$module_type})) {
-    $module_id{$module_type} = get_module_id($dbh, $module_type);
-  }
-
-  return $module_id{$module_type}
-}
 
 $SIG{INT} = \&stop;
 $SIG{TERM} = \&stop;

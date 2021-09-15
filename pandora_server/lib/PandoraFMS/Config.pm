@@ -1290,6 +1290,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^pandora_service_cmd\s(.*)/i) {
 			$pa_config->{'pandora_service_cmd'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^splitbrain_autofix\s(.*)/i) {
+			$pa_config->{'splitbrain_autofix'} = clean_blank($1);
+		}
 		
 	} # end of loop for parameter #
 

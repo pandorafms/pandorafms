@@ -305,6 +305,9 @@ function events_get_column_name($field, $table_alias=false)
                 return __('Severity mini');
             }
 
+        case 'direccion':
+        return __('Agent IP');
+
         default:
         return __($field);
     }
@@ -1151,7 +1154,12 @@ function events_get_all(
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
-                $_tmp .= ' AND ( ';
+                if ($tags[0] === $id_tag) {
+                    $_tmp .= ' AND ( ';
+                } else {
+                    $_tmp .= ' OR ( ';
+                }
+
                 $_tmp .= sprintf(
                     ' tags LIKE "%s" OR',
                     $tags_names[$id_tag]
@@ -3576,7 +3584,12 @@ function events_page_responses($event, $childrens_ids=[])
             '',
             __('None'),
             -1,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 70%'
         );
         $data[2] .= html_print_button(
             __('Update'),
@@ -4843,7 +4856,7 @@ function events_page_general($event)
     if (isset($event['id_agente']) && $event['id_agente'] > 0) {
         enterprise_include_once('include/functions_agents.php');
         $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
-        if (!empty($secondary_groups_selected)) {
+        if (empty($secondary_groups_selected['for_select']) === false) {
             $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
         }
     }
@@ -4866,6 +4879,14 @@ function events_page_general($event)
     $data[0] = __('Event name');
     $data[1] = '<span class="break_word">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
+
+    // Show server name in metaconsole.
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $data = [];
+        $data[0] = __('Node');
+        $data[1] = '<span class="break_word">'.$event['server_name'].'</span>';
+        $table_general->data[] = $data;
+    }
 
     $data = [];
     $data[0] = __('Timestamp');

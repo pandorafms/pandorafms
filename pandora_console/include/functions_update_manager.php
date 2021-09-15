@@ -244,6 +244,8 @@ function update_manager_get_messages()
  *
  * @param string $dir Path to dir.
  *
+ * @deprecated 755 Use Files::rmrf.
+ *
  * @return void
  */
 function rrmdir($dir)

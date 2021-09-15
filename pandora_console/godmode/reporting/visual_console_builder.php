@@ -151,6 +151,7 @@ switch ($activeTab) {
                 $height = '';
                 $visualConsoleName = '';
                 $is_favourite = 0;
+                $auto_adjust = 0;
             break;
 
             case 'update':
@@ -162,6 +163,7 @@ switch ($activeTab) {
                 $height = (int) get_parameter('height');
                 $visualConsoleName = (string) get_parameter('name');
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
+                $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
                 // ACL for the new visual console
                 // $vconsole_read_new = check_acl ($config['id_user'], $idGroup, "VR");
@@ -186,6 +188,7 @@ switch ($activeTab) {
                     'width'            => $width,
                     'height'           => $height,
                     'is_favourite'     => $is_favourite,
+                    'auto_adjust'      => $auto_adjust,
                 ];
 
                 $error = $_FILES['background_image']['error'];
@@ -353,6 +356,7 @@ switch ($activeTab) {
                 $width = $visualConsole['width'];
                 $height = $visualConsole['height'];
                 $is_favourite = $visualConsole['is_favourite'];
+                $auto_adjust = $visualConsole['auto_adjust'];
             break;
         }
     break;

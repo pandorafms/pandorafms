@@ -197,8 +197,11 @@ class TreeGroupEdition extends TreeGroup
             $group_stats[$group['gid']] = $this->getProcessedItem(
                 $group_stats[$group['gid']]
             );
-            $group_stats[$group['gid']]['delete']['messages'] = $messages;
-            $group_stats[$group['gid']]['edit']   = 1;
+            if (is_management_allowed() === true) {
+                $group_stats[$group['gid']]['delete']['messages'] = $messages;
+                $group_stats[$group['gid']]['edit']   = 1;
+            }
+
             $group_stats[$group['gid']]['alerts'] = '';
         }
 

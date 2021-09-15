@@ -1,0 +1,11 @@
+[Unit]
+Description=Pandora FMS Daemon Watchdog
+
+[Service]
+Type=forking
+PIDFile=/var/run/pandora_ha.pid
+Restart=always
+ExecStart=/usr/bin/pandora_ha -d -p /var/run/pandora_ha.pid /etc/pandora/pandora_server.conf
+
+[Install]
+WantedBy=multi-user.target

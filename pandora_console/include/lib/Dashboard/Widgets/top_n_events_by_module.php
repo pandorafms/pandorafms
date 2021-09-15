@@ -365,6 +365,8 @@ class TopNEventByModuleWidget extends Widget
 
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
 
+        $event_table = (is_metaconsole() === true) ? 'tmetaconsole_event' : 'tevento';
+
         if (empty($this->values['groupId']) === true) {
             $output = '<div class="container-center">';
             $output .= \ui_print_info_message(
@@ -389,12 +391,13 @@ class TopNEventByModuleWidget extends Widget
                         id_agentmodule,
                         event_type,
                         COUNT(*) AS count
-                    FROM tevento
+                    FROM %s
                     WHERE utimestamp >= %d
                         AND id_grupo IN (%s)
                     GROUP BY id_agentmodule, event_type
                     ORDER BY count DESC
                     LIMIT %d',
+                    $event_table,
                     $timestamp,
                     implode(',', $this->values['groupId']),
                     $this->values['amountShow']
@@ -405,11 +408,12 @@ class TopNEventByModuleWidget extends Widget
                         id_agentmodule,
                         event_type,
                         COUNT(*) AS count
-                    FROM tevento
+                    FROM %s
                     WHERE utimestamp >= %d
                     GROUP BY id_agentmodule, event_type
                     ORDER BY count DESC
                     LIMIT %d',
+                    $event_table,
                     $timestamp,
                     $this->values['amountShow']
                 );

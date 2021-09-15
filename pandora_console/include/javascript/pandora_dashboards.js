@@ -388,7 +388,7 @@ function initialiceLayout(data) {
           dashboardId: data.dashboardId,
           widgetId: widgetId
         },
-        width: widgetId == 14 ? 750 : 450,
+        width: widgetId == 14 || widgetId == 2 ? 750 : 450,
         maxHeight: 600,
         minHeight: 400
       },
@@ -809,6 +809,7 @@ function dashboardLoadWuxStats(settings) {
       page: settings.page,
       wux_transaction_stats: 1,
       id_agent: settings.id_agent,
+      server_id: settings.server_id,
       transaction: settings.transaction,
       view_all_stats: settings.view_all_stats,
       auth_class: settings.auth_class,
@@ -843,6 +844,9 @@ function processTreeSearch(settings) {
   filters.searchModule = settings.searchModule;
   filters.statusModule = settings.statusModule;
   filters.groupID = settings.searchGroup;
+  filters.searchHirearchy = 1;
+  filters.show_not_init_agents = 1;
+  filters.show_not_init_modules = 1;
 
   $.ajax({
     type: "POST",
@@ -1143,6 +1147,11 @@ function dashboardLoadVC(settings) {
     return item;
   });
 
+  settings.items.map(function(item) {
+    item["cellId"] = settings.cellId;
+    return item;
+  });
+
   createVisualConsole(
     container,
     settings.props,
@@ -1160,6 +1169,10 @@ function dashboardLoadVC(settings) {
 // eslint-disable-next-line no-unused-vars
 function dashboardShowEventDialog(settings) {
   settings = JSON.parse(atob(settings));
+  var dialog_exist = $("div[aria-describedby='event_details_window']");
+  if (dialog_exist.length == 1) {
+    $("div[aria-describedby='event_details_window']").remove();
+  }
   $.ajax({
     method: "post",
     url: settings.ajaxUrl,

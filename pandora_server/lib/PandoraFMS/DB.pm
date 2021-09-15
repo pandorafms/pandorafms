@@ -69,6 +69,7 @@ our @EXPORT = qw(
 		get_alert_template_module_id
 		get_alert_template_name
 		get_command_id
+		get_console_api_url
 		get_db_rows
 		get_db_rows_limit
 		get_db_single_row
@@ -109,6 +110,7 @@ our @EXPORT = qw(
 		get_agentmodule_status
 		get_agentmodule_status_str
 		get_agentmodule_data
+		set_ssl_opts
 		$RDBMS
 		$RDBMS_QUOTE
 		$RDBMS_QUOTE_STRING
@@ -123,6 +125,9 @@ our $RDBMS_QUOTE = '';
 # For strings, Character used to quote in the current RDBMS
 our $RDBMS_QUOTE_STRING = '';
 
+# SSL options.
+my $SSL_OPTS = '';
+
 ##########################################################################
 ## Connect to the DB.
 ##########################################################################
@@ -135,7 +140,7 @@ sub db_connect ($$$$$$) {
 		$RDBMS_QUOTE_STRING = '"';
 		
 		# Connect to MySQL
-		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:$db_port;$SSL_OPTS", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Enable auto reconnect
@@ -210,6 +215,33 @@ sub db_disconnect ($) {
 	my $dbh = shift;
 
 	$dbh->disconnect();
+}
+
+########################################################################
+## Return local console API url. 
+########################################################################
+sub get_console_api_url ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	# Only if console_api_url was not defined
+	if( !defined($pa_config->{"console_api_url"}) ) {
+		my $console_api_url = PandoraFMS::Config::pandora_get_tconfig_token(
+			$dbh, 'public_url', ''
+		);
+
+		my $include_api = 'include/api.php';
+		# If public_url is empty in database
+		if ( $console_api_url eq '' ) {
+			$pa_config->{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
+			logger($pa_config, "Assuming default path for API url: " . $pa_config->{"console_api_url"}, 3);
+		} else {
+			if ($console_api_url !~ /\/$/) {
+				$console_api_url .= '/';
+			}
+			$pa_config->{"console_api_url"} = $console_api_url . $include_api;	
+		}
+	}
+	return $pa_config->{'console_api_url'};
 }
 
 ########################################################################
@@ -1540,6 +1572,29 @@ sub db_release_lock($$) {
 	my $sth = $dbh->prepare('SELECT RELEASE_LOCK(?)');
 	$sth->execute($lock_name);
 	my ($lock) = $sth->fetchrow;
+}
+
+########################################################################
+## Set SSL options globally for the module.
+########################################################################
+sub set_ssl_opts($) {
+	my ($pa_config) = @_;
+
+	# SSL is disabled for the DB.
+	if (!defined($pa_config->{'dbssl'}) || $pa_config->{'dbssl'} == 0) {
+		return;
+	}
+
+	# Enable SSL.
+	$SSL_OPTS = "mysql_ssl=1;mysql_ssl_optional=1;mysql_ssl_verify_server_cert=1";
+
+	# Set additional SSL options.
+	if (defined($pa_config->{'dbsslcapath'}) && $pa_config->{'dbsslcapath'} ne "") {
+		$SSL_OPTS .= ";mysql_ssl_ca_path=" . $pa_config->{'dbsslcapath'};
+	}
+	if (defined($pa_config->{'dbsslcafile'}) && $pa_config->{'dbsslcafile'} ne "") {
+		$SSL_OPTS .= ";mysql_ssl_ca_file=" . $pa_config->{'dbsslcafile'};
+	}
 }
 
 # End of function declaration

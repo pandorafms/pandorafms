@@ -330,11 +330,12 @@ final class Percentile extends Item
      */
     protected static function fetchDataFromDB(
         array $filter,
-        ?float $ratio=0
+        ?float $ratio=0,
+        ?float $widthRatio=0
     ): array {
         // Due to this DB call, this function cannot be unit tested without
         // a proper mock.
-        $data = parent::fetchDataFromDB($filter, $ratio);
+        $data = parent::fetchDataFromDB($filter, $ratio, $widthRatio);
 
         /*
          * Retrieve extra data.

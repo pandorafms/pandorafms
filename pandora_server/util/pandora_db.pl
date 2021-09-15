@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.755+alt Build 210624";
+my $version = "7.0NG.757 Build 210915";
 
 # Pandora server configuration
 my %conf;
@@ -628,6 +628,9 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
     $conf->{'verbosity'} = '3' unless defined ($conf->{'verbosity'});
+
+	# Configure SSL.
+	set_ssl_opts($conf);
 
     # Dynamic interval configuration.                                                                                                                             
 	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});

@@ -40,6 +40,7 @@ class Manager
     const MODE_ONLINE = 0;
     const MODE_OFFLINE = 1;
     const MODE_REGISTER = 2;
+    const PANDORA_TRIAL_ISSUER = 'Enterprise Trial License(Pandora FMS <info@pandorafms.com>)';
 
     /**
      * Current mode (view).

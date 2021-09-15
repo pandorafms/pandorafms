@@ -35,7 +35,7 @@ $file = base64_decode(urldecode($file_raw));
 
 $hash = get_parameter('hash', null);
 
-if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) || !isset($_SERVER['HTTP_REFERER'])) {
+if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['server_unique_identifier']) || !isset($_SERVER['HTTP_REFERER'])) {
     echo "<h3 style='".$styleError."'>".__('Security error. Please contact the administrator.').'</h3>';
 } else {
     $downloadable_file = '';
@@ -53,6 +53,10 @@ if ($file === '' || $hash === '' || $hash !== md5($file_raw.$config['dbpass']) |
 
             case 'extensions/files_repo':
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
+            break;
+
+            case 'godmode/servers/plugin':
+                $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/plugin/'.$file;
             break;
 
             case $main_collections:

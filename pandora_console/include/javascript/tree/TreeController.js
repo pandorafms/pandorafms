@@ -758,7 +758,9 @@ var TreeController = {
 
               // Name max 42 chars.
               $content.append(
-                '<span class="module-name">' +
+                '<span title="' +
+                  element.name +
+                  '" class="module-name">' +
                   element.name.substring(0, 42) +
                   (element.name.length > 42 ? "..." : "") +
                   "</span>"

@@ -153,6 +153,17 @@ abstract class Entity
     /**
      * Dynamically call methods in this object.
      *
+     * To dynamically switch between community methods and prioritize
+     * enterprise ones, define method visibility as 'protected' in both
+     * classes.
+     *
+     * For instance, in following situation:
+     *  protected PandoraFMS\Agent::test()
+     *  protected PandoraFMS\Enterprise\Agent::test()
+     *
+     * If enterprise is available, then PandoraFMS\Enterprise\Agent::test()
+     * will be executed, community method otherwise.
+     *
      * @param string $methodName Name of target method or attribute.
      * @param array  $params     Arguments for target method.
      *
@@ -161,41 +172,42 @@ abstract class Entity
      */
     public function __call(string $methodName, ?array $params=null)
     {
-        // Prioritize written methods over dynamic ones.
-        if (method_exists($this, $methodName) === true) {
-            return call_user_func_array(
-                $this->{$methodName},
-                $params
-            );
-        }
-
         // Enterprise capabilities.
+        // Prioritize enterprise written methods over dynamic fields.
         if (\enterprise_installed() === true
             && $this->enterprise !== null
             && method_exists($this->enterprise, $methodName) === true
         ) {
+            $obj = $this->enterprise;
+            $callback = function (...$parameters) use ($obj, $methodName) {
+                return $obj->$methodName(...$parameters);
+            };
+
             return call_user_func_array(
-                [
-                    $this->enterprise,
-                    $methodName,
-                ],
+                $callback,
                 $params
             );
         }
 
-        if (array_key_exists($methodName, $this->fields) === true) {
-            if (empty($params) === true) {
-                return $this->fields[$methodName];
-            } else {
-                $this->fields[$methodName] = $params[0];
+        if (method_exists($this, $methodName) === false) {
+            if (array_key_exists($methodName, $this->fields) === true) {
+                if (empty($params) === true) {
+                    return $this->fields[$methodName];
+                } else {
+                    $this->fields[$methodName] = $params[0];
+                }
+
+                return null;
             }
 
-            return null;
+            throw new \Exception(
+                get_class($this).' error, method '.$methodName.' does not exist'
+            );
         }
 
-        throw new \Exception(
-            get_class($this).' error, method '.$methodName.' does not exist'
-        );
+        // Do not return nor throw exceptions after this point, allow php
+        // default __call behaviour to continue working with object method
+        // defined.
     }
 
 

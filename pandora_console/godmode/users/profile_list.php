@@ -1,17 +1,32 @@
 <?php
+/**
+ * Profiles.
+ *
+ * @category   Profiles
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Load global vars.
 global $config;
 
 check_login();
@@ -36,8 +51,8 @@ enterprise_include_once('meta/include/functions_users_meta.php');
 $tab = get_parameter('tab', 'profile');
 $pure = get_parameter('pure', 0);
 
-// Header
-if (!defined('METACONSOLE')) {
+// Header.
+if (is_metaconsole() === false) {
     $buttons = [
         'user'    => [
             'active' => false,
@@ -79,15 +94,27 @@ if (!defined('METACONSOLE')) {
     $sec = 'advanced';
 }
 
-
 $delete_profile = (bool) get_parameter('delete_profile');
 $create_profile = (bool) get_parameter('create_profile');
 $update_profile = (bool) get_parameter('update_profile');
 $id_profile = (int) get_parameter('id');
 
-// Profile deletion
-if ($delete_profile) {
-    // Delete profile
+$is_management_allowed = true;
+if (is_metaconsole() === false && is_management_allowed() === false) {
+    $is_management_allowed = false;
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All profiles information is read only. Go to %s to manage it.',
+            '<a target="_blank" href="'.ui_get_meta_url(
+                'index.php?sec=advanced&sec2=advanced/users_setup&tab=profile&pure=0'
+            ).'">'.__('metaconsole').'</a>'
+        )
+    );
+}
+
+// Profile deletion.
+if ($is_management_allowed === true && $delete_profile === true) {
+    // Delete profile.
     $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
     $ret = profile_delete_profile_and_clean_users($id_profile);
     if ($ret === false) {
@@ -103,44 +130,44 @@ if ($delete_profile) {
     $id_profile = 0;
 }
 
-// Store the variables when create or update
-if ($create_profile || $update_profile) {
+// Store the variables when create or update.
+if ($is_management_allowed === true && ($create_profile === true || $update_profile === true)) {
     $name = get_parameter('name');
 
-    // Agents
+    // Agents.
     $agent_view = (bool) get_parameter('agent_view');
     $agent_edit = (bool) get_parameter('agent_edit');
     $agent_disable = (bool) get_parameter('agent_disable');
 
-    // Alerts
+    // Alerts.
     $alert_edit = (bool) get_parameter('alert_edit');
     $alert_management = (bool) get_parameter('alert_management');
 
-    // Users
+    // Users.
     $user_management = (bool) get_parameter('user_management');
 
-    // DB
+    // DB.
     $db_management = (bool) get_parameter('db_management');
 
-    // Pandora
+    // Pandora.
     $pandora_management = (bool) get_parameter('pandora_management');
 
-    // Events
+    // Events.
     $event_view = (bool) get_parameter('event_view');
     $event_edit = (bool) get_parameter('event_edit');
     $event_management = (bool) get_parameter('event_management');
 
-    // Reports
+    // Reports.
     $report_view = (bool) get_parameter('report_view');
     $report_edit = (bool) get_parameter('report_edit');
     $report_management = (bool) get_parameter('report_management');
 
-    // Network maps
+    // Network maps.
     $map_view = (bool) get_parameter('map_view');
     $map_edit = (bool) get_parameter('map_edit');
     $map_management = (bool) get_parameter('map_management');
 
-    // Visual console
+    // Visual console.
     $vconsole_view = (bool) get_parameter('vconsole_view');
     $vconsole_edit = (bool) get_parameter('vconsole_edit');
     $vconsole_management = (bool) get_parameter('vconsole_management');
@@ -170,9 +197,9 @@ if ($create_profile || $update_profile) {
     ];
 }
 
-// Update profile
-if ($update_profile) {
-    if ($name) {
+// Update profile.
+if ($is_management_allowed === true && $update_profile === true) {
+    if (empty($name) === false) {
         $ret = db_process_sql_update('tperfil', $values, ['id_perfil' => $id_profile]);
         if ($ret !== false) {
             $info = '{"Name":"'.$name.'",
@@ -216,9 +243,9 @@ if ($update_profile) {
     $id_profile = 0;
 }
 
-// Create profile
-if ($create_profile) {
-    if ($name) {
+// Create profile.
+if ($is_management_allowed === true && $create_profile === true) {
+    if (empty($name) === false) {
         $ret = db_process_sql_insert('tperfil', $values);
 
         if ($ret !== false) {
@@ -295,7 +322,9 @@ $table->head['VR'] = 'VR';
 $table->head['VW'] = 'VW';
 $table->head['VM'] = 'VM';
 $table->head['PM'] = 'PM';
-$table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
+if ($is_management_allowed === true) {
+    $table->head['operations'] = '<span title="Operations">'.__('Op.').'</span>';
+}
 
 $table->align = array_fill(1, 11, 'center');
 
@@ -320,7 +349,9 @@ $table->size['VR'] = '10px';
 $table->size['VW'] = '10px';
 $table->size['VM'] = '10px';
 $table->size['PM'] = '10px';
-$table->size['operations'] = '5%';
+if ($is_management_allowed === true) {
+    $table->size['operations'] = '5%';
+}
 
 $profiles = db_get_all_rows_in_table('tperfil');
 if ($profiles === false) {
@@ -337,59 +368,74 @@ $img = html_print_image(
 );
 
 foreach ($profiles as $profile) {
-    $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.$profile['name'].'</a>';
-    $data['AR'] = ($profile['agent_view'] ? $img : '');
-    $data['AW'] = ($profile['agent_edit'] ? $img : '');
-    $data['AD'] = ($profile['agent_disable'] ? $img : '');
-    $data['LW'] = ($profile['alert_edit'] ? $img : '');
-    $data['LM'] = ($profile['alert_management'] ? $img : '');
-    $data['UM'] = ($profile['user_management'] ? $img : '');
-    $data['DM'] = ($profile['db_management'] ? $img : '');
-    $data['ER'] = ($profile['event_view'] ? $img : '');
-    $data['EW'] = ($profile['event_edit'] ? $img : '');
-    $data['EM'] = ($profile['event_management'] ? $img : '');
-    $data['RR'] = ($profile['report_view'] ? $img : '');
-    $data['RW'] = ($profile['report_edit'] ? $img : '');
-    $data['RM'] = ($profile['report_management'] ? $img : '');
-    $data['MR'] = ($profile['map_view'] ? $img : '');
-    $data['MW'] = ($profile['map_edit'] ? $img : '');
-    $data['MM'] = ($profile['map_management'] ? $img : '');
-    $data['VR'] = ($profile['vconsole_view'] ? $img : '');
-    $data['VW'] = ($profile['vconsole_edit'] ? $img : '');
-    $data['VM'] = ($profile['vconsole_management'] ? $img : '');
-    $data['PM'] = ($profile['pandora_management'] ? $img : '');
+    if ($is_management_allowed === true) {
+        $data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">';
+        $data['profiles'] .= $profile['name'];
+        $data['profiles'] .= '</a>';
+    } else {
+        $data['profiles'] = $profile['name'];
+    }
+
+    $data['AR'] = (empty($profile['agent_view']) === false) ? $img : '';
+    $data['AW'] = (empty($profile['agent_edit']) === false) ? $img : '';
+    $data['AD'] = (empty($profile['agent_disable']) === false) ? $img : '';
+    $data['LW'] = (empty($profile['alert_edit']) === false) ? $img : '';
+    $data['LM'] = (empty($profile['alert_management']) === false) ? $img : '';
+    $data['UM'] = (empty($profile['user_management']) === false) ? $img : '';
+    $data['DM'] = (empty($profile['db_management']) === false) ? $img : '';
+    $data['ER'] = (empty($profile['event_view']) === false) ? $img : '';
+    $data['EW'] = (empty($profile['event_edit']) === false) ? $img : '';
+    $data['EM'] = (empty($profile['event_management']) === false) ? $img : '';
+    $data['RR'] = (empty($profile['report_view']) === false) ? $img : '';
+    $data['RW'] = (empty($profile['report_edit']) === false) ? $img : '';
+    $data['RM'] = (empty($profile['report_management']) === false) ? $img : '';
+    $data['MR'] = (empty($profile['map_view']) === false) ? $img : '';
+    $data['MW'] = (empty($profile['map_edit']) === false) ? $img : '';
+    $data['MM'] = (empty($profile['map_management']) === false) ? $img : '';
+    $data['VR'] = (empty($profile['vconsole_view']) === false) ? $img : '';
+    $data['VW'] = (empty($profile['vconsole_edit']) === false) ? $img : '';
+    $data['VM'] = (empty($profile['vconsole_management']) === false) ? $img : '';
+    $data['PM'] = (empty($profile['pandora_management']) === false) ? $img : '';
     $table->cellclass[]['operations'] = 'action_buttons';
-    $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
-        'images/config.png',
-        true,
-        [
-            'title' => __('Edit'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-    if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
-        $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
-            'images/cross.png',
+    if ($is_management_allowed === true) {
+        $data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'&pure='.$pure.'">'.html_print_image(
+            'images/config.png',
             true,
-            ['class' => 'invert_filter']
+            [
+                'title' => __('Edit'),
+                'class' => 'invert_filter',
+            ]
         ).'</a>';
+        if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
+            $data['operations'] .= '<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile['id_perfil'].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
+                'images/cross.png',
+                true,
+                [
+                    'title' => __('Delete'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>';
+        }
     }
 
     array_push($table->data, $data);
 }
 
-if (isset($data)) {
+if (isset($data) === true) {
     html_print_table($table);
 } else {
     echo "<div class='nf'>".__('There are no defined profiles').'</div>';
 }
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_input_hidden('new_profile', 1);
-html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
+if ($is_management_allowed === true) {
+    echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    html_print_input_hidden('new_profile', 1);
+    html_print_submit_button(__('Create'), 'crt', false, 'class="sub next"');
+    echo '</div>';
+    echo '</form>';
+}
+
 unset($table);
 
 enterprise_hook('close_meta_frame');

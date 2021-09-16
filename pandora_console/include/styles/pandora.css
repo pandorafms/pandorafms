@@ -1,11 +1,9 @@
 /**
  *
  * Name: Default theme
+ * Pandora Stylesheet
  *
- * Extension to manage a list of gateways and the node address where they should
- * point to.
- *
- * @category   Extensions
+ * @category   Stylesheet
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -953,7 +951,7 @@ input.sub {
   border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;
-  background-position: 92% 10px;
+  background-position: 92% 13px;
   color: #000;
   padding-bottom: 10px;
   padding-top: 10px;
@@ -4969,7 +4967,6 @@ input:checked + .p-slider:before {
 
 #file_table_modal {
   display: flex;
-  justify-content: space-between;
   margin-bottom: 40px;
 }
 
@@ -5564,7 +5561,7 @@ div#bullets_modules div {
 
 /* Agent details in agent view */
 div#status_pie path {
-  stroke-width: 8px;
+  stroke-width: 0px;
 }
 div#status_pie {
   margin-bottom: 2em;
@@ -7208,7 +7205,7 @@ div.graph div.legend table {
 }
 
 .bg_82B92E {
-  background-color: #82b92e;
+  background-color: #82b92e !important;
 }
 
 .bg_B2B2B2 {
@@ -7233,13 +7230,13 @@ div.graph div.legend table {
   background-color: #eee;
 }
 .bg_ffd {
-  background-color: #ffd036;
+  background-color: #ffd036 !important;
 }
 .bg_ff5 {
-  background-color: #ff5653;
+  background-color: #ff5653 !important;
 }
 .bg_ff9 {
-  background-color: #ff9e39;
+  background-color: #ff9e39 !important;
 }
 .bg_lightgray {
   background-color: lightgray;
@@ -7486,15 +7483,18 @@ div.graph div.legend table {
 .load_enterprise_div {
   display: flex;
   align-items: center;
-  padding-top: 20px;
-  padding-left: 50px;
-  padding-right: 50px;
+  width: 100%;
+  justify-content: space-around;
 }
 
 .update_manager {
   position: relative;
   top: 20px;
   left: 0px;
+}
+
+#error_login .update_manager .center > input[type="text"] {
+  width: 97%;
 }
 
 .error_warning_licence {
@@ -7856,9 +7856,10 @@ div.graph div.legend table {
 }
 
 .model_log_viewer {
-  position: absolute;
-  bottom: 5px;
-  right: 0;
+  margin-top: 5px;
+  float: right;
+  margin-bottom: 0px;
+  margin-right: 0px;
 }
 
 .container_left_class {
@@ -8299,4 +8300,10 @@ div.stat-win-spinner img {
 }
 .line_height_12pt {
   line-height: 12pt;
+}
+.line_height_0pt {
+  line-height: 10pt !important;
+}
+#license_error_msg_dialog {
+  min-height: 350px !important;
 }

@@ -666,6 +666,7 @@ class Client
             $target = __('console update %d', $request['version']);
         }
 
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
         curl_setopt(
             $ch,
             CURLOPT_PROGRESSFUNCTION,
@@ -941,6 +942,15 @@ class Client
             $queries = preg_split("/(;\n)|(;\n\r)/", $sql);
             foreach ($queries as $query) {
                 if (empty($query) !== true) {
+                    if (preg_match('/^\s*SOURCE\s+(.*)$/i', $query, $matches) > 0) {
+                        $filepath = dirname($mr_file).'/'.$matches[1];
+                        if (file_exists($filepath) === true) {
+                            $query = file_get_contents($filepath);
+                        } else {
+                            throw new \Exception('Cannot load file: '.$filepath);
+                        }
+                    }
+
                     if ($dbh->query($query) === false) {
                         // 1022: Duplicate key in table.
                         // 1050: Table already defined.
@@ -1331,18 +1341,17 @@ class Client
         error_reporting(E_ALL ^ E_NOTICE);
         set_error_handler(
             function ($errno, $errstr) {
-                if (preg_match('/Undefined index/', $errstr) > 1) {
-                    return;
-                }
-
                 throw new \Exception($errstr, $errno);
-            }
+            },
+            (E_ALL ^ E_NOTICE)
         );
 
         register_shutdown_function(
             function () {
                 $error = error_get_last();
-                if (null !== $error) {
+                if (null !== $error
+                    && $error['type'] === (E_ALL ^ E_NOTICE)
+                ) {
                     echo __('Failed to analyze package: %s', $error['message']);
                 }
             }
@@ -1425,7 +1434,8 @@ class Client
         set_error_handler(
             function ($errno, $errstr) {
                 throw new \Exception($errstr, $errno);
-            }
+            },
+            (E_ALL ^ E_NOTICE)
         );
 
         if ($package === null) {
@@ -1664,7 +1674,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->productPath.'/extras/mr/'.$mr,
+                            $this->extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

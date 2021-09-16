@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.755
+# Version 7.0NG.757
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -692,10 +692,10 @@ syslog_max 65535
 # Address
 # sync_address
 
-# Pandora FMS Database HA Tool execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
+# Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30
 
-# Pandora FMS Database HA Tool monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
+# Pandora FMS Daemon Watchdog monitoring interval in seconds. Must be a multiple of ha_interval (PANDORA FMS ENTERPRISE ONLY).
 ha_monitoring_interval 60
 
 # Enable (1) or disable (0) Pandora FMS Alert Server.

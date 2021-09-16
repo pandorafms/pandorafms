@@ -200,6 +200,10 @@ abstract class Entity
         // Do not return nor throw exceptions after this point, allow php
         // default __call behaviour to continue working with object method
         // defined.
+        // If you're receiving NULL as result of the method invocation, ensure
+        // it is not private, take in mind this method will mask any access
+        // level error or notification since it is public and has limited access
+        // to the object (public|protected).
     }
 
 

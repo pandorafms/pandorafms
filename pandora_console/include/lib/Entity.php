@@ -178,15 +178,7 @@ abstract class Entity
             && $this->enterprise !== null
             && method_exists($this->enterprise, $methodName) === true
         ) {
-            $obj = $this->enterprise;
-            $callback = function (...$parameters) use ($obj, $methodName) {
-                return $obj->$methodName(...$parameters);
-            };
-
-            return call_user_func_array(
-                $callback,
-                $params
-            );
+            return $this->enterprise->$methodName(...$params);
         }
 
         if (method_exists($this, $methodName) === false) {

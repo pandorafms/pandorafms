@@ -16741,7 +16741,7 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
 
     $sql = sprintf(
         'SELECT id_grupo
-        FROM tgrupo WHERE nombre = "'.$other['data'].'"'
+        FROM tgrupo WHERE nombre = "'.$group_id.'"'
     );
 
     $group_id = db_get_all_rows_sql($sql);

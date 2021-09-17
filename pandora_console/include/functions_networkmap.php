@@ -1462,13 +1462,11 @@ function modules_get_all_interfaces($id_agent)
  */
 function networkmap_delete_networkmap($id=0)
 {
-    if (enterprise_installed() === true) {
-        // Relations.
-        $result = delete_relations($id);
+    // Relations.
+    $result = delete_relations($id);
 
-        // Nodes.
-        $result = delete_nodes($id);
-    }
+    // Nodes.
+    $result = delete_nodes($id);
 
     // Map.
     $result = db_process_sql_delete('tmap', ['id' => $id]);
@@ -1562,18 +1560,13 @@ function networkmap_db_node_to_js_node(
     $item = [];
     $item['id'] = $count;
 
-    if (enterprise_installed() && $simulated === false) {
-        enterprise_include_once('include/functions_networkmap.php');
-        $item['id_db'] = $node['id_in_db'];
-    } else {
-        $item['id_db'] = (int) $node['id'];
-    }
+    $item['id_db'] = ($simulated === true) ? (int) $node['id'] : (int) $node['id_in_db'];
 
-    if ((int) $node['type'] == 0) {
+    if ((int) $node['type'] === 0) {
         $item['type'] = 0;
         $item['id_agent'] = (int) $node['source_data'];
         $item['id_module'] = '';
-    } else if ((int) $node['type'] == 1) {
+    } else if ((int) $node['type'] === 1) {
         $item['type'] = 1;
         $item['id_agent'] = (int) $node['style']['id_agent'];
         $item['id_module'] = (int) $node['source_data'];
@@ -1770,10 +1763,6 @@ function networkmap_links_to_js_links(
 ) {
     $return = [];
 
-    if (enterprise_installed() && $simulated === false) {
-        enterprise_include_once('include/functions_networkmap.php');
-    }
-
     $count = 0;
     foreach ($relations as $key => $relation) {
         if (($relation['parent_type'] == NODE_MODULE)
@@ -1811,11 +1800,7 @@ function networkmap_links_to_js_links(
         $item = [];
         $item['id'] = $count;
         $count++;
-        if (enterprise_installed() && $simulated === false) {
-            $item['id_db'] = get_relation_id($relation);
-        } else {
-            $item['id_db'] = $key;
-        }
+        $item['id_db'] = ($simulated === true) ? $key : get_relation_id($relation);
 
         $item['arrow_start'] = '';
         $item['arrow_end'] = '';
@@ -1830,7 +1815,7 @@ function networkmap_links_to_js_links(
         $item['source'] = -1;
         $item['deleted'] = $relation['deleted'];
 
-        if (enterprise_installed() && $simulated === false) {
+        if ($simulated === false) {
             $target_and_source = [];
             $target_and_source = get_id_target_and_source_in_db($relation);
             $item['target_id_db'] = (int) $target_and_source['target'];
@@ -2095,24 +2080,18 @@ function duplicate_networkmap($id)
     if ($correct_or_id === false) {
         $return = false;
     } else {
-        if (enterprise_installed() === true) {
-            $new_id = $correct_or_id;
-            duplicate_map_insert_nodes_and_relations($id, $new_id);
-        }
+        $new_id = $correct_or_id;
+        duplicate_map_insert_nodes_and_relations($id, $new_id);
     }
 
     if ($return === true) {
         return true;
     } else {
+        // Relations.
+        delete_relations($new_id);
+        // Nodes.
+        delete_nodes($new_id);
         // Clean DB.
-        if (enterprise_installed() === true) {
-            // Relations.
-            delete_relations($new_id);
-
-            // Nodes.
-            delete_nodes($new_id);
-        }
-
         db_process_sql_delete('tmap', ['id' => $new_id]);
 
         return false;
@@ -2122,10 +2101,6 @@ function duplicate_networkmap($id)
 
 function clean_duplicate_links($relations)
 {
-    if (enterprise_installed()) {
-        enterprise_include_once('include/functions_networkmap.php');
-    }
-
     $segregation_links = [];
     $index = 0;
     $index2 = 0;
@@ -2159,9 +2134,7 @@ function clean_duplicate_links($relations)
         foreach ($segregation_links['aa'] as $link) {
             foreach ($segregation_links['aa'] as $link2) {
                 if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                    if (enterprise_installed() === true) {
-                        delete_link($segregation_links['aa'][$index_to_del]);
-                    }
+                    delete_link($segregation_links['aa'][$index_to_del]);
 
                     unset($segregation_links['aa'][$index_to_del]);
                 }
@@ -2184,9 +2157,7 @@ function clean_duplicate_links($relations)
         foreach ($segregation_links['mm'] as $link) {
             foreach ($segregation_links['mm'] as $link2) {
                 if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                    if (enterprise_installed() === true) {
-                        delete_link($segregation_links['mm'][$index_to_del]);
-                    }
+                    delete_link($segregation_links['mm'][$index_to_del]);
                 }
 
                 $index_to_del++;
@@ -2208,9 +2179,7 @@ function clean_duplicate_links($relations)
         foreach ($segregation_links['ff'] as $link) {
             foreach ($segregation_links['ff'] as $link2) {
                 if ($link['id_parent'] == $link2['id_child'] && $link['id_child'] == $link2['id_parent']) {
-                    if (enterprise_installed() === true) {
-                        delete_link($segregation_links['ff'][$index_to_del]);
-                    }
+                    delete_link($segregation_links['ff'][$index_to_del]);
 
                     unset($segregation_links['ff'][$index_to_del]);
                 }
@@ -2259,9 +2228,7 @@ function clean_duplicate_links($relations)
                     || (($id_p_source_data == $agent2)
                     && ($id_c_source_data == $agent1))
                 ) {
-                    if (enterprise_installed()) {
-                        delete_link($final_links['aa'][$key]);
-                    }
+                    delete_link($final_links['aa'][$key]);
 
                     unset($final_links['aa'][$key]);
                 }
@@ -2305,9 +2272,7 @@ function clean_duplicate_links($relations)
                     || (($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data'])
                     && ($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))
                 ) {
-                    if (enterprise_installed()) {
-                        delete_link($final_links2['aa'][$key]);
-                    }
+                    delete_link($final_links2['aa'][$key]);
 
                     unset($final_links2['aa'][$key]);
                 }

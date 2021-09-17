@@ -31,13 +31,14 @@ global $config;
 
 // Check user credentials.
 check_login();
-
+// error_reporting(E_ALL);
+// ini_set("display_errors", 1);
 // General ACL for the network maps.
-$networkmaps_read = check_acl($config['id_user'], 0, 'MR');
-$networkmaps_write = check_acl($config['id_user'], 0, 'MW');
-$networkmaps_manage = check_acl($config['id_user'], 0, 'MM');
+$networkmaps_read   = (bool) check_acl($config['id_user'], 0, 'MR');
+$networkmaps_write  = (bool) check_acl($config['id_user'], 0, 'MW');
+$networkmaps_manage = (bool) check_acl($config['id_user'], 0, 'MM');
 
-if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
+if ($networkmaps_read === false && $networkmaps_write === false && $networkmaps_manage === false) {
     db_pandora_audit(
         'ACL Violation',
         'Trying to access networkmap'
@@ -48,179 +49,175 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 
 require_once 'include/functions_networkmap.php';
 
-$new_networkmap = (bool) get_parameter('new_networkmap', false);
-$save_networkmap = (bool) get_parameter('save_networkmap', false);
-$save_empty_networkmap = (bool) get_parameter('save_empty_networkmap', false);
+$new_networkmap          = (bool) get_parameter('new_networkmap', false);
+$save_networkmap         = (bool) get_parameter('save_networkmap', false);
+$save_empty_networkmap   = (bool) get_parameter('save_empty_networkmap', false);
 $update_empty_networkmap = (bool) get_parameter('update_empty_networkmap', false);
-$update_networkmap = (bool) get_parameter('update_networkmap', false);
-$copy_networkmap = (bool) get_parameter('copy_networkmap', false);
-$delete = (bool) get_parameter('delete', false);
-$tab = (string) get_parameter('tab', 'list');
-$new_empty_networkmap = get_parameter('new_empty_networkmap', false);
+$update_networkmap       = (bool) get_parameter('update_networkmap', false);
+$copy_networkmap         = (bool) get_parameter('copy_networkmap', false);
+$delete                  = (bool) get_parameter('delete', false);
+$tab                     = (string) get_parameter('tab', 'list');
+$new_empty_networkmap    = (bool) get_parameter('new_empty_networkmap', false);
 
-if (enterprise_installed()) {
-    if ($new_empty_networkmap) {
-        if ($networkmaps_write || $networkmaps_manage) {
-            enterprise_include(
-                'godmode/agentes/pandora_networkmap_empty.editor.php'
-            );
-            return;
-        }
+if ($new_empty_networkmap === true) {
+    if ($networkmaps_write === true || $networkmaps_manage === true) {
+        include_once 'godmode/agentes/pandora_networkmap_empty.editor.php';
+        return;
+    }
+}
+
+if ($save_empty_networkmap === true) {
+    $id_group     = (int) get_parameter('id_group', 0);
+    $id_group_map = (int) get_parameter('id_group_map', 0);
+
+    // ACL for the network map.
+    $networkmap_write  = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+    $networkmap_manage = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
+
+    if ($networkmap_write === false && $networkmap_manage === false) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access networkmap'
+        );
+        include 'general/noaccess.php';
+        return;
     }
 
-    if ($save_empty_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
-        $id_group_map = (int) get_parameter('id_group_map', 0);
+    hd('papapapa');
+    $name = (string) get_parameter('name', '');
 
-        // ACL for the network map.
-        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
+    // Default size values.
+    $width = $config['networkmap_max_width'];
+    $height = $config['networkmap_max_width'];
 
-        if (!$networkmap_write && !$networkmap_manage) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
-            );
-            include 'general/noaccess.php';
-            return;
-        }
+    $method = (string) get_parameter('method', 'fdp');
 
-        $name = (string) get_parameter('name', '');
+    $dont_show_subgroups = (int) get_parameter_checkbox(
+        'dont_show_subgroups',
+        0
+    );
+    $node_radius = (int) get_parameter('node_radius', 40);
+    $description = get_parameter('description', '');
 
-        // Default size values
-        $width = $config['networkmap_max_width'];
-        $height = $config['networkmap_max_width'];
+    $values = [];
+    $values['name'] = $name;
+    $values['id_group'] = $id_group;
+    $values['source_period'] = 60;
+    $values['width'] = $width;
+    $values['height'] = $height;
+    $values['id_user'] = $config['id_user'];
+    $values['description'] = $description;
+    $values['source'] = 0;
+    $values['source_data'] = $id_group;
+    $values['id_group_map'] = $id_group_map;
 
-        $method = (string) get_parameter('method', 'fdp');
 
-        $dont_show_subgroups = (int) get_parameter_checkbox(
-            'dont_show_subgroups',
-            0
+    if (!$networkmap_write && !$networkmap_manage) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access networkmap'
         );
-        $node_radius = (int) get_parameter('node_radius', 40);
-        $description = get_parameter('description', '');
+        include 'general/noaccess.php';
+        return;
+    }
 
-        $values = [];
-        $values['name'] = $name;
-        $values['id_group'] = $id_group;
-        $values['source_period'] = 60;
-        $values['width'] = $width;
-        $values['height'] = $height;
-        $values['id_user'] = $config['id_user'];
-        $values['description'] = $description;
-        $values['source'] = 0;
-        $values['source_data'] = $id_group;
-        $values['id_group_map'] = $id_group_map;
+    $filter = [];
+    $filter['dont_show_subgroups'] = $dont_show_subgroups;
+    $filter['node_radius'] = $node_radius;
+    $filter['empty_map'] = 1;
+    $values['filter'] = json_encode($filter);
 
-
-        if (!$networkmap_write && !$networkmap_manage) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
-            );
-            include 'general/noaccess.php';
-            return;
-        }
-
-        $filter = [];
-        $filter['dont_show_subgroups'] = $dont_show_subgroups;
-        $filter['node_radius'] = $node_radius;
-        $filter['empty_map'] = 1;
-        $values['filter'] = json_encode($filter);
-
-        $result = false;
-        if (!empty($name)) {
-            $result = db_process_sql_insert(
-                'tmap',
-                $values
-            );
-        }
-
-        $result_txt = ui_print_result_message(
-            $result,
-            __('Succesfully created'),
-            __('Could not be created'),
-            '',
-            true
-        );
-
-        $id = $result;
-        define('_id_', $id);
-
-        if ($result !== false) {
-            $tab = 'view';
-            header(
-                'Location: '.ui_get_full_url(
-                    'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab='.$tab.'&id_networkmap='.$id
-                )
-            );
-        }
-    } else if ($update_empty_networkmap) {
-        $id_group = (int) get_parameter('id_group', 0);
-        $id_group_map = (int) get_parameter('id_group_map', 0);
-
-
-        // ACL for the new network map
-        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
-
-        if (!$networkmap_write && !$networkmap_manage) {
-            db_pandora_audit(
-                'ACL Violation',
-                'Trying to access networkmap'
-            );
-            include 'general/noaccess.php';
-            return;
-        }
-
-        $name = (string) get_parameter('name', '');
-
-        $recon_task_id = (int) get_parameter(
-            'recon_task_id',
-            0
-        );
-
-        $source = (string) get_parameter('source', 'group');
-
-        $values = [];
-        $values['name'] = $name;
-        $values['id_group'] = $id_group;
-
-        $values['generation_method'] = 4;
-
-        $description = get_parameter('description', '');
-        $values['description'] = $description;
-
-        $dont_show_subgroups = (int) get_parameter_checkbox(
-            'dont_show_subgroups',
-            0
-        );
-        $node_radius = (int) get_parameter('node_radius', 40);
-        $row = db_get_row('tmap', 'id', $id);
-        $filter = json_decode($row['filter'], true);
-        $filter['dont_show_subgroups'] = $dont_show_subgroups;
-        $filter['node_radius'] = $node_radius;
-
-        $values['filter'] = json_encode($filter);
-
-        $result = false;
-        if (!empty($name)) {
-            $result = db_process_sql_update(
-                'tmap',
-                $values,
-                ['id' => $id]
-            );
-        }
-
-        $result_txt = ui_print_result_message(
-            $result,
-            __('Succesfully updated'),
-            __('Could not be updated'),
-            '',
-            true
+    $result = false;
+    if (!empty($name)) {
+        $result = db_process_sql_insert(
+            'tmap',
+            $values
         );
     }
+
+    $result_txt = ui_print_result_message(
+        $result,
+        __('Succesfully created'),
+        __('Could not be created'),
+        '',
+        true
+    );
+
+    $id = $result;
+    define('_id_', $id);
+
+    if ($result !== false) {
+        $tab = 'view';
+        header(
+            'Location: '.ui_get_full_url(
+                'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab='.$tab.'&id_networkmap='.$id
+            )
+        );
+    }
+} else if ($update_empty_networkmap) {
+    $id_group = (int) get_parameter('id_group', 0);
+    $id_group_map = (int) get_parameter('id_group_map', 0);
+
+
+    // ACL for the new network map
+    $networkmap_write_new = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+    $networkmap_manage_new = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
+
+    if (!$networkmap_write && !$networkmap_manage) {
+        db_pandora_audit(
+            'ACL Violation',
+            'Trying to access networkmap'
+        );
+        include 'general/noaccess.php';
+        return;
+    }
+
+    $name = (string) get_parameter('name', '');
+
+    $recon_task_id = (int) get_parameter(
+        'recon_task_id',
+        0
+    );
+
+    $source = (string) get_parameter('source', 'group');
+
+    $values = [];
+    $values['name'] = $name;
+    $values['id_group'] = $id_group;
+
+    $values['generation_method'] = 4;
+
+    $description = get_parameter('description', '');
+    $values['description'] = $description;
+
+    $dont_show_subgroups = (int) get_parameter_checkbox(
+        'dont_show_subgroups',
+        0
+    );
+    $node_radius = (int) get_parameter('node_radius', 40);
+    $row = db_get_row('tmap', 'id', $id);
+    $filter = json_decode($row['filter'], true);
+    $filter['dont_show_subgroups'] = $dont_show_subgroups;
+    $filter['node_radius'] = $node_radius;
+
+    $values['filter'] = json_encode($filter);
+
+    $result = false;
+    if (empty($name) === false) {
+        $result = db_process_sql_update(
+            'tmap',
+            $values,
+            ['id' => $id]
+        );
+    }
+
+    $result_txt = ui_print_result_message(
+        $result,
+        __('Succesfully updated'),
+        __('Could not be updated'),
+        '',
+        true
+    );
 }
 
 // The networkmap doesn't exist yet
@@ -245,12 +242,11 @@ if ($new_networkmap || $save_networkmap) {
         $id_group_map = (int) get_parameter('id_group_map', 0);
 
 
-        // ACL for the network map
-        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-        $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
+        // ACL for the network map.
+        $networkmap_write  = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
-        if (!$networkmap_write && !$networkmap_manage) {
+        if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access networkmap'
@@ -259,9 +255,9 @@ if ($new_networkmap || $save_networkmap) {
             return;
         }
 
-        $name = (string) get_parameter('name', '');
+        $name = (string) get_parameter('name');
 
-        // Default size values
+        // Default size values.
         $width = $config['networkmap_max_width'];
         $height = $config['networkmap_max_width'];
 
@@ -288,11 +284,7 @@ if ($new_networkmap || $save_networkmap) {
         $scale_z = get_parameter('scale_z', 0.5);
 
         $node_sep = get_parameter('node_sep', '0.25');
-        if ($method == 'twopi') {
-            $rank_sep = get_parameter('rank_sep', '1.0');
-        } else {
-            $rank_sep = get_parameter('rank_sep', '0.5');
-        }
+        $rank_sep = get_parameter('rank_sep', ($method === 'twopi') ? '1.0' : '0.5');
 
         $mindist = get_parameter('mindist', '1.0');
         $kval = get_parameter('kval', '0.3');
@@ -348,7 +340,7 @@ if ($new_networkmap || $save_networkmap) {
             $values['source_data'] = $ip_mask;
         }
 
-        if (!$networkmap_write && !$networkmap_manage) {
+        if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access networkmap'
@@ -437,10 +429,10 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         return;
     }
 
-    $networkmap_write = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MW');
-    $networkmap_manage = check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MM');
+    $networkmap_write  = (bool) check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MW');
+    $networkmap_manage = (bool) check_acl_restricted_all($config['id_user'], $id_group_map_old, 'MM');
 
-    if (!$networkmap_write && !$networkmap_manage) {
+    if ($networkmap_write === false && $networkmap_manage === false) {
         db_pandora_audit(
             'ACL Violation',
             'Trying to access networkmap'
@@ -455,12 +447,12 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         $id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
 
 
-        // ACL for the new network map
-        $id_group_map = (int) get_parameter('id_group_map', 0);
-        $networkmap_write_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
-        $networkmap_manage_new = check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
+        // ACL for the new network map.
+        $id_group_map          = (int) get_parameter('id_group_map', 0);
+        $networkmap_write_new  = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MW');
+        $networkmap_manage_new = (bool) check_acl_restricted_all($config['id_user'], $id_group_map, 'MM');
 
-        if (!$networkmap_write && !$networkmap_manage) {
+        if ($networkmap_write === false && $networkmap_manage === false) {
             db_pandora_audit(
                 'ACL Violation',
                 'Trying to access networkmap'
@@ -503,7 +495,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
         $values['filter'] = json_encode($filter);
 
         $result = false;
-        if (!empty($name)) {
+        if (empty($name) === false) {
             $result = db_process_sql_update(
                 'tmap',
                 $values,
@@ -577,11 +569,9 @@ switch ($tab) {
         $old_networkmaps_enterprise = [];
         $old_networkmaps_open = [];
 
-        if (enterprise_installed()) {
-            $old_networkmaps_enterprise = db_get_all_rows_sql('SELECT * FROM tnetworkmap_enterprise');
-            if ($old_networkmaps_enterprise === false) {
-                $old_networkmaps_enterprise = [];
-            }
+        $old_networkmaps_enterprise = db_get_all_rows_sql('SELECT * FROM tnetworkmap_enterprise');
+        if ($old_networkmaps_enterprise === false) {
+            $old_networkmaps_enterprise = [];
         }
 
         $old_networkmaps_open = db_get_all_rows_sql('SELECT * FROM tnetwork_map');
@@ -590,13 +580,13 @@ switch ($tab) {
         foreach ($old_networkmaps_enterprise as $old_map_ent) {
             $old_map_options = json_decode($old_map_ent['options'], true);
 
-            if (!isset($old_map_options['migrated'])) {
+            if (isset($old_map_options['migrated']) === false) {
                 $ent_maps_to_migrate[] = $old_map_ent['id'];
             }
         }
 
         $open_maps_to_migrate = [];
-        if (isset($old_networkmaps_open) && is_array($old_networkmaps_open)) {
+        if (isset($old_networkmaps_open) === true && is_array($old_networkmaps_open) === true) {
             foreach ($old_networkmaps_open as $old_map_open) {
                 $text_filter = $old_map_open['text_filter'];
                 if ($text_filter != 'migrated') {
@@ -605,7 +595,7 @@ switch ($tab) {
             }
         }
 
-        if (!empty($ent_maps_to_migrate) || !empty($open_maps_to_migrate)) {
+        if (empty($ent_maps_to_migrate) === false || empty($open_maps_to_migrate) === false) {
             ?>
             <div id="migration_dialog" class="center">
                 <p class="center"><strong>Networkmaps are not migrated, wait while migration is processed...</strong></p>
@@ -694,12 +684,10 @@ switch ($tab) {
 
         $table->style = [];
         $table->style['name'] = '';
-        if (enterprise_installed()) {
-            $table->style['nodes'] = 'text-align: center;';
-        }
+        $table->style['nodes'] = 'text-align: center;';
 
         $table->style['groups'] = 'text-align: left;';
-        if ($networkmaps_write || $networkmaps_manage) {
+        if ($networkmaps_write === true || $networkmaps_manage === true) {
             $table->style['copy'] = 'text-align: center;';
             $table->style['edit'] = 'text-align: center;';
             $table->style['delete'] = 'text-align: center;';
@@ -707,12 +695,10 @@ switch ($tab) {
 
         $table->size = [];
         $table->size['name'] = '60%';
-        if (enterprise_installed()) {
-            $table->size['nodes'] = '30px';
-        }
+        $table->size['nodes'] = '30px';
 
         $table->size['groups'] = '400px';
-        if ($networkmaps_write || $networkmaps_manage) {
+        if ($networkmaps_write === true || $networkmaps_manage === true) {
             $table->size['copy'] = '30px';
             $table->size['edit'] = '30px';
             $table->size['delete'] = '30px';
@@ -720,12 +706,10 @@ switch ($tab) {
 
         $table->head = [];
         $table->head['name'] = __('Name');
-        if (enterprise_installed()) {
-            $table->head['nodes'] = __('Nodes');
-        }
+        $table->head['nodes'] = __('Nodes');
 
         $table->head['groups'] = __('Groups');
-        if ($networkmaps_write || $networkmaps_manage) {
+        if ($networkmaps_write === true || $networkmaps_manage === true) {
             $table->head['copy'] = __('Copy');
             $table->head['edit'] = __('Edit');
             $table->head['delete'] = __('Delete');
@@ -755,19 +739,10 @@ switch ($tab) {
             $table->data = [];
 
             foreach ($network_maps as $network_map) {
-                // ACL for the network map
-                $networkmap_read = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MR');
-                $networkmap_write = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MW');
-                $networkmap_manage = check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MM');
-
-                if (!$networkmap_read && !$networkmap_write && !$networkmap_manage) {
-                    db_pandora_audit(
-                        'ACL Violation',
-                        'Trying to access networkmap enterprise'
-                    );
-                    include 'general/noaccess.php';
-                    continue;
-                }
+                // ACL for the network map.
+                $networkmap_read   = (bool) check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MR');
+                $networkmap_write  = (bool) check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MW');
+                $networkmap_manage = (bool) check_acl_restricted_all($config['id_user'], $network_map['id_group_map'], 'MM');
 
                 $data = [];
                 if ($network_map['generation_method'] == 6) {
@@ -797,19 +772,17 @@ switch ($tab) {
                     $count = 0;
                 }
 
-                if (enterprise_installed()) {
-                    if (($count == 0) && ($network_map['source'] != 'empty')) {
-                        if ($network_map['generated']) {
-                            $data['nodes'] = __('Empty map');
-                        } else if ($network_map['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
-                            $data['nodes'] = __('Dynamic');
-                        } else {
-                            $data['nodes'] = __('Pending to generate');
-                        }
+                if (($count == 0) && ($network_map['source'] != 'empty')) {
+                    if ($network_map['generated']) {
+                        $data['nodes'] = __('Empty map');
+                    } else if ($network_map['generation_method'] == LAYOUT_RADIAL_DYNAMIC) {
+                        $data['nodes'] = __('Dynamic');
                     } else {
-                        $data['nodes'] = ($network_map['id_group'] == 0) ? ($count - 1) : $count;
-                        // PandoraFMS node is not an agent
+                        $data['nodes'] = __('Pending to generate');
                     }
+                } else {
+                    $data['nodes'] = ($network_map['id_group'] == 0) ? ($count - 1) : $count;
+                    // PandoraFMS node is not an agent
                 }
 
                 $data['groups'] = ui_print_group_icon($network_map['id_group_map'], true);
@@ -847,14 +820,12 @@ switch ($tab) {
             echo '</form>';
             echo '</div>';
 
-            if (enterprise_installed()) {
-                echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
-                echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
-                html_print_input_hidden('new_empty_networkmap', 1);
-                html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next float-right mrgn_right_20px"');
-                echo '</form>';
-                echo '</div>';
-            }
+            echo "<div style='width: ".$table->width."; margin-top: 5px;'>";
+            echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+            html_print_input_hidden('new_empty_networkmap', 1);
+            html_print_submit_button(__('Create empty network map'), 'crt', false, 'class="sub next float-right mrgn_right_20px"');
+            echo '</form>';
+            echo '</div>';
         }
     break;
 }

@@ -666,6 +666,7 @@ class Client
             $target = __('console update %d', $request['version']);
         }
 
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
         curl_setopt(
             $ch,
             CURLOPT_PROGRESSFUNCTION,
@@ -1673,7 +1674,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->productPath.'/extras/mr/'.$mr,
+                            $this->extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

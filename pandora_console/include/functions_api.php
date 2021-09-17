@@ -14821,6 +14821,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
         // Graph width (optional).
         $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+
+        // If recive value its from mail call.
+        $graph_font_size = $other['data'][5];
     } else {
         // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
@@ -14857,6 +14860,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'fullscale'          => false,
         'return_img_base_64' => true,
         'image_treshold'     => $graph_threshold,
+        'graph_font_size'    => $graph_font_size,
     ];
 
     // Format MIME RFC 2045 (line break 76 chars).
@@ -17337,7 +17341,7 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
         $agent = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $id_node]);
     }
 
-    $policy = policies_get_policy($id_policy, false, false);
+    $policy = policies_get_policy($id_policy);
 
     $policy_agent = (is_metaconsole()) ? db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent, 'id_node' => $id_node]) : db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
 

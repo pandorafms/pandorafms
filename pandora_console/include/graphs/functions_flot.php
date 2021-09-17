@@ -118,6 +118,7 @@ function flot_area_graph(
     $array_events_alerts
 ) {
     global $config;
+    global $is_mobile;
 
     // Get a unique identifier to graph.
     $graph_id = uniqid('graph_');
@@ -145,7 +146,7 @@ function flot_area_graph(
         break;
     }
 
-    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null )
+    if ($config['style'] === 'pandora_black' && ($params['pdf'] === false || $params['pdf'] === null) && (isset($is_mobile) === false || $is_mobile === false)
     ) {
         $background_style = '#222';
         $params['grid_color'] = '#fff';
@@ -170,7 +171,7 @@ function flot_area_graph(
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
     if ($params['show_legend']) {
-        $return .= '<p id="legend_'.$graph_id.'" style="text-align:left; width: '.$params['width'].'px;"></p>';
+        $return .= '<p id="legend_'.$graph_id.'" class="legend_background" style="text-align:left; width: '.$params['width'].'px;"></p>';
     }
 
     if (isset($params['graph_combined']) === true && $params['graph_combined']
@@ -760,11 +761,23 @@ function flot_slicesbar_graph(
     $graph_id = uniqid('graph_');
 
     // Set some containers to legend, graph, timestamp tooltip, etc.
-    $height = ((int) $height + 15);
+    if (is_numeric($height) === true) {
+        $height = ((int) $height + 15);
+    }
 
     $style = 'width:'.$width.'%;';
+
     // Fixed height size.
-    $style .= 'height: 100%;';
+    if (empty($height) === true) {
+        $style .= 'height: 100%;';
+    } else {
+        if (is_numeric($height) === true) {
+            $style .= 'height: '.$height.'px;';
+        } else {
+            $style .= 'height: '.$height.';';
+        }
+    }
+
     $return = "<div id='".$graph_id."' class='noresizevc graph ".$adapt_key."' style='".$style."'></div>";
 
     $return .= "<div id='value_".$graph_id."' class='flot_container'></div>";

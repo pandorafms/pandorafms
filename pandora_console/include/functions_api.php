@@ -16733,7 +16733,7 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
-    if (is_array($other) === true) {
+    if (is_array($other['data']) === true) {
         $group_id = $other['data'][0];
     } else {
         $group_id = $other['data'];

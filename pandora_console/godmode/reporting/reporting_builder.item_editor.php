@@ -5581,7 +5581,6 @@ function chooseType() {
 
     $('#agent_autocomplete_events').show();
 
-console.log(type);
     switch (type) {
         case 'event_report_group':
             $("#row_description").show();

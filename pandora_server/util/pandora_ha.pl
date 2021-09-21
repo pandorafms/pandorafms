@@ -49,11 +49,14 @@ my $Running = 0;
 ########################################################################
 # Print the given message with a preceding timestamp.
 ########################################################################
-sub log_message($$$) {
-  my ($conf, $source, $message) = @_;
+sub log_message($$$;$) {
+  my ($conf, $source, $message, $verbosity_level) = @_;
+
+  my $level = $verbosity_level;
+  $level = 5 unless defined($level);
 
   if (ref($conf) eq "HASH") {
-    logger($conf, 'HA (' . $source . ') ' . "$message", 5);
+    logger($conf, 'HA (' . $source . ') ' . "$message", $level);
   }
   
   if ($source eq '') {

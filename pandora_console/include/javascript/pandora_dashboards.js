@@ -1000,7 +1000,30 @@ function processServiceTree(settings) {
         });
         treeController.init({
           recipient: $("div#container_servicemap_" + settings.cellId),
-          detailRecipient: $.fixedBottomBox({ width: 100, height: 100 }),
+          detailRecipient: {
+            render: function(element, data) {
+              return {
+                open: function() {
+                  $("#module_details_window")
+                    .hide()
+                    .empty()
+                    .append(data)
+                    .dialog({
+                      resizable: true,
+                      draggable: true,
+                      modal: true,
+                      title: "Info",
+                      overlay: {
+                        opacity: 0.5,
+                        background: "black"
+                      },
+                      width: 450,
+                      height: 500
+                    });
+                }
+              };
+            }
+          },
           page: parameters["page"],
           emptyMessage: "No data found",
           foundMessage: "Found groups",

@@ -1293,6 +1293,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^splitbrain_autofix\s(.*)/i) {
 			$pa_config->{'splitbrain_autofix'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^ha_max_resync_wait_retries\s(.*)/i) {
+			$pa_config->{'ha_max_resync_wait_retries'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_resync_sleep\s(.*)/i) {
+			$pa_config->{'ha_resync_sleep'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ha_max_splitbrain_retries\s(.*)/i) {
+			$pa_config->{'ha_max_splitbrain_retries'} = clean_blank($1);
+		}
 		
 	} # end of loop for parameter #
 

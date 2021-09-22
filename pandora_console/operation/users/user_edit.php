@@ -445,12 +445,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 
 $autorefresh_list_out = [];
-if (is_metaconsole()) {
-    $autorefresh_list_out['monitoring/tactical'] = 'Tactical view';
-    $autorefresh_list_out['monitoring/group_view'] = 'Group view';
-} else {
-    $autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
-    $autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
+if (is_metaconsole() === false || is_centrallised() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
@@ -463,6 +458,8 @@ if (is_metaconsole()) {
     }
 }
 
+$autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
+$autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
 $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
 $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';

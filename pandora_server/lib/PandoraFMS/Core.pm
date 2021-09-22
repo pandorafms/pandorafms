@@ -1381,6 +1381,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# Simple email address validation. Prevents connections to the SMTP server when no address is provided.
+		if (index($field1, '@') == -1) {
+			logger($pa_config, "No valid email address provided for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 10);
+			return;
+		}
+
 		# Subject
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Message

@@ -32,6 +32,10 @@ function get_last_contact(source, agent_id) {
         type: "POST",
         url: "ajax.php",
         success: function (data) {
+            var td = $(`#img-${source}`).parent();
+            td.empty();
+            td.html(data);
+            td.css('padding-left', '12px');
         }
     });
 }
@@ -73,6 +77,7 @@ foreach ($logs as $log) {
         'images/spinner.gif',
         true,
         [
+            'id'     => 'img-'.$log['source'],
             'border' => '0',
             'width'  => '20px',
             'heigth' => '20px',

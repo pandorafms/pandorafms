@@ -5777,10 +5777,6 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
-        return;
-    }
-
     $headers = getallheaders();
     if (isset($headers['idk']) === false
         && is_management_allowed($headers['idk']) === false

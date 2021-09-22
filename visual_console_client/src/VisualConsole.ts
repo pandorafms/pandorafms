@@ -567,6 +567,10 @@ export default class VisualConsole {
 
     Object.keys(this.lineLinks[item.id]).forEach(i => {
       let lineId = parseInt(i);
+      const found = this.elementIds.indexOf(lineId);
+      if (found === -1) {
+        return;
+      }
       let line = this.elementsById[lineId] as Line;
       if (line.props) {
         let startX = line.props.startPosition.x;

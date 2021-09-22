@@ -71,7 +71,7 @@ $access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m ==
 
 
 $readonly = false;
-if (!is_metaconsole()
+if (is_metaconsole() === false
     && isset($config['event_replication'])
     && $config['event_replication'] == 1
     && $config['show_events_in_local'] == 1
@@ -82,7 +82,7 @@ if (!is_metaconsole()
 // Load specific stylesheet.
 ui_require_css_file('events');
 ui_require_css_file('tables');
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     ui_require_css_file('tables_meta', ENTERPRISE_DIR.'/include/styles/');
 }
 
@@ -216,7 +216,7 @@ $section = get_parameter('section', false);
 
 $id_source_event = get_parameter(
     'filter[id_source_event]',
-    $filter['id_source_event']
+    ($filter['id_source_event'] ?? '')
 );
 
 $server_id = get_parameter(
@@ -224,7 +224,7 @@ $server_id = get_parameter(
     $filter['id_server_meta']
 );
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     // Connect to node database.
     $id_node = $server_id;
     if ($id_node != 0) {
@@ -235,16 +235,16 @@ if (is_metaconsole()) {
 }
 
 
-if (empty($text_agent) && !empty($id_agent)) {
+if (empty($text_agent) && empty($id_agent) === false) {
     $text_agent = agents_get_alias($id_agent);
 }
 
-if (empty($text_module) && !empty($id_agent_module)) {
+if (empty($text_module) && empty($id_agent_module) === false) {
     $text_module = modules_get_agentmodule_name($id_agent_module);
     $text_agent = agents_get_alias(modules_get_agentmodule_agent($id_agent_module));
 }
 
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     // Return to metaconsole database.
     if ($id_node != 0) {
         metaconsole_restore_db();
@@ -252,7 +252,7 @@ if (is_metaconsole()) {
 }
 
 // Ajax responses.
-if (is_ajax()) {
+if (is_ajax() === true) {
     $get_events = get_parameter('get_events', 0);
     // Datatables offset, limit.
     $start = get_parameter('start', 0);
@@ -263,7 +263,7 @@ if (is_ajax()) {
             ob_start();
             $order = get_datatable_order(true);
 
-            if (is_array($order) && $order['field'] == 'mini_severity') {
+            if (is_array($order) === true && $order['field'] === 'mini_severity') {
                 $order['field'] = 'te.criticity';
             }
 
@@ -295,7 +295,8 @@ if (is_ajax()) {
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
-            if (!is_metaconsole()) {
+
+            if (is_metaconsole() === false) {
                 $fields[] = 'am.nombre as module_name';
                 $fields[] = 'am.id_agente_modulo as id_agentmodule';
                 $fields[] = 'am.custom_id as module_custom_id';
@@ -509,11 +510,13 @@ if ($loaded_filter !== false && $from_event_graph != 1) {
         $filter_only_alert = $filter['filter_only_alert'];
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
+        $time_from = $filter['time_from'];
         $date_to = $filter['date_to'];
+        $time_to = $filter['time_to'];
         $source = $filter['source'];
         $id_extra = $filter['id_extra'];
         $user_comment = $filter['user_comment'];
-        $id_source_event = $filter['id_source_event'];
+        $id_source_event = ($filter['id_source_event'] ?? '');
         $server_id = $filter['server_id'];
     }
 }
@@ -565,7 +568,7 @@ $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $tabletags_with->class = 'nobady';
     $tabletags_with->cellspacing = 0;
     $tabletags_with->cellpadding = 0;
@@ -642,7 +645,7 @@ $tabletags_without->width = '100%';
 $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $tabletags_without->class = 'nobady';
     $tabletags_without->cellspacing = 0;
     $tabletags_without->cellpadding = 0;
@@ -781,7 +784,7 @@ if ($pure) {
     // Floating menu - End.
     ui_require_jquery_file('countdown');
 } else {
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         // Load metaconsole frame.
         enterprise_hook('open_meta_frame');
     }
@@ -892,7 +895,7 @@ if ($pure) {
     }
 
     // If the history event is not enabled, dont show the history tab.
-    if (!isset($config['metaconsole_events_history']) || $config['metaconsole_events_history'] != 1) {
+    if (isset($config['metaconsole_events_history']) === false || $config['metaconsole_events_history'] != 1) {
         unset($onheader['history']);
     }
 
@@ -913,7 +916,7 @@ if ($pure) {
         break;
     }
 
-    if (! defined('METACONSOLE')) {
+    if (is_metaconsole() === false) {
         unset($onheader['history']);
         ui_print_page_header(
             __('Events'),
@@ -974,13 +977,16 @@ if (enterprise_installed() === true) {
 }
 
 // Error div for ajax messages.
-echo "<div id='show_message_error'>";
-echo '</div>';
-
+html_print_div(
+    [
+        'id'      => 'show_message_error',
+        'content' => '',
+    ]
+);
 
 // Controls.
 if (is_metaconsole() !== true) {
-    if (isset($config['event_replication'])
+    if (isset($config['event_replication']) === true
         && $config['event_replication'] == 1
     ) {
         if ($config['show_events_in_local'] == 0) {
@@ -1095,7 +1101,7 @@ $in = '<div class="filter_input"><label>'.__('Free search').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-if (empty($severity) && $severity !== '0') {
+if (empty($severity) === true && $severity !== '0') {
     $severity = -1;
 }
 
@@ -1207,7 +1213,7 @@ $in .= $data.'</div>';
 $adv_inputs[] = $in;
 
 // Mixed. Metaconsole => server, Console => module.
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $title = __('Server');
     $data = html_print_select_from_sql(
         'SELECT id, server_name FROM tmetaconsole_setup',
@@ -1270,16 +1276,20 @@ $data = html_print_select(
     -1,
     true
 );
-$in = '<div class="filter_input"><label>'.__('Alert events').'</label>';
-$in .= $data.'</div>';
-$adv_inputs[] = $in;
 
-if (is_metaconsole()) {
-    if (empty($id_source_event) === true) {
-        $id_source_event = '';
-    }
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s',
+            __('Alert events'),
+            $data
+        ),
+    ],
+    true
+);
 
-    $input_id_source_event = (empty($id_source_event) === true) ? '' : $id_source_event;
+if (is_metaconsole() === true) {
     $data = html_print_input_text(
         'id_source_event',
         $id_source_event,
@@ -1288,19 +1298,24 @@ if (is_metaconsole()) {
         255,
         true
     );
-    $in = '<div class="filter_input"><label>'.__('Id source event').'</label>';
-    $in .= $data.'</div>';
-    $adv_inputs[] = $in;
-}
 
-if ($date_from === '0000-00-00') {
-    $date_from = '';
+    $adv_inputs[] = html_print_div(
+        [
+            'class'   => 'filter_input',
+            'content' => sprintf(
+                '<label>%s</label>%s',
+                __('Id source event'),
+                $data
+            ),
+        ],
+        true
+    );
 }
 
 // Date from.
-$data = html_print_input_text(
+$inputDateFrom = html_print_input_text(
     'date_from',
-    $date_from,
+    ($date_from === '0000-00-00') ? '' : $date_from,
     '',
     false,
     10,
@@ -1318,22 +1333,69 @@ $data = html_print_input_text(
     // Autocomplete.
     'off'
 );
-$in = '<div class="filter_input">';
-$in .= '<div class="filter_input_little"><label>'.__('Date from').'</label>';
-$in .= $data.'</div>';
 
-$data = '';
-$in .= $data.'</div>';
-$adv_inputs[] = $in;
+// Time from.
+$inputTimeFrom = html_print_input_text(
+    'time_from',
+    $time_from,
+    '',
+    false,
+    10,
+    true,
+    // Disabled.
+    false,
+    // Required.
+    false,
+    // Function.
+    '',
+    // Class.
+    '',
+    // OnChange.
+    '',
+    // Autocomplete.
+    'off'
+);
 
-if ($date_to === '0000-00-00') {
-    $date_to = '';
-}
+// Date and Time From.
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s<span>:</span>%s',
+            __('From (date:time)'),
+            $inputDateFrom,
+            $inputTimeFrom
+        ),
+    ],
+    true
+);
+
+// Time to.
+$inputTimeTo = html_print_input_text(
+    'time_to',
+    $time_to,
+    '',
+    false,
+    10,
+    true,
+    // Disabled.
+    false,
+    // Required.
+    false,
+    // Function.
+    '',
+    // Class.
+    '',
+    // OnChange.
+    '',
+    // Autocomplete.
+    'off'
+);
 
 // Date to.
-$data = html_print_input_text(
+$inputDateTo = html_print_input_text(
     'date_to',
-    $date_to,
+    ($date_to === '0000-00-00') ? '' : $date_to,
     '',
     false,
     10,
@@ -1351,16 +1413,23 @@ $data = html_print_input_text(
     // Autocomplete.
     'off'
 );
-$in = '<div class="filter_input">';
-$in .= '<div class="filter_input_little"><label>'.__('Date to').'</label>';
-$in .= $data.'</div>';
 
-$data = '';
-$in .= $data.'</div>';
-$adv_inputs[] = $in;
+// Date and Time To.
+$adv_inputs[] = html_print_div(
+    [
+        'class'   => 'filter_input',
+        'content' => sprintf(
+            '<label>%s</label>%s<span>:</span>%s',
+            __('To (date:time)'),
+            $inputDateTo,
+            $inputTimeTo
+        ),
+    ],
+    true
+);
 
 // Tags.
-if (is_metaconsole()) {
+if (is_metaconsole() === true) {
     $data = '<fieldset><legend class="pdd_0px">'.__('Events with following tags').'</legend>'.html_print_table($tabletags_with, true).'</fieldset>';
     $data .= '<fieldset><legend class="pdd_0px">'.__('Events without following tags').'</legend>'.html_print_table($tabletags_without, true).'</fieldset>';
 } else {

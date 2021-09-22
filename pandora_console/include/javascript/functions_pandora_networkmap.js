@@ -1113,6 +1113,10 @@ function load_interfaces(selected_links) {
     );
     $("#relations_table tbody").append(template_relation_row);
 
+    // Update input for transform in select2.
+    $("#interface_source_" + i).select2();
+    $("#interface_target_" + i).select2();
+
     template_relation_row = null;
   });
 }

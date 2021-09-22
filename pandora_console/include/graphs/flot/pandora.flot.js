@@ -169,6 +169,11 @@ function pandoraFlotPieCustom(
   var label_conf;
   var show_legend = true;
 
+  // Set default value if not come like a number.
+  if (isNaN(width) === true) {
+    width = 451;
+  }
+
   if (width <= 450) {
     show_legend = false;
     label_conf = {
@@ -221,6 +226,9 @@ function pandoraFlotPieCustom(
   ) {
     conf_pie.series.pie.label = { show: false };
   }
+
+  // Avoid issues with 0 width values.
+  $("#" + graph_id).width(width);
 
   var plot = $.plot($("#" + graph_id), data, conf_pie);
   if (no_data == data.length) {

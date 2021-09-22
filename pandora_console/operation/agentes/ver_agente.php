@@ -765,7 +765,7 @@ if (is_ajax()) {
 
             $result = [];
             foreach ($last_modules_set as $module_name => $module_data) {
-                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
+                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true, false, '...');
 
                 $module_data_processed = array_map(
                     function ($item) {
@@ -863,10 +863,12 @@ if (is_ajax()) {
                         io_safe_output($nameModule['nombre']),
                         'module_medium',
                         false,
-                        true
+                        true,
+                        false,
+                        '...'
                     );
                 } else {
-                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true, false, '...');
                 }
             }
         }
@@ -886,6 +888,8 @@ if (is_ajax()) {
         $status_modulo = (int) get_parameter('status_module', -1);
 
         $tags = (array) get_parameter('tags', []);
+
+        $safe_name = (bool) get_parameter('safe_name', false);
 
         // Filter.
         $filter = [];
@@ -1024,6 +1028,9 @@ if (is_ajax()) {
 
         foreach ($agent_modules as $key => $module) {
             $agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
+            if ($safe_name == true) {
+                $agent_modules[$key]['safe_name'] = $module['nombre'];
+            }
         }
 
         $get_order_json = (bool) get_parameter('get_order_json', false);

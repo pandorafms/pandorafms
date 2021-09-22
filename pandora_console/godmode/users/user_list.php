@@ -129,7 +129,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -153,7 +153,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -177,7 +177,7 @@ switch ($sortField) {
             break;
 
             default:
-                // Not possible.
+                // Nothing to do.
             break;
         }
     break;
@@ -395,7 +395,7 @@ $table->data[0][4] = html_print_submit_button(
 );
 
 $is_management_allowed = true;
-if (is_management_allowed() === false) {
+if (is_metaconsole() === false && is_management_allowed() === false) {
     $is_management_allowed = false;
     ui_print_warning_message(
         __(
@@ -585,11 +585,11 @@ foreach ($info as $user_id => $user_info) {
     $cont++;
 
     // Manual pagination due the complicated process of the ACL data.
-    if ($cont <= $offset) {
+    if ($cont <= $offset && $search !== true) {
         continue;
     }
 
-    if ($cont > ($limit + $offset)) {
+    if ($cont > ($limit + $offset) && $search !== true) {
         break;
     }
 
@@ -820,6 +820,9 @@ foreach ($info as $user_id => $user_info) {
                 $data[6] .= '';
                 // Delete button not in this mode.
             }
+        } else {
+            $data[6] .= '';
+            // Delete button not in this mode.
         }
     }
 

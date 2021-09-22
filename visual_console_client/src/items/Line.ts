@@ -339,6 +339,10 @@ export default class Line extends Item<LineProps> {
   }
 
   protected updateDomElement(element: HTMLElement): void {
+    if (element.parentElement != null) {
+      element.parentElement.style.cursor = "default";
+    }
+
     let {
       x, // Box x
       y, // Box y
@@ -419,6 +423,7 @@ export default class Line extends Item<LineProps> {
       startCircle.style.position = "absolute";
       startCircle.style.left = `${x1 - this.circleRadius}px`;
       startCircle.style.top = `${y1 - this.circleRadius}px`;
+      startCircle.style.cursor = `move`;
 
       endCircle.classList.add(
         "visual-console-item-line-circle",
@@ -431,6 +436,7 @@ export default class Line extends Item<LineProps> {
       endCircle.style.position = "absolute";
       endCircle.style.left = `${x2 - this.circleRadius}px`;
       endCircle.style.top = `${y2 - this.circleRadius}px`;
+      endCircle.style.cursor = `move`;
 
       if (element.parentElement !== null) {
         const circles = element.parentElement.getElementsByClassName(

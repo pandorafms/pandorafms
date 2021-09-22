@@ -1,11 +1,9 @@
 /**
  *
  * Name: Default theme
+ * Pandora Stylesheet
  *
- * Extension to manage a list of gateways and the node address where they should
- * point to.
- *
- * @category   Extensions
+ * @category   Stylesheet
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -953,7 +951,7 @@ input.sub {
   border-radius: 5px;
   background-color: #fff;
   background-repeat: no-repeat;
-  background-position: 92% 10px;
+  background-position: 92% 13px;
   color: #000;
   padding-bottom: 10px;
   padding-top: 10px;
@@ -4969,7 +4967,6 @@ input:checked + .p-slider:before {
 
 #file_table_modal {
   display: flex;
-  justify-content: space-between;
   margin-bottom: 40px;
 }
 
@@ -5564,7 +5561,7 @@ div#bullets_modules div {
 
 /* Agent details in agent view */
 div#status_pie path {
-  stroke-width: 8px;
+  stroke-width: 0px;
 }
 div#status_pie {
   margin-bottom: 2em;
@@ -7859,9 +7856,10 @@ div.graph div.legend table {
 }
 
 .model_log_viewer {
-  position: absolute;
-  bottom: 5px;
-  right: 0;
+  margin-top: 5px;
+  float: right;
+  margin-bottom: 0px;
+  margin-right: 0px;
 }
 
 .container_left_class {
@@ -8302,4 +8300,10 @@ div.stat-win-spinner img {
 }
 .line_height_12pt {
   line-height: 12pt;
+}
+.line_height_0pt {
+  line-height: 10pt !important;
+}
+#license_error_msg_dialog {
+  min-height: 350px !important;
 }

@@ -710,6 +710,8 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 ALTER TABLE `tevent_alert` ADD COLUMN `special_days` tinyint(1) default 0;
 ALTER TABLE `tevent_alert` MODIFY COLUMN `time_threshold` int(10) NOT NULL default 86400;
 ALTER TABLE `tevent_alert` ADD COLUMN `disable_event` tinyint(1) DEFAULT 0;
+ALTER TABLE `tevent_alert` ADD COLUMN `id_template_conditions` int(10) unsigned NOT NULL default 0;
+ALTER TABLE `tevent_alert` ADD COLUMN `id_template_fields` int(10) unsigned NOT NULL default 0;
 
 -- -----------------------------------------------------
 -- Table `tevent_alert_action`
@@ -1028,6 +1030,7 @@ ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_timestamp_idx` (`timestamp`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_module_status_idx` (`module_status`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_criticity_idx` (`criticity`);
 ALTER TABLE `tmetaconsole_event` ADD INDEX `tme_agent_name_idx` (`agent_name`);
+ALTER TABLE `tmetaconsole_event` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_event_history`
@@ -1440,13 +1443,13 @@ ALTER TABLE `ttag` MODIFY COLUMN `name` text NOT NULL default '';
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 48);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('MR', 49);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_docs_logo', 'default_docs.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_support_logo', 'default_support.png');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('custom_logo_white_bg_preview', 'pandora_logo_head_white_bg.png');
 UPDATE tconfig SET value = 'https://licensing.artica.es/pandoraupdate7/server.php' WHERE token='url_update_manager';
 DELETE FROM `tconfig` WHERE `token` = 'current_package_enterprise';
-INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 756);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('current_package', 757);
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('status_monitor_fields', 'policy,agent,data_type,module_name,server_type,interval,status,graph,warn,data,timestamp');
 UPDATE `tconfig` SET `value` = 'mini_severity,evento,id_agente,estado,timestamp' WHERE `token` LIKE 'event_fields';
 DELETE FROM `tconfig` WHERE `token` LIKE 'integria_api_password';
@@ -2349,6 +2352,8 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
 ALTER TABLE `tevento` ADD COLUMN `data` double(50,5) default NULL;
 
 ALTER TABLE `tevento` ADD COLUMN `module_status` int(4) NOT NULL default '0';
+
+ALTER TABLE `tevento` MODIFY `data` TINYTEXT default NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_extended`
@@ -4075,3 +4080,5 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 	`utimestamp` bigint(20) NOT NULL default '0',
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+UPDATE `tlanguage` SET `name` = 'Deutsch' WHERE `id_language` = 'de';

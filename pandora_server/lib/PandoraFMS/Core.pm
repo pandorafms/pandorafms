@@ -1381,6 +1381,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# Simple email address validation. Prevents connections to the SMTP server when no address is provided.
+		if (index($field1, '@') == -1) {
+			logger($pa_config, "No valid email address provided for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 10);
+			return;
+		}
+
 		# Subject
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Message
@@ -1424,11 +1431,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			my $threshold = shift;
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
-				$params->{"other"} = $period . '%7C1%7C0%7C225';
+				$params->{"other"} = $period . '%7C1%7C0%7C225%7C""%7C14';
 				$cid = 'module_graph_' . $hours . 'h';
 			}
 			else{
-				$params->{"other"} = $period . '%7C1%7C1%7C225';
+				$params->{"other"} = $period . '%7C1%7C1%7C225%7C""%7C14';
 				$cid = 'module_graphth_' . $hours . 'h';
 			}
 
@@ -3683,7 +3690,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$) {
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 	my $event_id = db_insert ($dbh, 'id_evento','INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, $module_data, $module_status);
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
 
 	# Do not write to the event file
 	return $event_id if ($pa_config->{'event_file'} eq '');
@@ -4828,23 +4835,23 @@ sub generate_status_event ($$$$$$$$) {
 		}
 		
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description = $pa_config->{"text_going_down_normal"};
+		$description = safe_output($pa_config->{"text_going_down_normal"});
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description = $pa_config->{"text_going_up_critical"};
+		$description = safe_output($pa_config->{"text_going_up_critical"});
 	# Warning
 	} elsif ($status == 2) {
 		
 		# From critical
 		if ($known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description = $pa_config->{"text_going_down_warning"};
+			$description = safe_output($pa_config->{"text_going_down_warning"});
 		}
 		# From normal or warning (after becoming unknown)
 		else {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description = $pa_config->{"text_going_up_warning"};
+			$description = safe_output($pa_config->{"text_going_up_warning"});
 		}
 	} else {
 		# Unknown status

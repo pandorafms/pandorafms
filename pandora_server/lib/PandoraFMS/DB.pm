@@ -235,6 +235,9 @@ sub get_console_api_url ($$) {
 			$pa_config->{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
 			logger($pa_config, "Assuming default path for API url: " . $pa_config->{"console_api_url"}, 3);
 		} else {
+			if ($console_api_url !~ /\/$/) {
+				$console_api_url .= '/';
+			}
 			$pa_config->{"console_api_url"} = $console_api_url . $include_api;	
 		}
 	}

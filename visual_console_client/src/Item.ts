@@ -65,6 +65,7 @@ export interface ItemProps extends Position, Size {
   aclGroupId: number | null;
   cacheExpiration: number | null;
   colorStatus: string;
+  cellId: number | null;
 }
 
 export interface ItemClickEvent {
@@ -141,6 +142,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     aclGroupId: parseIntOr(data.aclGroupId, null),
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
     colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
+    cellId: parseIntOr(data.cellId, null),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };

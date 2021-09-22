@@ -1845,14 +1845,25 @@ function reporting_event_report_group(
     }
 
     $id_meta = 0;
+    $node_historical_event_enbled = '';
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+
+        // Check if node historical event is enable.
+        $sql = sprintf(
+            'SELECT value
+            FROM tconfig
+            WHERE token LIKE "history_event_enabled"'
+        );
+
+        $result = db_get_row_sql($sql);
+        $node_historical_event_enbled = $result['value'];
     }
 
     $history = false;
-    if ($config['history_event_enabled']) {
+    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
         $history = true;
     }
 
@@ -2274,6 +2285,7 @@ function reporting_agents_inventory($report, $content)
 
     $external_source = io_safe_input(json_decode($content['external_source'], true));
     $es_agents_inventory_display_options = $external_source['agents_inventory_display_options'];
+    $es_agent_custom_fields = $external_source['agent_custom_fields'];
     $es_custom_fields = $external_source['agent_custom_field_filter'];
     $es_os_filter = $external_source['agent_os_filter'];
     $es_agent_status_filter = $external_source['agent_status_filter'];
@@ -2288,10 +2300,20 @@ function reporting_agents_inventory($report, $content)
         $es_agents_inventory_display_options = [];
     }
 
+    $custom_field_sql = '';
     $search_sql = '';
 
-    if ($es_custom_fields != '') {
-        $search_sql .= ' AND id_os = '.$es_custom_fields;
+    if (!empty($es_agent_custom_fields)) {
+        $custom_field_sql = 'INNER JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
+        if ($es_agent_custom_fields[0] != 0) {
+            $custom_field_sql .= ' AND tacd.id_field IN ('.implode(',', $es_agent_custom_fields).')';
+        }
+
+        if (!empty($es_custom_fields)) {
+            $custom_field_sql .= ' AND tacd.description like "%'.$es_custom_fields.'%"';
+        } else {
+            $custom_field_sql .= ' AND tacd.description <> ""';
+        }
     }
 
     if (in_array('0', $es_os_filter) === false) {
@@ -2330,8 +2352,10 @@ function reporting_agents_inventory($report, $content)
             ON tagente.id_agente = tasg.id_agent
         LEFT JOIN tagente_modulo tam
             ON tam.id_agente = tagente.id_agente
+        %s
         WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
             %s',
+        $custom_field_sql,
         $user_groups_to_sql,
         $user_groups_to_sql,
         $search_sql

@@ -762,7 +762,7 @@ function events_get_all(
     }
 
     if (isset($filter['time_from'])) {
-        $time_from = $filter['time_from'];
+        $time_from = (empty($filter['time_from']) === true) ? '00:00:00' : $filter['time_from'];
     }
 
     if (isset($date_from)) {
@@ -785,7 +785,7 @@ function events_get_all(
     }
 
     if (isset($filter['time_to'])) {
-        $time_to = $filter['time_to'];
+        $time_to = (empty($filter['time_to']) === true) ? '23:59:59' : $filter['time_to'];
     }
 
     if (isset($date_to)) {
@@ -6193,7 +6193,9 @@ function events_get_events_grouped_by_agent(
  * @param array   $tag_without       Tag_without.
  * @param boolean $filter_only_alert Filter_only_alert.
  * @param string  $date_from         Date_from.
+ * @param string  $time_from         Time_from.
  * @param string  $date_to           Date_to.
+ * @param string  $time_to           Time_to.
  * @param boolean $id_user           Id_user.
  * @param boolean $server_id_search  Server_id_search.
  *
@@ -6213,7 +6215,9 @@ function events_sql_events_grouped_agents(
     $tag_without=[],
     $filter_only_alert=false,
     $date_from='',
+    $time_from='',
     $date_to='',
+    $time_to='',
     $id_user=false,
     $server_id_search=false
 ) {
@@ -6320,12 +6324,20 @@ function events_sql_events_grouped_agents(
         $sql_post .= " AND id_usuario = '".$id_user_ack."'";
     }
 
-    if (!isset($date_from)) {
+    if (isset($date_from) === false) {
         $date_from = '';
     }
 
-    if (!isset($date_to)) {
+    if (isset($time_from) === false) {
+        $time_from = '00:00:00';
+    }
+
+    if (isset($date_to) === false) {
         $date_to = '';
+    }
+
+    if (isset($time_to) === false || empty($time_to) === true) {
+        $time_to = '23:59:59';
     }
 
     if (($date_from == '') && ($date_to == '')) {
@@ -6334,13 +6346,13 @@ function events_sql_events_grouped_agents(
             $sql_post .= ' AND (utimestamp > '.$unixtime.')';
         }
     } else {
-        if ($date_from != '') {
-            $udate_from = strtotime($date_from.' 00:00:00');
+        if (empty($date_from) === false) {
+            $udate_from = strtotime($date_from.' '.$time_from);
             $sql_post .= ' AND (utimestamp >= '.$udate_from.')';
         }
 
-        if ($date_to != '') {
-            $udate_to = strtotime($date_to.' 23:59:59');
+        if (empty($date_to) === false) {
+            $udate_to = strtotime($date_to.' '.$time_to);
             $sql_post .= ' AND (utimestamp <= '.$udate_to.')';
         }
     }

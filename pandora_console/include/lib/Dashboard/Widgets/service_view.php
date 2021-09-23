@@ -305,6 +305,7 @@ class ServiceViewWidget extends Widget
 
             $containerId = 'container_servicemap_'.$this->cellId;
             $output .= "<div id='".$containerId."' class='tree-controller-recipient'>";
+            $output .= '</div>';
 
             $output .= \html_print_image(
                 'images/spinner.gif',
@@ -336,6 +337,10 @@ class ServiceViewWidget extends Widget
             $settings['cellId'] = $this->cellId;
             $settings['baseURL'] = \ui_get_full_url('/', false, false, false);
             $settings['ajaxURL'] = \ui_get_full_url('ajax.php', false, false, false);
+
+            // Show the modal window of an module.
+            $output .= '<div id="module_details_window" class="">';
+            $output .= '</div>';
 
             // Script.
             $output .= '<script type="text/javascript">';

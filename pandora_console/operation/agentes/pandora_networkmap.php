@@ -83,7 +83,6 @@ if ($save_empty_networkmap === true) {
         return;
     }
 
-    hd('papapapa');
     $name = (string) get_parameter('name', '');
 
     // Default size values.

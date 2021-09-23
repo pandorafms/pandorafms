@@ -2855,7 +2855,7 @@ class NetworkMap
     public function loadAdvancedInterface()
     {
         $list_networkmaps = get_networkmaps($this->idMap);
-        hd($list_networkmaps);
+
         if (empty($list_networkmaps) === true) {
             $list_networkmaps = [];
         }

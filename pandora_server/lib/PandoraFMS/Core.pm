@@ -1381,6 +1381,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# Simple email address validation. Prevents connections to the SMTP server when no address is provided.
+		if (index($field1, '@') == -1) {
+			logger($pa_config, "No valid email address provided for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 10);
+			return;
+		}
+
 		# Subject
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Message
@@ -4828,23 +4835,23 @@ sub generate_status_event ($$$$$$$$) {
 		}
 		
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description = $pa_config->{"text_going_down_normal"};
+		$description = safe_output($pa_config->{"text_going_down_normal"});
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description = $pa_config->{"text_going_up_critical"};
+		$description = safe_output($pa_config->{"text_going_up_critical"});
 	# Warning
 	} elsif ($status == 2) {
 		
 		# From critical
 		if ($known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description = $pa_config->{"text_going_down_warning"};
+			$description = safe_output($pa_config->{"text_going_down_warning"});
 		}
 		# From normal or warning (after becoming unknown)
 		else {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description = $pa_config->{"text_going_up_warning"};
+			$description = safe_output($pa_config->{"text_going_up_warning"});
 		}
 	} else {
 		# Unknown status

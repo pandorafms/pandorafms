@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.757";
-my $pandora_build = "210913";
+my $pandora_build = "210923";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -171,6 +171,8 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
+
+	$pa_config->{"event_replication"} = pandora_get_tconfig_token ($dbh, 'event_replication', 0);
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -1042,9 +1044,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^policy_manager\s+([0-1])/i) {
 			$pa_config->{'policy_manager'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^event_replication\s+([0-1])/i) {
-			$pa_config->{'event_replication'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^event_auto_validation\s+([0-1])/i) {
 			$pa_config->{'event_auto_validation'}= clean_blank($1);

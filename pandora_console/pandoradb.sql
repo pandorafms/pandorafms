@@ -3015,6 +3015,8 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	`special_days` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`id_template_conditions` int(10) unsigned NOT NULL default 0,
+	`id_template_fields` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

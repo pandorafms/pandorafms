@@ -108,3 +108,7 @@ enterprise/godmode/alerts/alert_events_rules.php
 enterprise/godmode/alerts/configure_alert_rule.php
 enterprise/include/functions_networkmap.php
 enterprise/operation/agentes/pandora_networkmap.view.php
+enterprise/include/ajax/map_enterprise.ajax.php
+enterprise/include/javascript/SimpleMapController.js
+enterprise/include/javascript/tooltipster.bundle.min.js
+enterprise/include/styles/tooltipster.bundle.min.css

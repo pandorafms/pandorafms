@@ -437,7 +437,7 @@ class NetworkMapWidget extends Widget
         $settings = \json_encode(
             [
                 'cellId'        => $this->cellId,
-                'page'          => 'enterprise/include/ajax/map_enterprise.ajax',
+                'page'          => 'include/ajax/map_enterprise.ajax',
                 'url'           => ui_get_full_url('ajax.php'),
                 'networkmap_id' => $id_networkmap,
                 'x_offset'      => $x_offset,

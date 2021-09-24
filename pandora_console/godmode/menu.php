@@ -525,10 +525,8 @@ if (check_acl($config['id_user'], 0, 'PM') && $config['enable_update_manager']) 
     $menu_godmode['messages']['id'] = 'god-um_messages';
 
     $sub = [];
-    if ($config['enterprise_installed']) {
-        $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
-        $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
-    }
+    $sub['godmode/update_manager/update_manager&tab=offline']['text'] = __('Update Manager offline');
+    $sub['godmode/update_manager/update_manager&tab=offline']['id'] = 'Offline';
 
     $sub['godmode/update_manager/update_manager&tab=online']['text'] = __('Update Manager online');
     $sub['godmode/update_manager/update_manager&tab=online']['id'] = 'Online';

@@ -665,7 +665,7 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
         $types['sql_graph_hbar'] = [
             'optgroup' => __('Graphs'),
-            'name'     => __('SQL horizonal bar graph'),
+            'name'     => __('SQL horizontal bar graph'),
         ];
     }
 
@@ -723,15 +723,15 @@ function reports_get_report_types($template=false, $not_editor=false)
 
     $types['avg_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Avg. Value'),
+        'name'     => __('Avg. value'),
     ];
     $types['max_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Max. Value'),
+        'name'     => __('Max. value'),
     ];
     $types['min_value'] = [
         'optgroup' => __('Modules'),
-        'name'     => __('Min. Value'),
+        'name'     => __('Min. value'),
     ];
     $types['monitor_report'] = [
         'optgroup' => __('Modules'),

@@ -1,5 +1,5 @@
 [Unit]
-Description=Pandora FMS Database HA Tool
+Description=Pandora FMS Daemon Watchdog
 
 [Service]
 Type=forking

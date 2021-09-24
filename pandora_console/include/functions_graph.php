@@ -735,7 +735,7 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
-    if (isset($params['only_image']) === true) {
+    if (isset($params['only_image']) === true && $params['vconsole'] !== true) {
         $params['backgroundColor'] = 'transparent';
     }
 
@@ -829,7 +829,11 @@ function grafico_modulo_sparse($params)
         $params['stacked'] = 0;
     }
 
-    $font_size = $config['font_size'];
+    if (isset($params['graph_font_size']) === true) {
+        $font_size = $params['graph_font_size'];
+    } else {
+        $font_size = $config['font_size'];
+    }
 
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {

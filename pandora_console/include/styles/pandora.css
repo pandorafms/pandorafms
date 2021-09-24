@@ -5814,10 +5814,30 @@ div#status_pie {
   margin-bottom: 30px;
 }
 
+#table_services_dashboard {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-rows: 1fr;
+  margin-bottom: 30px;
+}
+
+.services_table {
+  width: 97%;
+}
+
 .table_services_item_link {
   font-size: 16px;
   display: grid;
   min-height: 80px;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 0;
+}
+
+.table_services_item_link_dashboard {
+  font-size: 16px;
+  display: grid;
+  min-height: 50px;
   box-sizing: border-box;
   padding: 10px 10px 10px 0;
 }

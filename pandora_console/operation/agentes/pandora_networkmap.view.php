@@ -55,6 +55,7 @@ if (is_ajax()) {
     $process_migration = (bool) get_parameter('process_migration', false);
     $get_agent_info = (bool) get_parameter('get_agent_info', false);
     $update_node = (bool) get_parameter('update_node', false);
+    $get_agents_in_group = (bool) get_parameter('get_agents_in_group', false);
 
     if ($update_node) {
         $node_json = io_safe_output(get_parameter('node', ''));
@@ -74,6 +75,65 @@ if (is_ajax()) {
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
         $return['os'] = ui_print_os_icon($id_os, true, true);
+
+        echo json_encode($return);
+
+        return;
+    }
+
+
+    if ($get_agents_in_group) {
+        $id = (int) get_parameter('id', 0);
+        $group = (int) get_parameter('group', -1);
+        $group_recursion = (int) get_parameter('group_recursion', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        if ($group != -1) {
+            $where_id_agente = ' 1=1 ';
+
+            $agents_in_networkmap = db_get_all_rows_filter(
+                'titem',
+                [
+                    'id_map'  => $id,
+                    'deleted' => 0,
+                ]
+            );
+            if ($agents_in_networkmap !== false) {
+                $ids = [];
+                foreach ($agents_in_networkmap as $agent) {
+                    if ($agent['type'] == 0) {
+                        $ids[] = $agent['source_data'];
+                    }
+                }
+
+                if (empty($ids) === false) {
+                    $where_id_agente = 'AND id_agente NOT IN ('.implode(',', $ids).')';
+                }
+            }
+
+            if ($group_recursion !== 0) {
+                $group_tree = groups_get_children_ids($group);
+                $group = implode(',', $group_tree);
+            }
+
+            $sql = 'SELECT id_agente, alias
+				FROM tagente
+				WHERE id_grupo IN ('.$group.') AND '.$where_id_agente.' 
+				ORDER BY alias ASC';
+
+            $agents = db_get_all_rows_sql($sql);
+
+            if ($agents !== false) {
+                $return['agents'] = [];
+                foreach ($agents as $agent) {
+                    $return['agents'][$agent['id_agente']] = $agent['alias'];
+                }
+
+                $return['correct'] = true;
+            }
+        }
 
         echo json_encode($return);
 

@@ -648,36 +648,21 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	}
 	# Correlated alert
 	else {
-		if (defined($data)) {
-			# Data contains the number of occurrences of correlated alert.
-			if ($data < $alert->{'pool_occurrences'}) {
-				# Less occurrences than previous execution, alert ceased.
-				# 3 Alert ceased
-				return 3;
-			} elsif ($data eq $alert->{'pool_occurrences'}) {
-				# Same occurrences as previous execution, nothing new, but present in pool.
-				# 1 Do not execute the alert.
-				return 1;
-			} elsif ($data eq 0) {
-				# 4 Recover the alert
-				return 4;
-			} # else fire the alert, at the end of this sub.
+		my $rc = enterprise_hook (
+			'evaluate_correlated_alert',
+			[
+				$pa_config,
+				$dbh,
+				$alert,
+				$correlatedItems,
+				$event,
+				$log
+			]
+		);
 
-		} else {
-			my $rc = enterprise_hook (
-				'evaluate_correlated_alert',
-				[
-					$pa_config,
-					$dbh,
-					$alert,
-					$correlatedItems,
-					$event,
-					$log
-				]
-			);
-
-			return $status unless (defined ($rc) && $rc == 1);
-		}
+		return $status unless defined ($rc);
+		
+		return $rc unless $rc == 0;
 	}
 	
 	# Check min and max alert limits
@@ -812,7 +797,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
-	print "Pium pium\n";
+
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);

@@ -660,9 +660,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			]
 		);
 
-		return $status unless defined ($rc);
-		
-		return $rc unless $rc == 0;
+		return $status unless !PandoraFMS::Tools::is_empty($rc) && $rc == 1;
 	}
 	
 	# Check min and max alert limits

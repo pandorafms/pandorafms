@@ -812,7 +812,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
-		
+	print "Pium pium\n";
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);

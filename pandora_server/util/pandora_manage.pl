@@ -142,7 +142,7 @@ sub help_screen{
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
-	help_screen_line('--update_agent_custom_fields', '<id_agent> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: serial_number, departament, aditional_id, ehorus_id, wmware_vcenter_ip, wmware_datacenter, wmware_user, wmware_pass, wmware_type, wmware_parent.");
+	help_screen_line('--update_agent_custom_fields', '<id_agent> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: Serial number, Department ...");
 
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
@@ -3062,48 +3062,18 @@ sub cli_agent_update_custom_fields() {
 		exit;
 	}
 
-	# serial_number, departament, aditional_id, ehorus_id, wmware_vcenter_ip, wmware_datacenter, wmware_user, wmware_pass, wmware_type, wmware_parent.
+	# Department, Serial number ...
+	my $custom_field = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
 
-	if($field eq 'serial_number') {
-		$id_field = 1;
-
-	}	elsif ($field eq 'departament') {
-		$id_field = 2;
-
-	}	elsif ($field eq 'additional_id') {
-		$id_field = 3;
-
-	}	elsif ($field eq 'ehorus_id') {
-		$id_field = 4;
-
-	}	elsif ($field eq 'wmware_vcenter_ip') {
-		$id_field = 5;
-
-	}	elsif ($field eq 'wmware_datacenter') {
-		$id_field = 6;
-
-	}	elsif ($field eq 'wmware_user') {
-		$id_field = 7;
-
-	}	elsif ($field eq 'wmware_pass') {
-		$id_field = 8;
-
-	}	elsif ($field eq 'wmware_type') {
-		$id_field = 9;
-
-	}	elsif ($field eq 'wmware_parent') {
-		$id_field = 10;
-
+	if($custom_field eq '') {
+			print_log "[ERROR] Field '$field' doesnt exist\n\n";
+			exit;
 	}
-	else {
-		print_log "[ERROR] Field '$field' doesnt exist\n\n";
-		exit;
 
-	}
+	pandora_update_agent_custom_field ($dbh, $new_value, $id_field, $id_agent);
 
 	print_log "[INFO] Updating field '$field' in agent with ID '$id_agent'\n\n";
 
-	pandora_update_agent_custom_field ($dbh, $new_value, $id_field, $id_agent);
 	exit;
 	
 }

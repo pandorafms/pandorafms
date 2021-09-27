@@ -39,13 +39,14 @@ our @EXPORT = qw(
 	pandora_start_log
 	pandora_get_sharedconfig
 	pandora_get_tconfig_token
+	pandora_set_tconfig_token
 	pandora_get_initial_product_name
 	pandora_get_initial_copyright_notice
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.755";
-my $pandora_build = "210714";
+my $pandora_version = "7.0NG.757";
+my $pandora_build = "210927";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -170,6 +171,8 @@ sub pandora_get_sharedconfig ($$) {
 	$pa_config->{"event_storm_protection"} = pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0);
 
 	$pa_config->{"use_custom_encoding"} = pandora_get_tconfig_token ($dbh, 'use_custom_encoding', 0);
+
+	$pa_config->{"event_replication"} = pandora_get_tconfig_token ($dbh, 'event_replication', 0);
 
 	if ($pa_config->{'include_agents'} eq '') {
 		$pa_config->{'include_agents'} = 0;
@@ -337,6 +340,7 @@ sub pandora_load_config {
 	$pa_config->{"mssql_driver"} = undef; # 745 
 	$pa_config->{"snmpconsole_lock"} = 0; # 755.
 	$pa_config->{"snmpconsole_period"} = 0; # 755.
+	$pa_config->{"snmpconsole_threshold"} = 0; # 755.
 	
 	# Internal MTA for alerts, each server need its own config.
 	$pa_config->{"mta_address"} = ''; # Introduced on 2.0
@@ -1041,9 +1045,6 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^policy_manager\s+([0-1])/i) {
 			$pa_config->{'policy_manager'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^event_replication\s+([0-1])/i) {
-			$pa_config->{'event_replication'}= clean_blank($1);
-		}
 		elsif ($parametro =~ m/^event_auto_validation\s+([0-1])/i) {
 			$pa_config->{'event_auto_validation'}= clean_blank($1);
 		}
@@ -1367,6 +1368,31 @@ sub pandora_get_tconfig_token ($$$) {
 	}
 	
 	return $default_value;
+}
+
+##########################################################################
+# Write the given token to tconfig table.
+##########################################################################
+sub pandora_set_tconfig_token ($$$) {
+	my ($dbh, $token, $value) = @_;
+	
+	my $token_value = get_db_value ($dbh,
+		"SELECT `value` FROM `tconfig` WHERE `token` = ?", $token
+	);
+	if (defined ($token_value) && $token_value ne '') {
+		db_update($dbh,
+			'UPDATE `tconfig` SET `value`=? WHERE `token`= ?',
+			safe_input($value),
+			$token
+		);
+	} else {
+		db_insert($dbh, 'id_config',
+			'INSERT INTO `tconfig`(`token`, `value`) VALUES (?, ?)',
+			$token,
+			safe_input($value)
+		);
+	}
+	
 }
 
 ##########################################################################

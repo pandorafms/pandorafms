@@ -379,6 +379,11 @@ final class Percentile extends Item
 
             $moduleValue = \modules_get_last_value($moduleId);
             if ($moduleValue === false) {
+                // Restore connection.
+                if ($nodeConnected === true) {
+                    \metaconsole_restore_db();
+                }
+
                 throw new \InvalidArgumentException(
                     'error fetching the module value'
                 );

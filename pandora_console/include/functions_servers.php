@@ -57,7 +57,7 @@ function servers_get_server($id_server, $filter=false, $fields=false)
 /**
  * Get all the server availables.
  *
- * @return All the servers available.
+ * @return array the servers available.
  */
 function servers_get_names()
 {
@@ -1331,4 +1331,23 @@ function servers_get_server_string_name(int $server)
         default:
         return __('N/A');
     }
+}
+
+
+/**
+ * Return server name master where status is activated.
+ *
+ * @return string
+ */
+function servers_get_master()
+{
+    $sql = 'SELECT `name` FROM tserver WHERE `status` = 1 order by `master` desc';
+
+    $result = db_get_value_sql($sql);
+
+    if ($result === false) {
+        $result = '';
+    }
+
+    return $result;
 }

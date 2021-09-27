@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
-// Begin
+// Begin.
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
@@ -108,6 +108,7 @@ function add_component_selection($id_network_component_type)
     $data[0] = __('Using module component').' ';
 
     $component_groups = network_components_get_groups($id_network_component_type);
+
     $data[1] = '<span id="component_group" class="left">';
     $data[1] .= html_print_select(
         $component_groups,
@@ -214,7 +215,7 @@ $table_simple->colspan[3][1] = 3;
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = html_print_input_text_extended(
     'name',
-    io_safe_input(html_entity_decode($name, ENT_QUOTES, 'UTF-8')),
+    $name,
     'text-name',
     '',
     45,
@@ -272,7 +273,8 @@ $table_simple->data[0][3] .= html_print_select_from_sql(
     true,
     false,
     true,
-    $disabledBecauseInPolicy
+    $disabledBecauseInPolicy,
+    'width: 150px'
 );
 
 if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
@@ -357,7 +359,7 @@ if (!$edit) {
         false,
         '',
         false,
-        false,
+        'width:200px',
         false,
         100
     );
@@ -636,7 +638,7 @@ $table_advanced->data[1][4] = html_print_extended_select_for_post_process(
     '0',
     false,
     true,
-    false,
+    'width:10em',
     false,
     $disabledBecauseInPolicy
 );
@@ -1385,7 +1387,7 @@ $(document).ready (function () {
             tag_name = $(value).html();
             if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                 $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + id_tag + "']").remove();
+                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
                 $("#id_tag_selected").find("option[value='']").remove();
                 if($("#id_tag_available option").length == 0) {
                     $("select[name='id_tag_available[]']").append(value);

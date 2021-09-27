@@ -177,6 +177,16 @@ function returnError($typeError, $returnType='string')
             );
         break;
 
+        case 'auth_error':
+            returnData(
+                $returnType,
+                [
+                    'type' => 'string',
+                    'data' => __('Auth error'),
+                ]
+            );
+        break;
+
         default:
             returnData(
                 $returnType,
@@ -2129,6 +2139,14 @@ function api_set_create_os($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     $values = [];
 
     $values['name'] = $other['data'][0];
@@ -2158,6 +2176,14 @@ function api_set_update_os($id_os, $thrash2, $other, $thrash3)
 
     if (!check_acl($config['id_user'], 0, 'AW')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -5193,12 +5219,20 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
 function api_set_new_network_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -5287,12 +5321,20 @@ function api_set_new_plugin_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         return;
     }
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -5559,7 +5601,15 @@ function api_set_new_local_component($id, $thrash1, $other, $thrash2)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -5727,7 +5777,11 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -5862,7 +5916,15 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -6006,7 +6068,15 @@ function api_set_delete_alert_template($id_template, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -7196,6 +7266,14 @@ function api_set_tag($id, $thrash1, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     $values = [];
     $values['name'] = $id;
     $values['description'] = $other['data'][0];
@@ -7445,8 +7523,6 @@ function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
  *                       <type_periodicity>
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3)
 {
     global $config;
@@ -7900,6 +7976,14 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($id == '') {
         returnError(
             'The data module could not be updated in policy. Id_policy cannot be left blank.'
@@ -8009,6 +8093,14 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
 function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -8127,6 +8219,14 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($id == '') {
         returnError(
             'The network module could not be updated in policy. Id_policy cannot be left blank.'
@@ -8223,6 +8323,14 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
 function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -8349,6 +8457,14 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
 function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -8640,6 +8756,14 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($id == '') {
         returnError('The SNMP module could not be added to policy. Id_policy cannot be left blank.');
         return;
@@ -8796,6 +8920,14 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
 function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -8956,6 +9088,14 @@ function api_set_remove_agent_from_policy_by_id($id, $thrash1, $other, $thrash2)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($other['data'][0] == '' || !$other['data'][0]) {
         returnError('The agent could not be deleted from policy. Agent cannot be left blank.');
         return;
@@ -8986,6 +9126,14 @@ function api_set_remove_agent_from_policy_by_name($id, $thrash1, $other, $thrash
 {
     if ($id == '' || !$id) {
         returnError('The agent could not be deleted from policy. Policy cannot be left blank.');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -9022,6 +9170,14 @@ function api_set_create_group($id, $thrash1, $other, $thrash3)
     global $config;
 
     if (is_metaconsole()) {
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -9140,6 +9296,14 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if (db_get_value('id_grupo', 'tgrupo', 'id_grupo', $id_group) === false) {
         returnError('There is no group with the ID provided');
         return;
@@ -9206,6 +9370,14 @@ function api_set_delete_group($id_group, $thrash2, $other, $thrash3)
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -9526,6 +9698,14 @@ function api_set_new_user($id, $thrash2, $other, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     $values = [];
     $values['fullname'] = $other['data'][0];
     $values['firstname'] = $other['data'][1];
@@ -9573,6 +9753,14 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
 
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -9655,8 +9843,6 @@ function api_set_update_user($id, $thrash2, $other, $thrash3)
  *
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_enable_disable_user($id, $thrash2, $other, $thrash3)
 {
     global $config;
@@ -9667,6 +9853,14 @@ function api_set_enable_disable_user($id, $thrash2, $other, $thrash3)
 
     if (!check_acl($config['id_user'], 0, 'UM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -9927,6 +10121,14 @@ function api_set_new_alert_template($id, $id2, $other, $trash1)
 
     if (!check_acl($config['id_user'], 0, 'LM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -10345,6 +10547,14 @@ function api_set_alert_actions($id, $id2, $other, $trash1)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($other['type'] == 'string') {
         returnError('Parameter error.');
         return;
@@ -10493,6 +10703,14 @@ function api_set_new_module_group($id, $thrash2, $other, $trash1)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
         return;
@@ -10518,55 +10736,6 @@ function api_set_new_module_group($id, $thrash2, $other, $trash1)
         returnData('string', ['type' => 'string', 'data' => $return]);
     }
 
-}
-
-
-/**
- * synchronize module group
- *
- * @param $other as server_names (mandatory)
- example:
-
- * api.php?op=set&op2=module_group_synch&other=server_name1|server_name2|server_name3&other_mode=url_encode_separator_|&apipass=1234&user=admin&pass=pandora
- */
-
-
-function api_set_module_group_synch($thrash1, $thrash2, $other, $thrash4)
-{
-    global $config;
-    enterprise_include_once('meta/include/functions_meta.php');
-
-    if (is_metaconsole()) {
-        if (!check_acl($config['id_user'], 0, 'PM')) {
-            returnError('forbidden', 'string');
-            return;
-        }
-
-        $targets = [];
-        foreach ($other['data'] as $server) {
-            $targets[] = $server;
-        }
-
-        $return = meta_module_group_synchronizing($targets, true);
-
-        $module_group_update_err = $return['module_group_update_err'];
-        $module_group_create_err = $return['module_group_create_err'];
-        $module_group_update_ok = $return['module_group_update_ok'];
-        $module_group_create_ok = $return['module_group_create_ok'];
-
-        $string_ok = __('Created/Updated %s/%s module groups', $module_group_create_ok, $module_group_update_ok);
-
-        // User feedback
-        if ($module_group_create_err > 0 or $module_group_update_err > 0) {
-            returnError(sprintf('The module groups %s/%s could not be created/updated <br>', $module_group_create_err, $module_group_update_err));
-        }
-
-        if ($module_group_create_ok > 0 or $module_group_update_ok > 0) {
-            returnData('string', ['type' => 'string', 'data' => $string_ok]);
-        }
-    } else {
-        returnError('This function is for metaconsole only');
-    }
 }
 
 
@@ -10605,6 +10774,14 @@ function api_set_alert_commands($id, $thrash2, $other, $trash1)
 
     if (!check_acl($config['id_user'], 0, 'LW')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -11880,6 +12057,14 @@ function api_set_delete_user($id, $thrash1, $thrash2, $thrash3)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if (!delete_user($id)) {
         returnError('The user could not be deleted');
     } else {
@@ -11912,6 +12097,14 @@ function api_set_add_user_profile($id, $thrash1, $other, $thrash2)
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -11965,6 +12158,14 @@ function api_set_delete_user_profile($id, $thrash1, $other, $thrash2)
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -12075,6 +12276,14 @@ function api_set_create_user_profile_info($thrash1, $thrash2, $other, $returnTyp
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     $values = [
         'name'                => (string) $other['data'][0],
         'agent_view'          => (bool) $other['data'][1] ? 1 : 0,
@@ -12125,6 +12334,14 @@ function api_set_update_user_profile_info($id_profile, $thrash1, $other, $return
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -12187,6 +12404,14 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     $profile = db_get_value('id_perfil', 'tperfil', 'id_perfil', $id_profile);
     if ($profile === false) {
         returnError('id_not_found', 'string');
@@ -12212,8 +12437,6 @@ function api_set_delete_user_profile_info($id_profile, $thrash1, $thrash2, $retu
  * @param $thrash4 Don't use.
  * // http://localhost/pandora_console/include/api.php?op=set&op2=enable_module&id=garfio&id2=Status
  */
-
-
 function api_set_disable_module($agent_name, $module_name, $other, $thrash4)
 {
     if (defined('METACONSOLE')) {
@@ -13073,6 +13296,14 @@ function api_set_create_tag($id, $trash1, $other, $returnType)
 
     if (!check_acl($config['id_user'], 0, 'PM')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -14586,6 +14817,9 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
 
         // Graph width (optional).
         $width = (!empty($other) && isset($other['data'][4]) && $other['data'][4]) ? $other['data'][4] : '';
+
+        // If recive value its from mail call.
+        $graph_font_size = $other['data'][5];
     } else {
         // Fixed parameters for _modulegraph_nh_.
         $graph_seconds = $other['data'];
@@ -14622,6 +14856,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4)
         'fullscale'          => false,
         'return_img_base_64' => true,
         'image_treshold'     => $graph_threshold,
+        'graph_font_size'    => $graph_font_size,
     ];
 
     // Format MIME RFC 2045 (line break 76 chars).
@@ -16285,9 +16520,6 @@ function api_get_user_info($thrash1, $thrash2, $other, $returnType)
     If you mark 1 you will avoid the access to the non-administrators users, returning the response `denied' and registering that expulsion in the audit of pandora fms.
 
 */
-
-
-
 function api_set_access_process($thrash1, $thrash2, $other, $returnType)
 {
     if (defined('METACONSOLE')) {
@@ -16497,9 +16729,15 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if (is_array($other['data']) === true) {
+        $group_id = $other['data'][0];
+    } else {
+        $group_id = $other['data'];
+    }
+
     $sql = sprintf(
         'SELECT id_grupo
-        FROM tgrupo WHERE nombre = "'.$other['data'].'"'
+        FROM tgrupo WHERE nombre = "'.$group_id.'"'
     );
 
     $group_id = db_get_all_rows_sql($sql);
@@ -16946,6 +17184,14 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
         return;
     }
 
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
+        return;
+    }
+
     if ($other['data'][0] != '') {
         $values = [
             'id_up' => io_safe_output($other['data'][0]),
@@ -16996,6 +17242,14 @@ function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $retur
 
     if (!check_acl($config['id_user'], 0, 'AW')) {
         returnError('forbidden', 'string');
+        return;
+    }
+
+    $headers = getallheaders();
+    if (isset($headers['idk']) === false
+        && is_management_allowed($headers['idk']) === false
+    ) {
+        returnError('centralized');
         return;
     }
 
@@ -17089,7 +17343,7 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
         $agent = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $id_node]);
     }
 
-    $policy = policies_get_policy($id_policy, false, false);
+    $policy = policies_get_policy($id_policy);
 
     $policy_agent = (is_metaconsole()) ? db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent, 'id_node' => $id_node]) : db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
 

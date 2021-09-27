@@ -1,16 +1,32 @@
 <?php
+/**
+ * Tree view.
+ *
+ * @category   Operation
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// Begin.
 ui_require_css_file('tree');
 ui_require_css_file('fixed-bottom-box');
 
@@ -35,11 +51,11 @@ if (enterprise_include_once('include/functions_policies.php') !== ENTERPRISE_NOT
     $enterpriseEnable = true;
 }
 
-$url = 'index.php?'.'sec=estado&'.'sec2=operation/tree&'.'refr=0&'.'pure='.$pure.'&'.'tab=%s';
+$url = 'index.php?sec=estado&sec2=operation/tree&refr=0&pure='.$pure.'&tab=%s';
 
 $tabs = [];
 
-if (!$strict_acl) {
+if ($strict_acl === false) {
     $tabs['tag'] = [
         'text'   => "<a href='".sprintf($url, 'tag')."'>".html_print_image(
             'images/tag.png',
@@ -221,7 +237,7 @@ $row[] = __('Show full hirearchy');
 $row[] = html_print_checkbox('serach_hirearchy', $serach_hirearchy, false, true);
 
 $row[] = __('Agent status');
-$row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true);
+$row[] = html_print_select($agent_status_arr, 'status_agent', $status_agent, '', '', 0, true, false, true, '', false, 'width:10em');
 $row[] = html_print_input_hidden('show_not_init_modules_hidden', $show_not_init_modules, true);
 
 // Button

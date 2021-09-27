@@ -134,8 +134,7 @@ final class EventsHistory extends Item
             }
         }
 
-        $data['height'] = ($data['height'] - 20);
-
+        // $data['height'] = ($data['height'] - 20);
         if ((int) $data['width'] < 11) {
             $data['width'] = 11;
         }

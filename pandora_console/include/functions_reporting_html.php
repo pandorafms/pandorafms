@@ -389,6 +389,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_inventory_changes($table, $item);
             break;
 
+            case 'IPAM_network':
+                reporting_enterprise_html_ipam($table, $item, $mini);
+            break;
+
             case 'agent_detailed_event':
             case 'event_report_agent':
                 reporting_html_event_report_agent($table, $item);

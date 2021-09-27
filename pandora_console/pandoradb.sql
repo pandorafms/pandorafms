@@ -694,7 +694,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
-	`data` double(50,5) default NULL,
+	`data` tinytext default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -1683,6 +1683,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
+	`title` TEXT default '',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2746,12 +2747,13 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`auth_token` text,
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
-	`disabled` tinyint(1) unsigned NOT NULL default '0',
-	`last_event_replication` bigint(20) default '0',
+	`disabled` tinyint(1) unsigned NOT NULL default 0,
+	`unified` tinyint(1) unsigned NOT NULL default 0,
+	`last_event_replication` bigint(20) default 0,
 	`server_uid` text NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) ENGINE=InnoDB 
-COMMENT = 'Table to store metaconsole sources' 
+) ENGINE=InnoDB
+COMMENT = 'Table to store metaconsole sources'
 DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -3289,7 +3291,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(50,5) default NULL,
+	`data` tinytext default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3999,4 +4001,18 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`operation` text,
+	`table` text,
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

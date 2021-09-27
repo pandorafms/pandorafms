@@ -119,7 +119,7 @@ ui_print_message_dialog(
         <link rel="stylesheet" href="../../include/styles/js/jquery-ui_custom.css" type="text/css" />
         <script type='text/javascript' src='../../include/javascript/pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/pandora_ui.js'></script>
-        <script type='text/javascript' src='../../include/javascript/jquery-3.3.1.min.js'></script>
+        <script type='text/javascript' src='../../include/javascript/jquery.current.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
         <script type='text/javascript' src='../../include/javascript/jquery-ui.min.js'></script>
         <?php

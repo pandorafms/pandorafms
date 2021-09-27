@@ -1,18 +1,35 @@
 <?php
+/**
+ * Manage plugins.
+ *
+ * @category   Utility
+ * @package    Pandora FMS
+ * @subpackage Plugins
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// Load global vars
+// Begin.
 global $config;
+
+require_once $config['homedir'].'/include/functions_plugins.php';
 
 if (is_ajax()) {
     $get_plugin_description = get_parameter('get_plugin_description');
@@ -112,7 +129,6 @@ $edit_file = get_parameter('edit_file', false);
 $update_file = get_parameter('update_file', false);
 $plugin_command = get_parameter('plugin_command', '');
 $tab = get_parameter('tab', '');
-$deploy_plugin = get_parameter('deploy_plugin', 0);
 
 if ($view != '') {
     $form_id = $view;
@@ -203,34 +219,15 @@ if ($filemanager) {
 
         $id_plugin = (int) get_parameter('id_plugin', 0);
 
-        // Add custom directories here
+        // Add custom directories here.
         $fallback_directory = 'attachment/plugin';
-
-        $directory = (string) get_parameter('directory', $fallback_directory);
-        $directory = str_replace('\\', '/', $directory);
-
-        // A miminal security check to avoid directory traversal
-        if (preg_match('/\.\./', $directory)) {
+        // Get directory.
+        $directory = (string) get_parameter('directory');
+        if (empty($directory) === true) {
             $directory = $fallback_directory;
-        }
-
-        if (preg_match('/^\//', $directory)) {
-            $directory = $fallback_directory;
-        }
-
-        if (preg_match('/^manager/', $directory)) {
-            $directory = $fallback_directory;
-        }
-
-        $banned_directories['include'] = true;
-        $banned_directories['godmode'] = true;
-        $banned_directories['operation'] = true;
-        $banned_directories['reporting'] = true;
-        $banned_directories['general'] = true;
-        $banned_directories[ENTERPRISE_DIR] = true;
-
-        if (isset($banned_directories[$directory])) {
-            $directory = $fallback_directory;
+        } else {
+            $directory = str_replace('\\', '/', $directory);
+            $directory = filemanager_safe_directory($directory, $fallback_directory);
         }
 
         $real_directory = realpath($config['homedir'].'/'.$directory);
@@ -247,12 +244,12 @@ if ($filemanager) {
 
         $default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
 
-        if ($upload_file_or_zip) {
-            upload_file($upload_file_or_zip, $default_real_directory);
+        if ($upload_file_or_zip === true) {
+            upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
         }
 
-        if ($create_text_file) {
-            create_text_file($default_real_directory);
+        if ($create_text_file === true) {
+            create_text_file($default_real_directory, $real_directory);
         }
 
         filemanager_file_explorer(
@@ -283,11 +280,12 @@ $sec = 'gservers';
 if (($create != '') || ($view != '')) {
     enterprise_hook('open_meta_frame');
 
+    $management_allowed = is_management_allowed();
+
     if (defined('METACONSOLE')) {
         components_meta_print_header();
         $sec = 'advanced';
-        $management_allowed = is_management_allowed();
-        if (!$management_allowed) {
+        if ($management_allowed === false) {
             ui_print_warning_message(__('To manage plugin you must activate centralized management'));
         }
     } else {
@@ -309,8 +307,7 @@ if (($create != '') || ($view != '')) {
             );
         }
 
-        $management_allowed = !is_central_policies_on_node();
-        if (!$management_allowed) {
+        if ($management_allowed === false) {
             ui_print_warning_message(
                 __(
                     'This console is not manager of this environment,
@@ -619,36 +616,6 @@ if (($create != '') || ($view != '')) {
                 __('To manage plugin you must activate centralized management')
             );
         }
-
-        if (!$config['metaconsole_deploy_plugin_server'] && $management_allowed) {
-            $deploy_plugin_server = true;
-
-            echo '<div id="deploy_messages" class="invisible">';
-            echo '<span>'.__('The previous configuration of plugins has been imported from the nodes. Please check that the definitions are correct.').'</br></br>'.'<b>'.__('Note:').'</b>'.__(
-                'These definitions will not be operational until you manually 
-    			copy the files from the nodes to the atachment/plugin/ directory of the meta console.'
-            ).'</br></br>'.__('You can find more information at:')."<a href='https://pandorafms.com/manual'>https://pandorafms.com/manual</a>".'</span>';
-            echo '</div>';
-            ?>
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    $("#deploy_messages").dialog({
-                        resizable: true,
-                        draggable: true,
-                        modal: true,
-                        height: 220,
-                        title: '<?php echo __('Warning'); ?>',
-                        width: 528,
-                        overlay: {
-                            opacity: 0.5,
-                            background: "black"
-                        }
-                    });
-                });
-            </script>
-            <?php
-            config_update_value('metaconsole_deploy_plugin_server', 1);
-        }
     } else {
         ui_print_page_header(
             __(
@@ -661,8 +628,8 @@ if (($create != '') || ($view != '')) {
             true
         );
 
-        $management_allowed = !is_central_policies_on_node();
-        if (!$management_allowed) {
+        $management_allowed = is_management_allowed();
+        if ($management_allowed === false) {
             ui_print_warning_message(
                 __(
                     'This console is not manager of this environment,
@@ -820,180 +787,20 @@ if (($create != '') || ($view != '')) {
             }
         }
 
-
-        if ($plugin_id != 0) {
-            // Delete all the modules with this plugin
-            $plugin_modules = db_get_all_rows_filter(
-                'tagente_modulo',
-                ['id_plugin' => $plugin_id]
-            );
-
-            if (empty($plugin_modules)) {
-                $plugin_modules = [];
-            }
-
-            foreach ($plugin_modules as $pm) {
-                modules_delete_agent_module($pm['id_agente_modulo']);
-            }
-
-            if (enterprise_installed()) {
-                enterprise_include_once('include/functions_policies.php');
-                $policies_ids = db_get_all_rows_filter('tpolicy_modules', ['id_plugin' => $plugin_id]);
-                foreach ($policies_ids as $policies_id) {
-                    policies_change_delete_pending_module($policies_id['id']);
-                }
-            }
-
-            if (is_metaconsole()) {
-                enterprise_include_once('include/functions_plugins.php');
-                $result = plugins_delete_plugin($plugin_id);
-                if (!$result) {
-                    ui_print_error_message(__('Problem deleting plugin'));
-                } else {
-                    ui_print_success_message(__('Plugin deleted successfully'));
-                }
-            }
-        }
-    }
-
-    if ($deploy_plugin) {
-        if (is_metaconsole()) {
-            enterprise_include_once('include/functions_plugins.php');
-            $result = plugins_deploy_plugin($deploy_plugin);
-            if (!$result) {
-                ui_print_error_message(__('Problem deploying plugin'));
+        if ((int) $plugin_id > 0) {
+            // Delete all iformation related with this plugin.
+            $result = plugins_delete_plugin($plugin_id);
+            if (empty($result) === false) {
+                ui_print_error_message(
+                    implode('<br>', $result)
+                );
             } else {
-                ui_print_success_message(__('Plugin deployed successfully'));
+                ui_print_success_message(__('Plugin deleted successfully'));
             }
         }
     }
 
-    if ($deploy_plugin_server) {
-        $setup = db_get_all_rows_in_table('tmetaconsole_setup');
-        // recorremos todos los nodos.
-        foreach ($setup as $key => $value) {
-            // Obtenemos los plugins de la meta.
-            $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
-            // Conectamos con el nodo.
-            if (metaconsole_connect($value) == NOERR) {
-                $values = [];
-                // Obtenemos los plugin del nodo.
-                $node_plugin_server = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
-                foreach ($node_plugin_server as $key2 => $plugin) {
-                    // Comprobamos si el id esta meta y nodo al mismo tiempo.
-                    $key_exists = array_search($plugin['id'], array_column($all_plugin_meta, 'id'));
-                    if ($key_exists !== false) {
-                        // Si el plugin tiene el mismo id pero diferentes datos.
-                        if ($all_plugin_meta[$key_exists] != $plugin) {
-                            $old_id = $plugin['id'];
-                            $new_id = ($plugin['id'] + (1000 * $value['id']));
-
-                            // El plugin del nodo pasa a tener otro id y otro nombre.
-                            $plugin['id'] = $new_id;
-                            $plugin['name'] = $plugin['name'].'_'.$value['server_name'];
-                            $result_update = db_process_sql_update(
-                                'tplugin',
-                                [
-                                    'id'   => $new_id,
-                                    'name' => $plugin['name'],
-                                ],
-                                ['id' => $old_id]
-                            );
-
-                            if ($result_update) {
-                                db_process_sql_update(
-                                    'tagente_modulo',
-                                    ['id_plugin' => $new_id],
-                                    ['id_plugin' => $old_id]
-                                );
-
-                                db_process_sql_update(
-                                    'tnetwork_component',
-                                    ['id_plugin' => $new_id],
-                                    ['id_plugin' => $old_id]
-                                );
-
-                                db_process_sql_update(
-                                    'tpolicy_modules',
-                                    ['id_plugin' => $new_id],
-                                    ['id_plugin' => $old_id]
-                                );
-                            }
-
-                            // New plugins to insert in the metaconsole.
-                            $values[$plugin['id']] = $plugin;
-                        }
-                    } else {
-                        // Exists in the node, but does not exist in the metaconsole.
-                        $values[$plugin['id']] = $plugin;
-                    }
-                }
-
-                // Restore to metaconsole.
-                metaconsole_restore_db();
-
-                // Insert in metaconsole.
-                if (!empty($values)) {
-                    foreach ($values as $key2 => $val) {
-                        // Insert into metaconsole.
-                        $result_insert = db_process_sql_insert('tplugin', $val);
-                    }
-                }
-            }
-        }
-
-        $all_plugin_meta = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
-
-        foreach ($setup as $key => $value) {
-            if (metaconsole_connect($value) == NOERR) {
-                $all_plugin_node = db_get_all_rows_sql('SELECT SQL_NO_CACHE * FROM tplugin', false, false);
-
-                $array_diff = array_diff(array_column($all_plugin_meta, 'id'), array_column($all_plugin_node, 'id'));
-                foreach ($array_diff as $key2 => $pluginid) {
-                    $other = [];
-                    $plugin_meta = $all_plugin_meta[$key2];
-
-                    unset($plugin_meta['id']);
-                    $other['name'] = urlencode($plugin_meta['name']);
-                    $other['description'] = urlencode($plugin_meta['description']);
-                    $other['max_timeout'] = $plugin_meta['max_timeout'];
-                    $other['max_retries'] = $plugin_meta['max_retries'];
-                    $other['execute'] = urlencode($plugin_meta['execute']);
-                    $other['net_dst_opt'] = $plugin_meta['net_dst_opt'];
-                    $other['net_port_opt'] = $plugin_meta['net_port_opt'];
-                    $other['user_opt'] = $plugin_meta['user_opt'];
-                    $other['pass_opt'] = $plugin_meta['pass_opt'];
-                    $other['plugin_type'] = $plugin_meta['plugin_type'];
-                    $other['macros'] = urlencode($plugin_meta['macros']);
-                    $other['parameters'] = urlencode($plugin_meta['parameters']);
-                    $other = implode('%7E', $other);
-
-                    $auth_token = json_decode($value['auth_token']);
-                    $url = $value['server_url'].'include/api.php?op=set&op2=push_plugin'.'&id='.$pluginid.'&other_mode=url_encode_separator_%7E&other='.$other."&apipass=$auth_token->api_password"."&user=$auth_token->console_user&pass=$auth_token->console_password";
-                    $file_path = realpath($plugin_meta['execute']);
-                    $post = '';
-                    if (file_exists($file_path)) {
-                        $post = ['file' => curl_file_create($file_path)];
-                    }
-
-                    $curlObj = curl_init();
-                    curl_setopt($curlObj, CURLOPT_URL, $url);
-                    curl_setopt($curlObj, CURLOPT_POST, 1);
-                    curl_setopt($curlObj, CURLOPT_POSTFIELDS, $post);
-                    curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
-
-                    $api_result = curl_exec($curlObj);
-                    curl_close($curlObj);
-                }
-            }
-
-            // restore to metaconsole
-            metaconsole_restore_db();
-        }
-    }
-
-    // If not edition or insert, then list available plugins
+    // If not edition or insert, then list available plugins.
     $rows = db_get_all_rows_sql('SELECT * FROM tplugin ORDER BY name');
 
     if ($rows !== false) {
@@ -1081,16 +888,6 @@ if (($create != '') || ($view != '')) {
                         'class'  => 'invert_filter',
                     ]
                 ).'</a>';
-                if (is_metaconsole()) {
-                    echo "&nbsp;&nbsp;&nbsp;<a href='index.php?sec=$sec&sec2=godmode/servers/plugin&tab=$tab&deploy_plugin=".$row['id'].'&tab=plugins&pure='.$config['pure']."'>".html_print_image(
-                        'images/deploy.png',
-                        true,
-                        [
-                            'title' => __('Deploy'),
-                            'width' => '21 px',
-                        ]
-                    ).'</a>&nbsp;&nbsp;';
-                }
 
                 echo '</td>';
             }

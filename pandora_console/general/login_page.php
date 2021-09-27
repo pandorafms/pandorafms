@@ -63,6 +63,7 @@ switch ($login_screen) {
     case 'error_perms':
     case 'homedir_bad_defined':
     case 'homeurl_bad_defined':
+    case 'disabled_access_node':
         $logo_link = 'index.php';
         $logo_title = __('Go to Login');
     break;
@@ -208,6 +209,7 @@ if (is_metaconsole() === true) {
 switch ($login_screen) {
     case 'logout':
     case 'login':
+    case 'disabled_access_node':
         if (!empty($page) && !empty($sec)) {
             foreach ($_POST as $key => $value) {
                 html_print_input_hidden(io_safe_input($key), io_safe_input($value));
@@ -508,9 +510,29 @@ if ($login_screen == 'logout') {
     echo '</div>';
 }
 
+if ($login_screen === 'disabled_access_node') {
+    echo '<div id="disabled_access_node" title="'.__('User node access not enabled').'">';
+        echo '<div class="content_alert">';
+            echo '<div class="icon_message_alert">';
+                echo html_print_image('images/icono_logo_pandora.png', true, ['alt' => __('Centralized user in metaconsole'), 'border' => 0]);
+            echo '</div>';
+            echo '<div class="content_message_alert">';
+                echo '<div class="text_message_alert">';
+                    echo '<h1>'.__('Centralized user in metaconsole').'</h1>';
+                    echo '<p>'.__('This user does not have access on node, please enable node access on this user from metaconsole.').'</p>';
+                echo '</div>';
+                echo '<div class="button_message_alert">';
+                    html_print_submit_button('Ok', 'hide-login-logout', false);
+                echo '</div>';
+            echo '</div>';
+        echo '</div>';
+    echo '</div>';
+}
+
 switch ($login_screen) {
     case 'error_dbconfig':
     case 'error_authconfig':
+    case 'disabled_node_access':
         if (!isset($config['rb_product_name_alt'])) {
             $title = __('Problem with %s database', get_product_name());
         } else {
@@ -675,6 +697,29 @@ html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', '
             $(document).ready (function () {
                 $(function() {
                     $("#login_logout").dialog({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        height: 220,
+                        width: 528,
+                        clickOutside: true,
+                        overlay: {
+                            opacity: 0.5,
+                            background: "black"
+                        }
+                    });
+                });
+
+                $("#submit-hide-login-logout").click (function () {
+                    document.location = "<?php echo ui_get_full_url('index.php'); ?>";
+                });        
+            });
+        break;
+
+        case 'disabled_access_node':
+            $(document).ready (function () {
+                $(function() {
+                    $("#disabled_access_node").dialog({
                         resizable: true,
                         draggable: true,
                         modal: true,

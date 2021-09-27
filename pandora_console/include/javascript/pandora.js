@@ -281,11 +281,11 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
       $.each(data, function(i, val) {
         var s = js_html_entity_decode(val);
 
+        s = s.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+        i = i.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
         $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", i)
-            .attr("title", s)
+          $('<option value="' + i + '" title="' + s + '"></option>').text(val)
         );
 
         all_common_modules.push(i);
@@ -385,12 +385,11 @@ function agent_changed_by_multiple_agents_with_alerts(
         }
       }
       jQuery.each(data, function(i, val) {
-        s = js_html_entity_decode(val);
-        $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", val)
-        );
+        var s = js_html_entity_decode(val);
+
+        s = s.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+
+        $("#module").append($('<option value="' + s + '"></option>').text(val));
         $("#module").fadeIn("normal");
       });
       if (selected != undefined) $("#module").attr("value", selected);
@@ -481,12 +480,22 @@ function alert_templates_changed_by_multiple_agents_with_alerts(
         }
       }
       jQuery.each(data, function(i, val) {
-        s = js_html_entity_decode(val);
+        var decoded_val = js_html_entity_decode(val);
+
+        decoded_val = decoded_val
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&apos;");
+
         $("#module").append(
-          $("<option></option>")
-            .html(s)
-            .attr("value", val)
+          $(
+            '<option value="' +
+              decoded_val +
+              '" title="' +
+              decoded_val +
+              '"></option>'
+          ).text(val)
         );
+
         $("#module").fadeIn("normal");
       });
       if (selected != undefined) $("#module").attr("value", selected);
@@ -1324,9 +1333,13 @@ function defineTinyMCE(added_config) {
     theme_advanced_buttons1: buttons1,
     theme_advanced_toolbar_location: "top",
     theme_advanced_toolbar_align: "left",
-    theme_advanced_statusbar_location: "none",
+    theme_advanced_statusbar_location: "bottom",
+    theme_advanced_resizing: true,
     convert_urls: false,
-    element_format: "html"
+    element_format: "html",
+    object_resizing: true,
+    autoresize_bottom_margin: 50,
+    autoresize_on_init: true
   });
 
   if (!isEmptyObject(added_config)) {
@@ -1376,6 +1389,8 @@ function removeTinyMCE(elementID) {
 function addTinyMCE(elementID) {
   if (elementID.length > 0 && !isEmptyObject(tinyMCE))
     tinyMCE.EditorManager.execCommand("mceAddControl", true, elementID);
+  tinyMCE.EditorManager.execCommand("mceAutoResize");
+  tinymce.EditorManager.execCommand("mceTableSizingMode", false, "responsive");
 }
 
 function toggle_full_value(id) {
@@ -1937,4 +1952,49 @@ function ajaxRequest(id, settings) {
       $("#" + id).append(data);
     }
   });
+}
+
+function progressBarSvg(option) {
+  var svgNS = "http://www.w3.org/2000/svg";
+  // SVG container.
+  var svg = document.createElementNS(svgNS, "svg");
+
+  var backgroundRect = document.createElementNS(svgNS, "rect");
+  backgroundRect.setAttribute("fill", option.color);
+  backgroundRect.setAttribute("fill-opacity", "0.5");
+  backgroundRect.setAttribute("width", "100%");
+  backgroundRect.setAttribute("height", "100%");
+  backgroundRect.setAttribute("rx", "5");
+  backgroundRect.setAttribute("ry", "5");
+  var progressRect = document.createElementNS(svgNS, "rect");
+  progressRect.setAttribute("fill", option.colorfill);
+  progressRect.setAttribute("fill-opacity", "1");
+  progressRect.setAttribute("width", option.start + "%");
+  progressRect.setAttribute("height", "100%");
+  progressRect.setAttribute("rx", "5");
+  progressRect.setAttribute("ry", "5");
+  var text = document.createElementNS(svgNS, "text");
+  text.setAttribute("text-anchor", "middle");
+  text.setAttribute("alignment-baseline", "middle");
+  text.setAttribute("font-size", "15");
+  text.setAttribute("font-family", "arial");
+  text.setAttribute("font-weight", "bold");
+  text.setAttribute("transform", `translate(10, 17.5)`);
+  text.setAttribute("fill", "green");
+
+  //if (this.props.valueType === "value") {
+  //    text.style.fontSize = "6pt";
+  //
+  //    text.textContent = this.props.unit
+  //    ? `${formatValue} ${this.props.unit}`
+  //    : `${formatValue}`;
+  //} else {
+  //    text.textContent = `${progress}%`;
+  //}
+
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.append(backgroundRect, progressRect, text);
+
+  return svg;
 }

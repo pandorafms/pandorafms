@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.756
+# Version 7.0NG.757
 # Licensed under GPL license v2,
 # (c) 2003-2021 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -539,11 +539,6 @@ dataserver_lifo 0
 # 0 by default (PANDORA FMS ENTERPRISE ONLY) 
 
 policy_manager 1
-
-# If set to 1, the event replicate process is enabled. 0 by default. (PANDORA FMS ENTERPRISE ONLY) 
-# WARNING: This process doesn't do anything if is not properly configured from the console setup 
-
-event_replication 0
 
 # If set to 1, new events validate older event for the same module. This will
 # affect the performance of the server. This was the "normal behaviour" on previous (4.x) versions.

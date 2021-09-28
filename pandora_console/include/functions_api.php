@@ -5777,10 +5777,6 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
-        return;
-    }
-
     $headers = getallheaders();
     if (isset($headers['idk']) === false
         && is_management_allowed($headers['idk']) === false
@@ -16733,9 +16729,15 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if (is_array($other['data']) === true) {
+        $group_id = $other['data'][0];
+    } else {
+        $group_id = $other['data'];
+    }
+
     $sql = sprintf(
         'SELECT id_grupo
-        FROM tgrupo WHERE nombre = "'.$other['data'].'"'
+        FROM tgrupo WHERE nombre = "'.$group_id.'"'
     );
 
     $group_id = db_get_all_rows_sql($sql);
@@ -17341,7 +17343,7 @@ function remove_agent_from_policy($id_policy, $use_agent_name, $params)
         $agent = db_get_row_filter('tmetaconsole_agent', ['id_tagente' => $id_agent, 'id_tmetaconsole_setup' => $id_node]);
     }
 
-    $policy = policies_get_policy($id_policy, false, false);
+    $policy = policies_get_policy($id_policy);
 
     $policy_agent = (is_metaconsole()) ? db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent, 'id_node' => $id_node]) : db_get_row_filter('tpolicy_agents', ['id_policy' => $id_policy, 'id_agent' => $id_agent]);
 

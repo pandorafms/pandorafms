@@ -30,7 +30,6 @@
 global $config;
 
 require_once $config['homedir'].'/include/functions_networkmap.php';
-enterprise_include_once('include/functions_networkmap.php');
 enterprise_include_once('include/functions_discovery.php');
 
 // Avoid node overlapping.
@@ -723,13 +722,7 @@ class NetworkMap
         }
 
         if ($this->idMap !== false) {
-            if (enterprise_installed()) {
-                // Enterprise environment: LOAD.
-                $this->nodes = enterprise_hook(
-                    'get_nodes_from_db',
-                    [$this->idMap]
-                );
-            }
+            $this->nodes = get_nodes_from_db($this->idMap);
         }
 
         return $this->nodes;
@@ -762,12 +755,7 @@ class NetworkMap
         }
 
         if ($this->idMap !== false) {
-            if (enterprise_installed()) {
-                $this->relations = enterprise_hook(
-                    'get_relations_from_db',
-                    [$this->idMap]
-                );
-            }
+            $this->relations = get_relations_from_db($this->idMap);
         }
 
         return $this->relations;
@@ -786,12 +774,9 @@ class NetworkMap
 
         // Calculate.
         // Search.
-        if (enterprise_installed() && $this->idTask) {
+        if ($this->idTask) {
             // Network map, based on discovery task.
-            return enterprise_hook(
-                'get_discovery_agents',
-                [$this->idTask]
-            );
+            return get_discovery_agents($this->idTask);
         }
 
         if ($this->network) {
@@ -1101,18 +1086,14 @@ class NetworkMap
         $relations = $this->relations;
 
         // Generate if there's no data in DB about nodes or relations.
-        if (empty($nodes) && empty($relations)) {
+        if (empty($nodes) === true && empty($relations) === true) {
             $this->generateNetworkMap();
             return;
         }
 
-        $graph = enterprise_hook(
-            'networkmap_load_map',
-            [$this]
-        );
+        $graph = networkmap_load_map($this);
 
-        if ($graph === ENTERPRISE_NOT_HOOK) {
-            // Method not available, regenerate.
+        if (empty($graph) === true) {
             $this->generateNetworkMap();
             return;
         }
@@ -2607,15 +2588,7 @@ class NetworkMap
 
         // Save data.
         if ($this->idMap > 0 && (isset($this->map['__simulated']) === false)) {
-            if (enterprise_installed()) {
-                $graph = enterprise_hook(
-                    'save_generate_nodes',
-                    [
-                        $this->idMap,
-                        $graph,
-                    ]
-                );
-            }
+            $graph = save_generate_nodes($this->idMap, $graph);
 
             db_process_sql_update(
                 'tmap',
@@ -2733,7 +2706,6 @@ class NetworkMap
         $output .= 'var networkmap_refresh_time = 1000 * '.$networkmap['source_period'].";\n";
         $output .= 'var networkmap_center = [ '.$networkmap['center_x'].', '.$networkmap['center_y']."];\n";
         $output .= 'var networkmap_dimensions = [ '.$networkmap['width'].', '.$networkmap['height']."];\n";
-        $output .= 'var enterprise_installed = '.((int) enterprise_installed()).";\n";
         $output .= 'var networkmap_write = '.$networkmap_write.";\n";
         $output .= 'var node_radius = '.$networkmap['filter']['node_radius'].";\n";
         $output .= 'var networkmap_holding_area_dimensions = '.json_encode($networkmap['filter']['holding_area']).";\n";
@@ -2883,22 +2855,14 @@ class NetworkMap
     public function loadAdvancedInterface()
     {
         $list_networkmaps = get_networkmaps($this->idMap);
-        if (empty($list_networkmaps)) {
+
+        if (empty($list_networkmaps) === true) {
             $list_networkmaps = [];
         }
 
         $id = 'dialog_node_edit';
-        if (!enterprise_installed()) {
-            $id = 'open_version_dialog';
-                $output = '<div id="open_version" style="display: none" title="'.__('Warning').'">';
-                $output .= '<div class="center mrgn_top_20px w90p font_13px">'.__(
-                    'In the Open version of %s can not be edited nodes or map',
-                    get_product_name()
-                );
-                $output .= '</div></div>';
-        }
 
-        $output .= '<div id="'.$id.'" class="invisible" title="';
+        $output = '<div id="'.$id.'" class="invisible" title="';
         $output .= __('Edit node').'">';
         $output .= '<div class="left w100p">';
 
@@ -3017,16 +2981,14 @@ class NetworkMap
             true
         );
 
-        if (enterprise_installed()) {
-            $output .= ui_toggle(
-                html_print_table($table, true),
-                __('Node options'),
-                __('Node options'),
-                '',
-                true,
-                true
-            );
-        }
+        $output .= ui_toggle(
+            html_print_table($table, true),
+            __('Node options'),
+            __('Node options'),
+            '',
+            true,
+            true
+        );
 
         $table = new StdClass();
         $table->id = 'relations_table';
@@ -3109,16 +3071,14 @@ class NetworkMap
             true
         );
 
-        if (enterprise_installed()) {
-            $output .= ui_toggle(
-                html_print_table($table, true),
-                __('Relations'),
-                __('Relations'),
-                '',
-                true,
-                true
-            );
-        }
+        $output .= ui_toggle(
+            html_print_table($table, true),
+            __('Relations'),
+            __('Relations'),
+            '',
+            true,
+            true
+        );
 
         $output .= '</div></div>';
 
@@ -3340,8 +3300,7 @@ class NetworkMap
     {
         $output = '';
 
-        if (enterprise_installed()
-            && $this->useTooltipster
+        if ($this->useTooltipster
         ) {
             $output .= '<script type="text/javascript">
                 $(function() {
@@ -3376,7 +3335,7 @@ class NetworkMap
             graph: networkmap,
             networkmap_center: networkmap_center,
             networkmap_dimensions: networkmap_dimensions,
-            enterprise_installed: enterprise_installed,
+            enterprise_installed: 1,
             node_radius: node_radius,
             holding_area_dimensions: networkmap_holding_area_dimensions,
             url_background_grid: url_background_grid,
@@ -3419,18 +3378,17 @@ class NetworkMap
     {
         global $config;
 
-        if (enterprise_installed()
-            && isset($this->useTooltipster)
-            && $this->useTooltipster == true
+        if (isset($this->useTooltipster) === true
+            && (bool) $this->useTooltipster === true
         ) {
             $output = '<script type="text/javascript" src="'.ui_get_full_url(
                 'include/javascript/d3.3.5.14.js'
             ).'" charset="utf-8"></script>';
             $output .= '<script type="text/javascript" src="'.ui_get_full_url(
-                'enterprise/include/javascript/SimpleMapController.js'
+                'include/javascript/SimpleMapController.js'
             ).'"></script>';
             $output .= '<script type="text/javascript" src="'.ui_get_full_url(
-                'enterprise/include/javascript/tooltipster.bundle.min.js'
+                'include/javascript/tooltipster.bundle.min.js'
             ).'"></script>';
             $output .= '<script type="text/javascript" src="'.ui_get_full_url(
                 'include/javascript/jquery.svg.js'
@@ -3439,11 +3397,11 @@ class NetworkMap
                 'include/javascript/jquery.svgdom.js'
             ).'"></script>';
             $output .= '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url(
-                '/enterprise/include/styles/tooltipster.bundle.min.css'
+                'include/styles/tooltipster.bundle.min.css'
             ).'" />'."\n";
 
             $output .= '<div id="simple_map" data-id="'.$this->idMap.'" ';
-            $output .= 'class="border_1px_dd';
+            $output .= 'class="border_1px_dd" style="';
 
             if ($this->fullSize) {
                 $output .= ' width:100%';

@@ -3299,8 +3299,10 @@ function extract_column($array, $column)
 
 function get_percentile($percentile, $array)
 {
+    global $config;
+
     sort($array);
-    $index = (($percentile / 100) * count($array));
+    $index = (($config['percentil'] / 100) * count($array));
 
     if (floor($index) == $index) {
         $result = (($array[($index - 1)] + $array[$index]) / 2);

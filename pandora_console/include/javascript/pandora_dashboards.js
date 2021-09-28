@@ -948,6 +948,133 @@ function processTreeSearch(settings) {
   });
 }
 
+function processServiceTree(settings) {
+  var treeController = TreeController.getController();
+
+  if (
+    typeof treeController.recipient != "undefined" &&
+    treeController.recipient.length > 0
+  )
+    treeController.recipient.empty();
+
+  $(".loading_tree").show();
+
+  var parameters = {};
+  parameters["page"] = "include/ajax/tree.ajax";
+  parameters["getChildren"] = 1;
+  parameters["type"] = "services";
+  parameters["filter"] = {};
+  parameters["filter"]["searchGroup"] = "";
+  parameters["filter"]["searchAgent"] = "";
+  parameters["filter"]["statusAgent"] = "";
+  parameters["filter"]["searchModule"] = "";
+  parameters["filter"]["statusModule"] = "";
+  parameters["filter"]["groupID"] = "";
+  parameters["filter"]["tagID"] = "";
+  parameters["filter"]["searchHirearchy"] = 1;
+  parameters["filter"]["show_not_init_agents"] = 1;
+  parameters["filter"]["show_not_init_modules"] = 1;
+  parameters["filter"]["is_favourite"] = 0;
+  parameters["filter"]["width"] = 100;
+
+  $.ajax({
+    type: "POST",
+    url: settings.ajaxURL,
+    data: parameters,
+    success: function(data) {
+      if (data.success) {
+        $(".loading_tree").hide();
+        // Get the main values of the tree.
+        var rawTree = Object.values(data.tree);
+        // Sorting tree by description (TreeController.js).
+        rawTree.sort(function(a, b) {
+          var x = a.description.toLowerCase();
+          var y = b.description.toLowerCase();
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+        treeController.init({
+          recipient: $("div#container_servicemap_" + settings.cellId),
+          detailRecipient: {
+            render: function(element, data) {
+              return {
+                open: function() {
+                  $("#module_details_window")
+                    .hide()
+                    .empty()
+                    .append(data)
+                    .dialog({
+                      resizable: true,
+                      draggable: true,
+                      modal: true,
+                      title: "Info",
+                      overlay: {
+                        opacity: 0.5,
+                        background: "black"
+                      },
+                      width: 450,
+                      height: 500
+                    });
+                }
+              };
+            }
+          },
+          page: parameters["page"],
+          emptyMessage: "No data found",
+          foundMessage: "Found groups",
+          tree: rawTree,
+          baseURL: settings.baseURL,
+          ajaxURL: settings.ajaxURL,
+          filter: parameters["filter"],
+          counterTitles: {
+            total: {
+              agents: "Total agents",
+              modules: "Total modules",
+              none: "Total"
+            },
+            alerts: {
+              agents: "Fired alerts",
+              modules: "Fired alerts",
+              none: "Fired alerts"
+            },
+            critical: {
+              agents: "Critical agents",
+              modules: "Critical modules')",
+              none: "Critical"
+            },
+            warning: {
+              agents: "Warning agents",
+              modules: "Warning modules",
+              none: "Warning"
+            },
+            unknown: {
+              agents: "Unknown agents",
+              modules: "Unknown modules",
+              none: "Unknown"
+            },
+            not_init: {
+              agents: "Not init agents",
+              modules: "Not init modules",
+              none: "Not init"
+            },
+            ok: {
+              agents: " Normal agents ",
+              modules: " Normal modules ",
+              none: " Normal "
+            }
+          }
+        });
+      }
+    },
+    dataType: "json"
+  });
+}
+
 function show_module_detail_dialog(
   module_id,
   id_agent,

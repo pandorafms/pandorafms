@@ -3417,7 +3417,7 @@ sub pandora_select_id_custom_field ($$) {
 
 	$result = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
 
-	return $result;
+	return $result->{'id_field'};
 }
 
 ##########################################################################

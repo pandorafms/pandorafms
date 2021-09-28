@@ -3063,7 +3063,7 @@ sub cli_agent_update_custom_fields() {
 	}
 
 	# Department, Serial number ...
-	my $custom_field = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
+	my $custom_field = pandora_select_id_custom_field ($dbh, $field);
 
 	if($custom_field eq '') {
 			print_log "[ERROR] Field '$field' doesnt exist\n\n";

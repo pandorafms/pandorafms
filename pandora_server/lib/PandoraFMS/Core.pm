@@ -242,6 +242,7 @@ our @EXPORT = qw(
 	pandora_update_agent_module_count
 	pandora_update_config_token
 	pandora_update_agent_custom_field
+	pandora_select_id_custom_field
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
@@ -3407,6 +3408,17 @@ sub pandora_update_config_token ($$$) {
 	return $result;
 }
 
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_id_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
+
+	return $result;
+}
 
 ##########################################################################
 ## Update a custom field from agent of tagent_custom_data 

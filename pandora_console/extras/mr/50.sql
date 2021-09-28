@@ -11,4 +11,40 @@ ALTER TABLE `tevent_alert` ADD COLUMN `id_template_fields` int(10) unsigned NOT 
 ALTER TABLE `tevent_filter` ADD COLUMN `time_from` TIME NULL;
 ALTER TABLE `tevent_filter` ADD COLUMN `time_to` TIME NULL;
 
+CREATE TABLE IF NOT EXISTS `tncm_template` (
+    `id` serial,
+    `vendor` text,
+    `model` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tncm_script` (
+    `id` serial,
+    `type` int unsigned not null default 0,
+    `content` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
+    `id` serial,
+    `id_template` bigint(20) unsigned NOT NULL,
+    `id_script` bigint(20) unsigned NOT NULL,
+    `order` int unsigned not null default 0,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tncm_agent_templates` (
+    `id` serial,
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_template` bigint(20) unsigned NOT NULL,
+    `protocol` int unsigned not null default 0,
+    `cred_key` varchar(100),
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 COMMIT;

@@ -109,7 +109,7 @@ if (is_ajax()) {
                 }
 
                 if (empty($ids) === false) {
-                    $where_id_agente = 'AND id_agente NOT IN ('.implode(',', $ids).')';
+                    $where_id_agente = 'id_agente NOT IN ('.implode(',', $ids).')';
                 }
             }
 

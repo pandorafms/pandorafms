@@ -98,6 +98,19 @@ function chordDiagram(recipient, elements, matrix, width) {
               })
               .transition()
               .style("opacity", opacity);
+
+            svg.selectAll(".chord").filter(function(d) {
+              if (
+                event.type == "mouseover" &&
+                (d.source.index == i || d.target.index == i)
+              ) {
+                show_tooltip(d);
+                return;
+              } else {
+                hide_tooltip();
+                return;
+              }
+            });
           };
         };
 
@@ -122,7 +135,8 @@ function chordDiagram(recipient, elements, matrix, width) {
           .style("stroke", fill)
           .attr("d", arc)
           .on("mouseover", fade(0.1))
-          .on("mouseout", fade(1));
+          .on("mouseout", fade(1))
+          .on("mousemove", move_tooltip);
 
         g.append("svg:text")
           .each(function(d) {

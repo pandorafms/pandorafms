@@ -1080,7 +1080,7 @@ function netflow_draw_item(
                 $filter,
                 $aggregate,
                 $max_aggregates,
-                false,
+                true,
                 $connection_name,
                 $address_resolution
             );

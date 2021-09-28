@@ -183,3 +183,7 @@ div#tree-controller-recipient {
 .tree-node .disabled {
   filter: opacity(0.3);
 }
+
+.ipam-network {
+  font-size: 9pt;
+}

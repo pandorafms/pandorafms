@@ -99,18 +99,26 @@ function chordDiagram(recipient, elements, matrix, width) {
               .transition()
               .style("opacity", opacity);
 
-            svg.selectAll(".chord").filter(function(d) {
-              if (
-                event.type == "mouseover" &&
-                (d.source.index == i || d.target.index == i)
-              ) {
-                show_tooltip(d);
-                return;
-              } else {
-                hide_tooltip();
-                return;
-              }
-            });
+            if (event.type == "mouseover") {
+              const chords = chord.chords();
+              $.each(chords, function(key, value) {
+                if (
+                  (value.source.index == i && value.target.subindex == i) ||
+                  (value.source.subindex == i && value.target.index == i)
+                ) {
+                  if (
+                    $("#tooltip").is(":hidden") ||
+                    $("#tooltip").length == 0
+                  ) {
+                    show_tooltip(value);
+                  } else {
+                    add_tooltip(value);
+                  }
+                }
+              });
+            } else {
+              hide_tooltip();
+            }
           };
         };
 
@@ -270,6 +278,25 @@ function chordDiagram(recipient, elements, matrix, width) {
               "top: " +
               y +
               "px;"
+          );
+        }
+
+        function add_tooltip(d) {
+          $("#tooltip").append(
+            "</br>" +
+              elements[d.source.index] +
+              " → " +
+              elements[d.target.index] +
+              ": <b>" +
+              valueToBytes(d.source.value) +
+              "</b>" +
+              "<br>" +
+              elements[d.target.index] +
+              " → " +
+              elements[d.source.index] +
+              ": <b>" +
+              valueToBytes(d.target.value) +
+              "</b>"
           );
         }
 

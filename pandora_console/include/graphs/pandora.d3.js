@@ -101,18 +101,23 @@ function chordDiagram(recipient, elements, matrix, width) {
 
             if (event.type == "mouseover") {
               const chords = chord.chords();
+              let aux = 0;
               $.each(chords, function(key, value) {
-                if (
-                  (value.source.index == i && value.target.subindex == i) ||
-                  (value.source.subindex == i && value.target.index == i)
-                ) {
+                console.log(aux);
+                if (aux < 5) {
                   if (
-                    $("#tooltip").is(":hidden") ||
-                    $("#tooltip").length == 0
+                    (value.source.index == i && value.target.subindex == i) ||
+                    (value.source.subindex == i && value.target.index == i)
                   ) {
-                    show_tooltip(value);
-                  } else {
-                    add_tooltip(value);
+                    if (
+                      $("#tooltip").is(":hidden") ||
+                      $("#tooltip").length == 0
+                    ) {
+                      show_tooltip(value);
+                    } else {
+                      add_tooltip(value);
+                      aux++;
+                    }
                   }
                 }
               });

@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -223,7 +223,7 @@ if (!isset($text_filter)) {
 
 // Generate dot file
 $graph = networkmap_generate_hash(
-    __('Pandora FMS'),
+    get_product_name(),
     $group,
     $simple,
     $font_size,

@@ -73,9 +73,9 @@ echo '<title>'.__('Sound Events').'</title>';
 <?php
 echo '<link rel="icon" href="../../'.ui_get_favicon().'" type="image/ico" />';
 if ($config['style'] === 'pandora_black') {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/barivion_black.css" type="text/css" />';
 } else {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+    echo '<link rel="stylesheet" href="../../include/styles/barivion.css" type="text/css" />';
 }
 
 echo '</head>';

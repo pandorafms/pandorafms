@@ -41,13 +41,13 @@ $product_name = get_product_name(); ?>
     <script src="<?php $asset('resources/javascript/umc.js'); ?>" type="text/javascript"></script>
     <link rel="stylesheet" href="<?php $asset('resources/styles/jquery-ui.min.css'); ?>">
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/barivion.css'); ?>">
 </head>
 
 <div id="registration_wizard" title="
     <?php echo __('Register to Update Manager'); ?>
     " class="invisible">
-    <div class="register_update_manager">
+    <div class="register_update_manager" style="text-align: center;float: none;">
         <?php echo html_print_image('images/pandora_circle_big.png', true); ?>
     </div>
 
@@ -73,7 +73,7 @@ $product_name = get_product_name(); ?>
 
         <p>
             <?php echo __('Visit our privacy policy for more information'); ?>: 
-            <a href="https://pandorafms.com/privacy-policy/" target="_blank">https://pandorafms.com/privacy-policy/</a>
+            <a href="https://www.barivion.com/about-barivion/" target="_blank">https://www.barivion.com/about-barivion/</a>
         </p>
 
         <input id="registration-email" type="email" placeholder="<?php echo __('Your email'); ?>" />

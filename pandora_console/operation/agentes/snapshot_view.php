@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -80,7 +80,7 @@ if (!check_acl_one_of_groups($config['id_user'], $all_groups, 'AR')) {
             $query = ui_get_url_refresh(false);
             echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
             if ($config['style'] === 'pandora_black') {
-                echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+                echo '<link rel="stylesheet" href="../../include/styles/barivion_black.css" type="text/css"/>';
             }
         }
         ?>

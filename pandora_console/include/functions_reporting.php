@@ -14217,9 +14217,9 @@ function reporting_email_template(
         $body .= '<p />';
         $body .= __('Thanks for your time.');
         $body .= '<p />';
-        $body .= __('Best regards, Pandora FMS');
+        $body .= __('Best regards, %s', get_product_name());
         $body .= '<p />';
-        $body .= '<em>'.__('This is an automatically generated email from Pandora FMS, please do not reply.').'</em>';
+        $body .= '<em>'.__('This is an automatically generated email from %s, please do not reply.', get_product_name()).'</em>';
     } else {
         $bodyEmail = str_replace(
             [

@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -50,7 +50,7 @@ if (!isset($login_screen)) {
 
 switch ($login_screen) {
     case 'login':
-        $logo_link = 'http://www.pandorafms.com';
+        $logo_link = 'http://www.barivion.com';
         $logo_title = __('Go to %s Website', get_product_name());
     break;
 
@@ -135,8 +135,8 @@ if (isset($config['custom_docs_url'])) {
 
     echo '<li><a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">'.__('Docs').'</li>';
 } else if (!$custom_conf_enabled) {
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
-    echo '<li><a href="https://pandorafms.com/manual/" target="_blank">'.__('Docs').'</li>';
+    echo '<li><a href="https://barivion.com/manual/" target="_blank"><img src="'.$docs_logo.'" alt="docs"></a></li>';
+    echo '<li><a href="https://barivion.com/manual/" target="_blank">'.__('Docs').'</li>';
 }
 
 if (isset($config['custom_support_url'])) {
@@ -147,12 +147,12 @@ if (isset($config['custom_support_url'])) {
 
         echo '<li><a href="'.ui_get_full_external_url($config['custom_support_url']).'" target="_blank">'.__('Support').'</li>';
     } else {
-        echo '<li id="li_margin_left"><a href="https://pandorafms.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+        echo '<li id="li_margin_left"><a href="https://barivion.com/monitoring-services/support/" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
         echo '<li>'.__('Support').'</li>';
     }
 } else if (!$custom_conf_enabled) {
-    echo '<li id="li_margin_left"><a href="https://support.pandorafms.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
-    echo '<li><a href="https://support.pandorafms.com" target="_blank">'.__('Docs').'</li>';
+    echo '<li id="li_margin_left"><a href="https://support.barivion.com" target="_blank"><img src="'.$support_logo.'" alt="support"></a></li>';
+    echo '<li><a href="https://support.barivion.com" target="_blank">'.__('Docs').'</li>';
 }
 
         echo '</ul></div>';

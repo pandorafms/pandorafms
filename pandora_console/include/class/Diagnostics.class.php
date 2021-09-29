@@ -615,7 +615,7 @@ class Diagnostics extends Wizard
 
         $currentTime = time();
 
-        $pandoraDbLastRun = __('Pandora DB has never been executed');
+        $pandoraDbLastRun = __('%s DB has never been executed', get_product_name());
         if ($dateDbMantenaince !== false) {
             $difference = ($currentTime - $dateDbMantenaince);
             $pandoraDbLastRun = human_time_description_raw(
@@ -637,7 +637,7 @@ class Diagnostics extends Wizard
                     'value' => $notInitAgents,
                 ],
                 'pandoraDbLastRun' => [
-                    'name'  => __('Pandora DB Last run'),
+                    'name'  => __('%s DB Last run', get_product_name()),
                     'value' => $pandoraDbLastRun,
                 ],
             ],

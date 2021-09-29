@@ -127,9 +127,9 @@ if (check_login()) {
         case 'infomodal':
 
             if ($open) {
-                echo '<p>'.__('The Update Manager client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()).'</p>'.'<p>'.__('<b>OpenSource version updates are automated packages generated each week. These updates come WITHOUT ANY warranty or support. If your system is corrupted or a feature stops working properly, you will need to recover a backup by yourself.</b>').'</p>'.'<p>'.__('The Enterprise version comes with a different update system, with fully tested, professionally-supported packages, and our support team is there to help you in case of problems or queries. Update Manager is another feature present in the Enterprise version and not included in the OpenSource version. There are lots of advanced business-oriented features contained in %s Enterprise Edition. For more information visit <a href="http://pandorafms.com">pandorafms.com</a>', get_product_name()).'</p>';
+                echo '<p>'.__('The Update Manager client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()).'</p>'.'<p>'.__('<b>OpenSource version updates are automated packages generated each week. These updates come WITHOUT ANY warranty or support. If your system is corrupted or a feature stops working properly, you will need to recover a backup by yourself.</b>').'</p>'.'<p>'.__('The Enterprise version comes with a different update system, with fully tested, professionally-supported packages, and our support team is there to help you in case of problems or queries. Update Manager is another feature present in the Enterprise version and not included in the OpenSource version. There are lots of advanced business-oriented features contained in %s Enterprise Edition. For more information visit <a href="http://barivion.com">barivion.com</a>', get_product_name()).'</p>';
             } else {
-                echo '<p>'.__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()).'</p>'.'<p>'.__('The Update Manager is one of the most advanced features on the %s Enterprise Edition. For more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.', get_product_name()).'</p>'.'<p>'.__('Update Manager sends anonymous information about %s usage (number of agents and modules running). To disable it, please remove the remote server address from the Update Manager plugin setup.', get_product_name()).'</p>';
+                echo '<p>'.__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is included on %s. It helps system administrators update their %s automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.', get_product_name(), get_product_name()).'</p>'.'<p>'.__('The Update Manager is one of the most advanced features on the %s Enterprise Edition. For more information visit <a href="http://barivion.com">http://barivion.com</a>.', get_product_name()).'</p>'.'<p>'.__('Update Manager sends anonymous information about %s usage (number of agents and modules running). To disable it, please remove the remote server address from the Update Manager plugin setup.', get_product_name()).'</p>';
             }
         break;
 
@@ -141,7 +141,7 @@ if (check_login()) {
         break;
 
         case 'massivemodal':
-            echo __("Do you want to consolidate all your system monitoring? Do you have many systems, making it difficult to manage them in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? %s Enterprise Policies are exactly what you need; you'll save time, effort and annoyances. More information <a href='pandorafms.com'>pandorafms.com</a>", get_product_name());
+            echo __("Do you want to consolidate all your system monitoring? Do you have many systems, making it difficult to manage them in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? %s Enterprise Policies are exactly what you need; you'll save time, effort and annoyances. More information <a href='barivion.com'>barivion.com</a>", get_product_name());
         break;
 
         case 'eventsmodal':
@@ -218,7 +218,7 @@ $(".cerrar").click(function(){
 });
 
 $(".gopandora").click(function(){
-  window.open('https://pandorafms.com/es/software-de-monitorizacion-pandorafms/','_blank');
+  window.open('https://barivion.com/es/software-de-monitorizacion-pandorafms/','_blank');
 });
 
 </script>

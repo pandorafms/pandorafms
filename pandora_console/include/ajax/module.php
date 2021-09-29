@@ -396,7 +396,7 @@ if (check_login()) {
             $table->head[$index] = $col;
             if ($col === 'Data') {
                 $table->head[$index] .= ui_print_help_tip(
-                    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+                    __('In %s, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'%s Engineering\' chapter from documentation.', get_product_name(), get_product_name()),
                     true
                 );
             }

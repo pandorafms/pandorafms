@@ -1,5 +1,5 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -22,7 +22,7 @@ if (!isset($config)) {
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
-		<title>Pandora FMS - The Flexible Monitoring System - Console error</title>
+		<title>Barivion - The Flexible Monitoring System - Console error</title>
 		<meta http-equiv="expires" content="0">
 		<meta http-equiv="content-type" content="text/html; charset=utf8">
 		<meta name="resource-type" content="document">
@@ -31,7 +31,7 @@ if (!isset($config)) {
 		<meta name="copyright" content="(c) Artica ST">
 		<meta name="robots" content="index, follow">
 		<link rel="icon" href="../../images/pandora.ico" type="image/ico">
-		<link rel="stylesheet" href="../styles/pandora.css" type="text/css">
+		<link rel="stylesheet" href="../styles/barivion.css" type="text/css">
 	</head>
 	<body>
 		<div id="main" class="float-left mrgn_lft_100px">

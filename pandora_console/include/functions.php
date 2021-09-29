@@ -1,5 +1,5 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -4486,10 +4486,10 @@ function get_help_info($section_name)
     $user_language = get_user_language($config['id_user']);
 
     $es = false;
-    $result = 'https://pandorafms.com/manual/en/documentation/';
+    $result = 'https://barivion.com/manual/en/documentation/';
     if ($user_language == 'es') {
         $es = true;
-        $result = 'https://pandorafms.com/manual/es/documentation/';
+        $result = 'https://barivion.com/manual/es/documentation/';
     }
 
     switch ($section_name) {
@@ -5961,7 +5961,7 @@ function send_test_email(
 
         $mailer = new Swift_Mailer($transport);
 
-        $message = new Swift_Message(io_safe_output(__('Testing Pandora FMS email')));
+        $message = new Swift_Message(io_safe_output(__('Testing %s email', get_product_name())));
 
         $message->setFrom(
             [
@@ -5974,7 +5974,7 @@ function send_test_email(
         $to = trim($to);
         $message->setTo([$to => $to]);
         $message->setBody(
-            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            __('This is an email test sent from %s. If you can read this, your configuration works.', get_product_name()),
             'text/html'
         );
 

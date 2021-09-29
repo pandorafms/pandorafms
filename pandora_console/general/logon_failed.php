@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -27,6 +27,6 @@
         </div>
         </center>
         
-        <div class="msg"><?php echo __('Either, your password or your login are incorrect. Please check your CAPS LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, included failed login attempts are logged in Pandora FMS System logs, and these can be reviewed by each user, please report to admin any incident or malfunction.'); ?></div>
+        <div class="msg"><?php echo __('Either, your password or your login are incorrect. Please check your CAPS LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, included failed login attempts are logged in %s System logs, and these can be reviewed by each user, please report to admin any incident or malfunction.', get_product_name()); ?></div>
     </div>
 </div>

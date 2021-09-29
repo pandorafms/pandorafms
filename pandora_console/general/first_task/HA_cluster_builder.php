@@ -42,12 +42,12 @@ ui_print_info_message(['no_close' => true, 'message' => __('There are no HA clus
         <?php echo html_print_image('images/first_task/slave-mode.png', true, ['title' => __('Clusters')]); ?>
     </div>
     <div class="text_task_cluster">
-        <h3> <?php echo __('PANDORA FMS DB CLUSTER'); ?></h3>
+        <h3> <?php echo __('%s DB CLUSTER', get_product_name()); ?></h3>
         <p id="description_task"> 
     <?php
-    echo __('With Pandora FMS Enterprise you can add high availability to your Pandora FMS installation by adding redundant MySQL servers').'<br><br>';
+    echo __('With %s you can add high availability to your %s installation by adding redundant MySQL servers', get_product_name(), get_product_name()).'<br><br>';
 
-    echo __('Click on "add new node" to start transforming your Pandora FMS DB Cluster into a Pandora FMS DB Cluster.').'<br><br>';
+    echo __('Click on "add new node" to start transforming your %s DB Cluster into a %s DB Cluster.', get_product_name(), get_product_name()).'<br><br>';
     ?>
     </p>
         

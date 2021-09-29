@@ -1094,7 +1094,7 @@ function resource_registration_extension_main()
     }
 
     echo '<div class=notify>';
-    echo __('This extension makes registering resource templates easier.').' '.__('Here you can upload a resource template in .ptr format.').' '.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__("You can get more resurces in our <a href='http://pandorafms.com/Library/Library/'>Public Resource Library</a>");
+    echo __('This extension makes registering resource templates easier.').' '.__('Here you can upload a resource template in .ptr format.').' '.__('Please refer to our documentation for more information on how to obtain and use %s resources.', get_product_name()).' '.'<br> <br>'.__("You can get more resurces in our <a href='http://barivion.com/Library/Library/'>Public Resource Library</a>");
     echo '</div>';
 
     echo '<br /><br />';

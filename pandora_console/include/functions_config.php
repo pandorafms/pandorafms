@@ -2350,7 +2350,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title_header'])) {
-        config_update_value('meta_custom_title_header', get_product_name().__('Metaconsole'));
+        config_update_value('meta_custom_title_header', get_product_name().' '.__('Metaconsole'));
     }
 
     if (!isset($config['meta_custom_subtitle_header'])) {

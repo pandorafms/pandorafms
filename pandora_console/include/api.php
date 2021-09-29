@@ -99,7 +99,7 @@ if ($info == 'version') {
         $config['MR'] = 0;
     }
 
-    echo 'Pandora FMS '.$pandora_version.' - '.$build_version.' MR'.$config['MR'];
+    echo get_product_name().' '.$pandora_version.' - '.$build_version.' MR'.$config['MR'];
     exit;
 }
 

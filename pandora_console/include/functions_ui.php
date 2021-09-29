@@ -1825,7 +1825,7 @@ function ui_process_page_head($string, $bitfield)
                 'common'  => 'include/styles/common.css',
                 'menu'    => 'include/styles/menu.css',
                 'tables'  => 'include/styles/tables.css',
-                'general' => 'include/styles/pandora.css',
+                'general' => 'include/styles/barivion.css',
             ],
             $config['css']
         );

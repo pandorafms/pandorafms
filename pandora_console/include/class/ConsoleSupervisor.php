@@ -229,7 +229,7 @@ class ConsoleSupervisor
         /*
          * Check if the Pandora Console log
          * file remains in old location.
-         *  NOTIF.PANDORACONSOLE.LOG.OLD
+         *  NOTIF.BARIVIONCONSOLE.LOG.OLD
          */
 
         $this->checkPandoraConsoleLogOldLocation();
@@ -349,8 +349,8 @@ class ConsoleSupervisor
         /*
          * Check pandoradb running in main DB.
          * Check pandoradb running in historical DB.
-         *  NOTIF.PANDORADB
-         *  NOTIF.PANDORADB.HISTORICAL
+         *  NOTIF.BARIVIONDB
+         *  NOTIF.BARIVIONDB.HISTORICAL
          */
 
         $this->checkPandoraDBMaintenance();
@@ -664,8 +664,8 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.PHANTOMJS':
             case 'NOTIF.PHP.VERSION':
             case 'NOTIF.HISTORYDB':
-            case 'NOTIF.PANDORADB':
-            case 'NOTIF.PANDORADB.HISTORICAL':
+            case 'NOTIF.BARIVIONDB':
+            case 'NOTIF.BARIVIONDB.HISTORICAL':
             case 'NOTIF.HISTORYDB.MR':
             case 'NOTIF.EXT.ELASTICSEARCH':
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
@@ -1665,7 +1665,7 @@ class ConsoleSupervisor
         if ($last_maintance > 172800) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PANDORADB',
+                    'type'    => 'NOTIF.BARIVIONDB',
                     'title'   => __('Database maintenance problem'),
                     'message' => __(
                         'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
@@ -1675,7 +1675,7 @@ class ConsoleSupervisor
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PANDORADB');
+            $this->cleanNotifications('NOTIF.BARIVIONDB');
         }
 
         if (isset($config['history_db_enabled'])
@@ -1726,7 +1726,7 @@ class ConsoleSupervisor
             if ($last_maintance > 172800) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PANDORADB.HISTORY',
+                        'type'    => 'NOTIF.BARIVIONDB.HISTORY',
                         'title'   => __(
                             'Historical database maintenance problem.'
                         ),
@@ -1736,11 +1736,11 @@ class ConsoleSupervisor
                 );
             } else {
                 // Historical db working fine.
-                $this->cleanNotifications('NOTIF.PANDORADB.HISTORY');
+                $this->cleanNotifications('NOTIF.BARIVIONDB.HISTORY');
             }
         } else {
             // Disabled historical db.
-            $this->cleanNotifications('NOTIF.PANDORADB.HISTORY');
+            $this->cleanNotifications('NOTIF.BARIVIONDB.HISTORY');
         }
     }
 
@@ -2583,14 +2583,14 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
+                    'type'    => 'NOTIF.BARIVIONCONSOLE.LOG.OLD',
                     'title'   => __($title_pandoraconsole_old_log),
                     'message' => __($message_pandoraconsole_old_log),
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PANDORACONSOLE.LOG.OLD');
+            $this->cleanNotifications('NOTIF.BARIVIONCONSOLE.LOG.OLD');
         }
     }
 

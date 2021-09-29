@@ -94,7 +94,7 @@ function update_manager_verify_trial()
     global $config;
 
     if (isset($config['license_licensed_to'])
-        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
+        && strstr($config['license_licensed_to'], 'info@barivion.com') !== false
     ) {
         return true;
     }

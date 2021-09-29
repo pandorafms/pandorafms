@@ -567,7 +567,7 @@ CREATE TABLE IF NOT EXISTS `tskin` (
 	PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
+UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'barivion.css' WHERE `id` = 1;
 UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
 
 -- ---------------------------------------------------------------------

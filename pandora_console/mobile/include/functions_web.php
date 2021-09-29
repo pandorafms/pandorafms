@@ -1,5 +1,5 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -80,7 +80,7 @@ function footer()
     ?>
     <div id="footer" style="background: url('../images/pandora.ico.gif') no-repeat left #000;">
         <?php
-        echo sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version)).'<br />';
+        echo sprintf(__('%s %s - Build %s', get_product_name(), $pandora_version, $build_version)).'<br />';
         echo __('Generated at').' '.ui_print_timestamp($time, true, ['prominent' => 'timestamp']);
         ?>
     </div>

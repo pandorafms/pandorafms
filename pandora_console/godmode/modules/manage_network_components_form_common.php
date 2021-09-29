@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -408,14 +408,14 @@ $next_row++;
                        ){
                         if (language == 'es'){
                          window.open(
-                             'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
+                             'https://barivion.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
                              '_blank',
                              'width=800,height=600'
                                 );
                        }
                        else{
                         window.open(
-                            'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
+                            'https://barivion.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
                              '_blank',
                              'width=800,height=600'
                              );
@@ -428,14 +428,14 @@ $next_row++;
                      ){
                          if(language == 'es'){
                             window.open(
-                            'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
+                            'https://barivion.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
                              '_blank',
                              'width=800,height=600'
                              );
                          }
                          else{
                             window.open(
-                            'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
+                            'https://barivion.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
                              '_blank',
                              'width=800,height=600'
                              );
@@ -450,14 +450,14 @@ $next_row++;
                      ){
                          if(language == 'es'){
                             window.open(
-                            'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
+                            'https://barivion.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                              '_blank',
                              'width=800,height=600'
                              );
                          }
                          else{
                             window.open(
-                            'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring&printable=yes#monitoring_through_network_modules_with_snmp',
+                            'https://barivion.com/manual/en/documentation/03_monitoring/03_remote_monitoring&printable=yes#monitoring_through_network_modules_with_snmp',
                              '_blank',
                              'width=800,height=600'
                              );
@@ -472,14 +472,14 @@ $next_row++;
                        ){
                            if(language == 'es'){
                             window.open(
-                            'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
+                            'https://barivion.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
                              '_blank',
                              'width=800,height=600'
                              );
                            }
                            else{
                             window.open(
-                            'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring&printable=yes#tcp_monitoring',
+                            'https://barivion.com/manual/en/documentation/03_monitoring/03_remote_monitoring&printable=yes#tcp_monitoring',
                              '_blank',
                              'width=800,height=600'
                              );
@@ -494,14 +494,14 @@ $next_row++;
                        ){
                            if(language == 'es'){
                             window.open(
-                            'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
+                            'https://barivion.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
                              '_blank',
                              'width=800,height=600'
                              );
                            }
                            else{
                             window.open(
-                            'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
+                            'https://barivion.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
                              '_blank',
                              'width=800,height=600'
                              );

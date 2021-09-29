@@ -309,7 +309,7 @@ if (update_manager_verify_registration() === true && users_is_admin()) {
 
 if (license_free()) {
     $config['identification_reminder'] = isset($config['identification_reminder']) ? $config['identification_reminder'] : 1;
-    $table->data[8][0] = __('Pandora FMS community reminder').ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
+    $table->data[8][0] = __('%s community reminder', get_product_name()).ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
     $table->data[8][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 1, '', $config['identification_reminder'], true).'&nbsp;&nbsp;';
     $table->data[8][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button('identification_reminder', 0, '', $config['identification_reminder'], true);
 }

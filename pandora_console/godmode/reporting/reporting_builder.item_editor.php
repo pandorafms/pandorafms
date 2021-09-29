@@ -400,6 +400,12 @@ switch ($action) {
                     $sla_sorted_by = $item['top_n'];
                 break;
 
+                case 'IPAM_network':
+                    $network_filter = $item['ipam_network_filter'];
+                    $alive_ip = $item['ipam_alive_ips'];
+                    $agent_not_assigned_to_ip = $item['ipam_ip_not_assigned_to_agent'];
+                break;
+
                 case 'monitor_report':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
@@ -1066,6 +1072,51 @@ $class = 'databox filters';
             <td  >
                 <?php
                 echo "<input name='log_number' max='10000' min='1' size='10' type='number' value='".$log_number."'>";
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_network_filter"   class="datos">
+            <td class="bolder"><?php echo __('Filter by network'); ?></td>
+            <td>
+                <?php
+                $sql = 'SELECT id, CONCAT(name_network, " (", network, ")")
+                        FROM tipam_network';
+
+                    html_print_select_from_sql(
+                        $sql,
+                        'network_filter',
+                        $network_filter,
+                        '',
+                        '',
+                        '0'
+                    );
+                    ?>
+            </td>
+        </tr>
+
+        <tr id="row_alive_ip"   class="datos">
+            <td class="bolder"><?php echo __('Show alive IPs only'); ?></td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'alive_ip',
+                    1,
+                    $alive_ip
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_not_assigned_to_ip"   class="datos">
+            <td class="bolder"><?php echo __('Show IPs not assigned to an agent'); ?></td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'agent_not_assigned_to_ip',
+                    1,
+                    $agent_not_assigned_to_ip
+                );
                 ?>
             </td>
         </tr>
@@ -5532,7 +5583,9 @@ function chooseType() {
     $("#row_agent_version").hide();
     $("#row_agent_remote_conf").hide();
     $("#row_module_free_search").hide();
-
+    $("#row_network_filter").hide();
+    $("#row_alive_ip").hide();
+    $("#row_agent_not_assigned_to_ip").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6245,6 +6298,13 @@ function chooseType() {
             $("#row_max_values").show();
             $("#row_resolution").show();
             $("#row_servers").show();
+            $("#row_historical_db_check").hide();
+            break;
+
+        case 'IPAM_network':
+            $("#row_network_filter").show();
+            $("#row_alive_ip").show();
+            $("#row_agent_not_assigned_to_ip").show();
             $("#row_historical_db_check").hide();
             break;
 

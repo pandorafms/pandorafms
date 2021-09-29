@@ -1838,6 +1838,13 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'IPAM_network':
+                                $values['ipam_network_filter'] = get_parameter('network_filter');
+                                $values['ipam_alive_ips'] = get_parameter('alive_ip');
+                                $values['ipam_ip_not_assigned_to_agent'] = get_parameter('agent_not_assigned_to_ip');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2242,6 +2249,14 @@ switch ($action) {
                                 $values['external_source'] = json_encode($es);
                             break;
 
+                            case 'IPAM_network':
+                                $es['network_filter'] = get_parameter('network_filter');
+                                $es['alive_ip'] = get_parameter('alive_ip');
+                                $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
+
+                                // $values['external_source'] = json_encode($es);
+                            break;
+
                             default:
                                 // Default.
                             break;
@@ -2548,6 +2563,10 @@ switch ($action) {
                                 'id_agent_module'
                             );
                         }
+
+                        $values['ipam_network_filter'] = get_parameter('network_filter', 0);
+                        $values['ipam_alive_ips'] = get_parameter('alive_ip', 0);
+                        $values['ipam_ip_not_assigned_to_agent'] = get_parameter('agent_not_assigned_to_ip', 0);
 
                         $values['only_display_wrong'] = (int) get_parameter(
                             'checkbox_only_display_wrong',
@@ -2887,6 +2906,12 @@ switch ($action) {
                                 $es['agent_remote_conf'] = get_parameter('agent_remote_conf');
 
                                 $values['external_source'] = json_encode($es);
+                            break;
+
+                            case 'IPAM_network':
+                                $es['network_filter'] = get_parameter('network_filter');
+                                $es['alive_ip'] = get_parameter('alive_ip');
+                                $es['agent_not_assigned_to_ip'] = get_parameter('agent_not_assigned_to_ip');
                             break;
 
                             default:

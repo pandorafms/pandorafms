@@ -40,7 +40,8 @@ class TreeTag extends Tree
         $this->L1orderByFinal = 'tt.name';
 
         $this->L2condition = 'AND ttm.id_tag = '.$this->rootID;
-        $this->L2inner = $this->L1innerInside;
+        $this->L2inner = 'INNER JOIN ttag_module ttm
+        ON ttm.id_agente_modulo = tam.id_agente_modulo';
 
         $this->L3forceTagCondition = true;
     }

@@ -1801,7 +1801,7 @@ if ($get_list_events_agents) {
     $date_to = get_parameter('date_to');
     $time_to = get_parameter('time_to', '23:59:59');
     $id_user = $config['id_user'];
-    hd('hollllaa', true);
+
     $returned_sql = events_sql_events_grouped_agents(
         $id_agent,
         $server_id,

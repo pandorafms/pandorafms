@@ -1117,10 +1117,17 @@ function ui_format_alert_row(
         }
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-        if ($policyInfo === false) {
+        $module_linked = policies_is_module_linked($alert['id_agent_module']);
+        if (is_array($policyInfo) === false && $module_linked === false) {
             $data[$index['policy']] = '';
         } else {
-            $img = 'images/policies_mc.png';
+            $module_linked = policies_is_module_linked($alert['id_agent_module']);
+            if ($module_linked === '0') {
+                $img = 'images/unlinkpolicy.png';
+            } else {
+                $img = 'images/policies_mc.png';
+            }
+
             if (is_metaconsole() === false) {
                 $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             } else {
@@ -5738,7 +5745,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

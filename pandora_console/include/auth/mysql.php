@@ -770,7 +770,7 @@ function ldap_process_user_login($login, $password)
             io_safe_output($config['ldap_base_dn']),
             $config['ldap_login_attr'],
             io_safe_output($config['ldap_admin_login']),
-            $config['ldap_admin_pass'],
+            io_safe_output($config['ldap_admin_pass']),
             io_safe_output($login)
         );
 

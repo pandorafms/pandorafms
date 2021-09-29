@@ -757,6 +757,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'IPAM_network':
+                $report['contents'][] = reporting_ipam(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'agent_detailed_event':
             case 'event_report_agent':
                 $report_control = io_safe_output(

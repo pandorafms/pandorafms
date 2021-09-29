@@ -1580,6 +1580,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -3195,6 +3198,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

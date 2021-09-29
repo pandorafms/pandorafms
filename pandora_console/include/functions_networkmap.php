@@ -4062,7 +4062,7 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
             true
         );
     } else {
-        if ($map_filter['dont_show_subgroups'] == 'true') {
+        if ($map_filter['dont_show_subgroups'] == 'true' && $map_filter['dont_show_subgroups'] !== 0) {
             // Show only current selected group.
             $filter['id_grupo'] = $networkmap['id_group'];
         } else {

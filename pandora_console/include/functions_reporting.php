@@ -6765,9 +6765,12 @@ function reporting_advanced_sla(
                 $min_value = null;
             }
 
-            if ((!(isset($max_value_warning))) && (!(isset($min_value_warning)))) {
-                $max_value_warning = 0;
-                $min_value_warning = 0;
+            if ((!isset($min_value_warning)) || ($min_value_warning == 0)) {
+                $min_value_warning = null;
+            }
+
+            if ((!isset($max_value_warning)) || ($max_value_warning == 0)) {
+                $max_value_warning = null;
             }
         }
 

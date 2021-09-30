@@ -6756,16 +6756,8 @@ function reporting_advanced_sla(
                 $min_value = null;
             }
 
-            if ((!isset($min_value_warning)) || ($min_value_warning == 0)) {
-                $min_value_warning = null;
-            }
-
             if ((!isset($max_value)) || ($max_value == 0)) {
                 $max_value = null;
-            }
-
-            if ((!isset($max_value_warning)) || ($max_value_warning == 0)) {
-                $max_value_warning = null;
             }
 
             if ((!(isset($max_value))) && (!(isset($min_value)))) {
@@ -6774,8 +6766,8 @@ function reporting_advanced_sla(
             }
 
             if ((!(isset($max_value_warning))) && (!(isset($min_value_warning)))) {
-                $max_value_warning = null;
-                $min_value_warning = null;
+                $max_value_warning = 0;
+                $min_value_warning = 0;
             }
         }
 
@@ -7326,7 +7318,7 @@ function reporting_advanced_sla(
                                             $warning_checks++;
                                         }
 
-                                            $time_in_warning += $time_interval;
+                                        $time_in_warning += $time_interval;
                                     } else if ($sla_check_value === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
@@ -7335,7 +7327,7 @@ function reporting_advanced_sla(
                                             $ok_checks++;
                                         }
 
-                                            $time_in_ok += $time_interval;
+                                        $time_in_ok += $time_interval;
                                     } else {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0

@@ -4030,8 +4030,8 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_template` (
     `id` serial,
-    `vendor` json,
-    `model` json,
+    `vendor` text,
+    `model` text,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

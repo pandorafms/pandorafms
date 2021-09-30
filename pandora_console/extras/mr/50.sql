@@ -35,16 +35,23 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
     FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `tncm_agent_templates` (
-    `id` serial,
+CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_agent` int(10) unsigned NOT NULL,
-    `id_template` bigint(20) unsigned NOT NULL,
+	`vendor` text,
+    `model` text,
     `protocol` int unsigned not null default 0,
     `cred_key` varchar(100),
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tncm_agent_templates` (
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_template` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`id_agent`, `id_template`),
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 COMMIT;

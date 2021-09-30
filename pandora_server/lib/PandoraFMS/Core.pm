@@ -243,6 +243,7 @@ our @EXPORT = qw(
 	pandora_update_config_token
 	pandora_update_agent_custom_field
 	pandora_select_id_custom_field
+	pandora_select_combo_custom_field
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
@@ -3418,6 +3419,18 @@ sub pandora_select_id_custom_field ($$) {
 	$result = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
 
 	return $result->{'id_field'};
+}
+
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_combo_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT combo_values FROM tagent_custom_fields WHERE id_field = ? ', $field);
+
+	return $result->{'combo_values'};
 }
 
 ##########################################################################

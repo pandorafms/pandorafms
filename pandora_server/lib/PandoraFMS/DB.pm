@@ -273,9 +273,9 @@ sub get_agent_id ($$) {
 	
 	my $rc;
 	if($is_meta == 1) {
-		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ?", safe_input($agent_name));
 	} else {
-		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ?", safe_input($agent_name));
 	}
 
 	return defined ($rc) ? $rc : -1;

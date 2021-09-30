@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
-// Begin
+// Begin.
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_categories.php';
 require_once $config['homedir'].'/include/graphs/functions_d3.php';
@@ -273,7 +273,8 @@ $table_simple->data[0][3] .= html_print_select_from_sql(
     true,
     false,
     true,
-    $disabledBecauseInPolicy
+    $disabledBecauseInPolicy,
+    'width: 150px'
 );
 
 if ((isset($id_agent_module) && $id_agent_module) || $id_policy_module != 0) {
@@ -358,7 +359,7 @@ if (!$edit) {
         false,
         '',
         false,
-        false,
+        'width:200px',
         false,
         100
     );
@@ -637,7 +638,7 @@ $table_advanced->data[1][4] = html_print_extended_select_for_post_process(
     '0',
     false,
     true,
-    false,
+    'width:10em',
     false,
     $disabledBecauseInPolicy
 );

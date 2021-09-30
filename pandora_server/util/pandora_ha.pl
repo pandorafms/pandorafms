@@ -49,11 +49,14 @@ my $Running = 0;
 ########################################################################
 # Print the given message with a preceding timestamp.
 ########################################################################
-sub log_message($$$) {
-  my ($conf, $source, $message) = @_;
+sub log_message($$$;$) {
+  my ($conf, $source, $message, $verbosity_level) = @_;
+
+  my $level = $verbosity_level;
+  $level = 5 unless defined($level);
 
   if (ref($conf) eq "HASH") {
-    logger($conf, 'HA (' . $source . ') ' . "$message", 5);
+    logger($conf, 'HA (' . $source . ') ' . "$message", $level);
   }
   
   if ($source eq '') {
@@ -403,19 +406,6 @@ END {
   stop();
 }
 
-###############################################################################
-# Aux. get module id
-###############################################################################
-my %module_id;
-sub __get_module_id {
-  my ($dbh, $module_type) = @_;
-
-  if (!defined($module_id{$module_type})) {
-    $module_id{$module_type} = get_module_id($dbh, $module_type);
-  }
-
-  return $module_id{$module_type}
-}
 
 $SIG{INT} = \&stop;
 $SIG{TERM} = \&stop;

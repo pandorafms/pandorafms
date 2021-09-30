@@ -710,3 +710,15 @@ alertserver_threads 4
 # Generate an hourly warning event if alert execution is being delayed more than alertserver_warn seconds.
 alertserver_warn 180
 
+# Pandora FMS HA MySQL cluster splitbrain auto-recovery (PANDORA FMS ENTERPRISE ONLY)
+# IMPORTANT! Please understand and configure all settings from pandora_console/index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster&tab=setup
+# before enable this feature.
+#splitbrain_autofix 0
+
+# Pandora FMS HA MySQL cluster splitbrain auto-recovery settings (PANDORA FMS ENTERPRISE ONLY)
+# Maximum number of retries
+#ha_max_splitbrain_retries 2
+# Maximum number of retries to verify resync status.
+#ha_max_resync_wait_retries 3
+# Maximum number of seconds waiting while verifying resync status.
+#ha_resync_sleep 10

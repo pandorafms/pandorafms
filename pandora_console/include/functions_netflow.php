@@ -911,23 +911,21 @@ function netflow_get_filter_arguments($filter, $safe_input=false)
         // Normal filter.
         if ($filter['ip_dst'] != '') {
             if ($filter_args != '') {
-                $filter_args .= ' AND (';
+                $filter_args .= ' and (';
             } else {
                 $filter_args .= ' (';
             }
 
             $val_ipdst = explode(',', io_safe_output($filter['ip_dst']));
             for ($i = 0; $i < count($val_ipdst); $i++) {
-                if (!empty($val_ipdst[$i])) {
-                    if ($i > 0) {
-                        $filter_args .= ' or ';
-                    }
+                if ($i > 0) {
+                    $filter_args .= ' or ';
+                }
 
-                    if (netflow_is_net($val_ipdst[$i]) == 0) {
-                        $filter_args .= 'dst ip '.$val_ipdst[$i];
-                    } else {
-                        $filter_args .= 'dst net '.$val_ipdst[$i];
-                    }
+                if (netflow_is_net($val_ipdst[$i]) == 0) {
+                    $filter_args .= 'dst ip '.$val_ipdst[$i];
+                } else {
+                    $filter_args .= 'dst net '.$val_ipdst[$i];
                 }
             }
 

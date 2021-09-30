@@ -4808,7 +4808,11 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
         $water_mark,
         $config['fontpath'],
         $config['font_size'],
-        $ttl
+        $ttl,
+        false,
+        '',
+        false,
+        6
     );
 }
 
@@ -4833,7 +4837,7 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 700, true);
+    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
 }
 
 

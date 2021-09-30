@@ -98,13 +98,15 @@ abstract class Entity
      * @param string      $table            Table.
      * @param array|null  $filters          Filters, for instance ['id' => $id].
      * @param string|null $enterprise_class Enterprise class name.
+     * @param boolean     $cache            Use cache or not.
      *
      * @throws \Exception On error.
      */
     public function __construct(
         string $table,
         ?array $filters=null,
-        ?string $enterprise_class=null
+        ?string $enterprise_class=null,
+        bool $cache=true
     ) {
         if (empty($table) === true) {
             throw new \Exception(
@@ -116,7 +118,14 @@ abstract class Entity
 
         if (is_array($filters) === true) {
             // New one.
-            $data = \db_get_row_filter($this->table, $filters);
+            $data = \db_get_row_filter(
+                $this->table,
+                $filters,
+                false,
+                'AND',
+                false,
+                $cache
+            );
 
             if ($data === false) {
                 throw new \Exception(

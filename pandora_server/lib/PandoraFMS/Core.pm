@@ -3439,7 +3439,7 @@ sub pandora_select_combo_custom_field ($$) {
 sub pandora_update_agent_custom_field ($$$$) {
 	my ($dbh, $token, $field, $id_agent) = @_;
 	my $result = undef;
-	$result = db_update ($dbh, 'UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?', $token, $field, $id_agent);
+	$result = db_update ($dbh, 'UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?', safe_input($token), $field, $id_agent);
 
 	return $result;
 }

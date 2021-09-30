@@ -3078,7 +3078,7 @@ sub cli_agent_update_custom_fields() {
 
 		my @fields = split(',',$exist_option);
 		foreach my $combo (@fields) {
-			if($combo eq $new_value) {
+			if($combo eq safe_input($new_value)) {
 				$found = 1;
 			}
 		}
@@ -3090,7 +3090,7 @@ sub cli_agent_update_custom_fields() {
 
 	print_log "\n[INFO] Updating field '$field' in agent with ID '$id_agent'\n\n";
 
-	my $result = 	pandora_update_agent_custom_field ($dbh,  $new_value, $custom_field, $id_agent);
+	my $result = 	pandora_update_agent_custom_field ($dbh, $new_value, $custom_field, $id_agent);
 
 	if($result == "0E0"){
 			print_log "[ERROR] Error updating field '$field'\n\n";

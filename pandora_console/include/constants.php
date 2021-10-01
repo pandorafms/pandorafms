@@ -234,6 +234,7 @@ define('CLOCK', 19);
 define('COLOR_CLOUD', 20);
 define('NETWORK_LINK', 21);
 define('ODOMETER', 22);
+define('BASIC_CHART', 23);
 // Some styles.
 define('MIN_WIDTH', 300);
 define('MIN_HEIGHT', 120);

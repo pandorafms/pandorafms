@@ -266,6 +266,7 @@ if ($pure === false) {
         $class_cloud = 'color_cloud_min link-create-item';
         $class_nlink = 'network_link_min link-create-item';
         $class_odometer = 'odometer_min link-create-item';
+        $class_basic_chart = 'basic_chart_min link-create-item';
         $class_delete = 'delete_item delete_min';
         $class_copy = 'copy_item';
         if ($config['style'] === 'pandora_black') {
@@ -285,6 +286,7 @@ if ($pure === false) {
             $class_cloud = 'color_cloud_min_white link-create-item';
             $class_nlink = 'network_link_min_white link-create-item';
             $class_odometer = 'odometer_min_white link-create-item';
+            $class_basic_chart = 'basic_chart_min_white link-create-item';
             $class_delete = 'delete_item_white delete_min_white';
             $class_copy = 'copy_item_white';
         }
@@ -303,6 +305,11 @@ if ($pure === false) {
             'MODULE_GRAPH',
             __('Module Graph'),
             $class_module_graph
+        );
+        visual_map_print_button_editor_refactor(
+            'BASIC_CHART',
+            __('Basic chart'),
+            $class_basic_chart
         );
         visual_map_print_button_editor_refactor(
             'DONUT_GRAPH',

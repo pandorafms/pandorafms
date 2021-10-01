@@ -69,9 +69,14 @@ export default class BasicChart extends Item<BasicChartProps> {
     moduleName.style.color = `${this.props.moduleNameColor}`;
     header.appendChild(moduleName);
 
+    let value = "";
+    if (this.props.value !== null) {
+      value = this.number_format(this.props.value, false, "", 2, 1000);
+    }
+
     const moduleValue = document.createElement("h2");
     moduleValue.className = "basic-chart-header-value";
-    moduleValue.textContent = `${this.props.value}`;
+    moduleValue.textContent = `${value}`;
     moduleValue.style.color = this.props.status;
     header.appendChild(moduleValue);
 
@@ -124,9 +129,14 @@ export default class BasicChart extends Item<BasicChartProps> {
     moduleName.style.color = `${this.props.moduleNameColor}`;
     header.appendChild(moduleName);
 
+    let value = "";
+    if (this.props.value !== null) {
+      value = this.number_format(this.props.value, false, "", 2, 1000);
+    }
+
     const moduleValue = document.createElement("h2");
     moduleValue.className = "basic-chart-header-value";
-    moduleValue.textContent = `${this.props.value}`;
+    moduleValue.textContent = `${value}`;
     moduleValue.style.color = this.props.status;
     header.appendChild(moduleValue);
 
@@ -152,5 +162,61 @@ export default class BasicChart extends Item<BasicChartProps> {
         eval(scripts[i].innerHTML.trim());
       }
     }
+  }
+
+  protected number_format(
+    number: number,
+    force_integer: boolean,
+    unit: string,
+    short_data: number,
+    divisor: number
+  ) {
+    divisor = typeof divisor !== "undefined" ? divisor : 1000;
+    var decimals = 2;
+
+    // Set maximum decimal precision to 99 in case short_data is not set.
+    if (!short_data) {
+      short_data = 99;
+    }
+
+    if (force_integer) {
+      if (Math.round(number) != number) {
+        return "";
+      }
+    } else {
+      short_data++;
+      const aux_decimals = this.pad("1", short_data, 0);
+      number =
+        Math.round(number * Number.parseInt(aux_decimals)) /
+        Number.parseInt(aux_decimals);
+    }
+
+    var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];
+    var pos = 0;
+
+    while (Math.abs(number) >= divisor) {
+      // As long as the number can be divided by 1000 or 1024.
+      pos++;
+      number = number / divisor;
+    }
+
+    if (divisor) {
+      number = Math.round(number * decimals) / decimals;
+    } else {
+      number = Math.round(number * decimals);
+    }
+
+    if (isNaN(number)) {
+      number = 0;
+    }
+
+    return number + " " + shorts[pos] + unit;
+  }
+
+  protected pad(input: string, length: number, padding: number): string {
+    var str = input + "";
+    return length <= str.length
+      ? str
+      : this.pad(str + padding, length, padding);
   }
 }

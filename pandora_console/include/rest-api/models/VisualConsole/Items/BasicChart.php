@@ -221,6 +221,7 @@ final class BasicChart extends Item
             'show_legend'        => false,
             'show_title'         => false,
             'dashboard'          => true,
+            'backgroundColor'    => 'transparent',
             'server_id'          => $metaconsoleId,
             'basic_chart'        => true,
         ];

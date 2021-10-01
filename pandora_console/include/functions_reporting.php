@@ -6752,25 +6752,41 @@ function reporting_advanced_sla(
         }
 
         if (!$is_string_module) {
-            if ((!isset($min_value)) || ($min_value == 0)) {
+            if (isset($min_value) === false || (int) $min_value === 0) {
                 $min_value = null;
             }
 
-            if ((!isset($max_value)) || ($max_value == 0)) {
-                $max_value = null;
+            if (isset($max_value) === false || (int) $max_value === 0) {
+                if ($max_value === '0'
+                    && $max_value < $min_value
+                    && isset($min_value_warning) === true
+                    && $min_value_warning > $max_value
+                ) {
+                    $max_value = $min_value_warning;
+                } else {
+                    $max_value = null;
+                }
             }
 
-            if ((!(isset($max_value))) && (!(isset($min_value)))) {
+            if (isset($max_value) === false && isset($min_value) === false) {
                 $max_value = null;
                 $min_value = null;
             }
 
-            if ((!isset($min_value_warning)) || ($min_value_warning == 0)) {
+            if (isset($min_value_warning) === false || (int) $min_value_warning === 0) {
                 $min_value_warning = null;
             }
 
-            if ((!isset($max_value_warning)) || ($max_value_warning == 0)) {
-                $max_value_warning = null;
+            if (isset($max_value_warning) === false || (int) $max_value_warning === 0) {
+                if ((int) $max_value_warning === 0
+                    && $max_value_warning < $min_value_warning
+                    && isset($min_value) === true
+                    && $min_value > $max_value_warning
+                ) {
+                    $max_value_warning = $min_value;
+                } else {
+                    $max_value_warning = null;
+                }
             }
         }
 

@@ -1497,21 +1497,6 @@ function oracle_db_process_sql_rollback()
 
 
 /**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function oracle_safe_sql_string($string)
-{
-    if (get_magic_quotes_gpc() == 0) {
-        return $string;
-    }
-
-    return oracle_escape_string_sql($string);
-}
-
-
-/**
  * Get last error.
  *
  * @return string Return the string error.

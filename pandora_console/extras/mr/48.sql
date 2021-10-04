@@ -1,7 +1,5 @@
 START TRANSACTION;
 
-ALTER TABLE `tevento` MODIFY `data` TINYTEXT default NULL;
-ALTER TABLE `tmetaconsole_event` MODIFY `data` TINYTEXT default NULL;
 ALTER TABLE `tmetaconsole_setup` ADD COLUMN `unified` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 ALTER TABLE `tlayout_data` ADD COLUMN `title` TEXT default '';

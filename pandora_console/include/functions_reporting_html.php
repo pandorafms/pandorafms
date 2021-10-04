@@ -4334,14 +4334,6 @@ function reporting_html_general($table, $item, $pdf=0)
                     $table1->style[2] = 'text-align: center';
                     $table1->style[3] = 'text-align: center';
 
-                    // Begin - Order by agent.
-                    foreach ($item['data'] as $key => $row) {
-                        $aux[$key] = $row['agent'];
-                    }
-
-                    array_multisort($aux, SORT_ASC, $item['data']);
-
-                    // End - Order by agent.
                     foreach ($item['data'] as $row) {
                         if ($row['id_module_type'] == 6 || $row['id_module_type'] == 9 || $row['id_module_type'] == 18 || $row['id_module_type'] == 2) {
                             $row['formated_value'] = round($row['formated_value'], 0, PHP_ROUND_HALF_DOWN);

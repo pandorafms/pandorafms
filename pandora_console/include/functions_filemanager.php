@@ -128,15 +128,16 @@ require_once $config['homedir'].'/vendor/autoload.php';
  *
  * @param boolean $upload_file_or_zip     Upload file or zip.
  * @param string  $default_real_directory String with default directory.
+ * @param string  $destination_directory  String with destination directory.
  *
  * @return void
  */
-function upload_file($upload_file_or_zip, $default_real_directory)
+function upload_file($upload_file_or_zip, $default_real_directory, $destination_directory)
 {
     global $config;
     $config['filemanager'] = [];
     $config['filemanager']['correct_upload_file'] = 0;
-    $config['filemanager']['message'] = null;
+    $config['filemanager']['message'] = '';
 
     check_login();
 
@@ -164,7 +165,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
     if ($upload_file === true) {
         if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
             $filename       = $_FILES['file']['name'];
-            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $real_directory = filemanager_safe_directory($destination_directory);
             $umask          = io_safe_output((string) get_parameter('umask'));
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
@@ -173,23 +174,34 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 // user is not trying to access an external path (avoid
                 // execution of PHP files in directories that are not explicitly
                 // controlled by corresponding .htaccess).
-                ui_print_error_message(__('Security error'));
+                $config['filemanager']['message'] = ui_print_error_message(__('Security error'));
             } else {
                 // Copy file to directory and change name.
-                $nombre_archivo = $real_directory.'/'.$filename;
+                $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
 
-                if (! @copy($_FILES['file']['tmp_name'], $nombre_archivo)) {
-                    $config['filemanager']['message'] = ui_print_error_message(__('Upload error'));
-                } else {
+                try {
+                    $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
+                } catch (Exception $ex) {
+                    $result = false;
+                }
+
+                if ($result === true) {
+                    // If umask is provided, set.
                     if (empty($umask) === false) {
-                        chmod($nombre_archivo, $umask);
+                        try {
+                            chmod($nombre_archivo, $umask);
+                        } catch (Exception $ex) {
+                            $config['filemanager']['message'] = ui_print_error_message(__('Issue setting umask: %s', $ex->getMessage()));
+                        }
                     }
 
+                    // Upload performed properly.
+                    $config['filemanager']['message'] .= ui_print_success_message(__('Upload correct'));
                     $config['filemanager']['correct_upload_file'] = 1;
-                    ui_print_success_message(__('Upload correct'));
-
                     // Delete temporal file.
                     unlink($_FILES['file']['tmp_name']);
+                } else {
+                    $config['filemanager']['message'] = ui_print_error_message(__('Upload error'));
                 }
             }
         }
@@ -202,7 +214,7 @@ function upload_file($upload_file_or_zip, $default_real_directory)
         ) {
             $filename = $_FILES['file']['name'];
             $filepath = $_FILES['file']['tmp_name'];
-            $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+            $real_directory = filemanager_safe_directory($destination_directory);
 
             if (strpos($real_directory, $default_real_directory) !== 0) {
                 // Perform security check to determine whether received upload
@@ -213,10 +225,10 @@ function upload_file($upload_file_or_zip, $default_real_directory)
                 ui_print_error_message(__('Security error'));
             } else {
                 if (PandoraFMS\Tools\Files::unzip($filepath, $real_directory) === false) {
-                    ui_print_error_message(__('It was impossible to uncompress your file'));
+                    $config['filemanager']['message'] = ui_print_error_message(__('It was impossible to uncompress your file'));
                 } else {
                     unlink($_FILES['file']['tmp_name']);
-                    ui_print_success_message(__('Upload correct'));
+                    $config['filemanager']['message'] = ui_print_success_message(__('Upload correct'));
                     $config['filemanager']['correct_upload_file'] = 1;
                 }
             }
@@ -234,7 +246,7 @@ if (isset($_SERVER['CONTENT_LENGTH']) === true) {
 }
 
 
-function create_text_file($default_real_directory)
+function create_text_file($default_real_directory, $destination_directory)
 {
     global $config;
 
@@ -253,7 +265,7 @@ function create_text_file($default_real_directory)
     $filename = filemanager_safe_directory((string) get_parameter('name_file'));
 
     if (empty($filename) === false) {
-        $real_directory = filemanager_safe_directory((string) get_parameter('real_directory'));
+        $real_directory = filemanager_safe_directory($destination_directory);
         $umask          = (string) get_parameter('umask');
 
         if (strpos($real_directory, $default_real_directory) !== 0) {
@@ -980,6 +992,15 @@ function filemanager_safe_directory(
     // Safe output.
     $directory = io_safe_output($directory);
     $forbiddenAttempting = false;
+    // Banned directories.
+    $bannedDirectory = [
+        'include',
+        'godmode',
+        'operation',
+        'reporting',
+        'general',
+        ENTERPRISE_DIR,
+    ];
 
     if ((bool) preg_match('/(\.){2}/', $directory) !== false) {
         $directory = preg_replace('/(\.){2}/', '', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
@@ -988,6 +1009,12 @@ function filemanager_safe_directory(
 
     if ((bool) preg_match('/(/\/\)+/', $directory) !== false) {
         $directory = preg_replace('/(/\/\)+/', '/', (empty($safedDirectory) === true) ? $directory : $safedDirectory);
+        $forbiddenAttempting = true;
+    }
+
+    if (in_array($directory, $bannedDirectory) === true) {
+        // Setted images for default (usually in file manager).
+        $directory = (empty($safedDirectory) === false) ? $safedDirectory : 'images';
         $forbiddenAttempting = true;
     }
 

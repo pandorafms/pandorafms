@@ -78,17 +78,6 @@ if (empty($directory) === true) {
     $directory = filemanager_safe_directory($directory, $fallback_directory);
 }
 
-$banned_directories['include'] = true;
-$banned_directories['godmode'] = true;
-$banned_directories['operation'] = true;
-$banned_directories['reporting'] = true;
-$banned_directories['general'] = true;
-$banned_directories[ENTERPRISE_DIR] = true;
-
-if (isset($banned_directories[$directory]) === true) {
-    $directory = $fallback_directory;
-}
-
 $real_directory = realpath($config['homedir'].'/'.$directory);
 
 ui_print_info_message(__('MIB files will be installed on the system. Please note that a MIB may depend on other MIB. To customize trap definitions use the SNMP trap editor.'));
@@ -99,11 +88,11 @@ $create_text_file = (bool) get_parameter('create_text_file');
 $default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
 
 if ($upload_file_or_zip === true) {
-    upload_file($upload_file_or_zip, $default_real_directory);
+    upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
 }
 
 if ($create_text_file === true) {
-    create_text_file($default_real_directory);
+    create_text_file($default_real_directory, $real_directory);
 }
 
 filemanager_file_explorer(

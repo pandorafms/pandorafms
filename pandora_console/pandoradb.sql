@@ -1562,12 +1562,14 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -1580,6 +1582,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -3012,6 +3017,8 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	`special_days` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`id_template_conditions` int(10) unsigned NOT NULL default 0,
+	`id_template_fields` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3175,12 +3182,14 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -3193,6 +3202,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

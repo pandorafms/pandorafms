@@ -38,6 +38,7 @@ import BarsGraph, { barsGraphPropsDecoder } from "./items/BarsGraph";
 import ModuleGraph, { moduleGraphPropsDecoder } from "./items/ModuleGraph";
 import Service, { servicePropsDecoder } from "./items/Service";
 import Odometer, { odometerPropsDecoder } from "./items/Odometer";
+import BasicChart, { basicChartPropsDecoder } from "./items/BasicChart";
 
 // TODO: Document.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -88,6 +89,8 @@ function itemInstanceFrom(data: AnyObject) {
       return new NetworkLink(networkLinkPropsDecoder(data), meta);
     case ItemType.ODOMETER:
       return new Odometer(odometerPropsDecoder(data), meta);
+    case ItemType.BASIC_CHART:
+      return new BasicChart(basicChartPropsDecoder(data), meta);
     default:
       throw new TypeError("item not found");
   }
@@ -140,6 +143,8 @@ function decodeProps(data: AnyObject) {
       return networkLinkPropsDecoder(data);
     case ItemType.ODOMETER:
       return odometerPropsDecoder(data);
+    case ItemType.BASIC_CHART:
+      return basicChartPropsDecoder(data);
     default:
       throw new TypeError("decoder not found");
   }
@@ -567,6 +572,10 @@ export default class VisualConsole {
 
     Object.keys(this.lineLinks[item.id]).forEach(i => {
       let lineId = parseInt(i);
+      const found = this.elementIds.indexOf(lineId);
+      if (found === -1) {
+        return;
+      }
       let line = this.elementsById[lineId] as Line;
       if (line.props) {
         let startX = line.props.startPosition.x;
@@ -1283,7 +1292,8 @@ export default class VisualConsole {
     [ItemType.CLOCK]: Clock,
     [ItemType.COLOR_CLOUD]: ColorCloud,
     [ItemType.NETWORK_LINK]: NetworkLink,
-    [ItemType.ODOMETER]: Odometer
+    [ItemType.ODOMETER]: Odometer,
+    [ItemType.BASIC_CHART]: BasicChart
   };
 
   /**
@@ -1338,6 +1348,9 @@ export default class VisualConsole {
         break;
       case ItemType.ODOMETER:
         text = t("Odometer");
+        break;
+      case ItemType.BASIC_CHART:
+        text = t("BasicChart");
         break;
       default:
         text = t("Item");

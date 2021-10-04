@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.757 Build 210915";
+my $version = "7.0NG.757 Build 211004";
 
 # save program name for logging
 my $progname = basename($0);
@@ -142,6 +142,8 @@ sub help_screen{
 	help_screen_line('--get_cluster_status', '<id_cluster>', 'Getting cluster status');
 	help_screen_line('--set_disabled_and_standby', '<id_agent> <id_node> <value>', 'Overwrite and disable and standby status');
 	help_screen_line('--reset_agent_counts', '<id_agent>', 'Resets module counts and alert counts in the agents');
+	help_screen_line('--update_agent_custom_fields', '<id_agent> <type_field> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo ");
+
 	print "\nMODULES:\n\n" unless $param ne '';
 	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
 	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
@@ -3040,6 +3042,64 @@ sub cli_user_update() {
 	$update->{$field} = $new_value;
 	
 	pandora_update_user_from_hash ($update, 'id_user', safe_input($user_id), $dbh);
+}
+
+
+##############################################################################
+# Update an agent customs field.
+# Related option: --update_agent_custom_fields
+##############################################################################
+
+sub cli_agent_update_custom_fields() {
+	my ($id_agent,$type,$field,$new_value) = @ARGV[2..5];
+
+	my $agent_name = get_agent_name($dbh, $id_agent);
+
+	my $id_field;
+
+	my $found = 0;
+
+	if($agent_name eq '') {
+		print_log "[ERROR] Agent '$id_agent' doesnt exist\n\n";
+		exit;
+	}
+
+	# Department, Serial number ...
+	my $custom_field = pandora_select_id_custom_field ($dbh, $field);
+
+
+	if($custom_field eq '') {
+			print_log "[ERROR] Field '$field' doesnt exist\n\n";
+			exit;
+	}
+
+	if($type == 1) {
+		my $exist_option = pandora_select_combo_custom_field ($dbh, $custom_field);
+
+		my @fields = split(',',$exist_option);
+		foreach my $combo (@fields) {
+			if($combo eq safe_input($new_value)) {
+				$found = 1;
+			}
+		}
+		if($found == 0) {
+			print_log "\n[ERROR] Field '$new_value' doesn't match with combo option values\n\n";
+			exit
+		}
+	}
+
+	print_log "\n[INFO] Updating field '$field' in agent with ID '$id_agent'\n\n";
+
+	my $result = 	pandora_update_agent_custom_field ($dbh, $new_value, $custom_field, $id_agent);
+
+	if($result == "0E0"){
+			print_log "[ERROR] Error updating field '$field'\n\n";
+	} else {
+			print_log "[INFO] Field '$field' updated succesfully!\n\n";
+	}
+
+	exit;
+	
 }
 
 ##############################################################################
@@ -7866,6 +7926,9 @@ sub pandora_manage_main ($$$) {
 		}elsif ($param eq '--event_in_progress') {
 			param_check($ltotal, 1, 0);
 			cli_event_in_progress();
+		}		elsif ($param eq '--agent_update_custom_fields') {
+			param_check($ltotal, 4, 5);
+			cli_agent_update_custom_fields();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

@@ -520,6 +520,9 @@ function createVisualConsole(
         case "ODOMETER":
           type = 22;
           break;
+        case "BASIC_CHART":
+          type = 23;
+          break;
         default:
           type = 0;
       }
@@ -1239,6 +1242,9 @@ function createOrUpdateVisualConsoleItem(
       break;
     case 22:
       nameType = "Odometer";
+      break;
+    case 23:
+      nameType = "Basic chart";
       break;
 
     default:

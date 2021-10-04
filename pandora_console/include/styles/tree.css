@@ -176,10 +176,20 @@ div#tree-controller-recipient {
   margin-top: 10px;
 }
 
+.tree-controller-recipient {
+  text-align: left;
+  width: 98%;
+  margin-top: 10px;
+}
+
 .tree-node > .node-content > div + div:not(.tree-node-counters) {
   margin-left: 3px;
 }
 
 .tree-node .disabled {
   filter: opacity(0.3);
+}
+
+.ipam-network {
+  font-size: 9pt;
 }

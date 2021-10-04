@@ -434,6 +434,9 @@ sub process_xml_data ($$$$$) {
 
 	}
 
+	# Return if metaconsole, no further analysis.
+	return if (PandoraFMS::Tools::is_metaconsole($pa_config));
+
 	# Get the data of the agent, if fail return
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
 	if (!defined ($agent)) {

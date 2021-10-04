@@ -420,7 +420,8 @@ function netflow_get_data(
     $max,
     $absolute,
     $connection_name='',
-    $address_resolution=false
+    $address_resolution=false,
+    $network_format_bytes=false
 ) {
     global $nfdump_date_format;
     global $config;
@@ -560,7 +561,25 @@ function netflow_get_data(
                 continue;
             }
 
-            $values['data'][$interval_end][$line['agg']] = $line['data'];
+            if ($network_format_bytes == true) {
+                $pos = 0;
+                $number = $line['data'];
+                while ($number >= 1024) {
+                    // As long as the number can be divided by divider.
+                    $pos++;
+                    // Position in array starting with 0.
+                    $number = ($number / 1024);
+                }
+
+                while ($pos > 0) {
+                    $number = ($number * 1000);
+                    $pos --;
+                }
+
+                $values['data'][$interval_end][$line['agg']] = $number;
+            } else {
+                $values['data'][$interval_end][$line['agg']] = $line['data'];
+            }
         }
     }
 
@@ -1080,9 +1099,10 @@ function netflow_draw_item(
                 $filter,
                 $aggregate,
                 $max_aggregates,
-                false,
+                true,
                 $connection_name,
-                $address_resolution
+                $address_resolution,
+                true
             );
 
             if (empty($data) === true) {

@@ -3032,6 +3032,7 @@ function erase_node($id)
         ['deleted' => 1],
         ['id_parent' => (int) $node['id']]
     );
+
     db_process_sql_update(
         'trel_item',
         ['deleted' => 1],
@@ -3045,6 +3046,7 @@ function erase_node($id)
             'type'   => 1,
         ]
     );
+
     foreach ($node_modules as $node_module) {
         $style = json_decode($node_module['style'], true);
 
@@ -4035,7 +4037,8 @@ function add_agent_node_in_option($id_networkmap, $id_agent, $x, $y)
 
     $new_node = db_get_row_sql(
         sprintf(
-            'SELECT * FROM titem WHERE id_map = $id_networkmap AND type = 0 AND source_data = %s',
+            'SELECT * FROM titem WHERE id_map = %s AND type = 0 AND source_data = %s',
+            $id_networkmap,
             $id_agent
         )
     );

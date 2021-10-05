@@ -4136,7 +4136,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `protocol` int unsigned not null default 0,
     `cred_key` varchar(100),
 	`status` int(4) NOT NULL default 5,
-	`last_status_change` bigint(20) NOT NULL default 0,
+	`updated_at` bigint(20) NOT NULL default 0,
+	`config_backup_id` bigint(20) UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL
@@ -4149,7 +4150,22 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_templates` (
     `id_agent` int(10) unsigned NOT NULL,
     `id_template` bigint(20) unsigned NOT NULL,
 	`status` int(4) NOT NULL default 5,
-	`last_update` bigint(20) NOT NULL default 0,
+	`updated_at` bigint(20) NOT NULL default 0,
+	
+    PRIMARY KEY (`id_agent`, `id_template`),
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent_data`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_template` bigint(20) unsigned NOT NULL,
+	`data` LONGBLOB,
+	`status` int(4) NOT NULL default 5,
+	`updated_at` bigint(20) NOT NULL default 0,
     PRIMARY KEY (`id_agent`, `id_template`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE

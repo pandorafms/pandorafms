@@ -241,6 +241,9 @@ our @EXPORT = qw(
 	pandora_update_agent_alert_count
 	pandora_update_agent_module_count
 	pandora_update_config_token
+	pandora_update_agent_custom_field
+	pandora_select_id_custom_field
+	pandora_select_combo_custom_field
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
@@ -3410,6 +3413,41 @@ sub pandora_update_config_token ($$$) {
 		$result = db_insert ($dbh, 'id_config', 'INSERT INTO tconfig (token, value) VALUES (?, ?)', $token, $value);
 	}
 	
+	return $result;
+}
+
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_id_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
+
+	return $result->{'id_field'};
+}
+
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_combo_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT combo_values FROM tagent_custom_fields WHERE id_field = ? ', $field);
+
+	return $result->{'combo_values'};
+}
+
+##########################################################################
+## Update a custom field from agent of tagent_custom_data 
+##########################################################################
+sub pandora_update_agent_custom_field ($$$$) {
+	my ($dbh, $token, $field, $id_agent) = @_;
+	my $result = undef;
+	$result = db_update ($dbh, 'UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?', safe_input($token), $field, $id_agent);
+
 	return $result;
 }
 

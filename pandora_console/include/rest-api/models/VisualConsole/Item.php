@@ -1792,6 +1792,7 @@ class Item extends CachedModel
                     'legendBackgroundColor',
                     'legendColor',
                     'titleColor',
+                    'moduleNameColor',
                 ]
             ),
             null
@@ -2117,6 +2118,10 @@ class Item extends CachedModel
 
                         case ODOMETER:
                             $text = __('Odometer');
+                        break;
+
+                        case BASIC_CHART:
+                            $text = __('Basic chart');
                         break;
 
                         default:

@@ -835,6 +835,10 @@ function grafico_modulo_sparse($params)
         $font_size = $config['font_size'];
     }
 
+    if (isset($params['basic_chart']) === false) {
+        $params['basic_chart'] = false;
+    }
+
     // If is metaconsole set 10pt size value.
     if (is_metaconsole()) {
         $font_size = '10';
@@ -1416,20 +1420,20 @@ function graphic_combined_module(
         $labels  = [];
         $modules = [];
         foreach ($sources as $source) {
-            $id_agent = agents_get_module_id(
-                $source['id_agent_module']
-            );
-
-            if (!$id_agent) {
-                continue;
-            }
-
             if (is_metaconsole() === true) {
                 metaconsole_restore_db();
                 $server = metaconsole_get_connection_by_id($source['id_server']);
                 if (metaconsole_connect($server) != NOERR) {
                     continue;
                 }
+            }
+
+            $id_agent = agents_get_module_id(
+                $source['id_agent_module']
+            );
+
+            if (!$id_agent) {
+                continue;
             }
 
             $modulepush = [
@@ -4808,7 +4812,11 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
         $water_mark,
         $config['fontpath'],
         $config['font_size'],
-        $ttl
+        $ttl,
+        false,
+        '',
+        false,
+        6
     );
 }
 
@@ -4833,7 +4841,7 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 700, true);
+    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
 }
 
 

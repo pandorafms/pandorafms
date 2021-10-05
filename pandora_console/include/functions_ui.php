@@ -4348,7 +4348,9 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     } else {
         if ($proxy) {
-            $fullurl .= '/';
+            if (is_metaconsole() && $metaconsole_root) {
+                $fullurl .= 'enterprise/meta/';
+            }
         } else {
             if ($add_name_php_file) {
                 $fullurl .= $_SERVER['SCRIPT_NAME'];
@@ -4362,10 +4364,14 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     }
 
-    if (substr($fullurl, -1, 1) === substr($url, 0, 1)) {
-        if (substr($fullurl, -1, 1) === '/') {
-            $url = substr($url, 1);
-        }
+    // Add last slash if missing.
+    if (substr($fullurl, -1, 1) !== '/') {
+        $fullurl .= '/';
+    }
+
+    // Remove starting slash if present.
+    if (substr($url, 0, 1) === '/') {
+        $url = substr($url, 1);
     }
 
     return $fullurl.$url;

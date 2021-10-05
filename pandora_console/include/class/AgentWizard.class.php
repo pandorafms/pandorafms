@@ -1227,7 +1227,7 @@ class AgentWizard extends HTML
                         $this->idPolicy,
                         io_safe_input($module['name'])
                     );
-                    $msgError = __('Module exist in policy');
+                    $msgError = __('Module exists in policy');
                 } else {
                     $sql = sprintf(
                         "SELECT id_agente_modulo
@@ -1237,7 +1237,7 @@ class AgentWizard extends HTML
                         $this->idAgent,
                         io_safe_input($module['name'])
                     );
-                    $msgError = __('Module exist in agent');
+                    $msgError = __('Module exists in agent');
                 }
 
                 $existInDb = db_get_value_sql($sql);
@@ -1931,7 +1931,7 @@ class AgentWizard extends HTML
                 // Already defined.
                 $this->message['type'][] = 'error';
                 $this->message['message'][] = __(
-                    'Module "%s" exits in this agent',
+                    'Module "%s" exists in this agent',
                     $candidate['name']
                 );
                 $errorflag = true;
@@ -5681,22 +5681,28 @@ class AgentWizard extends HTML
                         .parent()
                         .removeClass("alpha50");
                         if (selectedBlock.prop("checked")) {
-                        // Set to active the values of fields.
-                            for (i = 0; i<=15; i++) {
-                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 1;
-                            }
-                            // Set checked.
+                            // Set all inputs in block to checked.
+                            var blockItems = document.querySelectorAll('[id^="hidden-module-active-'+switchName[2]+'"]');
+
+                            blockItems.forEach(function(item) {
+                                item.value = 1;
+                            });
+
+                            // Set block selector to checked.
                             $("[id*=checkbox-sel_module_" + blockNumber + "]")
                                 .each(function() {
                                     $(this).prop("checked", true);
                                 });
                             imageInfoModules.removeClass('hidden');
                         } else {
-                        // Set to inactive the values of fields.
-                            for (i = 0; i<=15; i++) {
-                                document.getElementById("hidden-module-active-" + switchName[2] + "_"+i+"-"+i).value = 0;
-                            }
-                            // Set unchecked.
+                            // Set all inputs in block to unchecked.
+                            var blockItems = document.querySelectorAll('[id^="hidden-module-active-'+switchName[2]+'"]');
+
+                            blockItems.forEach(function(item) {
+                                item.value = 0;
+                            });
+
+                            // Set block selector to unchecked.
                             $("[id*=checkbox-sel_module_" + blockNumber + "]")
                                 .each(function() {
                                     $(this).prop("checked", false);

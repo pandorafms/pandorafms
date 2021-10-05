@@ -1753,7 +1753,12 @@ function has_metaconsole()
  */
 function is_management_allowed($hkey='')
 {
-    return ( (is_metaconsole() && is_centrallised())
+    $nodes = db_get_value('count(*) as n', 'tmetaconsole_setup');
+    if ($nodes !== false) {
+        $nodes = (int) $nodes;
+    }
+
+    return ( (is_metaconsole() && (is_centrallised() || $nodes === 0))
         || (!is_metaconsole() && !is_centrallised())
         || (!is_metaconsole() && is_centrallised()) && $hkey == generate_hash_to_api());
 }

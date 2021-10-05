@@ -3965,7 +3965,7 @@ class AgentWizard extends HTML
 
                 $class = '';
                 if ($activeModules === 1) {
-                    $class = 'alpha50';
+                    $class = 'alpha50 pdd_0px';
                 }
 
                 $table->head[6] = html_print_checkbox_switch_extended(
@@ -3997,7 +3997,7 @@ class AgentWizard extends HTML
                     '',
                     true,
                     '',
-                    'alpha50'
+                    'alpha50 pdd_0px'
                 );
             }
 
@@ -4196,7 +4196,9 @@ class AgentWizard extends HTML
                         false,
                         'switchBlockControl(event)',
                         '',
-                        true
+                        true,
+                        '',
+                        'pdd_0px'
                     );
                 } else {
                     // WIP. Current value of this module.
@@ -4222,7 +4224,9 @@ class AgentWizard extends HTML
                         false,
                         'switchBlockControl(event)',
                         'form="form-create-modules"',
-                        true
+                        true,
+                        '',
+                        'pdd_0px'
                     );
                 }
 

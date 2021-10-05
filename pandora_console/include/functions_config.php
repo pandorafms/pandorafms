@@ -620,7 +620,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (!config_update_value('ldap_admin_pass', get_parameter('ldap_admin_pass'))) {
+                    if (!config_update_value('ldap_admin_pass', io_input_password(io_safe_output(get_parameter('ldap_admin_pass'))))) {
                         $error_update[] = __('Admin LDAP password');
                     }
 

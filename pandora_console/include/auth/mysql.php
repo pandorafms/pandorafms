@@ -770,7 +770,7 @@ function ldap_process_user_login($login, $password)
             io_safe_output($config['ldap_base_dn']),
             $config['ldap_login_attr'],
             io_safe_output($config['ldap_admin_login']),
-            io_safe_output($config['ldap_admin_pass']),
+            io_output_password($config['ldap_admin_pass']),
             io_safe_output($login)
         );
 
@@ -794,7 +794,7 @@ function ldap_process_user_login($login, $password)
     } else {
         // PHP LDAP function
         if ($config['ldap_admin_login'] != '' && $config['ldap_admin_pass'] != '') {
-            if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), $config['ldap_admin_pass'])) {
+            if (!@ldap_bind($ds, io_safe_output($config['ldap_admin_login']), io_output_password($config['ldap_admin_pass']))) {
                 $config['auth_error'] = 'Admin ldap connection fail';
                 @ldap_close($ds);
                 return false;

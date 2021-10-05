@@ -4290,10 +4290,6 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             if (substr($fullurl, -1) != '/') {
                 $fullurl .= '/';
             }
-
-            if ($url == 'index.php' && is_metaconsole()) {
-                $fullurl .= ENTERPRISE_DIR.'/meta';
-            }
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
@@ -4332,34 +4328,18 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             // Only add the home url.
             $url = $config['homeurl_static'].'/';
         }
-
-        if (is_metaconsole() && $metaconsole_root) {
-            $url .= 'enterprise/meta/';
-        }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
             $fullurl .= '/';
         } else {
             $fullurl .= $config['homeurl_static'].'/';
         }
-
-        if (is_metaconsole() && $metaconsole_root) {
-            $fullurl .= 'enterprise/meta/';
-        }
     } else {
-        if ($proxy) {
-            if (is_metaconsole() && $metaconsole_root) {
-                $fullurl .= 'enterprise/meta/';
-            }
-        } else {
+        if ((bool) $proxy === false) {
             if ($add_name_php_file) {
                 $fullurl .= $_SERVER['SCRIPT_NAME'];
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
-
-                if (is_metaconsole() && $metaconsole_root) {
-                    $fullurl .= 'enterprise/meta/';
-                }
             }
         }
     }
@@ -4372,6 +4352,10 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     // Remove starting slash if present.
     if (substr($url, 0, 1) === '/') {
         $url = substr($url, 1);
+    }
+
+    if (is_metaconsole() && $metaconsole_root) {
+        $fullurl .= 'enterprise/meta/';
     }
 
     return $fullurl.$url;

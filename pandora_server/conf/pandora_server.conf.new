@@ -128,7 +128,7 @@ snmp_pdu_address 0
 
 #snmp_trapd manual
 
-# SNMP Trap forwarding. Go to https://pandorafms.com/manual/ for more information.
+# SNMP Trap forwarding. Go to https://barivion.com/manual/ for more information.
 #snmp_forward_trap 1
 #snmp_forward_ip 192.168.1.145
 #snmp_forward_version 1
@@ -627,7 +627,7 @@ warmup_unknown_interval 300
 enc_dir /usr/share/pandora_server/enc/
 
 # The number of times dynamic_min and dynamic_max will be recalculated per dynamic_interval.
-# Go to https://pandorafms.com/manual/ for more information.
+# Go to https://barivion.com/manual/ for more information.
 dynamic_updates 5
 #dynamic_warning
 #dynamic_constant

@@ -7,7 +7,7 @@ python3 pandora-teams-cli.py -d "Agent=Server22,Module=test_module,Group=Servers
 -m "Pandora FMS Alert message" \
 -T 53e514 \
 --sub_desc "Alert subdescription" \
---thumb "https://pandorafms.com/images/alerta_roja.png" \
+--thumb "https://barivion.com/images/alerta_roja.png" \
 --button https://pandorafms.com \
 --button_desc "Open PandoraFMS"
 

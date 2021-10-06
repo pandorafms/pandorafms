@@ -10,7 +10,7 @@ For community support you can visit our forums at http://forums.pandorafms.org. 
 
 ### How to install Pandora FMS
 
-Installing Pandora FMS is a very easy task. Please visit our wiki and follow all the steps described for a quick and proper installation. https://pandorafms.com/manual/en/documentation/02_installation/01_installing
+Installing Pandora FMS is a very easy task. Please visit our wiki and follow all the steps described for a quick and proper installation. https://barivion.com/manual/en/documentation/02_installation/01_installing
 
 ### What is Pandora FMS?
 
@@ -18,7 +18,7 @@ Pandora FMS is a monitoring application to watch systems and applications that a
 
 ### Other things Pandora FMS can do
 
-Pandora FMS is a monitoring tool that not only measures if a parameter is right or wrong. Pandora FMS can quantify the state (right or wrong), or store a value (numeric or alphanumeric) for months if necessary. Pandora FMS can measure performances, compare values among different systems and set alarms over thresholds. Pandora FMS works against a Database so it can generate reports, statistics, SLA and meausre anything: OS, applications and hardware systems, such as firewalls, proxies, Databases, web servers, VPN, routers, switches, processes, services, [remote accesses to servers](https://pandorafms.com/server-monitoring/), etc. Everything integrated in an open and distributed architecture. Pandora FMS can be deployed over any OS, with specific agents for each platform. There are agents for Windows (2000, XP, 2003), GNU/Linux, Solaris, HP-UX, BSD, AIX, IPSO and OpenWRT. Pandora FMS not only gathers information through its agents, but it can also monitor any hardware system with TCP/IP connectivity, such as load balancing systems, routers, switches or printers, through SNMP and TCP/ICMP checks.
+Pandora FMS is a monitoring tool that not only measures if a parameter is right or wrong. Pandora FMS can quantify the state (right or wrong), or store a value (numeric or alphanumeric) for months if necessary. Pandora FMS can measure performances, compare values among different systems and set alarms over thresholds. Pandora FMS works against a Database so it can generate reports, statistics, SLA and meausre anything: OS, applications and hardware systems, such as firewalls, proxies, Databases, web servers, VPN, routers, switches, processes, services, [remote accesses to servers](https://barivion.com/server-monitoring/), etc. Everything integrated in an open and distributed architecture. Pandora FMS can be deployed over any OS, with specific agents for each platform. There are agents for Windows (2000, XP, 2003), GNU/Linux, Solaris, HP-UX, BSD, AIX, IPSO and OpenWRT. Pandora FMS not only gathers information through its agents, but it can also monitor any hardware system with TCP/IP connectivity, such as load balancing systems, routers, switches or printers, through SNMP and TCP/ICMP checks.
 
 ### Main features
 

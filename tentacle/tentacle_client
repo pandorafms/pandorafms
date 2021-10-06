@@ -4,7 +4,7 @@
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
 # Copyright (c) 2007-2008  Artica Soluciones Tecnologicas S.L.
 #
-# tentacle_client.pl	Tentacle Client. See https://pandorafms.com/docs/ for
+# tentacle_client.pl	Tentacle Client. See https://barivion.com/docs/ for
 # 			protocol description.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -155,7 +155,7 @@ my $t_zip = 0;
 sub print_help {
 
 	print ("Usage: $0 [options] [file] [file] ...\n\n");
-	print ("Tentacle client v$VERSION. See https://pandorafms.com/docs/ for protocol description.\n\n");
+	print ("Tentacle client v$VERSION. See https://barivion.com/docs/ for protocol description.\n\n");
 	print ("Options:\n");
 	print ("\t-a address\tServer address (default $t_address).\n");
 	print ("\t-b localaddress\tLocal address to bind.\n");
@@ -1091,7 +1091,7 @@ This is released under the GNU Lesser General Public License.
 
 L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
 
-Protocol description and more info at: L<< https://pandorafms.com/manual/en/documentation/08_technical_reference/09_tentacle >>
+Protocol description and more info at: L<< https://barivion.com/manual/en/documentation/08_technical_reference/09_tentacle >>
 
 =head1 COPYRIGHT
 

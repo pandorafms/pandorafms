@@ -10,7 +10,7 @@ parser.add_argument('-D', '--alert_desc', help='Alert description', default='Ale
 parser.add_argument('-m', '--message', help='Alert message', default='')
 parser.add_argument('-T','--tittle_color', help='Alert tittle descripcion in HEX EX: 53e514', default="53e514")
 parser.add_argument('--sub_desc', help='Alert sub description', default='Alert Fired')
-parser.add_argument('--thumb', help='Custom thumbnail url', default="https://pandorafms.com/images/alerta_roja.png")
+parser.add_argument('--thumb', help='Custom thumbnail url', default="https://barivion.com/images/alerta_roja.png")
 parser.add_argument('--button', help='Pandora button Url', default='https://pandorafms.com')
 parser.add_argument('--button_desc', help='Pandora button description', default='Open web console')
 

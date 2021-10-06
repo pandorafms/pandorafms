@@ -756,6 +756,7 @@ var TreeController = {
                 $content.append($statusImage);
               }
 
+              element.name = htmlDecode(element.name);
               // Name max 42 chars.
               $content.append(
                 '<span title="' +

@@ -4315,18 +4315,15 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     }
 
-    if ($url === '') {
-        if ($proxy) {
-            $url = '';
-        } else {
+    $skip_meta_tag = false;
+    if (empty($url) === true) {
+        if ($proxy === false) {
             $url = $_SERVER['REQUEST_URI'];
-        }
-    } else if ($url === false) {
-        if ($proxy) {
-            $url = '';
+            // Already inserted in request_uri.
+            $skip_meta_tag = true;
         } else {
-            // Only add the home url.
-            $url = $config['homeurl_static'].'/';
+            // Redirect to main.
+            $url = '?'.$_SERVER['QUERY_STRING'];
         }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
@@ -4354,7 +4351,10 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         $url = substr($url, 1);
     }
 
-    if (is_metaconsole() && $metaconsole_root) {
+    if ($skip_meta_tag === false
+        && $metaconsole_root
+        && is_metaconsole()
+    ) {
         $fullurl .= 'enterprise/meta/';
     }
 

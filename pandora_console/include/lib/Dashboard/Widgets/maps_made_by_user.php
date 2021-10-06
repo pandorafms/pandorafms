@@ -304,7 +304,20 @@ class MapsMadeByUser extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $node_id = $this->nodeId;
+        if (\is_metaconsole() === true && $node_id > 0) {
+            if (\metaconsole_connect(null, $node_id) !== NOERR) {
+                echo json_encode(
+                    ['error' => __('Failed to connect to node %d', $node_id) ]
+                );
+            }
+        }
+
         $fields = $this->getVisualConsoles();
+
+        if (\is_metaconsole() === true && $node_id > 0) {
+            \metaconsole_restore_db();
+        }
 
         // Visual console.
         $inputs[] = [

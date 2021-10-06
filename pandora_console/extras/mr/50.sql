@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
     `id` serial,
     `id_template` bigint(20) unsigned NOT NULL,
     `id_script` bigint(20) unsigned NOT NULL,
-    `order` int unsigned not null default 0,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE

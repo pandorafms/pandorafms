@@ -37,6 +37,13 @@ abstract class Entity
 {
 
     /**
+     * Load from DB or new one.
+     *
+     * @var boolean
+     */
+    protected $existsInDB;
+
+    /**
      * Entity fields (from table).
      *
      * @var array
@@ -88,6 +95,7 @@ abstract class Entity
             $obj->{$k}($v);
         }
 
+        $obj->existsInDB = true;
         return $obj;
     }
 
@@ -137,6 +145,9 @@ abstract class Entity
             foreach ($data as $k => $v) {
                 $this->fields[$k] = $v;
             }
+
+            // Mark as existing object.
+            $this->existsInDB = true;
         } else {
             // Empty one.
             $data = \db_get_all_rows_sql(
@@ -149,6 +160,9 @@ abstract class Entity
             foreach ($data as $row) {
                 $this->fields[$row['Field']] = null;
             }
+
+            // Mark as virtual object.
+            $this->existsInDB = false;
         }
 
         if (\enterprise_installed() === true

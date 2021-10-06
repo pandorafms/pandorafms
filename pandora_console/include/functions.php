@@ -1690,32 +1690,6 @@ if (!function_exists('mb_strtoupper')) {
 
 
 /**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function safe_sql_string($string)
-{
-    global $config;
-
-    switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_safe_sql_string($string);
-
-            break;
-        case 'postgresql':
-        return postgresql_safe_sql_string($string);
-
-            break;
-        case 'oracle':
-        return oracle_safe_sql_string($string);
-
-            break;
-    }
-}
-
-
-/**
  * Verifies if current Pandora FMS installation is a Metaconsole.
  *
  * @return boolean True metaconsole installation, false if not.

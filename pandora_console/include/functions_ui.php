@@ -4316,7 +4316,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     }
 
     $skip_meta_tag = false;
-    if (empty($url) === true) {
+    if ($url === '') {
         if ($proxy === false) {
             $url = $_SERVER['REQUEST_URI'];
             // Already inserted in request_uri.
@@ -4324,6 +4324,17 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         } else {
             // Redirect to main.
             $url = '?'.$_SERVER['QUERY_STRING'];
+        }
+    } else if (empty($url) === true) {
+        if ($proxy === false) {
+            $url = $config['homeurl_static'].'/';
+            if ($metaconsole_root === true) {
+                $url = $config['homeurl_static'].'/'.ENTERPRISE_DIR.'/meta/';
+            }
+
+            $skip_meta_tag = true;
+        } else {
+            $url = '';
         }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
@@ -4355,7 +4366,7 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         && $metaconsole_root
         && is_metaconsole()
     ) {
-        $fullurl .= 'enterprise/meta/';
+        $fullurl .= ENTERPRISE_DIR.'/meta/';
     }
 
     return $fullurl.$url;

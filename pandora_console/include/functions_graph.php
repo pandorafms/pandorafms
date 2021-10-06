@@ -1574,11 +1574,17 @@ function graphic_combined_module(
             $date_array['final_date'] = $params['date'];
             $date_array['start_date'] = ($params['date'] - $params['period']);
 
+            $server_name = metaconsole_get_server_by_id($modules[0]['server']);
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
                     $params['period'],
-                    $params_combined['projection']
+                    $params_combined['projection'],
+                    false,
+                    false,
+                    false,
+                    $server_name
                 );
             }
 

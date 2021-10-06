@@ -1982,7 +1982,7 @@ function html_print_extended_select_for_time(
         html_print_select(
             $units,
             $uniq_name.'_units',
-            '60',
+            '1',
             ''.$script,
             $nothing,
             $nothing_value,
@@ -3752,7 +3752,7 @@ function html_print_checkbox_switch_extended(
         $name.($idcounter[$name] ? $idcounter[$name] : '')
     );
 
-    $output = '<label class="p-switch '.$classParent.'">';
+    $output = '<label class="p-switch pdd_0px'.$classParent.'">';
     $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
@@ -3976,6 +3976,7 @@ function html_print_image(
             'onkeypress',
             'onkeydown',
             'onkeyup',
+            'onload',
             'pos_tree',
         ];
 

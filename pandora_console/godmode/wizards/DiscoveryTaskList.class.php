@@ -1652,9 +1652,9 @@ class DiscoveryTaskList extends HTML
         $license = enterprise_hook('license_get_info');
 
         if (is_array($license) === true
-            && $n_agents > ($license['limit'] - $license['count'])
+            && $n_agents > ($license['limit'] - $license['count_enabled'])
         ) {
-            $limit = ($license['limit'] - $license['count']);
+            $limit = ($license['limit'] - $license['count_enabled']);
             echo json_encode(
                 [
                     'error' => __(

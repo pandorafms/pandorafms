@@ -82,11 +82,6 @@ function io_safe_input($value)
         return $value;
     }
 
-    // Clean the trash mix into string because of magic quotes.
-    if (get_magic_quotes_gpc() == 1) {
-        $value = stripslashes($value);
-    }
-
     if (! mb_check_encoding($value, 'UTF-8')) {
         $value = utf8_encode($value);
     }
@@ -156,11 +151,6 @@ function io_safe_input_html($value)
     if (is_array($value)) {
         array_walk($value, 'io_safe_input');
         return $value;
-    }
-
-    // Clean the trash mix into string because of magic quotes.
-    if (get_magic_quotes_gpc() == 1) {
-        $value = stripslashes($value);
     }
 
     if (! mb_check_encoding($value, 'UTF-8')) {
@@ -377,21 +367,6 @@ function io_safe_output_xml($string)
     // now perform a replacement using preg_replace
     // each matched value in $table will be replaced with the corresponding value in $replace
     return preg_replace($table, $replace, $string);
-}
-
-
-/**
- * Avoid magic_quotes protection
- *
- * @param string Text string to be stripped of magic_quotes protection
- */
-function io_unsafe_string($string)
-{
-    if (get_magic_quotes_gpc()) {
-        return stripslashes($string);
-    }
-
-    return $string;
 }
 
 

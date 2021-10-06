@@ -373,12 +373,18 @@ function update_template($step)
 $is_management_allowed = is_management_allowed();
 
 if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_template&pure=0&id='.$id.'&step='.$step
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All alerts templates information is read only. Go to Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_template&pure=0&id='.$id.'&step='.$step
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

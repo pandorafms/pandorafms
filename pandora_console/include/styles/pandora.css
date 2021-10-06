@@ -6571,7 +6571,7 @@ div.graph div.legend table {
 */
 
 .pdd_0px {
-  padding: 0px;
+  padding: 0px !important;
 }
 .pdd_4px {
   padding: 4px;
@@ -6675,6 +6675,9 @@ div.graph div.legend table {
 }
 .pdd_r_30px {
   padding-right: 30px;
+}
+.pdd_r_35px {
+  padding-right: 35px;
 }
 .pdd_r_40px {
   padding-right: 40px;
@@ -6807,6 +6810,9 @@ div.graph div.legend table {
 }
 .pdd_t_10px {
   padding-top: 10px;
+}
+.pdd_t_15px {
+  padding-top: 15px;
 }
 .pdd_t_20px {
   padding-top: 20px;
@@ -7088,6 +7094,9 @@ div.graph div.legend table {
   max-height: 50px;
 }
 
+.mx_height150px {
+  max-height: 150px !important;
+}
 /*
 * HEIGHT PX
 */

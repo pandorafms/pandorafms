@@ -929,7 +929,12 @@ function netflow_get_filter_arguments($filter, $safe_input=false)
 
         // Normal filter.
         if ($filter['ip_dst'] != '') {
-            $filter_args .= ' (';
+            if ($filter_args != '') {
+                $filter_args .= ' and (';
+            } else {
+                $filter_args .= ' (';
+            }
+
             $val_ipdst = explode(',', io_safe_output($filter['ip_dst']));
             for ($i = 0; $i < count($val_ipdst); $i++) {
                 if ($i > 0) {
@@ -1754,7 +1759,9 @@ function netflow_update_second_level_filter(&$filter, $aggregate, $sources)
         $filter[$extra_filter] .= ',';
     }
 
-    $filter[$extra_filter] = implode(',', $sources);
+    if (!empty($sources)) {
+        $filter[$extra_filter] = implode(',', $sources);
+    }
 }
 
 

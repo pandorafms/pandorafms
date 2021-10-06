@@ -83,7 +83,7 @@ sub g_unicode {
 	while ($pos < $len ) {
 	    my $item;
 	    $item = substr($config_word,$pos,1);
-	    $output = $output.$config_char.decToHex(ord($item));
+	    $output = $output.$config_char.g_decToHex(ord($item));
 	    $pos++;
 	}
 	$config_word = $output;
@@ -99,10 +99,10 @@ sub g_trash_unicode {
     my $config_depth = $_[0];
     my $config_char="%";
     my $a;
-    my $output;
+    my $output = "";
 
     for ($a=0;$a<$config_depth;$a++){
-	    $output = $output.$config_char.decToHex(int(rand(25)+97));
+	    $output = $output.$config_char.g_decToHex(int(rand(25)+97));
     }
     return $output
 }
@@ -113,9 +113,8 @@ sub g_trash_unicode {
 
 sub g_trash_ascii {
     my $config_depth = $_[0];
-    my $config_char="%";
     my $a;
-    my $output;
+    my $output = "";
 
     for ($a=0;$a<$config_depth;$a++){
 	    $output = $output.chr(int(rand(25)+97));

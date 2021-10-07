@@ -1202,3 +1202,11 @@ a.pandora_pagination,
 .bg_ccc {
   background-color: #50505050 !important;
 }
+
+.filter_none {
+  filter: brightness(0) contrast(50%) !important;
+}
+
+input[type="image"] {
+  background-color: transparent !important;
+}

@@ -451,11 +451,15 @@ switch ($activeTab) {
                     $values['pos_y'] = get_parameter('top_'.$id, 0);
                     $type = db_get_value('type', 'tlayout_data', 'id', $id);
                     switch ($type) {
-                        case MODULE_GRAPH:
                         case SIMPLE_VALUE_MAX:
                         case SIMPLE_VALUE_MIN:
                         case SIMPLE_VALUE_AVG:
                             $values['period'] = get_parameter('period_'.$id, 0);
+                        break;
+
+                        case MODULE_GRAPH:
+                            $values['period'] = get_parameter('period_'.$id, 0);
+                            unset($values['image']);
                         break;
 
                         case GROUP_ITEM:

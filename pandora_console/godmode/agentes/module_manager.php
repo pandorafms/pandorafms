@@ -1130,6 +1130,7 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Enable module'),
                 'title' => __('Enable module'),
+                'class' => 'filter_none',
             ]
         ).'</a>';
     } else {
@@ -1139,7 +1140,6 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Disable module'),
                 'title' => __('Disable module'),
-                'class' => 'invert_filter',
             ]
         ).'</a>';
     }

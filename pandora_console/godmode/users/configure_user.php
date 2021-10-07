@@ -721,6 +721,7 @@ if ($update_user) {
         );
     }
 
+
     if ($values['strict_acl']) {
         $count_groups = 0;
         $count_tags = 0;
@@ -1226,7 +1227,8 @@ $session_time .= html_print_input_text(
     'class="input_line_small"'
 ).'</div>';
 
-$user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', $display_all_group))));
+
+$user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
 
 $event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')');
 if ($event_filter_data === false) {

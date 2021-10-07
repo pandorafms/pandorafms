@@ -961,7 +961,10 @@ class DiscoveryTaskList extends HTML
                             ).'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                                 'images/lightbulb_off.png',
                                 true,
-                                ['title' => __('enable task')]
+                                [
+                                    'title' => __('enable task'),
+                                    'class' => 'filter_none',
+                                ]
                             ).'</a>';
                         } else if ($task['disabled'] == 0) {
                             $data[9] .= '<a href="'.ui_get_full_url(

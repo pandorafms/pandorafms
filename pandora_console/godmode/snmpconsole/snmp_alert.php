@@ -1513,7 +1513,7 @@ $(document).ready (function () {
                         $('#table_macros-field' + i)
                             .removeAttr('class');
 
-                        $("[name=field" + i + "_value]").val(old_value);
+                        $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         $('#table_macros-field').show();
                     }
                 }

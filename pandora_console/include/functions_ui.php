@@ -4328,7 +4328,9 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
     } else if (empty($url) === true) {
         if ($proxy === false) {
             $url = $config['homeurl_static'].'/';
-            if ($metaconsole_root === true) {
+            if ($metaconsole_root === true
+                && is_metaconsole()
+            ) {
                 $url = $config['homeurl_static'].'/'.ENTERPRISE_DIR.'/meta/';
             }
 

@@ -433,7 +433,10 @@ switch ($activeTab) {
                 $idsElements = db_get_all_rows_filter(
                     'tlayout_data',
                     ['id_layout' => $idVisualConsole],
-                    ['id']
+                    [
+                        'id',
+                        'type',
+                    ]
                 );
 
                 if ($idsElements === false) {
@@ -449,8 +452,13 @@ switch ($activeTab) {
                     $values['height'] = get_parameter('height_'.$id, 0);
                     $values['pos_x'] = get_parameter('left_'.$id, 0);
                     $values['pos_y'] = get_parameter('top_'.$id, 0);
-                    $type = db_get_value('type', 'tlayout_data', 'id', $id);
-                    switch ($type) {
+                    switch ($idElement['type']) {
+                        case NETWORK_LINK:
+                        case LINE_ITEM:
+                        continue 2;
+
+                        break;
+
                         case MODULE_GRAPH:
                         case SIMPLE_VALUE_MAX:
                         case SIMPLE_VALUE_MIN:

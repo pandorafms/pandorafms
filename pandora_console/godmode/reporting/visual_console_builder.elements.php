@@ -306,6 +306,16 @@ foreach ($layoutDatas as $layoutData) {
         break;
 
         case NETWORK_LINK:
+            $table->data[($i + 1)]['icon'] = html_print_image(
+                'images/network_link_item.png',
+                true,
+                [
+                    'title' => __('Network link'),
+                    'class' => 'invert_filter',
+                ]
+            );
+        break;
+
         case LINE_ITEM:
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/line_item.png',

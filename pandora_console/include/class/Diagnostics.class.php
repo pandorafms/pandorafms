@@ -1481,11 +1481,13 @@ class Diagnostics extends Wizard
         if (isset($config['db_maintenance']) === false) {
             $result .= '(*) ';
             $result .= __(
-                'Please check your Pandora Server setup and make sure that the database maintenance daemon is running.'
+                'Please check your %s Server setup and make sure that the database maintenance daemon is running.',
+                get_product_name()
             );
             $result .= ' ';
             $result .= __(
-                'It\' is very important to keep the database up-to-date to get the best performance and results in Pandora'
+                'It\' is very important to keep the database up-to-date to get the best performance and results in %s',
+                get_product_name()
             );
         }
 

@@ -4872,7 +4872,8 @@ function events_page_general($event)
 
     $data = [];
     $data[0] = __('Event ID');
-    $data[1] = '#'.$event['id_evento'];
+    $table_event_id = (isset($event['max_id_evento']) === true) ? $event['max_id_evento'] : $event['id_evento'];
+    $data[1] = '#'.$table_event_id;
     $table_general->data[] = $data;
 
     $data = [];

@@ -261,23 +261,22 @@ foreach ($result as $row) {
             $data[] = $attr[1] ($row[$attr[0]]);
         } else if (($config['command_snapshot']) && (preg_match("/[\n]+/i", $row[$attr[0]]))) {
             // Its a single-data, multiline data (data snapshot) ?
-            // Detect string data with \n and convert to <br>'s
+            // Detect string data with \n and convert to <br>'s.
             $datos = preg_replace('/\n/i', '<br>', $row[$attr[0]]);
             $datos = preg_replace('/\s/i', '&nbsp;', $datos);
 
-            // Because this *SHIT* of print_table monster, I cannot format properly this cells
-            // so, eat this, motherfucker :))
+            // Because this print_table monster, I cannot format properly this cells.
             $datos = "<span class='mono'>".$datos.'</span>';
 
             // I dont why, but using index (value) method, data is automatically converted to html entities ¿?
             $data[$attr[1]] = $datos;
         } else if ($is_web_content_string) {
             // Fixed the goliat sends the strings from web
-            // without HTML entities
+            // without HTML entities.
             $data[$attr[1]] = io_safe_input($row[$attr[0]]);
         } else {
             // Just a string of alphanumerical data... just do print
-            // Fixed the data from Selenium Plugin
+            // Fixed the data from Selenium Plugin.
             if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
                 $data[$attr[1]] = io_safe_input($row[$attr[0]]);
             } else {

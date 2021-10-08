@@ -108,7 +108,7 @@ class ModuleGraph
 
         $this->height -= 80;
         // Correct the height
-        // For to avoid fucking IPHONES when they are in horizontal.
+        // For to avoid IPHONES when they are in horizontal.
         if ($this->height < 140) {
             $this->height = 140;
         }

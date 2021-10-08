@@ -4101,8 +4101,7 @@ CREATE TABLE IF NOT EXISTS `tncm_template` (
     `name` text,
     `vendor` varchar(500),
     `model` varchar(500),
-    PRIMARY KEY (`id`),
-	UNIQUE(`vendor`, `model`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

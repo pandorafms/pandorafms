@@ -5814,10 +5814,30 @@ div#status_pie {
   margin-bottom: 30px;
 }
 
+#table_services_dashboard {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-rows: 1fr;
+  margin-bottom: 30px;
+}
+
+.services_table {
+  width: 97%;
+}
+
 .table_services_item_link {
   font-size: 16px;
   display: grid;
   min-height: 80px;
+  box-sizing: border-box;
+  padding: 10px 10px 10px 0;
+}
+
+.table_services_item_link_dashboard {
+  font-size: 16px;
+  display: grid;
+  min-height: 50px;
   box-sizing: border-box;
   padding: 10px 10px 10px 0;
 }
@@ -6545,7 +6565,7 @@ div.graph div.legend table {
 */
 
 .pdd_0px {
-  padding: 0px;
+  padding: 0px !important;
 }
 .pdd_4px {
   padding: 4px;
@@ -6649,6 +6669,9 @@ div.graph div.legend table {
 }
 .pdd_r_30px {
   padding-right: 30px;
+}
+.pdd_r_35px {
+  padding-right: 35px;
 }
 .pdd_r_40px {
   padding-right: 40px;
@@ -6781,6 +6804,9 @@ div.graph div.legend table {
 }
 .pdd_t_10px {
   padding-top: 10px;
+}
+.pdd_t_15px {
+  padding-top: 15px;
 }
 .pdd_t_20px {
   padding-top: 20px;
@@ -7062,6 +7088,9 @@ div.graph div.legend table {
   max-height: 50px;
 }
 
+.mx_height150px {
+  max-height: 150px !important;
+}
 /*
 * HEIGHT PX
 */

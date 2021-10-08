@@ -159,6 +159,21 @@ var TreeController = {
                 }
               };
 
+              var IPAMSupernetCounterTitles = {
+                total_networks: {
+                  totals: "Networks"
+                }
+              };
+
+              var IPAMNetworkCounterTitles = {
+                alive_ips: {
+                  totals: "Alive IPs"
+                },
+                total_ips: {
+                  totals: "Total IPs"
+                }
+              };
+
               try {
                 var title = "";
 
@@ -191,6 +206,12 @@ var TreeController = {
                     break;
                   case "services":
                     title = serviceCounterTitles[counterType].totals;
+                    break;
+                  case "IPAM_supernets":
+                    title = IPAMSupernetCounterTitles[counterType].totals;
+                    break;
+                  case "IPAM_networks":
+                    title = IPAMNetworkCounterTitles[counterType].totals;
                     break;
                   default:
                     if (
@@ -333,6 +354,113 @@ var TreeController = {
 
                 hasCounters = true;
               }
+            } else if (type == "IPAM_supernets") {
+              var $counters = $("<div></div>");
+              $counters.addClass("tree-node-counters");
+
+              if (counters.total_networks > 0) {
+                // Open the parentheses
+                $counters.append(" (");
+
+                if (
+                  typeof counters.total_networks !== "undefined" &&
+                  counters.total_networks >= 0
+                ) {
+                  var $networksCounter = $("<div></div>");
+                  $networksCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html(counters.total_networks);
+
+                  _processNodeCounterTitle(
+                    $networksCounter,
+                    type,
+                    "total_networks"
+                  );
+
+                  $counters.append($networksCounter);
+                } else {
+                  var $networksCounter = $("<div></div>");
+                  $networksCounter
+                    .addClass("tree-node-counter")
+                    .addClass("total")
+                    .html("0");
+
+                  _processNodeCounterTitle(
+                    $networksCounter,
+                    type,
+                    "total_networks"
+                  );
+
+                  $counters.append($networksCounter);
+                }
+
+                // Close the parentheses
+                $counters.append(")");
+
+                hasCounters = true;
+              }
+            } else if (type == "IPAM_networks") {
+              var $counters = $("<div></div>");
+              $counters.addClass("tree-node-counters");
+
+              // Open the parentheses
+              $counters.append(" (");
+
+              if (
+                typeof counters.alive_ips !== "undefined" &&
+                counters.alive_ips >= 0
+              ) {
+                var $aliveCounter = $("<div></div>");
+                $aliveCounter
+                  .addClass("tree-node-counter")
+                  .addClass("total")
+                  .html(counters.alive_ips);
+
+                _processNodeCounterTitle($aliveCounter, type, "alive_ips");
+
+                $counters.append($aliveCounter);
+              } else {
+                var $aliveCounter = $("<div></div>");
+                $aliveCounter
+                  .addClass("tree-node-counter")
+                  .addClass("total")
+                  .html("0");
+
+                _processNodeCounterTitle($aliveCounter, type, "alive_ips");
+
+                $counters.append($aliveCounter);
+              }
+
+              if (
+                typeof counters.total_ips !== "undefined" &&
+                counters.total_ips >= 0
+              ) {
+                var $totalCounter = $("<div></div>");
+                $totalCounter
+                  .addClass("tree-node-counter")
+                  .addClass("total")
+                  .html(counters.total_ips);
+
+                _processNodeCounterTitle($totalCounter, type, "total_ips");
+
+                $counters.append(" : ").append($totalCounter);
+              } else {
+                var $totalCounter = $("<div></div>");
+                $totalCounter
+                  .addClass("tree-node-counter")
+                  .addClass("total")
+                  .html("0");
+
+                _processNodeCounterTitle($totalCounter, type, "total_ips");
+
+                $counters.append(" : ").append($totalCounter);
+              }
+
+              // Close the parentheses
+              $counters.append(")");
+
+              hasCounters = true;
             } else {
               var $counters = $("<div></div>");
               $counters.addClass("tree-node-counters");
@@ -638,6 +766,87 @@ var TreeController = {
 
               $content.append(" " + element.alias);
               break;
+            case "IPAM_supernets":
+              var IPAMSupernetDetailImage = $(
+                '<img class="invert_filter" src="' +
+                  (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                  'images/transactional_map.png" /> '
+              );
+
+              if (typeof element.id !== "undefined") {
+                IPAMSupernetDetailImage.click(function(e) {
+                  e.preventDefault();
+
+                  var postData = {
+                    page: "enterprise/include/ajax/ipam.ajax",
+                    show_networkmap_statistics: 1,
+                    "node_data[id_net]": element.id,
+                    "node_data[type_net]": "supernet"
+                  };
+
+                  $.ajax({
+                    url: controller.ajaxURL,
+                    type: "POST",
+                    dataType: "html",
+                    data: postData,
+                    success: function(data, textStatus, xhr) {
+                      controller.detailRecipient
+                        .render("IPAMsupernets", data)
+                        .open();
+                    }
+                  });
+                }).css("cursor", "pointer");
+
+                $content.append(IPAMSupernetDetailImage);
+              }
+
+              if (element.name !== null) {
+                $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
+              }
+
+              break;
+            case "IPAM_networks":
+              $content.addClass("ipam-network");
+
+              var IPAMNetworkDetailImage = $(
+                '<img class="invert_filter" src="' +
+                  (controller.baseURL.length > 0 ? controller.baseURL : "") +
+                  'images/list.png" /> '
+              );
+
+              if (typeof element.id !== "undefined") {
+                IPAMNetworkDetailImage.click(function(e) {
+                  e.preventDefault();
+
+                  //window.location.href = element.IPAMNetworkDetail;
+                  var postData = {
+                    page: "enterprise/include/ajax/ipam.ajax",
+                    show_networkmap_statistics: 1,
+                    "node_data[id_net]": element.id,
+                    "node_data[type_net]": "network"
+                  };
+
+                  $.ajax({
+                    url: controller.ajaxURL,
+                    type: "POST",
+                    dataType: "html",
+                    data: postData,
+                    success: function(data, textStatus, xhr) {
+                      controller.detailRecipient
+                        .render("IPAMnetwork", data)
+                        .open();
+                    }
+                  });
+                }).css("cursor", "pointer");
+
+                $content.append(IPAMNetworkDetailImage);
+              }
+
+              if (element.name !== null) {
+                $content.append("&nbsp;&nbsp;&nbsp;" + element.name);
+              }
+
+              break;
             case "services":
               if (
                 typeof element.statusImageHTML != "undefined" &&
@@ -756,9 +965,12 @@ var TreeController = {
                 $content.append($statusImage);
               }
 
+              element.name = htmlDecode(element.name);
               // Name max 42 chars.
               $content.append(
-                '<span class="module-name">' +
+                '<span title="' +
+                  element.name +
+                  '" class="module-name">' +
                   element.name.substring(0, 42) +
                   (element.name.length > 42 ? "..." : "") +
                   "</span>"
@@ -960,7 +1172,7 @@ var TreeController = {
               return;
             }
           }
-          // If exist the detail container, show the data
+          // If detail container exists, show the data.
           if (
             typeof controller.detailRecipient !== "undefined" ||
             disabled == false

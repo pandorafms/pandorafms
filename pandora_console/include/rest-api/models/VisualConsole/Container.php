@@ -389,6 +389,9 @@ final class Container extends Model
             case ODOMETER:
             return Items\Odometer::class;
 
+            case BASIC_CHART:
+            return Items\BasicChart::class;
+
             default:
             return Item::class;
         }

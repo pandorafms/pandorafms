@@ -1117,10 +1117,17 @@ function ui_format_alert_row(
         }
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-        if ($policyInfo === false) {
+        $module_linked = policies_is_module_linked($alert['id_agent_module']);
+        if (is_array($policyInfo) === false && $module_linked === false) {
             $data[$index['policy']] = '';
         } else {
-            $img = 'images/policies_mc.png';
+            $module_linked = policies_is_module_linked($alert['id_agent_module']);
+            if ($module_linked === '0') {
+                $img = 'images/unlinkpolicy.png';
+            } else {
+                $img = 'images/policies_mc.png';
+            }
+
             if (is_metaconsole() === false) {
                 $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             } else {
@@ -4283,10 +4290,6 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             if (substr($fullurl, -1) != '/') {
                 $fullurl .= '/';
             }
-
-            if ($url == 'index.php' && is_metaconsole()) {
-                $fullurl .= ENTERPRISE_DIR.'/meta';
-            }
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
@@ -4312,22 +4315,28 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     }
 
+    $skip_meta_tag = false;
     if ($url === '') {
-        if ($proxy) {
-            $url = '';
-        } else {
+        if ($proxy === false) {
             $url = $_SERVER['REQUEST_URI'];
-        }
-    } else if ($url === false) {
-        if ($proxy) {
-            $url = '';
+            // Already inserted in request_uri.
+            $skip_meta_tag = true;
         } else {
-            // Only add the home url.
-            $url = $config['homeurl_static'].'/';
+            // Redirect to main.
+            $url = '?'.$_SERVER['QUERY_STRING'];
         }
+    } else if (empty($url) === true) {
+        if ($proxy === false) {
+            $url = $config['homeurl_static'].'/';
+            if ($metaconsole_root === true
+                && is_metaconsole()
+            ) {
+                $url = $config['homeurl_static'].'/'.ENTERPRISE_DIR.'/meta/';
+            }
 
-        if (is_metaconsole() && $metaconsole_root) {
-            $url .= 'enterprise/meta/';
+            $skip_meta_tag = true;
+        } else {
+            $url = '';
         }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
@@ -4335,30 +4344,31 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         } else {
             $fullurl .= $config['homeurl_static'].'/';
         }
-
-        if (is_metaconsole() && $metaconsole_root) {
-            $fullurl .= 'enterprise/meta/';
-        }
     } else {
-        if ($proxy) {
-            $fullurl .= '/';
-        } else {
+        if ((bool) $proxy === false) {
             if ($add_name_php_file) {
                 $fullurl .= $_SERVER['SCRIPT_NAME'];
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
-
-                if (is_metaconsole() && $metaconsole_root) {
-                    $fullurl .= 'enterprise/meta/';
-                }
             }
         }
     }
 
-    if (substr($fullurl, -1, 1) === substr($url, 0, 1)) {
-        if (substr($fullurl, -1, 1) === '/') {
-            $url = substr($url, 1);
-        }
+    // Add last slash if missing.
+    if (substr($fullurl, -1, 1) !== '/') {
+        $fullurl .= '/';
+    }
+
+    // Remove starting slash if present.
+    if (substr($url, 0, 1) === '/') {
+        $url = substr($url, 1);
+    }
+
+    if ($skip_meta_tag === false
+        && $metaconsole_root
+        && is_metaconsole()
+    ) {
+        $fullurl .= ENTERPRISE_DIR.'/meta/';
     }
 
     return $fullurl.$url;
@@ -5738,7 +5748,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

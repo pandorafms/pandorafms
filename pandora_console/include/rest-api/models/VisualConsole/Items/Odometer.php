@@ -53,6 +53,13 @@ final class Odometer extends Item
         $return['thresholds'] = $this->extractThresholds($data);
         $return['titleColor'] = $this->extractTitleColor($data);
         $return['title'] = $this->extractTitle($data);
+
+        $return['titleModule'] = $return['moduleName'];
+
+        if (strlen($return['moduleName']) >= 25) {
+            $return['moduleName'] = substr($return['moduleName'], 0, 9).' ... '.substr($return['moduleName'], -9);
+        }
+
         $return['minMaxValue'] = $this->extractMinMaxValue($data);
 
         return $return;

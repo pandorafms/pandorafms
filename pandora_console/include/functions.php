@@ -1690,32 +1690,6 @@ if (!function_exists('mb_strtoupper')) {
 
 
 /**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function safe_sql_string($string)
-{
-    global $config;
-
-    switch ($config['dbtype']) {
-        case 'mysql':
-        return mysql_safe_sql_string($string);
-
-            break;
-        case 'postgresql':
-        return postgresql_safe_sql_string($string);
-
-            break;
-        case 'oracle':
-        return oracle_safe_sql_string($string);
-
-            break;
-    }
-}
-
-
-/**
  * Verifies if current Pandora FMS installation is a Metaconsole.
  *
  * @return boolean True metaconsole installation, false if not.
@@ -1753,7 +1727,12 @@ function has_metaconsole()
  */
 function is_management_allowed($hkey='')
 {
-    return ( (is_metaconsole() && is_centrallised())
+    $nodes = db_get_value('count(*) as n', 'tmetaconsole_setup');
+    if ($nodes !== false) {
+        $nodes = (int) $nodes;
+    }
+
+    return ( (is_metaconsole() && (is_centrallised() || $nodes === 0))
         || (!is_metaconsole() && !is_centrallised())
         || (!is_metaconsole() && is_centrallised()) && $hkey == generate_hash_to_api());
 }
@@ -3299,8 +3278,10 @@ function extract_column($array, $column)
 
 function get_percentile($percentile, $array)
 {
+    global $config;
+
     sort($array);
-    $index = (($percentile / 100) * count($array));
+    $index = (($config['percentil'] / 100) * count($array));
 
     if (floor($index) == $index) {
         $result = (($array[($index - 1)] + $array[$index]) / 2);

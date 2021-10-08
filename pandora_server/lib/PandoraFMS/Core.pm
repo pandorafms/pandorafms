@@ -241,6 +241,9 @@ our @EXPORT = qw(
 	pandora_update_agent_alert_count
 	pandora_update_agent_module_count
 	pandora_update_config_token
+	pandora_update_agent_custom_field
+	pandora_select_id_custom_field
+	pandora_select_combo_custom_field
 	pandora_update_gis_data
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
@@ -1391,6 +1394,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 
 		# Address
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+
+		# Simple email address validation. Prevents connections to the SMTP server when no address is provided.
+		if (index($field1, '@') == -1) {
+			logger($pa_config, "No valid email address provided for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'alias'} : 'N/A') . "'.", 10);
+			return;
+		}
+
 		# Subject
 		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
 		# Message
@@ -3417,6 +3427,41 @@ sub pandora_update_config_token ($$$) {
 }
 
 ##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_id_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT id_field FROM tagent_custom_fields WHERE name = ? ', safe_input($field));
+
+	return $result->{'id_field'};
+}
+
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_select_combo_custom_field ($$) {
+	my ($dbh, $field) = @_;
+	my $result = undef;
+
+	$result = get_db_single_row ($dbh, 'SELECT combo_values FROM tagent_custom_fields WHERE id_field = ? ', $field);
+
+	return $result->{'combo_values'};
+}
+
+##########################################################################
+## Update a custom field from agent of tagent_custom_data 
+##########################################################################
+sub pandora_update_agent_custom_field ($$$$) {
+	my ($dbh, $token, $field, $id_agent) = @_;
+	my $result = undef;
+	$result = db_update ($dbh, 'UPDATE tagent_custom_data SET description = ? WHERE id_field = ? AND id_agent = ?', safe_input($token), $field, $id_agent);
+
+	return $result;
+}
+
+##########################################################################
 ## Get value of  a token of tconfig table
 ##########################################################################
 sub pandora_get_config_value ($$) {
@@ -4838,23 +4883,23 @@ sub generate_status_event ($$$$$$$$) {
 		}
 		
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description = $pa_config->{"text_going_down_normal"};
+		$description = safe_output($pa_config->{"text_going_down_normal"});
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description = $pa_config->{"text_going_up_critical"};
+		$description = safe_output($pa_config->{"text_going_up_critical"});
 	# Warning
 	} elsif ($status == 2) {
 		
 		# From critical
 		if ($known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description = $pa_config->{"text_going_down_warning"};
+			$description = safe_output($pa_config->{"text_going_down_warning"});
 		}
 		# From normal or warning (after becoming unknown)
 		else {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description = $pa_config->{"text_going_up_warning"};
+			$description = safe_output($pa_config->{"text_going_up_warning"});
 		}
 	} else {
 		# Unknown status

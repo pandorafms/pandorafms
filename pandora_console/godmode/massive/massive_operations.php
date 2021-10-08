@@ -334,12 +334,18 @@ $agentstab = [
         }
 
         if ($tab == 'massive_policies' && is_management_allowed() === false) {
+            if (is_metaconsole() === false) {
+                $url = '<a target="_blank" href="'.ui_get_meta_url(
+                    'index.php?sec=advanced&sec2=advanced/policymanager'
+                ).'">'.__('metaconsole').'</a>';
+            } else {
+                $url = __('any node');
+            }
+
             ui_print_warning_message(
                 __(
                     'This node is configured with centralized mode. All policies information is read only. Go to %s to manage it.',
-                    '<a target="_blank" href="'.ui_get_meta_url(
-                        'index.php?sec=advanced&sec2=advanced/policymanager'
-                    ).'">'.__('metaconsole').'</a>'
+                    $url
                 )
             );
             return;
@@ -401,12 +407,18 @@ $agentstab = [
 
 <?php
 if (is_management_allowed() === false && $option == 'delete_agents') {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. To delete agents go to %s',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

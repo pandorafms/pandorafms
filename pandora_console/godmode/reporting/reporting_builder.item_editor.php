@@ -162,12 +162,14 @@ $filter_exclude = '';
 $total_time = true;
 $time_failed = true;
 $time_in_ok_status = true;
+$time_in_warning_status = false;
 $time_in_unknown_status = true;
 $time_of_not_initialized_module = true;
 $time_of_downtime = true;
 $total_checks = true;
 $checks_failed = true;
 $checks_in_ok_status = true;
+$checks_in_warning_status = true;
 $unknown_checks = true;
 $agent_max_value = true;
 $agent_min_value = true;
@@ -358,7 +360,6 @@ switch ($action) {
                     $failover_type = $item['failover_type'];
                 break;
 
-                case 'histogram_data':
                 case 'module_histogram_graph':
                     $description = $item['description'];
                     $period = $item['period'];
@@ -397,6 +398,12 @@ switch ($action) {
                     $show_graph = $item['show_graph'];
                     // 'top_n' filed will be reused for SLA sort option.
                     $sla_sorted_by = $item['top_n'];
+                break;
+
+                case 'IPAM_network':
+                    $network_filter = $item['ipam_network_filter'];
+                    $alive_ip = $item['ipam_alive_ips'];
+                    $agent_not_assigned_to_ip = $item['ipam_ip_not_assigned_to_agent'];
                 break;
 
                 case 'monitor_report':
@@ -673,12 +680,14 @@ switch ($action) {
                     $total_time = $item['total_time'];
                     $time_failed = $item['time_failed'];
                     $time_in_ok_status = $item['time_in_ok_status'];
+                    $time_in_warning_status = $item['time_in_warning_status'];
                     $time_in_unknown_status = $item['time_in_unknown_status'];
                     $time_of_not_initialized_module = $item['time_of_not_initialized_module'];
                     $time_of_downtime = $item['time_of_downtime'];
                     $total_checks = $item['total_checks'];
                     $checks_failed = $item['checks_failed'];
                     $checks_in_ok_status = $item['checks_in_ok_status'];
+                    $checks_in_warning_status = $item['checks_in_warning_status'];
                     $unknown_checks = $item['unknown_checks'];
                     $agent_max_value = $item['agent_max_value'];
                     $agent_min_value = $item['agent_min_value'];
@@ -837,7 +846,6 @@ switch ($action) {
                 case 'database_serialized':
                 case 'last_value':
                 case 'monitor_report':
-                case 'histogram_data':
                 case 'min_value':
                 case 'max_value':
                 case 'avg_value':
@@ -1064,6 +1072,51 @@ $class = 'databox filters';
             <td  >
                 <?php
                 echo "<input name='log_number' max='10000' min='1' size='10' type='number' value='".$log_number."'>";
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_network_filter"   class="datos">
+            <td class="bolder"><?php echo __('Filter by network'); ?></td>
+            <td>
+                <?php
+                $sql = 'SELECT id, CONCAT(name_network, " (", network, ")")
+                        FROM tipam_network';
+
+                    html_print_select_from_sql(
+                        $sql,
+                        'network_filter',
+                        $network_filter,
+                        '',
+                        '',
+                        '0'
+                    );
+                    ?>
+            </td>
+        </tr>
+
+        <tr id="row_alive_ip"   class="datos">
+            <td class="bolder"><?php echo __('Show alive IPs only'); ?></td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'alive_ip',
+                    1,
+                    $alive_ip
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_agent_not_assigned_to_ip"   class="datos">
+            <td class="bolder"><?php echo __('Show IPs not assigned to an agent'); ?></td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'agent_not_assigned_to_ip',
+                    1,
+                    $agent_not_assigned_to_ip
+                );
                 ?>
             </td>
         </tr>
@@ -2312,6 +2365,14 @@ $class = 'databox filters';
             <td>
             <p class="mrgn_right_30px">
                 <?php
+                echo __('Time in warning status').'<br>';
+                html_print_checkbox_switch('time_in_warning_status', 1, $time_in_warning_status);
+                ?>
+                </p>
+            </td>
+            <td>
+            <p class="mrgn_right_30px">
+                <?php
                 echo __('Time in unknown status').'<br>';
                 html_print_checkbox_switch(
                     'time_in_unknown_status',
@@ -2417,6 +2478,18 @@ $class = 'databox filters';
                     'checks_in_ok_status',
                     1,
                     $checks_in_ok_status
+                );
+                ?>
+                </p>
+            </td>
+            <td>
+            <p class="mrgn_right_30px">
+                <?php
+                echo __('Checks in Warning status');
+                html_print_checkbox(
+                    'checks_in_warning_status',
+                    1,
+                    $checks_in_warning_status
                 );
                 ?>
                 </p>
@@ -4433,7 +4506,6 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
-            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4487,7 +4559,6 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
-            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -4573,7 +4644,6 @@ $(document).ready (function () {
             case 'max_value':
             case 'min_value':
             case 'monitor_report':
-            case 'histogram_data':
             case 'database_serialized':
             case 'last_value':
             case 'sumatory':
@@ -4622,7 +4692,6 @@ $(document).ready (function () {
             case 'prediction_date':
             case 'projection_graph':
             case 'monitor_report':
-            case 'histogram_data':
             case 'module_histogram_graph':
             case 'avg_value':
             case 'max_value':
@@ -5514,7 +5583,9 @@ function chooseType() {
     $("#row_agent_version").hide();
     $("#row_agent_remote_conf").hide();
     $("#row_module_free_search").hide();
-
+    $("#row_network_filter").hide();
+    $("#row_alive_ip").hide();
+    $("#row_agent_not_assigned_to_ip").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -5650,7 +5721,6 @@ function chooseType() {
             $("#row_summary").show();
             break;
 
-        case 'histogram_data':
         case 'module_histogram_graph':
             $("#row_description").show();
             $("#row_period").show();
@@ -6228,6 +6298,13 @@ function chooseType() {
             $("#row_max_values").show();
             $("#row_resolution").show();
             $("#row_servers").show();
+            $("#row_historical_db_check").hide();
+            break;
+
+        case 'IPAM_network':
+            $("#row_network_filter").show();
+            $("#row_alive_ip").show();
+            $("#row_agent_not_assigned_to_ip").show();
             $("#row_historical_db_check").hide();
             break;
 

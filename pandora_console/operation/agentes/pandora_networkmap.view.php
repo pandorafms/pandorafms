@@ -1,7 +1,6 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Network map actions for main view.
  *
  * @category   Extensions
  * @package    Pandora FMS
@@ -32,29 +31,1409 @@ global $config;
 require_once 'include/functions_networkmap.php';
 enterprise_include_once('include/functions_policies.php');
 require_once 'include/functions_modules.php';
+require_once 'include/functions_db.php';
+enterprise_include_once('include/functions_agents.php');
 
 // Login check.
 check_login();
 
 // --------------INIT AJAX-----------------------------------------------
-if (is_ajax()) {
-    $update_refresh_state = (bool) get_parameter('update_refresh_state', false);
-    $set_center = (bool) get_parameter('set_center', false);
-    $erase_relation = (bool) get_parameter('erase_relation', false);
-    $search_agents = (bool) get_parameter('search_agents');
-    $get_agent_pos_search = (bool) get_parameter('get_agent_pos_search', false);
-    $get_shape_node = (bool) get_parameter('get_shape_node', false);
-    $set_shape_node = (bool) get_parameter('set_shape_node', false);
-    $get_info_module = (bool) get_parameter('get_info_module', false);
-    $get_tooltip_content = (bool) get_parameter('get_tooltip_content', false);
-    $add_several_agents = (bool) get_parameter('add_several_agents', false);
-    $update_fictional_point = (bool) get_parameter('update_fictional_point', false);
-    $update_z = (bool) get_parameter('update_z', false);
-    $module_get_status = (bool) get_parameter('module_get_status', false);
-    $update_node_alert = (bool) get_parameter('update_node_alert', false);
-    $process_migration = (bool) get_parameter('process_migration', false);
-    $get_agent_info = (bool) get_parameter('get_agent_info', false);
-    $update_node = (bool) get_parameter('update_node', false);
+if (is_ajax() === true) {
+    $update_refresh_state          = (bool) get_parameter('update_refresh_state', false);
+    $set_center                    = (bool) get_parameter('set_center', false);
+    $erase_relation                = (bool) get_parameter('erase_relation', false);
+    $search_agents                 = (bool) get_parameter('search_agents');
+    $get_agent_pos_search          = (bool) get_parameter('get_agent_pos_search', false);
+    $get_shape_node                = (bool) get_parameter('get_shape_node', false);
+    $set_shape_node                = (bool) get_parameter('set_shape_node', false);
+    $get_info_module               = (bool) get_parameter('get_info_module', false);
+    $get_tooltip_content           = (bool) get_parameter('get_tooltip_content', false);
+    $add_several_agents            = (bool) get_parameter('add_several_agents', false);
+    $update_fictional_point        = (bool) get_parameter('update_fictional_point', false);
+    $update_z                      = (bool) get_parameter('update_z', false);
+    $module_get_status             = (bool) get_parameter('module_get_status', false);
+    $update_node_alert             = (bool) get_parameter('update_node_alert', false);
+    $process_migration             = (bool) get_parameter('process_migration', false);
+    $get_agent_info                = (bool) get_parameter('get_agent_info', false);
+    $update_node                   = (bool) get_parameter('update_node', false);
+    $delete_link                   = (bool) get_parameter('delete_link', false);
+    $update_fictional_node         = (bool) get_parameter('update_fictional_node', false);
+    $change_shape                  = (bool) get_parameter('change_shape', false);
+    $get_intefaces                 = (bool) get_parameter('get_intefaces', false);
+    $set_relationship              = (bool) get_parameter('set_relationship', false);
+    $delete_node                   = (bool) get_parameter('delete_node', false);
+    $create_fictional_point        = (bool) get_parameter('create_fictional_point', false);
+    $update_node_color             = (bool) get_parameter('update_node_color', false);
+    $refresh_holding_area          = (bool) get_parameter('refresh_holding_area', false);
+    $update_node                   = (bool) get_parameter('update_node', false);
+    $update_link                   = (bool) get_parameter('update_link', false);
+    $add_agent                     = (bool) get_parameter('add_agent', false);
+    $get_agents_in_group           = (bool) get_parameter('get_agents_in_group', false);
+    $get_interface_info            = (bool) get_parameter('get_interface_info', false);
+    $set_relationship_interface    = (bool) get_parameter('set_relationship_interface', false);
+    $add_interface_relation        = (bool) get_parameter('add_interface_relation', false);
+    $update_node_name              = (bool) get_parameter('update_node_name', false);
+    $get_networkmap_from_fictional = (bool) get_parameter('get_networkmap_from_fictional', false);
+    $get_reset_map_form            = (bool) get_parameter('get_reset_map_form', false);
+    $reset_map                     = (bool) get_parameter('reset_map', false);
+
+    if ($get_reset_map_form) {
+        $map_id = get_parameter('map_id');
+
+        $map_info = db_get_row_filter('tmap', ['id' => $map_id]);
+        $map_filter = json_decode($map_info['filter'], true);
+
+        $map_form = '';
+
+        $table = new StdClass();
+        $table->id = 'form_editor';
+        $table->width = '98%';
+        $table->class = 'databox_color';
+        $table->head = [];
+        $table->size = [];
+        $table->size[0] = '30%';
+        $table->style = [];
+        $table->style[0] = 'font-weight: bold; width: 150px;';
+
+        $table->data = [];
+
+        $table->data[0][0] = __('Name');
+        $table->data[0][1] = html_print_input_text('name', io_safe_output($map_info['name']), '', 30, 100, true);
+
+        $table->data[1][0] = __('Group');
+        $table->data[1][1] = html_print_select_groups(false, 'AR', true, 'id_group', $map_info['id_group'], '', '', 0, true);
+
+        $table->data[2][0] = __('Node radius');
+        $table->data[2][1] = html_print_input_text('node_radius', $map_filter['node_radius'], '', 2, 10, true);
+
+        $table->data[3][0] = __('Description');
+        $table->data[3][1] = html_print_textarea('description', 7, 25, $map_info['description'], '', true);
+
+        $source = $map_info['source'];
+        switch ($source) {
+            case 0:
+                $source = 'group';
+            break;
+
+            case 1:
+                $source = 'recon_task';
+            break;
+
+            case 2:
+                $source = 'ip_mask';
+            break;
+        }
+
+        $table->data[4][0] = __('Position X');
+        $table->data[4][1] = html_print_input_text('pos_x', $map_filter['x_offs'], '', 2, 10, true);
+        $table->data[5][0] = __('Position Y');
+        $table->data[5][1] = html_print_input_text('pos_y', $map_filter['y_offs'], '', 2, 10, true);
+
+        $table->data[6][0] = __('Zoom scale');
+
+        $table->data[6][1] = html_print_input_text('scale_z', $map_filter['z_dash'], '', 2, 10, true).ui_print_help_tip(__('Introduce zoom level. 1 = Highest resolution. Figures may include decimals'), true);
+
+        $table->data['source'][0] = __('Source');
+        $table->data['source'][1] = html_print_radio_button('source', 'group', __('Group'), $source, true).html_print_radio_button('source', 'recon_task', __('Discovery task'), $source, true).html_print_radio_button('source', 'ip_mask', __('CIDR IP mask'), $source, true);
+
+        if (! check_acl($config['id_user'], 0, 'PM')) {
+            $sql = sprintf(
+                'SELECT *
+				FROM trecon_task RT, tusuario_perfil UP
+				WHERE UP.id_usuario = "%s" AND UP.id_grupo = RT.id_group',
+                $config['id_user']
+            );
+
+
+            $result = db_get_all_rows_sql($sql);
+        } else {
+            $sql = sprintf(
+                'SELECT *
+				FROM trecon_task'
+            );
+            $result = db_get_all_rows_sql($sql);
+        }
+
+        $list_recon_tasks = [];
+        if (!empty($result)) {
+            foreach ($result as $item) {
+                $list_recon_tasks[$item['id_rt']] = io_safe_output($item['name']);
+            }
+        }
+
+        $table->data['source_data_recon_task'][0] = __('Source from recon task');
+        $table->data['source_data_recon_task'][0] .= ui_print_help_tip(
+            __('It is setted any recon task, the nodes get from the recontask IP mask instead from the group.'),
+            true
+        );
+        $table->data['source_data_recon_task'][1] = html_print_select(
+            $list_recon_tasks,
+            'recon_task_id',
+            $map_info['source_data'],
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            true,
+            ''
+        );
+        $table->data['source_data_recon_task'][1] .= ui_print_help_tip(
+            __('Show only the task with the recon script "SNMP L2 Recon".'),
+            true
+        );
+
+        $table->data['source_data_ip_mask'][0] = __('Source from CIDR IP mask');
+        $table->data['source_data_ip_mask'][1] = html_print_input_text('ip_mask', $map_info['source_data'], '', 20, 255, true);
+
+        $dont_show_subgroups = 0;
+        if (isset($map_filter['dont_show_subgroups'])) {
+            if ($map_filter['dont_show_subgroups'] === 'true'
+                || $map_filter['dont_show_subgroups'] == 1
+            ) {
+                $dont_show_subgroups = 1;
+            }
+        }
+
+        $table->data['source_data_dont_show_subgroups'][0] = __('Don\'t show subgroups:');
+        $table->data['source_data_dont_show_subgroups'][1] = html_print_checkbox('dont_show_subgroups', '1', $dont_show_subgroups, true);
+
+        $methods = [
+            'twopi' => 'radial',
+            'dot'   => 'flat',
+            'circo' => 'circular',
+            'neato' => 'spring1',
+            'fdp'   => 'spring2',
+        ];
+
+        switch ($map_info['generation_method']) {
+            case LAYOUT_CIRCULAR:
+                $method = 'circo';
+            break;
+
+            case LAYOUT_FLAT:
+                $method = 'dot';
+            break;
+
+            case LAYOUT_RADIAL:
+                $method = 'twopi';
+            break;
+
+            case LAYOUT_SPRING1:
+            default:
+                $method = 'neato';
+            break;
+
+            case LAYOUT_SPRING2:
+                $method = 'fdp';
+            break;
+        }
+
+        $table->data[7][0] = __('Method generation networkmap');
+        $table->data[7][1] = html_print_select(
+            $methods,
+            'method',
+            $method,
+            '',
+            '',
+            'twopi',
+            true,
+            false,
+            true,
+            '',
+            $disabled_generation_method_select
+        );
+
+        $table->data['nodesep'][0] = __('Node separation');
+        $table->data['nodesep'][1] = html_print_input_text('node_sep', $map_filter['node_sep'], '', 5, 10, true).ui_print_help_tip(__('Separation between nodes. By default 0.25'), true);
+
+        $table->data['ranksep'][0] = __('Rank separation');
+        $table->data['ranksep'][1] = html_print_input_text('rank_sep', $map_filter['rank_sep'], '', 5, 10, true).ui_print_help_tip(__('Only flat and radial. Separation between arrows. By default 0.5 in flat and 1.0 in radial'), true);
+
+        $table->data['mindist'][0] = __('Min nodes dist');
+        $table->data['mindist'][1] = html_print_input_text('mindist', $map_filter['mindist'], '', 5, 10, true).ui_print_help_tip(__('Only circular. Minimum separation between all nodes. By default 1.0'), true);
+
+        $table->data['kval'][0] = __('Default ideal node separation');
+        $table->data['kval'][1] = html_print_input_text('kval', $map_filter['kval'], '', 5, 10, true).ui_print_help_tip(__('Only fdp. Default ideal node separation in the layout. By default 0.3'), true);
+
+        $map_form .= html_print_table($table, true);
+
+        $map_form .= '<script>
+						$("input[name=\'source\']").on(\'change\', function() {
+							var source = $("input[name=\'source\']:checked").val();
+							
+							if (source == \'recon_task\') {
+								$("#form_editor-source_data_ip_mask")
+									.css(\'display\', \'none\');
+								$("#form_editor-source_data_dont_show_subgroups")
+									.css(\'display\', \'none\');
+								$("#form_editor-source_data_recon_task")
+									.css(\'display\', \'\');
+							}
+							else if (source == \'ip_mask\') {
+								$("#form_editor-source_data_ip_mask")
+									.css(\'display\', \'\');
+								$("#form_editor-source_data_recon_task")
+									.css(\'display\', \'none\');
+								$("#form_editor-source_data_dont_show_subgroups")
+									.css(\'display\', \'none\');
+							}
+							else if (source == \'group\') {
+								$("#form_editor-source_data_ip_mask")
+									.css(\'display\', \'none\');
+								$("#form_editor-source_data_recon_task")
+									.css(\'display\', \'none\');
+								$("#form_editor-source_data_dont_show_subgroups")
+									.css(\'display\', \'\');
+							}
+						});
+						$("#method").on(\'change\', function () {
+						var method = $("#method").val();
+
+						if (method == \'circo\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'none\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'\');
+							$("#form_editor-kval")
+								.css(\'display\', \'none\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'\');
+						}
+						else if (method == \'dot\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'none\');
+							$("#form_editor-kval")
+								.css(\'display\', \'none\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'\');
+						}
+						else if (method == \'twopi\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'none\');
+							$("#form_editor-kval")
+								.css(\'display\', \'none\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'\');
+						}
+						else if (method == \'neato\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'none\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'none\');
+							$("#form_editor-kval")
+								.css(\'display\', \'none\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'\');
+						}
+						else if (method == \'radial_dinamic\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'none\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'none\');
+							$("#form_editor-kval")
+								.css(\'display\', \'none\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'none\');
+						}
+						else if (method == \'fdp\') {
+							$("#form_editor-ranksep")
+								.css(\'display\', \'none\');
+							$("#form_editor-mindist")
+								.css(\'display\', \'none\');
+							$("#form_editor-kval")
+								.css(\'display\', \'\');
+							$("#form_editor-nodesep")
+								.css(\'display\', \'\');
+						}
+					});
+					
+					$("input[name=\'source\']").trigger("change");
+					$("#method").trigger("change");
+			</script>';
+
+        echo $map_form;
+
+        return;
+    }
+
+    if ($reset_map) {
+        $map_id = get_parameter('map_id');
+
+        $delete_nodes = db_process_sql_delete('titem', ['id_map' => $map_id]);
+        $delete_rel = db_process_sql_delete('trel_item', ['id_map' => $map_id]);
+        $data = get_parameter('params');
+
+        $items = db_get_value('count(*) as n', 'titem', 'id_map', $map_id);
+        $rel_items = db_get_value('count(*) as n', 'trel_item', 'id_map', $map_id);
+
+        if (($items == 0) && ($rel_items == 0)) {
+            $data = get_parameter('params');
+
+            $new_values = [];
+            $new_values['name'] = $data['name'];
+            $new_values['id_group'] = $data['id_group'];
+            $new_values['id_user'] = $config['id_user'];
+
+            $filter = [];
+            $filter['node_radius'] = $data['node_radius'];
+            $filter['x_offs'] = $data['pos_x'];
+            $filter['y_offs'] = $data['pos_y'];
+            $filter['z_dash'] = $data['scale_z'];
+            $filter['node_sep'] = $data['node_sep'];
+            $filter['rank_sep'] = $data['rank_sep'];
+            $filter['mindist'] = $data['mindist'];
+            $filter['kval'] = $data['kval'];
+
+            $new_values['description'] = $data['description'];
+
+            switch ($data['source']) {
+                case 'group':
+                    $new_values['source'] = SOURCE_GROUP;
+                    $filter['dont_show_subgroups'] = $data['dont_show_subgroups'];
+                    $new_values['source_data'] = SOURCE_GROUP;
+                break;
+
+                case 'recon_task':
+                    $new_values['source'] = SOURCE_TASK;
+                    $new_values['source_data'] = $data['recon_task_id'];
+                break;
+
+                case 'ip_mask':
+                    $new_values['source'] = SOURCE_NETWORK;
+                    $new_values['source_data'] = $data['ip_mask'];
+                break;
+
+                default:
+                    // Ignore. Control input.
+                break;
+            }
+
+            switch ($data['generation_method']) {
+                case 'circo':
+                    $new_values['generation_method'] = LAYOUT_CIRCULAR;
+                break;
+
+                case 'dot':
+                    $new_values['generation_method'] = LAYOUT_FLAT;
+                break;
+
+                case 'twopi':
+                    $new_values['generation_method'] = LAYOUT_RADIAL;
+                break;
+
+                case 'neato':
+                default:
+                    $new_values['generation_method'] = LAYOUT_SPRING1;
+                break;
+
+                case 'fdp':
+                    $new_values['generation_method'] = LAYOUT_SPRING2;
+                break;
+            }
+
+            $new_values['filter'] = json_encode($filter);
+
+            // Ensure we have all required data before update.
+            if (!isset($new_values['generation_method'])
+                || !isset($new_values['source'])
+                || !isset($new_values['source_data'])
+                || !isset($new_values['name'])
+                || !isset($new_values['id_group'])
+                || !isset($map_id)
+            ) {
+                $result_update = false;
+            } else {
+                $result_update = db_process_sql_update('tmap', $new_values, ['id' => $map_id]);
+            }
+
+            if ($result_update) {
+                $return['error'] = false;
+                error_log('Failed to reset map '.$map_id);
+            } else {
+                $return['error'] = true;
+            }
+        } else {
+            $return['error'] = true;
+            error_log(
+                'Failed to reset map '.$map_id.' items:'.$items.', relations:'.$rel_items
+            );
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($delete_link) {
+        $source_id = (int) get_parameter('source_id', 0);
+        $source_module_id = (int) get_parameter('source_module_id', 0);
+        $target_id = (int) get_parameter('target_id', 0);
+        $target_module_id = (int) get_parameter('target_module_id', 0);
+        $networkmap_id = (int) get_parameter('networkmap_id', 0);
+        $id_link = (int) get_parameter('id_link', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        // ACL for the network map
+        $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
+        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+
+        if (!$networkmap_write && !$networkmap_manage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access networkmap'
+            );
+            echo json_encode($return);
+            return;
+        }
+
+        $return['correct'] = networkmap_delete_link(
+            $networkmap_id,
+            $source_id,
+            $source_module_id,
+            $target_id,
+            $target_module_id,
+            $id_link
+        );
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($get_networkmap_from_fictional) {
+        $id_node = (int) get_parameter('id');
+        $networkmap_id = (int) get_parameter('id_map');
+        $node = db_get_row_filter(
+            'titem',
+            [
+                'id_map' => $networkmap_id,
+                'id'     => $id_node,
+            ]
+        );
+
+        $style = json_decode($node['style'], true);
+
+        $return = [];
+        if ($style['networkmap'] != 0) {
+            $return['correct'] = true;
+            $return['id_networkmap'] = $style['networkmap'];
+        } else {
+            $return['correct'] = false;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($update_fictional_node) {
+        $networkmap_id = (int) get_parameter('networkmap_id', 0);
+        $node_id = (int) get_parameter('node_id', 0);
+        $name = get_parameter('name', '');
+        $networkmap_to_link = (int) get_parameter('networkmap_to_link', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        // ACL for the network map
+        $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
+        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+
+        if (!$networkmap_write && !$networkmap_manage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access networkmap'
+            );
+            echo json_encode($return);
+            return;
+        }
+
+        $node = db_get_row(
+            'titem',
+            'id',
+            $node_id
+        );
+        $node['style'] = json_decode($node['style'], true);
+        $node['style']['label'] = $name;
+        $node['style']['networkmap'] = $networkmap_to_link;
+        $node['style'] = json_encode($node['style']);
+
+        $return['correct'] = (bool) db_process_sql_update(
+            'titem',
+            $node,
+            ['id' => $node_id]
+        );
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($update_node_name) {
+        $networkmap_id = (int) get_parameter('networkmap_id', 0);
+        $node_id = (int) get_parameter('node_id', 0);
+        $name = get_parameter('name', '');
+
+        $return = [];
+        $return['correct'] = false;
+        $return['raw_text'] = $name;
+        $return['text'] = io_safe_output($name);
+
+        // ACL for the network map
+        $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
+        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+
+        if (!$networkmap_write && !$networkmap_manage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access networkmap'
+            );
+            echo json_encode($return);
+            return;
+        }
+
+        $node = db_get_row(
+            'titem',
+            'id',
+            $node_id
+        );
+        $node['style'] = json_decode($node['style'], true);
+        $node['style']['label'] = $name;
+        $node['style'] = json_encode($node['style']);
+
+        $return['correct'] = (bool) db_process_sql_update(
+            'titem',
+            $node,
+            ['id' => $node_id]
+        );
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($change_shape) {
+        $networkmap_id = (int) get_parameter('networkmap_id', 0);
+        $id = (int) get_parameter('id', 0);
+        $shape = get_parameter('shape', 'circle');
+
+        $return = [];
+        $return['correct'] = false;
+
+        // ACL for the network map
+        $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
+        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+
+        if (!$networkmap_write && !$networkmap_manage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access networkmap'
+            );
+            echo json_encode($return);
+            return;
+        }
+
+        $node = db_get_row_filter(
+            'titem',
+            [
+                'id_map' => $networkmap_id,
+                'id'     => $id,
+            ]
+        );
+
+        $node['style'] = json_decode($node['style'], true);
+        $node['style']['shape'] = $shape;
+        $node['style'] = json_encode($node['style']);
+
+        $return['correct'] = db_process_sql_update(
+            'titem',
+            $node,
+            [
+                'id_map' => $networkmap_id,
+                'id'     => $id,
+            ]
+        );
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($get_intefaces) {
+        $id_agent_target = (int) get_parameter('id_agent_target', 0);
+        $id_agent_source = (int) get_parameter('id_agent_source', 0);
+
+        $return = [];
+        $return['correct'] = true;
+        $return['target_interfaces'] = [];
+        $return['source_interfaces'] = [];
+
+        $return['source_interfaces'] = modules_get_all_interfaces(
+            $id_agent_source,
+            [
+                'id_agente_modulo',
+                'nombre',
+            ]
+        );
+        $return['target_interfaces'] = modules_get_all_interfaces(
+            $id_agent_target,
+            [
+                'id_agente_modulo',
+                'nombre',
+            ]
+        );
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($set_relationship) {
+        $id = (int) get_parameter('id');
+        $child = (int) get_parameter('child');
+        $parent = (int) get_parameter('parent');
+        $child_source_data = db_get_value('source_data', 'titem', 'id', $child);
+        $parent_source_data = db_get_value('source_data', 'titem', 'id', $parent);
+        $child_type = db_get_value('type', 'titem', 'id', $child);
+        $parent_type = db_get_value('type', 'titem', 'id', $parent);
+
+        $correct = db_process_sql_insert(
+            'trel_item',
+            [
+                'id_map'                => $id,
+                'id_parent'             => $parent,
+                'id_child'              => $child,
+                'parent_type'           => $parent_type,
+                'child_type'            => $child_type,
+                'id_parent_source_data' => $parent_source_data,
+                'id_child_source_data'  => $child_source_data,
+            ]
+        );
+
+        $return = [];
+        $return['correct'] = false;
+
+        if ($correct) {
+            $return['correct'] = true;
+            $return['id'] = $correct;
+            $return['id_child'] = $child;
+            $return['id_parent'] = $parent;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($delete_node) {
+        $id = (int) get_parameter('id', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        $return['correct'] = erase_node(['id' => $id]);
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($add_agent === true) {
+        $id = (int) get_parameter('id', 0);
+        $agent = get_parameter('agent', '');
+        $x = (int) get_parameter('x', 0);
+        $y = (int) get_parameter('y', 0);
+        $id_agent = (int) get_parameter('id_agent', -1);
+        if ($id_agent == -1) {
+            $id_agent = agents_get_agent_id($agent);
+        }
+
+        $return = [];
+        $return['correct'] = false;
+
+        $item_exist = db_get_value_filter(
+            'id',
+            'titem',
+            [
+                'source_data' => $id_agent,
+                'type'        => 0,
+                'id_map'      => $id,
+                'deleted'     => 0,
+            ]
+        );
+
+        if ($item_exist) {
+            echo json_encode($return);
+            return;
+        }
+
+        $return_data = add_agent_node_in_option($id, $id_agent, $x, $y);
+
+        $relations = db_get_all_rows_filter(
+            'trel_item',
+            [
+                'id_map'  => $id,
+                'deleted' => 0,
+            ]
+        );
+
+        if ($relations === false) {
+            $relations = [];
+        }
+
+        networkmap_clean_relations_for_js($relations);
+
+        if ($return_data['id'] !== false) {
+            $id_node = $return_data['id'];
+            $return['correct'] = true;
+
+            $node = db_get_row(
+                'titem',
+                'id',
+                $id_node
+            );
+            $style = json_decode($node['style'], true);
+
+            $return['id_node'] = $id_node;
+            $return['id_agent'] = $node['source_data'];
+            $return['parent'] = $node['parent'];
+            $return['shape'] = $style['shape'];
+            $return['image'] = $style['image'];
+            $return['image_url'] = html_print_image(
+                $style['image'],
+                true,
+                false,
+                true
+            );
+            $return['width'] = $style['width'];
+            $return['height'] = $style['height'];
+            $return['raw_text'] = $style['label'];
+            $return['text'] = io_safe_output($style['label']);
+            $return['x'] = $x;
+            $return['y'] = $y;
+            $return['map_id'] = $node['id_map'];
+            $return['state'] = $node['state'];
+            $return['status'] = get_status_color_networkmap($id_agent);
+        }
+
+        if (!empty($return_data['rel'])) {
+            $return['rel'] = $return_data['rel'];
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($create_fictional_point) {
+        $id = (int) get_parameter('id', 0);
+        $x = (int) get_parameter('x', 0);
+        $y = (int) get_parameter('y', 0);
+        $name = get_parameter('name', '');
+        $shape = get_parameter('shape', 0);
+        $radious = (int) get_parameter('radious', 20);
+        $color = get_parameter('color', 0);
+        $networkmap = (int) get_parameter('networkmap', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        $data = [];
+        $data['id_map'] = $id;
+        $data['x'] = $x;
+        $data['y'] = $y;
+        $data['source_data'] = -2;
+        // The id for the fictional points.
+        $data['deleted'] = 0;
+        // Type in db to fictional nodes
+        $data['type'] = 3;
+        $style = [];
+        $style['shape'] = $shape;
+        $style['image'] = '';
+        $style['width'] = ($radious * 2);
+        $style['height'] = ($radious * 2);
+        // WORK AROUND FOR THE JSON ENCODE WITH FOR EXAMPLE Ñ OR Á
+        $style['label'] = 'json_encode_crash_with_ut8_chars';
+        $style['color'] = $color;
+        $style['networkmap'] = $networkmap;
+        $data['style'] = json_encode($style);
+        $data['style'] = str_replace(
+            'json_encode_crash_with_ut8_chars',
+            $name,
+            $data['style']
+        );
+
+        $id_node = db_process_sql_insert(
+            'titem',
+            $data
+        );
+
+        $return['correct'] = (bool) $id_node;
+
+        if ($return['correct']) {
+            $return['id_node'] = $id_node;
+            $return['id_agent'] = -2;
+            // The finctional point id
+            $return['shape'] = $shape;
+            $return['image'] = '';
+            $return['width'] = ($radious * 2);
+            $return['height'] = ($radious * 2);
+            $return['raw_text'] = $name;
+            $return['text'] = io_safe_output($name);
+            $return['color'] = $color;
+            $return['networkmap'] = $networkmap;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($update_node_color) {
+        $id = (int) get_parameter('id', 0);
+
+        $id_agent = db_get_value(
+            'source_data',
+            'titem',
+            'id',
+            $id
+        );
+
+        $return = [];
+        $return['correct'] = true;
+        if ($id_agent != -2) {
+            $return['color'] = get_status_color_networkmap($id_agent);
+        } else {
+            $style = db_get_value(
+                'style',
+                'titem',
+                'id',
+                $id
+            );
+            $style = json_decode($style, true);
+            if ($style['networkmap'] == 0) {
+                $return['color'] = $style['color'];
+            } else {
+                $return['color'] = get_status_color_networkmap_fictional_point(
+                    $style['networkmap']
+                );
+            }
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($refresh_holding_area) {
+        $networkmap_id = (int) get_parameter('id', 0);
+        $x = (int) get_parameter('x', 666);
+        $y = (int) get_parameter('y', 666);
+        $return = [];
+        $return['correct'] = false;
+        $return['holding_area'] = [];
+
+        // ACL for the network map
+        $id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
+        // $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
+        $networkmap_write = check_acl($config['id_user'], $id_group, 'MW');
+        $networkmap_manage = check_acl($config['id_user'], $id_group, 'MM');
+
+        if (!$networkmap_write && !$networkmap_manage) {
+            db_pandora_audit(
+                'ACL Violation',
+                'Trying to access networkmap'
+            );
+            echo json_encode($return);
+            return;
+        }
+
+        $data = networkmap_refresh_holding_area($networkmap_id, $x, $y);
+
+        if (!empty($data)) {
+            $return['correct'] = true;
+            $return['holding_area'] = $data;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($update_node) {
+        $node_json = io_safe_output(get_parameter('node', ''));
+        $x = get_parameter('x');
+        $y = get_parameter('y');
+
+        $node = json_decode($node_json, true);
+
+        echo json_encode(update_node($node, $x, $y));
+
+        return;
+    }
+
+    if ($update_link) {
+        // Only real agents/modules are able to have interface relations.
+        $networkmap_id = (int) get_parameter('networkmap_id', 0);
+        $id_link = (int) get_parameter('id_link', 0);
+        $interface_source = (int) get_parameter('interface_source', 0);
+        $interface_target = (int) get_parameter('interface_target', 0);
+        $source_text = get_parameter('source_text');
+        $target_text = get_parameter('target_text');
+
+        // Initialize statuses to NORMAl by default.
+        $source_status = AGENT_MODULE_STATUS_NORMAL;
+        $target_status = AGENT_MODULE_STATUS_NORMAL;
+
+        $old_link = db_get_row_sql('SELECT id_parent_source_data, id_child_source_data FROM trel_item WHERE id = '.$id_link.' AND deleted = 0');
+
+        // Search source.
+        if ($source_text != 'None') {
+            // Interface selected.
+            // Source_value is id_agente_modulo.
+            $source_agent = db_get_value(
+                'id_agente',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $interface_source
+            );
+            $source_type = NODE_MODULE;
+            $source_link_value = $interface_source;
+            $source_status = db_get_value_filter(
+                'estado',
+                'tagente_estado',
+                ['id_agente_modulo' => $interface_source]
+            );
+
+            if (preg_match('/(.+)_ifOperStatus$/', (string) $source_text, $matches)) {
+                if ($matches[1]) {
+                        $source_text = $matches[1];
+                }
+            }
+        } else {
+            // No interface selected.
+            // Source_value is id_agente.
+            $source_text = '';
+            $source_agent = $interface_source;
+            $source_type = NODE_AGENT;
+            $source_link_value = $source_agent;
+        }
+
+        // Search node id in map.
+        $child_id = db_get_value_filter(
+            'id',
+            'titem',
+            [
+                'source_data' => $source_agent,
+                'id_map'      => $networkmap_id,
+            ]
+        );
+
+         // Search target.
+        if ($target_text != 'None') {
+            // Interface selected.
+            // Target value is id_agente_modulo.
+            $target_agent = db_get_value(
+                'id_agente',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $interface_target
+            );
+            $target_type = NODE_MODULE;
+            $target_link_value = $interface_target;
+            $target_status = db_get_value_filter(
+                'estado',
+                'tagente_estado',
+                ['id_agente_modulo' => $interface_target]
+            );
+
+            if (preg_match('/(.+)_ifOperStatus$/', (string) $target_text, $matches)) {
+                if ($matches[1]) {
+                       $target_text = $matches[1];
+                }
+            }
+        } else {
+            // No interface selected.
+            // Target value is id_agente.
+            $target_text = '';
+            $target_agent = $interface_target;
+            $target_type = NODE_AGENT;
+            $target_link_value = $target_agent;
+        }
+
+        // Search node id in map.
+        $parent_id = db_get_value_filter(
+            'id',
+            'titem',
+            [
+                'source_data' => $target_agent,
+                'id_map'      => $networkmap_id,
+            ]
+        );
+
+        // Register link in DB.
+        $link = [];
+        $link['id_parent'] = $parent_id;
+        $link['id_child'] = $child_id;
+        $link['id_item'] = 0;
+        $link['deleted'] = 0;
+        $link['id_map'] = $networkmap_id;
+        $link['parent_type'] = $target_type;
+        $link['id_parent_source_data'] = $target_link_value;
+        $link['child_type'] = $source_type;
+        $link['id_child_source_data'] = $source_link_value;
+
+        $insert_result = db_process_sql_insert('trel_item', $link);
+
+        // Store module relationship (if req.).
+        if ($target_type == NODE_MODULE
+            && $source_type == NODE_MODULE
+        ) {
+            $rel = [];
+            $rel['module_a'] = $target_link_value;
+            $rel['module_b'] = $source_link_value;
+            $rel['disable_update'] = 0;
+
+            $insert_result_relation = db_process_sql_insert(
+                'tmodule_relationship',
+                $rel
+            );
+        }
+
+        // Delete old links and send response to controller.
+        if ($insert_result !== false) {
+            db_process_sql_delete('trel_item', ['id' => $id_link]);
+            db_process_sql_delete('tmodule_relationship', ['module_a' => $old_link['id_parent_source_data'], 'module_b' => $old_link['id_child_source_data']]);
+            db_process_sql_delete('tmodule_relationship', ['module_a' => $old_link['id_child_source_data'], 'module_b' => $old_link['id_parent_source_data']]);
+
+            $return['correct'] = true;
+            $return['status_start'] = $source_status;
+            $return['status_end'] = $target_status;
+            $return['text_start'] = $source_text;
+            $return['text_end'] = $target_text;
+            $return['id_db_link'] = $insert_result;
+            $return['id_db_source'] = $source_agent;
+            $return['id_db_target'] = $target_agent;
+            $return['type_source'] = $source_type;
+            $return['type_target'] = $target_type;
+        } else {
+            $return['correct'] = false;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($get_agents_in_group) {
+        $id = (int) get_parameter('id', 0);
+        $group = (int) get_parameter('group', -1);
+
+        $return = [];
+        $return['correct'] = false;
+
+        if ($group != -1) {
+            $where_id_agente = ' 1=1 ';
+
+            $agents_in_networkmap = db_get_all_rows_filter(
+                'titem',
+                [
+                    'id_map'  => $id,
+                    'deleted' => 0,
+                ]
+            );
+            if ($agents_in_networkmap !== false) {
+                $ids = [];
+                foreach ($agents_in_networkmap as $agent) {
+                    if ($agent['type'] == 0) {
+                        $ids[] = $agent['source_data'];
+                    }
+                }
+
+                $where_id_agente = ' id_agente NOT IN ('.implode(',', $ids).')';
+            }
+
+
+            $sql = 'SELECT id_agente, alias
+				FROM tagente
+				WHERE id_grupo = '.$group.' AND '.$where_id_agente.' 
+				ORDER BY alias ASC';
+
+            $agents = db_get_all_rows_sql($sql);
+
+            if ($agents !== false) {
+                $return['agents'] = [];
+                foreach ($agents as $agent) {
+                    $return['agents'][$agent['id_agente']] = $agent['alias'];
+                }
+
+                $return['correct'] = true;
+            }
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($get_agent_info) {
+        $id_agent = (int) get_parameter('id_agent');
+
+        $return = [];
+        $return['alias'] = agents_get_alias($id_agent);
+        $return['adressess'] = agents_get_addresses($id_agent);
+        $id_group = agents_get_agent_group($id_agent);
+        $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
+        $id_os = agents_get_os($id_agent);
+        $return['os'] = ui_print_os_icon($id_os, true, true);
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($get_interface_info) {
+        $id_agent = get_parameter('id_agent');
+
+        $agent = db_get_row('tagente', 'id_agente', $id_agent);
+
+        $network_interfaces_by_agents = agents_get_network_interfaces([$agent]);
+
+        $network_interfaces = [];
+        if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agents[$id_agent])) {
+            $network_interfaces = $network_interfaces_by_agents[$id_agent]['interfaces'];
+        }
+
+        $return = [];
+        $index = 0;
+        foreach ($network_interfaces as $interface_name => $interface) {
+            if (!empty($interface['traffic'])) {
+                $permission = check_acl($config['id_user'], $agent['id_grupo'], 'RR');
+
+                if ($permission) {
+                    $params = [
+                        'interface_name'     => $interface_name,
+                        'agent_id'           => $id_agent,
+                        'traffic_module_in'  => $interface['traffic']['in'],
+                        'traffic_module_out' => $interface['traffic']['out'],
+                    ];
+                    $params_json = json_encode($params);
+                    $params_encoded = base64_encode($params_json);
+                    $win_handle = dechex(crc32($interface['status_module_id'].$interface_name));
+                    $graph_link = "<a href=\"javascript:winopeng_var('operation/agentes/interface_traffic_graph_win.php?params=$params_encoded','$win_handle', 800, 480)\">".html_print_image('images/chart_curve.png', true, ['title' => __('Interface traffic')]).'</a>';
+                } else {
+                    $graph_link = '';
+                }
+            } else {
+                $graph_link = '';
+            }
+
+            $return[$index]['graph'] = $graph_link;
+            $return[$index]['name'] = '<strong>'.$interface_name.'</strong>';
+            $return[$index]['status'] = $interface['status_image'];
+            $return[$index]['ip'] = $interface['ip'];
+            $return[$index]['mac'] = $interface['mac'];
+
+            $index++;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($set_relationship_interface) {
+        $id_networkmap = get_parameter('id');
+        $child = get_parameter('child');
+        $parent = get_parameter('parent');
+
+        $child_source_data = db_get_value_filter('source_data', 'titem', ['id' => $child, 'id_map' => $id_networkmap]);
+        $parent_source_data = db_get_value_filter('source_data', 'titem', ['id' => $parent, 'id_map' => $id_networkmap]);
+
+        $return = [];
+
+        $return['interfaces_child'] = [];
+        $return['interfaces_child'] = modules_get_all_interfaces(
+            $child_source_data,
+            [
+                'id_agente_modulo',
+                'nombre',
+            ]
+        );
+
+        $return['interfaces_parent'] = [];
+        $return['interfaces_parent'] = modules_get_all_interfaces(
+            $parent_source_data,
+            [
+                'id_agente_modulo',
+                'nombre',
+            ]
+        );
+
+        echo json_encode($return);
+
+        return;
+    }
+
+    if ($add_interface_relation) {
+        // Only real agents/modules are able to have interface relations.
+        $id_networkmap = (int) get_parameter('id');
+        $source_value = (int) get_parameter('source_value');
+        $target_value = (int) get_parameter('target_value');
+        $source_text = get_parameter('source_text');
+        $target_text = get_parameter('target_text');
+
+        // Initialize statuses to NORMAl by default.
+        $source_status = AGENT_MODULE_STATUS_NORMAL;
+        $target_status = AGENT_MODULE_STATUS_NORMAL;
+
+        // Search source.
+        if ($source_text != 'None') {
+            // Interface selected.
+            // Source_value is id_agente_modulo.
+            $source_agent = db_get_value(
+                'id_agente',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $source_value
+            );
+            $source_type = NODE_MODULE;
+            $source_link_value = $source_value;
+            $source_status = db_get_value_filter(
+                'estado',
+                'tagente_estado',
+                ['id_agente_modulo' => $source_value]
+            );
+
+            if (preg_match('/(.+)_ifOperStatus$/', (string) $source_text, $matches)) {
+                if ($matches[1]) {
+                        $source_text = $matches[1];
+                }
+            }
+        } else {
+            // No interface selected.
+            // Source_value is id_agente.
+            $source_text = '';
+            $source_agent = $source_value;
+            $source_type = NODE_AGENT;
+            $source_link_value = $source_agent;
+        }
+
+        // Search node id in map.
+        $child_id = db_get_value_filter(
+            'id',
+            'titem',
+            [
+                'source_data' => $source_agent,
+                'id_map'      => $id_networkmap,
+            ]
+        );
+
+        // Search target.
+        if ($target_text != 'None') {
+            // Interface selected.
+            // Target value is id_agente_modulo.
+            $target_agent = db_get_value(
+                'id_agente',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $target_value
+            );
+            $target_type = NODE_MODULE;
+            $target_link_value = $target_value;
+            $target_status = db_get_value_filter(
+                'estado',
+                'tagente_estado',
+                ['id_agente_modulo' => $target_value]
+            );
+
+            if (preg_match('/(.+)_ifOperStatus$/', (string) $target_text, $matches)) {
+                if ($matches[1]) {
+                        $target_text = $matches[1];
+                }
+            }
+        } else {
+            // No interface selected.
+            // Target value is id_agente.
+            $target_text = '';
+            $target_agent = $target_value;
+            $target_type = NODE_AGENT;
+            $target_link_value = $target_agent;
+        }
+
+        // Search node id in map.
+        $parent_id = db_get_value_filter(
+            'id',
+            'titem',
+            [
+                'source_data' => $target_agent,
+                'id_map'      => $id_networkmap,
+            ]
+        );
+
+        // Register link in DB.
+        $link = [];
+        $link['id_parent'] = $parent_id;
+        $link['id_child'] = $child_id;
+        $link['id_item'] = 0;
+        $link['deleted'] = 0;
+        $link['id_map'] = $id_networkmap;
+        $link['parent_type'] = $target_type;
+        $link['id_parent_source_data'] = $target_link_value;
+        $link['child_type'] = $source_type;
+        $link['id_child_source_data'] = $source_link_value;
+
+        $insert_result = db_process_sql_insert('trel_item', $link);
+
+        // Store module relationship (if req.).
+        if ($target_type == NODE_MODULE
+            && $source_type == NODE_MODULE
+        ) {
+            $rel = [];
+            $rel['module_a'] = $target_link_value;
+            $rel['module_b'] = $source_link_value;
+            $rel['disable_update'] = 0;
+
+            $insert_result_relation = db_process_sql_insert(
+                'tmodule_relationship',
+                $rel
+            );
+        }
+
+
+        // Send response to controller.
+        if ($insert_result !== false) {
+            $return['correct'] = true;
+            $return['status_start'] = $source_status;
+            $return['status_end'] = $target_status;
+            $return['text_start'] = $source_text;
+            $return['text_end'] = $target_text;
+            $return['id_db_link'] = $insert_result;
+            $return['id_db_source'] = $source_agent;
+            $return['id_db_target'] = $target_agent;
+            $return['type_source'] = $source_type;
+            $return['type_target'] = $target_type;
+        } else {
+            $return['correct'] = false;
+        }
+
+        echo json_encode($return);
+
+        return;
+    }
 
     if ($update_node) {
         $node_json = io_safe_output(get_parameter('node', ''));
@@ -74,6 +1453,65 @@ if (is_ajax()) {
         $return['group'] = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_group);
         $id_os = agents_get_os($id_agent);
         $return['os'] = ui_print_os_icon($id_os, true, true);
+
+        echo json_encode($return);
+
+        return;
+    }
+
+
+    if ($get_agents_in_group) {
+        $id = (int) get_parameter('id', 0);
+        $group = (int) get_parameter('group', -1);
+        $group_recursion = (int) get_parameter('group_recursion', 0);
+
+        $return = [];
+        $return['correct'] = false;
+
+        if ($group != -1) {
+            $where_id_agente = ' 1=1 ';
+
+            $agents_in_networkmap = db_get_all_rows_filter(
+                'titem',
+                [
+                    'id_map'  => $id,
+                    'deleted' => 0,
+                ]
+            );
+            if ($agents_in_networkmap !== false) {
+                $ids = [];
+                foreach ($agents_in_networkmap as $agent) {
+                    if ($agent['type'] == 0) {
+                        $ids[] = $agent['source_data'];
+                    }
+                }
+
+                if (empty($ids) === false) {
+                    $where_id_agente = 'id_agente NOT IN ('.implode(',', $ids).')';
+                }
+            }
+
+            if ($group_recursion !== 0) {
+                $group_tree = groups_get_children_ids($group);
+                $group = implode(',', $group_tree);
+            }
+
+            $sql = 'SELECT id_agente, alias
+				FROM tagente
+				WHERE id_grupo IN ('.$group.') AND '.$where_id_agente.' 
+				ORDER BY alias ASC';
+
+            $agents = db_get_all_rows_sql($sql);
+
+            if ($agents !== false) {
+                $return['agents'] = [];
+                foreach ($agents as $agent) {
+                    $return['agents'][$agent['id_agente']] = $agent['alias'];
+                }
+
+                $return['correct'] = true;
+            }
+        }
 
         echo json_encode($return);
 

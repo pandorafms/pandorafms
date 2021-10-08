@@ -13,9 +13,36 @@
 // GNU General Public License for more details.
 global $config;
 
-// Login check
+// Login check.
 check_login();
 
+?>
+<script type="text/javascript">
+
+function get_last_contact(source, agent_id) {
+    var params = {};
+    params["get_last_contact"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+    params["source"] = source;
+    params["agent_id"] = agent_id;
+
+    jQuery.ajax ({
+        data: params,
+        dataType: "html",
+        type: "POST",
+        url: "ajax.php",
+        success: function (data) {
+            var td = $(`#img-${source}`).parent();
+            td.empty();
+            td.html(data);
+            td.css('padding-left', '12px');
+        }
+    });
+}
+
+</script>
+
+<?php
 $agent_id = get_parameter_get('id_agente', 0);
 
 $table = new stdClass();
@@ -46,9 +73,19 @@ $logs = mysql_db_get_all_rows_sql($sql);
 foreach ($logs as $log) {
     $row['source'] = $log['source'];
     $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$log['source'].'-'.$agent_id."')"]).'</a>';
-    $row['last_contact'] = human_time_comparation($log['last_contact']);
+    $row['last_contact'] = html_print_image(
+        'images/spinner.gif',
+        true,
+        [
+            'id'     => 'img-'.$log['source'],
+            'border' => '0',
+            'width'  => '20px',
+            'heigth' => '20px',
+            'onload' => "get_last_contact('".$log['source']."', '".$agent_id."')",
+        ]
+    );
 
-    $table->data[] = $row;
+    $table->data[$log['source']] = $row;
 }
 
 ob_start();

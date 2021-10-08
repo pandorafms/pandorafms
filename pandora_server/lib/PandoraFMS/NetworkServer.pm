@@ -347,6 +347,8 @@ sub pandora_query_snmp ($$$$) {
 	# Initialize macros.
 	my %macros = (
 		'_agentcustomfield_\d+_' => undef,
+		'_addressn_\d+_' => undef,
+		'_address_' => undef,
 	);
 
 	
@@ -479,8 +481,17 @@ sub exec_network_module ($$$$) {
 		$target_os = $agent_row->{'id_os'};
 	}
 
+	# Initialize macros.
+	my %macros = (
+		'_agentcustomfield_\d+_' => undef,
+		'_addressn_\d+_' => undef,
+		'_address_' => undef,
+	);
+
+	$ip_target = safe_output(subst_column_macros($ip_target, \%macros, $pa_config, $dbh, $agent_row, $module));
+
 	# Use the agent address by default
-	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto'|| $ip_target eq '_address_') {
+	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
 		$ip_target = $agent_row->{'direccion'};
 	}
 

@@ -1291,7 +1291,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
 				_all_address_ => undef,
-				'_address_\d+_' => undef,
+				'_addressn_\d+_' => undef,
 				_secondarygroups_ => undef,
 				 );
 	
@@ -4419,16 +4419,12 @@ sub on_demand_macro($$$$$$;$) {
 		}
 		$field_value .= "</pre>";
 		return(defined($field_value)) ? $field_value : '';
-	} elsif ($macro =~ /_address_(\d+)_/) {
+	} elsif ($macro =~ /_addressn_(\d+)_/) {
 		return '' unless defined ($module);
 		my $field_number = $1 - 1;
-		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ?', $module->{'id_agente'});
+		my @rows = get_db_rows ($dbh, 'SELECT ip FROM taddress_agent taag, taddress ta WHERE ta.id_a = taag.id_a AND id_agent = ? ORDER BY ip ASC', $module->{'id_agente'});
 		
 		my $field_value = $rows[$field_number]->{'ip'};
-		if($field_value == ''){
-			$field_value = 'Ip not defined';
-		}
-		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro =~ /_moduledata_(\S+)_/) {
 		my $field_number = $1;

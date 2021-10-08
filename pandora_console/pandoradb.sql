@@ -4034,8 +4034,8 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_template` (
     `id` serial,
-	`name` text,
-	`vendor` varchar(500),
+    `name` text,
+    `vendor` varchar(500),
     `model` varchar(500),
     PRIMARY KEY (`id`),
 	UNIQUE(`vendor`, `model`)
@@ -4075,8 +4075,8 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
     `config_backup_id` bigint(20) UNSIGNED DEFAULT NULL,
-	`id_template` bigint(20) unsigned,
-	`execute` int(2) UNSIGNED NOT NULL default 0,
+    `id_template` bigint(20) unsigned,
+    `execute` int(2) UNSIGNED NOT NULL default 0,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL,
@@ -4087,11 +4087,11 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
 -- Table `tncm_agent_data`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
+    `id` serial,
     `id_agent` int(10) unsigned NOT NULL,
     `script_type` int unsigned not null,
     `data` LONGBLOB,
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
-    PRIMARY KEY (`id_agent`, `id_script`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

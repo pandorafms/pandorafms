@@ -716,10 +716,12 @@ foreach ($info as $user_id => $user_info) {
                     $toDoString = __('Disable');
                     $toDoAction = '1';
                     $toDoImage  = 'images/lightbulb.png';
+                    $toDoClass  = '';
                 } else {
                     $toDoString = __('Enable');
                     $toDoAction = '0';
                     $toDoImage  = 'images/lightbulb_off.png';
+                    $toDoClass  = 'filter_none';
                 }
 
                 $data[6] = '<form method="POST" action="index.php?sec='.$sec.'&amp;sec2=godmode/users/user_list&amp;pure='.$pure.'" class="inline">';
@@ -742,7 +744,7 @@ foreach ($info as $user_id => $user_info) {
                     [
                         'data-title'                     => $toDoString,
                         'data-use_title_for_force_title' => '1',
-                        'class'                          => 'forced_title no-padding',
+                        'class'                          => 'forced_title no-padding '.$toDoClass,
                     ]
                 );
                 $data[6] .= '</form>';

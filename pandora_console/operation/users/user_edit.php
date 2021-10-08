@@ -438,8 +438,9 @@ if (isset($double_authentication)) {
 
 if (check_acl($config['id_user'], 0, 'ER')) {
     $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
+    $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', $display_all_group))));
     $event_filter .= html_print_select_from_sql(
-        'SELECT id_filter, id_name FROM tevent_filter',
+        'SELECT id_filter, id_name FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')',
         'event_filter',
         $user_info['default_event_filter'],
         '',

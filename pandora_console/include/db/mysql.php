@@ -766,7 +766,7 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
 
         if ($value === null) {
             $not = (($negative === true) ? 'NOT' : '');
-            $query .= sprintf('%s IS %s NULL', $field, $negative);
+            $query .= sprintf('%s IS %s NULL', $field, $not);
         } else if (is_int($value) || is_bool($value)) {
             $not = (($negative === true) ? '!' : '');
             $query .= sprintf('%s %s= %d', $field, $not, $value);

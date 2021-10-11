@@ -4075,6 +4075,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `updated_at` bigint(20) NOT NULL default 0,
     `config_backup_id` bigint(20) UNSIGNED DEFAULT NULL,
     `id_template` bigint(20) unsigned,
+	`execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,

@@ -2205,7 +2205,7 @@ if ( !$.support.boxShadow ) {
 				// the passed url may not yield the correct result
 				search = this.parseUrl( href ).search;
 
-				// TODO all this crap is terrible, clean it up
+				// TODO clean it up
 				if ( isPath ) {
 					// reject the hash if it's a path or it's just a dialog key
 					if( path.isPath( preservedHash ) || preservedHash.replace("#", "").indexOf( this.uiStateKey ) === 0) {

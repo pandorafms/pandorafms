@@ -1619,14 +1619,14 @@ function events_get_events($filter=false, $fields=false)
  */
 function events_get_event($id, $fields=false, $meta=false, $history=false)
 {
-    if (empty($id)) {
+    if (empty($id) === true) {
         return false;
     }
 
     global $config;
 
-    if (is_array($fields)) {
-        if (! in_array('id_grupo', $fields)) {
+    if (is_array($fields) === true) {
+        if (in_array('id_grupo', $fields) === false) {
             $fields[] = 'id_grupo';
         }
     }
@@ -1634,7 +1634,7 @@ function events_get_event($id, $fields=false, $meta=false, $history=false)
     $table = events_get_events_table($meta, $history);
 
     $event = db_get_row($table, 'id_evento', $id, $fields);
-    if (! check_acl($config['id_user'], $event['id_grupo'], 'ER')) {
+    if ((bool) check_acl($config['id_user'], $event['id_grupo'], 'ER') === false) {
         return false;
     }
 
@@ -2255,7 +2255,7 @@ function events_comment(
         // If comments are not stored in json, the format is old.
         $event_comments_array = json_decode($event_comments[0]['user_comment']);
 
-        if (empty($event_comments_array)) {
+        if (empty($event_comments_array) === true) {
             $comments_format = 'old';
         } else {
             $comments_format = 'new';
@@ -2268,6 +2268,7 @@ function events_comment(
             $comment_for_json['action'] = $action;
             $comment_for_json['id_user'] = $config['id_user'];
             $comment_for_json['utimestamp'] = time();
+            $comment_for_json['event_id'] = $first_event;
 
             $event_comments_array[] = $comment_for_json;
 
@@ -2282,11 +2283,11 @@ function events_comment(
         break;
 
         case 'old':
-            // Give old ugly format to comment. TODO: Change this method for
-            // aux table or json.
+            // Give old ugly format to comment.
+            // Change this method for aux table or json.
             $comment = str_replace(["\r\n", "\r", "\n"], '<br>', $comment);
 
-            if ($comment != '') {
+            if ($comment !== '') {
                 $commentbox = '<div class="comment_box">'.io_safe_input($comment).'</div>';
             } else {
                 $commentbox = '';
@@ -5082,11 +5083,13 @@ function events_page_general($event)
 /**
  * Generate 'comments' page for event viewer.
  *
- * @param array $event Event.
+ * @param array   $event   Event.
+ * @param boolean $ajax    If the query come from AJAX.
+ * @param boolean $grouped If the event must shown comments grouped.
  *
  * @return string HTML.
  */
-function events_page_comments($event, $ajax=false)
+function events_page_comments($event, $ajax=false, $groupedComments=[])
 {
     // Comments.
     global $config;
@@ -5097,23 +5100,36 @@ function events_page_comments($event, $ajax=false)
     $table_comments->head = [];
     $table_comments->class = 'table_modal_alternate';
 
-    $comments = ($event['user_comment'] ?? '');
+    $comments = (empty($groupedComments) === true) ? $event['user_comment'] : $groupedComments;
 
-    if (empty($comments)) {
+    if (empty($comments) === true) {
         $table_comments->style[0] = 'text-align:center;';
         $table_comments->colspan[0][0] = 2;
         $data = [];
         $data[0] = __('There are no comments');
         $table_comments->data[] = $data;
     } else {
-        if (is_array($comments)) {
+        if (is_array($comments) === true) {
+            $comments_array = [];
             foreach ($comments as $comm) {
-                if (empty($comm)) {
+                if (empty($comm) === true) {
                     continue;
+                }
+
+                // If exists user_comments, come from grouped events and must be handled like this.
+                if (isset($comm['user_comment']) === true) {
+                    $comm = $comm['user_comment'];
                 }
 
                 $comments_array[] = io_safe_output(json_decode($comm, true));
             }
+
+            usort(
+                $comments_array,
+                function ($a, $b) {
+                    return ($a[(count($a) - 1)]['utimestamp'] < $b[(count($b) - 1)]['utimestamp']);
+                }
+            );
         } else {
             $comments = str_replace(["\n", '&#x0a;'], '<br>', $comments);
             // If comments are not stored in json, the format is old.
@@ -5122,22 +5138,32 @@ function events_page_comments($event, $ajax=false)
 
         foreach ($comments_array as $comm) {
             // Show the comments more recent first.
-            if (is_array($comm)) {
+            if (is_array($comm) === true) {
                 $comm = array_reverse($comm);
             }
 
-            if (empty($comm)) {
-                $comments_format = 'old';
-            } else {
-                $comments_format = 'new';
-            }
+            $comments_format = (empty($comm) === true ? 'old' : 'new');
 
             switch ($comments_format) {
                 case 'new':
                     foreach ($comm as $c) {
-                        $data[0] = '<b>'.$c['action'].' by '.$c['id_user'].'</b>';
-                        $data[0] .= '<br><br><i>'.date($config['date_format'], $c['utimestamp']).'</i>';
+                        $eventIdExplanation = (empty($groupedComments) === false) ? sprintf(' (#%d)', $c['event_id']) : '';
+
+                        $data[0] = sprintf(
+                            '<b>%s %s %s%s</b>',
+                            $c['action'],
+                            __('by'),
+                            $c['id_user'],
+                            $eventIdExplanation
+                        );
+
+                        $data[0] .= sprintf(
+                            '<br><br><i>%s</i>',
+                            date($config['date_format'], $c['utimestamp'])
+                        );
+
                         $data[1] = '<p class="break_word">'.stripslashes(str_replace(['\n', '\r'], '<br/>', $c['comment'])).'</p>';
+
                         $table_comments->data[] = $data;
                     }
                 break;
@@ -5227,7 +5253,7 @@ function events_page_comments($event, $ajax=false)
         );
     }
 
-    if ($ajax) {
+    if ($ajax === true) {
         return $comments_form.html_print_table($table_comments, true);
     }
 

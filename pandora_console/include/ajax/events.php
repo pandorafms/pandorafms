@@ -83,16 +83,18 @@ $in_process_event = get_parameter('in_process_event', 0);
 $validate_event = get_parameter('validate_event', 0);
 $delete_event = get_parameter('delete_event', 0);
 $get_event_filters = get_parameter('get_event_filters', 0);
-$get_comments = get_parameter('get_comments', 0);
+$get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
-if ($get_comments) {
+if ($get_comments === true) {
     $event = get_parameter('event', false);
     $filter = get_parameter('filter', false);
 
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
+
+    $eventsGrouped = [];
 
     if ($filter['group_rep'] == 1) {
         $events = events_get_all(
@@ -119,23 +121,39 @@ if ($get_comments) {
             // True for show comments of validated events.
             true
         );
+
         if ($events !== false) {
             $event = $events[0];
         }
     } else {
-        $events = events_get_event(
-            $event['id_evento'],
-            false,
-            $meta,
-            $history
-        );
+        // Consider if the event is grouped.
+        if (isset($event['event_rep']) === true && $event['event_rep'] > 0) {
+            $eventsGrouped = db_get_all_rows_sql(
+                sprintf(
+                    'SELECT `user_comment`
+                    FROM `tevento`
+                    WHERE `id_agente` = "%d" AND `data` = "%d" AND `estado` = "%d"',
+                    $event['id_agente'],
+                    $event['data'],
+                    $event['estado']
+                )
+            );
+        } else {
+            $events = events_get_event(
+                $event['id_evento'],
+                false,
+                $meta,
+                $history
+            );
 
-        if ($events !== false) {
-            $event = $events;
+            if ($events !== false) {
+                $event = $events;
+            }
         }
     }
 
-    echo events_page_comments($event, true);
+    // End of get_comments.
+    echo events_page_comments($event, true, $eventsGrouped);
 
     return;
 }

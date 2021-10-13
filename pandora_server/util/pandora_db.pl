@@ -389,6 +389,15 @@ sub pandora_purgedb ($$) {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
 	}
 
+	# Delete old log data
+	log_message ('PURGE', "Deleting old network configuration manager data.");
+	if (defined($conf->{'days_purge_ncm'}) && $conf->{'days_purge_ncm'} > 0) {
+		log_message ('PURGE', 'Deleting NCM data older than ' . $conf->{'days_purge_ncm'} . ' days.');
+    enterprise_hook ('pandora_purge_ncm', [$dbh, \&log_message, $conf->{'days_purge_ncm'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]);
+	} else {
+		log_message ('PURGE', 'days_purge_ncm is set to 0. Old network configuration manager data will not be deleted.');
+	}
+
 	# Delete old special days
 	log_message ('PURGE', "Deleting old special days.");
 	if ($conf->{'_num_past_special_days'} > 0) {

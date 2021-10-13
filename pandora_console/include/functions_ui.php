@@ -2731,16 +2731,20 @@ function ui_print_status_image(
  * @param integer $status Module status.
  * @param boolean $return True or false.
  * @param string  $class  Custom class or use defined.
+ * @param string  $title  Custom title or inherit from module status.
  *
  * @return string HTML code for shape.
  */
 function ui_print_module_status(
     $status,
     $return=false,
-    $class='status_rounded_rectangles'
+    $class='status_rounded_rectangles',
+    $title=null
 ) {
     $color = modules_get_color_status($status, true);
-    $title = modules_get_modules_status($status);
+    if ($title === null) {
+        $title = modules_get_modules_status($status);
+    }
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;

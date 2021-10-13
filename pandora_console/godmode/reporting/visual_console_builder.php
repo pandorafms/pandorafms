@@ -460,7 +460,13 @@ switch ($activeTab) {
 
                         case GROUP_ITEM:
                             $values['id_group'] = get_parameter('group_'.$id, 0);
-                            $values['show_statistics'] = get_parameter('show_statistics', 0);
+                        break;
+
+                        case CIRCULAR_PROGRESS_BAR:
+                        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                        case PERCENTILE_BUBBLE:
+                        case PERCENTILE_BAR:
+                            unset($values['height']);
                         break;
                     }
 

@@ -31,7 +31,7 @@ global $config;
 // Require needed class.
 require_once $config['homedir'].'/include/class/AgentsAlerts.class.php';
 // Get the parameter.
-$sec2        = get_parameter_get('sec2');
+$sec2 = get_parameter_get('sec2');
 // Add operation menu option.
 extensions_add_operation_menu_option(
     __('Agents/Alerts view'),

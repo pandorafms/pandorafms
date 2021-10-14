@@ -4030,13 +4030,33 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
+-- Table `tncm_vendor`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_vendor` (
+    `id` serial,
+    `name` TEXT UNIQUE,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_model`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_model` (
+    `id` serial,
+    `id_vendor` bigint(20) unsigned NOT NULL,
+    `name` TEXT UNIQUE,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_vendor`) REFERENCES `tncm_vendor`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
 -- Table `tncm_template`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_template` (
     `id` serial,
     `name` text,
-    `vendor` varchar(500),
-    `model` varchar(500),
+    `vendors` text,
+    `models` text,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4067,22 +4087,22 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_agent` int(10) unsigned NOT NULL,
-    `vendor` text,
-    `model` text,
+    `id_vendor` bigint(20) unsigned NOT NULL,
+    `id_model` bigint(20) unsigned NOT NULL,
     `protocol` int unsigned not null default 0,
     `cred_key` varchar(100),
-	`port` int(4) unsigned default 22,
+    `port` int(4) unsigned default 22,
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
     `config_backup_id` bigint(20) UNSIGNED DEFAULT NULL,
     `id_template` bigint(20) unsigned,
-	`execute_type` int(2) UNSIGNED NOT NULL default 0,
+    `execute_type` int(2) UNSIGNED NOT NULL default 0,
     `execute` int(2) UNSIGNED NOT NULL default 0,
-	`last_error` text,
+    `last_error` text,
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL,
-	FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------

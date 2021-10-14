@@ -172,7 +172,7 @@ div#rules::after {
   font-size: 2.5em;
   color: #aaa;
   overflow: hidden;
-  background: #fff;
+  background: transparent;
   text-align: center;
   height: 100px;
 }

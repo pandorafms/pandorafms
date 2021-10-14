@@ -4034,7 +4034,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
-    `name` varchar(500) UNIQUE,
+    `name` varchar(255) UNIQUE,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -4044,7 +4044,7 @@ CREATE TABLE IF NOT EXISTS `tncm_vendor` (
 CREATE TABLE IF NOT EXISTS `tncm_model` (
     `id` serial,
     `id_vendor` bigint(20) unsigned NOT NULL,
-    `name` varchar(500) UNIQUE,
+    `name` varchar(255) UNIQUE,
     PRIMARY KEY (`id`),
     FOREIGN KEY (`id_vendor`) REFERENCES `tncm_vendor`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

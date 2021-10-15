@@ -88,12 +88,6 @@ export function moduleGraphPropsDecoder(
 export default class ModuleGraph extends Item<ModuleGraphProps> {
   protected createDomElement(): HTMLElement {
     const element = document.createElement("div");
-    //element.className = "module-graph";
-    //element.style.backgroundImage = `url(${this.props.html})`;
-    //element.style.backgroundRepeat = "no-repeat";
-    //element.style.backgroundSize = `${this.props.width}px ${
-    //  this.props.height
-    //}px`;
 
     element.innerHTML = this.props.html;
     element.className = "module-graph";
@@ -128,18 +122,10 @@ export default class ModuleGraph extends Item<ModuleGraphProps> {
       }
     }
 
-    // element.innerHTML = this.props.html;
-
     return element;
   }
 
   protected updateDomElement(element: HTMLElement): void {
-    //element.style.backgroundImage = `url(${this.props.html})`;
-    //element.style.backgroundRepeat = "no-repeat";
-    //element.style.backgroundSize = `${this.props.width}px ${
-    //  this.props.height
-    //}px`;
-
     element.innerHTML = this.props.html;
 
     // Remove the overview graph.

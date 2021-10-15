@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_model` bigint(20) unsigned NOT NULL,
     `protocol` int unsigned not null default 0,
     `cred_key` varchar(100),
+    `adv_key` varchar(100),
     `port` int(4) unsigned default 22,
     `status` int(4) NOT NULL default 5,
     `updated_at` bigint(20) NOT NULL default 0,
@@ -74,7 +75,9 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
     PRIMARY KEY (`id_agent`),
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL,
-    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_vendor`) REFERENCES `tncm_vendor`(`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+    FOREIGN KEY (`id_model`) REFERENCES `tncm_model`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tncm_agent_data` (

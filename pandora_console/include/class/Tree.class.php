@@ -600,7 +600,7 @@ class Tree
 
         if (is_metaconsole()) {
             $module['serverID'] = $this->serverID;
-            $module['serverName'] = $this->serverName;
+            $module['serverName'] = empty($this->serverName) === false ? $this->serverName : servers_get_name($this->serverID);
         } else {
             $module['serverName'] = false;
             $module['serverID'] = false;

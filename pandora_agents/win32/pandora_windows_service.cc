@@ -2047,16 +2047,15 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 			this->pandora_init ();
 		}
 		this->checkCollections ();
-	}
 
-	
-	/* Execute omnishell commands */
-	omnishell_path = '"'+Pandora::getPandoraInstallDir ();
-	omnishell_path += "util\\omnishell_client.exe\" \"" + conf_file+"\"";
-	if (getPandoraDebug () != false) {
-		pandoraLog ("Omnishell: Running");
+		/* Execute omnishell commands */
+		omnishell_path = '"'+Pandora::getPandoraInstallDir ();
+		omnishell_path += "util\\omnishell_client.exe\" \"" + conf_file+"\"";
+		if (getPandoraDebug () != false) {
+			pandoraLog ("Omnishell: Running");
+		}
+		omnishell_output = getValueFromCmdExec(omnishell_path.c_str(), 6000000);
 	}
-	omnishell_output = getValueFromCmdExec(omnishell_path.c_str(), 6000000);
 
 	server_addr = conf->getValue ("server_ip");
 

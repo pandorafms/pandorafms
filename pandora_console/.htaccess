@@ -1,6 +1,9 @@
 # pandora disable listing
 Options -Indexes
 
+# Avoid clickjacking
+Header always append X-Frame-Options SAMEORIGIN
+
 <Files ~ "\.log$"> 
 Order Allow,Deny
 Deny from All

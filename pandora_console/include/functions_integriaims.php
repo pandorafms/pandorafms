@@ -454,3 +454,49 @@ function get_tickets_integriaims($tickets_filters)
 
     return $array_get_incidents;
 }
+
+
+function integriaims_upload_file($filename, $incident_id, $file_description)
+{
+    hd('aqui0', true);
+    hd($_FILES, true);
+    if ($_FILES[$filename]['name'] != '') {
+        $filename = io_safe_input($_FILES[$filename]['name']);
+        $filesize = io_safe_input($_FILES[$filename]['size']);
+
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $invalid_extensions = '/^(bat|exe|cmd|sh|php|php1|php2|php3|php4|php5|pl|cgi|386|dll|com|torrent|js|app|jar|iso|
+            pif|vb|vbscript|wsf|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|
+            htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i';
+        hd('aqui1', true);
+        if (!preg_match($invalid_extensions, $extension)) {
+            hd('aqui2', true);
+            // The following is if you have clamavlib installed.
+            // (php5-clamavlib) and enabled in php.ini
+            // http://www.howtoforge.com/scan_viruses_with_php_clamavlib
+            if (extension_loaded('clamav')) {
+                cl_setlimits(5, 1000, 200, 0, 10485760);
+                $malware = cl_scanfile($_FILES['file']['tmp_name']);
+                if ($malware) {
+                    $error = 'Malware detected: '.$malware.'<br>ClamAV version: '.clam_get_version();
+                    die($error);
+                }
+            }
+
+            $filecontent = base64_encode(file_get_contents($_FILES[$filename]['tmp_name']));
+            hd($filecontent, true);
+            $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $file_description, $filecontent], false, '', '|;|');
+
+            // API method returns '0' string if success.
+            $file_added = ($result_api_call === '0') ? true : false;
+
+            ui_print_result_message(
+                $file_added,
+                __('File successfully added'),
+                __('File could not be added')
+            );
+        } else {
+            ui_print_error_message(__('File has an invalid extension'));
+        }
+    }
+}

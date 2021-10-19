@@ -90,6 +90,7 @@ $incident_creator = get_parameter('creator');
 $incident_status = (int) get_parameter('status');
 $incident_title = events_get_field_value_by_event_id($event_id, get_parameter('incident_title'));
 $incident_content = events_get_field_value_by_event_id($event_id, get_parameter('incident_content'));
+$file_description = get_parameter('file_description');
 
 // Separator conversions.
 $incident_title = str_replace(',', ':::', $incident_title);
@@ -100,7 +101,11 @@ if ($create_incident === true) {
     // Call Integria IMS API method to create an incident.
     $result_api_call = integria_api_call(null, null, null, null, 'create_incident', [$incident_title, $incident_group_id, $incident_criticity_id, $incident_content, '', $incident_type, '', $incident_owner, '0', $incident_status], false, '', ',');
 
-    // Necessary to explicitly set true if not false because function returns api call result in case of success instead of true value.
+    if ($userfile !== '' && $result_api_call !== false) {
+        integriaims_upload_file('userfile', $result_api_call, $file_description);
+    }
+
+    // Necessary to explicitly set true if not false because function returns result of api call in case of success instead of true value.
     $incident_created_ok = ($result_api_call != false) ? true : false;
 
     ui_print_result_message(
@@ -111,6 +116,10 @@ if ($create_incident === true) {
 } else if ($update_incident === true) {
     // Call Integria IMS API method to update an incident.
     $result_api_call = integria_api_call(null, null, null, null, 'update_incident', [$incident_id_edit, $incident_title, $incident_content, '', $incident_group_id, $incident_criticity_id, 0, $incident_status, $incident_owner, 0, $incident_type], false, '', ',');
+
+    if ($userfile !== '') {
+        integriaims_upload_file('userfile', $incident_id_edit, $file_description);
+    }
 
     // Necessary to explicitly set true if not false because function returns api call result in case of success instead of true value.
     $incident_updated_ok = ($result_api_call != false) ? true : false;
@@ -153,6 +162,7 @@ $table->style[1] = 'width: 33%; padding-right: 50px; padding-left: 50px;';
 $table->style[2] = 'width: 33%; padding-right: 100px; padding-left: 50px;';
 $table->colspan[0][0] = 2;
 $table->colspan[3][0] = 3;
+$table->colspan[5][0] = 3;
 
 $help_macros = isset($_GET['from_event']) ? ui_print_help_icon('response_macros', true) : '';
 
@@ -303,8 +313,20 @@ $table->data[3][0] .= '<div class="label_select_parent">'.html_print_textarea(
     true
 ).'</div>';
 
+$table->data[4][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
+$table->data[4][0] .= html_print_input_file('userfile', true);
+$table->data[5][0] = '<div class="label_select"><p class="input_label">'.__('Description').':</p>';
+$table->data[5][0] .= html_print_textarea(
+    'file_description',
+    3,
+    20,
+    '',
+    '',
+    true
+);
+
 // Print forms and stuff.
-echo '<form id="create_integria_incident_form" name="create_integria_incident_form" method="POST">';
+echo '<form id="create_integria_incident_form" name="create_integria_incident_form" method="POST" enctype="multipart/form-data">';
 html_print_table($table);
 
 if (!$update) {

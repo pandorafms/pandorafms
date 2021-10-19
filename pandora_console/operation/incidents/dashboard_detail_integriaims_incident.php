@@ -90,7 +90,7 @@ $resolution_text = integriaims_get_details('resolution', $resolution);
 $type_text = integriaims_get_details('type', $type);
 
 // Incident file management.
-$upload_file = get_parameter('upload_file');
+$upload_file = (bool) get_parameter('upload_file');
 $delete_file_id = get_parameter('delete_file');
 $download_file_id = get_parameter('download_file');
 $download_file_name = get_parameter('download_file_name');
@@ -121,47 +121,10 @@ $table_files->head[5] = __('Delete');
 
 $table_files->data = [];
 
-// Upload file.
-if ($upload_file && ($_FILES['userfile']['name'] != '')) {
-    $filedescription = get_parameter('file_description', __('No description available'));
+$filedescription = get_parameter('file_description', __('No description available'));
 
-    $filename = io_safe_input($_FILES['userfile']['name']);
-    $filesize = io_safe_input($_FILES['userfile']['size']);
-
-    $extension = pathinfo($filename, PATHINFO_EXTENSION);
-    $invalid_extensions = '/^(bat|exe|cmd|sh|php|php1|php2|php3|php4|php5|pl|cgi|386|dll|com|torrent|js|app|jar|iso|
-        pif|vb|vbscript|wsf|asp|cer|csr|jsp|drv|sys|ade|adp|bas|chm|cpl|crt|csh|fxp|hlp|hta|inf|ins|isp|jse|htaccess|
-        htpasswd|ksh|lnk|mdb|mde|mdt|mdw|msc|msi|msp|mst|ops|pcd|prg|reg|scr|sct|shb|shs|url|vbe|vbs|wsc|wsf|wsh)$/i';
-
-    if (!preg_match($invalid_extensions, $extension)) {
-        // The following is if you have clamavlib installed.
-        // (php5-clamavlib) and enabled in php.ini
-        // http://www.howtoforge.com/scan_viruses_with_php_clamavlib
-        if (extension_loaded('clamav')) {
-            cl_setlimits(5, 1000, 200, 0, 10485760);
-            $malware = cl_scanfile($_FILES['file']['tmp_name']);
-            if ($malware) {
-                $error = 'Malware detected: '.$malware.'<br>ClamAV version: '.clam_get_version();
-                die($error);
-                // On malware, we die because it's not good to handle it
-            }
-        }
-
-        $filecontent = base64_encode(file_get_contents($_FILES['userfile']['tmp_name']));
-
-        $result_api_call = integria_api_call(null, null, null, null, 'attach_file', [$incident_id, $filename, $filesize, $filedescription, $filecontent], false, '', '|;|');
-
-        // API method returns '0' string if success.
-        $file_added = ($result_api_call === '0') ? true : false;
-
-        ui_print_result_message(
-            $file_added,
-            __('File successfully added'),
-            __('File could not be added')
-        );
-    } else {
-        ui_print_error_message(__('File has an invalid extension'));
-    }
+if ($upload_file === true) {
+    integriaims_upload_file('userfile', $incident_id, $filedescription);
 }
 
 // Delete file.
@@ -252,11 +215,11 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload2'), 'accion', false, 'class="sub wand"', true).'</div>';
 
 $upload_file_form = '<div class="w100p">';
 
-$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', 1, true);
+$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment1').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', true, true);
 
 $upload_file_form .= '<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
 

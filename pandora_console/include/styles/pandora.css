@@ -6150,9 +6150,8 @@ div.graph div.legend table {
 
 .sound_events {
   background-color: #494949;
-  max-width: 550px;
-  max-height: 400px;
-  margin-top: 40px;
+  margin: 40px 2em 0;
+  min-height: auto;
 }
 
 .w16px {

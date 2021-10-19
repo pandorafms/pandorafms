@@ -427,11 +427,18 @@ if (check_acl($config['id_user'], 0, 'ER')
     <script type="text/javascript">
     function openSoundEventWindow() {
         url = '<?php echo ui_get_full_url('operation/events/sound_events.php'); ?>';
+        // devicePixelRatio knows how much zoom browser applied.
+        var windowScale = parseFloat(window.devicePixelRatio);
+        var defaultWidth = 600;
+        var defaultHeight = 450;
+        // If the scale is 1, no zoom has been applied.
+        var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
+        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight;
         
         window.open(
             url,
             '<?php __('Sound Alerts'); ?>',
-            'width=600, height=450, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no'
+            'width='+windowWidth+', height='+windowHeight+', resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'
         );
     }
     </script>

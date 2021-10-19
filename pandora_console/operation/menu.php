@@ -433,7 +433,7 @@ if (check_acl($config['id_user'], 0, 'ER')
         var defaultHeight = 450;
         // If the scale is 1, no zoom has been applied.
         var windowWidth = windowScale <= 1 ? defaultWidth : windowScale*defaultWidth;
-        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight;
+        var windowHeight = windowScale <= 1 ? defaultHeight : windowScale*defaultHeight + (defaultHeight*0.1);
         
         window.open(
             url,

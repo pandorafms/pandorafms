@@ -387,7 +387,7 @@ function process_user_login_remote($login, $pass, $api=false)
                 $pass,
                 $user_info,
                 $permissions,
-                is_metaconsole()
+                is_metaconsole() && is_centralized() === false
             );
         }
     } else {

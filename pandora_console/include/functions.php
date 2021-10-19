@@ -1732,9 +1732,9 @@ function is_management_allowed($hkey='')
         $nodes = (int) $nodes;
     }
 
-    return ( (is_metaconsole() && (is_centrallised() || $nodes === 0))
-        || (!is_metaconsole() && !is_centrallised())
-        || (!is_metaconsole() && is_centrallised()) && $hkey == generate_hash_to_api());
+    return ( (is_metaconsole() && (is_centralized() || $nodes === 0))
+        || (!is_metaconsole() && !is_centralized())
+        || (!is_metaconsole() && is_centralized()) && $hkey == generate_hash_to_api());
 }
 
 
@@ -1743,7 +1743,7 @@ function is_management_allowed($hkey='')
  *
  * @return boolean
  */
-function is_centrallised()
+function is_centralized()
 {
     global $config;
 
@@ -1763,7 +1763,7 @@ function is_centrallised()
  */
 function is_central_policies()
 {
-    return is_metaconsole() && is_centrallised();
+    return is_metaconsole() && is_centralized();
 }
 
 

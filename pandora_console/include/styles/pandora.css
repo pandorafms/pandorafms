@@ -688,6 +688,12 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .flex-row-vcenter {
   display: flex;
   flex-direction: row;

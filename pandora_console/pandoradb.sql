@@ -583,6 +583,19 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
+-- Table `talert_execution_queue`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_alert_template_module` int(10) unsigned NOT NULL,
+	`alert_mode` tinyint(1) NOT NULL,
+	`data` mediumtext NOT NULL,
+	`extra_macros` text,
+	`utimestamp` bigint(20) NOT NULL default '0',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
 -- Table `tattachment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tattachment` (
@@ -681,7 +694,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`owner_user` VARCHAR(100) NOT NULL DEFAULT '',
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`custom_data` TEXT NOT NULL,
-	`data` double(50,5) default NULL,
+	`data` tinytext default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -1549,12 +1562,14 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -1567,6 +1582,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -1670,6 +1688,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`timezone` varchar(60) NOT NULL default "Europe/Madrid",
 	`show_last_value` tinyint(1) UNSIGNED NULL default '0',
 	`cache_expiration` INTEGER UNSIGNED NOT NULL default 0,
+	`title` TEXT default '',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -2733,12 +2752,13 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_setup` (
 	`auth_token` text,
 	`id_group` int(10) unsigned NOT NULL default 0,
 	`api_password` text NOT NULL,
-	`disabled` tinyint(1) unsigned NOT NULL default '0',
-	`last_event_replication` bigint(20) default '0',
+	`disabled` tinyint(1) unsigned NOT NULL default 0,
+	`unified` tinyint(1) unsigned NOT NULL default 0,
+	`last_event_replication` bigint(20) default 0,
 	`server_uid` text NOT NULL default '',
 	PRIMARY KEY  (`id`)
-) ENGINE=InnoDB 
-COMMENT = 'Table to store metaconsole sources' 
+) ENGINE=InnoDB
+COMMENT = 'Table to store metaconsole sources'
 DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
@@ -2997,6 +3017,8 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	`special_days` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`id_template_conditions` int(10) unsigned NOT NULL default 0,
+	`id_template_fields` int(10) unsigned NOT NULL default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3160,12 +3182,14 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -3178,6 +3202,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3276,7 +3303,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_event` (
 	`ack_utimestamp` BIGINT(20) NOT NULL DEFAULT '0',
 	`server_id` int(10) NOT NULL,
 	`custom_data` TEXT NOT NULL DEFAULT '',
-	`data` double(50,5) default NULL,
+	`data` tinytext default NULL,
 	`module_status` int(4) NOT NULL default '0',
 	PRIMARY KEY  (`id_evento`),
 	KEY `idx_agente` (`id_agente`),
@@ -3668,6 +3695,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
 	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
+	`auto_adjust` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3986,4 +4014,18 @@ CREATE TABLE IF NOT EXISTS `tipam_supernet_network` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_supernet`) REFERENCES tipam_supernet(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (`id_network`) REFERENCES tipam_network(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tsync_queue`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsync_queue` (
+	`id` serial,
+	`sql` MEDIUMTEXT,
+	`target` bigint(20) unsigned NOT NULL,
+	`utimestamp` bigint(20) default '0',
+	`operation` text,
+	`table` text,
+	`error` MEDIUMTEXT,
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

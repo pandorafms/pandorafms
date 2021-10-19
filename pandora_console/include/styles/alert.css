@@ -166,15 +166,15 @@ div.target.flex {
   text-align: center;
 }
 div#rules::after {
-  content: "Drop Here";
   position: relative;
   display: block;
   margin: 2em auto;
-  font-size: 3em;
+  font-size: 2.5em;
   color: #aaa;
   overflow: hidden;
-  background: #fff;
+  background: transparent;
   text-align: center;
+  height: 100px;
 }
 div#rules.cleanup::after {
   content: none;

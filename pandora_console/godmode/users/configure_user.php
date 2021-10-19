@@ -296,7 +296,7 @@ if ($new_user && $config['admin_can_add_user']) {
     // This attributes are inherited from global configuration
     $user_info['block_size'] = $config['block_size'];
 
-    if (enterprise_installed() && defined('METACONSOLE')) {
+    if (enterprise_installed() && is_metaconsole() === true) {
         $user_info['metaconsole_agents_manager'] = 0;
         $user_info['metaconsole_assigned_server'] = '';
         $user_info['metaconsole_access_node'] = 0;
@@ -721,6 +721,7 @@ if ($update_user) {
         );
     }
 
+
     if ($values['strict_acl']) {
         $count_groups = 0;
         $count_tags = 0;
@@ -991,7 +992,7 @@ $email = '<div class="label_select_simple">'.html_print_input_text_extended(
     $view_mode,
     '',
     [
-        'class'       => 'input input_line email_icon_input invert_filter',
+        'class'       => 'input input_line email_icon_input',
         'placeholder' => __('E-mail'),
     ],
     true
@@ -1226,7 +1227,10 @@ $session_time .= html_print_input_text(
     'class="input_line_small"'
 ).'</div>';
 
-$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+
+$user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
+
+$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')');
 if ($event_filter_data === false) {
     $event_filter_data = [];
 }

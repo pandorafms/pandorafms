@@ -436,6 +436,7 @@ function html_print_select_style($fields, $name, $selected='', $style='', $scrip
  * @param string  $size                    Style, size (width) of element.
  * @param boolean $simple_multiple_options Discovery simple multiple inputs.
  * @param boolean $required                Required input.
+ * @param string  $inverse                 Change All to None with inverse condition.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -462,7 +463,8 @@ function html_print_select_groups(
     $include_groups=false,
     $size=false,
     $simple_multiple_options=false,
-    $required=false
+    $required=false,
+    $inverse=''
 ) {
     $output = '';
 
@@ -522,7 +524,11 @@ function html_print_select_groups(
         if (empty($selected) === false) {
             $fields = [ $selected => groups_get_name($selected) ];
         } else if ($returnAllGroup === true && $multiple === false) {
-            $fields = [ $selected => groups_get_name(null, true) ];
+            if ($selected === 0 && $inverse !== '') {
+                $fields = [ $selected => 'None' ];
+            } else {
+                $fields = [ $selected => groups_get_name(null, true) ];
+            }
         }
     } else {
         foreach ($selected as $k) {
@@ -595,7 +601,9 @@ function html_print_select_groups(
     </style>
 
     <script type="text/javascript">
+
         $(document).ready(function() {
+
             $('select[name="<?php echo $name; ?>"]').each(
                 function() {
                     $(this).select2({
@@ -625,6 +633,7 @@ function html_print_select_groups(
                                     inclusions: '<?php echo $json_inclusions; ?>',
                                     step: params.page || 1,
                                     strict: "<?php echo $strict_user; ?>",
+                                    not_condition: $('#not_condition_switch').prop('checked'),
                                     returnAllGroup: <?php echo (int) $returnAllGroup; ?>
                                 }
 
@@ -781,7 +790,7 @@ function html_print_select(
         $required = 'required';
     }
 
-    $output .= '<select '.$required.' id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
+    $output .= '<select '.$required.' onclick="'.$script.'" id="'.$id.'" name="'.$name.'"'.$attributes.' '.$styleText.'>';
 
     if ($nothing !== false) {
         if ($nothing != '' || empty($fields)) {
@@ -1765,6 +1774,12 @@ function html_print_extended_select_for_post_process(
         $uniq_name = $name;
     }
 
+    $style = 'font-size: xx-small;';
+
+    if ($select_style !== false) {
+        $style .= sprintf(' %s', $select_style);
+    }
+
     ob_start();
 
     echo '<div id="'.$uniq_name.'_default" style="w100p inline_line">';
@@ -1780,7 +1795,7 @@ function html_print_extended_select_for_post_process(
             false,
             '',
             $disabled,
-            'font-size: xx-small;'.$select_style
+            $style
         );
         echo ' <a href="javascript:">'.html_print_image(
             'images/pencil.png',
@@ -1831,20 +1846,20 @@ function html_print_extended_select_for_post_process(
 /**
  * Render a pair of select for times and text box for set the time more fine.
  *
- * @param string  $name          Select form name
- * @param variant $selected      Current selected value. Can be a single value or an array of selected values (in combination with multiple)
+ * @param string  $name          Select form name.
+ * @param mixed   $selected      Current selected value. Can be a single value or an array of selected values (in combination with multiple).
  * @param string  $script        Javascript onChange (select) code.
  * @param string  $nothing       Label when nothing is selected.
- * @param variant $nothing_value Value when nothing is selected
+ * @param mixed   $nothing_value Value when nothing is selected.
  * @param integer $size          Size of the input.
  * @param boolean $return        Whether to return an output string or echo now (optional, echo by default).
- * @param boolean $select_style  Wherter to assign to combo a unique name (to have more than one on same page, like dashboard)
- * @param boolean $unique_name
- * @param string  $class
- * @param boolean $readonly
- * @param string  $custom_fields
- * @param string  $style_icon
- * @param boolean $no_change
+ * @param boolean $select_style  Wherter to assign to combo a unique name (to have more than one on same page, like dashboard).
+ * @param boolean $unique_name   Uunique name value.
+ * @param string  $class         Class value.
+ * @param boolean $readonly      Readonly value.
+ * @param string  $custom_fields Custom fields value.
+ * @param string  $style_icon    Style icon value.
+ * @param boolean $no_change     No change value.
  * @param boolean $allow_zero    Allow the use of the value zero.
 
  * @return string HTML code if return parameter is true.
@@ -1926,7 +1941,7 @@ function html_print_extended_select_for_time(
 
     ob_start();
     // Use the no_meta parameter because this image is only in the base console.
-    echo '<div id="'.$uniq_name.'_default" class="wauto inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="wauto inline_flex">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -1967,7 +1982,7 @@ function html_print_extended_select_for_time(
         html_print_select(
             $units,
             $uniq_name.'_units',
-            '60',
+            '1',
             ''.$script,
             $nothing,
             $nothing_value,
@@ -2015,13 +2030,14 @@ function html_print_extended_select_for_time(
 /**
  * Print selects to configure the cron of a module.
  *
- * @param string Run hour.
- * @param string Run minute.
- * @param string Run day of the month.
- * @param string Run month.
- * @param string Run day of the week.
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Print cron grayed
+ * @param string  $hour     Run hour.
+ * @param string  $minute   Run minute.
+ * @param string  $mday     Run day of the month.
+ * @param string  $month    Run month.
+ * @param string  $wday     Run day of the week.
+ * @param boolean $return   Whether to return an output string or echo now (optional, echo by default).
+ * @param boolean $disabled If true, the control will show disabled.
+ * @param boolean $to       Print cron grayed.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -2365,12 +2381,13 @@ function html_print_div(
 /**
  * Render an anchor <a> html element.
  *
- * @param array   $options Parameters
+ * @param array   $options Parameters.
  *                - id: string.
  *                - style: string.
  *                - title: string.
  *                - href: string.
  *                - content: string.
+ *                - onClick: string.
  * @param boolean $return  Return or echo flag.
  *
  * @return string HTML code if return parameter is true.
@@ -2387,6 +2404,7 @@ function html_print_anchor(
         'style',
         'class',
         'title',
+        'onClick',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
@@ -3729,7 +3747,7 @@ function html_print_checkbox_switch_extended(
         $name.($idcounter[$name] ? $idcounter[$name] : '')
     );
 
-    $output = '<label class="p-switch '.$classParent.'">';
+    $output = '<label class="p-switch pdd_0px'.$classParent.'">';
     $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
@@ -3953,6 +3971,7 @@ function html_print_image(
             'onkeypress',
             'onkeydown',
             'onkeyup',
+            'onload',
             'pos_tree',
         ];
 
@@ -4803,7 +4822,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['style']) === true) ? $data['selected'] : false),
-                ((isset($data['unique']) === true) ? $data['unique'] : false)
+                ((isset($data['unique']) === true) ? $data['unique'] : false),
+                ((isset($data['class']) === true) ? $data['class'] : ''),
+                ((isset($data['readonly']) === true) ? $data['readonly'] : false),
+                ((isset($data['custom_fields']) === true) ? $data['custom_fields'] : false),
+                ((isset($data['style_icon']) === true) ? $data['style_icon'] : '')
             );
         break;
 
@@ -5269,7 +5292,7 @@ function html_print_tabs(array $tabs)
  * Create a datalist.
  *
  * @param string $id          Use custom id.
- * @param string $values      Input values.
+ * @param array  $values      Input values.
  * @param string $returnparam Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.

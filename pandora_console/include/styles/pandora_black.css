@@ -36,7 +36,8 @@ textarea,
 select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
-.selection {
+.selection,
+button.sub {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -61,6 +62,27 @@ div#rules::after table.agent_info_table thead > tr:first-child th,
 table.agent_info_table tr {
   background-color: #222 !important;
   color: #fff !important;
+}
+
+#um-next:hover,
+#um-last:hover {
+  border: 1px solid #888 !important;
+}
+#um-next,
+#um-last {
+  background-color: #111 !important;
+  color: #fff !important;
+  font-weight: 500;
+  border-radius: 5px;
+  background-repeat: no-repeat;
+  background-position: 92% 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 15px;
+  border: 1px solid #333 !important;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10pt;
 }
 
 input[readonly] {
@@ -308,6 +330,7 @@ table.black_table_modal_alternate tr:nth-child(even) td {
 .action_buttons input[type="image"],
 .action_button_img {
   filter: brightness(4.5) contrast(50%);
+  background-color: transparent !important;
 }
 
 a.pandora_pagination {
@@ -351,7 +374,7 @@ ul.tree-group
 /* login.css */
 div.login_nick input,
 div.login_pass input {
-  background-color: #fff !important;
+  background-color: #111 !important;
 }
 
 /* user edit */
@@ -398,7 +421,7 @@ table#diagnostic_info tbody td div {
 }
 .ui-widget-content,
 .ui-widget-content a {
-  color: #fff;
+  color: #fff !important;
 }
 
 .ui-widget-content.ui-autocomplete a {
@@ -464,7 +487,7 @@ pre,
 
 /* update_manager.css */
 div#box_online * {
-  color: #000;
+  color: #fff;
 }
 
 /* discovery.css */
@@ -657,7 +680,8 @@ form ul.form_flex {
 
 .graph_conteiner_inside,
 .container_table,
-.second_background {
+.second_background,
+.bg_color222 {
   background-color: #222;
 }
 
@@ -1158,4 +1182,34 @@ a.pandora_pagination,
 #header_table {
   padding-right: 35px;
   background-color: #222;
+}
+#box_online {
+  background-image: url("../../images/update_pandora_black.jpg") !important;
+  background-position: left, left !important;
+  background-repeat: no-repeat;
+  background-color: #000 !important;
+  padding: 40px 50px;
+  border: 1px solid #111 !important;
+  border-radius: 5px;
+  min-height: 600px;
+  background-size: contain;
+  box-shadow: 1px 1px 4px rgba(160, 160, 160, 0.514);
+}
+.legend_background {
+  background-color: #222;
+  color: #fff !important;
+}
+.bg_ccc {
+  background-color: #50505050 !important;
+}
+.filter_none {
+  filter: brightness(0) contrast(50%) !important;
+}
+
+input[type="image"] {
+  background-color: transparent !important;
+}
+
+.databox_color {
+  background-color: transparent !important;
 }

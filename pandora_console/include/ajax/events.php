@@ -252,7 +252,9 @@ if ($save_event_filter) {
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
+    $values['time_from'] = get_parameter('time_from');
     $values['date_to'] = get_parameter('date_to');
+    $values['time_to'] = get_parameter('time_to');
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
@@ -304,13 +306,15 @@ if ($update_event_filter) {
     $values['filter_only_alert'] = get_parameter('filter_only_alert');
     $values['id_group_filter'] = get_parameter('id_group_filter');
     $values['date_from'] = get_parameter('date_from');
+    $values['time_from'] = get_parameter('time_from');
     $values['date_to'] = get_parameter('date_to');
+    $values['time_to'] = get_parameter('time_to');
     $values['source'] = get_parameter('source');
     $values['id_extra'] = get_parameter('id_extra');
     $values['user_comment'] = get_parameter('user_comment');
     $values['id_source_event'] = get_parameter('id_source_event');
 
-    if (is_metaconsole()) {
+    if (is_metaconsole() === true) {
         $values['server_id'] = get_parameter('server_id');
     }
 
@@ -355,7 +359,9 @@ if ($get_filter_values) {
             'id_extra'          => '',
             'id_user_ack'       => '',
             'date_from'         => '',
+            'time_from'         => '',
             'date_to'           => '',
+            'time_to'           => '',
             'severity'          => '',
             'event_type'        => '',
             'group_rep'         => 0,
@@ -380,7 +386,7 @@ if ($get_filter_values) {
             }
         }
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $server_name = db_get_value('server_name', 'tmetaconsole_setup', 'id', $event_filter['server_id']);
             if ($server_name !== false) {
                 $event_filter['server_name'] = $server_name;
@@ -543,8 +549,12 @@ function load_form_filter() {
                     $("#select2-server_id-container").text(val);
                 if(i == 'date_from')
                     $("#text-date_from").val(val);
+                if(i == 'time_from')
+                    $("#text-time_from").val(val);
                 if(i == 'date_to')
                     $("#text-date_to").val(val);
+                if(i == 'time_to')
+                    $("#text-time_to").val(val);
                 if(i == 'module_search')
                     $('input[name=module_search]').val(val);
                 if(i == 'group_name')
@@ -767,7 +777,9 @@ function save_new_filter() {
             "filter_only_alert" : $("#filter_only_alert").val(),
             "id_group_filter": $("#id_group_filter").val(),
             "date_from": $("#text-date_from").val(),
+            "time_from": $("#text-time_from").val(),
             "date_to": $("#text-date_to").val(),
+            "time_to": $("#text-time_to").val(),
             "source": $("#text-source").val(),
             "id_extra": $("#text-id_extra").val(),
             "user_comment": $("#text-user_comment").val(),
@@ -838,7 +850,9 @@ function save_update_filter() {
         "filter_only_alert" : $("#filter_only_alert").val(),
         "id_group_filter": $("#id_group_filter").val(),
         "date_from": $("#text-date_from").val(),
+        "time_from": $("#text-time_from").val(),
         "date_to": $("#text-date_to").val(),
+        "time_to": $("#text-time_to").val(),
         "source": $("#text-source").val(),
         "id_extra": $("#text-id_extra").val(),
         "user_comment": $("#text-user_comment").val(),
@@ -1364,7 +1378,7 @@ if ($get_extended_event) {
     }
 
     // Tabs.
-    $tabs = "<ul class=''>";
+    $tabs = "<ul class='event_detail_tab_menu'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image(
         'images/lightning_go.png',
         true,
@@ -1422,7 +1436,7 @@ if ($get_extended_event) {
         ).'<span>'.__('Responses').'</span></a></li>';
     }
 
-    if ($event['custom_data'] != '') {
+    if (empty($event['custom_data']) === false) {
         $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image(
             'images/custom_field_col.png',
             true,
@@ -1599,7 +1613,6 @@ if ($get_extended_event) {
                     page: "include/ajax/events",
                     get_comments: 1,
                     event: '.json_encode($event).',
-                    filter: '.json_encode($filter).'
                 },
                 dataType : "html",
                 success: function (data) {
@@ -1784,7 +1797,9 @@ if ($get_list_events_agents) {
     $tag_without = get_parameter('tag_without');
     $filter_only_alert = get_parameter('filter_only_alert');
     $date_from = get_parameter('date_from');
+    $time_from = get_parameter('time_from', '00:00:00');
     $date_to = get_parameter('date_to');
+    $time_to = get_parameter('time_to', '23:59:59');
     $id_user = $config['id_user'];
 
     $returned_sql = events_sql_events_grouped_agents(
@@ -1801,7 +1816,9 @@ if ($get_list_events_agents) {
         $tag_without,
         $filter_only_alert,
         $date_from,
+        $time_from,
         $date_to,
+        $time_to,
         $id_user
     );
 
@@ -1914,7 +1931,7 @@ if ($get_events_fired) {
     $idGroup = get_parameter('id_group');
     $agents = get_parameter('agents', null);
 
-    $query = ' AND id_evento >= '.$id;
+    $query = ' AND id_evento > '.$id;
 
     $type = [];
     $alert = get_parameter('alert_fired');

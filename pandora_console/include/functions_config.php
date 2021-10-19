@@ -620,7 +620,7 @@ function config_update_config()
                         $error_update[] = __('Admin LDAP login');
                     }
 
-                    if (!config_update_value('ldap_admin_pass', io_input_password(get_parameter('ldap_admin_pass')))) {
+                    if (!config_update_value('ldap_admin_pass', get_parameter('ldap_admin_pass'))) {
                         $error_update[] = __('Admin LDAP password');
                     }
 
@@ -2243,7 +2243,7 @@ function config_process_config()
     if (!isset($config['fontpath'])) {
         config_update_value(
             'fontpath',
-            'lato.ttf'
+            'Lato-Regular.ttf'
         );
     }
 
@@ -3126,7 +3126,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_report_front_font'])) {
-        config_update_value('custom_report_front_font', 'lato.ttf');
+        config_update_value('custom_report_front_font', 'Lato-Regular.ttf');
     }
 
     if (!isset($config['custom_report_front_logo'])) {
@@ -3249,20 +3249,6 @@ function config_process_config()
 
     if (!isset($config['ehorus_req_timeout'])) {
         config_update_value('ehorus_req_timeout', 5);
-    }
-
-    if (is_metaconsole()) {
-        if (!isset($config['metaconsole_deploy_collection'])) {
-            config_update_value('metaconsole_deploy_collection', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_inventory_plugin'])) {
-            config_update_value('metaconsole_deploy_inventory_plugin', 0);
-        }
-
-        if (!isset($config['metaconsole_deploy_plugin_server'])) {
-            config_update_value('metaconsole_deploy_plugin_server', 0);
-        }
     }
 
     // Integria.
@@ -3400,7 +3386,7 @@ function config_user_set_custom_config()
         }
     }
 
-    if ((isset($userinfo['id_skin']) && $userinfo['id_skin'] !== 0)) {
+    if ((isset($userinfo['id_skin']) && (int) $userinfo['id_skin'] !== 0)) {
         if ((int) $userinfo['id_skin'] === 1) {
             $config['style'] = 'pandora';
         }
@@ -3416,12 +3402,10 @@ function config_user_set_custom_config()
     if ($sec2_aux != 'godmode/groups/group_list' && $skin !== false) {
         $id_user_aux = get_parameter('id');
         if ($id_user_aux == $config['id_user']) {
-            if ((int) $skin === 1 || (int) $skin === 0) {
-                $config['style'] = 'pandora';
-            }
-
-            if ((int) $skin === 2) {
+            if ($config['style'] === 'pandora_black' && (int) $skin === 0 || (int) $skin === 2) {
                 $config['style'] = 'pandora_black';
+            } else if ((int) $skin === 1 || (int) $skin === 0) {
+                $config['style'] = 'pandora';
             }
         }
     }

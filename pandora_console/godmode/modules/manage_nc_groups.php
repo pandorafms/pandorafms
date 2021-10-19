@@ -255,7 +255,7 @@ foreach ($groups as $group) {
 
 
     $tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $data[0] = $tabulation.'<a href="index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
     } else {
         $data[0] = $tabulation.'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&id='.$group['id_sg'].'">'.$group['name'].'</a>';
@@ -270,8 +270,21 @@ foreach ($groups as $group) {
     array_push($table->data, $data);
 }
 
-if (is_management_allowed() === false && !is_metaconsole()) {
-    ui_print_warning_message(__('This node is configured with centralized mode. This page is for read only. Go to metaconsole to manage the component groups.'));
+if (is_management_allowed() === false && is_metaconsole() === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. Component groups are read only. Go to %s to manage it.',
+            $url
+        )
+    );
 }
 
 if (isset($data)) {

@@ -31,6 +31,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::Core;
+use PandoraFMS::AlertServer;
 use PandoraFMS::DataServer;
 use PandoraFMS::NetworkServer;
 use PandoraFMS::SNMPServer;
@@ -147,6 +148,7 @@ sub pandora_startup () {
 	# Load servers
 	if (!is_metaconsole(\%Config)) {
 		pandora_reset_server (\%Config, $DBH);
+		push (@Servers, new PandoraFMS::AlertServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::DiscoveryServer (\%Config, $DBH));
@@ -618,15 +620,7 @@ sub main() {
 
 	# Only if console_api_url was not defined
 	if( !defined($Config{"console_api_url"}) ) {
-		my $console_api_url = pandora_get_tconfig_token ($DBH, 'public_url', '');
-		my $include_api = 'include/api.php';
-		# If public_url is empty in database
-		if ( $console_api_url eq '' ) {
-			$Config{"console_api_url"} = 'http://127.0.0.1/pandora_console/' . $include_api;
-			logger(\%Config, "Assuming default path for API url: " . $Config{"console_api_url"}, 3);
-		} else {
-			$Config{"console_api_url"} = $console_api_url . $include_api;	
-		}
+		$Config{"console_api_url"} = get_console_api_url(\%Config, $DBH);
 	}
 
 	# Definition of configuration file
@@ -687,6 +681,7 @@ sub main() {
 			print CFG "console_pass " .$Config{"console_pass"} . "\n";
 
 			close (CFG);
+
 		} else {
 			logger(\%Config, "[WARNING] Error with configuration file when define `console_pass`: $!", 3);
 		}
@@ -731,6 +726,7 @@ sub main() {
 					print CFG "\n# Console User (created for API use)\n";
 					print CFG "console_user " . $Config{"console_user"} . "\n";
 					close (CFG);
+
 				} else {
 					logger(\%Config, "Warning. Was not possible edit configuration file for add console user", 3);
 				}
@@ -742,11 +738,19 @@ sub main() {
 
 	# Testing API url
 	my $curl_execution = "'".$Config{'console_api_url'}."?op=get&op2=test&apipass=".$Config{"console_api_pass"}."&user=".$Config{"console_user"}."&pass=".$Config{"console_pass"}."'";
-	my $exe_testing_api = `curl $curl_execution 2>/dev/null`;
+	# More than 30 secs is highly unrecommendated
+	my $command = $Config{'plugin_exec'}.' 30 curl '.$curl_execution.' 2>/dev/null';
+	my $exe_testing_api = `$command`;
 	my @res_testing_api = split(',', $exe_testing_api);
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
 		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	} else {
+		# Test successful.
+		pandora_set_tconfig_token($DBH, 'internal_user_pass',
+			pandora_input_password(\%Config, $Config{"console_pass"})
+		);
+		pandora_set_tconfig_token($DBH, 'internal_user', $Config{"console_user"});
 	}
 
 	# Generate 'going up' events

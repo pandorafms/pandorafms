@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Remote components
  *
- * @category   Extensions
+ * @category   Remote Components
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -48,7 +47,7 @@ enterprise_include_once('meta/include/functions_components_meta.php');
 require_once $config['homedir'].'/include/functions_component_groups.php';
 
 // Header.
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $sec = 'advanced';
 
     $id_modulo = (int) get_parameter('id_component_type');
@@ -65,6 +64,11 @@ if (defined('METACONSOLE')) {
     }
 
     $sec = 'gmodules';
+}
+
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
 }
 
 $type = (int) get_parameter('type');
@@ -87,7 +91,7 @@ $macros = (string) get_parameter('macros');
 $id_modulo = (int) get_parameter('id_component_type');
 $new_component = (bool) get_parameter('new_component');
 
-if (!empty($macros)) {
+if (empty($macros) === false) {
     $macros = json_decode(base64_decode($macros), true);
 
     foreach ($macros as $k => $m) {
@@ -179,7 +183,7 @@ $create_network_from_snmp_browser = (bool) get_parameter(
     0
 );
 
-if ($duplicate_network_component) {
+if ($is_management_allowed === true && $duplicate_network_component) {
     $source_id = (int) get_parameter('source_id');
 
     $id = network_components_duplicate_network_component($source_id);
@@ -267,7 +271,7 @@ $custom_string_2 = '';
 $custom_string_3 = '';
 
 // Header.
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     components_meta_print_header();
     $sec = 'advanced';
 } else {
@@ -292,6 +296,23 @@ if (defined('METACONSOLE')) {
     $sec = 'gmodules';
 }
 
+if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/modules/manage_network_components&tab=network&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All remote components are read only. Go to %s to manage them.',
+            $url
+        )
+    );
+}
+
 if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
     // New support for snmp v3.
     $tcp_send = $snmp_version;
@@ -307,7 +328,7 @@ if ($type >= MODULE_TYPE_REMOTE_SNMP && $type <= MODULE_TYPE_REMOTE_SNMP_PROC) {
     $custom_string_2 = $command_os;
 }
 
-if ($create_component) {
+if ($is_management_allowed === true && $create_component) {
     $name_check = db_get_value(
         'name',
         'tnetwork_component',
@@ -410,7 +431,7 @@ if ($create_component) {
     $id = 0;
 }
 
-if ($update_component) {
+if ($is_management_allowed === true && $update_component) {
     $id = (int) get_parameter('id');
 
     if (!empty($name)) {
@@ -502,7 +523,7 @@ if ($update_component) {
     $id = 0;
 }
 
-if ($delete_component) {
+if ($is_management_allowed === true && $delete_component) {
     $id = (int) get_parameter('id');
 
     $result = network_components_delete_network_component($id);
@@ -527,7 +548,7 @@ if ($delete_component) {
     $id = 0;
 }
 
-if ($multiple_delete) {
+if ($is_management_allowed === true && $multiple_delete) {
     $ids = (array) get_parameter('delete_multiple', []);
 
     foreach ($ids as $id) {
@@ -645,7 +666,7 @@ $table->data[0][3] = html_print_input_text(
     255,
     true
 );
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->data[0][4] = '<div>';
 } else {
     $table->data[0][4] = '<div class="action-buttons">';
@@ -660,7 +681,7 @@ $table->data[0][4] .= html_print_submit_button(
 );
 $table->data[0][4] .= '</div>';
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $filter = '<form class="filters_form" method="post" action="'.$url.'">';
     $filter .= html_print_table($table, true);
     $filter .= '</form>';
@@ -713,26 +734,38 @@ unset($table);
 $table->width = '100%';
 $table->head = [];
 $table->class = 'info_table';
-$table->head['checkbox'] = html_print_checkbox(
-    'all_delete',
-    0,
-    false,
-    true,
-    false
-);
+if ($is_management_allowed === true) {
+    $table->head['checkbox'] = html_print_checkbox(
+        'all_delete',
+        0,
+        false,
+        true,
+        false
+    );
+}
+
 $table->head[0] = __('Module name');
 $table->head[1] = __('Server');
 $table->head[2] = __('Type');
 $table->head[3] = __('Description');
 $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
-$table->head[6] = __('Action');
+if ($is_management_allowed === true) {
+    $table->head[6] = __('Action');
+}
+
 $table->size = [];
-$table->size['checkbox'] = '20px';
+if ($is_management_allowed === true) {
+    $table->size['checkbox'] = '20px';
+}
+
 $table->size[1] = '40px';
 $table->size[2] = '50px';
-$table->size[6] = '80px';
-$table->align[6] = 'left';
+if ($is_management_allowed === true) {
+    $table->size[6] = '80px';
+    $table->align[6] = 'left';
+}
+
 $table->data = [];
 
 foreach ($components as $component) {
@@ -743,19 +776,24 @@ foreach ($components as $component) {
         $component['min'] = __('N/A');
     }
 
-    $data['checkbox'] = html_print_checkbox_extended(
-        'delete_multiple[]',
-        $component['id_nc'],
-        false,
-        false,
-        '',
-        'class="check_delete"',
-        true
-    );
+    if ($is_management_allowed === true) {
+        $data['checkbox'] = html_print_checkbox_extended(
+            'delete_multiple[]',
+            $component['id_nc'],
+            false,
+            false,
+            '',
+            'class="check_delete"',
+            true
+        );
 
-    $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
-    $data[0] .= io_safe_output($component['name']);
-    $data[0] .= '</a>';
+        $data[0] = '<a href="index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&pure='.$pure.'">';
+        $data[0] .= io_safe_output($component['name']);
+        $data[0] .= '</a>';
+    } else {
+        $data[0] = io_safe_output($component['name']);
+    }
+
     switch ($component['id_modulo']) {
         case MODULE_NETWORK:
             $data[1] .= html_print_image(
@@ -811,32 +849,37 @@ foreach ($components as $component) {
     $data[4] = network_components_get_group_name($component['id_group']);
     $data[5] = $component['max'].' / '.$component['min'];
 
-    $table->cellclass[][6] = 'action_buttons';
-    $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
-        'images/copy.png',
-        true,
-        [
-            'alt'   => __('Duplicate'),
-            'title' => __('Duplicate'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
-    $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
-        'images/cross.png',
-        true,
-        [
-            'alt'   => __('Delete'),
-            'title' => __('Delete'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>';
+    if ($is_management_allowed === true) {
+        $table->cellclass[][6] = 'action_buttons';
+        $data[6] = '<a class="inline_line float-left" href="'.$url.'&search_id_group='.$search_id_group.'search_string='.$search_string.'&duplicate_network_component=1&source_id='.$component['id_nc'].'">'.html_print_image(
+            'images/copy.png',
+            true,
+            [
+                'alt'   => __('Duplicate'),
+                'title' => __('Duplicate'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
+        $data[6] .= '<a href="'.$url.'&delete_component=1&id='.$component['id_nc'].'&search_id_group='.$search_id_group.'search_string='.$search_string.'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >'.html_print_image(
+            'images/cross.png',
+            true,
+            [
+                'alt'   => __('Delete'),
+                'title' => __('Delete'),
+                'class' => 'invert_filter',
+            ]
+        ).'</a>';
+    }
 
     array_push($table->data, $data);
 }
 
-if (isset($data)) {
-    echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
-    html_print_input_hidden('multiple_delete', 1);
+if (isset($data) === true) {
+    if ($is_management_allowed === true) {
+        echo "<form method='post' action='index.php?sec=".$sec.'&sec2=godmode/modules/manage_network_components&search_id_group=0search_string=&pure='.$pure."'>";
+        html_print_input_hidden('multiple_delete', 1);
+    }
+
     html_print_table($table);
     ui_pagination(
         $total_components,
@@ -848,15 +891,17 @@ if (isset($data)) {
         true,
         'pagination-bottom'
     );
-    echo "<div id='btn_delete_5' class='float-right'>";
-    html_print_submit_button(
-        __('Delete'),
-        'delete_btn',
-        false,
-        'class="sub delete"'
-    );
-    echo '</div>';
-    echo '</form>';
+    if ($is_management_allowed === true) {
+        echo "<div id='btn_delete_5' class='float-right'>";
+        html_print_submit_button(
+            __('Delete'),
+            'delete_btn',
+            false,
+            'class="sub delete"'
+        );
+        echo '</div>';
+        echo '</form>';
+    }
 } else {
     ui_print_info_message(
         [
@@ -866,31 +911,33 @@ if (isset($data)) {
     );
 }
 
-echo '<form method="post" action="'.$url.'">';
-echo '<div class="right_align mrgn_btn_15px">';
-html_print_input_hidden('new_component', 1);
-html_print_select(
-    [
-        COMPONENT_TYPE_NETWORK => __('Create a new network component'),
-        COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
-        COMPONENT_TYPE_WMI     => __('Create a new WMI component'),
-        COMPONENT_TYPE_WIZARD  => __('Create a new wizard component'),
-    ],
-    'id_component_type',
-    '',
-    '',
-    '',
-    '',
-    ''
-);
-html_print_submit_button(
-    __('Create'),
-    'crt',
-    false,
-    'class="sub next mrgn_lft_5px"'
-);
-echo '</div>';
-echo '</form>';
+if ($is_management_allowed === true) {
+    echo '<form method="post" action="'.$url.'">';
+    echo '<div class="right_align mrgn_btn_15px">';
+    html_print_input_hidden('new_component', 1);
+    html_print_select(
+        [
+            COMPONENT_TYPE_NETWORK => __('Create a new network component'),
+            COMPONENT_TYPE_PLUGIN  => __('Create a new plugin component'),
+            COMPONENT_TYPE_WMI     => __('Create a new WMI component'),
+            COMPONENT_TYPE_WIZARD  => __('Create a new wizard component'),
+        ],
+        'id_component_type',
+        '',
+        '',
+        '',
+        '',
+        ''
+    );
+    html_print_submit_button(
+        __('Create'),
+        'crt',
+        false,
+        'class="sub next mrgn_lft_5px"'
+    );
+    echo '</div>';
+    echo '</form>';
+}
 
 enterprise_hook('close_meta_frame');
 

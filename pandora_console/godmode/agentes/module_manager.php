@@ -170,9 +170,9 @@ $checked = get_parameter('checked');
 
 if (($policy_page) || (isset($agent))) {
     if ($policy_page) {
-        $show_creation = !is_central_policies_on_node();
+        $show_creation = is_management_allowed();
     } else {
-        if (!isset($all_groups)) {
+        if (isset($all_groups) === false) {
             $all_groups = agents_get_all_groups_agent(
                 $agent['id_agente'],
                 $agent['id_grupo']
@@ -184,7 +184,7 @@ if (($policy_page) || (isset($agent))) {
         }
     }
 
-    if ($show_creation) {
+    if ($show_creation === true) {
         // Create module/type combo.
         echo '<form id="create_module_type" method="post" action="'.$url.'">';
         if (!$policy_page) {
@@ -1130,6 +1130,7 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Enable module'),
                 'title' => __('Enable module'),
+                'class' => 'filter_none',
             ]
         ).'</a>';
     } else {
@@ -1139,7 +1140,6 @@ foreach ($modules as $module) {
             [
                 'alt'   => __('Disable module'),
                 'title' => __('Disable module'),
-                'class' => 'invert_filter',
             ]
         ).'</a>';
     }

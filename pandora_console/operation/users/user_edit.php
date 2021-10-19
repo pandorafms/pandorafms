@@ -1,8 +1,8 @@
 <?php
 /**
- * User edition.
+ * User edit.
  *
- * @category   Operation
+ * @category   Users
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -123,7 +123,7 @@ if (isset($_GET['modified']) && !$view_mode) {
         $upd_info['data_section'] = $visual_console;
     }
 
-    if (!empty($password_new)) {
+    if (empty($password_new) === false) {
         $correct_password = false;
 
         $user_credentials_check = process_user_login($config['id_user'], $current_password, true);
@@ -230,8 +230,27 @@ if ($status != -1) {
     );
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     echo '<div class="user_form_title">'.__('Edit my User').'</div>';
+}
+
+$is_management_allowed = true;
+if (is_metaconsole() === false && is_management_allowed() === false) {
+    $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All users information is read only. Go to %s to manage it.',
+            $url
+        )
+    );
 }
 
 
@@ -419,8 +438,9 @@ if (isset($double_authentication)) {
 
 if (check_acl($config['id_user'], 0, 'ER')) {
     $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
+    $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', $display_all_group))));
     $event_filter .= html_print_select_from_sql(
-        'SELECT id_filter, id_name FROM tevent_filter',
+        'SELECT id_filter, id_name FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')',
         'event_filter',
         $user_info['default_event_filter'],
         '',
@@ -432,30 +452,29 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 
 $autorefresh_list_out = [];
-if (is_metaconsole()) {
-    $autorefresh_list_out['monitoring/tactical'] = 'Tactical view';
-    $autorefresh_list_out['monitoring/group_view'] = 'Group view';
-} else {
-    $autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
-    $autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
+if (is_metaconsole() === false || is_centrallised() === true) {
+    $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+    $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
+    $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
+    $autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
+    $autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
+
+    if (enterprise_installed()) {
+        $autorefresh_list_out['general/sap_view'] = 'SAP view';
+    }
 }
 
-$autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
-$autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
+$autorefresh_list_out['operation/agentes/tactical'] = 'Tactical view';
+$autorefresh_list_out['operation/agentes/group_view'] = 'Group view';
 $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
-$autorefresh_list_out['operation/operation/services/services'] = 'Services';
+$autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
-$autorefresh_list_out['operation/reporting/graph_viewer'] = 'Graph Viewer';
-$autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
 
-$autorefresh_list_out['operation/snmpconsole/snmp_view'] = 'SNMP console';
 $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
-$autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
-if (enterprise_installed()) {
-    $autorefresh_list_out['general/sap_view'] = 'SAP view';
-}
+
 
 if (!isset($autorefresh_list)) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$config['id_user']."'");
@@ -644,7 +663,7 @@ if (!is_metaconsole()) {
         </div>';
 
 if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
-    // eHorus user remote login
+    // EHorus user remote login.
     $table_remote = new StdClass();
     $table_remote->data = [];
     $table_remote->width = '100%';
@@ -653,13 +672,12 @@ if ($config['ehorus_enabled'] && $config['ehorus_user_level_conf']) {
     $table_remote->size['name'] = '30%';
     $table_remote->style['name'] = 'font-weight: bold';
 
-
-    // Title
+    // Title.
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('eHorus user configuration').': </p>';
     $table_remote->data['ehorus_user_level_conf'] = $row;
 
-    // Enable/disable eHorus for this user
+    // Enable/disable eHorus for this user.
     $row = [];
     $row['name'] = __('eHorus user acces enabled');
     $row['control'] = html_print_checkbox_switch('ehorus_user_level_enabled', 1, $user_info['ehorus_user_level_enabled'], true);
@@ -706,7 +724,7 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
     $table_remote->style['name'] = 'font-weight: bold';
 
     // Integria IMS user level authentication.
-    // Title
+    // Title.
     $row = [];
     $row['control'] = '<p class="edit_user_labels">'.__('Integria user configuration').': </p>';
     $table_remote->data['integria_user_level_conf'] = $row;
@@ -742,26 +760,29 @@ if ($config['integria_enabled'] && $config['integria_user_level_conf']) {
 }
 
 
-echo '<div class="edit_user_button">';
-if (!$config['user_can_update_info']) {
-    echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
-} else {
-    html_print_csrf_hidden();
-    html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
-}
+if ($is_management_allowed === true) {
+    echo '<div class="edit_user_button">';
+    if (!$config['user_can_update_info']) {
+        echo '<i>'.__('You can not change your user info under the current authentication scheme').'</i>';
+    } else {
+        html_print_csrf_hidden();
+        html_print_submit_button(__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
+    }
 
     echo '</div>';
-    echo '</form>';
+}
+
+echo '</form>';
 
 echo '<div id="edit_user_profiles" class="white_box">';
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     echo '<p class="edit_user_labels">'.__('Profiles/Groups assigned to this user').'</p>';
 }
 
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'info_table';
-if (defined('METACONSOLE')) {
+if (is_metaconsole() === true) {
     $table->width = '100%';
     $table->class = 'databox data';
     $table->title = __('Profiles/Groups assigned to this user');
@@ -776,7 +797,7 @@ $table->head = [];
 $table->align = [];
 $table->style = [];
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     $table->style[0] = 'font-weight: bold';
     $table->style[1] = 'font-weight: bold';
 }
@@ -827,7 +848,7 @@ echo '</div>';
 
 enterprise_hook('close_meta_frame');
 
-if (!defined('METACONSOLE')) {
+if (is_metaconsole() === false) {
     ?>
 
     <style>

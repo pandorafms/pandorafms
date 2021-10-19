@@ -36,7 +36,9 @@ $id = (int) get_parameter('id');
 $pure = get_parameter('pure', 0);
 $step = (int) get_parameter('step', 1);
 // We set here the number of steps.
-define('LAST_STEP', 3);
+if (defined('LAST_STEP') === false) {
+    define('LAST_STEP', 3);
+}
 
 if ($duplicate_template) {
     $source_id = (int) get_parameter('source_id');
@@ -368,16 +370,24 @@ function update_template($step)
 }
 
 
-$is_central_policies_on_node = is_central_policies_on_node();
+$is_management_allowed = is_management_allowed();
 
-if ($is_central_policies_on_node === true) {
+if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_template&pure=0&id='.$id.'&step='.$step
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alerts templates information is read only. Go to Go to %s to manage it.',
+            $url
+        )
     );
 }
-
-// We set here the number of steps.
-define('LAST_STEP', 3);
 
 $step = (int) get_parameter('step', 1);
 
@@ -609,7 +619,7 @@ if ($step == 2) {
         1,
         $monday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Tue');
     $table->data[0][1] .= html_print_checkbox(
@@ -617,7 +627,7 @@ if ($step == 2) {
         1,
         $tuesday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Wed');
     $table->data[0][1] .= html_print_checkbox(
@@ -625,7 +635,7 @@ if ($step == 2) {
         1,
         $wednesday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Thu');
     $table->data[0][1] .= html_print_checkbox(
@@ -633,7 +643,7 @@ if ($step == 2) {
         1,
         $thursday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Fri');
     $table->data[0][1] .= html_print_checkbox(
@@ -641,7 +651,7 @@ if ($step == 2) {
         1,
         $friday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Sat');
     $table->data[0][1] .= html_print_checkbox(
@@ -649,7 +659,7 @@ if ($step == 2) {
         1,
         $saturday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[0][1] .= __('Sun');
     $table->data[0][1] .= html_print_checkbox(
@@ -657,7 +667,7 @@ if ($step == 2) {
         1,
         $sunday,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[0][2] = __('Use special days list');
@@ -666,7 +676,7 @@ if ($step == 2) {
         1,
         $special_day,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[1][0] = __('Time from');
@@ -687,7 +697,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[1][2] = __('Time to');
     $table->data[1][3] = html_print_input_text(
@@ -707,7 +717,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->colspan['threshold'][1] = 3;
@@ -723,7 +733,7 @@ if ($step == 2) {
         false,
         true,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[3][0] = __('Min. number of alerts');
@@ -744,7 +754,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[3][2] = __('Reset counter for non-sustained alerts');
@@ -757,7 +767,7 @@ if ($step == 2) {
         1,
         $min_alerts_reset_counter,
         true,
-        ($is_central_policies_on_node | $disabled),
+        (!$is_management_allowed | $disabled),
         '',
         false,
         $create_template == 1 ? 'checked=checked' : ''
@@ -781,7 +791,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[4][2] = __('Disable event');
@@ -790,7 +800,7 @@ if ($step == 2) {
         1,
         $disable_event,
         true,
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[5][0] = __('Default action');
@@ -818,7 +828,7 @@ if ($step == 2) {
         true,
         false,
         false,
-        ($is_central_policies_on_node | $disabled),
+        (!$is_management_allowed | $disabled),
         false,
         false,
         0
@@ -840,7 +850,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->data[6][1] .= '<span id="matches_value" '.($show_matches ? '' : 'class="invisible"').'>';
     $table->data[6][1] .= '&nbsp;'.html_print_checkbox('matches_value', 1, $matches, true);
@@ -949,7 +959,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
     $table->colspan[0][1] = 2;
 
@@ -975,7 +985,7 @@ if ($step == 2) {
             0,
             '',
             false,
-            ($is_central_policies_on_node | $disabled),
+            (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."')",
             '',
             true
@@ -988,7 +998,7 @@ if ($step == 2) {
             0,
             '',
             true,
-            ($is_central_policies_on_node | $disabled),
+            (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."')",
             '',
             true
@@ -1004,7 +1014,7 @@ if ($step == 2) {
             'class="fields" min-height-40px',
             true,
             '',
-            ($is_central_policies_on_node | $disabled)
+            (!$is_management_allowed | $disabled)
         );
 
         // Recovery.
@@ -1016,7 +1026,7 @@ if ($step == 2) {
             0,
             '',
             false,
-            ($is_central_policies_on_node | $disabled),
+            (!$is_management_allowed | $disabled),
             "removeTinyMCE('textarea_field".$i."_recovery')",
             '',
             true
@@ -1029,7 +1039,7 @@ if ($step == 2) {
             0,
             '',
             true,
-            ($is_central_policies_on_node | $disabled),
+            (!$is_management_allowed | $disabled),
             "addTinyMCE('textarea_field".$i."_recovery')",
             '',
             true
@@ -1045,7 +1055,7 @@ if ($step == 2) {
             'class="fields min-height-40px"',
             true,
             '',
-            ($is_central_policies_on_node | $disabled)
+            (!$is_management_allowed | $disabled)
         );
     }
 } else {
@@ -1102,7 +1112,7 @@ if ($step == 2) {
         '',
         '',
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
 
@@ -1134,7 +1144,7 @@ if ($step == 2) {
         false,
         true,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     ).'</div>';
 
 
@@ -1147,7 +1157,7 @@ if ($step == 2) {
         '',
         true,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     $table->data[2][0] = __('Priority');
@@ -1162,7 +1172,7 @@ if ($step == 2) {
         false,
         false,
         '',
-        ($is_central_policies_on_node | $disabled)
+        (!$is_management_allowed | $disabled)
     );
 
     if (defined('METACONSOLE')) {
@@ -1200,7 +1210,7 @@ if ($id) {
 }
 
 if (!$disabled) {
-    if ($is_central_policies_on_node === false) {
+    if ($is_management_allowed === true) {
         if ($step >= LAST_STEP) {
             html_print_submit_button(
                 __('Finish'),

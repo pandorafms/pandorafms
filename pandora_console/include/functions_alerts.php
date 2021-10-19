@@ -1162,7 +1162,6 @@ function alerts_duplicate_alert_template($id_alert_template, $id_group)
     unset($template['name']);
     unset($template['id']);
     unset($template['type']);
-    $template['value'] = safe_sql_string($template['value']);
 
     return alerts_create_alert_template($name, $type, $template);
 }
@@ -2824,19 +2823,21 @@ function alerts_ui_update_or_create_actions($update=true)
     $values['id_group'] = $group;
     $values['action_threshold'] = $action_threshold;
     $values['create_wu_integria'] = $create_wu_integria;
-    if ($update) {
-        $values['name'] = $name;
-        $values['id_alert_command'] = $id_alert_command;
-        // Only for Metaconsole, save the previous name for synchronization.
-        if (is_metaconsole()) {
-            $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
-        }
 
-        $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
+    // If this alert has the same name, not valid.
+    $name_check = db_get_row('talert_actions', 'name', $name);
+    if (empty($name_check) === false && (int) $name_check['id'] !== (int) $id) {
+        $result = '';
     } else {
-        $name_check = db_get_value('name', 'talert_actions', 'name', $name);
-        if ($name_check) {
-            $result = '';
+        if ($update) {
+            $values['name'] = $name;
+            $values['id_alert_command'] = $id_alert_command;
+            // Only for Metaconsole, save the previous name for synchronization.
+            if (is_metaconsole()) {
+                $values['previous_name'] = db_get_value('name', 'talert_actions', 'id', $id);
+            }
+
+            $result = (!$name) ? '' : alerts_update_alert_action($id, $values);
         } else {
             $result = alerts_create_alert_action(
                 $name,

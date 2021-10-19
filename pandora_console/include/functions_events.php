@@ -305,6 +305,9 @@ function events_get_column_name($field, $table_alias=false)
                 return __('Severity mini');
             }
 
+        case 'direccion':
+        return __('Agent IP');
+
         default:
         return __($field);
     }
@@ -759,7 +762,7 @@ function events_get_all(
     }
 
     if (isset($filter['time_from'])) {
-        $time_from = $filter['time_from'];
+        $time_from = (empty($filter['time_from']) === true) ? '00:00:00' : $filter['time_from'];
     }
 
     if (isset($date_from)) {
@@ -782,7 +785,7 @@ function events_get_all(
     }
 
     if (isset($filter['time_to'])) {
-        $time_to = $filter['time_to'];
+        $time_to = (empty($filter['time_to']) === true) ? '23:59:59' : $filter['time_to'];
     }
 
     if (isset($date_to)) {
@@ -1151,7 +1154,12 @@ function events_get_all(
                     $tags_names[$id_tag] = tags_get_name($id_tag);
                 }
 
-                $_tmp .= ' AND ( ';
+                if ($tags[0] === $id_tag) {
+                    $_tmp .= ' AND ( ';
+                } else {
+                    $_tmp .= ' OR ( ';
+                }
+
                 $_tmp .= sprintf(
                     ' tags LIKE "%s" OR',
                     $tags_names[$id_tag]
@@ -3576,7 +3584,12 @@ function events_page_responses($event, $childrens_ids=[])
             '',
             __('None'),
             -1,
-            true
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 70%'
         );
         $data[2] .= html_print_button(
             __('Update'),
@@ -4649,6 +4662,8 @@ function events_page_custom_data($event)
         return '';
     }
 
+    $table = new stdClass();
+
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
@@ -4656,14 +4671,31 @@ function events_page_custom_data($event)
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);
+
     if ($custom_data === null) {
-        return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
+        // Try again because is possible that info not come coded.
+        $custom_data = json_decode(io_safe_output($event['custom_data']));
+
+        if ($custom_data === null) {
+            return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
+        }
     }
 
     $i = 0;
     foreach ($custom_data as $field => $value) {
-        $table->data[$i][0] = io_safe_output($field);
-        $table->data[$i][1] = io_safe_output($value);
+        $table->data[$i][0] = ucfirst(io_safe_output($field));
+
+        if (is_array($value) === true) {
+            $table->data[$i][1] = '<ul>';
+            foreach ($value as $individualValue) {
+                $table->data[$i][1] .= sprintf('<li>%s</li>', $individualValue);
+            }
+
+            $table->data[$i][1] .= '</ul>';
+        } else {
+            $table->data[$i][1] = io_safe_output($value);
+        }
+
         $i++;
     }
 
@@ -4843,7 +4875,7 @@ function events_page_general($event)
     if (isset($event['id_agente']) && $event['id_agente'] > 0) {
         enterprise_include_once('include/functions_agents.php');
         $secondary_groups_selected = enterprise_hook('agents_get_secondary_groups', [$event['id_agente'], is_metaconsole()]);
-        if (!empty($secondary_groups_selected)) {
+        if (empty($secondary_groups_selected['for_select']) === false) {
             $secondary_groups = implode(', ', $secondary_groups_selected['for_select']);
         }
     }
@@ -4866,6 +4898,14 @@ function events_page_general($event)
     $data[0] = __('Event name');
     $data[1] = '<span class="break_word">'.events_display_name($event['evento']).'</span>';
     $table_general->data[] = $data;
+
+    // Show server name in metaconsole.
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $data = [];
+        $data[0] = __('Node');
+        $data[1] = '<span class="break_word">'.$event['server_name'].'</span>';
+        $table_general->data[] = $data;
+    }
 
     $data = [];
     $data[0] = __('Timestamp');
@@ -6172,7 +6212,9 @@ function events_get_events_grouped_by_agent(
  * @param array   $tag_without       Tag_without.
  * @param boolean $filter_only_alert Filter_only_alert.
  * @param string  $date_from         Date_from.
+ * @param string  $time_from         Time_from.
  * @param string  $date_to           Date_to.
+ * @param string  $time_to           Time_to.
  * @param boolean $id_user           Id_user.
  * @param boolean $server_id_search  Server_id_search.
  *
@@ -6192,7 +6234,9 @@ function events_sql_events_grouped_agents(
     $tag_without=[],
     $filter_only_alert=false,
     $date_from='',
+    $time_from='',
     $date_to='',
+    $time_to='',
     $id_user=false,
     $server_id_search=false
 ) {
@@ -6299,12 +6343,20 @@ function events_sql_events_grouped_agents(
         $sql_post .= " AND id_usuario = '".$id_user_ack."'";
     }
 
-    if (!isset($date_from)) {
+    if (isset($date_from) === false) {
         $date_from = '';
     }
 
-    if (!isset($date_to)) {
+    if (isset($time_from) === false) {
+        $time_from = '00:00:00';
+    }
+
+    if (isset($date_to) === false) {
         $date_to = '';
+    }
+
+    if (isset($time_to) === false || empty($time_to) === true) {
+        $time_to = '23:59:59';
     }
 
     if (($date_from == '') && ($date_to == '')) {
@@ -6313,13 +6365,13 @@ function events_sql_events_grouped_agents(
             $sql_post .= ' AND (utimestamp > '.$unixtime.')';
         }
     } else {
-        if ($date_from != '') {
-            $udate_from = strtotime($date_from.' 00:00:00');
+        if (empty($date_from) === false) {
+            $udate_from = strtotime($date_from.' '.$time_from);
             $sql_post .= ' AND (utimestamp >= '.$udate_from.')';
         }
 
-        if ($date_to != '') {
-            $udate_to = strtotime($date_to.' 23:59:59');
+        if (empty($date_to) === false) {
+            $udate_to = strtotime($date_to.' '.$time_to);
             $sql_post .= ' AND (utimestamp <= '.$udate_to.')';
         }
     }

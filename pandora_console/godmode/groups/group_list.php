@@ -379,6 +379,25 @@ if (is_metaconsole() === true) {
     );
 }
 
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/groups/group_list&tab=groups'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All groups information is read only. Go to %s to manage it.',
+            $url
+        )
+    );
+}
+
 // Load credential store view before parse list-tree forms.
 if ($tab == 'credbox') {
     include_once __DIR__.'/credential_store.php';
@@ -392,7 +411,10 @@ $delete_group = (bool) get_parameter('delete_group');
 $pure = get_parameter('pure', 0);
 
 // Create group.
-if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
+if ($is_management_allowed === true
+    && $create_group === true
+    && ((bool) check_acl($config['id_user'], 0, 'PM') === true)
+) {
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
     $id_parent = (int) get_parameter('id_parent');
@@ -448,7 +470,7 @@ if (($create_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true))
 }
 
 // Update group.
-if ($update_group) {
+if ($is_management_allowed === true && $update_group === true) {
     $id_group = (int) get_parameter('id_group');
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
@@ -520,7 +542,10 @@ if ($update_group) {
 }
 
 // Delete group.
-if (($delete_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true)) {
+if ($is_management_allowed === true
+    && $delete_group === true
+    && ((bool) check_acl($config['id_user'], 0, 'PM') === true)
+) {
     $id_group = (int) get_parameter('id_group');
 
     $usedGroup = groups_check_used($id_group);
@@ -701,7 +726,6 @@ if (($delete_group) && ((bool) check_acl($config['id_user'], 0, 'PM') === true))
     }
 }
 
-
 // Credential store is loaded previously in this document to avoid
 // process group tree - list forms.
 if ($tab == 'tree') {
@@ -817,15 +841,24 @@ if ($tab == 'tree') {
         $table->headstyle[4] = 'min-width: 100px;';
         $table->head[5] = __('Description');
         $table->headstyle[5] = 'min-width: 100px;';
-        $table->head[6] = __('Actions');
-        $table->headstyle[6] = 'min-width: 100px;';
+        if ($is_management_allowed === true) {
+            $table->head[6] = __('Actions');
+            $table->headstyle[6] = 'min-width: 100px;';
+        }
+
         $table->align = [];
         $table->align[0] = 'left';
         $table->align[2] = 'left';
-        $table->align[6] = 'left';
+        if ($is_management_allowed === true) {
+            $table->align[6] = 'left';
+        }
+
         $table->size[0] = '3%';
         $table->size[5] = '30%';
-        $table->size[6] = '5%';
+        if ($is_management_allowed === true) {
+            $table->size[6] = '5%';
+        }
+
         $table->data = [];
 
         foreach ($groups as $key => $group) {
@@ -837,7 +870,12 @@ if ($tab == 'tree') {
             }
 
             $table->data[$key][0] = $group['id_grupo'];
-            $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
+            if ($is_management_allowed === true) {
+                $table->data[$key][1] = '<a href="'.$url.'">'.$group['nombre'].'</a>';
+            } else {
+                $table->data[$key][1] = $group['nombre'];
+            }
+
             if ($group['icon'] != '') {
                 $table->data[$key][2] = html_print_image(
                     'images/groups_small/'.$group['icon'].'.png',
@@ -862,36 +900,38 @@ if ($tab == 'tree') {
             $table->data[$key][3] = ($group['disabled']) ? __('Disabled') : __('Enabled');
             $table->data[$key][4] = $group['parent_name'];
             $table->data[$key][5] = $group['description'];
-            $table->cellclass[$key][6] = 'action_buttons';
-            $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
-                'images/config.png',
-                true,
-                [
-                    'alt'    => __('Edit'),
-                    'title'  => __('Edit'),
-                    'border' => '0',
-                ]
-            ).'</a>';
+            if ($is_management_allowed === true) {
+                $table->cellclass[$key][6] = 'action_buttons';
+                $table->data[$key][6] = '<a href="'.$url.'">'.html_print_image(
+                    'images/config.png',
+                    true,
+                    [
+                        'alt'    => __('Edit'),
+                        'title'  => __('Edit'),
+                        'border' => '0',
+                    ]
+                ).'</a>';
 
-            if (is_metaconsole() === true) {
-                $confirm_message = __('Are you sure? This group will also be deleted in all the nodes.');
-            } else {
-                $confirm_message = __('Are you sure?');
+                if (is_metaconsole() === true) {
+                    $confirm_message = __('Are you sure? This group will also be deleted in all the nodes.');
+                } else {
+                    $confirm_message = __('Are you sure?');
+                }
+
+                if ($group['has_child']) {
+                    $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
+                }
+
+                $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
+                    'images/cross.png',
+                    true,
+                    [
+                        'alt'    => __('Delete'),
+                        'title'  => __('Delete'),
+                        'border' => '0',
+                    ]
+                ).'</a>';
             }
-
-            if ($group['has_child']) {
-                $confirm_message = __('The child groups will be updated to use the parent id of the deleted group').'. '.$confirm_message;
-            }
-
-            $table->data[$key][6] .= '<a href="'.$url_delete.'" onClick="if (!confirm(\' '.$confirm_message.'\')) return false;">'.html_print_image(
-                'images/cross.png',
-                true,
-                [
-                    'alt'    => __('Delete'),
-                    'title'  => __('Delete'),
-                    'border' => '0',
-                ]
-            ).'</a>';
         }
 
         echo ui_pagination(
@@ -924,7 +964,10 @@ if ($tab == 'tree') {
     }
 }
 
-if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+
+if ($is_management_allowed === true
+    && (bool) check_acl($config['id_user'], 0, 'PM') === true
+) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group">';
         echo '<div class="action-buttons w100p">';
             html_print_submit_button(__('Create group'), 'crt', false, 'class="sub next"');

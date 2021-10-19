@@ -4,7 +4,7 @@
 
 # define variables
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
-S_VERSION='2021012801'
+S_VERSION='2021100601'
 LOGFILE="/tmp/pandora-agent-deploy-$(date +%F).log"
 
 # Ansi color code variables
@@ -68,7 +68,7 @@ check_root_permissions () {
 
 install_autodiscover () {
     local arch=$1
-    wget https://pandorafms.com/library/wp-content/uploads/2020/04/autodiscover-linux.zip
+    wget http://firefly.artica.es/projects/autodiscover-linux.zip
     unzip autodiscover-linux.zip
     chmod +x $arch/autodiscover 
     mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover
@@ -83,6 +83,7 @@ execute_cmd  "[ $PANDORA_SERVER_IP ]" 'Check Server IP Address' 'Please define e
 OS=$([[ $(grep '^ID_LIKE=' /etc/os-release) ]] && grep ^ID_LIKE= /etc/os-release | cut -d '=' -f2 | tr -d '"' || grep ^ID= /etc/os-release | cut -d '=' -f2 | tr -d '"')
 
 [[ $OS == 'rhel fedora' ]] &&  OS_RELEASE=$OS
+[[ $OS == 'fedora' ]] &&  OS_RELEASE=$OS
 [[ $OS == 'centos rhel fedora' ]] &&  OS_RELEASE=$OS
 [[ $OS == 'debian' ]] &&  OS_RELEASE=$OS
 

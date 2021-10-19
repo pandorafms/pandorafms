@@ -1,9 +1,8 @@
 <?php
 /**
- * Extension to manage a list of gateways and the node address where they should
- * point to.
+ * Module Groups.
  *
- * @category   Extensions
+ * @category   Module groups
  * @package    Pandora FMS
  * @subpackage Community
  * @version    1.0.0
@@ -40,7 +39,7 @@ if (! check_acl($config['id_user'], 0, 'PM')) {
     return;
 }
 
-if (is_ajax()) {
+if (is_ajax() === true) {
     $get_group_json = (bool) get_parameter('get_group_json');
     $get_group_agents = (bool) get_parameter('get_group_agents');
 
@@ -65,7 +64,7 @@ if (is_ajax()) {
     return;
 }
 
-if (!is_metaconsole()) {
+if (is_metaconsole() === false) {
     // Header.
     ui_print_page_header(
         __('Module groups defined in %s', get_product_name()),
@@ -77,12 +76,31 @@ if (!is_metaconsole()) {
     );
 }
 
+$is_management_allowed = true;
+if (is_management_allowed() === false) {
+    $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/component_management&tab=module_group'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All module groups information is read only. Go to %s to manage it.',
+            $url
+        )
+    );
+}
+
 $create_group = (bool) get_parameter('create_group');
 $update_group = (bool) get_parameter('update_group');
 $delete_group = (bool) get_parameter('delete_group');
 
 // Create group.
-if ($create_group) {
+if ($is_management_allowed === true && $create_group === true) {
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
     $id_parent = (int) get_parameter('id_parent');
@@ -115,7 +133,7 @@ if ($create_group) {
 }
 
 // Update group.
-if ($update_group) {
+if ($is_management_allowed === true && $update_group === true) {
     $id_group = (int) get_parameter('id_group');
     $name = (string) get_parameter('name');
     $icon = (string) get_parameter('icon');
@@ -151,7 +169,7 @@ if ($update_group) {
 }
 
 // Delete group.
-if ($delete_group) {
+if ($is_management_allowed === true && $delete_group === true) {
     $id_group = (int) get_parameter('id_group');
 
     $result = db_process_sql_delete('tmodule_group', ['id_mg' => $id_group]);
@@ -217,7 +235,6 @@ $total_groups = db_get_num_rows('SELECT * FROM tmodule_group');
 $url = ui_get_url_refresh(['offset' => false]);
 $offset = (int) get_parameter('offset', 0);
 
-
 $sql = 'SELECT *
     FROM tmodule_group
     ORDER BY name ASC
@@ -229,27 +246,39 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'info_table';
 
-if (!empty($groups)) {
+if (empty($groups) === false) {
     $table->head = [];
     $table->head[0] = __('ID');
     $table->head[1] = __('Name');
-    $table->head[2] = __('Delete');
+    if ($is_management_allowed === true) {
+        $table->head[2] = __('Delete');
+    }
+
     $table->align = [];
     $table->align[1] = 'left';
-    $table->align[2] = 'left';
-    $table->size[2] = '5%';
+    if ($is_management_allowed === true) {
+        $table->align[2] = 'left';
+        $table->size[2] = '5%';
+    }
+
     $table->data = [];
 
     foreach ($groups as $id_group) {
         $data = [];
         $data[0] = $id_group['id_mg'];
 
-        $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
-        if (is_metaconsole()) {
-            $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+        if ($is_management_allowed === true) {
+            $data[1] = '<strong><a href="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group&id_group='.$id_group['id_mg'].'">'.ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT).'</a></strong>';
+            if (is_metaconsole() === true) {
+                $data[2] = '<a href="index.php?sec=advanced&sec2=advanced/component_management&tab=module_group&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+            } else {
+                $table->cellclass[][2] = 'action_buttons';
+                $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+            }
         } else {
-            $table->cellclass[][2] = 'action_buttons';
-            $data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/groups/modu_group_list&id_group='.$id_group['id_mg'].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/cross.png', true, ['border' => '0']).'</a>';
+            $data[1] = '<strong>';
+            $data[1] .= ui_print_truncate_text($id_group['name'], GENERIC_SIZE_TEXT);
+            $data[1] .= '</strong>';
         }
 
         array_push($table->data, $data);
@@ -267,13 +296,15 @@ if (!empty($groups)) {
     );
 }
 
-echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button(
-    __('Create module group'),
-    'crt',
-    false,
-    'class="sub next"'
-);
-echo '</div>';
-echo '</form>';
+if ($is_management_allowed === true) {
+    echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';
+    echo '<div class="action-buttons" style="width: '.$table->width.'">';
+    html_print_submit_button(
+        __('Create module group'),
+        'crt',
+        false,
+        'class="sub next"'
+    );
+    echo '</div>';
+    echo '</form>';
+}

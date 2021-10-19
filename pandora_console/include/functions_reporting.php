@@ -757,6 +757,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'IPAM_network':
+                $report['contents'][] = reporting_ipam(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'agent_detailed_event':
             case 'event_report_agent':
                 $report_control = io_safe_output(
@@ -858,7 +865,6 @@ function reporting_make_reporting_data(
                 );
             break;
 
-            case 'histogram_data':
             case 'module_histogram_graph':
                 $report['contents'][] = reporting_module_histogram_graph(
                     $report,
@@ -1845,14 +1851,25 @@ function reporting_event_report_group(
     }
 
     $id_meta = 0;
+    $node_historical_event_enbled = '';
     if (is_metaconsole() === true && empty($content['server_name']) === false) {
         $id_meta = metaconsole_get_id_server($content['server_name']);
         $server = metaconsole_get_connection_by_id($id_meta);
         metaconsole_connect($server);
+
+        // Check if node historical event is enable.
+        $sql = sprintf(
+            'SELECT value
+            FROM tconfig
+            WHERE token LIKE "history_event_enabled"'
+        );
+
+        $result = db_get_row_sql($sql);
+        $node_historical_event_enbled = $result['value'];
     }
 
     $history = false;
-    if ($config['history_event_enabled']) {
+    if ($config['history_event_enabled'] || $node_historical_event_enbled) {
         $history = true;
     }
 
@@ -2274,6 +2291,7 @@ function reporting_agents_inventory($report, $content)
 
     $external_source = io_safe_input(json_decode($content['external_source'], true));
     $es_agents_inventory_display_options = $external_source['agents_inventory_display_options'];
+    $es_agent_custom_fields = $external_source['agent_custom_fields'];
     $es_custom_fields = $external_source['agent_custom_field_filter'];
     $es_os_filter = $external_source['agent_os_filter'];
     $es_agent_status_filter = $external_source['agent_status_filter'];
@@ -2288,10 +2306,20 @@ function reporting_agents_inventory($report, $content)
         $es_agents_inventory_display_options = [];
     }
 
+    $custom_field_sql = '';
     $search_sql = '';
 
-    if ($es_custom_fields != '') {
-        $search_sql .= ' AND id_os = '.$es_custom_fields;
+    if (!empty($es_agent_custom_fields)) {
+        $custom_field_sql = 'INNER JOIN tagent_custom_data tacd ON tacd.id_agent = tagente.id_agente';
+        if ($es_agent_custom_fields[0] != 0) {
+            $custom_field_sql .= ' AND tacd.id_field IN ('.implode(',', $es_agent_custom_fields).')';
+        }
+
+        if (!empty($es_custom_fields)) {
+            $custom_field_sql .= ' AND tacd.description like "%'.$es_custom_fields.'%"';
+        } else {
+            $custom_field_sql .= ' AND tacd.description <> ""';
+        }
     }
 
     if (in_array('0', $es_os_filter) === false) {
@@ -2330,8 +2358,10 @@ function reporting_agents_inventory($report, $content)
             ON tagente.id_agente = tasg.id_agent
         LEFT JOIN tagente_modulo tam
             ON tam.id_agente = tagente.id_agente
+        %s
         WHERE (tagente.id_grupo IN (%s) OR tasg.id_group IN (%s))
             %s',
+        $custom_field_sql,
         $user_groups_to_sql,
         $user_groups_to_sql,
         $search_sql
@@ -6686,7 +6716,8 @@ function reporting_advanced_sla(
     $timeFrom=null,
     $timeTo=null,
     $slices=1,
-    $inclusive_downtimes=1
+    $inclusive_downtimes=1,
+    $sla_check_warning=false
 ) {
     // In content:
     // Example: [time_from, time_to] => Worktime
@@ -6708,26 +6739,54 @@ function reporting_advanced_sla(
 
         // Take in mind: the "inverse" critical threshold.
         $inverse_interval = ($agentmodule_info['critical_inverse'] == 0) ? 1 : 0;
+        $inverse_interval_warning = (int) $agentmodule_info['critical_warning'];
 
         if (!$is_string_module) {
-            $min_value        = $agentmodule_info['min_critical'];
-            $max_value        = $agentmodule_info['max_critical'];
+            $min_value         = $agentmodule_info['min_critical'];
+            $max_value         = $agentmodule_info['max_critical'];
+            $min_value_warning = $agentmodule_info['min_warning'];
+            $max_value_warning = $agentmodule_info['max_warning'];
         } else {
-            $max_value = io_safe_output($agentmodule_info['str_critical']);
+            $max_values        = io_safe_output($agentmodule_info['str_critical']);
+            $max_value_warning = io_safe_output($agentmodule_info['str_warning']);
         }
 
         if (!$is_string_module) {
-            if ((!isset($min_value)) || ($min_value == 0)) {
+            if (isset($min_value) === false || (int) $min_value === 0) {
                 $min_value = null;
             }
 
-            if ((!isset($max_value)) || ($max_value == 0)) {
-                $max_value = null;
+            if (isset($max_value) === false || (int) $max_value === 0) {
+                if ($max_value === '0'
+                    && $max_value < $min_value
+                    && isset($min_value_warning) === true
+                    && $min_value_warning > $max_value
+                ) {
+                    $max_value = $min_value_warning;
+                } else {
+                    $max_value = null;
+                }
             }
 
-            if ((!(isset($max_value))) && (!(isset($min_value)))) {
+            if (isset($max_value) === false && isset($min_value) === false) {
                 $max_value = null;
                 $min_value = null;
+            }
+
+            if (isset($min_value_warning) === false || (int) $min_value_warning === 0) {
+                $min_value_warning = null;
+            }
+
+            if (isset($max_value_warning) === false || (int) $max_value_warning === 0) {
+                if ((int) $max_value_warning === 0
+                    && $max_value_warning < $min_value_warning
+                    && isset($min_value) === true
+                    && $min_value > $max_value_warning
+                ) {
+                    $max_value_warning = $min_value;
+                } else {
+                    $max_value_warning = null;
+                }
             }
         }
 
@@ -6752,6 +6811,30 @@ function reporting_advanced_sla(
             } else if ($agentmodule_info['id_tipo_modulo'] == '100') {
                 $max_value = 0.9;
                 $min_value = 0;
+            }
+        }
+
+        if ((!isset($min_value_warning)) && (!isset($max_value_warning))) {
+            if (($agentmodule_info['id_tipo_modulo'] == '2')
+                // Generic_proc.
+                || ($agentmodule_info['id_tipo_modulo'] == '6')
+                // Remote_icmp_proc.
+                || ($agentmodule_info['id_tipo_modulo'] == '9')
+                // Remote_tcp_proc.
+                || ($agentmodule_info['id_tipo_modulo'] == '18')
+                // Remote_snmp_proc.
+                || ($agentmodule_info['id_tipo_modulo'] == '21')
+                // Async_proc.
+                || ($agentmodule_info['id_tipo_modulo'] == '31')
+            ) {
+                // Web_proc
+                // boolean values are OK if they're different from 0.
+                $max_value_warning = 0;
+                $min_value_warning = 0;
+                $inverse_interval_warning = 0;
+            } else if ($agentmodule_info['id_tipo_modulo'] == '100') {
+                $max_value_warning = 0.9;
+                $min_value_warning = 0;
             }
         }
     }
@@ -7097,6 +7180,7 @@ function reporting_advanced_sla(
         // Timing.
         $time_total       = 0;
         $time_in_ok       = 0;
+        $time_in_warning  = 0;
         $time_in_error    = 0;
         $time_in_unknown  = 0;
         $time_in_not_init = 0;
@@ -7106,6 +7190,7 @@ function reporting_advanced_sla(
         // Checks.
         $bad_checks       = 0;
         $ok_checks        = 0;
+        $warning_checks   = 0;
         $not_init_checks  = 0;
         $unknown_checks   = 0;
         $total_checks     = 0;
@@ -7198,6 +7283,7 @@ function reporting_advanced_sla(
                                 ) {
                                     // Check values if module is sring type.
                                     if ($is_string_module) {
+                                        // OK SLA check.
                                         if (empty($max_value)) {
                                             $match = preg_match('/^'.$max_value.'$/', $current_data['datos']);
                                         } else {
@@ -7210,17 +7296,49 @@ function reporting_advanced_sla(
                                         } else {
                                             $sla_check_value = !$match;
                                         }
+
+                                        // Warning SLA check.
+                                        if (empty($max_value_warning)) {
+                                            $match = preg_match('/^'.$max_value_warning.'$/', $current_data['datos']);
+                                        } else {
+                                            $match = preg_match('/'.$max_value_warning.'/', $current_data['datos']);
+                                        }
+
+                                        if ($inverse_interval_warning == 0) {
+                                            $sla_check_value_warning = $match;
+                                        } else {
+                                            $sla_check_value_warning = !$match;
+                                        }
                                     } else {
+                                        // OK SLA check.
                                         $sla_check_value = sla_check_value(
                                             $current_data['datos'],
                                             $min_value,
                                             $max_value,
                                             $inverse_interval
                                         );
+
+                                        // Warning SLA check.
+                                        $sla_check_value_warning = sla_check_value(
+                                            $current_data['datos'],
+                                            $min_value_warning,
+                                            $max_value_warning,
+                                            $inverse_interval_warning,
+                                            1
+                                        );
                                     }
 
                                     // Not unknown nor not init values.
-                                    if ($sla_check_value) {
+                                    if ($sla_check_value_warning && $sla_check_warning === true) {
+                                        if (isset($current_data['type']) === false
+                                            || ((int) $current_data['type'] === 0
+                                            && $i !== 0)
+                                        ) {
+                                            $warning_checks++;
+                                        }
+
+                                        $time_in_warning += $time_interval;
+                                    } else if ($sla_check_value === true) {
                                         if (isset($current_data['type']) === false
                                             || ((int) $current_data['type'] === 0
                                             && $i !== 0)
@@ -7295,6 +7413,7 @@ function reporting_advanced_sla(
         // Timing.
         $return['time_total']      = $time_total;
         $return['time_ok']         = $time_in_ok;
+        $return['time_warning']    = $time_in_warning;
         $return['time_error']      = $time_in_error;
         $return['time_unknown']    = $time_in_unknown;
         $return['time_not_init']   = $time_in_not_init;
@@ -7304,12 +7423,13 @@ function reporting_advanced_sla(
         // Checks.
         $return['checks_total']    = $total_checks;
         $return['checks_ok']       = $ok_checks;
+        $return['checks_warning']  = $warning_checks;
         $return['checks_error']    = $bad_checks;
         $return['checks_unknown']  = $unknown_checks;
         $return['checks_not_init'] = $not_init_checks;
 
         // SLA.
-        $return['SLA'] = reporting_sla_get_compliance_from_array($return);
+        $return['SLA'] = reporting_sla_get_compliance_from_array($return, $sla_check_warning);
         $return['sla_fixed'] = sla_truncate(
             $return['SLA'],
             $config['graph_precision']
@@ -7514,6 +7634,8 @@ function reporting_availability($report, $content, $date=false, $time=false)
 
                 $text = '';
 
+                $check_sla_warning = ((int) $content['time_in_warning_status']) === 1;
+
                 if (isset($item['compare']) === true
                     && empty($item['compare']) === true
                 ) {
@@ -7535,14 +7657,26 @@ function reporting_availability($report, $content, $date=false, $time=false)
                             '7' => $content['saturday'],
                         ],
                         $content['time_from'],
-                        $content['time_to']
+                        $content['time_to'],
+                        1,
+                        1,
+                        $check_sla_warning
                     );
                 } else {
                     // Intervals is dinamic.
                     $row['data'] = reporting_advanced_sla(
                         $item['id_agent_module'],
                         ($report['datetime'] - $content['period']),
-                        $report['datetime']
+                        $report['datetime'],
+                        null,
+                        null,
+                        0,
+                        null,
+                        null,
+                        null,
+                        1,
+                        1,
+                        $check_sla_warning
                     );
                 }
 
@@ -7688,12 +7822,14 @@ function reporting_availability($report, $content, $date=false, $time=false)
     $return['fields']['total_time'] = $content['total_time'];
     $return['fields']['time_failed'] = $content['time_failed'];
     $return['fields']['time_in_ok_status'] = $content['time_in_ok_status'];
+    $return['fields']['time_in_warning_status'] = $content['time_in_warning_status'];
     $return['fields']['time_in_unknown_status'] = $content['time_in_unknown_status'];
     $return['fields']['time_of_not_initialized_module'] = $content['time_of_not_initialized_module'];
     $return['fields']['time_of_downtime'] = $content['time_of_downtime'];
     $return['fields']['total_checks'] = $content['total_checks'];
     $return['fields']['checks_failed'] = $content['checks_failed'];
     $return['fields']['checks_in_ok_status'] = $content['checks_in_ok_status'];
+    $return['fields']['checks_in_warning_status'] = $content['checks_in_warning_status'];
     $return['fields']['unknown_checks'] = $content['unknown_checks'];
     $return['fields']['agent_max_value'] = $content['agent_max_value'];
     $return['fields']['agent_min_value'] = $content['agent_min_value'];
@@ -9535,12 +9671,14 @@ function reporting_check_structure_content($report)
         $return['fields']['total_time'] = '';
         $return['fields']['time_failed'] = '';
         $return['fields']['time_in_ok_status'] = '';
+        $return['fields']['time_in_warning_status'] = '';
         $return['fields']['time_in_unknown_status'] = '';
         $return['fields']['time_of_not_initialized_module'] = '';
         $return['fields']['time_of_downtime'] = '';
         $return['fields']['total_checks'] = '';
         $return['fields']['checks_failed'] = '';
         $return['fields']['checks_in_ok_status'] = '';
+        $return['fields']['checks_in_warning_status'] = '';
         $return['fields']['unknown_checks'] = '';
         $return['fields']['agent_max_value'] = '';
         $return['fields']['agent_min_value'] = '';
@@ -13592,9 +13730,14 @@ function reporting_sql_macro(array $report, string $sql): string
  * @param  Array With keys time_ok, time_error, time_downtime and time_unknown
  * @return SLA Return the compliance value.
  */
-function reporting_sla_get_compliance_from_array($sla_array)
+function reporting_sla_get_compliance_from_array($sla_array, $sla_check_warning=false)
 {
     $time_compliance = ($sla_array['time_ok'] + $sla_array['time_unknown'] + $sla_array['time_downtime']);
+
+    if ($sla_check_warning === true) {
+        $time_compliance += $sla_array['time_warning'];
+    }
+
     $time_total_working = ($time_compliance + $sla_array['time_error']);
     return $time_compliance == 0 ? 0 : (($time_compliance / $time_total_working) * 100);
 }

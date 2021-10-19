@@ -331,6 +331,10 @@ function mainAgentsModules()
     $offset = (int) get_parameter('offset', 0);
     $hor_offset = (int) get_parameter('hor_offset', 0);
     $block = $config['block_size'];
+    if (intval($block) > 15) {
+        $block = '15';
+    }
+
     if (get_parameter('modulegroup') != null) {
         $agents_id = (array) get_parameter('id_agents2', null);
     }
@@ -543,7 +547,7 @@ function mainAgentsModules()
 
     if ($config['pure'] != 1) {
         $show_filters = '<form method="post" action="'.ui_get_url_refresh(['offset' => $offset, 'hor_offset' => $offset, 'group_id' => $group_id, 'modulegroup' => $modulegroup]).'" class="w100p">';
-        $show_filters .= '<table class="white_table w100p no-border" cellpadding="0" cellspacing="0" border="0">';
+        $show_filters .= '<table class="w100p no-border" cellpadding="0" cellspacing="0" border="0">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td>'.$filter_groups_label.'</td>';
                 $show_filters .= '<td>'.$filter_groups.'&nbsp;&nbsp;&nbsp;'.$filter_recursion_label.$filter_recursion.'</td>';
@@ -561,7 +565,7 @@ function mainAgentsModules()
                 $show_filters .= '<td>'.$filter_modules.'</td>';
             $show_filters .= '</tr>';
             $show_filters .= '<tr>';
-                $show_filters .= "<td colspan=6 ><span class='right pdd_r_20px'>".$filter_update.'</span></td>';
+                $show_filters .= "<td colspan=6 ><span class='right pdd_r_35px mrgn_top_25px'>".$filter_update.'</span></td>';
             $show_filters .= '</tr>';
         $show_filters .= '</table>';
         $show_filters .= '</form>';

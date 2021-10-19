@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 ###############################################################################
-# Pandora FMS Database HA
+# Pandora FMS Daemon Watchdog
 ###############################################################################
 # Copyright (c) 2018-2021 Artica Soluciones Tecnologicas S.L
 ###############################################################################
@@ -12,7 +12,6 @@ use Getopt::Std;
 use POSIX qw(setsid strftime :sys_wait_h);
 use threads;
 use threads::shared;
-use Storable;
 use File::Path qw(rmtree);
 
 # Default lib dir for Pandora FMS RPM and DEB packages.
@@ -50,11 +49,14 @@ my $Running = 0;
 ########################################################################
 # Print the given message with a preceding timestamp.
 ########################################################################
-sub log_message($$$) {
-  my ($conf, $source, $message) = @_;
+sub log_message($$$;$) {
+  my ($conf, $source, $message, $verbosity_level) = @_;
+
+  my $level = $verbosity_level;
+  $level = 5 unless defined($level);
 
   if (ref($conf) eq "HASH") {
-    logger($conf, 'HA (' . $source . ') ' . "$message", 5);
+    logger($conf, 'HA (' . $source . ') ' . "$message", $level);
   }
   
   if ($source eq '') {
@@ -106,7 +108,7 @@ sub ha_daemonize($) {
 sub ha_init_pandora($) {
   my $conf = shift;
   
-  log_message($conf, '', "\nPandora FMS Database HA Tool " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
+  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
   
   getopts('dp:', \%Opts);
 
@@ -160,6 +162,8 @@ sub help_screen {
 ##############################################################################
 sub ha_keep_pandora_running($$) {
   my ($conf, $dbh) = @_;
+  my $OSNAME = $^O;
+  my $control_command;
 
   $conf->{'pandora_service_cmd'} = 'service pandora_server' unless defined($conf->{'pandora_service_cmd'});
 
@@ -170,8 +174,9 @@ sub ha_keep_pandora_running($$) {
     'SELECT count(*) AS "delayed"
      FROM  tserver
      WHERE ((status = -1) OR ( (unix_timestamp() - unix_timestamp(keepalive)) > (server_keepalive+1) AND status != 0 ))
-       AND server_type != ? AND name = ?',
+       AND server_type NOT IN (?, ?) AND name = ?',
     PandoraFMS::Tools::SATELLITESERVER,
+    PandoraFMS::Tools::MFSERVER,
     $conf->{'servername'}
   );
 
@@ -180,18 +185,30 @@ sub ha_keep_pandora_running($$) {
   $Pandora_Service = $conf->{'pandora_service_cmd'};
 
   # Check if service is running
-  my $pid =  `$Pandora_Service status-server | awk '{print \$NF*1}' | tr -d '\.'`;
+  $control_command = "status-server";
+  if ($OSNAME eq "freebsd") {
+    $control_command = "status_server";
+  }
+  my $pid =  `$Pandora_Service $control_command | awk '{print \$NF*1}' | tr -d '\.'`;
 
   if ( ($pid > 0) && ($component_last_contact > 0)) {
     # service running but not all components
     log_message($conf, 'LOG', 'Pandora service running but not all components.');
     print ">> service running but delayed...\n";
-    `$Pandora_Service restart-server 2>/dev/null`;
+    $control_command = "restart-server";
+    if ($OSNAME eq "freebsd") {
+      $control_command = "restart_server";
+    }
+    `$Pandora_Service $control_command 2>/dev/null`;
   } elsif ($pid == 0) {
     # service not running
     log_message($conf, 'LOG', 'Pandora service not running.');
     print ">> service not running...\n";
-    `$Pandora_Service start-server 2>/dev/null`;
+    $control_command = "start-server";
+    if ($OSNAME eq "freebsd") {
+      $control_command = "start_server";
+    }
+    `$Pandora_Service $control_command 2>/dev/null`;
   } elsif ($pid > 0
     && $nservers == 0
   ) {
@@ -203,7 +220,11 @@ sub ha_keep_pandora_running($$) {
     log_message($conf, 'LOG', 'Pandora service running without servers ['.$nservers.'].');
     if ($nservers >= 0) {
       log_message($conf, 'LOG', 'Restarting Pandora service...');
-      `$Pandora_Service restart-serer 2>/dev/null`;
+      $control_command = "restart-server";
+      if ($OSNAME eq "freebsd") {
+        $control_command = "restart_server";
+      }
+      `$Pandora_Service $control_command 2>/dev/null`;
     }
   }
 }
@@ -213,6 +234,7 @@ sub ha_keep_pandora_running($$) {
 ###############################################################################
 sub ha_update_server($$) {
   my ($config, $dbh) = @_;
+  my $OSNAME = $^O;
 
   my $repoServer = pandora_get_tconfig_token(
     $dbh, 'remote_config',  '/var/spool/pandora/data_in'
@@ -251,8 +273,11 @@ sub ha_update_server($$) {
   # Restart service
 	$config->{'pandora_service_cmd'} = 'service pandora_server'
     unless defined($config->{'pandora_service_cmd'});
-
-  `$config->{'pandora_service_cmd'} restart-server 2>/dev/null`;
+  my $control_command = "restart-server";
+  if ($OSNAME eq "freebsd") {
+    $control_command = "restart_server";
+  }
+  `$config->{'pandora_service_cmd'} $control_command 2>/dev/null`;
   `touch "$lockFile"`;
 
   # After apply update, permission over files are changed, allow group to 
@@ -336,7 +361,10 @@ sub ha_main($) {
         # Exit current eval.
         return;
       }
-    
+
+      # Synchronize database.
+      enterprise_hook('pandoraha_sync_node', [$conf, $dbh]);
+
       # Monitoring.
       enterprise_hook('pandoraha_monitoring', [$conf, $dbh]);
     
@@ -357,11 +385,17 @@ sub ha_main($) {
 # Stop pandora server
 ################################################################################
 sub stop {
+  my $OSNAME = $^O;
+
   if ($Running == 1) {
     $Running = 0;
     # cleanup and stop pandora_server
     print ">> stopping server...\n";
-    `$Pandora_Service stop-server 2>/dev/null`;
+    my $control_command = "stop-server";
+    if ($OSNAME eq "freebsd") {
+      $control_command = "stop_server";
+    }
+    `$Pandora_Service $control_command 2>/dev/null`;
   }
 }
 
@@ -372,19 +406,6 @@ END {
   stop();
 }
 
-###############################################################################
-# Aux. get module id
-###############################################################################
-my %module_id;
-sub __get_module_id {
-  my ($dbh, $module_type) = @_;
-
-  if (!defined($module_id{$module_type})) {
-    $module_id{$module_type} = get_module_id($dbh, $module_type);
-  }
-
-  return $module_id{$module_type}
-}
 
 $SIG{INT} = \&stop;
 $SIG{TERM} = \&stop;

@@ -517,6 +517,12 @@ function createVisualConsole(
         case "NETWORK_LINK":
           type = 21;
           break;
+        case "ODOMETER":
+          type = 22;
+          break;
+        case "BASIC_CHART":
+          type = 23;
+          break;
         default:
           type = 0;
       }
@@ -1234,6 +1240,12 @@ function createOrUpdateVisualConsoleItem(
     case 21:
       nameType = "Network Link";
       break;
+    case 22:
+      nameType = "Odometer";
+      break;
+    case 23:
+      nameType = "Basic chart";
+      break;
 
     default:
       nameType = "Static graph";
@@ -1819,13 +1831,13 @@ function getTimeZoneVisualConsole(baseUrl, vcId, zone, callback) {
  * Draw a line between two elements in a div
  * 
  * @param line Line to draw. JavaScript object with the following properties:
-	- x1 X coordinate of the first point. If not set, it will get the coord from node_begin position
-	- y1 Y coordinate of the first point. If not set, it will get the coord from node_begin position
-	- x2 X coordinate of the second point. If not set, it will get the coord from node_end position
-	- y2 Y coordinate of the second point. If not set, it will get the coord from node_end position
-	- color Color of the line to draw
-	- node_begin Id of the beginning node
-	- node_end Id of the finishing node
+  - x1 X coordinate of the first point. If not set, it will get the coord from node_begin position
+  - y1 Y coordinate of the first point. If not set, it will get the coord from node_begin position
+  - x2 X coordinate of the second point. If not set, it will get the coord from node_end position
+  - y2 Y coordinate of the second point. If not set, it will get the coord from node_end position
+  - color Color of the line to draw
+  - node_begin Id of the beginning node
+  - node_end Id of the finishing node
  * @param id_div Div to draw the lines in
  * @param editor Boolean variable to set other css selector in editor (when true).
  */

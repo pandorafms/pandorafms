@@ -47,7 +47,9 @@ export const enum ItemType {
   BARS_GRAPH = 18,
   CLOCK = 19,
   COLOR_CLOUD = 20,
-  NETWORK_LINK = 21
+  NETWORK_LINK = 21,
+  ODOMETER = 22,
+  BASIC_CHART = 23
 }
 
 // Base item properties. This interface should be extended by the item implementations.
@@ -63,6 +65,7 @@ export interface ItemProps extends Position, Size {
   aclGroupId: number | null;
   cacheExpiration: number | null;
   colorStatus: string;
+  cellId: number | null;
 }
 
 export interface ItemClickEvent {
@@ -139,6 +142,7 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     aclGroupId: parseIntOr(data.aclGroupId, null),
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
     colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
+    cellId: parseIntOr(data.cellId, null),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -213,6 +217,12 @@ export function titleItem(id: number): string {
       break;
     case ItemType.NETWORK_LINK:
       title = t("Network link");
+      break;
+    case ItemType.ODOMETER:
+      title = t("Odometer");
+      break;
+    case ItemType.BASIC_CHART:
+      title = t("Basic chart");
       break;
     default:
       title = t("Item");

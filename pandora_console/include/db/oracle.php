@@ -72,15 +72,23 @@ function oracle_connect_db($host=null, $db=null, $user=null, $pass=null, $port=n
 /**
  * Get the first value of the first row of a table in the database.
  *
- * @param string Field name to get
- * @param string Table to retrieve the data
- * @param string Field to filter elements
- * @param string Condition the field must have
+ * @param string  $field             Field name to get.
+ * @param string  $table             Table to retrieve the data.
+ * @param string  $field_search      Field to filter elements.
+ * @param string  $condition         Condition the field must have.
+ * @param boolean $search_history_db Search in historical db.
+ * @param boolean $cache             Enable cache or not.
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function oracle_db_get_value($field, $table, $field_search=1, $condition=1, $search_history_db=false)
-{
+function oracle_db_get_value(
+    $field,
+    $table,
+    $field_search=1,
+    $condition=1,
+    $search_history_db=false,
+    $cache=false
+) {
     if (is_int($condition)) {
         $sql = sprintf(
             'SELECT *
@@ -113,7 +121,7 @@ function oracle_db_get_value($field, $table, $field_search=1, $condition=1, $sea
         );
     }
 
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;
@@ -996,10 +1004,10 @@ function oracle_db_get_value_sql($sql, $dbconnection=false)
  *
  * @return mixed The first row of the result or false
  */
-function oracle_db_get_row_sql($sql, $search_history_db=false)
+function oracle_db_get_row_sql($sql, $search_history_db=false, $cache=true)
 {
     $sql = 'SELECT * FROM ('.$sql.') WHERE rownum < 2';
-    $result = oracle_db_get_all_rows_sql($sql, $search_history_db);
+    $result = oracle_db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;
@@ -1485,21 +1493,6 @@ function oracle_db_process_sql_rollback()
     global $config;
 
     oci_rollback($config['dbconnection']);
-}
-
-
-/**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function oracle_safe_sql_string($string)
-{
-    if (get_magic_quotes_gpc() == 0) {
-        return $string;
-    }
-
-    return oracle_escape_string_sql($string);
 }
 
 

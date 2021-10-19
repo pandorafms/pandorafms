@@ -593,7 +593,7 @@ class Tree
 
         $module['type'] = 'module';
         $module['id'] = (int) $module['id'];
-        $module['name'] = io_safe_output($module['name']);
+        $module['name'] = $module['name'];
         $module['id_module_type'] = (int) $module['id_tipo_modulo'];
         $module['server_type'] = (int) $module['id_modulo'];
         $module['status'] = $module['estado'];
@@ -993,7 +993,6 @@ class Tree
 			$inner
 			GROUP BY g
 			ORDER BY $order_by_final";
-            hd($sql, true);
         return $sql;
     }
 
@@ -1098,7 +1097,7 @@ class Tree
 
     protected function getThirdLevelSql()
     {
-        // Get the server id
+        // Get the server id.
         $serverID = $this->serverID;
 
         $group_acl = $this->getGroupAclCondition();

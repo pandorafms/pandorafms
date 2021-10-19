@@ -105,6 +105,7 @@ if ($update_command) {
             $alert['command'] = $command;
             $alert['description'] = $description;
             $alert['id_group'] = $id_group;
+            $alert['fields_hidden'] = io_json_mb_encode($fields_hidden);
         }
     }
 
@@ -155,11 +156,22 @@ if (empty($fields_hidden) === false) {
 }
 
 
-$is_central_policies_on_node = is_central_policies_on_node();
+$is_management_allowed = is_management_allowed();
 
-if ($is_central_policies_on_node === true) {
+if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/alerts/configure_alert_command&pure=0&id='.$id
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
-        __('This node is configured with centralized mode. All alerts templates information is read only. Go to metaconsole to manage it.')
+        __(
+            'This node is configured with centralized mode. All alert commands information is read only. Go to %s to manage it.',
+            $url
+        )
     );
 }
 
@@ -203,7 +215,7 @@ $table->data['name'][2] = html_print_input_text(
     '',
     '',
     '',
-    $is_central_policies_on_node
+    !$is_management_allowed
 );
 
 $table->colspan['command'][1] = 3;
@@ -216,7 +228,7 @@ $table->data['command'][1] = html_print_textarea(
     '',
     true,
     '',
-    $is_central_policies_on_node
+    !$is_management_allowed
 );
 
 $return_all_group = false;
@@ -240,7 +252,7 @@ $table->data['group'][1] = '<div class="w250px inline">'.html_print_select_group
     false,
     true,
     '',
-    $is_central_policies_on_node
+    !$is_management_allowed
 ).'</div>';
 
 $table->colspan['description'][1] = 3;
@@ -253,7 +265,7 @@ $table->data['description'][1] = html_print_textarea(
     '',
     true,
     '',
-    $is_central_policies_on_node
+    !$is_management_allowed
 );
 
 
@@ -283,7 +295,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         '',
         '',
         '',
-        $is_central_policies_on_node
+        !$is_management_allowed
     );
 
     $table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
@@ -321,7 +333,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         '',
         '',
         '',
-        $is_central_policies_on_node
+        !$is_management_allowed
     );
 
     $table->data['field'.$i][4] = __('Hide');
@@ -330,7 +342,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         'field'.$i.'_hide',
         1,
         $selected,
-        $is_central_policies_on_node,
+        !$is_management_allowed,
         'cursor: \'pointer\'',
         'class="hide_inputs"',
         true
@@ -340,7 +352,7 @@ for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'">';
 html_print_table($table);
 
-if ($is_central_policies_on_node === false) {
+if ($is_management_allowed === true) {
     echo '<div class="action-buttons" style="width: '.$table->width.'">';
     if ($id) {
         html_print_input_hidden('id', $id);

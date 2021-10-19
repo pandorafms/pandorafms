@@ -38,6 +38,25 @@ if (! check_acl($config['id_user'], 0, 'UM')) {
     return;
 }
 
+if (is_management_allowed() === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/users_setup&tab=profile&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
+    ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All profiles user information is read only. Go to %s to manage it.',
+            $url
+        )
+    );
+
+    return;
+}
+
 require_once 'include/functions_agents.php';
 require_once 'include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_profile.php';

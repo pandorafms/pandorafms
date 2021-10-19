@@ -511,6 +511,11 @@ function tags_update_policy_module_tag($id_policy_module, $tags, $autocommit=fal
         }
     }
 
+    if ($errn > 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 
@@ -700,7 +705,7 @@ function tags_get_tags_formatted($tags_array, $get_url=true)
     $tags = [];
     foreach ($tags_array as $t) {
         $tag_url = explode(' ', trim($t));
-        $tag = $tag_url[0];
+        $tag = io_safe_output($tag_url[0]);
         if (isset($tag_url[1]) && $tag_url[1] != '' && $get_url) {
             $title = $tag_url[1];
             // $link = '<a href="'.$tag_url[1].'" target="_blank">'.html_print_image('images/zoom.png',true, array('alt' => $title, 'title' => $title)).'</a>';

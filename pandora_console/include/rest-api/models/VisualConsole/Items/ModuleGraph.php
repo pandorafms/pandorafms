@@ -612,6 +612,9 @@ final class ModuleGraph extends Item
 
             // Custom graph.
             $fields = self::getListCustomGraph();
+            $selected_custom_graph = (\is_metaconsole() === true)
+                ? $values['customGraphId'].'|'.$values['metaconsoleId']
+                : $values['customGraphId'];
             $inputs[] = [
                 'id'        => 'MGcustomGraph',
                 'hidden'    => $hiddenCustom,
@@ -620,7 +623,7 @@ final class ModuleGraph extends Item
                     'type'          => 'select',
                     'fields'        => $fields,
                     'name'          => 'customGraphId',
-                    'selected'      => $values['customGraphId'],
+                    'selected'      => $selected_custom_graph,
                     'return'        => true,
                     'nothing'       => __('None'),
                     'nothing_value' => 0,

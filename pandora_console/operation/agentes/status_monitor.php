@@ -769,37 +769,40 @@ if ($not_condition !== '') {
     $check_not_condition = true;
 }
 
-$table->data[4][0] .= __('Not condition');
-        $table->data[4][1] .= '<div class="w120px mrgn_top_20px">';
-        $table->data[4][1] .= html_print_input(
+$table->data[4][0] .= __('Not condition').'&nbsp;'.ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
+        $table->data[4][1] = html_print_div(
             [
-                'type'    => 'switch',
-                'name'    => 'not_condition',
-                'return'  => false,
-                'checked' => $check_not_condition,
-                'value'   => 'NOT',
-                'id'      => 'not_condition_switch',
-                'onclick' => 'changeNotConditionStatus(this)',
-            ]
+                'class'   => 'w120px mrgn_5px mrgn_lft_0px mrgn_right_0px',
+                'content' => html_print_input(
+                    [
+                        'type'    => 'switch',
+                        'name'    => 'not_condition',
+                        'return'  => false,
+                        'checked' => $check_not_condition,
+                        'value'   => 'NOT',
+                        'id'      => 'not_condition_switch',
+                        'onclick' => 'changeNotConditionStatus(this)',
+                    ]
+                ),
+            ],
+            true
         );
-        $table->data[4][1] .= ui_print_help_tip(__('If you check this option, those elements that do NOT meet any of the requirements will be shown'), true);
-        $table->data[4][1] .= '</div>';
 
         $table_custom_fields = new stdClass();
         $table_custom_fields->class = 'filters';
         $table_custom_fields->width = '100%';
+        $table_custom_fields->style = [];
+        $table_custom_fields->style[0] = 'font-weight: bold;';
 
-        if (is_metaconsole()) {
+        // Style is different in metaconsole.
+        if (is_metaconsole() === false) {
+            $table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
+        }
+
+        if (is_metaconsole() === true) {
             $table_custom_fields->styleTable = 'margin-left:0px; margin-top:15px;';
             $table_custom_fields->cellpadding = '0';
             $table_custom_fields->cellspacing = '0';
-        }
-
-        $table_custom_fields->style = [];
-        if (!is_metaconsole()) {
-            $table_custom_fields->style[0] = 'font-weight: bold; width: 150px;';
-        } else {
-            $table_custom_fields->style[0] = 'font-weight: bold;';
         }
 
         $table_custom_fields->colspan = [];
@@ -815,9 +818,9 @@ $table->data[4][0] .= __('Not condition');
             $row[0] = $custom_field['name'];
 
             $custom_field_value = '';
-            if (!empty($ag_custom_fields)) {
+            if (empty($ag_custom_fields) === false) {
                 $custom_field_value = $ag_custom_fields[$custom_field['id_field']];
-                if (empty($custom_field_value)) {
+                if (empty($custom_field_value) === true) {
                     $custom_field_value = '';
                 }
             }
@@ -830,7 +833,7 @@ $table->data[4][0] .= __('Not condition');
         $filters = '<form method="post" action="index.php?sec='.$section.'&sec2=operation/agentes/status_monitor&refr='.$refr.'&ag_group='.$ag_group.'&ag_freestring='.$ag_freestring.'&module_option='.$module_option.'&ag_modulename='.$ag_modulename.'&moduletype='.$moduletype.'&datatype='.$datatype.'&status='.$status.'&sort_field='.$sortField.'&sort='.$sort.'&pure='.$config['pure'].$ag_custom_fields_params.'">';
 
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             $table->colspan[5][0] = 7;
             $table->cellstyle[5][0] = 'padding: 10px;';
             $table->data[5][0] = ui_toggle(

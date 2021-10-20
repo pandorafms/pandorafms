@@ -8700,8 +8700,8 @@ function reporting_increment($report, $content)
         $return['data']['message'] = __('The monitor have no data in this range of dates or monitor type is not numeric');
         $return['data']['error'] = true;
     } else if (is_numeric($old_data) && is_numeric($last_data)) {
-        $return['data']['old'] = $old_data;
-        $return['data']['now'] = $last_data;
+        $return['data']['old'] = round(floatval($old_data), $config['graph_precision']);
+        $return['data']['now'] = round(floatval($last_data), $config['graph_precision']);
         $increment = ($old_data - $last_data);
 
         if ($increment < 0) {

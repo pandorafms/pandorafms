@@ -373,6 +373,10 @@ function process_user_login_remote($login, $pass, $api=false)
             return false;
         }
 
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ldap_adv_user_node'];
+        }
+
         $permissions = fill_permissions_ldap($sr);
         if (empty($permissions) === true) {
             $config['auth_error'] = __('User not found in database or incorrect password');

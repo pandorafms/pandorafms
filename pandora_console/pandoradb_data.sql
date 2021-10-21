@@ -364,7 +364,12 @@ INSERT INTO `tusuario_perfil` (`id_up`, `id_usuario`, `id_perfil`, `id_grupo`, `
 -- Dumping data for table `tperfil`
 --
 
-INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1),(4,'Group&#x20;coordinator',1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `tperfil` VALUES 
+	(1,'Operator&#x20;&#40;Read&#41;',1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0),
+	(2,'Operator&#x20;&#40;Write&#41;',1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0,0,0,0),
+	(3,'Chief&#x20;Operator',1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,0,0),
+	(4,'Group&#x20;coordinator',1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0),
+	(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
 --
 -- Dumping data for table `tnews`
@@ -2782,3 +2787,4 @@ INSERT INTO `tncm_script` VALUES
 	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');
 
+INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);

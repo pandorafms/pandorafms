@@ -115,7 +115,7 @@ INSERT IGNORE INTO `tncm_model` VALUES (1,1,'7200');
 INSERT IGNORE INTO `tncm_template` VALUES (1,'cisco-base','[\"1\"]','[\"1\"]');
 
 INSERT IGNORE INTO `tncm_script` VALUES 
-    (1,0,'enable&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;exit'),
+    (1,0,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;exit'),
     (2,1,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;running-config&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(3,2,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;_applyconfigbackup_&#x0d;&#x0a;exit&#x0d;&#x0a;'),
 	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),

@@ -4078,6 +4078,10 @@ ALTER TABLE `tperfil` DROP COLUMN `incident_view`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_edit`;
 ALTER TABLE `tperfil` DROP COLUMN `incident_management`;
 
+ALTER TABLE `tperfil` ADD COLUMN `network_config_view`tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `network_config_edit`tinyint(1) NOT NULL DEFAULT 0;
+ALTER TABLE `tperfil` ADD COLUMN `network_config_management`tinyint(1) NOT NULL DEFAULT 0;
+
 -- -----------------------------------------------------
 -- Table `talert_execution_queue`
 -- -----------------------------------------------------
@@ -4184,3 +4188,31 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
     `updated_at` bigint(20) NOT NULL default 0,
     FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `tncm_vendor` VALUES
+    (1,'Cisco'),
+	(2, 'D-Link Systems, Inc.'),
+    (3, 'MikroTik'),
+    (4, 'Alcatel-Lucent Enterprise'),
+    (5, 'Ubiquiti Networks, Inc.'),
+    (6, 'Allied Telesis, Inc.'),
+    (7, 'Frogfoot Networks'),
+    (8, 'IBM'),
+    (9, 'Dell Inc.'),
+    (10, 'Hitachi Communication Technologies, Ltd.'),
+    (11, 'Netlink'),
+    (12, 'Ascom'),
+    (13, 'Synology Inc.'),
+    (14, 'Fujitsu Network Communications, Inc.');
+
+INSERT INTO `tncm_model` VALUES (1,1,'7200');
+
+INSERT INTO `tncm_template` VALUES (1,'cisco-base','[\"1\"]','[\"1\"]');
+
+INSERT INTO `tncm_script` VALUES 
+    (1,0,'enable&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;exit'),
+    (2,1,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;running-config&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(3,2,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;_applyconfigbackup_&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');

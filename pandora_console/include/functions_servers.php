@@ -800,6 +800,19 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 0;
             break;
 
+            case SERVER_TYPE_NCM:
+                $server['img'] = html_print_image(
+                    'images/book_edit.png',
+                    true,
+                    [
+                        'title' => __('NCM server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'ncm';
+                $id_modulo = 0;
+            break;
+
             case SERVER_TYPE_AUTOPROVISION:
                 $server['img'] = html_print_image(
                     'images/autoprovision.png',

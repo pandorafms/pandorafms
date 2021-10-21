@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 
 CREATE TABLE IF NOT EXISTS `tncm_agent` (
     `id_agent` int(10) unsigned NOT NULL,
-    `id_vendor` bigint(20) unsigned NOT NULL,
-    `id_model` bigint(20) unsigned NOT NULL,
+    `id_vendor` bigint(20) unsigned,
+    `id_model` bigint(20) unsigned,
     `protocol` int unsigned not null default 0,
     `cred_key` varchar(100),
     `adv_key` varchar(100),

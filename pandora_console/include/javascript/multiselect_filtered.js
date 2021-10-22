@@ -1,6 +1,20 @@
 /* global $, jQuery*/
 
 /**
+ * Custom selector for case instensitive contains.
+ */
+jQuery.expr[":"].iContains = jQuery.expr.createPseudo(function(arg) {
+  return function(elem) {
+    return (
+      jQuery(elem)
+        .text()
+        .toUpperCase()
+        .indexOf(arg.toUpperCase()) >= 0
+    );
+  };
+});
+
+/**
  * Add modules from available to selected.
  */
 // eslint-disable-next-line no-unused-vars
@@ -58,14 +72,14 @@ function filterItems(id, str) {
   $("#" + id + " option[value=0]").remove();
 
   // Move not matching elements filtered to tmp-id.
-  var tmp = $("#" + id + " option:not(:contains(" + str + "))").toArray();
+  var tmp = $("#" + id + " option:not(:iContains(" + str + "))").toArray();
   tmp.forEach(function(item) {
     $("#tmp-" + id).append(item);
     $(this).remove();
   });
 
   // Move matching filter back to id.
-  tmp = $("#tmp-" + id + " option:contains(" + str + ")").toArray();
+  tmp = $("#tmp-" + id + " option:iContains(" + str + ")").toArray();
   tmp.forEach(function(item) {
     $("#" + id).append(item);
     $(this).remove();

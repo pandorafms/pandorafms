@@ -139,32 +139,32 @@ if ($searchAlerts) {
     switch ($config['dbtype']) {
         case 'mysql':
             $whereAlerts = 'AND (
-				id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%'.$stringSearchSQL.'%") OR
+				id_alert_template IN (SELECT id FROM talert_templates WHERE name COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%") OR
 				id_alert_template IN (
 					SELECT id
 					FROM talert_templates
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE name LIKE "%'.$stringSearchSQL.'%")) OR
+						WHERE name COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%")) OR
 				talert_template_modules.id IN (
 					SELECT id_alert_template_module
 					FROM talert_template_module_actions
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE name LIKE "%'.$stringSearchSQL.'%")) OR
+						WHERE name COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%")) OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
-					WHERE nombre LIKE "%'.$stringSearchSQL.'%") OR
+					WHERE nombre COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%") OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE "%'.$stringSearchSQL.'%" '.$extra_sql.'))
+						WHERE nombre COLLATE utf8_general_ci LIKE "%'.$stringSearchSQL.'%" '.$extra_sql.'))
 			)';
         break;
 

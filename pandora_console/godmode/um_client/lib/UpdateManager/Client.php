@@ -1674,7 +1674,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->extract_to.'/extras/mr/'.$mr,
+                            $extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

@@ -1,5 +1,5 @@
 package: pandorafms-agent-unix
-Version: 7.0NG.758-211023
+Version: 7.0NG.758-211024
 Architecture: all
 Priority: optional
 Section: admin

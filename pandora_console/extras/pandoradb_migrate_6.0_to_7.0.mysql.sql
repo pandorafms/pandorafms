@@ -2229,6 +2229,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE tlayout_template MODIFY `name` varchar(600) NOT NULL;
+ALTER TABLE `tlayout` ADD COLUMN `auto_adjust` INTEGER UNSIGNED NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tlayout_template_data`

@@ -48,7 +48,7 @@ function show_event_dialog(event, dialog_page, result) {
           resizable: true,
           draggable: true,
           modal: true,
-          minWidth: 710,
+          minWidth: 875,
           minHeight: 600,
           close: function() {
             $("#refrcounter").countdown("resume");

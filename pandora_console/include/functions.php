@@ -2089,8 +2089,14 @@ function get_snmpwalk(
         exec($command_str, $output, $rc);
     }
 
-    // Parse the output of snmpwalk.
     $snmpwalk = [];
+
+    // Check if OID is available.
+    if (count($output) == 1 && strpos($output[0], "No Such Object available on this agent at this OID") !== false) {
+        return $snmpwalk;
+    }
+
+    // Parse the output of snmpwalk.
     foreach ($output as $line) {
         // Separate the OID from the value.
         if (strpos($format, 'q') === false) {

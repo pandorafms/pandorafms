@@ -1270,7 +1270,7 @@ class Client
         }
 
         $content = file_get_contents($delete_files_txt);
-        $files = explode('\n', $content);
+        $files = explode("\n", $content);
         $processed = [];
         foreach ($files as $file) {
             $file = trim(str_replace("\0", '', $this->productPath.'/'.$file));
@@ -1674,7 +1674,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->extract_to.'/extras/mr/'.$mr,
+                            $extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

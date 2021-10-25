@@ -21,7 +21,6 @@
 use strict;
 use constant TSTAMP_FILE => '/tmp/pandora_inventory.tstamp';
 use Scalar::Util qw(looks_like_number);
-use Data::Dumper;
 
 # Set environment language to English
 $ENV{"LANG"} = "en_US";

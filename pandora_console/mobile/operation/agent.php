@@ -410,7 +410,7 @@ class Agent
 			});
 
             function agent_filter_modules() {
-                $.mobile.showPageLoadingMsg();
+                $.mobile.loading('show');
                 $.ajax ({
                     type: 'POST',
                     url: 'index.php',
@@ -423,7 +423,7 @@ class Agent
                         'filter': $('#filter-modules').val()
                     },
                     success: function(r) {
-                        $.mobile.hidePageLoadingMsg();
+                        $.mobile.loading('hide');
                         var className = $('#list_agent_Modules').attr('class');
                         if (document.getElementById('list_agent_Modules') == null) {
                             $($('p.empty_advice')[0]).parent().html(r);
@@ -434,7 +434,7 @@ class Agent
                         $('#list_agent_Modules').addClass(className);
                     },
                     error: function(r, t, e) {
-                        $.mobile.hidePageLoadingMsg();
+                        $.mobile.loading('hide');
                         console.error(e);
                     }
                 });

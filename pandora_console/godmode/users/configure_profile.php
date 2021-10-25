@@ -187,9 +187,9 @@ if ($id_profile || $new_profile) {
         $vconsole_management = (bool) $profile['vconsole_management'];
 
         // NCM.
-        $networ_config_view = (bool) $profile['network_config_view'];
-        $networ_config_edit = (bool) $profile['network_config_edit'];
         $network_config_management = (bool) $profile['network_config_management'];
+        $network_config_view = (bool) $profile['network_config_view'] || $network_config_management;
+        $network_config_edit = (bool) $profile['network_config_edit'] || $network_config_management;
 
         $id_audit = db_pandora_audit(
             'User management',
@@ -217,6 +217,8 @@ if ($id_profile || $new_profile) {
         $info .= ' Visual console view: '.$vconsole_view;
         $info .= ' Visual console edit: '.$vconsole_edit;
         $info .= ' Visual console management: '.$vconsole_management;
+        $info .= ' Network config view: '.$network_config_view;
+        $info .= ' Network config write: '.$network_config_write;
         $info .= ' Network config management: '.$network_config_management;
         $info .= ' '.get_product_name().' Management: '.$pandora_management;
 

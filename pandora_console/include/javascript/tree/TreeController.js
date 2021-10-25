@@ -1444,7 +1444,12 @@ var TreeController = {
         if (typeof data.auth_hash !== "undefined") {
           this.auth_hash = data.auth_hash;
         }
-        if (data.tree[0]["rootType"] == "services") {
+        if (
+          typeof data.tree !== "undefined" &&
+          Array.isArray(data.tree) &&
+          data.tree.length > 0 &&
+          data.tree[0]["rootType"] == "services"
+        ) {
           this.foundMessage = "";
         }
         this.load();

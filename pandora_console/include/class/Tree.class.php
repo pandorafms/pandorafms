@@ -895,9 +895,15 @@ class Tree
     protected function processAgents(&$agents, $server=false)
     {
         if (!empty($agents)) {
+            $agents_aux = [];
             foreach ($agents as $iterator => $agent) {
                 $this->processAgent($agents[$iterator], $server);
+                if ($agents[$iterator]['counters']['total'] !== '0') {
+                    $agents_aux[] = $agents[$iterator];
+                }
             }
+
+            $agents = $agents_aux;
         }
     }
 

@@ -905,7 +905,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 
 		# Get default action
 		if ($#actions < 0) {
-			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, * FROM talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
 						WHERE talert_actions.id = ?
 						AND talert_actions.id_alert_command = talert_commands.id',
 						$alert->{'id_alert_action'});
@@ -914,7 +915,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 	# Event alert
 	else {
 		if ($alert_mode == RECOVERED_ALERT) {
-			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, * FROM tevent_alert_action, talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tevent_alert_action, talert_actions, talert_commands
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
@@ -922,7 +924,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 						OR ? >= fires_min)',
 						$alert->{'id'}, $alert->{'times_fired'});
 		} else {
-			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, * FROM tevent_alert_action, talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tevent_alert_action, talert_actions, talert_commands
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
@@ -934,7 +937,8 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 
 		# Get default action
 		if ($#actions < 0) {
-			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, * FROM talert_actions, talert_commands
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
 						WHERE talert_actions.id = ?
 						AND talert_actions.id_alert_command = talert_commands.id',
 						$alert->{'id_alert_action'});
@@ -4242,7 +4246,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			}
 			
 			# Execute alert
-			my $action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, *
+			my $action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
 							FROM talert_actions, talert_commands
 							WHERE talert_actions.id_alert_command = talert_commands.id
 							AND talert_actions.id = ?', $alert->{'id_alert'});
@@ -4276,7 +4280,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					$alert->{'id_as'});
 					
 			foreach my $other_alert (@more_actions_snmp) {
-				my $other_action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, *
+				my $other_action = get_db_single_row ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
 					FROM talert_actions, talert_commands
 					WHERE talert_actions.id_alert_command = talert_commands.id
 					AND talert_actions.id = ?', $other_alert->{'alert_type'});

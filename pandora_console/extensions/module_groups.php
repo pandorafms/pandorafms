@@ -351,7 +351,7 @@ function mainModuleGroups()
                         }
 
                         $data[$i][$j] = "<div style='".$cell_style.'background:'.$color.";'>";
-                        $data[$i][$j] .= '<a class="info_cell white font_18px" rel="'.$rel.'" href="'.$url.'">';
+                        $data[$i][$j] .= "<a class='info_cell white font_18px' rel='".$rel."' href='".$url."'>";
                         $data[$i][$j] .= $array_data[$key][$k]['total_count'];
                         $data[$i][$j] .= '</a></div>';
                     } else {

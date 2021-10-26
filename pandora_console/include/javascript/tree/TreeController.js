@@ -965,9 +965,12 @@ var TreeController = {
                 $content.append($statusImage);
               }
 
+              element.name = htmlDecode(element.name);
               // Name max 42 chars.
               $content.append(
-                '<span class="module-name">' +
+                '<span title="' +
+                  element.name +
+                  '" class="module-name">' +
                   element.name.substring(0, 42) +
                   (element.name.length > 42 ? "..." : "") +
                   "</span>"
@@ -1441,7 +1444,12 @@ var TreeController = {
         if (typeof data.auth_hash !== "undefined") {
           this.auth_hash = data.auth_hash;
         }
-        if (data.tree[0]["rootType"] == "services") {
+        if (
+          typeof data.tree !== "undefined" &&
+          Array.isArray(data.tree) &&
+          data.tree.length > 0 &&
+          data.tree[0]["rootType"] == "services"
+        ) {
           this.foundMessage = "";
         }
         this.load();

@@ -149,7 +149,7 @@ class CredentialStore extends Wizard
      * @param string $ajax_controller Path of ajaxController, is the 'page'
      *                               variable sent in ajax calls.
      *
-     * @return Object
+     * @return object
      */
     public function __construct($ajax_controller)
     {
@@ -248,7 +248,11 @@ class CredentialStore extends Wizard
                 );
             } else {
                 $groups = [ $filter['filter_id_group'] ];
-                $childrens = groups_get_children($id_group, null, true);
+                $childrens = groups_get_children(
+                    $filter['filter_id_group'],
+                    null,
+                    true
+                );
                 if (!empty($childrens)) {
                     foreach ($childrens as $child) {
                         $groups[] = (int) $child['id_grupo'];
@@ -352,6 +356,10 @@ class CredentialStore extends Wizard
         }
 
         $return = db_get_all_rows_sql($sql);
+
+        if ($return === false) {
+            $return = [];
+        }
 
         // Filter out those items of group all that cannot be edited by user.
         $return = array_filter(

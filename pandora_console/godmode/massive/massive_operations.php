@@ -219,7 +219,8 @@ $alertstab = [
             'title' => __('Alerts operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_alerts',
+    ).'</a>',
+    'active' => $tab == 'massive_alerts',
 ];
 
 $userstab = [
@@ -230,7 +231,8 @@ $userstab = [
             'title' => __('Users operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_users',
+    ).'</a>',
+    'active' => $tab == 'massive_users',
 ];
 
 $agentstab = [
@@ -241,7 +243,8 @@ $agentstab = [
             'title' => __('Agents operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_agents',
+    ).'</a>',
+    'active' => $tab == 'massive_agents',
 ];
 
         $modulestab = [
@@ -252,7 +255,8 @@ $agentstab = [
                     'title' => __('Modules operations'),
                     'class' => 'invert_filter',
                 ]
-            ).'</a>', 'active' => $tab == 'massive_modules',
+            ).'</a>',
+            'active' => $tab == 'massive_modules',
         ];
 
         $pluginstab = [
@@ -263,7 +267,8 @@ $agentstab = [
                     'title' => __('Plugins operations'),
                     'class' => 'invert_filter',
                 ]
-            ).'</a>', 'active' => $tab == 'massive_plugins',
+            ).'</a>',
+            'active' => $tab == 'massive_plugins',
         ];
 
         $policiestab = enterprise_hook('massive_policies_tab');
@@ -334,12 +339,18 @@ $agentstab = [
         }
 
         if ($tab == 'massive_policies' && is_management_allowed() === false) {
+            if (is_metaconsole() === false) {
+                $url = '<a target="_blank" href="'.ui_get_meta_url(
+                    'index.php?sec=advanced&sec2=advanced/policymanager'
+                ).'">'.__('metaconsole').'</a>';
+            } else {
+                $url = __('any node');
+            }
+
             ui_print_warning_message(
                 __(
                     'This node is configured with centralized mode. All policies information is read only. Go to %s to manage it.',
-                    '<a target="_blank" href="'.ui_get_meta_url(
-                        'index.php?sec=advanced&sec2=advanced/policymanager'
-                    ).'">'.__('metaconsole').'</a>'
+                    $url
                 )
             );
             return;
@@ -401,12 +412,18 @@ $agentstab = [
 
 <?php
 if (is_management_allowed() === false && $option == 'delete_agents') {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. To delete agents go to %s',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=monitoring&sec2=monitoring/wizard/wizard'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

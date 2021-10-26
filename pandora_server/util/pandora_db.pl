@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.757 Build 210930";
+my $version = "7.0NG.758 Build 211026";
 
 # Pandora server configuration
 my %conf;
@@ -387,6 +387,15 @@ sub pandora_purgedb ($$) {
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
+	}
+
+	# Delete old log data
+	log_message ('PURGE', "Deleting old network configuration manager data.");
+	if (defined($conf->{'days_purge_ncm'}) && $conf->{'days_purge_ncm'} > 0) {
+		log_message ('PURGE', 'Deleting NCM data older than ' . $conf->{'days_purge_ncm'} . ' days.');
+    enterprise_hook ('pandora_purge_ncm', [$dbh, \&log_message, $conf->{'days_purge_ncm'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]);
+	} else {
+		log_message ('PURGE', 'days_purge_ncm is set to 0. Old network configuration manager data will not be deleted.');
 	}
 
 	# Delete old special days

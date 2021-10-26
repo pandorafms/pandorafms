@@ -382,12 +382,18 @@ if (is_metaconsole() === true) {
 $is_management_allowed = true;
 if (is_management_allowed() === false) {
     $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/groups/group_list&tab=groups'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All groups information is read only. Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/groups/group_list&tab=groups'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

@@ -1251,16 +1251,7 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-            if ($columnview) {
-                $count = 0;
-                foreach ($table->data as $datos) {
-                    if (!isset($datos[9])) {
-                        $table->data[$count][9] = '';
-                    }
 
-                    $count++;
-                }
-            }
 
             html_print_table($table);
             ui_pagination(
@@ -1759,6 +1750,9 @@ switch ($action) {
                                 $values['time_in_ok_status'] = get_parameter(
                                     'time_in_ok_status'
                                 );
+                                $values['time_in_warning_status'] = get_parameter(
+                                    'time_in_warning_status'
+                                );
                                 $values['time_in_unknown_status'] = get_parameter(
                                     'time_in_unknown_status'
                                 );
@@ -1776,6 +1770,9 @@ switch ($action) {
                                 );
                                 $values['checks_in_ok_status'] = get_parameter(
                                     'checks_in_ok_status'
+                                );
+                                $values['checks_in_warning_status'] = get_parameter(
+                                    'checks_in_warning_status'
                                 );
                                 $values['unknown_checks'] = get_parameter(
                                     'unknown_checks'
@@ -1902,6 +1899,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -1924,6 +1925,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(
@@ -2192,7 +2197,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':
@@ -2579,6 +2583,10 @@ switch ($action) {
                             'time_in_ok_status',
                             0
                         );
+                        $values['time_in_warning_status'] = get_parameter(
+                            'time_in_warning_status',
+                            0
+                        );
                         $values['time_in_unknown_status'] = get_parameter(
                             'time_in_unknown_status',
                             0
@@ -2601,6 +2609,10 @@ switch ($action) {
                         );
                         $values['checks_in_ok_status'] = get_parameter(
                             'checks_in_ok_status',
+                            0
+                        );
+                        $values['checks_in_warning_status'] = get_parameter(
+                            'checks_in_warning_status',
                             0
                         );
                         $values['unknown_checks'] = get_parameter(
@@ -2844,7 +2856,6 @@ switch ($action) {
                             break;
 
                             case 'module_histogram_graph':
-                            case 'histogram_data':
                             case 'agent_configuration':
                             case 'alert_report_agent':
                             case 'alert_report_module':

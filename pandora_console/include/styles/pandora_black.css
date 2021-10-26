@@ -36,7 +36,8 @@ textarea,
 select,
 .edit_user_comments #textarea_comments,
 .discovery_textarea_input,
-.selection {
+.selection,
+button.sub {
   background-color: #111 !important;
   color: #fff !important;
 }
@@ -1197,4 +1198,18 @@ a.pandora_pagination,
 .legend_background {
   background-color: #222;
   color: #fff !important;
+}
+.bg_ccc {
+  background-color: #50505050 !important;
+}
+.filter_none {
+  filter: brightness(0) contrast(50%) !important;
+}
+
+input[type="image"] {
+  background-color: transparent !important;
+}
+
+.databox_color {
+  background-color: transparent !important;
 }

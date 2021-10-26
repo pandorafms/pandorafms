@@ -750,7 +750,7 @@ function postgresql_db_get_row_sql($sql, $search_history_db=false, $cache=true)
  *
  * @return mixed Array of the row or false in case of error.
  */
-function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND')
+function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -772,7 +772,7 @@ function postgresql_db_get_row_filter($table, $filter, $fields=false, $where_joi
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-    return db_get_row_sql($sql);
+    return db_get_row_sql($sql, $historydb, $cache);
 }
 
 
@@ -1095,23 +1095,6 @@ function postgresql_db_process_sql_commit()
 function postgresql_db_process_sql_rollback()
 {
     pg_query('ROLLBACK TRANSACTION');
-}
-
-
-/**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function postgresql_safe_sql_string($string)
-{
-    if (get_magic_quotes_gpc() == 0) {
-        return $string;
-    }
-
-    global $config;
-
-    return pg_escape_string($config['dbconnection'], $string);
 }
 
 

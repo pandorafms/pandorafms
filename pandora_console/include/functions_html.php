@@ -1982,7 +1982,7 @@ function html_print_extended_select_for_time(
         html_print_select(
             $units,
             $uniq_name.'_units',
-            '60',
+            '1',
             ''.$script,
             $nothing,
             $nothing_value,
@@ -2521,7 +2521,8 @@ function html_print_input_text(
     $formTo='',
     $onKeyUp='',
     $disabled=false,
-    $list=''
+    $list='',
+    $placeholder=null
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2564,6 +2565,10 @@ function html_print_input_text(
 
     if ($list != '') {
         $attr['list'] = $list;
+    }
+
+    if ($list !== null) {
+        $attr['placeholder'] = $placeholder;
     }
 
     return html_print_input_text_extended(
@@ -3747,7 +3752,7 @@ function html_print_checkbox_switch_extended(
         $name.($idcounter[$name] ? $idcounter[$name] : '')
     );
 
-    $output = '<label class="p-switch '.$classParent.'">';
+    $output = '<label class="p-switch pdd_0px'.$classParent.'">';
     $output .= '<input name="'.$name.'" type="checkbox" value="'.$value.'" '.($checked ? 'checked="checked"' : '');
     if ($id == '') {
         $output .= ' id="checkbox-'.$id_aux.'"';
@@ -3971,6 +3976,7 @@ function html_print_image(
             'onkeypress',
             'onkeydown',
             'onkeyup',
+            'onload',
             'pos_tree',
         ];
 
@@ -4547,7 +4553,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['list']) === true) ? $data['list'] : '')
+                ((isset($data['list']) === true) ? $data['list'] : ''),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : '')
             );
         break;
 

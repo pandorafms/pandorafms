@@ -1041,7 +1041,7 @@ function oracle_db_get_row_sql($sql, $search_history_db=false, $cache=true)
  *
  * @return mixed Array of the row or false in case of error.
  */
-function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='AND')
+function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $history_db=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -1063,7 +1063,7 @@ function oracle_db_get_row_filter($table, $filter, $fields=false, $where_join='A
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-    return db_get_row_sql($sql);
+    return db_get_row_sql($sql, $history_db, $cache);
 }
 
 
@@ -1493,21 +1493,6 @@ function oracle_db_process_sql_rollback()
     global $config;
 
     oci_rollback($config['dbconnection']);
-}
-
-
-/**
- * Put quotes if magic_quotes protection
- *
- * @param string Text string to be protected with quotes if magic_quotes protection is disabled
- */
-function oracle_safe_sql_string($string)
-{
-    if (get_magic_quotes_gpc() == 0) {
-        return $string;
-    }
-
-    return oracle_escape_string_sql($string);
 }
 
 

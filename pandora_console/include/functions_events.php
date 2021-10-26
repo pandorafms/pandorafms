@@ -4662,6 +4662,8 @@ function events_page_custom_data($event)
         return '';
     }
 
+    $table = new stdClass();
+
     $table->width = '100%';
     $table->data = [];
     $table->head = [];
@@ -4669,14 +4671,31 @@ function events_page_custom_data($event)
 
     $json_custom_data = base64_decode($event['custom_data']);
     $custom_data = json_decode($json_custom_data);
+
     if ($custom_data === null) {
-        return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
+        // Try again because is possible that info not come coded.
+        $custom_data = json_decode(io_safe_output($event['custom_data']));
+
+        if ($custom_data === null) {
+            return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
+        }
     }
 
     $i = 0;
     foreach ($custom_data as $field => $value) {
-        $table->data[$i][0] = io_safe_output($field);
-        $table->data[$i][1] = io_safe_output($value);
+        $table->data[$i][0] = ucfirst(io_safe_output($field));
+
+        if (is_array($value) === true) {
+            $table->data[$i][1] = '<ul>';
+            foreach ($value as $individualValue) {
+                $table->data[$i][1] .= sprintf('<li>%s</li>', $individualValue);
+            }
+
+            $table->data[$i][1] .= '</ul>';
+        } else {
+            $table->data[$i][1] = io_safe_output($value);
+        }
+
         $i++;
     }
 

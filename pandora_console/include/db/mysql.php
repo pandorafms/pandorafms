@@ -766,7 +766,7 @@ function mysql_db_format_array_where_clause_sql($values, $join='AND', $prefix=fa
 
         if ($value === null) {
             $not = (($negative === true) ? 'NOT' : '');
-            $query .= sprintf('%s IS %s NULL', $field, $negative);
+            $query .= sprintf('%s IS %s NULL', $field, $not);
         } else if (is_int($value) || is_bool($value)) {
             $not = (($negative === true) ? '!' : '');
             $query .= sprintf('%s %s= %d', $field, $not, $value);
@@ -883,7 +883,7 @@ function mysql_db_get_row_sql($sql, $search_history_db=false, $cache=true)
  *
  * @return mixed Array of the row or false in case of error.
  */
-function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false)
+function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false, $cache=true)
 {
     if (empty($fields)) {
         $fields = '*';
@@ -905,7 +905,7 @@ function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AN
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
 
-    return db_get_row_sql($sql, $historydb);
+    return db_get_row_sql($sql, $historydb, $cache);
 }
 
 

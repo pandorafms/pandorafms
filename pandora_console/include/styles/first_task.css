@@ -1,25 +1,28 @@
 .new_task p,
+.new_task b,
+.new_task div {
+  font-size: 1.05em;
+}
+.new_task p,
 .new_task div {
   font-weight: inherit;
 }
+
 .new_task {
   margin-top: 30px;
   min-width: 600px;
+  width: 100%;
   left: 20px;
-  height: 300px;
+  height: auto;
   background-color: #ececec;
   border-radius: 3px 3px 3px 3px;
-}
-div.new_task_cluster {
-  margin-top: 30px;
-  left: 20px;
-  width: 60%;
-  border-radius: 3px 3px 3px 3px;
-}
-
-div.new_task_cluster,
-div.new_task_cluster > div {
-  background-color: #ececec;
+  clear: both;
+  display: flex;
+  flex-direction: row;
+  padding-top: 1em;
+  padding-bottom: 5em;
+  align-items: center;
+  align-content: center;
 }
 
 .title_task {
@@ -33,38 +36,19 @@ div.new_task_cluster > div {
 }
 
 .image_task {
-  width: 20%;
-  min-width: 175px;
-  height: 100%;
-  float: left;
+  margin: auto 35px;
 }
-.image_task_cluster {
-  width: 20%;
-  height: 100%;
-  float: left;
-  margin-left: 50px;
-  margin-top: 50px;
-}
+
 .image_task > img {
-  margin-top: 35%;
-  margin-left: 15%;
+  position: relative;
 }
 
 .text_task {
+  flex: 1 1 auto;
   width: 70%;
   float: left;
   height: 100%;
   padding-right: 25px;
-}
-.text_task_cluster {
-  width: 70%;
-  height: 100%;
-  padding-right: 25px;
-  margin-left: 270px;
-  padding-top: 10px;
-}
-.text_task > p {
-  margin-top: 4%;
 }
 
 .button_task {
@@ -76,12 +60,10 @@ div.new_task_cluster > div {
   border: none;
 }
 #description_task {
-  font-size: 12px;
   line-height: 1.8em;
 }
 
 #fuerte {
-  font-size: 12px;
 }
 
 .flex-row-baseline * {

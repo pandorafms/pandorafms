@@ -688,6 +688,12 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .flex-row-vcenter {
   display: flex;
   flex-direction: row;
@@ -745,6 +751,12 @@ select:-internal-list-box {
 }
 .padding-right-2-imp {
   padding-right: 2em !important;
+}
+.padding-left-2 {
+  padding-left: 2em;
+}
+.padding-left-2-imp {
+  padding-left: 2em !important;
 }
 .margin-soft {
   margin: 0.3em 1em;

@@ -404,6 +404,8 @@ class ComposerStaticInitfdecadadce22e6dde51e9535fe4ad7aa
         'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueue' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/SyncQueue.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueueItem' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/SyncQueueItem.php',
         'PandoraFMS\\Enterprise\\Metaconsole\\Synchronizer' => __DIR__ . '/../..' . '/enterprise/include/lib/Metaconsole/Synchronizer.php',
+        'PandoraFMS\\Enterprise\\NetworkManager' => __DIR__ . '/../..' . '/enterprise/include/lib/NetworkManager.php',
+        'PandoraFMS\\Enterprise\\NetworkManager\\NetworkAgent' => __DIR__ . '/../..' . '/enterprise/include/lib/NetworkManager/NetworkAgent.php',
         'PandoraFMS\\Enterprise\\Policy' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy.php',
         'PandoraFMS\\Enterprise\\Policy\\Inventory' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy/Inventory.php',
         'PandoraFMS\\Enterprise\\Policy\\Module' => __DIR__ . '/../..' . '/enterprise/include/lib/Policy/Module.php',

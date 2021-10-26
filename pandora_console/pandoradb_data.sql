@@ -364,7 +364,12 @@ INSERT INTO `tusuario_perfil` (`id_up`, `id_usuario`, `id_perfil`, `id_grupo`, `
 -- Dumping data for table `tperfil`
 --
 
-INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0),(3,'Chief&#x20;Operator',1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1),(4,'Group&#x20;coordinator',1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `tperfil` VALUES 
+	(1,'Operator&#x20;&#40;Read&#41;',1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,0,0,0),
+	(2,'Operator&#x20;&#40;Write&#41;',1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0,0,0,0),
+	(3,'Chief&#x20;Operator',1,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,0,0,0),
+	(4,'Group&#x20;coordinator',1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0),
+	(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
 
 --
 -- Dumping data for table `tnews`
@@ -2754,3 +2759,32 @@ SELECT @plugin_id := `id` FROM `tplugin` WHERE `name` = @plugin_name;
 INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `id_plugin`, `plugin_user`, `plugin_pass`, `plugin_parameter`, `max_timeout`, `max_retries`, `history_data`, `min_warning`, `max_warning`, `str_warning`, `min_critical`, `max_critical`, `str_critical`, `min_ff_event`, `custom_string_1`, `custom_string_2`, `custom_string_3`, `custom_integer_1`, `custom_integer_2`, `post_process`, `unit`, `wizard_level`, `macros`, `critical_instructions`, `warning_instructions`, `unknown_instructions`, `critical_inverse`, `warning_inverse`, `id_category`, `tags`, `disabled_types_event`, `module_macros`, `min_ff_event_normal`, `min_ff_event_warning`, `min_ff_event_critical`, `ff_type`, `each_ff`, `dynamic_interval`, `dynamic_max`, `dynamic_min`, `dynamic_next`, `dynamic_two_tailed`, `module_type`, `protocol`, `manufacturer_id`, `execution_type`, `scan_type`, `value`, `value_operations`, `module_enabled`, `name_oid`, `query_class`, `query_key_field`, `scan_filters`, `query_filters`, `enabled`) VALUES (@component_id,@component_name,@component_description,@group_id,1,0,0,0,0,'','','','',0,9,0,'','','',0,0,0,80.00,90.00,'',90.00,0.00,'',0,'','','',0,0,0.000000000000000,'%','nowizard',CONCAT('{\"extra_field_1\":\"Size\",\"extra_field_2\":\"FreeSpace\",\"satellite_execution\":\"/etc/pandora/satellite_plugins/wizard_wmi_module&#x20;-host&#x20;&quot;_address_&quot;&#x20;-namespace&#x20;&quot;_namespace_wmi_&quot;&#x20;-user&#x20;&quot;_user_wmi_&quot;&#x20;-pass&#x20;&quot;_pass_wmi_&quot;&#x20;-wmiClass&#x20;&quot;_class_wmi_&quot;&#x20;-fieldsList&#x20;&quot;_field_wmi_1_,_field_wmi_2_&quot;&#x20;-queryFilter&#x20;&quot;DeviceID&#x20;=&#x20;&#039;_DeviceID_&#039;&quot;&#x20;-operation&#x20;&quot;&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_&quot;&#x20;-wmicPath&#x20;/usr/bin/wmic\",\"value_operation\":\"&#40;&#40;_Size_&#x20;-&#x20;_FreeSpace_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_Size_\",\"server_plugin\":\"',@plugin_id,'\",\"_field2__wmi_field\":\"_namespace_wmi_\",\"_field1__wmi_field\":\"_address_\",\"_field4__wmi_field\":\"_pass_wmi_\",\"_field3__wmi_field\":\"_user_wmi_\",\"_field6__wmi_field\":\"_field_wmi_1_,_field_wmi_2_\",\"_field5__wmi_field\":\"_class_wmi_\",\"_field8__wmi_field\":\"&#40;&#40;_f1_&#x20;-&#x20;_f2_&#41;&#x20;*&#x20;100&#41;&#x20;/&#x20;_f1_\",\"_field7__wmi_field\":\"DeviceID&#x20;=&#x20;&#039;_DeviceID_&#039;\",\"field0_wmi_field\":\"\"}'),'','','',0,0,0,'','{\"going_unknown\":0}','',0,0,0,0,0,0,0,0,0,0,1,'wmi','',2,2,'','',1,'','Win32_LogicalDisk','DeviceID','','{\"scan\":\"DriveType&#x20;=&#x20;3\",\"execution\":\"\",\"field\":\"\",\"key_string\":\"\"}',1);
 
 INSERT IGNORE INTO `tpen` VALUES (171,'dlink','D-Link Systems, Inc.'),(14988,'mikrotik','MikroTik'),(6486,'alcatel','Alcatel-Lucent Enterprise'),(41112,'ubiquiti','Ubiquiti Networks, Inc.'),(207,'telesis','Allied Telesis, Inc.'),(10002,'frogfoot','Frogfoot Networks'),(2,'ibm','IBM'),(4,'unix','Unix'),(63,'apple','Apple Computer, Inc.'),(674,'dell','Dell Inc.'),(111,'oracle','Oracle'),(116,'hitachi','Hitachi, Ltd.'),(173,'netlink','Netlink'),(188,'ascom','Ascom'),(6574,'synology','Synology Inc.'),(3861,'fujitsu','Fujitsu Network Communications, Inc.'),(53526,'dell','Dell ATC'),(52627,'apple','Apple Inc'),(19464,'hitachi','Hitachi Communication Technologies, Ltd.'),(13062,'ascom','Ascom');
+
+INSERT INTO `tncm_vendor` VALUES
+    (1,'Cisco'),
+	(2, 'D-Link Systems, Inc.'),
+    (3, 'MikroTik'),
+    (4, 'Alcatel-Lucent Enterprise'),
+    (5, 'Ubiquiti Networks, Inc.'),
+    (6, 'Allied Telesis, Inc.'),
+    (7, 'Frogfoot Networks'),
+    (8, 'IBM'),
+    (9, 'Dell Inc.'),
+    (10, 'Hitachi Communication Technologies, Ltd.'),
+    (11, 'Netlink'),
+    (12, 'Ascom'),
+    (13, 'Synology Inc.'),
+    (14, 'Fujitsu Network Communications, Inc.');
+
+INSERT INTO `tncm_model` VALUES (1,1,'7200');
+
+INSERT INTO `tncm_template` VALUES (1,'cisco-base','[\"1\"]','[\"1\"]');
+
+INSERT INTO `tncm_script` VALUES 
+    (1,0,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;exit'),
+    (2,1,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;running-config&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(3,2,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;terminal&#x0d;&#x0a;_applyconfigbackup_&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(4,3,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#x0d;&#x0a;exit&#x0d;&#x0a;'),
+	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');
+
+INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);

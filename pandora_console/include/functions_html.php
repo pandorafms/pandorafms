@@ -2521,7 +2521,8 @@ function html_print_input_text(
     $formTo='',
     $onKeyUp='',
     $disabled=false,
-    $list=''
+    $list='',
+    $placeholder=null
 ) {
     if ($maxlength == 0) {
         $maxlength = 255;
@@ -2564,6 +2565,10 @@ function html_print_input_text(
 
     if ($list != '') {
         $attr['list'] = $list;
+    }
+
+    if ($list !== null) {
+        $attr['placeholder'] = $placeholder;
     }
 
     return html_print_input_text_extended(
@@ -4548,7 +4553,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['form']) === true) ? $data['form'] : ''),
                 ((isset($data['onKeyUp']) === true) ? $data['onKeyUp'] : ''),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : false),
-                ((isset($data['list']) === true) ? $data['list'] : '')
+                ((isset($data['list']) === true) ? $data['list'] : ''),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : '')
             );
         break;
 

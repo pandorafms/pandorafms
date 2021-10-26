@@ -175,6 +175,10 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     enterprise_hook('agents_submenu');
 }
 
+if (check_acl($config['id_user'], 0, 'NW')) {
+    enterprise_hook('agents_ncm_submenu');
+}
+
 if (check_acl($config['id_user'], 0, 'AW')) {
     $sub['gmassive']['text'] = __('Bulk operations');
     $sub['gmassive']['id'] = 'Bulk operations';

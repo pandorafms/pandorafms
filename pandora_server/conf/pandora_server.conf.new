@@ -687,6 +687,15 @@ syslog_max 65535
 # Address
 # sync_address
 
+# Network manager configuration server (PANDORA FMS ENTERPRISE ONLY).
+#ncmserver 1
+
+# Threads for NCM server (PANDORA FMS ENTERPRISE ONLY).
+ncmserver_threads 1
+
+# NCM utility to avoid Net::SSH::Expect issues in multi-threaded environments.
+ncm_ssh_utility /usr/share/pandora_server/util/ncm_ssh_extension
+
 # Pandora FMS Daemon Watchdog execution interval in seconds (PANDORA FMS ENTERPRISE ONLY).
 ha_interval 30
 

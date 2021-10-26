@@ -2452,86 +2452,74 @@ function get_acl_column($access)
         case 'AR':
         return 'agent_view';
 
-            break;
         case 'AW':
         return 'agent_edit';
 
-            break;
         case 'AD':
         return 'agent_disable';
 
-            break;
         case 'LW':
         return 'alert_edit';
 
-            break;
         case 'LM':
         return 'alert_management';
 
-            break;
         case 'PM':
         return 'pandora_management';
 
-            break;
         case 'DM':
         return 'db_management';
 
-            break;
         case 'UM':
         return 'user_management';
 
-            break;
         case 'RR':
         return 'report_view';
 
-            break;
         case 'RW':
         return 'report_edit';
 
-            break;
         case 'RM':
         return 'report_management';
 
-            break;
         case 'ER':
         return 'event_view';
 
-            break;
         case 'EW':
         return 'event_edit';
 
-            break;
         case 'EM':
         return 'event_management';
 
-            break;
         case 'MR':
         return 'map_view';
 
-            break;
         case 'MW':
         return 'map_edit';
 
-            break;
         case 'MM':
         return 'map_management';
 
-            break;
         case 'VR':
         return 'vconsole_view';
 
-            break;
         case 'VW':
         return 'vconsole_edit';
 
-            break;
         case 'VM':
         return 'vconsole_management';
 
-            break;
+        case 'NR':
+        return 'network_config_view';
+
+        case 'NW':
+        return 'network_config_edit';
+
+        case 'NM':
+        return 'network_config_management';
+
         default:
         return '';
-            break;
     }
 }
 
@@ -2565,7 +2553,10 @@ function get_users_acl($id_user)
 						sum(tperfil.map_management) as map_management,
 						sum(tperfil.vconsole_view) as vconsole_view,
 						sum(tperfil.vconsole_edit) as vconsole_edit,
-						sum(tperfil.vconsole_management) as vconsole_management
+						sum(tperfil.vconsole_management) as vconsole_management,
+                        sum(tperfil.network_config_view) as network_config_view,
+						sum(tperfil.network_config_edit) as network_config_edit,
+						sum(tperfil.network_config_management) as network_config_management
 					FROM tusuario_perfil, tperfil
 					WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 						AND tusuario_perfil.id_usuario = '%s'",

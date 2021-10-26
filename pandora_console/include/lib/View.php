@@ -29,14 +29,16 @@
 // Begin.
 namespace PandoraFMS;
 
+use HTML;
+
 global $config;
 
 require_once $config['homedir'].'/include/class/HTML.class.php';
 
 /**
- * View class.
+ * View class. Extends HTML to allow print forms and inputs.
  */
-class View
+class View extends HTML
 {
 
 

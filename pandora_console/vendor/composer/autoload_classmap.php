@@ -330,6 +330,8 @@ return array(
     'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueue' => $baseDir . '/enterprise/include/lib/Metaconsole/SyncQueue.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\SyncQueueItem' => $baseDir . '/enterprise/include/lib/Metaconsole/SyncQueueItem.php',
     'PandoraFMS\\Enterprise\\Metaconsole\\Synchronizer' => $baseDir . '/enterprise/include/lib/Metaconsole/Synchronizer.php',
+    'PandoraFMS\\Enterprise\\NetworkManager' => $baseDir . '/enterprise/include/lib/NetworkManager.php',
+    'PandoraFMS\\Enterprise\\NetworkManager\\NetworkAgent' => $baseDir . '/enterprise/include/lib/NetworkManager/NetworkAgent.php',
     'PandoraFMS\\Enterprise\\Policy' => $baseDir . '/enterprise/include/lib/Policy.php',
     'PandoraFMS\\Enterprise\\Policy\\Inventory' => $baseDir . '/enterprise/include/lib/Policy/Inventory.php',
     'PandoraFMS\\Enterprise\\Policy\\Module' => $baseDir . '/enterprise/include/lib/Policy/Module.php',

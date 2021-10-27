@@ -4263,8 +4263,26 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 			# Generate an event, ONLY if our alert action is different from generate an event.
 			if ($action->{'id_alert_command'} != 3 && $alert->{'disable_event'} == 0){
-				pandora_event ($pa_config, "SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
-					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
+				pandora_event (
+					$pa_config,
+					"SNMP alert fired (" . safe_output($alert->{'description'}) . ")",
+					0,
+					0,
+					$alert->{'priority'},
+					0,
+					0,
+					'alert_fired',
+					0,
+					$dbh,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					undef,
+					p_encode_json($pa_config, $custom_data));
 		   }
 
 			# Update alert status
@@ -4320,6 +4338,11 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'disable_event' => $alert->{'disable_event'}
 				);
 
+				# Additional execution information for the console.
+				my $custom_data = {
+					'actions'	=> [],
+				};
+
 				pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert_action, 1, $other_action, undef, $dbh, $timestamp, \%macros) if (defined ($other_action));
 				push(@{$custom_data->{'actions'}}, safe_output($other_action->{'action_name'}));
 					
@@ -4342,7 +4365,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 						undef,
 						undef,
 						undef,
-						undef,,
+						undef,
 						undef,
 						p_encode_json($pa_config, $custom_data));
 				}

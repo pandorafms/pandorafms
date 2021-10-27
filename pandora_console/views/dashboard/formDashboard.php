@@ -76,10 +76,11 @@ $inputs = [
     [
         'label'     => __('Name'),
         'arguments' => [
-            'type'  => 'text',
-            'name'  => 'name',
-            'value' => $arrayDashboard['name'],
-            'size'  => '',
+            'type'      => 'text',
+            'name'      => 'name',
+            'value'     => $arrayDashboard['name'],
+            'size'      => '',
+            'maxlength' => 35,
         ],
     ],
     [

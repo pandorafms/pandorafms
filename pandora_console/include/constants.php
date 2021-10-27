@@ -173,6 +173,7 @@ define('COL_GRAPH13', '#E83128');
 // Styles.
 // Size of text in characters for truncate.
 define('GENERIC_SIZE_TEXT', 50);
+define('MENU_SIZE_TEXT', 28);
 
 
 

@@ -733,7 +733,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		# Generate an event
 		if ($table eq 'tevent_alert') {
-			pandora_event ($pa_config, "Alert ceased (" .
+			pandora_event ($pa_config, "Correlated alert ceased (" .
 				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
 				"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
@@ -762,7 +762,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
 			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
 		} else {
-			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
 		}
 		return;
 	}

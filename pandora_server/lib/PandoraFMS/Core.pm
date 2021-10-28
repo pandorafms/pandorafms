@@ -1007,7 +1007,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			$text = "Correlated alert $text";
 			pandora_event (
 				$pa_config,
-				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
+				"$text (" . safe_output($alert->{'name'}) . ") ",
 				(defined ($agent) ? $agent->{'id_grupo'} : 0),
 				# id agent.
 				0,

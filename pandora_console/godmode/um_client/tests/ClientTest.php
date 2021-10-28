@@ -183,7 +183,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         try {
             $this->conf = new \Config('client/conf/test.ini');
         } catch (\Exception $e) {
-            $this->fail($e->xdebug_message);
+            $this->fail($e->getMessage());
         }
 
         // Verify endpoint has all needed stuff, like licenses and OUM packages.
@@ -510,7 +510,12 @@ class ClientTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(0, $umc_enterprise->getMR());
 
-        $umc_enterprise->updateLastVersion();
+        try {
+            $umc_enterprise->updateLastVersion();
+        } catch (\Exception $e) {
+            echo $e->getTraceAsString();
+            $this->fail('Failed while updating: '.$e->getMessage());
+        }
 
         $this->assertEquals(
             4,

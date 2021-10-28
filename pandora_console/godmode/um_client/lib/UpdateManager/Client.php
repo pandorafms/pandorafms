@@ -1276,6 +1276,7 @@ class Client
             $file = trim(str_replace("\0", '', $this->productPath.'/'.$file));
             if (file_exists($file) === true
                 && is_file($delete_files_txt) === true
+                && is_dir($file) === false
             ) {
                 unlink($file);
                 $processed[$file] = 'removed';

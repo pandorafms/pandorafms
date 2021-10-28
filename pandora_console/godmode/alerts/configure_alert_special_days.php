@@ -1,17 +1,31 @@
 <?php
+/**
+ * Special days.
+ *
+ * @category   Alerts
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - http://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
-// Copyright (c) 2012-2013 Junichi Satoh
-// Please see http://pandorafms.org for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 // Load global vars.
 global $config;
 require_once 'include/functions_alerts.php';
@@ -35,9 +49,9 @@ $date = (string) get_parameter('date');
 $name = '';
 $command = '';
 $description = '';
-$same_day = '';
+$same_day = 'monday';
 $id_group = 0;
-if ($id) {
+if (empty($id) === false) {
     $special_day = alerts_get_alert_special_day($id);
     $date = str_replace('0001', '*', $special_day['date']);
     $date_orig = $date;
@@ -47,7 +61,7 @@ if ($id) {
     $id_group_orig = $id_group;
 }
 
-if ($date == '') {
+if (empty($date) === true) {
     $date = date('Y-m-d', get_system_time());
 }
 
@@ -91,7 +105,7 @@ $table->data[1][0] = __('Group');
 $groups = users_get_groups();
 $own_info = get_user_info($config['id_user']);
 // Only display group "All" if user is administrator or has "LM" privileges.
-if (users_can_manage_group_all('LM')) {
+if (users_can_manage_group_all('LM') === true) {
     $display_all_group = true;
 } else {
     $display_all_group = false;
@@ -140,11 +154,11 @@ $table->data[3][1] = html_print_textarea(
     true
 );
 
-echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days">';
+echo '<form method="post" id="form-special-days" action="index.php?sec=galertas&sec2=godmode/alerts/alert_special_days">';
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if ($id) {
+if (empty($id) === false) {
     html_print_input_hidden('id', $id);
     html_print_input_hidden('update_special_day', 1);
     html_print_input_hidden('id_group_orig', $id_group_orig);
@@ -157,3 +171,25 @@ if ($id) {
 
 echo '</div>';
 echo '</form>';
+echo '<div id="modal-alert-templates" class="invisible"></div>';
+ui_require_javascript_file('pandora_alerts');
+?>
+<script type="text/javascript">
+$(document).ready (function () {
+    $("#submit-create").click (function (e) {
+        e.preventDefault();
+        load_templates_alerts_special_days({
+            date: $("#text-date").val(),
+            id_group: $("#id_group").val(),
+            same_day: $("#same_day").val(),
+            btn_ok_text: '<?php echo __('Create'); ?>',
+            btn_cancel_text: '<?php echo __('Cancel'); ?>',
+            title: $("#text-date").val(),
+            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+            page: "godmode/alerts/alert_special_days",
+            loading: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
+            name_form: 'form-special-days'
+        });
+    });
+});
+</script>

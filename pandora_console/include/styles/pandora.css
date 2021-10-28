@@ -8309,6 +8309,31 @@ div.stat-win-spinner img {
   min-width: 50px;
 }
 
+.note-special-day {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+}
+
+.note-special-day div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+}
+
+.note-special-day div a.tip {
+  margin: 0px;
+  margin-right: 2px;
+}
+
+.note-special-day div a.tip > img {
+  margin: 0px;
+}
+
 .lign_right {
   text-align: right;
 }

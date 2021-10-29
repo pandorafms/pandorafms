@@ -333,6 +333,10 @@ class TreeViewWidget extends Widget
             'policies'     => __('Policies'),
         ];
 
+        if (is_metaconsole() === true) {
+            $fields = ['group' => __('Groups')];
+        }
+
         $inputs[] = [
             'label'     => __('Type tree'),
             'arguments' => [

@@ -1612,6 +1612,7 @@ if ($get_extended_event) {
                 data : {
                     page: "include/ajax/events",
                     get_comments: 1,
+                    meta: '.(int) is_metaconsole().',
                     event: '.json_encode($event).',
                 },
                 dataType : "html",

@@ -349,18 +349,24 @@ function process_user_login_remote($login, $pass, $api=false)
             return false;
         }
 
+        $user_info = [
+            'fullname' => $login,
+            'comments' => 'Imported from '.$config['auth'],
+        ];
+
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ad_adv_user_node'];
+        }
+
         // Create the user.
         if (enterprise_hook(
             'prepare_permissions_groups_of_user_ad',
             [
                 $login,
                 $pass,
-                [
-                    'fullname' => $login,
-                    'comments' => 'Imported from '.$config['auth'],
-                ],
+                $user_info,
                 false,
-                defined('METACONSOLE'),
+                defined('METACONSOLE') && is_centralized() === false,
             ]
         ) === false
         ) {

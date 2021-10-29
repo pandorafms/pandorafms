@@ -1321,6 +1321,8 @@ if (isset($double_authentication)) {
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
 
+    $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+
     $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
     $metaconsole_agents_manager .= html_print_checkbox_switch(
         'metaconsole_agents_manager',
@@ -1342,7 +1344,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox(
         'metaconsole_access_node',
         1,
-        $user_info['metaconsole_access_node'],
+        $access_node,
         true
     ).'</div>';
 }

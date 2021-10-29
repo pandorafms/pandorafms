@@ -332,7 +332,7 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
 
         $list['_server_sanity_'] = format_numeric((100 - $list['_module_sanity_']), 1);
     } else {
-        if (users_is_admin()) {
+        if (users_is_admin() || users_can_manage_group_all()) {
             $result_list = db_get_all_rows_sql(
                 sprintf(
                     'SELECT COUNT(*) as contado, estado FROM tagente_estado tae 

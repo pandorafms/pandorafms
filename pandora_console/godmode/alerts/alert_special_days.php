@@ -59,10 +59,10 @@ if (is_ajax() === true) {
         $id_group = get_parameter('id_group', 0);
         $same_day = get_parameter('same_day', '');
 
-        echo '<h4>'.__('Same as %s', ucfirst($same_day));
-        echo ' &raquo; ';
-        echo __('Templates not being fired');
-        echo '</h4>';
+        $output = '<h4>'.__('Same as %s', ucfirst($same_day));
+        $output .= ' &raquo; ';
+        $output .= __('Templates not being fired');
+        $output .= '</h4>';
 
         $columns = [
             'name',
@@ -90,10 +90,10 @@ if (is_ajax() === true) {
             __('Sun'),
         ];
         try {
-            ui_print_datatable(
+            $output .= ui_print_datatable(
                 [
                     'id'                  => 'templates_alerts_special_days',
-                    'return'              => false,
+                    'return'              => true,
                     'class'               => 'info_table',
                     'style'               => 'width: 100%',
                     'columns'             => $columns,
@@ -132,8 +132,10 @@ if (is_ajax() === true) {
                 ]
             );
         } catch (Exception $e) {
-            echo $e->getMessage();
+            $output .= $e->getMessage();
         }
+
+        echo $output;
 
         return;
     }
@@ -158,7 +160,7 @@ if (is_ajax() === true) {
         $data = [];
         if (empty($templates) === false) {
             foreach ($templates as $template) {
-                if ((bool) $template[$same_day] === true) {
+                if ((bool) $template[$same_day] === false) {
                     $data[] = [
                         'name'      => $template['name'],
                         'id_group'  => ui_print_group_icon(
@@ -814,6 +816,36 @@ for ($month = 1; $month <= 12; $month++) {
                 $cal_table->data[$cal_line][$week] .= '</div>';
                 $cal_table->data[$cal_line][$week] .= '<div>';
                 if ($special_day['id_group'] || ($can_manage_group_all && $special_day['id_group'] == 0)) {
+                    $script_delete = '';
+                    $dateformat = date_create($special_day['date']);
+                    $options_zoom = htmlspecialchars(
+                        json_encode(
+                            [
+                                'date'            => $special_day['date'],
+                                'id_group'        => $special_day['id_group'],
+                                'same_day'        => $special_day['same_day'],
+                                'btn_ok_text'     => __('Create'),
+                                'btn_cancel_text' => __('Cancel'),
+                                'title'           => date_format($dateformat, 'd M Y'),
+                                'url'             => ui_get_full_url('ajax.php', false, false, false),
+                                'page'            => 'godmode/alerts/alert_special_days',
+                                'loading'         => __('Loading, this operation might take several minutes...'),
+                            ]
+                        ),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+
+                    $onclick_zoom = 'load_templates_alerts_special_days('.$options_zoom.')';
+                    $cal_table->data[$cal_line][$week] .= '<a href="#" onclick="'.$onclick_zoom.'"';
+                    $cal_table->data[$cal_line][$week] .= 'title="';
+                    $cal_table->data[$cal_line][$week] .= __('Show templates');
+                    $cal_table->data[$cal_line][$week] .= '">';
+                    $cal_table->data[$cal_line][$week] .= html_print_image(
+                        'images/zoom.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    ).'</a>';
                     $cal_table->data[$cal_line][$week] .= '<a href="'.$url_alert.'&id='.$special_day['id'].'" title=';
                     $cal_table->data[$cal_line][$week] .= __('Edit');
                     $cal_table->data[$cal_line][$week] .= '>'.html_print_image(

@@ -75,10 +75,9 @@ function load_templates_alerts_special_days(settings) {
         },
         datatype: "html",
         success: function(data) {
-          console.log(data);
           $("#" + id)
             .empty()
-            .append(data);
+            .html(data);
         },
         error: function(e) {
           showMsg(e);

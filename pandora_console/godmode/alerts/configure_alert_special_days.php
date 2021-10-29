@@ -172,19 +172,26 @@ if (empty($id) === false) {
 echo '</div>';
 echo '</form>';
 echo '<div id="modal-alert-templates" class="invisible"></div>';
+
 ui_require_javascript_file('pandora_alerts');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
     $("#submit-create").click (function (e) {
         e.preventDefault();
+        var date = new Date($("#text-date").val());
+        var dateformat = date.toLocaleString(
+            'default',
+            {day: 'numeric', month: 'short',  year: 'numeric'}
+        );
+
         load_templates_alerts_special_days({
             date: $("#text-date").val(),
             id_group: $("#id_group").val(),
             same_day: $("#same_day").val(),
             btn_ok_text: '<?php echo __('Create'); ?>',
             btn_cancel_text: '<?php echo __('Cancel'); ?>',
-            title: $("#text-date").val(),
+            title: dateformat,
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
             page: "godmode/alerts/alert_special_days",
             loading: '<?php echo __('Loading, this operation might take several minutes...'); ?>',

@@ -219,7 +219,8 @@ $alertstab = [
             'title' => __('Alerts operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_alerts',
+    ).'</a>',
+    'active' => $tab == 'massive_alerts',
 ];
 
 $userstab = [
@@ -230,7 +231,8 @@ $userstab = [
             'title' => __('Users operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_users',
+    ).'</a>',
+    'active' => $tab == 'massive_users',
 ];
 
 $agentstab = [
@@ -241,7 +243,8 @@ $agentstab = [
             'title' => __('Agents operations'),
             'class' => 'invert_filter',
         ]
-    ).'</a>', 'active' => $tab == 'massive_agents',
+    ).'</a>',
+    'active' => $tab == 'massive_agents',
 ];
 
         $modulestab = [
@@ -252,7 +255,8 @@ $agentstab = [
                     'title' => __('Modules operations'),
                     'class' => 'invert_filter',
                 ]
-            ).'</a>', 'active' => $tab == 'massive_modules',
+            ).'</a>',
+            'active' => $tab == 'massive_modules',
         ];
 
         $pluginstab = [
@@ -263,7 +267,8 @@ $agentstab = [
                     'title' => __('Plugins operations'),
                     'class' => 'invert_filter',
                 ]
-            ).'</a>', 'active' => $tab == 'massive_plugins',
+            ).'</a>',
+            'active' => $tab == 'massive_plugins',
         ];
 
         $policiestab = enterprise_hook('massive_policies_tab');

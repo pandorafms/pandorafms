@@ -281,7 +281,31 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver transactionalserver mfserver syncserver wuxserver syslogserver provisioningserver migrationserver);
+our @ServerTypes = qw (
+	dataserver
+	networkserver
+	snmpconsole
+	reconserver
+	pluginserver
+	predictionserver
+	wmiserver
+	exportserver
+	inventoryserver
+	webserver
+	eventserver
+	icmpserver
+	snmpserver
+	satelliteserver
+	transactionalserver
+	mfserver
+	syncserver
+	wuxserver
+	syslogserver
+	provisioningserver
+	migrationserver
+	alertserver
+	correlationserver
+);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -639,7 +663,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 			]
 		);
 
-		return $status unless (defined ($rc) && $rc == 1);
+		return $status unless !PandoraFMS::Tools::is_empty($rc) && $rc == 1;
 	}
 	
 	# Check min and max alert limits
@@ -709,7 +733,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		# Generate an event
 		if ($table eq 'tevent_alert') {
-			pandora_event ($pa_config, "Alert ceased (" .
+			pandora_event ($pa_config, "Correlated alert ceased (" .
 				safe_output($alert->{'name'}) . ")", 0, 0, $alert->{'priority'}, $id,
 				(defined ($alert->{'id_agent_module'}) ? $alert->{'id_agent_module'} : 0), 
 				"alert_ceased", 0, $dbh, 'monitoring_server', '', '', '', '', $critical_instructions, $warning_instructions, $unknown_instructions);
@@ -738,7 +762,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		if ($pa_config->{'alertserver'} == 1 && defined ($alert->{'id_template_module'})) {
 			pandora_queue_alert($pa_config, $dbh, $data, $alert, 0, $extra_macros);
 		} else {
-			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
+			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
 		}
 		return;
 	}
@@ -774,7 +798,7 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		# Update alert status
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
-		
+
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
@@ -983,7 +1007,7 @@ sub pandora_execute_alert ($$$$$$$$$;$$) {
 			$text = "Correlated alert $text";
 			pandora_event (
 				$pa_config,
-				"$text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
+				"$text (" . safe_output($alert->{'name'}) . ") ",
 				(defined ($agent) ? $agent->{'id_grupo'} : 0),
 				# id agent.
 				0,

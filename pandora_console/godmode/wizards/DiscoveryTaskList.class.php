@@ -178,7 +178,8 @@ class DiscoveryTaskList extends HTML
                             'attributes' => 'class="sub cancel"',
                             'return'     => true,
                         ],
-                    ],[
+                    ],
+                    [
                         'class'     => 'action-buttons rule-builder-actions',
                         'arguments' => [
                             'name'       => 'refresh',

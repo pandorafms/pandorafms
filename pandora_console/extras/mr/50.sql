@@ -124,4 +124,7 @@ INSERT IGNORE INTO `tncm_script` VALUES
 
 INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);
 
+ALTER TABLE `tevent_alert` ADD COLUMN `last_evaluation` bigint(20) NOT NULL default 0;
+ALTER TABLE `tevent_alert` ADD COLUMN `pool_occurrences` int unsigned not null default 0;
+
 COMMIT;

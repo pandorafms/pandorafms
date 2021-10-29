@@ -2092,7 +2092,7 @@ function get_snmpwalk(
     $snmpwalk = [];
 
     // Check if OID is available.
-    if (count($output) == 1 && strpos($output[0], "No Such Object available on this agent at this OID") !== false) {
+    if (count($output) == 1 && strpos($output[0], 'No Such Object available on this agent at this OID') !== false) {
         return $snmpwalk;
     }
 

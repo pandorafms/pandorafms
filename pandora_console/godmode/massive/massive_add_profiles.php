@@ -85,7 +85,7 @@ if ($create_profiles) {
                         );
                         $return = profile_create_user_profile($user, $profile, $group);
                         if ($return !== false) {
-                            $n_added ++;
+                            $n_added++;
                         }
                     }
                 }

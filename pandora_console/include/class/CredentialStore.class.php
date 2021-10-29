@@ -149,7 +149,7 @@ class CredentialStore extends Wizard
      * @param string $ajax_controller Path of ajaxController, is the 'page'
      *                               variable sent in ajax calls.
      *
-     * @return Object
+     * @return object
      */
     public function __construct($ajax_controller)
     {

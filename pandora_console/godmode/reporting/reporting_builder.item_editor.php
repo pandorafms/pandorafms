@@ -3772,23 +3772,23 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                        if (!empty($services_tmp)
-                            && $services_tmp != ENTERPRISE_NOT_HOOK
-                        ) {
-                            foreach ($services_tmp as $service) {
-                                $check_module_sla = modules_check_agentmodule_exists(
-                                    $service['sla_id_module']
-                                );
-                                $check_module_sla_value = modules_check_agentmodule_exists(
-                                    $service['sla_value_id_module']
-                                );
-                                if ($check_module_sla
-                                    && $check_module_sla_value
+                                if (!empty($services_tmp)
+                                    && $services_tmp != ENTERPRISE_NOT_HOOK
                                 ) {
-                                    $services[$service['id']] = $service['name'];
+                                    foreach ($services_tmp as $service) {
+                                        $check_module_sla = modules_check_agentmodule_exists(
+                                            $service['sla_id_module']
+                                        );
+                                        $check_module_sla_value = modules_check_agentmodule_exists(
+                                            $service['sla_value_id_module']
+                                        );
+                                        if ($check_module_sla
+                                            && $check_module_sla_value
+                                        ) {
+                                            $services[$service['id']] = $service['name'];
+                                        }
+                                    }
                                 }
-                            }
-                        }
 
                                 echo '<td class="sla_list_service_col">';
                                 echo html_print_select(

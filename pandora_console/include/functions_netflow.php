@@ -573,7 +573,7 @@ function netflow_get_data(
 
                 while ($pos > 0) {
                     $number = ($number * 1000);
-                    $pos --;
+                    $pos--;
                 }
 
                 $values['data'][$interval_end][$line['agg']] = $number;

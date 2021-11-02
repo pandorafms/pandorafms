@@ -67,6 +67,7 @@ our @EXPORT = qw(
 	INVENTORYSERVER
 	WEBSERVER
 	EVENTSERVER
+	CORRELATIONSERVER
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
@@ -192,6 +193,7 @@ use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
 use constant MIGRATIONSERVER => 20;
 use constant ALERTSERVER => 21;
+use constant CORRELATIONSERVER => 22;
 use constant NCMSERVER => 23;
 
 # Module status
@@ -780,11 +782,11 @@ sub md5check {
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
 
-	# Clean any string and ready to be printed in screen/file
-	$message = safe_output ($message);
-
 	$level = 1 unless defined ($level);
 	return if (!defined ($pa_config->{'verbosity'}) || $level > $pa_config->{'verbosity'});
+
+	# Clean any string and ready to be printed in screen/file
+	$message = safe_output ($message);
 
 	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
@@ -2524,6 +2526,7 @@ sub get_server_name {
 	return "PROVISIONINGSERVER" if ($server_type eq PROVISIONINGSERVER);
 	return "MIGRATIONSERVER" if ($server_type eq MIGRATIONSERVER);
 	return "ALERTSERVER" if ($server_type eq ALERTSERVER);
+	return "CORRELATIONSERVER" if ($server_type eq CORRELATIONSERVER);
 
 	return "UNKNOWN";
 }

@@ -2742,7 +2742,7 @@ class ConsoleSupervisor
                             'type'    => 'NOTIF.SYNCQUEUE.LENGTH.'.$node_id,
                             'title'   => __('Node %s sync queue length exceeded, ', $node->server_name()),
                             'message' => __(
-                                'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, pleae visit the ',
+                                'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, please check the queue status.',
                                 $node->server_name(),
                                 $count,
                                 self::MIN_SYNC_QUEUE_LENGTH

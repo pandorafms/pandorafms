@@ -281,6 +281,14 @@ final class Odometer extends Item
             }
         }
 
+        $sql = sprintf(
+            'SELECT min_warning, max_warning, min_critical, max_critical FROM %s 
+            WHERE id_agente_modulo = %d',
+            'tagente_modulo',
+            $moduleId
+        );
+        $thresholds = \db_get_row_sql($sql);
+
         if (\modules_get_unit($moduleId) === '%') {
             $data['odometerType'] = 'percent';
         } else {
@@ -296,17 +304,25 @@ final class Odometer extends Item
                 }
 
                 $data['min_max_value'] = json_encode($minMax);
+
+                if ($thresholds['min_warning'] != 0 && $thresholds['min_warning'] > $minMax['max']) {
+                    $thresholds['min_warning'] = $minMax['max'];
+                }
+
+                if ($thresholds['max_warning'] != 0 && $thresholds['max_warning'] > $minMax['max']) {
+                    $thresholds['max_warning'] = $minMax['max'];
+                }
+
+                if ($thresholds['min_critical'] != 0 && $thresholds['min_critical'] > $minMax['max']) {
+                    $thresholds['min_critical'] = $minMax['max'];
+                }
+
+                if ($thresholds['max_critical'] != 0 && $thresholds['max_critical'] > $minMax['max']) {
+                    $thresholds['max_critical'] = $minMax['max'];
+                }
             }
         }
 
-        $sql = sprintf(
-            'SELECT min_warning, max_warning, min_critical, max_critical FROM %s 
-            WHERE id_agente_modulo = %d',
-            'tagente_modulo',
-            $moduleId
-        );
-
-        $thresholds = \db_get_row_sql($sql);
         $data['thresholds'] = json_encode($thresholds);
 
         $data['status'] = \modules_get_color_status(modules_get_agentmodule_last_status($moduleId));
@@ -320,53 +336,6 @@ final class Odometer extends Item
         }
 
         return $data;
-    }
-
-
-    /**
-     * Insert or update an item in the database
-     *
-     * @param array $data Unknown input data structure.
-     *
-     * @return integer The modeled element data structure stored into the DB.
-     *
-     * @overrides Model::save.
-     */
-    public function save(array $data=[]): int
-    {
-        if (empty($data) === false) {
-            if (empty($data['id']) === true) {
-                // Insert.
-                $save = static::encode($data);
-                $result = \db_process_sql_insert('tlayout_data', $save);
-                if ($result !== false) {
-                    $item = static::fromDB(['id' => $result]);
-                    $item->setData($item->toArray());
-                }
-            } else {
-                // Update.
-                $dataModelEncode = $this->encode($this->toArray());
-                $dataEncode = $this->encode($data);
-
-                $save = array_merge($dataModelEncode, $dataEncode);
-
-                $result = \db_process_sql_update(
-                    'tlayout_data',
-                    $save,
-                    ['id' => $save['id']]
-                );
-                // Invalidate the item's cache.
-                if ($result !== false && $result > 0) {
-                    $item = static::fromDB(['id' => $save['id']]);
-                    // Update the model.
-                    if (empty($item) === false) {
-                        $this->setData($item->toArray());
-                    }
-                }
-            }
-        }
-
-        return $result;
     }
 
 

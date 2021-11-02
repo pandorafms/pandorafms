@@ -2788,3 +2788,5 @@ INSERT INTO `tncm_script` VALUES
 	(5,5,'enable&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#x0d;&#x0a;term&#x20;length&#x20;0&#x0d;&#x0a;config&#x20;term&#x0d;&#x0a;end&#x0d;&#x0a;end&#x0d;&#x0a;exit&#x0d;&#x0a;');
 
 INSERT INTO `tncm_template_scripts`(`id_template`, `id_script`) VALUES (1,1),(1,2),(1,3),(1,4),(1,5);
+
+INSERT INTO `talert_calendar` VALUES (1, 'Default', 0, 'Default calendar');

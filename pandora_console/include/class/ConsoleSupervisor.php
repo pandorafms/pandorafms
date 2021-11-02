@@ -2718,6 +2718,8 @@ class ConsoleSupervisor
      */
     public function checkSyncQueueLength()
     {
+        global $config;
+
         if (is_metaconsole() !== true) {
             return;
         }
@@ -2730,8 +2732,13 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.%');
         }
 
+        $items_min = $config['sync_queue_items_max'];
+        if (is_numeric($items_min) !== true && $items_min <= 0) {
+            $items_min = self::MIN_SYNC_QUEUE_LENGTH;
+        }
+
         foreach ($counts as $node_id => $count) {
-            if ($count < self::MIN_SYNC_QUEUE_LENGTH) {
+            if ($count < $items_min) {
                 $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
             } else {
                 try {
@@ -2747,7 +2754,7 @@ class ConsoleSupervisor
                                 'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, please check the queue status.',
                                 $node->server_name(),
                                 $count,
-                                self::MIN_SYNC_QUEUE_LENGTH
+                                $items_min
                             ),
                             'url'     => $url,
                         ]

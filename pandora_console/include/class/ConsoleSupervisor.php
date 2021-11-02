@@ -254,7 +254,8 @@ class ConsoleSupervisor
          */
 
         if (is_metaconsole() === true) {
-            $this->checkSyncQueue();
+            $this->checkSyncQueueLength();
+            $this->checkSyncQueueStatus();
         }
 
     }
@@ -514,7 +515,8 @@ class ConsoleSupervisor
          */
 
         if (is_metaconsole() === true) {
-            $this->checkSyncQueue();
+            $this->checkSyncQueueLength();
+            $this->checkSyncQueueStatus();
         }
     }
 
@@ -2714,14 +2716,14 @@ class ConsoleSupervisor
      *
      * @return void
      */
-    public function checkSyncQueue()
+    public function checkSyncQueueLength()
     {
         if (is_metaconsole() !== true) {
             return;
         }
 
         $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
-        $counts = $sync->counts();
+        $counts = $sync->getQueues(true);
 
         if (count($counts) === 0) {
             // Clean all.
@@ -2753,6 +2755,60 @@ class ConsoleSupervisor
                 } catch (\Exception $e) {
                     // Clean, exception in node finding.
                     $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * Verifies the status of synchronization queue and warns if something is
+     * not working as expected.
+     *
+     * @return void
+     */
+    public function checkSyncQueueStatus()
+    {
+        if (is_metaconsole() !== true) {
+            return;
+        }
+
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $queues = $sync->getQueues();
+        if (count($queues) === 0) {
+            // Clean all.
+            $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.%');
+        }
+
+        foreach ($queues as $node_id => $queue) {
+            if (count($queue) === 0) {
+                $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.'.$node_id);
+                continue;
+            }
+
+            $item = $queue[0];
+
+            if (empty($item->error()) === false) {
+                try {
+                    $node = new PandoraFMS\Enterprise\Metaconsole\Node($node_id);
+                    $url = '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=consoles';
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SYNCQUEUE.STATUS.'.$node_id,
+                            'title'   => __('Node %s sync queue failed, ', $node->server_name()),
+                            'message' => __(
+                                'Node %s cannot process synchronization queue due %s, please check the queue status.',
+                                $node->server_name(),
+                                $item->error()
+                            ),
+                            'url'     => $url,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Clean, exception in node finding.
+                    $this->cleanNotifications('NOTIF.SYNCQUEUE.STATUS.'.$node_id);
                 }
             }
         }

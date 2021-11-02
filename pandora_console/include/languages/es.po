@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-27 09:58+0200\n"
-"PO-Revision-Date: 2021-11-02 11:56+0100\n"
+"PO-Revision-Date: 2021-11-02 16:26+0100\n"
 "Last-Translator: Laura Cano <Unknown>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -12814,7 +12814,7 @@ msgid "Operation and table"
 msgstr "Funcionamiento y tabla"
 
 #: ../../enterprise/include/lib/Metaconsole/Node.php:707
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Failed synchronizing %s, please check node PHP configuration issues and "
 "collection max sizes"
@@ -12854,13 +12854,10 @@ msgstr ""
 "metaconsola y de toda la configuración que se les asigne. "
 
 #: ../../enterprise/include/lib/Metaconsole/Node.php:1244
-#, fuzzy
-#| msgid "And The rules for this node may stop working. "
 msgid "The rules for this node may stop working. "
 msgstr "Y las reglas para este nodo podrían dejar de funcionar. "
 
 #: ../../enterprise/include/lib/Metaconsole/Node.php:1248
-#, fuzzy
 msgid ""
 "The deleted node will lose its license, and you must license it manually "
 "again. "
@@ -12877,10 +12874,9 @@ msgid "Error: %s"
 msgstr "Error: %s"
 
 #: ../../enterprise/include/lib/Metaconsole/Node.php:1751
-#, fuzzy, php-format
-#| msgid "Failed to write file to disk"
+#, php-format
 msgid "Failed to overwrite node data: %s"
-msgstr "No se pudo escribir el archivo al disco."
+msgstr "Error al sobrescribir los datos del nodo: %s"
 
 #: ../../enterprise/include/lib/AlertCorrelation.class.php:183
 msgid "There was a problem creating Alert"
@@ -13014,8 +13010,6 @@ msgstr "menor que"
 #: ../../enterprise/include/lib/AlertCorrelation.class.php:1345
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1430
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1472
-#, fuzzy
-#| msgid "Greater or equal (>=)"
 msgid "greater or equal than"
 msgstr "Mayor o igual (>=)"
 
@@ -13028,22 +13022,18 @@ msgstr "es igual"
 #: ../../enterprise/include/lib/AlertCorrelation.class.php:1357
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1445
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1484
-#, fuzzy
-#| msgid "Different name"
 msgid "is different"
-msgstr "Diferente nombre"
+msgstr "es diferente "
 
 #: ../../enterprise/include/lib/AlertCorrelation.class.php:1361
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1450
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1488
-#, fuzzy
 msgid "is like (regex)"
 msgstr "es como (regex)"
 
 #: ../../enterprise/include/lib/AlertCorrelation.class.php:1365
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1455
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1492
-#, fuzzy
 msgid "is not like (regex)"
 msgstr "no es como (regex)"
 
@@ -13066,10 +13056,9 @@ msgid "any"
 msgstr "cualquier"
 
 #: ../../enterprise/include/lib/Policy.php:280
-#, fuzzy, php-format
-#| msgid "Invalid cron task"
+#, php-format
 msgid "Invalid operation %s"
-msgstr "Tarea cron no válida"
+msgstr "Operación no válida %s"
 
 #: ../../enterprise/include/lib/Policy.php:1218
 #, php-format
@@ -13156,16 +13145,14 @@ msgid "The agent could not be added to the policy."
 msgstr "No se ha podido añadir el agente a la política."
 
 #: ../../enterprise/include/functions_enterprise_api.php:6273
-#, fuzzy, php-format
-#| msgid "Delete remote conf agent files"
+#, php-format
 msgid "Failed Updated remote config files %d"
-msgstr "Eliminar archivos de agente de configuración remota"
+msgstr "Error al actualizar los archivos de configuración remota %d"
 
 #: ../../enterprise/include/functions_enterprise_api.php:6283
-#, fuzzy, php-format
-#| msgid "Delete remote conf agent files"
+#, php-format
 msgid "Updated remote config files: %d => %d"
-msgstr "Eliminar archivos de agente de configuración remota"
+msgstr "Archivos de configuración remota actualizados: %d => %d"
 
 #: ../../enterprise/include/functions_tasklist.php:55
 #: ../../include/class/ConsoleSupervisor.php:2350
@@ -13563,17 +13550,14 @@ msgid "Current Networks"
 msgstr "Redes actuales"
 
 #: ../../enterprise/include/ajax/ipam.ajax.php:287
-#, fuzzy
-#| msgid "Add network to Vlan"
 msgid "Add networks in custom range"
-msgstr "Añadir red a vlan"
+msgstr "Agregar redes en un rango personalizado"
 
 #: ../../enterprise/include/ajax/ipam.ajax.php:294
 msgid "Range"
 msgstr "Rango"
 
 #: ../../enterprise/include/ajax/ipam.ajax.php:294
-#, fuzzy
 msgid ""
 "Add those networks from the top selector that belong to the range specified "
 "herein. (e.g.: 192.168.30.0/24)"
@@ -13586,7 +13570,6 @@ msgid "Max. number"
 msgstr "Número máximo"
 
 #: ../../enterprise/include/ajax/ipam.ajax.php:296
-#, fuzzy
 msgid ""
 "Maximum number of networks to be added within custom range (starting by first "
 "address in range)"
@@ -13726,25 +13709,20 @@ msgstr "Crear regla"
 #: ../../godmode/alerts/alert_templates.php:268
 #: ../../godmode/users/user_list.php:405 ../../godmode/users/profile_list.php:110
 #: ../../godmode/tag/tag.php:179
-#, fuzzy
-#| msgid "Main node"
 msgid "any node"
-msgstr "Nodo principal"
+msgstr "cualquier nodo"
 
 #: ../../enterprise/include/ajax/agent_autoconfiguration.ajax.php:213
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:63
 #: ../../enterprise/godmode/agentes/agent_autoconfiguration.php:98
 #: ../../enterprise/godmode/agentes/agent_autoconfiguration.definition.php:323
-#, fuzzy, php-format
-#| msgid ""
-#| "This console is not manager of this environment, please manage this feature "
-#| "from centralized manager console (Metaconsole)."
+#, php-format
 msgid ""
 "This console is not manager of this environment, please manage this feature "
 "from centralized manager console. Go to %s to manage it."
 msgstr ""
-"La consola no administra este entorno, gestione esta funcionalidad desde el "
-"administrador centralizado de la consola (Metaconsola)."
+"Esta consola no es el administrador de este entorno, administre esta función "
+"desde la consola del administrador centralizado. Vaya a %s para gestionarlo."
 
 #: ../../enterprise/include/ajax/agent_autoconfiguration.ajax.php:255
 #: ../../enterprise/include/functions_reporting_csv.php:700
@@ -14385,10 +14363,8 @@ msgstr "Valor medio"
 
 #: ../../enterprise/include/functions_reporting_csv.php:678
 #: ../../include/functions_reports.php:860
-#, fuzzy
-#| msgid "Sync inventory"
 msgid "Agents inventory"
-msgstr "Inventario Sync"
+msgstr "Inventario de agentes"
 
 #: ../../enterprise/include/functions_reporting_csv.php:700
 #: ../../enterprise/meta/include/functions_wizard_meta.php:209
@@ -14432,10 +14408,8 @@ msgid "Remote"
 msgstr "Remoto"
 
 #: ../../enterprise/include/functions_reporting_csv.php:700
-#, fuzzy
-#| msgid "Search group"
 msgid "Sec. group"
-msgstr "Buscar grupo"
+msgstr "Grupo sec."
 
 #: ../../enterprise/include/functions_reporting_csv.php:700
 msgid "Custom Field"
@@ -15189,10 +15163,8 @@ msgid "Result "
 msgstr "Resultado "
 
 #: ../../enterprise/include/functions_reporting_csv.php:1885
-#, fuzzy
-#| msgid "Networks"
 msgid "IPAM Networks"
-msgstr "Redes"
+msgstr "Redes IPAM"
 
 #: ../../enterprise/include/functions_reporting_csv.php:1945
 msgid "SLA max"
@@ -16021,8 +15993,6 @@ msgid "Block"
 msgstr "Bloquear"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1369
-#, fuzzy
-#| msgid "Event group Recursive"
 msgid "Event group (recursive)"
 msgstr "Recursividad del grupo de eventos"
 
@@ -16032,53 +16002,42 @@ msgstr "Operadores"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1435
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1476
-#, fuzzy
-#| msgid "Less or equal (<=)"
 msgid "less or equal than"
-msgstr "Menor o igual (<=)"
+msgstr "menor o igual (<=)"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1525
 msgid "Modifiers"
 msgstr "Modificadores"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1530
-#, fuzzy
 msgid "within an interval (seconds)"
 msgstr "dentro de un intervalo (segundos)"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1535
-#, fuzzy
-#| msgid "has at least"
 msgid "repeated at least"
 msgstr "tiene al menos"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1575
-#, fuzzy
 msgid "Matches on both true"
 msgstr "Coincidencias en ambos verdaderos"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1581
-#, fuzzy
 msgid "Matches when any is false"
 msgstr "Coincidencias cuando alguna es falsa"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1587
-#, fuzzy
 msgid "Matches on any true"
 msgstr "Coincidencias en cualquier verdadero"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1593
-#, fuzzy
 msgid "Matches when both are false"
 msgstr "Coincidencias cuando ambas son falsas"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1599
-#, fuzzy
 msgid "Matches when only one is true"
 msgstr "Coincidencias cuando solo una es verdadera"
 
 #: ../../enterprise/include/class/AlertCorrelationManager.class.php:1605
-#, fuzzy
 msgid "Matches when both are either true or false"
 msgstr "Coincidencias cuando ambas son verdaderas o falsas"
 
@@ -16839,52 +16798,38 @@ msgid "Monitor tablespaces"
 msgstr "Espacio de tablas del monitor"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:331
-#, fuzzy
-#| msgid "Performance"
 msgid "Perform action"
-msgstr "Rendimiento"
+msgstr "Realizar acción"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1007
-#, fuzzy
-#| msgid "No Services"
 msgid "NCM devices"
-msgstr "Sin servicios"
+msgstr "Dispositivos NCM"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1021
-#, fuzzy
-#| msgid "More templates"
 msgid "NCM templates"
-msgstr "Más plantillas"
+msgstr "Plantillas NCM"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1035
-#, fuzzy
-#| msgid "Register node"
 msgid "Registered vendors"
-msgstr "Registrar nodo"
+msgstr "Fabricantes registrados"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1049
-#, fuzzy
-#| msgid "Register node"
 msgid "Registered models"
-msgstr "Registrar nodo"
+msgstr "Modelos registrados"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1085
-#, fuzzy
 msgid "No agents with NCM features enabled yet"
 msgstr "Aún no hay agentes con funciones de NCM habilitadas"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1178
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1452
-#, fuzzy, php-format
-#| msgid "Cluster not found: "
+#, php-format
 msgid "Template not found: %s"
-msgstr "Clúster no encontrado: "
+msgstr "Plantilla no encontrada: %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1203
-#, fuzzy
-#| msgid "Template Triggered"
 msgid "Template created"
-msgstr "Plantillas disparadas"
+msgstr "Plantilla creada"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1203
 msgid "Template updated"
@@ -16892,10 +16837,9 @@ msgstr "Plantilla actualizada"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1269
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1522
-#, fuzzy, php-format
-#| msgid "Cluster not found: "
+#, php-format
 msgid "Vendor not found: %s"
-msgstr "Clúster no encontrado: "
+msgstr "Fabricante no encontrado: %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1284
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1373
@@ -16905,35 +16849,26 @@ msgstr "Error al actualizar"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1287
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1376
-#, fuzzy
-#| msgid "Failed to create task"
 msgid "Failed to create"
-msgstr "No se ha podido crear la tarea"
+msgstr "Error al crear"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1299
-#, fuzzy
-#| msgid "Failed adding service child: %s"
 msgid "Failed saving vendor: "
-msgstr "No se ha podido añadir el servicio hijo: %s"
+msgstr "Fallo al guardar fabricante:"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1358
-#, fuzzy, php-format
-#| msgid "Route not found"
+#, php-format
 msgid "model not found: %s"
-msgstr "Ruta no encontrada"
+msgstr "modelo no encontrado: %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1380
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1620
-#, fuzzy
-#| msgid "You must select a valid group."
 msgid "you must select a valid vendor"
-msgstr "Seleccione un grupo válido."
+msgstr "Debe seleccionar un fabricante válido"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1393
-#, fuzzy
-#| msgid "Failed to delete: %s"
 msgid "Failed saving model: "
-msgstr "No se ha podido eliminar: %s"
+msgstr "Fallo al guardar el modelo: "
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1464
 #: ../../godmode/modules/manage_network_templates.php:77
@@ -16941,76 +16876,57 @@ msgid "Template successfully deleted"
 msgstr "Plantilla borrada correctamente"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1487
-#, fuzzy, php-format
-#| msgid "Route not found"
+#, php-format
 msgid "Model not found: %s"
-msgstr "Ruta no encontrada"
+msgstr "Modelo no encontrado: %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1499
-#, fuzzy
-#| msgid "Module successfully deleted"
 msgid "Model successfully deleted"
-msgstr "Módulo eliminado con éxito"
+msgstr "Modelo eliminado correctamente"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1534
-#, fuzzy
-#| msgid "Field successfully deleted"
 msgid "Vendor successfully deleted"
-msgstr "El campo se ha borrado correctamente."
+msgstr "Fabriante eliminado correctamente"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1610
-#, fuzzy, php-format
-#| msgid "Error creating template"
+#, php-format
 msgid "Error retrieving template: %s"
-msgstr "Error al crear plantilla"
+msgstr "Error al recuperar la plantilla: %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1616
-#, fuzzy
-#| msgid "Do you want delete all templates?"
 msgid "you must select a template"
-msgstr "¿Desea eliminar todas las plantillas?"
+msgstr "Debe seleccionar una plantilla"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1618
-#, fuzzy
-#| msgid "You must select a valid group."
 msgid "you must select a valid model"
-msgstr "Seleccione un grupo válido."
+msgstr "Debe seleccionar un modelo válido"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1622
-#, fuzzy
-#| msgid "You must select a valid group."
 msgid "you must select a valid port"
-msgstr "Seleccione un grupo válido."
+msgstr "Debe seleccionar un puerto válido"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1644
-#, fuzzy, php-format
-#| msgid "Failed to update"
+#, php-format
 msgid "Failed to update%s"
-msgstr "Error al actualizar"
+msgstr "No se pudo actualizar %s"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1676
-#, fuzzy
-#| msgid "No configuration file found"
 msgid "No configuration registers to backup"
-msgstr "No se ha encontrado el archivo de configuración"
+msgstr "No hay registros de configuración para realizar copias de seguridad"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1684
-#, fuzzy
-#| msgid "Successfully copied "
 msgid "Successfully backed up"
-msgstr "Copiado correctamente "
+msgstr "Copia de copia de ha realizada"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1719
-#, fuzzy
-#| msgid "Invalid code"
 msgid "Invalid id given"
-msgstr "Código no válido"
+msgstr "ID no válido"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1754
-#, fuzzy
-#| msgid "Keep this %s console up to date with latest updates."
 msgid "This operation is not ready yet! Keep up to date with latest updates"
-msgstr "Mantener la consola %s actualizada con las últimas actualizaciones."
+msgstr ""
+"¡Esta operación aún no está lista! Manténgase al día con las últimas "
+"actualizaciones"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1763
 msgid "Invalid action"
@@ -17022,10 +16938,8 @@ msgid "Successfully scheduled"
 msgstr "Programado correctamente"
 
 #: ../../enterprise/include/class/NetworkConfigManager.class.php:1783
-#, fuzzy
-#| msgid "Failed to schedule"
 msgid "Failed to schedule action."
-msgstr "No se ha podido programar"
+msgstr "Error al programar la acción."
 
 #: ../../enterprise/include/class/SAP.app.php:154
 msgid ""
@@ -18079,22 +17993,17 @@ msgid "Main"
 msgstr "Principal"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:146
-#, fuzzy
-#| msgid "Command viewer"
 msgid "Command center"
-msgstr "Visor de comandos"
+msgstr "command center"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:160
-#, fuzzy
 msgid "Could not be start merge process, no nodes in the metaconsole "
 msgstr ""
 "No se pudo iniciar el proceso de combinación, no hay nodos en la metaconsola "
 
 #: ../../enterprise/include/class/CommandCenter.class.php:312
-#, fuzzy
-#| msgid "Priority mode"
 msgid "Nodes priority order"
-msgstr "Modo de prioridad"
+msgstr "Orden de prioridad de los nodos"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:317
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:830
@@ -18109,31 +18018,22 @@ msgid "API"
 msgstr "API"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:366
-#, fuzzy
-#| msgid "Only database"
 msgid "Unify databases"
-msgstr "Bases de datos solamente"
+msgstr "Unificar bases de datos"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:383
-#, fuzzy
-#| msgid "In process"
 msgid "merge process"
-msgstr "En proceso"
+msgstr "proceso de combinación"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:391
-#, fuzzy
-#| msgid "Process deletion"
 msgid "Process detail of node"
-msgstr "Borrado del proceso"
+msgstr "Detalle del proceso del nodo"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:392
-#, fuzzy
-#| msgid "Error delete model"
 msgid "Errors of node"
-msgstr "Error al borrar modelo"
+msgstr "Errores de nodo"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:421
-#, fuzzy
 msgid "Unexpected end of process"
 msgstr "Fin inesperado del proceso"
 
@@ -18142,16 +18042,12 @@ msgid "Please retry"
 msgstr "Por favor reinténtelo"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:443
-#, fuzzy
-#| msgid "Critical service alert"
 msgid "Critical issues while merging"
-msgstr "Alerta de servicio en crítico"
+msgstr "Problemas críticos durante la fusión"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:444
-#, fuzzy
-#| msgid "Restore the backup"
 msgid "Please restore your backups"
-msgstr "Restaurar la copia de seguridad"
+msgstr "Restaure sus copias de seguridad"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:452
 #: ../../include/functions_ui.php:6427
@@ -18173,13 +18069,10 @@ msgid "Error message"
 msgstr "Mensaje de error"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:457
-#, fuzzy
-#| msgid "Process deletion"
 msgid "Process details"
-msgstr "Borrado del proceso"
+msgstr "Detalles del proceso"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:458
-#, fuzzy
 msgid ""
 "System is not unified yet, something is wrong, please troubleshoot the errors "
 "and retry the merge process. Your data have not been modified."
@@ -18188,16 +18081,12 @@ msgstr ""
 "vuelva a intentar el proceso de fusión. Sus datos no han sido modificados."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:459
-#, fuzzy
-#| msgid "Error while processing: %s"
 msgid "Errors while merging"
-msgstr "Error al procesar: %s"
+msgstr "Errores al fusionar"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:460
-#, fuzzy
-#| msgid "The package has been uploaded successfully."
 msgid "The process has been completed correctly"
-msgstr "Se ha  subido correctamente el paquete."
+msgstr "El proceso se ha completado correctamente"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:461
 #: ../../enterprise/include/functions_login.php:145
@@ -18205,32 +18094,25 @@ msgid "Successfully"
 msgstr "Correcto"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:462
-#, fuzzy
 msgid "System is merging your environment, please wait"
 msgstr "El sistema está fusionando su entorno, espere"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:464
 #: ../../enterprise/include/class/CommandCenter.class.php:884
-#, fuzzy
 msgid "Initialice merge"
-msgstr "Combinación de inicialice"
+msgstr "Inicializar fusión"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:465
 #: ../../enterprise/include/class/CommandCenter.class.php:890
-#, fuzzy
-#| msgid "Apply Filter"
 msgid "Apply merge"
-msgstr "Aplicar el filtro"
+msgstr "Aplicar combinación"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:466
-#, fuzzy
-#| msgid "Finished"
 msgid "Finished merge"
-msgstr "Terminado"
+msgstr "Fusión finalizada"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:467
 #: ../../enterprise/include/class/CommandCenter.class.php:896
-#, fuzzy
 msgid "Restore merge"
 msgstr "Restaurar combinación"
 
@@ -18245,41 +18127,31 @@ msgid "Result"
 msgstr "Resultado"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:469
-#, fuzzy
-#| msgid "Successfully"
 msgid "Succesfully"
-msgstr "Correcto"
+msgstr "Éxito"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:470
 msgid "Pending operations"
 msgstr "Operaciones pendientes"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:472
-#, fuzzy
 msgid "Error. Synchronization aborted. Backup restored"
 msgstr "Error. Sincronización anulada. Copia de seguridad restaurada"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:542
 #: ../../enterprise/include/class/CommandCenter.class.php:548
-#, fuzzy
-#| msgid "Update node"
 msgid "Update priority nodes"
-msgstr "Actualizar nodo"
+msgstr "Actualizar nodos prioritarios"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:543
-#, fuzzy
-#| msgid "Successfully updated export target"
 msgid "Successfully updated priority order nodes"
-msgstr "Servidor de exportación actualizado correctamente"
+msgstr "Nodos de orden de prioridad actualizados correctamente"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:549
-#, fuzzy
-#| msgid "Could not be update: Error in %s"
 msgid "Could not be updated priority order nodes"
-msgstr "No se puede actualizar: error en %s"
+msgstr "No se pudieron actualizar los nodos de orden de prioridad"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:565
-#, fuzzy
 msgid ""
 "By unifying databases all information across your infrastructure will be "
 "merged to gain integrity"
@@ -18293,25 +18165,20 @@ msgid "Blocked"
 msgstr "Bloqueado"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:579
-#, fuzzy
-#| msgid "This agent is already a target"
 msgid "This process already running"
-msgstr "Este agente ya es un objetivo"
+msgstr "Este proceso ya se está ejecutando"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:589
-#, fuzzy
 msgid "You cannot start a new merge because system is merging events data."
 msgstr ""
 "No puede iniciar una nueva combinación porque el sistema está combinando datos "
 "de eventos."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:597
-#, fuzzy
 msgid "Press OK button to start the process"
 msgstr "Presione el botón OK para iniciar el proceso"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:599
-#, fuzzy
 msgid ""
 "There are backups from a previous merging process, are you sure you want to "
 "overwrite those backups? Press OK button to ignore this message and start the "
@@ -18322,22 +18189,17 @@ msgstr ""
 "este mensaje e iniciar el proceso."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:647
-#, fuzzy
-#| msgid "Systems management"
 msgid "System is merging events..."
-msgstr "Gestión de sistemas"
+msgstr "El sistema está fusionando eventos..."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:654
-#, fuzzy
 msgid "Already working..."
 msgstr "Ya funcionando..."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:760
 #: ../../enterprise/include/class/CommandCenter.class.php:761
-#, fuzzy
-#| msgid "Uninitialized"
 msgid "Initilize"
-msgstr "No iniciado"
+msgstr "Initilizar"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:866
 #: ../../enterprise/include/class/CommandCenter.class.php:1054
@@ -18345,50 +18207,36 @@ msgid "Waiting"
 msgstr "Esperando"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:873
-#, fuzzy
-#| msgid "Process deletion"
 msgid "Process detail"
-msgstr "Borrado del proceso"
+msgstr "Detalle del proceso"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:878
 msgid "Display errors"
 msgstr "Mostrar errores"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:909
-#, fuzzy
-#| msgid "There are no Modules over %s."
 msgid "There are no nodes to do the merge process."
-msgstr "No hay módulos por encima de %s"
+msgstr "No hay nodos para realizar el proceso de combinación."
 
 #: ../../enterprise/include/class/CommandCenter.class.php:1017
-#, fuzzy
-#| msgid "More events"
 msgid "merge events"
-msgstr "Más eventos"
+msgstr "eventos de combinación"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:1060
-#, fuzzy
-#| msgid "Post process"
 msgid "Retry process"
-msgstr "Posprocesado"
+msgstr "Reintentar proceso"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:1065
-#, fuzzy
-#| msgid "Display on front"
 msgid "Display events errors"
-msgstr "Mostrar en la vista principal"
+msgstr "Mostrar errores de eventos"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:1078
-#, fuzzy
-#| msgid "Event History Graph"
 msgid "Events History"
-msgstr "Gráfica de histórico de eventos"
+msgstr "Historial de eventos"
 
 #: ../../enterprise/include/class/CommandCenter.class.php:1140
-#, fuzzy
-#| msgid "Generate events"
 msgid "merge process events"
-msgstr "Generar eventos"
+msgstr "eventos del proceso de combinación"
 
 #: ../../enterprise/include/class/MicrosoftSQLServer.app.php:171
 msgid ""
@@ -19037,10 +18885,8 @@ msgstr "Gestión de servidores"
 
 #: ../../enterprise/meta/general/main_header.php:363
 #: ../../enterprise/meta/general/main_menu.php:412
-#, fuzzy
-#| msgid "Command viewer"
 msgid "Command Center"
-msgstr "Visor de comandos"
+msgstr "command center"
 
 #: ../../enterprise/meta/general/main_header.php:369
 #: ../../enterprise/meta/general/main_menu.php:491 ../../godmode/menu.php:371
@@ -19113,13 +18959,11 @@ msgstr "Correlación de alertas"
 
 #: ../../enterprise/meta/general/main_menu.php:358
 #: ../../enterprise/meta/general/main_menu.php:423
-#, fuzzy
-#| msgid "Centralized management"
 msgid "Centralised management"
 msgstr "Gestión centralizada"
 
 #: ../../enterprise/meta/index.php:847
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "System is not centralised, please go to %s to perform a database merge process."
 msgstr ""
@@ -19303,10 +19147,8 @@ msgstr "Gestión centralizada"
 
 #: ../../enterprise/meta/include/functions_meta.php:121
 #: ../../include/functions_config.php:214
-#, fuzzy
-#| msgid "Attachment store"
 msgid "Attachment store."
-msgstr "Almacenamiento de adjuntos"
+msgstr "Almacenamiento de adjuntos."
 
 #: ../../enterprise/meta/include/functions_meta.php:123
 #: ../../enterprise/meta/advanced/cron_main.php:155
@@ -20032,17 +19874,13 @@ msgstr "Título2 conexión personalizado"
 
 #: ../../enterprise/meta/include/functions_meta.php:1429
 #: ../../include/functions_config.php:1032
-#, fuzzy
-#| msgid "Custom title header"
 msgid "Meta custom title header"
 msgstr "Encabezado de título personalizado"
 
 #: ../../enterprise/meta/include/functions_meta.php:1438
 #: ../../include/functions_config.php:1036
-#, fuzzy
-#| msgid "Custom subtitle header"
 msgid "Meta custom subtitle header"
-msgstr "Encabezado del subtítulo personalizado"
+msgstr "Encabezado de subtítulos meta personalizado"
 
 #: ../../enterprise/meta/include/functions_meta.php:1447
 #: ../../enterprise/meta/advanced/metasetup.visual.php:740
@@ -20435,7 +20273,6 @@ msgid "Less loaded"
 msgstr "Menos cargado"
 
 #: ../../enterprise/meta/include/functions_autoprovision.php:422
-#, fuzzy
 msgid ""
 "It uses the Round-robin planning method to distribute, \n"
 "                in an equitable way and in a rational order, all the new "
@@ -20452,7 +20289,6 @@ msgstr ""
 "            "
 
 #: ../../enterprise/meta/include/functions_autoprovision.php:430
-#, fuzzy
 msgid ""
 "The new agents will be dynamically assigned to those servers with less load."
 msgstr ""
@@ -20460,7 +20296,6 @@ msgstr ""
 "carga."
 
 #: ../../enterprise/meta/include/functions_autoprovision.php:435
-#, fuzzy
 msgid ""
 "In the customized classification, we will be able to define our own "
 "classification rules, \n"
@@ -21165,65 +21000,45 @@ msgstr "Selecciona el módulo para editarlo o borrarlo"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:505
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:545
-#, fuzzy
-#| msgid "Error creating filter"
 msgid "Error creating alert"
-msgstr "Error al crear filtro"
+msgstr "Error al crear una alerta"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:509
-#, fuzzy
-#| msgid " could not be created"
 msgid "Alert could not be created"
-msgstr " no se ha podido crear"
+msgstr "No se pudo crear la alerta"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:529
-#, fuzzy
-#| msgid "Correlated alerts"
 msgid "Perform create alert"
-msgstr "Alertas correladas"
+msgstr "Realizar crear alerta"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:533
-#, fuzzy
-#| msgid "All agents processed correctly"
 msgid "Alert created correctly"
-msgstr "Todos los agentes procesados correctamente"
+msgstr "Alerta creada correctamente"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:549
-#, fuzzy
-#| msgid "All templates deleted"
 msgid "Alert template must be setted"
-msgstr "Eliminadas todas las plantillas"
+msgstr "La plantilla de alerta debe estar configurada"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:588
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:621
-#, fuzzy
-#| msgid "Error updating filter"
 msgid "Error updating alert"
-msgstr "Error al actualizar el filtro"
+msgstr "Alerta de actualización de error"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:592
-#, fuzzy
-#| msgid "Something gone wrong. Please, try again"
 msgid "Something gone wrong with alert update"
-msgstr "Ha habido un error. inténtelo de nuevo."
+msgstr "Algo salió mal con la actualización de alertas"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:603
-#, fuzzy
-#| msgid "Error update filter."
 msgid "Perform update alert"
-msgstr "Error al actualizar el filtro."
+msgstr "Realizar alerta de actualización"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:607
-#, fuzzy
-#| msgid "All agents processed correctly"
 msgid "Alert updated correctly"
-msgstr "Todos los agentes procesados correctamente"
+msgstr "Alerta actualizada correctamente"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:625
-#, fuzzy
-#| msgid "Templates list"
 msgid "Template must be set."
-msgstr "Lista de plantillas"
+msgstr "Se debe establecer la plantilla."
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:650
 #: ../../enterprise/meta/monitoring/wizard/wizard.manage_alert.php:104
@@ -21274,10 +21089,8 @@ msgid "Please, set a valid IP/Name address"
 msgstr "Por favor, introduce una IP/Nombre de dirección válido."
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.agent.php:209
-#, fuzzy
-#| msgid "Please, select an agent first"
 msgid "Please, select a group first"
-msgstr "Primero seleccione un agente"
+msgstr "Por favor, seleccione primero un grupo"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.web.php:101
 #: ../../enterprise/meta/monitoring/wizard/wizard.module.local.php:108
@@ -21308,7 +21121,7 @@ msgid "Please, set an interval"
 msgstr "Por favor, introduce un intervalo."
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:50
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "You should centralise management in order to use Wizard section. Please go to "
 "%s"
@@ -21427,10 +21240,8 @@ msgid "Create new template"
 msgstr "Crear nueva plantilla"
 
 #: ../../enterprise/meta/monitoring/wizard/wizard.manage_alert.php:280
-#, fuzzy
-#| msgid "Create new custom"
 msgid "Create new action"
-msgstr "Crear nueva consulta personalizada"
+msgstr "Crear nueva acción"
 
 #: ../../enterprise/meta/monitoring/custom_fields_view.php:54
 msgid "Custom fields View"
@@ -21928,10 +21739,8 @@ msgid "Log location: pandora_console/log/audit.log"
 msgstr "Localización de logs:  pandora_console/log/audit.log"
 
 #: ../../enterprise/meta/advanced/collections.php:111
-#, fuzzy
-#| msgid "No agent has been selected"
 msgid "Collection has been deleted"
-msgstr "No se han seleccionado agentes"
+msgstr "Se ha eliminado la colección"
 
 #: ../../enterprise/meta/advanced/collections.php:122
 #: ../../enterprise/meta/advanced/collections.php:144
@@ -22503,10 +22312,8 @@ msgstr ""
 
 #: ../../enterprise/meta/advanced/collections.editor.php:76
 #: ../../enterprise/meta/advanced/collections.data.php:296
-#, fuzzy
-#| msgid "This console is not joining any metaconsole."
 msgid "This console is not manager of this environment."
-msgstr "Esta consola no se unirá a ninguna Metaconsola"
+msgstr "Esta consola no es el administrador de este entorno."
 
 #: ../../enterprise/meta/advanced/collections.editor.php:122
 #: ../../enterprise/meta/advanced/collections.editor.php:190
@@ -22782,14 +22589,10 @@ msgid "Could not be update"
 msgstr "No se pudo actualizar"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:260
-#, fuzzy
-#| msgid "Could not be create, duplicated register found."
 msgid "Could not be created, duplicated register found."
-msgstr "No se ha podido crear, el registro ya existe."
+msgstr "No se pudo crear, se encontró un registro duplicado."
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:322
-#, fuzzy
-#| msgid "Node synchronization process failed"
 msgid "Node synchronization process failed: "
 msgstr "Error al sincronizar con el nodo"
 
@@ -22803,10 +22606,9 @@ msgid "Successfully registered"
 msgstr "Registrado con éxito"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:344
-#, fuzzy, php-format
-#| msgid "Could not be created: %s"
+#, php-format
 msgid "Could not be registered %s"
-msgstr "No se ha podido crear: %s"
+msgstr "No se pudo registrar %s"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:370
 msgid "Successfully delete"
@@ -22853,13 +22655,12 @@ msgid "Successfully disabled"
 msgstr "Desactivado correctamente"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:413
-#, fuzzy, php-format
-#| msgid "Could not be disabled"
+#, php-format
 msgid "Could not be disabled: %s"
-msgstr "No se pudo desactivar"
+msgstr "No se pudo deshabilitar: %s"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:429
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "System is centralised, but you just modify nodes registered, please go to %s "
 "to perform a database merge process."
@@ -22868,10 +22669,8 @@ msgstr ""
 "%s para realizar un proceso de combinación de bases de datos."
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:432
-#, fuzzy
-#| msgid "This address will not be updated by the server"
 msgid "This node will not be usable until unifying the environment"
-msgstr "Esta dirección no será actualizada por el servidor."
+msgstr "Este nodo no será utilizable hasta unificar el entorno"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:507
 #, php-format
@@ -22985,24 +22784,18 @@ msgid "Metaconsole DB port"
 msgstr "Puerto BD Metaconsola"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:726
-#, fuzzy
-#| msgid "Register new node"
 msgid "Register empty node"
-msgstr "Registrar nuevo nodo"
+msgstr "Registrar nodo vacío"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:732
-#, fuzzy
-#| msgid "Register new key into keystore"
 msgid "Register node with data to merge"
-msgstr "Registrar una clave nueva en el repositorio de claves"
+msgstr "Nodo de registro con datos para combinar"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:769
-#, fuzzy
 msgid "Node data will be wiped out"
 msgstr "Los datos del nodo se borrarán"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:770
-#, fuzzy
 msgid ""
 "Information contained in this node is not needed. Node information will be "
 "erased, and replaced with new data from this metaconsole automatically after "
@@ -23013,12 +22806,10 @@ msgstr ""
 "automáticamente después de registrar el nodo. ¿Estás seguro?"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:786
-#, fuzzy
 msgid "Node data will be merged"
 msgstr "Los datos del nodo se fusionarán"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:787
-#, fuzzy
 msgid ""
 "Information contained in this node is useful. After register the node, you "
 "must launch a merge process from command center, which will combine "
@@ -23040,10 +22831,8 @@ msgid "Event replication"
 msgstr "Replicación de eventos"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:836
-#, fuzzy
-#| msgid "Database sanity"
 msgid "Database sync"
-msgstr "Estado de la BD"
+msgstr "Sincronización de bases de datos"
 
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:903
 msgid "New node"
@@ -23234,11 +23023,11 @@ msgstr "Error al actualizar la regla de aprovisionamiento"
 
 #: ../../enterprise/meta/advanced/agents_setup.autoprovision_rules.php:125
 msgid "Error deleting provisioning rule."
-msgstr "Error al borrar la regla de aprovisionamiento"
+msgstr "Error al borrar la regla de aprovisionamiento."
 
 #: ../../enterprise/meta/advanced/agents_setup.autoprovision_rules.php:135
 msgid "There was an error rule when moving the provisioning."
-msgstr "Error al mover la regla de aprovisionamiento"
+msgstr "Error al mover la regla de aprovisionamiento."
 
 #: ../../enterprise/meta/advanced/agents_setup.autoprovision_rules.php:202
 msgid "Edit rule"
@@ -23269,13 +23058,13 @@ msgstr "Hubo un problema al eliminar el servidor"
 #: ../../godmode/update_manager/update_manager.setup.php:143
 #: ../../godmode/update_manager/update_manager.setup.php:202
 msgid "Succesful Update the url config vars."
-msgstr "Variables de configuración de la URL actualizadas correctamente"
+msgstr "Variables de configuración de la URL actualizadas correctamente."
 
 #: ../../enterprise/meta/advanced/metasetup.mail.php:80
 #: ../../godmode/update_manager/update_manager.setup.php:144
 #: ../../godmode/update_manager/update_manager.setup.php:203
 msgid "Unsuccesful Update the url config vars."
-msgstr "Error al actualizar las variables de configuración de la URL"
+msgstr "Error al actualizar las variables de configuración de la URL."
 
 #: ../../enterprise/meta/advanced/metasetup.mail.php:98
 msgid ""
@@ -23342,7 +23131,7 @@ msgstr " Caracteres"
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:102
 msgid "Set 0 if never expire."
-msgstr "Introduce 0 para que nunca expire"
+msgstr "Introduce 0 para que nunca expire."
 
 #: ../../enterprise/meta/advanced/metasetup.password.php:103
 #: ../../enterprise/godmode/setup/setup.php:513
@@ -23499,22 +23288,18 @@ msgid "Online Update Options"
 msgstr "Opciones de actualización online"
 
 #: ../../enterprise/meta/advanced/metasetup.php:254
-#, fuzzy
-#| msgid "Online Update Options"
 msgid "Online Update Offline"
-msgstr "Opciones de actualización online"
+msgstr "Actualización sin conexión"
 
 #: ../../enterprise/meta/advanced/metasetup.php:261
-#, fuzzy
-#| msgid "Online Update Options"
 msgid "Online Update Online"
-msgstr "Opciones de actualización online"
+msgstr "Actualización en línea"
 
 #: ../../enterprise/meta/advanced/agents_setup.autoprovision.php:72
 #, php-format
 msgid "Provisioning custom data <b>%s</b> successfully deleted."
 msgstr ""
-"Datos personalizados de aprovisionamiento <b>%s</b> borrados correctamente"
+"Datos personalizados de aprovisionamiento <b>%s</b> borrados correctamente."
 
 #: ../../enterprise/meta/advanced/agents_setup.autoprovision.php:79
 #, php-format
@@ -23964,22 +23749,18 @@ msgid "Error add '%s' action."
 msgstr "Error al añadir la acción '%s'"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:849
-#, fuzzy
-#| msgid "The file does not exists"
 msgid "The inventory module does not exist"
-msgstr "El archivo seleccionado no existe."
+msgstr "El módulo de inventario no existe"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:854
-#, fuzzy, php-format
-#| msgid "Success add '%s' module."
+#, php-format
 msgid "Success add '%s' inventory module."
-msgstr "Módulo '%s' añadido correctamente"
+msgstr "Éxito agregar el módulo de inventario '%s'."
 
 #: ../../enterprise/extensions/resource_registration/functions.php:855
-#, fuzzy, php-format
-#| msgid "Error adding inventory module"
+#, php-format
 msgid "Error add '%s' inventory module."
-msgstr "Error al añadir el módulo al inventario"
+msgstr "Error al agregar el módulo de inventario '%s'."
 
 #: ../../enterprise/extensions/disabled/check_acls.php:16
 msgid "ACL users for this agent"
@@ -24096,16 +23877,13 @@ msgid "VMware View"
 msgstr "Vista VMware"
 
 #: ../../enterprise/extensions/csv_import_group.php:47
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All group information is read "
 "only. Go to %s to import the CSV."
 msgstr ""
-"Este nodo esta configurado con el modo centralizado. Toda la información de "
-"las políticas está en modo lectura. Vaya a la metaconsola para administrarlo."
+"Este nodo se configura con el modo centralizado. Toda la información del grupo "
+"es de solo lectura. Vaya a %s para importar el CSV."
 
 #: ../../enterprise/extensions/csv_import_group.php:66
 #: ../../enterprise/extensions/csv_import_group/main.php:23
@@ -24272,9 +24050,8 @@ msgid "VMware view options"
 msgstr "Opciones de la vista de VMware"
 
 #: ../../enterprise/extensions/vmware/vmware_view.php:1396
-#, fuzzy
 msgid "VMWare"
-msgstr "VMWare"
+msgstr "VMware"
 
 #: ../../enterprise/extensions/vmware/vmware_view.php:1501
 msgid ""
@@ -24582,16 +24359,13 @@ msgid "List of services"
 msgstr "de los Servicios"
 
 #: ../../enterprise/operation/services/services.list.php:99
-#, fuzzy
-#| msgid "File successfully deleted"
 msgid "Services successfully deleted"
-msgstr "Archivo añadido correctamente"
+msgstr "Servicios eliminados correctamente"
 
 #: ../../enterprise/operation/services/services.list.php:100
-#, fuzzy, php-format
-#| msgid "Error deleting service %s"
+#, php-format
 msgid "Error while deleting services: %s"
-msgstr "Error al eliminar el servicio %s"
+msgstr "Error al eliminar servicios: %s"
 
 #: ../../enterprise/operation/services/services.list.php:114
 msgid "Service deleted successfully"
@@ -24673,10 +24447,8 @@ msgstr "Configurar elementos"
 #: ../../enterprise/operation/services/services.php:136
 #: ../../enterprise/godmode/services/services.elements.php:740
 #: ../../enterprise/godmode/services/services.service.php:431
-#, fuzzy
-#| msgid "Services operations"
 msgid "Bulk service elements operations"
-msgstr "Operaciones de servicios"
+msgstr "Operaciones de elementos de servicio masivos"
 
 #: ../../enterprise/operation/services/services.php:152
 #: ../../enterprise/godmode/services/services.elements.php:755
@@ -24700,10 +24472,8 @@ msgid "Service tree view"
 msgstr "Vista de árbol de servicios"
 
 #: ../../enterprise/operation/services/services.php:229
-#, fuzzy
-#| msgid "Bulk operations"
 msgid "Bulk creation"
-msgstr "Operaciones masivas"
+msgstr "Creación masiva"
 
 #: ../../enterprise/operation/services/services.service.php:55
 #: ../../enterprise/operation/services/services.service_map.php:62
@@ -24880,8 +24650,6 @@ msgstr "Volver al modo ventana"
 #: ../../enterprise/operation/agentes/manage_transmap_creation.php:353
 #: ../../enterprise/operation/agentes/manage_transmap_creation.php:475
 #: ../../enterprise/operation/agentes/transactional_map.php:74
-#, fuzzy
-#| msgid "Transactional map"
 msgid "Transactional Map"
 msgstr "Mapa transaccional"
 
@@ -24994,10 +24762,7 @@ msgstr "Este agente no tiene ninguna política asignada."
 #: ../../enterprise/godmode/policies/policy_collections.php:50
 #: ../../enterprise/godmode/policies/policy_alerts.php:53
 #: ../../godmode/massive/massive_operations.php:347
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All policies information is "
 "read only. Go to %s to manage it."
@@ -25128,10 +24893,8 @@ msgid "Could not be data updated"
 msgstr "Error al actualizar los datos"
 
 #: ../../enterprise/operation/agentes/manage_transmap_creation.php:160
-#, fuzzy
-#| msgid "Create user"
 msgid "Create Phase"
-msgstr "Crear usuario"
+msgstr "Fase de creación"
 
 #: ../../enterprise/operation/agentes/manage_transmap_creation.php:185
 msgid "Index"
@@ -25164,10 +24927,8 @@ msgid "Loop interval"
 msgstr "Intervalo del bucle"
 
 #: ../../enterprise/operation/agentes/manage_transmap_creation.php:462
-#, fuzzy
-#| msgid "Transactional Map - Create Transaction"
 msgid "Transactional Map - Edit Transaction"
-msgstr "Mapa Transaccional - Crear Transacción -"
+msgstr "Mapa transaccional - Editar transacción"
 
 #: ../../enterprise/operation/agentes/ver_agente.php:72
 #: ../../operation/agentes/ver_agente.php:1080
@@ -25198,10 +24959,8 @@ msgid "WUX Console"
 msgstr "Consola WUX"
 
 #: ../../enterprise/operation/agentes/transactional_map.php:61
-#, fuzzy
-#| msgid "Show transaction"
 msgid "List of transactions"
-msgstr "Mostrar transacción"
+msgstr "Lista de transacciones"
 
 #: ../../enterprise/operation/agentes/transactional_map.php:149
 msgid "Name can't be empty"
@@ -25251,10 +25010,8 @@ msgid "Edit phases"
 msgstr "Editar fases"
 
 #: ../../enterprise/operation/agentes/transactional_map.php:461
-#, fuzzy
-#| msgid "Status module"
 msgid "Go to `Status` module"
-msgstr "Módulo de estado"
+msgstr "Vaya al módulo 'Estado'"
 
 #: ../../enterprise/operation/agentes/transactional_map.php:492
 msgid "Error in phases section"
@@ -25684,32 +25441,24 @@ msgid "Enterprise ACL setup"
 msgstr "Configuración ACL Enterprise"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:66
-#, fuzzy
-#| msgid "Service element deleted successfully"
 msgid "ACL element was deleted successfully"
-msgstr "Elemento de servicio eliminado correctamente"
+msgstr "El elemento ACL se eliminó correctamente"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:68
-#, fuzzy
-#| msgid "There was a problem deleting Alert"
 msgid "There was a problem delete ACL element"
-msgstr "Ha habido un problema al eliminar la alerta"
+msgstr "Hubo un problema al eliminar el elemento ACL"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:274
 msgid "This record already exists in the database"
 msgstr "Este registro ya existe en la base de datos."
 
 #: ../../enterprise/godmode/setup/setup_acl.php:279
-#, fuzzy
-#| msgid "Comment added successfully"
 msgid "ACL element is added successfully"
-msgstr "Comentario añadido correctamente"
+msgstr "El elemento ACL se agrega correctamente"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:281
-#, fuzzy
-#| msgid "There was a problem adding Module"
 msgid "There was a problem adding ACL element"
-msgstr "Ha surgido un problema al añadir el módulo."
+msgstr "Hubo un problema al agregar el elemento ACL"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:321
 #: ../../enterprise/godmode/setup/setup_acl.php:396
@@ -26572,17 +26321,15 @@ msgid "Remote/Local"
 msgstr "Remoto/Local"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:372
-#, fuzzy
-#| msgid ""
-#| "The configurations of inventory modules from the nodes have been unified. \n"
-#| "\t\tFrom this point on, changes to the inventory scripts must be made "
-#| "through this screen."
 msgid ""
 "The configurations of inventory modules from the nodes have been unified.\n"
 "\t\tFrom this point on, changes to the inventory scripts must be made through "
 "this screen."
 msgstr ""
-"Las configuraciones de los módulos de inventario de los nodos se han unificado."
+"Las configuraciones de los módulos de inventario de los nodos se han "
+"unificado.\n"
+"\t\tA partir de este momento, los cambios en los scripts de inventario deben "
+"realizarse a través de esta pantalla."
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:374
 msgid "You can find more information at:"
@@ -26600,10 +26347,7 @@ msgid "Local component management"
 msgstr "Gestión de componentes locales"
 
 #: ../../enterprise/godmode/modules/local_components.php:261
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All local components are read "
 "only. Go to %s to manage them."
@@ -27511,77 +27255,60 @@ msgid "Bulk Satellite modules edit"
 msgstr "Editar módulos Satélite de forma masiva"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:156
-#, fuzzy
-#| msgid "Bulk Services creation"
 msgid "Bulk services creation"
-msgstr "Creación de servicios en masa"
+msgstr "Creación de servicios masivos"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:157
 #: ../../enterprise/godmode/services/services.massive.elements.php:56
-#, fuzzy
-#| msgid "Bulk Services deletion"
 msgid "Bulk service elements adition"
-msgstr "Borrado de servicios en masa"
+msgstr "Adición de elementos de servicio masivos"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:158
 #: ../../enterprise/godmode/services/services.massive.elements.php:61
-#, fuzzy
-#| msgid "Bulk Services deletion"
 msgid "Bulk service elements edition"
-msgstr "Borrado de servicios en masa"
+msgstr "Edición de elementos de servicio masivos"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:159
 #: ../../enterprise/godmode/services/services.massive.elements.php:57
-#, fuzzy
-#| msgid "Bulk Services deletion"
 msgid "Bulk service elements deletion"
-msgstr "Borrado de servicios en masa"
+msgstr "Eliminación masiva de elementos de servicio"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:160
-#, fuzzy
-#| msgid "Bulk Services deletion"
 msgid "Bulk services deletion"
 msgstr "Borrado de servicios en masa"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:65
 #: ../../enterprise/godmode/massive/massive_delete_service_elements.php:67
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:71
-#, fuzzy
-#| msgid "You must select a Discovery server."
 msgid "You must select a service"
-msgstr "Seleccione un servidor Discovery."
+msgstr "Debe seleccionar un servicio"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:126
 #: ../../enterprise/godmode/massive/massive_delete_service_elements.php:85
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:212
-#, fuzzy
-#| msgid "Failed to process validation"
 msgid "Failed to process: "
-msgstr "No se ha podido efectuar la validación"
+msgstr "Error al procesar: "
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:144
 #: ../../enterprise/godmode/massive/massive_delete_service_elements.php:103
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:231
-#, fuzzy, php-format
-#| msgid " modules"
+#, php-format
 msgid "%d modules"
-msgstr " módulos"
+msgstr "%d módulos"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:152
 #: ../../enterprise/godmode/massive/massive_delete_service_elements.php:111
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:239
-#, fuzzy, php-format
-#| msgid " agents"
+#, php-format
 msgid "%d agents"
-msgstr " agentes"
+msgstr "%d agentes"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:160
 #: ../../enterprise/godmode/massive/massive_delete_service_elements.php:119
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:247
-#, fuzzy, php-format
-#| msgid "%s servers"
+#, php-format
 msgid "%d services"
-msgstr "Servidores de %s"
+msgstr "%d servicios"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:163
 #: ../../include/class/ConfigPEN.class.php:564
@@ -27596,17 +27323,11 @@ msgstr "No se realizaron cambios"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:243
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:476
-#, fuzzy
-#| msgid "In smart mode weights are automatically calculated."
 msgid "In smart services weights are automatically calculated."
 msgstr "En el modo inteligente, los pesos se calculan automáticamente."
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:248
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:481
-#, fuzzy
-#| msgid ""
-#| "Weights configured are common for every item added to the service, if you "
-#| "want to customize them, please edit the service."
 msgid ""
 "Weights configured are common for every item added to the service, if you want "
 "to customize them, please edit each element at service element editor."
@@ -27656,10 +27377,8 @@ msgid "Selected services"
 msgstr "Servicios seleccionados"
 
 #: ../../enterprise/godmode/massive/massive_edit_service_elements.php:364
-#, fuzzy
-#| msgid "Delete service element"
 msgid "Update selected service elements"
-msgstr "Eliminar elemento de servicio"
+msgstr "Actualizar los elementos de servicio seleccionados"
 
 #: ../../enterprise/godmode/massive/massive_add_modules_policy.php:72
 msgid "Successfully copied "
@@ -28097,31 +27816,27 @@ msgid "Modules used"
 msgstr "Módulos usados"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:112
-#, fuzzy, php-format
-#| msgid " error: Failed to delete element: %s"
+#, php-format
 msgid "Problems while adding module element: %d, %s"
-msgstr " error: No se ha podido eliminar el elemento: %s"
+msgstr "Problemas al agregar el elemento del módulo: %d, %s"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:157
-#, fuzzy, php-format
+#, php-format
 msgid "Problems while adding agent element: %d, %s"
 msgstr "Problemas al agregar el elemento agente: %d, %s"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:204
-#, fuzzy, php-format
-#| msgid "Error deleting service element"
+#, php-format
 msgid "Problems while adding service element: %d, %s"
-msgstr "Error al eliminar el elemento de servicio"
+msgstr "Problemas al agregar elementos de servicio: %d, %s"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:250
 msgid "added"
 msgstr "añadido"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:334
-#, fuzzy
-#| msgid "Item type not valid ["
 msgid "Item type to be added"
-msgstr "Tipo de elemento no válido ["
+msgstr "Tipo de artículo que se agregará"
 
 #: ../../enterprise/godmode/massive/massive_add_service_elements.php:596
 #: ../../include/functions_notifications.php:939
@@ -28896,10 +28611,8 @@ msgid "Instance table"
 msgstr "Tabla de instancias"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:66
-#, fuzzy
-#| msgid "Custom Mysql template builder"
 msgid "Custom MySQL template builder"
-msgstr "Creador de plantillas personalizadas para MySQL"
+msgstr "Creador de plantillas MySQL personalizado"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:116
 msgid "Create custom SQL"
@@ -28915,10 +28628,8 @@ msgid "List of custom MySQL templates"
 msgstr "Listas de plantillas MySQL personalizadas"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:192
-#, fuzzy
-#| msgid "Template to build"
 msgid "Template builder"
-msgstr "Plantilla a crear"
+msgstr "Creador de plantillas"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:211
 msgid "Successfully operation"
@@ -28989,10 +28700,8 @@ msgid "Generate index in PDF render"
 msgstr "Generar índice en formato PDF"
 
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:65
-#, fuzzy
-#| msgid "Graph template editor"
 msgid "Graph template item editor"
-msgstr "Editor de plantillas gráficas"
+msgstr "Editor de elementos de plantilla de gráfico"
 
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:186
 #: ../../enterprise/godmode/reporting/graph_template_item_editor.php:240
@@ -29040,8 +28749,6 @@ msgid "Visual Console Template Wizard"
 msgstr "Asistente de plantilla de consola visual"
 
 #: ../../enterprise/godmode/reporting/visual_console_template_wizard.php:108
-#, fuzzy
-#| msgid "Templates Wizard"
 msgid "Template Wizard"
 msgstr "Asistente de plantillas"
 
@@ -29391,24 +29098,18 @@ msgstr "Gráfico y tabla"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:3195
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1080
-#, fuzzy
-#| msgid "Filter by tag"
 msgid "Filter by network"
-msgstr "Filtrar por tag"
+msgstr "Filtrar por red"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:3225
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1099
-#, fuzzy
-#| msgid "Show not alive hosts"
 msgid "Show alive IPs only"
-msgstr "Mostrar máquinas inactivas"
+msgstr "Mostrar solo IPs vivas"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:3238
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1112
-#, fuzzy
-#| msgid "Show not init agents"
 msgid "Show IPs not assigned to an agent"
-msgstr "Mostrar agentes no iniciados"
+msgstr "Mostrar IP no asignadas a un agente"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:3264
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3387
@@ -29799,10 +29500,8 @@ msgid "Error. Error created template"
 msgstr "Error. Error al crear la plantilla"
 
 #: ../../enterprise/godmode/reporting/visual_console_template.php:149
-#, fuzzy
-#| msgid "Profile name cannot be empty"
 msgid "Error. Template name cannot be repeated"
-msgstr "El nombre de perfil no puede estar vacío."
+msgstr "Error. El nombre de la plantilla no se puede repetir"
 
 #: ../../enterprise/godmode/reporting/visual_console_template.php:151
 msgid "Successfully created template"
@@ -29935,10 +29634,8 @@ msgid "Selected service not found."
 msgstr "Servicio seleccionado no encontrado."
 
 #: ../../enterprise/godmode/services/services.elements.php:511
-#, fuzzy
-#| msgid "Selected service not found."
 msgid "Selected service could generate a loop"
-msgstr "Servicio seleccionado no encontrado."
+msgstr "El servicio seleccionado podría generar un bucle"
 
 #: ../../enterprise/godmode/services/services.elements.php:521
 #, php-format
@@ -30006,10 +29703,8 @@ msgid "No Services or concrete action"
 msgstr "Sin servicios o acción concreta"
 
 #: ../../enterprise/godmode/services/services.service.php:530
-#, fuzzy
-#| msgid "From name"
 msgid "Random name"
-msgstr "Desde nombre"
+msgstr "Nombre aleatorio"
 
 #: ../../enterprise/godmode/services/services.service.php:578
 msgid "Server assigned"
@@ -30073,10 +29768,7 @@ msgstr "Gestión de colecciones"
 #: ../../enterprise/godmode/agentes/collections.php:89
 #: ../../enterprise/godmode/agentes/collections.editor.php:106
 #: ../../enterprise/godmode/agentes/collections.data.php:371
-#, fuzzy, php-format
-#| msgid ""
-#| "This console is not manager of this environment, please manage this feature "
-#| "from centralized manager console (Metaconsole)."
+#, php-format
 msgid ""
 "This console is not manager of this environment, please manage this feature "
 "from %s."
@@ -30276,7 +29968,6 @@ msgid "Collection updated successfully"
 msgstr "Collección actualizada con éxito"
 
 #: ../../enterprise/godmode/agentes/collections.data.php:386
-#, fuzzy
 msgid "Please go to the metaconsole and apply this collection"
 msgstr "Por favor, vaya a la metaconsola y aplique esta colección"
 
@@ -30286,10 +29977,8 @@ msgstr "Error: el directorio donde se almacenan las colecciones no existe."
 
 #: ../../enterprise/godmode/agentes/pandora_networkmap_empty.editor.php:93
 #: ../../godmode/agentes/pandora_networkmap_empty.editor.php:95
-#, fuzzy
-#| msgid "Network maps reading"
 msgid "Empty Network maps editor"
-msgstr "Lectura de mapas de red"
+msgstr "Editor de mapas de red vacío"
 
 #: ../../enterprise/godmode/agentes/pandora_networkmap_empty.editor.php:106
 #: ../../operation/agentes/pandora_networkmap.view.php:2232
@@ -30890,8 +30579,6 @@ msgid "Manage Pandora DB HA"
 msgstr "Gestionar la alta disponibilidad de la base de datos de Pandora FMS"
 
 #: ../../enterprise/godmode/servers/HA_cluster.php:101
-#, fuzzy
-#| msgid "Manage database HA"
 msgid "Manage Database HA"
 msgstr "Gestionar la base de datos de alta disponibilidad"
 
@@ -31100,10 +30787,8 @@ msgstr "Duplicar configuración"
 
 #: ../../enterprise/godmode/menu.php:81
 #: ../../godmode/agentes/configurar_agente.php:712
-#, fuzzy
-#| msgid "Network component management"
 msgid "Network config manager"
-msgstr "Gestión de los componentes de red"
+msgstr "Administrador de configuración de red"
 
 #: ../../enterprise/godmode/menu.php:117
 msgid "Manage agent autoconfiguration"
@@ -31427,10 +31112,8 @@ msgid "Please select any module to copy"
 msgstr "Por favor, selecciona algún módulo para copiar."
 
 #: ../../enterprise/godmode/policies/policies.php:85
-#, fuzzy
-#| msgid "Group not found."
 msgid "Policy not found."
-msgstr "Grupo no encontrado"
+msgstr "No se ha encontrado la política."
 
 #: ../../enterprise/godmode/policies/policies.php:147
 msgid "Policy name already exists"
@@ -31563,10 +31246,8 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_agents.php:125
 #: ../../enterprise/godmode/policies/policy_agents.php:170
 #: ../../enterprise/godmode/policies/policy_agents.php:233
-#, fuzzy
-#| msgid "Module store the service does not exist."
 msgid "Policy with this id does not exist. "
-msgstr "El módulo que almacena los servicios no existe"
+msgstr "La política con este id no existe. "
 
 #: ../../enterprise/godmode/policies/policy_agents.php:154
 #: ../../enterprise/godmode/policies/policy_agents.php:282
@@ -31579,10 +31260,9 @@ msgid "Could not be added to delete queue"
 msgstr "No se pudo añadir a la lista de eliminación."
 
 #: ../../enterprise/godmode/policies/policy_agents.php:222
-#, fuzzy, php-format
-#| msgid "Successfully added"
+#, php-format
 msgid "Successfully added %d"
-msgstr "Añadido correctamente"
+msgstr "Se ha agregado correctamente %d"
 
 #: ../../enterprise/godmode/policies/policy_agents.php:253
 msgid ""
@@ -31593,16 +31273,12 @@ msgstr ""
 "Esto podría causar fallos o problemas en el funcionamiento."
 
 #: ../../enterprise/godmode/policies/policy_agents.php:260
-#, fuzzy
-#| msgid "Successfully added network profile"
 msgid "Successfully added to policy"
-msgstr "Perfil de red añadido correctamente"
+msgstr "Agregado correctamente a la directiva"
 
 #: ../../enterprise/godmode/policies/policy_agents.php:261
-#, fuzzy
-#| msgid "Could not be added"
 msgid "Could not be added to policy"
-msgstr "No se pudo añadir"
+msgstr "No se pudo agregar a la directiva"
 
 #: ../../enterprise/godmode/policies/policy_agents.php:378
 msgid "Apply to"
@@ -31726,15 +31402,13 @@ msgid "T."
 msgstr "T."
 
 #: ../../enterprise/godmode/policies/policy_queue.php:62
-#, fuzzy
 msgid "No policies with this id"
 msgstr "No hay políticas con este identificador"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:127
-#, fuzzy, php-format
-#| msgid "Operations successfully deleted from the queue"
+#, php-format
 msgid "%s: Operations successfully deleted from the queue"
-msgstr "Operaciones eliminadas correctamente de la cola"
+msgstr "%s: Operaciones eliminadas correctamente de la cola"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:134
 msgid "Operations successfully deleted from the queue"
@@ -31936,7 +31610,6 @@ msgstr "OID personalizado"
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:57
 #: ../../godmode/snmpconsole/snmp_filters.php:59
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:51
-#, fuzzy
 msgid "SMNP"
 msgstr "SMNP"
 
@@ -32230,10 +31903,8 @@ msgstr "Odómetro #1"
 
 #: ../../include/rest-api/models/VisualConsole/Item.php:2124
 #: ../../operation/visual_console/view.php:311
-#, fuzzy
-#| msgid "Basic"
 msgid "Basic chart"
-msgstr "Básico"
+msgstr "Gráfico básico"
 
 #: ../../include/rest-api/models/VisualConsole/Item.php:2144
 #: ../../include/functions_visual_map_editor.php:956
@@ -32330,10 +32001,8 @@ msgid "Show legend"
 msgstr "Mostrar leyenda"
 
 #: ../../include/rest-api/models/VisualConsole/Items/BasicChart.php:325
-#, fuzzy
-#| msgid "Module name"
 msgid "Module name color"
-msgstr "Nombre del módulo"
+msgstr "Color del nombre del módulo"
 
 #: ../../include/rest-api/models/VisualConsole/Items/BarsGraph.php:499
 #: ../../include/functions_visual_map_editor.php:378
@@ -32526,10 +32195,8 @@ msgid "Max. Time"
 msgstr "Tiempo máximo"
 
 #: ../../include/rest-api/models/VisualConsole/Items/EventsHistory.php:290
-#, fuzzy
-#| msgid "Element color"
 msgid "Legend color"
-msgstr "Color del elemento"
+msgstr "Color de leyenda"
 
 #: ../../include/rest-api/models/VisualConsole/Items/Box.php:299
 #: ../../include/functions_visual_map_editor.php:107
@@ -33968,10 +33635,8 @@ msgstr "Prioridad baja"
 
 #: ../../include/functions_events.php:309
 #: ../../godmode/events/custom_events.php:98
-#, fuzzy
-#| msgid "Agent ID"
 msgid "Agent IP"
-msgstr "ID de agente"
+msgstr "IP del agente"
 
 #: ../../include/functions_events.php:2543
 #: ../../operation/agentes/tactical.php:227
@@ -34417,10 +34082,8 @@ msgid "Module Histogram graph"
 msgstr "Gráfico de histórico de módulo"
 
 #: ../../include/functions_reports.php:692
-#, fuzzy
-#| msgid "No networkmaps"
 msgid "IPAM networks"
-msgstr "No hay mapas de red"
+msgstr "Redes IPAM"
 
 #: ../../include/functions_reports.php:723
 #: ../../include/functions_reports.php:727
@@ -34432,8 +34095,6 @@ msgid "Projection graph"
 msgstr "Gráfico de proyección"
 
 #: ../../include/functions_reports.php:733
-#, fuzzy
-#| msgid "Avg value"
 msgid "Avg. value"
 msgstr "Valor medio"
 
@@ -34607,14 +34268,10 @@ msgid "Events validated vs unvalidated"
 msgstr "Eventos validados vs no validados"
 
 #: ../../include/functions_reporting_html.php:1492
-#, fuzzy
-#| msgid "Search group"
 msgid "Sec. groups"
-msgstr "Buscar grupo"
+msgstr "Sec. grupos"
 
 #: ../../include/functions_reporting_html.php:1512
-#, fuzzy
-#| msgid "Remote config"
 msgid "Remote conf."
 msgstr "Configuración remota"
 
@@ -34804,16 +34461,12 @@ msgid "Events info (1hr.)"
 msgstr "Información de eventos (1h)"
 
 #: ../../include/functions_reporting_html.php:5816
-#, fuzzy
-#| msgid "This SLA has been affected by the following planned downtimes"
 msgid "This SLA has been affected by the following scheduled downtimes"
-msgstr "Las siguientes paradas planificadas han modificado este SLA"
+msgstr ""
+"Este SLA se ha visto afectado por los siguientes tiempos de inactividad "
+"programados"
 
 #: ../../include/functions_reporting_html.php:5817
-#, fuzzy
-#| msgid ""
-#| "If the duration of the planned downtime is less than 5 minutes it will not "
-#| "be represented in the graph"
 msgid ""
 "If the duration of the scheduled downtime is less than 5 minutes it will not "
 "be represented in the graph"
@@ -34834,14 +34487,10 @@ msgid "Dates"
 msgstr "Fechas"
 
 #: ../../include/functions_reporting_html.php:5855
-#, fuzzy
-#| msgid "This item is affected by a malformed planned downtime"
 msgid "This item is affected by a malformed scheduled downtime"
 msgstr "A este elemento le afecta una parada planificada mal formada."
 
 #: ../../include/functions_reporting_html.php:5855
-#, fuzzy
-#| msgid "Go to the planned downtimes section to solve this"
 msgid "Go to the scheduled downtimes section to solve this"
 msgstr "Ir a la sección de paradas planificadas para solucionar este problema"
 
@@ -35461,10 +35110,9 @@ msgid "report"
 msgstr "informe"
 
 #: ../../include/lib/Group.php:299
-#, fuzzy, php-format
-#| msgid "Failed to apply rule: %s."
+#, php-format
 msgid "Failed to save group %s"
-msgstr "Error al aplicar la regla: %s"
+msgstr "Error al guardar el %s de grupo"
 
 #: ../../include/lib/Module.php:256
 msgid " error: Module has no agent assigned."
@@ -35656,10 +35304,8 @@ msgid "There is not data to show."
 msgstr "No hay datos que mostrar."
 
 #: ../../include/lib/Dashboard/Widgets/service_view.php:190
-#, fuzzy
-#| msgid "Service "
 msgid "Service View"
-msgstr "Servicio "
+msgstr "Vista de servicio"
 
 #: ../../include/lib/Dashboard/Widgets/service_view.php:246
 msgid "Tree"
@@ -35671,10 +35317,8 @@ msgid "The user doesn't have permission to read agents"
 msgstr "El usuario no tiene permiso de lectura para agentes"
 
 #: ../../include/lib/Dashboard/Widgets/service_view.php:456
-#, fuzzy
-#| msgid "Services tree view"
 msgid "Services view"
-msgstr "Vista de árbol de  servicios"
+msgstr "Vista de servicios"
 
 #: ../../include/lib/Dashboard/Widgets/single_graph.php:170
 #: ../../include/lib/Dashboard/Widgets/single_graph.php:394
@@ -36027,16 +35671,14 @@ msgid "Icon image dashboard"
 msgstr "Panel de control de imágenes de iconos"
 
 #: ../../include/functions_plugins.php:58
-#, fuzzy, php-format
-#| msgid "Failed to create service for module %s, %s"
+#, php-format
 msgid "Failed to erase module %d: %s"
-msgstr "No se ha podido crear el servicio para el módulo %s, %s"
+msgstr "Error al borrar el %d del módulo: %s"
 
 #: ../../include/functions_plugins.php:72
-#, fuzzy, php-format
-#| msgid "Failed to apply rule: %s."
+#, php-format
 msgid "Failed to erase policy module: %d"
-msgstr "Error al aplicar la regla: %s"
+msgstr "Error al borrar el módulo de politica: %d"
 
 #: ../../include/auth/mysql.php:295 ../../include/auth/mysql.php:323
 msgid ""
@@ -36060,10 +35702,8 @@ msgstr ""
 
 #: ../../include/auth/mysql.php:348 ../../include/auth/mysql.php:372
 #: ../../include/auth/mysql.php:403
-#, fuzzy
-#| msgid "Custom splash login metaconsole"
 msgid "Please, login into metaconsole first"
-msgstr "Conexión del Splash personalizado de la Metaconsola"
+msgstr "Por favor, inicie sesión en la metaconsola primero"
 
 #: ../../include/auth/mysql.php:684
 msgid "Could not changes password on remote pandora"
@@ -36585,17 +36225,13 @@ msgstr "El día de fin debe ser posterior el día de inicio."
 #: ../../include/functions_planned_downtimes.php:98
 #: ../../include/functions_planned_downtimes.php:814
 #: ../../godmode/agentes/planned_downtime.editor.php:311
-#, fuzzy
-#| msgid "Each planned downtime must have a different name"
 msgid "Each scheduled downtime must have a different name"
-msgstr "Cada parada de servicio planeada debe tener un nombre diferente."
+msgstr "Cada tiempo de inactividad programado debe tener un nombre diferente"
 
 #: ../../include/functions_planned_downtimes.php:103
 #: ../../include/functions_planned_downtimes.php:820
 #: ../../godmode/agentes/planned_downtime.editor.php:316
 #: ../../godmode/agentes/planned_downtime.editor.php:348
-#, fuzzy
-#| msgid "Planned downtime must have a name"
 msgid "Scheduled downtime must have a name"
 msgstr "La parada de servicio planeada debe tener un nombre."
 
@@ -36642,21 +36278,15 @@ msgid "Date is wrong formatted"
 msgstr "Formato de fecha incorrecto"
 
 #: ../../include/functions_planned_downtimes.php:907
-#, fuzzy
-#| msgid "This planned downtime are executed now. Can't delete in this moment."
 msgid "This scheduled downtime are executed now. Can't delete in this moment."
 msgstr ""
 "Esta parada planificada se está ejecutando. No se puede borrar en este momento."
 
 #: ../../include/functions_planned_downtimes.php:914
-#, fuzzy
-#| msgid "Deleted this planned downtime successfully."
 msgid "Deleted this scheduled downtime successfully."
 msgstr "Parada planificada borrada correctamente"
 
 #: ../../include/functions_planned_downtimes.php:916
-#, fuzzy
-#| msgid "Problems for deleted this planned downtime."
 msgid "Problems for deleted this scheduled downtime."
 msgstr "Error al borrar la parada planificada"
 
@@ -36762,8 +36392,6 @@ msgstr "Modo tutorial"
 
 #: ../../include/functions_config.php:322
 #: ../../godmode/setup/setup_general.php:425
-#, fuzzy
-#| msgid "Allow create planned downtimes in the past"
 msgid "Allow create scheduled downtimes in the past"
 msgstr ""
 "Permitir la creación de paradas planificadas con fecha anterior a la actual"
@@ -37349,8 +36977,6 @@ msgid "eHorus id custom field"
 msgstr "ID del campo personalizado de eHorus"
 
 #: ../../include/functions_config.php:1646
-#, fuzzy
-#| msgid "Integria user"
 msgid "Integria user login"
 msgstr "Usuario de Integria"
 
@@ -37464,16 +37090,12 @@ msgid "the Flexible Monitoring System"
 msgstr "Sistema Flexible de Monitorización"
 
 #: ../../include/functions_config.php:2345
-#, fuzzy
-#| msgid "Pandora FMS Metaconsole item edition"
 msgid "PandoraFMS Metaconsole"
-msgstr "Edición de elementos de la Metaconsola de Pandora FMS"
+msgstr "Metaconsola PandoraFMS"
 
 #: ../../include/functions_config.php:2349
-#, fuzzy
-#| msgid "Desynchronized operation on the node "
 msgid "Centralized operation console"
-msgstr "Operación desincronizada en el nodo "
+msgstr "Consola de operación centralizada"
 
 #: ../../include/functions_config.php:2353
 msgid "PANDORA FMS"
@@ -37732,10 +37354,8 @@ msgstr ""
 "desde la consola de gestión centralizada (Metaconsola)."
 
 #: ../../include/functions_api.php:185
-#, fuzzy
-#| msgid "auth error."
 msgid "Auth error"
-msgstr "Error de autenticación."
+msgstr "Error de autenticación"
 
 #: ../../include/functions_api.php:1470
 msgid ""
@@ -37746,16 +37366,13 @@ msgstr ""
 "diferente de 0."
 
 #: ../../include/functions_api.php:1924
-#, fuzzy, php-format
-#| msgid "Update pending agents"
+#, php-format
 msgid "Updated %d/%d agents"
-msgstr "Actualizar agentes pendientes"
+msgstr "Se han actualizado  %d/%d agentes"
 
 #: ../../include/functions_api.php:1932
-#, fuzzy
-#| msgid "Package not updated."
 msgid "Agent updated."
-msgstr "Paquete no actualizado."
+msgstr "Agente actualizado."
 
 #: ../../include/functions_api.php:2164 ../../godmode/setup/os.php:235
 msgid "Success creating OS"
@@ -37879,10 +37496,6 @@ msgid "Correct validation of all policy alerts."
 msgstr "Validación correcta de las alertas de política."
 
 #: ../../include/functions_api.php:7139
-#, fuzzy
-#| msgid ""
-#| "Error stopping downtime. Periodical and running planned downtime cannot be "
-#| "stopped."
 msgid ""
 "Error stopping downtime. Periodical and running scheduled downtime cannot be "
 "stopped."
@@ -37907,22 +37520,16 @@ msgid "and this agents with ids are doesn't exists: "
 msgstr "y estos agentes con los identificadores no existen: "
 
 #: ../../include/functions_api.php:7790
-#, fuzzy
-#| msgid "planned downtime"
 msgid "Planned downtime updated"
-msgstr "parada programada"
+msgstr "Tiempo de parada planificado actualizado"
 
 #: ../../include/functions_api.php:7866
-#, fuzzy
-#| msgid "No agents selected"
 msgid " Agents deleted"
-msgstr "No se seleccionó ningún agente"
+msgstr " Agentes eliminados"
 
 #: ../../include/functions_api.php:7947
-#, fuzzy
-#| msgid "Agent address"
 msgid " Agents added"
-msgstr "Dirección del agente"
+msgstr " Agentes añadidos"
 
 #: ../../include/functions_api.php:8067
 msgid "Data policy module updated."
@@ -38145,7 +37752,7 @@ msgid "Security error"
 msgstr "Error de seguridad"
 
 #: ../../include/functions_filemanager.php:194
-#, fuzzy, php-format
+#, php-format
 msgid "Issue setting umask: %s"
 msgstr "Problema al configurar umask: %s"
 
@@ -38159,7 +37766,6 @@ msgid "Upload error"
 msgstr "Error de subida"
 
 #: ../../include/functions_filemanager.php:228
-#, fuzzy
 msgid "It was impossible to uncompress your file"
 msgstr "Era imposible descomprimir el archivo"
 
@@ -38172,8 +37778,6 @@ msgstr ""
 "configuración de php.ini o contacta con el administrador."
 
 #: ../../include/functions_filemanager.php:290
-#, fuzzy
-#| msgid "Filter created successfully"
 msgid "File created correctly"
 msgstr "Filtro creado correctamente"
 
@@ -38191,10 +37795,8 @@ msgid "Directory created"
 msgstr "Directorio creado"
 
 #: ../../include/functions_filemanager.php:344
-#, fuzzy
-#| msgid "Something gone wrong. Please, try again"
 msgid "Something gone wrong creating directory"
-msgstr "Ha habido un error. inténtelo de nuevo."
+msgstr "Algo salió mal al crear un directorio"
 
 #: ../../include/functions_filemanager.php:566
 #: ../../include/functions_filemanager.php:802
@@ -39030,14 +38632,10 @@ msgid "No selected modules"
 msgstr "No hay módulos seleccionados"
 
 #: ../../include/class/AgentWizard.class.php:1210
-#, fuzzy
-#| msgid "Module exist in policy"
 msgid "Module exists in policy"
 msgstr "El módulo existe en la política"
 
 #: ../../include/class/AgentWizard.class.php:1220
-#, fuzzy
-#| msgid "Module exist in agent"
 msgid "Module exists in agent"
 msgstr "El módulo existe en el agente"
 
@@ -39078,8 +38676,7 @@ msgid "Modules created"
 msgstr "Módulos creados"
 
 #: ../../include/class/AgentWizard.class.php:1914
-#, fuzzy, php-format
-#| msgid "Module \"%s\" exits in this agent"
+#, php-format
 msgid "Module \"%s\" exists in this agent"
 msgstr "El módulo \"%s\" sale de este agente"
 
@@ -39908,8 +39505,6 @@ msgid "results found"
 msgstr "Resultados encontrados"
 
 #: ../../include/class/OrderInterpreter.class.php:427
-#, fuzzy
-#| msgid "Free text for search"
 msgid "Press enter to search"
 msgstr "Búsqueda de texto libre"
 
@@ -40728,10 +40323,8 @@ msgid "Delete this custom command"
 msgstr "Eliminar comando personalizado"
 
 #: ../../include/class/ExternalTools.class.php:486
-#, fuzzy
-#| msgid "This agent doesn't have any GIS data."
 msgid "The agent doesn`t have an IP yet"
-msgstr "Este agente no tiene ningún dato GIS."
+msgstr "El agente aún no tiene una IP"
 
 #: ../../include/class/ExternalTools.class.php:508
 msgid "Traceroute"
@@ -40762,13 +40355,10 @@ msgid "SNMP Version"
 msgstr "Versión SNMP"
 
 #: ../../include/class/ExternalTools.class.php:707
-#, fuzzy
-#| msgid "Command not found."
 msgid "Command not response"
-msgstr "Comando no encontrado."
+msgstr "Comando no responde"
 
 #: ../../include/class/ExternalTools.class.php:716
-#, fuzzy
 msgid "The command failed and obtained the return code:"
 msgstr "El comando falló y obtuvo el código de retorno:"
 
@@ -41126,10 +40716,8 @@ msgid "Log server"
 msgstr "Servidor de registros"
 
 #: ../../include/functions_servers.php:808
-#, fuzzy
-#| msgid "ICMP server"
 msgid "NCM server"
-msgstr "Servidor ICPM"
+msgstr "Servidor NCM"
 
 #: ../../include/functions_servers.php:821
 msgid "Autoprovision server"
@@ -41140,10 +40728,8 @@ msgid "Migration server"
 msgstr "Servidor de migración"
 
 #: ../../include/functions_servers.php:847
-#, fuzzy
-#| msgid "Select server"
 msgid "Alert server"
-msgstr "Seleccionar servidor"
+msgstr "Servidor de alertas"
 
 #: ../../include/functions_servers.php:1315
 msgid "Prediction Server"
@@ -41448,8 +41034,6 @@ msgid "Users connected"
 msgstr "Usuarios conectados"
 
 #: ../../extensions/users_connected.php:42
-#, fuzzy
-#| msgid "This user doesn't have any assigned profile/group"
 msgid "This user does not have any associated profile"
 msgstr "Este usuario no tiene ningún perfil/grupo asignado"
 
@@ -41578,10 +41162,8 @@ msgstr "Alertas disparadas"
 #: ../../extensions/intracom/functions_gis_node.php:27
 #: ../../extensions/intracom/functions_gis_node.php:31
 #: ../../extensions/intracom/functions_gis_node.php:36
-#, fuzzy
-#| msgid "No colections"
 msgid "Node connections"
-msgstr "Sin colecciones"
+msgstr "Conexiones de nodo"
 
 #: ../../extensions/extension_uploader.php:29
 msgid "Uploader extension"
@@ -41940,10 +41522,7 @@ msgid "Resource registration"
 msgstr "Registro de recursos"
 
 #: ../../extensions/resource_registration.php:1094
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. Go to metaconsole to create "
-#| "a policy."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. Go to %s to create a policy."
 msgstr ""
@@ -41968,19 +41547,14 @@ msgstr ""
 "obtener y usar los recursos de %s."
 
 #: ../../extensions/resource_registration.php:1103
-#, fuzzy
-#| msgid ""
-#| "You can get more resurces in our <a href='http://pandorafms.com/Library/"
-#| "Library/'>Public Resource Library</a>"
 msgid ""
 "You can get more resurces in our <a href=\"http://pandorafms.com/Library/"
 "Library/\">Public Resource Library</a>"
 msgstr ""
-"Puede obtener más recursos en nuestra <a href='http://pandorafms.com/Library/"
+"Puede obtener más recursos en nuestra <a href='https://pandorafms.com/Library/"
 "Library/'>Librería de recursos pública</a>"
 
 #: ../../extensions/resource_registration.php:1130
-#, fuzzy
 msgid ""
 "Error uploading resource. Check if the selected file is a valid resource "
 "template in .ptr format"
@@ -42255,10 +41829,8 @@ msgid "Reply"
 msgstr "Responder"
 
 #: ../../operation/messages/message_edit.php:226
-#, fuzzy
-#| msgid "User or group not specified"
 msgid "User or group must be selected."
-msgstr "Usuario o grupo no especificados"
+msgstr "Usuario o grupo no especificados."
 
 #: ../../operation/messages/message_edit.php:244
 #, php-format
@@ -42740,8 +42312,6 @@ msgid "Succesfully deleted"
 msgstr "Eliminado correctamente"
 
 #: ../../operation/agentes/pandora_networkmap.php:656
-#, fuzzy
-#| msgid "List of networkmap"
 msgid "List of network maps"
 msgstr "Lista de mapas de red"
 
@@ -42829,10 +42399,8 @@ msgid "# of Packages"
 msgstr "# de paquetes"
 
 #: ../../operation/agentes/pandora_networkmap.editor.php:205
-#, fuzzy
-#| msgid "Network maps reading"
 msgid "Network maps editor"
-msgstr "Lectura de mapas de red"
+msgstr "Editor de mapas de red"
 
 #: ../../operation/agentes/pandora_networkmap.editor.php:382
 msgid "Source id group changed. All elements in networkmap will be lost."
@@ -42852,10 +42420,8 @@ msgid "empty"
 msgstr "vacío"
 
 #: ../../operation/agentes/interface_view.php:63 ../../operation/menu.php:61
-#, fuzzy
-#| msgid "Interface"
 msgid "Interface view"
-msgstr "Interfaz"
+msgstr "Vista de interfaz"
 
 #: ../../operation/agentes/custom_fields.php:59
 msgid "No fields defined"
@@ -42897,45 +42463,34 @@ msgstr "Estado de las fuentes de logs"
 
 #: ../../operation/agentes/interface_view.functions.php:170
 #: ../../operation/agentes/interface_view.functions.php:171
-#, fuzzy
-#| msgid "Include filter"
 msgid "Interface filter"
-msgstr "Incluir filtro"
+msgstr "Filtro de interfaz"
 
 #: ../../operation/agentes/interface_view.functions.php:489
-#, fuzzy
-#| msgid "Name"
 msgid "IfName"
-msgstr "Nombre"
+msgstr "IfName"
 
 #: ../../operation/agentes/interface_view.functions.php:499
-#, fuzzy
 msgid "IfSpeed"
 msgstr "IfSpeed"
 
 #: ../../operation/agentes/interface_view.functions.php:507
-#, fuzzy
 msgid "IfInOctets"
 msgstr "IfInOctets"
 
 #: ../../operation/agentes/interface_view.functions.php:515
-#, fuzzy
 msgid "IfOutOctets"
 msgstr "IfOutOctets"
 
 #: ../../operation/agentes/interface_view.functions.php:523
-#, fuzzy
 msgid "% Bandwidth usage (in)"
-msgstr "% Uso de ancho de banda (en)"
+msgstr "% Uso de ancho de banda (entrada)"
 
 #: ../../operation/agentes/interface_view.functions.php:531
-#, fuzzy
 msgid "% Bandwidth usage (out)"
 msgstr "% Uso de ancho de banda (salida)"
 
 #: ../../operation/agentes/interface_view.functions.php:728
-#, fuzzy
-#| msgid "Sorry no search parameters"
 msgid "No search parameters"
 msgstr "No hay parámetros de búsqueda"
 
@@ -43149,19 +42704,16 @@ msgid "Min. hours in current status"
 msgstr "Mín. de horas en el estado actual"
 
 #: ../../operation/agentes/status_monitor.php:772
-#, fuzzy
-#| msgid "Postconditions "
 msgid "Not condition"
-msgstr "Condiciones posteriores "
+msgstr "Condition NOT"
 
 #: ../../operation/agentes/status_monitor.php:785
-#, fuzzy
 msgid ""
 "If you check this option, those elements that do NOT meet any of the "
 "requirements will be shown"
 msgstr ""
 "Si marca esta opción, se mostrarán aquellos elementos que NO cumplan alguno de "
-"los requisitos."
+"los requisitos"
 
 #: ../../operation/agentes/status_monitor.php:838
 msgid "Advanced Options"
@@ -43313,10 +42865,7 @@ msgid "Edit my User"
 msgstr "Editar mi usuario"
 
 #: ../../operation/users/user_edit.php:250 ../../godmode/users/user_list.php:410
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All users information is read "
 "only. Go to %s to manage it."
@@ -43452,10 +43001,8 @@ msgid "eHorus user acces enabled"
 msgstr "Acceso de usuario eHorus habilitado"
 
 #: ../../operation/users/user_edit.php:729
-#, fuzzy
-#| msgid "eHorus user configuration"
 msgid "Integria user configuration"
-msgstr "Configuración de usuario eHorus"
+msgstr "Configuración de usuario de Integria"
 
 #: ../../operation/users/user_edit.php:766
 msgid "You can not change your user info under the current authentication scheme"
@@ -43811,10 +43358,8 @@ msgid "Started"
 msgstr "Iniciado hace"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:85
-#, fuzzy
-#| msgid "Statistics"
 msgid "SNMP Statistics"
-msgstr "Estadísticas"
+msgstr "Estadísticas SNMP"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:156
 #: ../../operation/snmpconsole/snmp_view.php:720
@@ -44090,13 +43635,10 @@ msgid "Id source event"
 msgstr "Evento de origen de ID"
 
 #: ../../operation/events/events.php:1365
-#, fuzzy
-#| msgid "From name"
 msgid "From (date:time)"
-msgstr "Desde nombre"
+msgstr "Desde (fecha:hora)"
 
 #: ../../operation/events/events.php:1423
-#, fuzzy
 msgid "To (date:time)"
 msgstr "Hasta (fecha:hora)"
 
@@ -44677,13 +44219,10 @@ msgid "Check mail configuration"
 msgstr "Revisar configuración de correo"
 
 #: ../../godmode/setup/setup_integria.php:293
-#, fuzzy
-#| msgid "Update Integria IMS Ticket"
 msgid "URL to Integria IMS setup"
-msgstr "Actualizar el ticket de Integria IMS"
+msgstr "URL a la configuración de Integria IMS"
 
 #: ../../godmode/setup/setup_integria.php:293
-#, fuzzy
 msgid ""
 "Full URL to your Integria IMS setup (e.g., http://192.168.1.20/integria, "
 "https://support.mycompany.com)."
@@ -44706,10 +44245,8 @@ msgstr "Inventario Sync"
 
 #: ../../godmode/setup/setup_integria.php:345
 #: ../../godmode/setup/setup_integria.php:466
-#, fuzzy
-#| msgid "Ticket"
 msgid "Ticket body"
-msgstr "Ticket"
+msgstr "Cuerpo del ticket"
 
 #: ../../godmode/setup/setup_integria.php:578 ../../godmode/setup/setup.php:162
 #: ../../godmode/setup/setup.php:280 ../../godmode/menu.php:350
@@ -44851,10 +44388,7 @@ msgid "Correct update the setup options"
 msgstr "Actualización correcta de las opciones de configuración"
 
 #: ../../godmode/setup/os.list.php:53
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All OS definitions are read "
 "only. Go to %s to manage them."
@@ -44984,8 +44518,6 @@ msgid "Edit OS"
 msgstr "Editar SO"
 
 #: ../../godmode/setup/os.php:208
-#, fuzzy
-#| msgid "List OS"
 msgid "List of OS"
 msgstr "Lista de sistemas operativos"
 
@@ -45215,13 +44747,10 @@ msgid "License management"
 msgstr "Gestión de licencias"
 
 #: ../../godmode/setup/license.php:90
-#, fuzzy
-#| msgid "When connecting to licence server."
 msgid "Error while connecting to licence server."
-msgstr "Al conectar con el servidor de licencias."
+msgstr "Error al conectar con el servidor de licencias."
 
 #: ../../godmode/setup/license.php:91
-#, fuzzy
 msgid "Invalid response while validating license."
 msgstr "Respuesta no válida al validar la licencia."
 
@@ -45296,10 +44825,7 @@ msgid "Remote component management"
 msgstr "Gestión remota de componentes"
 
 #: ../../godmode/modules/manage_network_components.php:310
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All remote components are read "
 "only. Go to %s to manage them."
@@ -45457,10 +44983,7 @@ msgid "Could not be created. Blank name"
 msgstr "No pudo ser creado. Nombre en blanco"
 
 #: ../../godmode/modules/manage_nc_groups.php:284
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. Component groups are read only. "
 "Go to %s to manage it."
@@ -45678,10 +45201,7 @@ msgstr "No se seleccionó ninguna alerta"
 
 #: ../../godmode/massive/massive_delete_profiles.php:52
 #: ../../godmode/massive/massive_add_profiles.php:52
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All profiles user information "
 "is read only. Go to %s to manage it."
@@ -45787,10 +45307,7 @@ msgstr ""
 "cambios o póngase en contacto con el administrador."
 
 #: ../../godmode/massive/massive_operations.php:420
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. To delete an agent go to "
-#| "metaconsole."
+#, php-format
 msgid "This node is configured with centralized mode. To delete agents go to %s"
 msgstr ""
 "Este nodo está configurado en modo centralizado. Para eliminar un agente, vaya "
@@ -46212,16 +45729,11 @@ msgstr "Editar o borrar grupos puede causar problemas con la sincronización."
 
 #: ../../godmode/groups/group_list.php:376
 #: ../../godmode/groups/configure_group.php:123
-#, fuzzy
-#| msgid "Manage agents groups"
 msgid "Manage agents group"
-msgstr "Configuración de grupos de agentes"
+msgstr "Administrar grupo de agentes"
 
 #: ../../godmode/groups/group_list.php:395
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All groups information is read "
 "only. Go to %s to manage it."
@@ -46318,10 +45830,7 @@ msgid "Module groups defined in %s"
 msgstr "Grupos de módulos definidos en %s"
 
 #: ../../godmode/groups/modu_group_list.php:92
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All module groups information "
 "is read only. Go to %s to manage it."
@@ -46463,10 +45972,8 @@ msgid "Graphs containers"
 msgstr "Contenedores de gráficos"
 
 #: ../../godmode/reporting/graphs.php:120
-#, fuzzy
-#| msgid "Custom graphs"
 msgid "List of custom graphs"
-msgstr "Gráficos personalizados"
+msgstr "Lista de gráficos personalizados"
 
 #: ../../godmode/reporting/graphs.php:225
 #: ../../godmode/reporting/reporting_builder.php:790
@@ -46641,10 +46148,8 @@ msgid "Reports list"
 msgstr "Lista de informes"
 
 #: ../../godmode/reporting/reporting_builder.php:583
-#, fuzzy
-#| msgid "List of Alerts"
 msgid "List of reports"
-msgstr "Lista de alertas"
+msgstr "Lista de informes"
 
 #: ../../godmode/reporting/reporting_builder.php:1055
 msgid "This report exceeds the item limit for realtime operations"
@@ -46729,7 +46234,6 @@ msgid "Favourite visual console"
 msgstr "Consola visual favorita"
 
 #: ../../godmode/reporting/visual_console_builder.data.php:225
-#, fuzzy
 msgid "Auto adjust to screen in fullscreen"
 msgstr "Ajuste automático a la pantalla en pantalla completa"
 
@@ -46876,10 +46380,8 @@ msgstr ""
 "módulos al final del informe y las comprobaciones."
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:2488
-#, fuzzy
-#| msgid "Checks in OK status"
 msgid "Checks in Warning status"
-msgstr "Comprobaciones en estado OK"
+msgstr "Chequeos en estado Warning"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:2639
 msgid "Include extended events"
@@ -46938,58 +46440,40 @@ msgid "Display options"
 msgstr "Mostrar opciones"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3191
-#, fuzzy
-#| msgid "Agent group"
 msgid "Agent group filter"
-msgstr "Grupo de agentes"
+msgstr "Filtro de grupo de agentes"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3211
-#, fuzzy
-#| msgid "Event filter"
 msgid "Agent OS filter"
-msgstr "Filtro de eventos"
+msgstr "Filtro del so del agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3237
-#, fuzzy
-#| msgid "Agent custom fields"
 msgid "Agent custom field"
-msgstr "Campos personalizados de agente"
+msgstr "Campo personalizado de agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3259
-#, fuzzy
-#| msgid "Agent custom fields"
 msgid "Agent custom field filter"
-msgstr "Campos personalizados de agente"
+msgstr "Filtro de campo personalizado de agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3283
-#, fuzzy
-#| msgid "Agent status"
 msgid "Agent status filter"
-msgstr "Estado de agente"
+msgstr "Filtro de estado del agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3321
-#, fuzzy
-#| msgid "Agent version installed"
 msgid "Agent version filter"
-msgstr "Verison de agente instalada"
+msgstr "Filtro de versión del agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3345
-#, fuzzy
-#| msgid "Agent autoconfiguration"
 msgid "Agent has remote configuration"
-msgstr "Autoconfiguración de agente"
+msgstr "El agente tiene configuración remota"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3346
-#, fuzzy
-#| msgid "Remote configuration enabled"
 msgid "Filter agents by remote configuration enabled."
-msgstr "Configuración remota habilitada"
+msgstr "Filtrar agentes por configuración remota habilitada."
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3357
-#, fuzzy
-#| msgid "Agent/module view"
 msgid "Agent module filter"
-msgstr "Vista de agente/módulo"
+msgstr "Filtro del módulo del agente"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3463
 #: ../../godmode/reporting/reporting_builder.item_editor.php:3897
@@ -47238,10 +46722,8 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.export_csv.php:199
 #: ../../godmode/agentes/planned_downtime.list.php:365
-#, fuzzy
-#| msgid "Scheduled downtime"
 msgid "No scheduled downtime"
-msgstr "Desconexión programada"
+msgstr "No hay paradas planificadas"
 
 #: ../../godmode/agentes/module_manager_editor_common.php:108
 msgid "Using module component"
@@ -47497,16 +46979,12 @@ msgid "Add Module:"
 msgstr "Añadir módulo:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:1513
-#, fuzzy
-#| msgid ""
-#| "WARNING: If you edit this planned downtime, the data of future SLA reports "
-#| "may be altered"
 msgid ""
 "WARNING: If you edit this scheduled downtime, the data of future SLA reports "
 "may be altered"
 msgstr ""
 "ADVERTENCIA: si se modifica esta parada planificada, los datos de los futuros "
-"informes SLA pueden ser alterados."
+"informes SLA pueden ser alterados"
 
 #: ../../godmode/agentes/configure_field.php:38
 msgid "Update agent custom field"
@@ -47578,7 +47056,6 @@ msgid "SNMP walk"
 msgstr "SNMP walk"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:448
-#, fuzzy
 msgid ""
 "Please use single quotation marks when necessary. \n"
 "\n"
@@ -47807,11 +47284,9 @@ msgid "Altitude: "
 msgstr "Altitud: "
 
 #: ../../godmode/agentes/planned_downtime.list.php:47
-#, fuzzy
-#| msgid "An error occurred while migrating the malformed planned downtimes"
 msgid "An error occurred while migrating the malformed scheduled downtimes"
 msgstr ""
-"Ha ocurrido un error mientras se migraban paradas planificadas mal formadas."
+"Ha ocurrido un error mientras se migraban paradas planificadas mal formadas"
 
 #: ../../godmode/agentes/planned_downtime.list.php:47
 msgid "Please run the migration again or contact with the administrator"
@@ -47820,16 +47295,12 @@ msgstr ""
 "administrador"
 
 #: ../../godmode/agentes/planned_downtime.list.php:83
-#, fuzzy
-#| msgid "An error occurred stopping the planned downtime"
 msgid "An error occurred stopping the scheduled downtime"
-msgstr "Se produjo un error al detener la parada planificada."
+msgstr "Se produjo un error al detener la parada planificada"
 
 #: ../../godmode/agentes/planned_downtime.list.php:106
-#, fuzzy
-#| msgid "This planned downtime is running"
 msgid "This scheduled downtime is running"
-msgstr "Esta parada planificada se está ejecutando."
+msgstr "Esta parada planificada se está ejecutando"
 
 #: ../../godmode/agentes/planned_downtime.list.php:162
 msgid "Show past downtimes"
@@ -47854,22 +47325,16 @@ msgid "Not running"
 msgstr "No está en ejecución"
 
 #: ../../godmode/agentes/planned_downtime.list.php:575
-#, fuzzy
-#| msgid ""
-#| "WARNING: If you delete this planned downtime, it will not be taken into "
-#| "account in future SLA reports"
 msgid ""
 "WARNING: If you delete this scheduled downtime, it will not be taken into "
 "account in future SLA reports"
 msgstr ""
 "ADVERTENCIA: si se borra esta parada planificada, no se tendrá en cuenta en "
-"futuros informes SLA."
+"futuros informes SLA"
 
 #: ../../godmode/agentes/planned_downtime.list.php:581
-#, fuzzy
-#| msgid "WARNING: There are malformed planned downtimes"
 msgid "WARNING: There are malformed scheduled downtimes"
-msgstr "ADVERTENCIA: hay paradas planificadas mal formadas."
+msgstr "ADVERTENCIA: hay paradas planificadas mal formadas"
 
 #: ../../godmode/agentes/planned_downtime.list.php:581
 msgid "Do you want to migrate automatically the malformed items?"
@@ -48066,15 +47531,12 @@ msgid "Agents defined in %s"
 msgstr "Agentes definidos en %s"
 
 #: ../../godmode/agentes/modificar_agente.php:124
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. To delete an agent go to "
-#| "metaconsole."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. Go to %s to delete an agent"
 msgstr ""
 "Este nodo está configurado en modo centralizado. Para eliminar un agente, vaya "
-"a la Metaconsola."
+"a la Metaconsola"
 
 #: ../../godmode/agentes/modificar_agente.php:170
 msgid "Success deleted agent."
@@ -48361,15 +47823,11 @@ msgstr ""
 "componentes están usando el plugin."
 
 #: ../../godmode/servers/plugin_registration.php:65
-#, fuzzy
 msgid "PLUGIN REGISTRATION"
 msgstr "REGISTRO DE PLUGINS"
 
 #: ../../godmode/servers/plugin_registration.php:76
-#, fuzzy, php-format
-#| msgid ""
-#| "This console is not manager of this environment, please manage this feature "
-#| "from centralized manager console (Metaconsole)."
+#, php-format
 msgid ""
 "This console is not manager of this environment, please manage this feature "
 "from feature from %s."
@@ -48382,21 +47840,16 @@ msgid "Plugin Registration"
 msgstr "Registro de puglins"
 
 #: ../../godmode/servers/plugin_registration.php:103
-#, fuzzy
-#| msgid "You can export resource templates in .ptr format."
 msgid "You can get more plugins in our"
-msgstr "Puede exportar plantillas de recursos en formato .prt."
+msgstr "Puedes obtener más plugins en nuestra"
 
 #: ../../godmode/servers/plugin_registration.php:105
-#, fuzzy
 msgid "Public Resource Library"
 msgstr "Biblioteca de Recursos Públicos"
 
 #: ../../godmode/servers/plugin_registration.php:133
-#, fuzzy
-#| msgid "Failed to create policy"
 msgid "Failed to create temporary directory"
-msgstr "Error al crear política"
+msgstr "Error al crear un directorio temporal"
 
 #: ../../godmode/servers/plugin_registration.php:152
 msgid "Cannot load INI file"
@@ -48427,16 +47880,13 @@ msgid "Registered successfully"
 msgstr "Registrado correctamente"
 
 #: ../../godmode/servers/plugin_registration.php:516
-#, fuzzy
-#| msgid "Unable to open public key file %s"
 msgid "Unable to uncompress uploaded file"
-msgstr "No se ha podido abrir el archivo de clave pública %s"
+msgstr "No se puede descomprimir el archivo cargado"
 
 #: ../../godmode/servers/plugin_registration.php:534
-#, fuzzy, php-format
-#| msgid "Cannot read file"
+#, php-format
 msgid "Cannot move uploaded file to %s."
-msgstr "No se puede leer el archivo"
+msgstr "No se puede mover el archivo cargado a %s."
 
 #: ../../godmode/servers/servers.build_table.php:104
 msgid "Server has crashed."
@@ -48504,10 +47954,7 @@ msgid "Create category"
 msgstr "Crear categoría"
 
 #: ../../godmode/category/category.php:105
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All categories information is "
 "read only. Go to %s to manage it."
@@ -48554,10 +48001,7 @@ msgstr "Configurar comando de alerta"
 
 #: ../../godmode/alerts/configure_alert_command.php:172
 #: ../../godmode/alerts/alert_commands.php:629
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All alerts templates "
-#| "information is read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All alert commands information "
 "is read only. Go to %s to manage it."
@@ -48662,10 +48106,7 @@ msgstr "Acciones de alerta"
 
 #: ../../godmode/alerts/alert_actions.php:228
 #: ../../godmode/alerts/configure_alert_action.php:117
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All alerts templates "
-#| "information is read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All alert actions information "
 "is read only. Go to %s to manage it."
@@ -48703,10 +48144,7 @@ msgid "Advanced fields"
 msgstr "Campos avanzados"
 
 #: ../../godmode/alerts/configure_alert_template.php:386
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All alerts templates "
-#| "information is read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All alerts templates "
 "information is read only. Go to Go to %s to manage it."
@@ -48860,10 +48298,7 @@ msgstr ""
 "ticket en Integria IMS en vez de cerrar el ticket."
 
 #: ../../godmode/alerts/alert_templates.php:273
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All alerts templates "
-#| "information is read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All alert templates information "
 "is read only. Go to %s to manage it."
@@ -49168,22 +48603,16 @@ msgid "Manage visual console"
 msgstr "Gestionar consolas visuales"
 
 #: ../../godmode/users/configure_profile.php:352
-#, fuzzy
-#| msgid "Other SNMP data"
 msgid "View NCM data"
-msgstr "Otros datos SNMP"
+msgstr "Ver datos de NCM"
 
 #: ../../godmode/users/configure_profile.php:356
-#, fuzzy
-#| msgid "Operation Menu"
 msgid "Operate NCM"
-msgstr "Menú Operación"
+msgstr "Operar NCM"
 
 #: ../../godmode/users/configure_profile.php:360
-#, fuzzy
-#| msgid "Manage"
 msgid "Manage NCM"
-msgstr "Gestionar"
+msgstr "Administrar NCM"
 
 #: ../../godmode/users/configure_profile.php:367
 msgid "Manage users"
@@ -49400,10 +48829,7 @@ msgstr ""
 "seguro?"
 
 #: ../../godmode/users/profile_list.php:115
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All profiles information is "
 "read only. Go to %s to manage it."
@@ -49436,10 +48862,8 @@ msgid "Categories"
 msgstr "Categorías"
 
 #: ../../godmode/module_library/module_library_view.php:65
-#, fuzzy
-#| msgid "Main event view"
 msgid "Main view"
-msgstr "Vista principal de eventos"
+msgstr "Vista principal"
 
 #: ../../godmode/module_library/module_library_view.php:78
 #: ../../godmode/menu.php:545
@@ -49537,10 +48961,8 @@ msgid "Manage servers"
 msgstr "Gestionar servidores"
 
 #: ../../godmode/menu.php:296
-#, fuzzy
-#| msgid "Register plugin"
 msgid "Register Plugin"
-msgstr "Registro plugin"
+msgstr "Registrar Plugin"
 
 #: ../../godmode/menu.php:358
 msgid "Websocket Engine"
@@ -49616,10 +49038,7 @@ msgid "Successfully deleted tag"
 msgstr "Etiqueta eliminada correctamente"
 
 #: ../../godmode/tag/tag.php:184
-#, fuzzy, php-format
-#| msgid ""
-#| "This node is configured with centralized mode. All policies information is "
-#| "read only. Go to metaconsole to manage it."
+#, php-format
 msgid ""
 "This node is configured with centralized mode. All tags information is read "
 "only. Go to %s to manage it."
@@ -50011,10 +49430,8 @@ msgid "URL update manager"
 msgstr "URL Administrador de actualizaciones"
 
 #: ../../godmode/update_manager/update_manager.setup.php:239
-#, fuzzy
-#| msgid "URL update manager:"
 msgid "Use secured update manager:"
-msgstr "URL Administrador de actualizaciones:"
+msgstr "Utilice el administrador de actualizaciones seguro:"
 
 #: ../../godmode/update_manager/update_manager.setup.php:248
 msgid "Proxy server:"
@@ -50093,31 +49510,27 @@ msgid "Update manager Â» Online"
 msgstr "Administrador de actualizaciones » Online"
 
 #: ../../godmode/um_client/index.php:99
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "You cannot use update manager %s. You are exceding monitoring limits by %s "
 "elements. Please update your license or disable enterprise section by moving "
 "enterprise directory to another location and try again."
 msgstr ""
 "No puede utilizar el administrador de actualizaciones %s. Estás exiendo los "
-"límites de supervisión al %s elementos. Actualice su licencia o deshabilite la "
-"sección de empresa moviendo el directorio de la empresa a otra ubicación e "
-"inténtelo de nuevo."
+"límites de supervisión al %s elementos. Actualice su licencia."
 
 #: ../../godmode/um_client/index.php:110
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "You cannot use update manager %s. This license has expired %d days ago. Please "
 "update your license or disable enterprise section by moving enterprise "
 "directory to another location and try again."
 msgstr ""
 "No puede utilizar el administrador de actualizaciones %s. Esta licencia ha "
-"caducado hace %d días. Actualice su licencia o deshabilite la sección de "
-"empresa moviendo el directorio de la empresa a otra ubicación e inténtelo de "
-"nuevo."
+"caducado hace %d días. Actualice su licencia."
 
 #: ../../godmode/um_client/index.php:127
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "You cannot use update manager %s. This license is a trial license to test all "
 "%s features. Please update your license to unlock all %s features."
@@ -50127,31 +49540,25 @@ msgstr ""
 "licencia para desbloquear todas %s funciones."
 
 #: ../../godmode/um_client/index.php:227
-#, fuzzy, php-format
+#, php-format
 msgid "Master server version %s does not match console version %s."
 msgstr ""
 "La versión maestra del servidor %s no coincide con la versión de consola %s."
 
 #: ../../godmode/um_client/index.php:240
-#, fuzzy, php-format
-#| msgid ""
-#| "Please, change it on your PHP configuration file (php.ini) or contact with "
-#| "administrator"
+#, php-format
 msgid ""
 "'%s' recommended value is %s or greater. Please, change it on your PHP "
 "configuration file (php.ini) or contact with administrator"
 msgstr ""
-"Por favor, cámbialo en el archivo de configuración de PHP (php.ini) o contacta "
-"con un administrador."
+"El valor recomendado \"%s\" es %s o mayor. Por favor, cámbielo en su archivo "
+"de configuración PHP (php.ini) o póngase en contacto con el administrador"
 
 #: ../../godmode/um_client/index.php:329
-#, fuzzy
-#| msgid "Update Manager Online requires registration"
 msgid "Update manager online requires registration."
-msgstr "Debe registrarse en Update Manager Online"
+msgstr "Update Manager online requiere registro."
 
 #: ../../godmode/um_client/index.php:334
-#, fuzzy
 msgid ""
 "Applying offline patches may make your console unusable, we recommend to "
 "completely backup your files before applying any patch."
@@ -50161,44 +49568,32 @@ msgstr ""
 "archivos antes de aplicar cualquier parche."
 
 #: ../../godmode/um_client/views/online.php:64
-#, fuzzy
-#| msgid "Update to the last version"
 msgid "Update to next version"
-msgstr "Actualizar a la última versión"
+msgstr "Actualizar a la siguiente versión"
 
 #: ../../godmode/um_client/views/online.php:65
-#, fuzzy
-#| msgid "Update to the last version"
 msgid "Update to latest version"
 msgstr "Actualizar a la última versión"
 
 #: ../../godmode/um_client/views/online.php:89
 #: ../../godmode/um_client/views/offline.php:72
-#, fuzzy
-#| msgid "Updating"
 msgid "Updating to"
 msgstr "Actualizando"
 
 #: ../../godmode/um_client/views/online.php:90
 #: ../../godmode/um_client/views/offline.php:73
-#, fuzzy
-#| msgid "Are you sure you want to perform this action?"
 msgid "Do you really want to leave our brilliant application?"
 msgstr "¿Estás seguro de que quieres realizar esta acción?"
 
 #: ../../godmode/um_client/views/online.php:91
 #: ../../godmode/um_client/views/offline.php:74
-#, fuzzy
-#| msgid "There is no update available."
 msgid "There are no updates available"
 msgstr "No hay actualizaciones disponibles"
 
 #: ../../godmode/um_client/views/online.php:92
 #: ../../godmode/um_client/views/offline.php:75
-#, fuzzy
-#| msgid "Searching for devices..."
 msgid "Searching for updates..."
-msgstr "Buscando dispositivos..."
+msgstr "Buscando actualizaciones..."
 
 #: ../../godmode/um_client/views/online.php:93
 #: ../../godmode/um_client/views/offline.php:76
@@ -50208,7 +49603,6 @@ msgstr "Paquete"
 #: ../../godmode/um_client/views/online.php:122
 #: ../../godmode/um_client/views/online.php:163
 #: ../../godmode/um_client/views/offline.php:69
-#, fuzzy
 msgid "This action will upgrade this console to version "
 msgstr "Esta acción actualizará esta consola a la versión "
 
@@ -50219,14 +49613,10 @@ msgstr "Actualización para"
 
 #: ../../godmode/um_client/views/online.php:144
 #: ../../godmode/um_client/views/online.php:148
-#, fuzzy
-#| msgid "Failed to update"
 msgid "Failed to update to "
-msgstr "Error al actualizar"
+msgstr "Error al actualizar a "
 
 #: ../../godmode/um_client/views/online.php:187
-#, fuzzy
-#| msgid "Failed to update"
 msgid "Failed to update:"
 msgstr "Error al actualizar"
 
@@ -50235,8 +49625,6 @@ msgid "Drop the package here or"
 msgstr "Arrastre el paquete hasta aquí o"
 
 #: ../../godmode/um_client/views/offline.php:65
-#, fuzzy
-#| msgid "browse it"
 msgid "Browse it"
 msgstr "navegue hasta él"
 
@@ -50260,30 +49648,27 @@ msgid "Click on the file below to begin."
 msgstr "Haz clic en el archivo de abajo para comenzar."
 
 #: ../../godmode/um_client/views/offline.php:70
-#, fuzzy
 msgid "This action will upgrade all servers to version "
 msgstr "Esta acción actualizará todos los servidores a la versión "
 
 #: ../../godmode/um_client/views/offline.php:80
-#, fuzzy, php-format
-#| msgid "This update does not correspond to the next version of Pandora"
+#, php-format
 msgid ""
 "This update does not correspond with next version of %s. Are you sure you want "
 "to install it?"
 msgstr ""
-"Esta actualización no se corresponde con la siguiente versión de Pandora FMS"
+"Esta actualización no se corresponde con la siguiente versión de %s. ¿Estás "
+"seguro de que quieres instalarlo?"
 
 #: ../../godmode/um_client/views/offline.php:81
-#, fuzzy
-#| msgid "This update does not correspond to the next version of Pandora"
 msgid ""
 "This server update does not correspond with current console version. Are you "
 "sure you want to install it?"
 msgstr ""
-"Esta actualización no se corresponde con la siguiente versión de Pandora FMS"
+"Esta actualización del servidor no se corresponde con la versión actual de la "
+"consola. ¿Estás seguro de que quieres instalarlo?"
 
 #: ../../godmode/um_client/views/offline.php:82
-#, fuzzy
 msgid ""
 "File name does not match required format: package_NUMBER.oum or "
 "pandorafms_server[_enterprise]-7.0NG.NUMBER_x86[_64].tar.gz, you can use "
@@ -50294,23 +49679,19 @@ msgstr ""
 "números con decimales."
 
 #: ../../godmode/um_client/views/offline.php:83
-#, fuzzy
-#| msgid "Active incident on this agent"
 msgid "Files included in this package"
-msgstr "Activar incidencia a este agente"
+msgstr "Archivos incluidos en este paquete"
 
 #: ../../godmode/um_client/views/offline.php:84
 msgid "Ignore"
 msgstr "Ignorar"
 
 #: ../../godmode/um_client/views/offline.php:85
-#, fuzzy
-#| msgid "The package is installed."
 msgid "Verify package signature"
-msgstr "El paquete está instalado."
+msgstr "Verificar la firma del paquete"
 
 #: ../../godmode/um_client/views/offline.php:86
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Copy into the textarea the signature validation token you can retrieve from %s "
 "and press OK to verify the package, press ignore to avoid signature "
@@ -50330,13 +49711,7 @@ msgid "Keep this %s console up to date with latest updates."
 msgstr "Mantener la consola %s actualizada con las últimas actualizaciones."
 
 #: ../../godmode/um_client/views/register.php:62
-#, fuzzy, php-format
-#| msgid ""
-#| "When you subscribe to the %s Update Manager service, you accept that we "
-#| "register your %s instance as an identifier on a database owned by %s. This "
-#| "data will solely be used to provide you with information about %s and will "
-#| "not be conceded to third parties. You can unregister from said database at "
-#| "any time from the Update Manager options."
+#, php-format
 msgid ""
 "When you subscribe to the %s Update Manager service, you accept that we\n"
 "            register your %s instance as an identifier on a database owned by "
@@ -50352,7 +49727,6 @@ msgstr ""
 "cualquier momento desde las opciones de Update Manager."
 
 #: ../../godmode/um_client/views/register.php:75
-#, fuzzy
 msgid "Visit our privacy policy for more information"
 msgstr "Visite nuestra política de privacidad para obtener más información"
 
@@ -50365,10 +49739,6 @@ msgid "Are you sure you don't want to use update manager?"
 msgstr "¿Está seguro de que no quiere usar Update Manager?"
 
 #: ../../godmode/um_client/views/register.php:116
-#, fuzzy
-#| msgid ""
-#| "You will need to update your system manually, through source code or RPM "
-#| "packages to be up to date with latest updates."
 msgid ""
 "You will need to update your system manually, through source code or RPM\n"
 "            packages to be up to date with latest updates."
@@ -50377,10 +49747,8 @@ msgstr ""
 "paquetes RPM para estar al día con las últimas actualizaciones."
 
 #: ../../godmode/um_client/views/register.php:207
-#, fuzzy
-#| msgid "Unsuccessful subscription."
 msgid "Unsuccessful subscription"
-msgstr "No se pudo suscribir"
+msgstr "Suscripción incorrecta"
 
 #: ../../godmode/um_client/views/register.php:212
 msgid "Pandora successfully subscribed with UID: "
@@ -50391,10 +49759,9 @@ msgid "Next update"
 msgstr "próxima actualización"
 
 #: ../../godmode/um_client/lib/UpdateManager/UI/Manager.php:461
-#, fuzzy, php-format
-#| msgid "There is no update available."
+#, php-format
 msgid "%s update(s) available more"
-msgstr "No hay actualizaciones disponibles"
+msgstr "%s actualización(es) disponible(s) más"
 
 #: ../../godmode/um_client/lib/UpdateManager/UI/Manager.php:473
 msgid "details"

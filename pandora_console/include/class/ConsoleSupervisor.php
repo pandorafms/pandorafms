@@ -52,6 +52,12 @@ class ConsoleSupervisor
      */
     public const MIN_PERFORMANCE_MODULES = 100;
 
+
+    /**
+     * Minimum queued elements in synchronization queue to be warned..
+     */
+    public const MIN_SYNC_QUEUE_LENGTH = 200;
+
     /**
      * Show if console supervisor is enabled or not.
      *
@@ -241,6 +247,15 @@ class ConsoleSupervisor
          */
 
         $this->checkAuditLogOldLocation();
+
+        /*
+         * Checks if sync queue is longer than limits.
+         *  NOTIF.SYNCQUEUE.LENGTH
+         */
+
+        if (is_metaconsole() === true) {
+            $this->checkSyncQueue();
+        }
 
     }
 
@@ -492,6 +507,15 @@ class ConsoleSupervisor
          */
 
         $this->checkAuditLogOldLocation();
+
+        /*
+         * Checks if sync queue is longer than limits.
+         *  NOTIF.SYNCQUEUE.LENGTH
+         */
+
+        if (is_metaconsole() === true) {
+            $this->checkSyncQueue();
+        }
     }
 
 
@@ -2681,6 +2705,58 @@ class ConsoleSupervisor
             'clean_phantomjs_cache',
             0
         );
+    }
+
+
+    /**
+     * Verifies the status of synchronization queue and warns if something is
+     * not working as expected.
+     *
+     * @return void
+     */
+    public function checkSyncQueue()
+    {
+        if (is_metaconsole() !== true) {
+            return;
+        }
+
+        $sync = new PandoraFMS\Enterprise\Metaconsole\Synchronizer();
+        $counts = $sync->counts();
+
+        if (count($counts) === 0) {
+            // Clean all.
+            $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.%');
+        }
+
+        foreach ($counts as $node_id => $count) {
+            if ($count < self::MIN_SYNC_QUEUE_LENGTH) {
+                $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
+            } else {
+                try {
+                    $node = new PandoraFMS\Enterprise\Metaconsole\Node($node_id);
+
+                    $url = '__url__/index.php?sec=advanced&sec2=advanced/metasetup&tab=consoles';
+
+                    $this->notify(
+                        [
+                            'type'    => 'NOTIF.SYNCQUEUE.LENGTH.'.$node_id,
+                            'title'   => __('Node %s sync queue length exceeded, ', $node->server_name()),
+                            'message' => __(
+                                'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, pleae visit the ',
+                                $node->server_name(),
+                                $count,
+                                self::MIN_SYNC_QUEUE_LENGTH
+                            ),
+                            'url'     => $url,
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Clean, exception in node finding.
+                    $this->cleanNotifications('NOTIF.SYNCQUEUE.LENGTH.'.$node_id);
+                }
+            }
+        }
+
     }
 
 

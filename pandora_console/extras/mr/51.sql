@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE `tagent_repository` ADD COLUMN `deployment_timeout` INT UNSIGNED DEFAULT 600 AFTER `path`;
+
+COMMIT;

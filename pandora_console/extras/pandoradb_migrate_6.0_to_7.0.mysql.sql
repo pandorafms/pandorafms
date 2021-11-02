@@ -2681,6 +2681,7 @@ CREATE TABLE `tagent_repository` (
   `arch` ENUM('x64', 'x86') DEFAULT 'x64',
   `version` VARCHAR(10) DEFAULT '',
   `path` text,
+  `deployment_timeout` INT UNSIGNED DEFAULT 600,
   `uploaded_by` VARCHAR(100) DEFAULT '',
   `uploaded` bigint(20) NOT NULL DEFAULT 0 COMMENT "When it was uploaded",
   `last_err` text,

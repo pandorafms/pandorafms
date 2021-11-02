@@ -391,7 +391,7 @@ $sql_conditions_tags = '';
 if (!users_is_admin()) {
         $sql_conditions_tags = tags_get_acl_tags(
             $config['id_user'],
-            $ag_group,
+            ($recursion) ? $all_groups : $ag_group,
             'AR',
             'module_condition',
             'AND',

@@ -70,6 +70,7 @@ $inputs[] = [
         'returnAllGroup' => true,
         'name'           => 'id_group',
         'selected'       => $calendar->id_group(),
+        'required'       => true,
     ],
 ];
 

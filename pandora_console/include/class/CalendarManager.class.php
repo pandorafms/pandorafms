@@ -165,10 +165,11 @@ class CalendarManager
         ];
 
         if ($tab !== 'list') {
+            $id_calendar = get_parameter('id_calendar', 0);
             $buttons['special_days'] = [
                 'active' => false,
                 'text'   => '<a href="'.ui_get_full_url(
-                    $this->url.'&tab=special_days'
+                    $this->url.'&tab=special_days&id_calendar='.$id_calendar
                 ).'&pure='.(int) $config['pure'].'">'.html_print_image(
                     'images/templates.png',
                     true,
@@ -193,22 +194,21 @@ class CalendarManager
      */
     public function run()
     {
+        \ui_require_css_file('alert');
         $op = get_parameter('op');
         $tab = get_parameter('tab');
         switch ($tab) {
             case 'special_days':
-                hd('tab special_day');
                 if ($op === 'edit') {
-                    hd('op = edit');
                     if ($this->showSpecialDaysEdition() !== true) {
                         return;
                     }
                 } else if ($op === 'delete') {
-                    // $this->deleteVendor();
-                    hd('delete special days');
+                    $this->deleteSpecialDay();
+                } else if ($op === 'upload_ical') {
+                    $this->iCalendarSpecialDay();
                 }
 
-                echo 'WIP special list';
                 $this->showSpecialDays();
             break;
 
@@ -219,14 +219,190 @@ class CalendarManager
                         return;
                     }
                 } else if ($op === 'delete') {
-                    // $this->deleteVendor();
-                    hd('delete calendar');
+                    $this->deleteCalendar();
                 }
 
                 $this->showCalendarList();
             break;
         }
 
+    }
+
+
+    /**
+     * Delete calendar
+     *
+     * @return void
+     */
+    public function deleteCalendar()
+    {
+        $id = (int) get_parameter('id');
+        try {
+            $calendar = new Calendar($id);
+            if ($id === 0) {
+                return;
+            }
+        } catch (\Exception $e) {
+            if ($id > 0) {
+                $this->message = \ui_print_error_message(
+                    \__('Calendar not found: %s', $e->getMessage()),
+                    '',
+                    true
+                );
+            }
+
+            return;
+        }
+
+        // Remove.
+        $calendar->delete();
+        $this->message = \ui_print_success_message(
+            \__('Calendar successfully deleted'),
+            '',
+            true
+        );
+    }
+
+
+    /**
+     * Delete special day.
+     *
+     * @return void
+     */
+    public function deleteSpecialDay()
+    {
+        $id = (int) get_parameter('id');
+        try {
+            $specialDay = new SpecialDay($id);
+            if ($id === 0) {
+                return;
+            }
+        } catch (\Exception $e) {
+            if ($id > 0) {
+                $this->message = \ui_print_error_message(
+                    \__('Special day not found: %s', $e->getMessage()),
+                    '',
+                    true
+                );
+            }
+
+            return;
+        }
+
+        // Remove.
+        $specialDay->delete();
+        $this->message = \ui_print_success_message(
+            \__('Special day successfully deleted'),
+            '',
+            true
+        );
+    }
+
+
+    /**
+     * Icalendar.
+     *
+     * @return void
+     */
+    public function iCalendarSpecialDay()
+    {
+        $day_code = (string) get_parameter('day_code');
+        $overwrite = (bool) get_parameter('overwrite', 0);
+        $values = [];
+        $values['id_group'] = (string) get_parameter('id_group');
+        $values['id_calendar'] = get_parameter('id_calendar');
+        $values['day_code'] = $day_code;
+
+        $error = $_FILES['ical_file']['error'];
+        $extension = substr($_FILES['ical_file']['name'], -3);
+
+        if ($error == 0 && strcasecmp($extension, 'ics') == 0) {
+            $skipped_dates = '';
+            $this_month = date('Ym');
+            $ical = new \ICal($_FILES['ical_file']['tmp_name']);
+            $events = $ical->events();
+            foreach ($events as $event) {
+                $event_date = substr($event['DTSTART'], 0, 8);
+                $event_month = substr($event['DTSTART'], 0, 6);
+                if ($event_month >= $this_month) {
+                    $values['description'] = @$event['SUMMARY'];
+                    $values['date'] = $event_date;
+                    $date = date('Y-m-d', strtotime($event_date));
+                    $date_check = '';
+                    $filter['id_group'] = $values['id_group'];
+                    $filter['date'] = $date;
+                    $date_check = db_get_value_filter(
+                        'date',
+                        'talert_special_days',
+                        $filter
+                    );
+
+                    if ($date_check === $date) {
+                        if ($overwrite === true) {
+                            $id_special_day = db_get_value_filter(
+                                'id',
+                                'talert_special_days',
+                                $filter
+                            );
+                            try {
+                                $specialDay = new SpecialDay($id_special_day);
+                                $specialDay->date($values['date']);
+                                $specialDay->id_group($values['id_group']);
+                                $specialDay->day_code($values['day_code']);
+                                $specialDay->description($values['description']);
+                                $specialDay->id_calendar($values['id_calendar']);
+
+                                if ($specialDay->save() === true) {
+                                    $result = true;
+                                } else {
+                                    $result = false;
+                                }
+                            } catch (\Exception $e) {
+                                $result = false;
+                            }
+                        } else {
+                            if ($skipped_dates == '') {
+                                $skipped_dates = __('Skipped dates: ');
+                            }
+
+                            $skipped_dates .= $date.' ';
+                        }
+                    } else {
+                        try {
+                            $specialDay = new SpecialDay();
+                            $specialDay->date($values['date']);
+                            $specialDay->id_group($values['id_group']);
+                            $specialDay->day_code($values['day_code']);
+                            $specialDay->description($values['description']);
+                            $specialDay->id_calendar($values['id_calendar']);
+
+                            if ($specialDay->save() === true) {
+                                $result = true;
+                            } else {
+                                $result = false;
+                            }
+                        } catch (\Exception $e) {
+                            $result = false;
+                        }
+                    }
+                }
+            }
+        } else {
+            $result = false;
+        }
+
+        if ($result === true) {
+            db_pandora_audit(
+                'Special days list',
+                'Upload iCalendar '.$_FILES['ical_file']['name']
+            );
+        }
+
+        $this->message = \ui_print_result_message(
+            $result,
+            \__('Success to upload iCalendar').'<br />'.$skipped_dates,
+            \__('Fail to upload iCalendar')
+        );
     }
 
 
@@ -256,6 +432,7 @@ class CalendarManager
      */
     public function showCalendarEdition()
     {
+        global $config;
         $id = (int) get_parameter('id');
         $new = false;
         try {
@@ -288,19 +465,31 @@ class CalendarManager
             }
 
             try {
-                $calendar->name(get_parameter('name', null));
+                $name = get_parameter('name', null);
+                $change_name = true;
+                if ($new === false && $name === $calendar->name()) {
+                    $change_name = false;
+                }
+
+                $calendar->name($name);
                 $calendar->id_group(get_parameter('id_group', null));
                 $calendar->description(get_parameter('description', null));
 
-                // Save template.
-                if ($calendar->save() === true) {
-                    $success = true;
-                } else {
-                    global $config;
+                if ($change_name === true && empty($calendar->search(['name' => $calendar->name()])) === false) {
                     $reason = \__(
-                        'Failed saving calendar: ',
+                        'Failed saving calendar: name exists',
                         $config['dbconnection']->error
                     );
+                } else {
+                    // Save template.
+                    if ($calendar->save() === true) {
+                        $success = true;
+                    } else {
+                        $reason = \__(
+                            'Failed saving calendar: ',
+                            $config['dbconnection']->error
+                        );
+                    }
                 }
             } catch (\Exception $e) {
                 $this->message = \ui_print_error_message(
@@ -439,7 +628,7 @@ class CalendarManager
                             // Options. Especial days.
                             $tmp->options .= '<a href="';
                             $tmp->options .= ui_get_full_url(
-                                $this->url.'&op=special_days&tab=special_days&id='.$tmp->id
+                                $this->url.'&op=special_days&tab=special_days&id_calendar='.$tmp->id
                             );
                             $tmp->options .= '">';
                             $tmp->options .= html_print_image(
@@ -512,7 +701,8 @@ class CalendarManager
     public function showSpecialDays()
     {
         global $config;
-        $id = (int) get_parameter('id');
+        $id_calendar = (int) get_parameter('id_calendar');
+
         $display_range = (int) get_parameter('display_range', 0);
         try {
             // Datatables offset, limit and order.
@@ -527,7 +717,7 @@ class CalendarManager
             $filter = [];
             $filter['date'] = $date;
             $filter['futureDate'] = $futureDate;
-            $filter['id_calendar'] = $id;
+            $filter['id_calendar'] = $id_calendar;
             if (!is_user_admin($config['id_user'])) {
                 $filter['id_group'] = array_keys(
                     users_get_groups(false, 'LM')
@@ -555,7 +745,7 @@ class CalendarManager
                 true
             );
         } catch (\Exception $e) {
-            if ($id > 0) {
+            if ($id_calendar > 0) {
                 $this->message = \ui_print_error_message(
                     \__('Special days not found: %s', $e->getMessage()),
                     '',
@@ -572,7 +762,7 @@ class CalendarManager
                 'tabs'          => $this->getTabs('special_days'),
                 'message'       => $this->message,
                 'specialDays'   => $specialDays,
-                'id_calendar'   => $id,
+                'id_calendar'   => $id_calendar,
                 'display_range' => $display_range,
             ]
         );
@@ -586,13 +776,15 @@ class CalendarManager
      */
     public function showSpecialDaysEdition()
     {
+        global $config;
+
         $id = (int) get_parameter('id');
-        hd($id);
         $new = false;
         try {
             $specialDay = new SpecialDay($id);
             if ($id === 0) {
                 $specialDay->date(get_parameter('date', null));
+                $specialDay->id_calendar(get_parameter('id_calendar', null));
                 $new = true;
             }
         } catch (\Exception $e) {
@@ -620,20 +812,50 @@ class CalendarManager
             }
 
             try {
-                $specialDay->date(get_parameter('date', null));
-                $specialDay->id_group(get_parameter('id_group', null));
-                $specialDay->day_code(get_parameter('day_code', null));
-                $specialDay->description(get_parameter('description', null));
+                $date = get_parameter('date', null);
+                $id_group = get_parameter('id_group', null);
+                $day_code = get_parameter('day_code', null);
+                $id_calendar = get_parameter('id_calendar', null);
+                $description = get_parameter('description', null);
+                $change = true;
+                if ($new === false
+                    && ($date === $specialDay->date()
+                    || $id_group === $specialDay->id_group()
+                    || $day_code === $specialDay->day_code())
+                ) {
+                    $change = false;
+                }
 
-                // Save template.
-                if ($specialDay->save() === true) {
-                    $success = true;
-                } else {
-                    global $config;
+                $specialDay->date($date);
+                $specialDay->id_group($id_group);
+                $specialDay->day_code($day_code);
+                $specialDay->description($description);
+                $specialDay->id_calendar($id_calendar);
+
+                $search = specialDay::specialDays(
+                    [ '`talert_special_days`.*' ],
+                    [
+                        'date_match' => $specialDay->date(),
+                        'id_group'   => [$specialDay->id_group()],
+                        'day_code'   => $specialDay->day_code(),
+                    ]
+                );
+
+                if ($change === true && empty($search) === false) {
                     $reason = \__(
-                        'Failed saving special day: ',
+                        'Failed saving calendar: name exists',
                         $config['dbconnection']->error
                     );
+                } else {
+                    // Save template.
+                    if ($specialDay->save() === true) {
+                        $success = true;
+                    } else {
+                        $reason = \__(
+                            'Failed saving special day: ',
+                            $config['dbconnection']->error
+                        );
+                    }
                 }
             } catch (\Exception $e) {
                 $this->message = \ui_print_error_message(
@@ -661,7 +883,7 @@ class CalendarManager
             'calendar/special_days_edit',
             [
                 'ajax_url'   => $this->ajaxUrl,
-                'url'        => $this->url.'&op=edit&tab=special_days',
+                'url'        => $this->url.'&id_calendar='.$specialDay->id_calendar().'&op=edit&tab=special_days',
                 'tabs'       => $this->getTabs('special_days'),
                 'specialDay' => $specialDay,
                 'message'    => $this->message,
@@ -686,9 +908,9 @@ class CalendarManager
         $templates = alerts_get_alert_templates($filter);
         $date = get_parameter('date', '');
         $id_group = get_parameter('id_group', 0);
-        $same_day = get_parameter('same_day', '');
+        $day_code = get_parameter('day_code', '');
 
-        $output = '<h4>'.__('Same as %s', ucfirst($same_day));
+        $output = '<h4>'.__('Same as %s', $day_code);
         $output .= ' &raquo; ';
         $output .= __('Templates not being fired');
         $output .= '</h4>';
@@ -730,7 +952,7 @@ class CalendarManager
                     'ajax_url'            => 'godmode/alerts/alert_special_days',
                     'ajax_data'           => [
                         'method'   => 'dataAlertTemplates',
-                        'same_day' => $same_day,
+                        'day_code' => $day_code,
                     ],
                     'no_sortable_columns' => [-1],
                     'order'               => [

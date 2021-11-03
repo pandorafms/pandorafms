@@ -44,16 +44,24 @@ class SpecialDay extends Entity
      */
     public function __construct(?int $id=null)
     {
+        $table = 'talert_special_days';
+        $filter = ['id' => $id];
+
+        $this->existsInDB = false;
+
         if (is_numeric($id) === true
             && $id > 0
         ) {
             parent::__construct(
-                'talert_special_days',
-                ['id' => $id]
+                $table,
+                $filter,
+                null,
+                false
             );
+            $this->existsInDB = true;
         } else {
             // Create empty skel.
-            parent::__construct('talert_special_days');
+            parent::__construct($table, null);
         }
     }
 
@@ -71,7 +79,7 @@ class SpecialDay extends Entity
             $updates = $this->fields;
 
             $rs = \db_process_sql_update(
-                'talert_special_days',
+                $this->table,
                 $updates,
                 ['id' => $this->fields['id']]
             );
@@ -94,7 +102,7 @@ class SpecialDay extends Entity
             }
 
             $rs = \db_process_sql_insert(
-                'talert_special_days',
+                $this->table,
                 $inserts
             );
 
@@ -113,6 +121,23 @@ class SpecialDay extends Entity
 
 
     /**
+     * Remove this Special day.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        if ($this->existsInDB === true) {
+            \db_process_delete_temp(
+                $this->table,
+                'id',
+                $this->fields['id']
+            );
+        }
+    }
+
+
+    /**
      * Returns an array with all special days filtered.
      *
      * @param array   $fields     Fields array or 'count' keyword to retrieve count.
@@ -122,6 +147,7 @@ class SpecialDay extends Entity
      * @param integer $limit      Limit (pagination).
      * @param string  $order      Sort order.
      * @param string  $sort_field Sort field.
+     * @param boolean $reduce     Reduce result [Year][month][day].
      *
      * @return array With all results.
      * @throws \Exception On error.
@@ -185,6 +211,24 @@ class SpecialDay extends Entity
             );
         }
 
+        if (isset($filter['date_match']) === true
+            && empty($filter['date_match']) === false
+        ) {
+            $sql_filters[] = sprintf(
+                ' AND `talert_special_days`.`date` = "%s"',
+                $filter['date_match']
+            );
+        }
+
+        if (isset($filter['day_code']) === true
+            && empty($filter['day_code']) === false
+        ) {
+            $sql_filters[] = sprintf(
+                ' AND `talert_special_days`.`day_code` = %d',
+                $filter['day_code']
+            );
+        }
+
         if (isset($order) === true) {
             $dir = 'asc';
             if ($order === 'desc') {
@@ -233,6 +277,8 @@ class SpecialDay extends Entity
             $order_by,
             $pagination
         );
+
+        hd($sql);
 
         if ($count === true) {
             $sql = sprintf('SELECT count(*) as n FROM ( %s ) tt', $sql);

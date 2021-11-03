@@ -38,22 +38,50 @@ class Calendar extends Entity
 
 
     /**
+     * Search Calendar.
+     *
+     * @param array $filter Filters.
+     *
+     * @return array Rows.
+     */
+    public static function search(array $filter)
+    {
+        $table = '`talert_calendar`';
+        $rows = \db_get_all_rows_filter(
+            $table,
+            $filter,
+            ['`talert_calendar`.*']
+        );
+
+        return $rows;
+    }
+
+
+    /**
      * Builds a PandoraFMS\Calendar object from given id.
      *
      * @param integer $id Id special day.
      */
     public function __construct(?int $id=null)
     {
+        $table = 'talert_calendar';
+        $filter = ['id' => $id];
+
+        $this->existsInDB = false;
+
         if (is_numeric($id) === true
             && $id > 0
         ) {
             parent::__construct(
-                'talert_calendar',
-                ['id' => $id]
+                $table,
+                $filter,
+                null,
+                false
             );
+            $this->existsInDB = true;
         } else {
             // Create empty skel.
-            parent::__construct('talert_calendar');
+            parent::__construct($table, null);
         }
     }
 
@@ -71,7 +99,7 @@ class Calendar extends Entity
             $updates = $this->fields;
 
             $rs = \db_process_sql_update(
-                'talert_calendar',
+                $this->table,
                 $updates,
                 ['id' => $this->fields['id']]
             );
@@ -94,7 +122,7 @@ class Calendar extends Entity
             }
 
             $rs = \db_process_sql_insert(
-                'talert_calendar',
+                $this->table,
                 $inserts
             );
 
@@ -109,6 +137,23 @@ class Calendar extends Entity
         }
 
         return true;
+    }
+
+
+    /**
+     * Remove this calendar.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        if ($this->existsInDB === true) {
+            \db_process_delete_temp(
+                $this->table,
+                'id',
+                $this->fields['id']
+            );
+        }
     }
 
 

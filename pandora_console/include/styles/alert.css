@@ -292,3 +292,29 @@ div#rules.show {
 #rules select.click-list-elements:focus {
   outline-color: transparent;
 }
+
+#icalendar-special-days {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+  padding: 20px 50px;
+}
+
+#icalendar-special-days ul.wizard {
+  flex: 0;
+}
+
+#icalendar-special-days ul.wizard:first-child {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 80px;
+}

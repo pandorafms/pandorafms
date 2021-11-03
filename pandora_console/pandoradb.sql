@@ -589,7 +589,6 @@ CREATE TABLE IF NOT EXISTS `talert_special_days` (
 	`id_calendar` int(10) unsigned NOT NULL DEFAULT 1,
 	`id_group` INT(10) NOT NULL DEFAULT 0,
 	`date` date NOT NULL DEFAULT '1970-01-01',
-	`same_day` enum('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL DEFAULT 'sunday',
 	`day_code` tinyint(2) NOT NULL,
 	`description` text,
 	PRIMARY KEY (`id`),

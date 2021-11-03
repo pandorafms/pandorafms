@@ -60,21 +60,15 @@ $inputs[] = [
         'required' => true,
         'value'    => $specialDay->date(),
     ],
-];
-
-// Date img.
-$inputs[] = [
-    'arguments' => [
-        'type'    => 'image',
-        'src'     => 'images/calendar_view_day.png',
-        'value'   => $specialDay->date(),
-        'options' => [
+    'extra'     => html_print_image(
+        'images/calendar_view_day.png',
+        true,
+        [
             'alt'     => 'calendar',
             'onclick' => "scwShow(scwID('text-date'),this);",
             'class'   => 'invert_filter',
-        ],
-
-    ],
+        ]
+    ),
 ];
 
 if (users_can_manage_group_all('LM') === true) {
@@ -128,6 +122,15 @@ $inputs[] = [
     ],
 ];
 
+// Calendar.
+$inputs[] = [
+    'arguments' => [
+        'type'  => 'hidden',
+        'name'  => 'id_calendar',
+        'value' => $specialDay->id_calendar(),
+    ],
+];
+
 // Submit.
 $inputs[] = [
     'arguments' => [
@@ -143,7 +146,7 @@ HTML::printForm(
     [
         'form'   => [
             'id'     => 'form-special-days',
-            'action' => $url.'&tab=special_days&op=edit&action=save&id='.$specialDay->id(),
+            'action' => $url.'&action=save&id='.$specialDay->id(),
             'method' => 'POST',
         ],
         'inputs' => $inputs,
@@ -156,8 +159,6 @@ echo '<div id="modal-alert-templates" class="invisible"></div>';
 
 ui_require_javascript_file('calendar');
 ui_require_javascript_file('pandora_alerts');
-
-hd($ajax_url);
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

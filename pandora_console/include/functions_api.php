@@ -55,6 +55,7 @@ enterprise_include_once('include/functions_alerts.php');
 // Clases.
 use PandoraFMS\Module;
 use PandoraFMS\Enterprise\Cluster;
+use PandoraFMS\SpecialDay;
 
 
 /**
@@ -14131,7 +14132,7 @@ function api_get_special_days($thrash1, $thrash2, $other, $thrash3)
  *
  * @param $thrash1 Don't use.
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <special_day>;<same_day>;<description>;<id_group>; in this order
+ * @param array             $other it's array, $other as param is <special_day>;<day_code>;<description>;<id_group>; in this order
  *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
  *
@@ -14147,9 +14148,10 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
     }
 
     $special_day = $other['data'][0];
-    $same_day = $other['data'][1];
+    $day_code = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
+    $id_calendar = $other['data'][4] || 1;
 
     if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
         returnError('forbidden', 'string');
@@ -14186,17 +14188,21 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         }
     }
 
-    $values = [
-        'description' => $other['data'][2],
-        'id_group'    => $other['data'][3],
-    ];
-
-    $idSpecialDay = alerts_create_alert_special_day($special_day, $same_day, $values);
-
-    if (is_error($idSpecialDay)) {
-        returnError('Special Day could not be created');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $idSpecialDay]);
+    try {
+        $sd = new SpecialDay();
+        $sd->date($special_day);
+        $sd->id_group($idGroup);
+        $sd->day_code($day_code);
+        $sd->description($description);
+        $sd->id_calendar($id_calendar);
+        $sd->save();
+        if ($sd->save() === true) {
+            returnError('Special Day could not be created');
+        } else {
+            returnData('string', ['type' => 'string', 'data' => $sd->id()]);
+        }
+    } catch (Exception $e) {
+        returnData('string', ['type' => 'string', 'data' => $e]);
     }
 }
 
@@ -14693,7 +14699,7 @@ function api_set_recreate_service_modules($id, $id_agent)
  *
  * @param string            $id    Id of the special day to update.
  * @param $thrash2 Don't use.
- * @param array             $other it's array, $other as param is <special_day>;<same_day>;<description>;<id_group>; in this order
+ * @param array             $other it's array, $other as param is <special_day>;<day_code>;<description>;<id_group>; in this order
  *              and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  * @param $thrash3 Don't use
  *
@@ -14709,9 +14715,10 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
     }
 
     $special_day = $other['data'][0];
-    $same_day = $other['data'][1];
+    $day_code = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
+    $id_calendar = $other['data'][4];
 
     if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
         returnError('forbidden', 'string');
@@ -14742,24 +14749,22 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
         return;
     }
 
-    $return = db_process_sql_update(
-        'talert_special_days',
-        [
-            'date'        => $special_day,
-            'same_day'    => $same_day,
-            'description' => $description,
-            'id_group'    => $idGroup,
-        ],
-        ['id' => $id_special_day]
-    );
-
-    returnData(
-        'string',
-        [
-            'type' => 'string',
-            'data' => (int) ((bool) $return),
-        ]
-    );
+    try {
+        $sd = new SpecialDay();
+        $sd->date($special_day);
+        $sd->id_group($idGroup);
+        $sd->day_code($day_code);
+        $sd->description($description);
+        $sd->id_calendar($id_calendar);
+        $sd->save();
+        if ($sd->save() === true) {
+            returnError('Special Day could not be updated');
+        } else {
+            returnData('string', ['type' => 'string', 'data' => $sd->id()]);
+        }
+    } catch (Exception $e) {
+        returnData('string', ['type' => 'string', 'data' => $e]);
+    }
 }
 
 
@@ -14805,13 +14810,20 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
         return;
     }
 
-    $return = alerts_delete_alert_special_day($id_special_day);
+    try {
+        $specialDay = new SpecialDay($id_special_day);
+    } catch (\Exception $e) {
+        if ($id > 0) {
+            returnError('The Special Day could not be deleted.');
+        }
 
-    if (is_error($return)) {
-        returnError('The Special Day could not be deleted.');
-    } else {
-        returnData('string', ['type' => 'string', 'data' => $return]);
+        return;
     }
+
+    // Remove.
+    $specialDay->delete();
+    $return = 'success';
+    returnData('string', ['type' => 'string', 'data' => $return]);
 }
 
 

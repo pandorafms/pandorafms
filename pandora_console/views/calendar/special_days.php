@@ -58,6 +58,7 @@ $inputs[] = [
         'type'    => 'file',
         'columns' => 25,
         'rows'    => 10,
+        'options' => ['required' => 1],
     ],
 ];
 
@@ -117,15 +118,15 @@ $inputs[] = [
 // Print form.
 HTML::printForm(
     [
-        'id'     => 'icalendar-special-days',
-        'form'   => [
-            'action' => $url.'&op=edit&action=upload_ical&id='.$id_calendar,
+        'form'    => [
+            'action' => $url.'&op=upload_ical&id='.$id_calendar,
             'method' => 'POST',
+            'id'     => 'icalendar-special-days',
         ],
-        'inputs' => $inputs,
+        'inputs'  => $inputs,
+        'enctype' => 'multipart/form-data',
     ],
-    false,
-    true
+    false
 );
 
 
@@ -136,6 +137,8 @@ $filter = [];
 if (!is_user_admin($config['id_user'])) {
     $filter['id_group'] = array_keys(users_get_groups(false, 'LM'));
 }
+
+$url = $url.'&id_calendar='.$id_calendar;
 
 // Show display range.
 $html = "<table cellpadding='4' cellspacing='4' width='100%' margin-bottom: 10px;'><tr><td>".__('Display range: ');
@@ -398,7 +401,7 @@ for ($month = 1; $month <= 12; $month++) {
                         true,
                         ['class' => 'invert_filter']
                     ).'</a> &nbsp;';
-                    $url_delete = $url.'&delete_special_day=1&id='.$special_day['id'];
+                    $url_delete = $url.'&op=delete&id='.$special_day['id'];
                     $script_delete = 'if (!confirm(\''.__('Are you sure?').'\')) return false;';
                     $cal_table->data[$cal_line][$week] .= '<a href="'.$url_delete.'"';
                     $cal_table->data[$cal_line][$week] .= ' onClick="'.$script_delete.'"';
@@ -456,7 +459,7 @@ ui_require_javascript_file('pandora_alerts');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
-    $("#srcbutton").click (function (e) {
+    $("#submit-button").click (function (e) {
         e.preventDefault();
         load_templates_alerts_special_days({
             date: '',

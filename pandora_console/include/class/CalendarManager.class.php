@@ -71,7 +71,11 @@ class CalendarManager
      *
      * @var array
      */
-    public static $AJAXMethods = ['drawListCalendar'];
+    public static $AJAXMethods = [
+        'drawListCalendar',
+        'drawAlertTemplates',
+        'dataAlertTemplates',
+    ];
 
 
     /**
@@ -193,7 +197,9 @@ class CalendarManager
         $tab = get_parameter('tab');
         switch ($tab) {
             case 'special_days':
+                hd('tab special_day');
                 if ($op === 'edit') {
+                    hd('op = edit');
                     if ($this->showSpecialDaysEdition() !== true) {
                         return;
                     }
@@ -507,13 +513,18 @@ class CalendarManager
     {
         global $config;
         $id = (int) get_parameter('id');
-        $display_range = (int) get_parameter('display_range', date('Y'));
+        $display_range = (int) get_parameter('display_range', 0);
         try {
             // Datatables offset, limit and order.
-            $date = $display_range.'-'.date('m').'-1';
-            $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($date)));
-            $filter = [];
+            if ($display_range === 0) {
+                $date = date('Y').'-'.date('m').'-1';
+            } else {
+                $date = $display_range.'-1-1';
+            }
 
+            $futureDate = date('Y-m-d', strtotime('+1 year', strtotime($date)));
+
+            $filter = [];
             $filter['date'] = $date;
             $filter['futureDate'] = $futureDate;
             $filter['id_calendar'] = $id;
@@ -529,10 +540,20 @@ class CalendarManager
                 // Fields.
                 $fields,
                 // Filter.
-                $filter
+                $filter,
+                // Count.
+                false,
+                // Offset.
+                null,
+                // Limit.
+                null,
+                // Order.
+                null,
+                // Sort field.
+                null,
+                // Reduce array.
+                true
             );
-
-            hd($specialDays);
         } catch (\Exception $e) {
             if ($id > 0) {
                 $this->message = \ui_print_error_message(
@@ -546,12 +567,13 @@ class CalendarManager
         View::render(
             'calendar/special_days',
             [
-                'ajax_url'    => $this->ajaxUrl,
-                'url'         => $this->url.'&tab=special_days',
-                'tabs'        => $this->getTabs('special_days'),
-                'message'     => $this->message,
-                'specialDays' => $specialDays,
-                'id_calendar' => $id,
+                'ajax_url'      => $this->ajaxUrl,
+                'url'           => $this->url.'&tab=special_days',
+                'tabs'          => $this->getTabs('special_days'),
+                'message'       => $this->message,
+                'specialDays'   => $specialDays,
+                'id_calendar'   => $id,
+                'display_range' => $display_range,
             ]
         );
     }
@@ -565,10 +587,12 @@ class CalendarManager
     public function showSpecialDaysEdition()
     {
         $id = (int) get_parameter('id');
+        hd($id);
         $new = false;
         try {
             $specialDay = new SpecialDay($id);
             if ($id === 0) {
+                $specialDay->date(get_parameter('date', null));
                 $new = true;
             }
         } catch (\Exception $e) {
@@ -596,8 +620,9 @@ class CalendarManager
             }
 
             try {
-                $specialDay->name(get_parameter('name', null));
+                $specialDay->date(get_parameter('date', null));
                 $specialDay->id_group(get_parameter('id_group', null));
+                $specialDay->day_code(get_parameter('day_code', null));
                 $specialDay->description(get_parameter('description', null));
 
                 // Save template.
@@ -645,6 +670,204 @@ class CalendarManager
         );
 
         return false;
+    }
+
+
+    /**
+     * AJAX Method, draw Alert Template list.
+     *
+     * @return void
+     */
+    public function drawAlertTemplates()
+    {
+        global $config;
+
+        $filter['special_day'] = 1;
+        $templates = alerts_get_alert_templates($filter);
+        $date = get_parameter('date', '');
+        $id_group = get_parameter('id_group', 0);
+        $same_day = get_parameter('same_day', '');
+
+        $output = '<h4>'.__('Same as %s', ucfirst($same_day));
+        $output .= ' &raquo; ';
+        $output .= __('Templates not being fired');
+        $output .= '</h4>';
+
+        $columns = [
+            'name',
+            'id_group',
+            'type',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
+        ];
+
+        $column_names = [
+            __('Name'),
+            __('Group'),
+            __('Type'),
+            __('Mon'),
+            __('Tue'),
+            __('Wed'),
+            __('Thu'),
+            __('Fri'),
+            __('Sat'),
+            __('Sun'),
+        ];
+        try {
+            $output .= ui_print_datatable(
+                [
+                    'id'                  => 'templates_alerts_special_days',
+                    'return'              => true,
+                    'class'               => 'info_table',
+                    'style'               => 'width: 100%',
+                    'columns'             => $columns,
+                    'column_names'        => $column_names,
+                    'ajax_url'            => 'godmode/alerts/alert_special_days',
+                    'ajax_data'           => [
+                        'method'   => 'dataAlertTemplates',
+                        'same_day' => $same_day,
+                    ],
+                    'no_sortable_columns' => [-1],
+                    'order'               => [
+                        'field'     => 'name',
+                        'direction' => 'asc',
+                    ],
+                    'search_button_class' => 'sub filter float-right',
+                    'form'                => [
+                        'inputs' => [
+                            [
+                                'label'         => __('Type'),
+                                'type'          => 'select',
+                                'name'          => 'type',
+                                'fields'        => alerts_get_alert_templates_types(),
+                                'selected'      => 0,
+                                'nothing'       => 'None',
+                                'nothing_value' => 0,
+                            ],
+                            [
+                                'label' => __('Search'),
+                                'type'  => 'text',
+                                'class' => 'mw250px',
+                                'id'    => 'name',
+                                'name'  => 'name',
+                            ],
+                        ],
+                    ],
+                ]
+            );
+        } catch (Exception $e) {
+            $output .= $e->getMessage();
+        }
+
+        echo $output;
+
+        return;
+    }
+
+
+    /**
+     * AJAX Method, draw Alert Template list.
+     *
+     * @return array
+     */
+    public function dataAlertTemplates()
+    {
+        global $config;
+        $filters = get_parameter('filter', []);
+        if (empty($filters['type']) === false) {
+            $filter['type'] = $filters['type'];
+        }
+
+        if (empty($filters['name']) === false) {
+            $filter[] = "name LIKE '%".$filters['name']."%'";
+        }
+
+        $filter['special_day'] = 1;
+
+        $templates = alerts_get_alert_templates($filter);
+        $count = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);
+
+        $day_code = get_parameter('day_code', '');
+        $data = [];
+        if (empty($templates) === false) {
+            foreach ($templates as $template) {
+                // TODO
+                if ((bool) $template[$day_code] === false) {
+                    $data[] = [
+                        'name'      => $template['name'],
+                        'id_group'  => ui_print_group_icon(
+                            $template['id_group'],
+                            true
+                        ),
+                        'type'      => $template['type'],
+                        'monday'    => (bool) $template['monday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'tuesday'   => (bool) $template['tuesday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'wednesday' => (bool) $template['wednesday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'thursday'  => (bool) $template['thursday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'friday'    => (bool) $template['friday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'saturday'  => (bool) $template['saturday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                        'sunday'    => (bool) $template['sunday'] === true
+                    ? html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    )
+                    : '',
+                    ];
+                }
+            }
+        }
+
+        echo json_encode(
+            [
+                'data'            => $data,
+                'recordsTotal'    => $count[0]['total'],
+                'recordsFiltered' => count($data),
+            ]
+        );
+
+        return $data;
     }
 
 

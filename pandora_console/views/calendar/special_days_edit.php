@@ -51,7 +51,7 @@ if (empty($message) === false) {
 
 $inputs = [];
 
-// Name.
+// Date.
 $inputs[] = [
     'label'     => __('Date'),
     'arguments' => [
@@ -59,6 +59,21 @@ $inputs[] = [
         'name'     => 'date',
         'required' => true,
         'value'    => $specialDay->date(),
+    ],
+];
+
+// Date img.
+$inputs[] = [
+    'arguments' => [
+        'type'    => 'image',
+        'src'     => 'images/calendar_view_day.png',
+        'value'   => $specialDay->date(),
+        'options' => [
+            'alt'     => 'calendar',
+            'onclick' => "scwShow(scwID('text-date'),this);",
+            'class'   => 'invert_filter',
+        ],
+
     ],
 ];
 
@@ -127,7 +142,8 @@ $inputs[] = [
 HTML::printForm(
     [
         'form'   => [
-            'action' => $url.'&op=edit&action=save&id='.$specialDay->id(),
+            'id'     => 'form-special-days',
+            'action' => $url.'&tab=special_days&op=edit&action=save&id='.$specialDay->id(),
             'method' => 'POST',
         ],
         'inputs' => $inputs,
@@ -135,30 +151,13 @@ HTML::printForm(
     false,
     true
 );
-/*
-    $table->data[0][0] = __('Date');
-    $table->data[0][1] = html_print_input_text(
-    'date',
-    $date,
-    '',
-    10,
-    10,
-    true
-    );
-    $table->data[0][1] .= html_print_image(
-    'images/calendar_view_day.png',
-    true,
-    [
-        'alt'     => 'calendar',
-        'onclick' => "scwShow(scwID('text-date'),this);",
-        'class'   => 'invert_filter',
-    ]
-    );
-*/
+
 echo '<div id="modal-alert-templates" class="invisible"></div>';
 
 ui_require_javascript_file('calendar');
 ui_require_javascript_file('pandora_alerts');
+
+hd($ajax_url);
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
@@ -173,12 +172,12 @@ $(document).ready (function () {
         load_templates_alerts_special_days({
             date: $("#text-date").val(),
             id_group: $("#id_group").val(),
-            same_day: $("#same_day").val(),
+            day_code: $("#day_code").val(),
             btn_ok_text: '<?php echo __('Create'); ?>',
             btn_cancel_text: '<?php echo __('Cancel'); ?>',
             title: dateformat,
             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
-            page: "godmode/alerts/alert_special_days",
+            page: '<?php echo $ajax_url; ?>',
             loading: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
             name_form: 'form-special-days'
         });

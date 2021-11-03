@@ -68,10 +68,10 @@ function load_templates_alerts_special_days(settings) {
         url: settings.url,
         data: {
           page: settings.page,
-          get_template_alerts: 1,
+          method: "drawAlertTemplates",
           date: settings.date,
           id_group: settings.id_group,
-          same_day: settings.same_day
+          day_code: settings.day_code
         },
         datatype: "html",
         success: function(data) {

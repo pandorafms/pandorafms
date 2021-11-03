@@ -133,7 +133,8 @@ class SpecialDay extends Entity
         ?int $offset=null,
         ?int $limit=null,
         ?string $order=null,
-        ?string $sort_field=null
+        ?string $sort_field=null,
+        ?bool $reduce=false
     ) {
         $sql_filters = [];
         $order_by = '';
@@ -233,8 +234,6 @@ class SpecialDay extends Entity
             $pagination
         );
 
-        hd($sql);
-
         if ($count === true) {
             $sql = sprintf('SELECT count(*) as n FROM ( %s ) tt', $sql);
 
@@ -245,6 +244,19 @@ class SpecialDay extends Entity
 
         if (is_array($return) === false) {
             return [];
+        }
+
+        if ($reduce === true) {
+            $return = array_reduce(
+                $return,
+                function ($carry, $item) {
+                    $year = date('Y', strtotime($item['date']));
+                    $month = date('n', strtotime($item['date']));
+                    $day = date('j', strtotime($item['date']));
+                    $carry[$year][$month][$day][] = $item;
+                    return $carry;
+                }
+            );
         }
 
         return $return;

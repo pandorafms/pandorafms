@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+global $config;
+
 // Header.
 \ui_print_page_header(
     // Title.
@@ -115,6 +117,7 @@ $inputs[] = [
 // Print form.
 HTML::printForm(
     [
+        'id'     => 'icalendar-special-days',
         'form'   => [
             'action' => $url.'&op=edit&action=upload_ical&id='.$id_calendar,
             'method' => 'POST',
@@ -280,19 +283,11 @@ for ($month = 1; $month <= 12; $month++) {
 
         $date = sprintf('%04d-%02d-%02d', $display_year, $display_month, $day);
         $date_wildcard = sprintf('0001-%02d-%02d', $display_month, $day);
-        $special_days = '';
-        $filter['date'] = [
-            $date,
-            $date_wildcard,
-        ];
-        $filter['order']['field'] = 'date';
-        $filter['order']['order'] = 'DESC';
-        $special_days = db_get_all_rows_filter('talert_special_days', $filter);
 
         $cal_table->cellstyle[$cal_line][$week] .= 'font-size: 18px;';
         $cal_table->data[$cal_line][$week] = $day.'&nbsp;';
 
-        $cal_table->data[$cal_line][$week] .= '<a href="'.$url_alert.'&create_special_day=1&date='.$date.'" title=';
+        $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&date='.$date.'" title=';
         $cal_table->data[$cal_line][$week] .= __('Create');
         $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
             'images/add_mc.png',
@@ -300,9 +295,9 @@ for ($month = 1; $month <= 12; $month++) {
             ['class' => 'invert_filter']
         ).'</a>';
 
-        if (empty($special_days) === false) {
+        if (empty($specialDays) === false && isset($specialDays[$display_year][$display_month][$day]) === true) {
             $cal_table->data[$cal_line][$week] .= '<br>';
-            foreach ($special_days as $special_day) {
+            foreach ($specialDays[$display_year][$display_month][$day] as $special_day) {
                 // Only show description if is filled.
                 $cal_table->data[$cal_line][$week] .= '<div class="note-special-day">';
                 $cal_table->data[$cal_line][$week] .= '<div>';
@@ -325,33 +320,37 @@ for ($month = 1; $month <= 12; $month++) {
                 }
 
                 $cal_table->data[$cal_line][$week] .= __('As ');
-                switch ($special_day['same_day']) {
-                    case 'monday':
+                switch ($special_day['day_code']) {
+                    case '1':
                         $cal_table->data[$cal_line][$week] .= __('Monday');
                     break;
 
-                    case 'tuesday':
+                    case '2':
                         $cal_table->data[$cal_line][$week] .= __('Tuesday');
                     break;
 
-                    case 'wednesday':
+                    case '3':
                         $cal_table->data[$cal_line][$week] .= __('Wednesday');
                     break;
 
-                    case 'thursday':
+                    case '4':
                         $cal_table->data[$cal_line][$week] .= __('Thursday');
                     break;
 
-                    case 'friday':
+                    case '5':
                         $cal_table->data[$cal_line][$week] .= __('Friday');
                     break;
 
-                    case 'saturday':
+                    case '6':
                         $cal_table->data[$cal_line][$week] .= __('Saturday');
                     break;
 
-                    case 'sunday':
+                    case '7':
                         $cal_table->data[$cal_line][$week] .= __('Sunday');
+                    break;
+
+                    case '8':
+                        $cal_table->data[$cal_line][$week] .= __('Holidays');
                     break;
 
                     default:
@@ -361,7 +360,7 @@ for ($month = 1; $month <= 12; $month++) {
 
                 $cal_table->data[$cal_line][$week] .= '</div>';
                 $cal_table->data[$cal_line][$week] .= '<div>';
-                if ($special_day['id_group'] || ($can_manage_group_all && $special_day['id_group'] == 0)) {
+                if ($special_day['id_group'] || (users_can_manage_group_all('LM') === true && $special_day['id_group'] == 0)) {
                     $script_delete = '';
                     $dateformat = date_create($special_day['date']);
                     $options_zoom = htmlspecialchars(
@@ -369,12 +368,12 @@ for ($month = 1; $month <= 12; $month++) {
                             [
                                 'date'            => $special_day['date'],
                                 'id_group'        => $special_day['id_group'],
-                                'same_day'        => $special_day['same_day'],
+                                'day_code'        => $special_day['day_code'],
                                 'btn_ok_text'     => __('Create'),
                                 'btn_cancel_text' => __('Cancel'),
                                 'title'           => date_format($dateformat, 'd M Y'),
                                 'url'             => ui_get_full_url('ajax.php', false, false, false),
-                                'page'            => 'godmode/alerts/alert_special_days',
+                                'page'            => $ajax_url,
                                 'loading'         => __('Loading, this operation might take several minutes...'),
                             ]
                         ),
@@ -392,7 +391,7 @@ for ($month = 1; $month <= 12; $month++) {
                         true,
                         ['class' => 'invert_filter']
                     ).'</a>';
-                    $cal_table->data[$cal_line][$week] .= '<a href="'.$url_alert.'&id='.$special_day['id'].'" title=';
+                    $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&id='.$special_day['id'].'" title=';
                     $cal_table->data[$cal_line][$week] .= __('Edit');
                     $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
                         'images/config.png',
@@ -453,3 +452,24 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
 }
 
 echo '<div id="modal-alert-templates" class="invisible"></div>';
+ui_require_javascript_file('pandora_alerts');
+?>
+<script type="text/javascript">
+$(document).ready (function () {
+    $("#srcbutton").click (function (e) {
+        e.preventDefault();
+        load_templates_alerts_special_days({
+            date: '',
+            id_group: $("#id_group").val(),
+            day_code: $("#day_code").val(),
+            btn_ok_text: '<?php echo __('Create'); ?>',
+            btn_cancel_text: '<?php echo __('Cancel'); ?>',
+            title: '<?php echo __('Load calendar'); ?>',
+            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+            page: "godmode/alerts/alert_special_days",
+            loading: '<?php echo __('Loading, this operation might take several minutes...'); ?>',
+            name_form: 'icalendar-special-days'
+        });
+    });
+});
+</script>

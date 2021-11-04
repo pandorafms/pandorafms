@@ -644,21 +644,23 @@ class CalendarManager
                             );
                             $tmp->options .= '</a>';
 
-                            // Options. Delete.
-                            $tmp->options .= '<a href="';
-                            $tmp->options .= ui_get_full_url(
-                                $this->url.'&op=delete&id='.$tmp->id
-                            );
-                            $tmp->options .= '">';
-                            $tmp->options .= html_print_image(
-                                'images/cross.png',
-                                true,
-                                [
-                                    'title' => __('Delete'),
-                                    'class' => 'invert_filter',
-                                ]
-                            );
-                            $tmp->options .= '</a>';
+                            if ($tmp->id != 1) {
+                                // Options. Delete.
+                                $tmp->options .= '<a href="';
+                                $tmp->options .= ui_get_full_url(
+                                    $this->url.'&op=delete&id='.$tmp->id
+                                );
+                                $tmp->options .= '">';
+                                $tmp->options .= html_print_image(
+                                    'images/cross.png',
+                                    true,
+                                    [
+                                        'title' => __('Delete'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->options .= '</a>';
+                            }
                         }
 
                         $carry[] = $tmp;

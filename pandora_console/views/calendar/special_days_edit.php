@@ -105,7 +105,7 @@ $inputs[] = [
         'name'     => 'day_code',
         'type'     => 'select',
         'fields'   => $days,
-        'selected' => $specialDay->day_code(),
+        'selected' => ($specialDay->day_code() === null) ? 1 : $specialDay->day_code(),
     ],
 ];
 

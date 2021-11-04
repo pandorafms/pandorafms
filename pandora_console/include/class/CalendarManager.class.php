@@ -164,12 +164,32 @@ class CalendarManager
             ).'</a>',
         ];
 
-        if ($tab !== 'list') {
-            $id_calendar = get_parameter('id_calendar', 0);
+        $id_calendar = get_parameter('id_calendar', 0);
+        $id = get_parameter('id', 0);
+
+        $op = get_parameter('op', '');
+        $action = get_parameter('action', '');
+
+        if (($id_calendar !== 0 || $id !== 0)) {
+            $id = ($id_calendar === 0) ? $id : $id_calendar;
+            $buttons['list_edit'] = [
+                'active' => false,
+                'text'   => '<a href="'.ui_get_full_url(
+                    $this->url.'&tab=list&op=edit&id='.$id
+                ).'&pure='.(int) $config['pure'].'">'.html_print_image(
+                    'images/pencil.png',
+                    true,
+                    [
+                        'title' => __('Edit calendar'),
+                        'class' => 'invert_filter',
+                    ]
+                ).'</a>',
+            ];
+
             $buttons['special_days'] = [
                 'active' => false,
                 'text'   => '<a href="'.ui_get_full_url(
-                    $this->url.'&tab=special_days&id_calendar='.$id_calendar
+                    $this->url.'&tab=special_days&id_calendar='.$id
                 ).'&pure='.(int) $config['pure'].'">'.html_print_image(
                     'images/templates.png',
                     true,
@@ -179,6 +199,10 @@ class CalendarManager
                     ]
                 ).'</a>',
             ];
+        }
+
+        if ($op === 'edit' && $action === '') {
+            $tab = 'list_edit';
         }
 
         $buttons[$tab]['active'] = true;
@@ -596,7 +620,7 @@ class CalendarManager
                         if ((bool) $manage === true) {
                             $name = '<b><a href="';
                             $name .= ui_get_full_url(
-                                $this->url.'&op=edit&id='.$tmp->id
+                                $this->url.'&op=special_days&tab=special_days&id_calendar='.$tmp->id
                             );
                             $name .= '">';
                             $name .= $tmp->name;
@@ -914,7 +938,18 @@ class CalendarManager
         $day_code = get_parameter('day_code', '');
         $id_calendar = get_parameter('id_calendar', 0);
 
-        $output = '<h4>'.__('Same as %s', $day_code);
+        $weekdays = [
+            1 => 'monday',
+            2 => 'tuesday',
+            3 => 'wednesday',
+            4 => 'thursday',
+            5 => 'friday',
+            6 => 'saturday',
+            7 => 'sunday',
+            8 => 'holidays',
+        ];
+
+        $output = '<h4>'.__('Same as %s', $weekdays[$day_code]);
         $output .= ' &raquo; ';
         $output .= __('Templates not being fired');
         $output .= '</h4>';

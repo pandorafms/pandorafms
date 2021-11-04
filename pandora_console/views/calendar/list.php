@@ -49,6 +49,10 @@ if (empty($message) === false) {
 // Datatables list.
 try {
     $columns = [
+        [
+            'text'  => 'id',
+            'class' => 'invisible',
+        ],
         'name',
         'id_group',
         'description',
@@ -59,6 +63,7 @@ try {
     ];
 
     $column_names = [
+        __('ID'),
         __('Name'),
         __('Group'),
         __('Description'),
@@ -78,7 +83,7 @@ try {
             'ajax_data'           => ['method' => 'drawListCalendar'],
             'no_sortable_columns' => [-1],
             'order'               => [
-                'field'     => 'name',
+                'field'     => 'id',
                 'direction' => 'asc',
             ],
             'search_button_class' => 'sub filter float-right',

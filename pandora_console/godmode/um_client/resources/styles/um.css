@@ -141,7 +141,7 @@
 }
 
 div#upload span.browse {
-  background-color: #82b92e;
+  background-color: #256bbd;
   border-radius: 2px;
   color: #ffffff;
   cursor: pointer;
@@ -194,7 +194,7 @@ span.warning {
 
 .license_text a {
   font-size: 11pt;
-  color: #82b92e;
+  color: #256bbd;
 }
 
 input.error {

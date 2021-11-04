@@ -218,13 +218,13 @@ div.login_button_saml {
 
 div.login_button input {
   width: 100%;
-  background-color: #82b92e;
+  background-color: #256bbd;
   text-align: center;
   height: 40px;
   padding: 0px;
   font-size: 11pt;
   color: #fff;
-  border: 1px solid #82b92e;
+  border: 1px solid #256bbd;
   border-radius: 3px;
 }
 
@@ -380,8 +380,8 @@ div.button_message_alert input {
   float: right;
   width: 87px;
   height: 33px;
-  color: #82b92e;
-  border: 1px solid #82b92e;
+  color: #256bbd;
+  border: 1px solid #256bbd;
   font-weight: bold;
   margin-right: 20px;
   margin-top: 20px;
@@ -425,8 +425,8 @@ div.button_message_alert_form input {
   float: right;
   width: 87px;
   height: 33px;
-  color: #82b92e;
-  border: 1px solid #82b92e;
+  color: #256bbd;
+  border: 1px solid #256bbd;
   font-weight: bold;
   font-size: 10pt;
   margin-right: 25px;

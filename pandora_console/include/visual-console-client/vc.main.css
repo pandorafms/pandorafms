@@ -33,7 +33,7 @@
 }
 
 .visual-console-item.is-editing:hover {
-  border-color: #82b92e;
+  border-color: #256bbd;
 }
 
 .visual-console-item.is-editing.is-selected {
@@ -662,7 +662,7 @@ div.module-graph .gauge_d3_class {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: #82b92e;
+  background-color: #256bbd;
   margin-left: auto;
   margin-right: auto;
   border-radius: 1000px 1000px 0px 0px;

@@ -219,7 +219,7 @@ div#rules.show {
 }
 
 .variable {
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 
 .variable:empty::before {

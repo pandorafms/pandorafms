@@ -278,7 +278,7 @@
 .select2-container--default
   .select2-selection--multiple
   .select2-selection__choice__remove:hover {
-  color: #256bbd;
+  color: #82b92e;
 }
 .select2-container--default[dir="rtl"]
   .select2-selection--multiple

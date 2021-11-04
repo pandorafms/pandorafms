@@ -299,7 +299,7 @@ switch ($section) {
 
     case 'websocket_engine':
         $buttons['websocket_engine']['active'] = true;
-        $subpage = ' &raquo '.__('%s Websocket Engine', get_product_name());
+        $subpage = ' &raquo '.__('Pandora Websocket Engine');
         $help_header = 'quickshell_settings';
     break;
 

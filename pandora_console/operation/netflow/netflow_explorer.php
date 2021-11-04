@@ -5,7 +5,7 @@
  * @package    Operations.
  * @subpackage Netflow explorer view.
  *
- * Barivion - http://barivion.com
+ * Pandora FMS - http://pandorafms.com
  * ==================================================
  * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list

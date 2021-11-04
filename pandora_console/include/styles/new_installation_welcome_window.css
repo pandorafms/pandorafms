@@ -72,7 +72,7 @@
 }
 
 #welcome_form li:not(.centered_full):not(.white_box) {
-  border-left: 4px solid #50aaff;
+  border-left: 4px solid #79a930;
 }
 
 #welcome_form li:not(.centered_full):not(.white_box).row_grey {

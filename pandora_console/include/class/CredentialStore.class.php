@@ -763,9 +763,9 @@ class CredentialStore extends Wizard
         ui_require_css_file('credential_store');
 
         if (!isset($config['encryption_passphrase'])) {
-            $url = 'https://barivion.com/docs/index.php?title=Pandora:Documentation_en:Password_Encryption';
+            $url = 'https://pandorafms.com/docs/index.php?title=Pandora:Documentation_en:Password_Encryption';
             if ($config['language'] == 'es') {
-                $url = 'https://barivion.com/docs/index.php?title=Pandora:Documentation_es:Cifrado_Contrase%C3%B1as';
+                $url = 'https://pandorafms.com/docs/index.php?title=Pandora:Documentation_es:Cifrado_Contrase%C3%B1as';
             }
 
             ui_print_warning_message(

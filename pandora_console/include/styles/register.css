@@ -24,8 +24,8 @@ button.submit-cancel:hover {
 input[type="submit"].submit-next,
 button.submit-next.ui-button.ui-corner-all.ui-widget,
 input[type="button"].submit-next {
-  color: #256bbd;
-  border: 1px solid #256bbd;
+  color: #82b92e;
+  border: 1px solid #82b92e;
   background: #fff;
   padding: 5px;
   font-size: 1.3em;
@@ -41,7 +41,7 @@ input[type="submit"].submit-next:hover,
 button.submit-next.ui-button.ui-corner-all.ui-widget:hover,
 input[type="button"].submit-next:hover {
   color: #fff;
-  background: #256bbd;
+  background: #82b92e;
 }
 
 div.submit_buttons_container {

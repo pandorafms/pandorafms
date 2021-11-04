@@ -100,7 +100,8 @@ $(document).ready(function() {
   // Get all categories from Module library.
   function get_all_categories() {
     $.ajax({
-      url: "https://barivion.com/library/wp-json/wp/v2/categories?per_page=100",
+      url:
+        "https://pandorafms.com/library/wp-json/wp/v2/categories?per_page=100",
       type: "GET",
       cache: false,
       crossDomain: true,
@@ -126,9 +127,10 @@ $(document).ready(function() {
 
     var api_url = "";
     if (selector == "search") {
-      api_url = "https://barivion.com/library/wp-json/wp/v2/posts?search=";
+      api_url = "https://pandorafms.com/library/wp-json/wp/v2/posts?search=";
     } else if (selector == "category") {
-      api_url = "https://barivion.com/library/wp-json/wp/v2/posts/?categories=";
+      api_url =
+        "https://pandorafms.com/library/wp-json/wp/v2/posts/?categories=";
     }
 
     $.ajax({
@@ -236,7 +238,7 @@ $(document).ready(function() {
 /* Print main page */
 function library_main() {
   $.ajax({
-    url: "https://barivion.com/library/wp-json/wp/v2/pages/121",
+    url: "https://pandorafms.com/library/wp-json/wp/v2/pages/121",
     type: "GET",
     cache: false,
     crossDomain: true,
@@ -312,7 +314,7 @@ function library_main() {
 // Get all data from one category. This is necessary to get the category name.
 function get_category(id) {
   $.ajax({
-    url: "https://barivion.com/library/wp-json/wp/v2/categories/" + id,
+    url: "https://pandorafms.com/library/wp-json/wp/v2/categories/" + id,
     type: "GET",
     cache: false,
     contentType: "application/json",

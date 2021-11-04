@@ -84,12 +84,12 @@ div.options_divider {
 div.options_divider h2 {
   margin: 20px 20px 0;
   padding: 5px;
-  border: 2px solid #256bbd;
+  border: 2px solid #82b92e;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   color: white;
   text-align: center;
-  background: #256bbd;
+  background: #82b92e;
   font-size: 14px;
   font-weight: 600;
 }
@@ -125,8 +125,8 @@ select {
 }
 
 .options_textarea button {
-  background-color: #256bbd;
-  border: 1px solid #256bbd;
+  background-color: #82b92e;
+  border: 1px solid #82b92e;
   color: white;
   padding: 6px 32px;
   text-align: center;
@@ -139,7 +139,7 @@ select {
 
 .options_textarea button:hover {
   background-color: transparent;
-  color: #256bbd;
+  color: #82b92e;
   cursor: pointer;
 }
 

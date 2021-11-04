@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -16,7 +16,7 @@ global $config;
 if ($helps === false || !$searchHelps) {
     echo "<br><div class='nf'>".__('Zero results found.').sprintf(
         __('You can find more help in the <a class="underline" href="%s">wiki</a>'),
-        'https://pandorafms.com/manual/start?do=search&id=start&q='.$config['search_keywords']
+        'https://barivion.com/manual/start?do=search&id=start&q='.$config['search_keywords']
     )."</div>\n";
 } else {
     $table->width = '98%';

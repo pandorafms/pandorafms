@@ -6,10 +6,10 @@ A plugin for [Pandora FMS](https://github.com/pandorafms/pandorafms) to enable n
 
 Assuming you are using Pandora FMS 6.0, the steps are:
 
-1. Create the [Alert command](https://pandorafms.com/manual/en/documentation/04_using/01_alerts#the_alert_command) going to Alerts -> Commands and clicking on "Create". Then:
+1. Create the [Alert command](https://barivion.com/manual/en/documentation/04_using/01_alerts#the_alert_command) going to Alerts -> Commands and clicking on "Create". Then:
    ![create command](help/images/1-set-up-the-mattermost-command.png?raw=true "Set up Mattermost Command")
 
-2. Define the [Alert Action](https://pandorafms.com/manual/en/documentation/04_using/01_alerts#alert_actions) going to Alerts -> Actions and clicking on "Create". Then:
+2. Define the [Alert Action](https://barivion.com/manual/en/documentation/04_using/01_alerts#alert_actions) going to Alerts -> Actions and clicking on "Create". Then:
    ![create action](help/images/2-set-up-the-mattermost-action.png?raw=true "Set up Mattermost Action")
 
 3. Assign the action to an existing module under Alerts -> List of alerts:

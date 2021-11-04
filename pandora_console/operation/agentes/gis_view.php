@@ -1,6 +1,6 @@
 <?php
 /**
- * Pandora FMS- http://pandorafms.com
+ * Pandora FMS- http://barivion.com
  * ==================================================
  * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  *

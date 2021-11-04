@@ -88,8 +88,8 @@ div#vc-controls img.vc-qr {
 
 input.vs_button_ghost {
   background-color: transparent;
-  border: 1px solid #82b92e;
-  color: #82b92e;
+  border: 1px solid #256bbd;
+  color: #256bbd;
   text-align: center;
   padding: 4px 12px;
   font-weight: bold;
@@ -117,7 +117,7 @@ div#edit-controls input.visual_editor_button_toolbox {
 div#edit-controls button.sub:hover,
 div#edit-controls input.sub:hover {
   border: 0px;
-  border-bottom: 3px solid #82b92e;
+  border-bottom: 3px solid #256bbd;
 }
 
 div#edit-controls button.sub[disabled],
@@ -455,5 +455,5 @@ div.label strong span {
 }
 
 /*.termframe{
-	background-color: #82b92e;
+	background-color: #256bbd;
 }*/

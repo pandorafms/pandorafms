@@ -101,7 +101,7 @@ $output .= '<p id="description_task">';
 $output .= __($str);
 $output .= '<br><br>';
 $output .= __('You can get more plugins in our');
-$output .= '<a href="http://pandorafms.com/Library/Library/">';
+$output .= '<a href="http://barivion.com/Library/Library/">';
 $output .= ' '.__('Public Resource Library');
 $output .= '</a>';
 $output .= '</p>';

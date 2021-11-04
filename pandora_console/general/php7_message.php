@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -19,15 +19,15 @@
 global $config;
 
 if ($config['language'] == 'es') {
-    $url_help = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+    $url_help = 'https://barivion.com/manual/es/documentation/07_technical_annexes/14_php_7';
 } else {
-    $url_help = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+    $url_help = 'https://barivion.com/manual/en/documentation/07_technical_annexes/14_php_7';
 }
 
 // Prints help dialog information
 echo '<div id="login_help_dialog" title="PHP UPDATE REQUIRED" class="invisible">';
     echo '<div class="login_help_dialog">';
-        echo "<p><b class='font_10'>".__('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'</b></p>';
+        echo "<p><b class='font_10'>".__('For a correct operation of %s, PHP must be updated to version 7.0 or higher.', get_product_name()).'</b></p>';
         echo "<p class='font_10'><b>".__('Otherwise, functionalities will be lost.').'</b></p>';
         echo '<ul>';
             echo "<li class='pdd_5px'>".__('Report download in PDF format').'</li>';

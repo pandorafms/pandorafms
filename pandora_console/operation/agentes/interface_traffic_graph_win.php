@@ -67,7 +67,7 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
     $l10n->load_tables();
 }
 
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/barivion.css" type="text/css"/>';
 if ($config['style'] === 'pandora_black') {
     ui_require_css_file('pandora_black', 'include/styles/', true);
 }
@@ -305,7 +305,7 @@ $menu_form .= html_print_image(
 $menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
 $menu_form .= '<b>'.__('Graph configuration menu').'</b>';
 $menu_form .= ui_print_help_tip(
-    __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+    __('In %s, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'%s Engineering\' chapter from documentation.', get_product_name(), get_product_name()),
     true
 );
 $menu_form .= '</span>';

@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -63,7 +63,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                 echo '</td>';
 
                 echo '<td class="border_solid_white center">';
-                echo '<a href="http://pandorafms.com/" target="_blank" class="no_decoration">'.html_print_image(
+                echo '<a href="http://barivion.com/" target="_blank" class="no_decoration">'.html_print_image(
                     'images/enterprise_version.png',
                     true,
                     [
@@ -72,11 +72,11 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                     ]
                 ).'</a>';
                 echo '<br id="br_mb_40" />';
-                echo '<a class="font_9pt" href="http://pandorafms.com/" target="_blank">'.__('Enterprise version').'</a>';
+                echo '<a class="font_9pt" href="http://barivion.com/" target="_blank">'.__('Enterprise version').'</a>';
                 echo '</td>';
 
                 echo '<td class="border_solid_white center">';
-                echo '<a href="https://pandorafms.com/forums" target="_blank" class="no_decoration">'.html_print_image(
+                echo '<a href="https://barivion.com/forums" target="_blank" class="no_decoration">'.html_print_image(
                     'images/support.png',
                     true,
                     [
@@ -85,7 +85,7 @@ echo '<div id="login_help_dialog" title="'.__('Welcome to %s', get_product_name(
                     ]
                 ).'</a>';
                 echo '<br id="br_mb_40" />';
-                echo '<a class="font_9pt" href="https://pandorafms.com/forums" target="_blank">'.__('Support').' / '.__('Forums').'</a>';
+                echo '<a class="font_9pt" href="https://barivion.com/forums" target="_blank">'.__('Support').' / '.__('Forums').'</a>';
                 echo '</td>';
 
                 echo '<td class="border_solid_white center">';

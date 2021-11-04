@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -22,7 +22,7 @@ $config['homedir'] = realpath(__DIR__.'/../');
 
 echo '<html>';
 ob_start('ui_process_page_head');
-echo '<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">';
+echo '<link rel="stylesheet" href="include/styles/barivion.css" type="text/css">';
 echo '</head>'."\n";
 
 require_once __DIR__.'/../include/functions_themes.php';

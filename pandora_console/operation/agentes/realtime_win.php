@@ -68,7 +68,7 @@ if ($config['style'] === 'pandora_black') {
     ui_require_css_file('pandora_black', 'include/styles/', true);
 }
 
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/barivion.css" type="text/css"/>';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

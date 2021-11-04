@@ -227,7 +227,7 @@ a:hover {
   font-weight: bold;
 }
 :focus {
-  outline-color: #82b92e;
+  outline-color: #256bbd;
 }
 a:focus,
 input:focus,
@@ -314,12 +314,12 @@ select:-webkit-autofill:focus {
 
 /* All select type multiple */
 select[multiple] option:checked {
-  background: #82b92e linear-gradient(0deg, #82b92e 0%, #82b92e 100%);
+  background: #256bbd linear-gradient(0deg, #256bbd 0%, #256bbd 100%);
   color: #fff;
 }
 
 select option:checked {
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
 }
 
@@ -937,7 +937,7 @@ p.center {
   text-align: center;
   top: 50%;
   background-color: #fff;
-  border: 2px solid #82b92e;
+  border: 2px solid #256bbd;
   box-shadow: 2px 2px 2px #9dbba1;
   padding: 20px;
   z-index: 100;
@@ -1018,7 +1018,7 @@ input.sub[disabled] {
   font-weight: bold;
   padding-top: 5px;
   margin-left: 5px;
-  background: none repeat scroll 0% 0% #82b92e;
+  background: none repeat scroll 0% 0% #256bbd;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
   border-bottom-left-radius: 2px;
@@ -1178,7 +1178,7 @@ input.datos {
 /* global syles */
 .bg {
   /* op menu */
-  background: #82b92e;
+  background: #256bbd;
   height: 20px;
 }
 
@@ -1420,7 +1420,7 @@ div.title_line {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  border-bottom: 2px solid #82b92e;
+  border-bottom: 2px solid #256bbd;
   min-height: 50px;
   width: calc(100% + 3em);
   padding-right: 0px;
@@ -1462,7 +1462,7 @@ div.title_line {
 }
 
 .breadcrumb_active {
-  color: #82b92e;
+  color: #256bbd;
   font-size: 10pt;
 }
 /* End - Breadcrum */
@@ -2455,7 +2455,7 @@ tr.group_view_crit,
 
 tr.group_view_ok,
 .group_view_ok {
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
 }
 
@@ -2497,7 +2497,7 @@ tr.group_view_unk,
 .datos_green a,
 .datos_greenf9 a,
 .datos_green * {
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
 }
 .datos_red,
@@ -3312,7 +3312,7 @@ table#policy_modules td * {
 
 #clippy_head_title {
   font-weight: bold;
-  background: #82b92e;
+  background: #256bbd;
   color: #ffffff;
   margin-top: -15px;
   margin-left: -15px;
@@ -3445,13 +3445,13 @@ div.div_groups_status {
 }
 
 #menu_tab li:hover {
-  box-shadow: inset 0px 4px #82b92e;
+  box-shadow: inset 0px 4px #256bbd;
 }
 
 #menu_tab li.nomn_high,
 #menu_tab li.nomn_high span {
   color: #fff;
-  box-shadow: inset 0px 4px #82b92e;
+  box-shadow: inset 0px 4px #256bbd;
   background-color: #fff;
 }
 
@@ -3496,7 +3496,7 @@ div.div_groups_status {
 
 .title_um {
   font-size: 20px;
-  color: #82b92e;
+  color: #256bbd;
   text-align: center;
 }
 
@@ -3618,7 +3618,7 @@ div.simple_value > a > span.text p {
   width: 100%;
   height: 37px;
   left: 0px;
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 .modalheadertext {
   color: white;
@@ -3632,7 +3632,7 @@ div.simple_value > a > span.text p {
   height: 26px;
   left: 0px;
   padding-top: 10px;
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: white;
   position: relative;
   font-size: 11pt;
@@ -3690,7 +3690,7 @@ div.simple_value > a > span.text p {
   width: 90px;
   height: 30px;
   background-color: white;
-  border: 1px solid #82b92e;
+  border: 1px solid #256bbd;
 }
 .modalokbuttontext {
   transition-property: background-color, color;
@@ -3700,7 +3700,7 @@ div.simple_value > a > span.text p {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  color: #82b92e;
+  color: #256bbd;
   font-size: 10pt;
   position: relative;
   top: 6px;
@@ -3714,7 +3714,7 @@ div.simple_value > a > span.text p {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 
 .modalokbutton:hover .modalokbuttontext {
@@ -3805,7 +3805,7 @@ div.simple_value > a > span.text p {
   width: 240px;
   height: 30px;
   background-color: white;
-  border: 1px solid #82b92e;
+  border: 1px solid #256bbd;
 }
 .modalgobuttontext {
   transition-property: background-color, color;
@@ -3815,7 +3815,7 @@ div.simple_value > a > span.text p {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  color: #82b92e;
+  color: #256bbd;
   font-size: 10pt;
   position: relative;
   top: 6px;
@@ -3829,7 +3829,7 @@ div.simple_value > a > span.text p {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 
 .modalgobutton:hover .modalgobuttontext {
@@ -4343,7 +4343,7 @@ div#dialog_messages table th:last-child {
 }
 
 .notification-ball-no-messages {
-  background-color: #82b92e;
+  background-color: #256bbd;
   cursor: pointer;
 }
 .notification-ball-new-messages {
@@ -4541,11 +4541,11 @@ div#dialog_messages table th:last-child {
 }
 
 input:checked + .p-slider {
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 
 input:focus + .p-slider {
-  box-shadow: 0 0 1px #82b92e;
+  box-shadow: 0 0 1px #256bbd;
 }
 
 input:checked + .p-slider:before {
@@ -4652,7 +4652,7 @@ input:checked + .p-slider:before {
   border: none;
   outline: none;
   background: url("../../images/to_top_menu.png") no-repeat center;
-  background-color: #82b92e;
+  background-color: #256bbd;
   width: 27px;
   height: 27px;
   cursor: pointer;
@@ -4663,7 +4663,7 @@ input:checked + .p-slider:before {
 #top_btn:hover {
   background: url("../../images/to_top_menu_hover.png") no-repeat center;
   background-color: #fff;
-  border: 2px solid #82b92e;
+  border: 2px solid #256bbd;
 }
 
 /* New white rounded boxes */
@@ -5127,9 +5127,9 @@ table.info_table.agent_info_table table.info_table {
 }
 
 .agent_info_table_opened {
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
-  border-color: #82b92e;
+  border-color: #256bbd;
 }
 
 .agent_info_table_closed {
@@ -5207,9 +5207,9 @@ table.info_table.policy_sub_table {
 
 .pagination .page_number_active {
   font-weight: bold;
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
-  border-color: #82b92e;
+  border-color: #256bbd;
 }
 
 .pagination .page_number_active a {
@@ -5381,7 +5381,7 @@ div.label_select_child_left > span {
 }
 
 .switch_radio_button input:checked + label {
-  background-color: #82b92e;
+  background-color: #256bbd;
   box-shadow: none;
   color: #fff !important;
 }
@@ -5479,7 +5479,7 @@ div#bullets_modules div {
   background: #4a83f3;
 }
 .green_background {
-  background: #82b92e;
+  background: #256bbd;
 }
 
 .orange_color {
@@ -5501,7 +5501,7 @@ div#bullets_modules div {
   color: #5bb6e5;
 }
 .green_color {
-  color: #82b92e;
+  color: #256bbd;
 }
 /* First row in agent view */
 #agent_details_first_row {
@@ -6021,11 +6021,11 @@ form#modal_form_feedback ul.wizard li > textarea {
 
 /* Generic classes to reuse and facilitate the creation of custom themes */
 .pandora_green_text {
-  color: #82b92e;
+  color: #256bbd;
 }
 
 .pandora_green_bg {
-  background-color: #82b92e;
+  background-color: #256bbd;
 }
 
 .default_container {
@@ -7246,7 +7246,7 @@ div.graph div.legend table {
 }
 
 .bg_82B92E {
-  background-color: #82b92e !important;
+  background-color: #256bbd !important;
 }
 
 .bg_B2B2B2 {
@@ -7293,7 +7293,7 @@ div.graph div.legend table {
   color: #676767;
 }
 .color_82b92e {
-  color: #82b92e;
+  color: #256bbd;
 }
 .networkconsole {
   width: 100%;

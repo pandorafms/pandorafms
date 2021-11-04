@@ -43,7 +43,7 @@
     <script src="<?php $asset('resources/javascript/jquery.iframe-transport.js'); ?>" type="text/javascript"></script>
     <script src="<?php $asset('resources/javascript/jquery.knob.js'); ?>" type="text/javascript"></script>
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>">
-    <link rel="stylesheet" href="<?php $asset('resources/styles/pandora.css'); ?>">
+    <link rel="stylesheet" href="<?php $asset('resources/styles/barivion.css'); ?>">
 </head>
 
 <div id="box_offline">
@@ -83,7 +83,7 @@
         'fileList': "<?php echo __('Files included in this package'); ?>",
         'ignoresign': "<?php echo __('Ignore'); ?>",
         'verifysigntitle': "<?php echo __('Verify package signature'); ?>",
-        'verifysigns': "<?php echo __('Copy into the textarea the signature validation token you can retrieve from %s and press OK to verify the package, press ignore to avoid signature verification', 'https://support.pandorafms.com'); ?>"
+        'verifysigns': "<?php echo __('Copy into the textarea the signature validation token you can retrieve from %s and press OK to verify the package, press ignore to avoid signature verification', 'https://support.barivion.com'); ?>"
     }
 
     var insecureMode = <?php echo ($insecure === true) ? 'true' : 'false'; ?>;

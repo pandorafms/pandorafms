@@ -1182,40 +1182,40 @@ a.ui-link-inherit {
 /* Active class used as the "on" state across all themes
 -----------------------------------------------------------------------------------------------------------*/
 .ui-btn-active {
-  border: 1px solid #82b92e /*{global-active-border}*/;
+  border: 1px solid #256bbd /*{global-active-border}*/;
   background: #5393c5 /*{global-active-background-color}*/;
   font-weight: bold;
   color: #fff /*{global-active-color}*/;
   cursor: pointer;
   text-shadow: 0 /*{global-active-shadow-x}*/ 1px /*{global-active-shadow-y}*/ 0
-    /*{global-active-shadow-radius}*/ #82b92e /*{global-active-shadow-color}*/;
+    /*{global-active-shadow-radius}*/ #256bbd /*{global-active-shadow-color}*/;
   text-decoration: none;
   background-image: -webkit-gradient(
     linear,
     left top,
     left bottom,
-    from(#82b92e /*{global-active-background-start}*/),
-    to(#82b92e /*{global-active-background-end}*/)
+    from(#256bbd /*{global-active-background-start}*/),
+    to(#256bbd /*{global-active-background-end}*/)
   ); /* Saf4+, Chrome */
   background-image: -webkit-linear-gradient(
-    #82b92e /*{global-active-background-start}*/,
-    #82b92e /*{global-active-background-end}*/
+    #256bbd /*{global-active-background-start}*/,
+    #256bbd /*{global-active-background-end}*/
   ); /* Chrome 10+, Saf5.1+ */
   background-image: -moz-linear-gradient(
-    #82b92e /*{global-active-background-start}*/,
-    #82b92e /*{global-active-background-end}*/
+    #256bbd /*{global-active-background-start}*/,
+    #256bbd /*{global-active-background-end}*/
   ); /* FF3.6 */
   background-image: -ms-linear-gradient(
-    #82b92e /*{global-active-background-start}*/,
-    #82b92e /*{global-active-background-end}*/
+    #256bbd /*{global-active-background-start}*/,
+    #256bbd /*{global-active-background-end}*/
   ); /* IE10 */
   background-image: -o-linear-gradient(
-    #82b92e /*{global-active-background-start}*/,
-    #82b92e /*{global-active-background-end}*/
+    #256bbd /*{global-active-background-start}*/,
+    #256bbd /*{global-active-background-end}*/
   ); /* Opera 11.10+ */
   background-image: linear-gradient(
-    #82b92e /*{global-active-background-start}*/,
-    #82b92e /*{global-active-background-end}*/
+    #256bbd /*{global-active-background-start}*/,
+    #256bbd /*{global-active-background-end}*/
   );
 }
 .ui-btn-active:visited,
@@ -1558,12 +1558,12 @@ a.ui-link-inherit {
 }
 .ui-focus,
 .ui-btn:focus {
-  -moz-box-shadow: inset 0 0 3px #82b92e /*{global-active-background-color}*/,
-    0 0 9px #82b92e /*{global-active-background-color}*/;
-  -webkit-box-shadow: inset 0 0 3px #82b92e /*{global-active-background-color}*/,
-    0 0 9px #82b92e /*{global-active-background-color}*/;
-  box-shadow: inset 0 0 3px #82b92e /*{global-active-background-color}*/,
-    0 0 9px #82b92e /*{global-active-background-color}*/;
+  -moz-box-shadow: inset 0 0 3px #256bbd /*{global-active-background-color}*/,
+    0 0 9px #256bbd /*{global-active-background-color}*/;
+  -webkit-box-shadow: inset 0 0 3px #256bbd /*{global-active-background-color}*/,
+    0 0 9px #256bbd /*{global-active-background-color}*/;
+  box-shadow: inset 0 0 3px #256bbd /*{global-active-background-color}*/,
+    0 0 9px #256bbd /*{global-active-background-color}*/;
 }
 .ui-input-text.ui-focus,
 .ui-input-search.ui-focus {

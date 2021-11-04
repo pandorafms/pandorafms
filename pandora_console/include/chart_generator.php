@@ -89,7 +89,7 @@ if (check_login(false) === false) {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Access denied</title>
-    <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
+    <link rel="stylesheet" href="styles/barivion.css" type="text/css" />
     <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
     <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
     <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />
@@ -146,8 +146,8 @@ if (file_exists('languages/'.$user_language.'.mo') === true) {
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>Pandora FMS Graph (<?php echo agents_get_alias($agent_id).' - '.$interface_name; ?>)</title>
-        <link rel="stylesheet" href="styles/pandora.css" type="text/css" />
+        <title><?php echo get_product_name().' Graph '.agents_get_alias($agent_id).' - '.$interface_name; ?>)</title>
+        <link rel="stylesheet" href="styles/barivion.css" type="text/css" />
         <link rel="stylesheet" href="styles/pandora_minimal.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui.min.css" type="text/css" />
         <link rel="stylesheet" href="styles/js/jquery-ui_custom.css" type="text/css" />

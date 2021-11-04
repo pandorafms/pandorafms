@@ -189,7 +189,7 @@
 }
 
 #categories_library .card_category a:hover {
-  color: #82b92e;
+  color: #256bbd;
   text-decoration: none;
 }
 
@@ -221,7 +221,7 @@
 }
 
 #pagination_library .pagination_pages a.active_number {
-  background-color: #82b92e;
+  background-color: #256bbd;
   color: #fff;
 }
 
@@ -232,7 +232,7 @@
 }
 
 #modal_library h2 {
-  color: #82b92e !important;
+  color: #256bbd !important;
 }
 
 #modal_library ul {
@@ -241,7 +241,7 @@
 }
 
 #modal_library a {
-  color: #82b92e;
+  color: #256bbd;
 }
 
 #modal_library pre {

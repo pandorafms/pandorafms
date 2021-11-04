@@ -5,10 +5,10 @@ python3 pandora-gchat-cli.py \
 -u https://chat.googleapis.com/v1/spaces/AAAA6-AOZQ8/messages\?key\=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI\&token\=_ZGwKN4lue8ZiDKGVMLfMay3hLRrYjmgYr2fXPqPy0c%3D \
 -t 'PandoraFMS Alert' \
 -D 'Alert Fired' \
---thumb https://pandorafms.com/images/alerta_roja.png \
+--thumb https://barivion.com/images/alerta_roja.png \
 --btn_desc pandorafms.com \
---btn_url https://pandorafms.com/
+--btn_url https://barivion.com/
 
 
 # Pandora FMS command definition example
-python3 /usr/share/pandora_server/util/pandora-gchat/pandora-gchat-cli.py -d '_field1_' -u '_field2_' -t '_field3_' -D '_field4_' --thumb '_field5_' --btn_desc pandorafms.com --btn_url https://pandorafms.com/
+python3 /usr/share/pandora_server/util/pandora-gchat/pandora-gchat-cli.py -d '_field1_' -u '_field2_' -t '_field3_' -D '_field4_' --thumb '_field5_' --btn_desc pandorafms.com --btn_url https://barivion.com/

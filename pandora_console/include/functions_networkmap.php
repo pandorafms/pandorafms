@@ -2384,7 +2384,7 @@ function networkmap_load_cluetip()
         $(document).ready(function() {
             // TODO: Implement the jquery tooltip functionality everywhere
             // and remove the cluetip code.
-            $("area[title!='<?php echo 'Pandora FMS'; ?>']")
+            $("area[title!='<?php echo get_product_name(); ?>']")
                 .each(function(index, element) {
                     // Store the title.
                     // The title stores the url into a data property

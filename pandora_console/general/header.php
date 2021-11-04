@@ -1,6 +1,6 @@
 <?php
 /**
- * Pandora FMS - http://pandorafms.com
+ * Barivion - http://barivion.com
  * ==================================================
  * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list
@@ -72,9 +72,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if ($check_minor_release_available) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] == 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://barivion.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://barivion.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }
@@ -363,7 +363,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if (enterprise_installed()) {
             $header_support_link = $config['custom_support_url'];
         } else {
-            $header_support_link = 'https://pandorafms.com/forums/';
+            $header_support_link = 'https://barivion.com/forums/';
         }
 
         $header_support = '<div id="header_support">';

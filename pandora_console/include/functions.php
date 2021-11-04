@@ -1,5 +1,5 @@
 <?php
-// Pandora FMS - http://pandorafms.com
+// Barivion - http://barivion.com
 // ==================================================
 // Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
@@ -4251,7 +4251,7 @@ function get_product_name()
             return $config['rb_product_name_alt'];
         }
 
-        return 'Pandora FMS';
+        return 'Barivion';
     }
 
     return $stored_name;
@@ -4261,14 +4261,14 @@ function get_product_name()
 /**
  * Get the copyright notice.
  *
- * @return string If the installation is open, it will be 'Artica ST'.
- *         If the product name stored is empty, it returns 'Artica ST' too.
+ * @return string If the installation is open, it will be 'PandoraFMS.com'.
+ *         If the product name stored is empty, it returns 'PandoraFMS.com' too.
  */
 function get_copyright_notice()
 {
     $stored_name = enterprise_hook('enterprise_get_copyright_notice');
     if (empty($stored_name) || $stored_name == ENTERPRISE_NOT_HOOK) {
-        return 'PandoraFMS.com';
+        return 'Barivion';
     }
 
     return $stored_name;
@@ -4462,10 +4462,10 @@ function get_help_info($section_name)
     $user_language = get_user_language($config['id_user']);
 
     $es = false;
-    $result = 'https://pandorafms.com/manual/en/documentation/';
+    $result = 'https://barivion.com/manual/en/documentation/';
     if ($user_language == 'es') {
         $es = true;
-        $result = 'https://pandorafms.com/manual/es/documentation/';
+        $result = 'https://barivion.com/manual/es/documentation/';
     }
 
     switch ($section_name) {
@@ -5937,7 +5937,7 @@ function send_test_email(
 
         $mailer = new Swift_Mailer($transport);
 
-        $message = new Swift_Message(io_safe_output(__('Testing Pandora FMS email')));
+        $message = new Swift_Message(io_safe_output(__('Testing %s email', get_product_name())));
 
         $message->setFrom(
             [
@@ -5950,7 +5950,7 @@ function send_test_email(
         $to = trim($to);
         $message->setTo([$to => $to]);
         $message->setBody(
-            __('This is an email test sent from Pandora FMS. If you can read this, your configuration works.'),
+            __('This is an email test sent from %s. If you can read this, your configuration works.', get_product_name()),
             'text/html'
         );
 

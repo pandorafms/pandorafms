@@ -65,10 +65,10 @@ if (file_exists('../../include/languages/'.$user_language.'.mo')) {
 }
 
 global $config;
-echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
+echo '<link rel="stylesheet" href="../../include/styles/barivion.css" type="text/css"/>';
 
 if ($config['style'] === 'pandora_black') {
-    echo '<link rel="stylesheet" href="../../include/styles/pandora_black.css" type="text/css"/>';
+    echo '<link rel="stylesheet" href="../../include/styles/barivion_black.css" type="text/css"/>';
 }
 
 
@@ -455,7 +455,7 @@ ui_print_message_dialog(
         $menu_form .= '<span style="flex: 2; justify-content:center;" class="flex-row">';
         $menu_form .= '<b>'.__('Graph configuration menu').'</b>';
         $menu_form .= ui_print_help_tip(
-            __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+            __('In %s, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'%s Engineering\' chapter from documentation.', get_product_name(), get_product_name()),
             true
         );
         $menu_form .= '</span>';

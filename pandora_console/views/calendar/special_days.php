@@ -118,13 +118,13 @@ $inputs[] = [
 // Print form.
 HTML::printForm(
     [
-        'form'    => [
-            'action' => $url.'&op=upload_ical&id='.$id_calendar,
-            'method' => 'POST',
-            'id'     => 'icalendar-special-days',
+        'form'   => [
+            'action'  => $url.'&op=upload_ical&id='.$id_calendar,
+            'method'  => 'POST',
+            'id'      => 'icalendar-special-days',
+            'enctype' => 'multipart/form-data',
         ],
-        'inputs'  => $inputs,
-        'enctype' => 'multipart/form-data',
+        'inputs' => $inputs,
     ],
     false
 );
@@ -372,6 +372,7 @@ for ($month = 1; $month <= 12; $month++) {
                                 'date'            => $special_day['date'],
                                 'id_group'        => $special_day['id_group'],
                                 'day_code'        => $special_day['day_code'],
+                                'id_calendar'     => $special_day['id_calendar'],
                                 'btn_ok_text'     => __('Create'),
                                 'btn_cancel_text' => __('Cancel'),
                                 'title'           => date_format($dateformat, 'd M Y'),
@@ -465,6 +466,7 @@ $(document).ready (function () {
             date: '',
             id_group: $("#id_group").val(),
             day_code: $("#day_code").val(),
+            id_calendar: '<?php echo $id_calendar; ?>',
             btn_ok_text: '<?php echo __('Create'); ?>',
             btn_cancel_text: '<?php echo __('Cancel'); ?>',
             title: '<?php echo __('Load calendar'); ?>',

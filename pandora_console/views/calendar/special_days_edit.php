@@ -174,6 +174,7 @@ $(document).ready (function () {
             date: $("#text-date").val(),
             id_group: $("#id_group").val(),
             day_code: $("#day_code").val(),
+            id_calendar: '<?php echo $id_calendar; ?>',
             btn_ok_text: '<?php echo __('Create'); ?>',
             btn_cancel_text: '<?php echo __('Cancel'); ?>',
             title: dateformat,

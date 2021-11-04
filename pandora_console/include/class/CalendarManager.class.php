@@ -306,17 +306,19 @@ class CalendarManager
      */
     public function iCalendarSpecialDay()
     {
+        include_once 'include/ics-parser/class.iCalReader.php';
+
         $day_code = (string) get_parameter('day_code');
         $overwrite = (bool) get_parameter('overwrite', 0);
         $values = [];
         $values['id_group'] = (string) get_parameter('id_group');
         $values['id_calendar'] = get_parameter('id_calendar');
         $values['day_code'] = $day_code;
-
         $error = $_FILES['ical_file']['error'];
         $extension = substr($_FILES['ical_file']['name'], -3);
 
         if ($error == 0 && strcasecmp($extension, 'ics') == 0) {
+            $result = true;
             $skipped_dates = '';
             $this_month = date('Ym');
             $ical = new \ICal($_FILES['ical_file']['tmp_name']);
@@ -331,6 +333,7 @@ class CalendarManager
                     $date_check = '';
                     $filter['id_group'] = $values['id_group'];
                     $filter['date'] = $date;
+                    $filter['id_calendar'] = $values['id_calendar'];
                     $date_check = db_get_value_filter(
                         'date',
                         'talert_special_days',
@@ -882,12 +885,13 @@ class CalendarManager
         View::render(
             'calendar/special_days_edit',
             [
-                'ajax_url'   => $this->ajaxUrl,
-                'url'        => $this->url.'&id_calendar='.$specialDay->id_calendar().'&op=edit&tab=special_days',
-                'tabs'       => $this->getTabs('special_days'),
-                'specialDay' => $specialDay,
-                'message'    => $this->message,
-                'create'     => $new,
+                'ajax_url'    => $this->ajaxUrl,
+                'url'         => $this->url.'&id_calendar='.$specialDay->id_calendar().'&op=edit&tab=special_days',
+                'tabs'        => $this->getTabs('special_days'),
+                'specialDay'  => $specialDay,
+                'message'     => $this->message,
+                'create'      => $new,
+                'id_calendar' => $specialDay->id_calendar(),
             ]
         );
 
@@ -903,12 +907,10 @@ class CalendarManager
     public function drawAlertTemplates()
     {
         global $config;
-
-        $filter['special_day'] = 1;
-        $templates = alerts_get_alert_templates($filter);
         $date = get_parameter('date', '');
         $id_group = get_parameter('id_group', 0);
         $day_code = get_parameter('day_code', '');
+        $id_calendar = get_parameter('id_calendar', 0);
 
         $output = '<h4>'.__('Same as %s', $day_code);
         $output .= ' &raquo; ';
@@ -951,8 +953,9 @@ class CalendarManager
                     'column_names'        => $column_names,
                     'ajax_url'            => 'godmode/alerts/alert_special_days',
                     'ajax_data'           => [
-                        'method'   => 'dataAlertTemplates',
-                        'day_code' => $day_code,
+                        'method'      => 'dataAlertTemplates',
+                        'day_code'    => $day_code,
+                        'id_calendar' => $id_calendar,
                     ],
                     'no_sortable_columns' => [-1],
                     'order'               => [
@@ -1009,17 +1012,28 @@ class CalendarManager
             $filter[] = "name LIKE '%".$filters['name']."%'";
         }
 
-        $filter['special_day'] = 1;
-
+        $id_calendar = get_parameter('id_calendar', 0);
+        $filter['special_day'] = $id_calendar;
         $templates = alerts_get_alert_templates($filter);
+
         $count = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);
 
         $day_code = get_parameter('day_code', '');
+
+        $weekdays = [
+            1 => 'monday',
+            2 => 'tuesday',
+            3 => 'wednesday',
+            4 => 'thursday',
+            5 => 'friday',
+            6 => 'saturday',
+            7 => 'sunday',
+        ];
+
         $data = [];
         if (empty($templates) === false) {
             foreach ($templates as $template) {
-                // TODO
-                if ((bool) $template[$day_code] === false) {
+                if ((bool) $template[$weekdays[$day_code]] === false) {
                     $data[] = [
                         'name'      => $template['name'],
                         'id_group'  => ui_print_group_icon(

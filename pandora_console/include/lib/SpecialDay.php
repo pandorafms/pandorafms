@@ -278,8 +278,6 @@ class SpecialDay extends Entity
             $pagination
         );
 
-        hd($sql);
-
         if ($count === true) {
             $sql = sprintf('SELECT count(*) as n FROM ( %s ) tt', $sql);
 

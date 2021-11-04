@@ -160,13 +160,14 @@ class Calendar extends Entity
     /**
      * Returns an array with all calendar filtered.
      *
-     * @param array   $fields     Fields array or 'count' keyword to retrieve count.
-     * @param array   $filter     Filters to be applied.
-     * @param boolean $count      Retrieve count of items instead results.
-     * @param integer $offset     Offset (pagination).
-     * @param integer $limit      Limit (pagination).
-     * @param string  $order      Sort order.
-     * @param string  $sort_field Sort field.
+     * @param array   $fields         Fields array or 'count' keyword to retrieve count.
+     * @param array   $filter         Filters to be applied.
+     * @param boolean $count          Retrieve count of items instead results.
+     * @param integer $offset         Offset (pagination).
+     * @param integer $limit          Limit (pagination).
+     * @param string  $order          Sort order.
+     * @param string  $sort_field     Sort field.
+     * @param boolean $select_options Array options for select.
      *
      * @return array With all results.
      * @throws \Exception On error.
@@ -178,7 +179,8 @@ class Calendar extends Entity
         ?int $offset=null,
         ?int $limit=null,
         ?string $order=null,
-        ?string $sort_field=null
+        ?string $sort_field=null,
+        ?bool $select_options=false
     ) {
         $sql_filters = [];
         $order_by = '';
@@ -253,6 +255,16 @@ class Calendar extends Entity
 
         if (is_array($return) === false) {
             return [];
+        }
+
+        if ($select_options === true) {
+            $return = array_reduce(
+                $return,
+                function ($carry, $item) {
+                    $carry[$item['id']] = $item['name'];
+                    return $carry;
+                }
+            );
         }
 
         return $return;

@@ -71,7 +71,8 @@ function load_templates_alerts_special_days(settings) {
           method: "drawAlertTemplates",
           date: settings.date,
           id_group: settings.id_group,
-          day_code: settings.day_code
+          day_code: settings.day_code,
+          id_calendar: settings.id_calendar
         },
         datatype: "html",
         success: function(data) {

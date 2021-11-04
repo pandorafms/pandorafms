@@ -848,7 +848,7 @@ class CalendarManager
 
                 if ($change === true && empty($search) === false) {
                     $reason = \__(
-                        'Failed saving calendar: name exists',
+                        'Failed saving calendar: already exists',
                         $config['dbconnection']->error
                     );
                 } else {
@@ -958,6 +958,7 @@ class CalendarManager
                         'method'      => 'dataAlertTemplates',
                         'day_code'    => $day_code,
                         'id_calendar' => $id_calendar,
+                        'id_group'    => $id_group,
                     ],
                     'no_sortable_columns' => [-1],
                     'order'               => [
@@ -1014,8 +1015,14 @@ class CalendarManager
             $filter[] = "name LIKE '%".$filters['name']."%'";
         }
 
-        $id_calendar = get_parameter('id_calendar', 0);
+        $id_calendar = (int) get_parameter('id_calendar', 0);
+        $id_group = (int) get_parameter('id_group', 0);
         $filter['special_day'] = $id_calendar;
+
+        if ($id_group !== 0) {
+            $filter['id_group'] = $id_group;
+        }
+
         $templates = alerts_get_alert_templates($filter);
 
         $count = alerts_get_alert_templates($filter, ['COUNT(*) AS total']);

@@ -14148,10 +14148,10 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
     }
 
     $special_day = $other['data'][0];
-    $day_code = $other['data'][1];
+    $same_day = $other['data'][1];
     $description = $other['data'][2];
     $idGroup = $other['data'][3];
-    $id_calendar = $other['data'][4] || 1;
+    $calendar_name = (isset($other['data'][4]) === true) ? $other['data'][4] : 'Default';
 
     if (!check_acl($config['id_user'], $idGroup, 'LM', true)) {
         returnError('forbidden', 'string');
@@ -14188,6 +14188,36 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         }
     }
 
+    $weekdays = [
+        'monday'    => 1,
+        'tuesday'   => 2,
+        'wednesday' => 3,
+        'thursday'  => 4,
+        'friday'    => 5,
+        'saturday'  => 6,
+        'sunday'    => 7,
+        'holiday'   => 8,
+    ];
+
+    $day_code = (isset($weekdays[$same_day]) === true) ? $weekdays[$same_day] : 0;
+
+    if ($day_code === 0) {
+        returnError('Special Day could not be created. Same day doesn\'t exists.');
+        return;
+    }
+
+    $id_calendar = db_get_value_sql(
+        sprintf(
+            'SELECT id FROM talert_calendar WHERE name="%s"',
+            $calendar_name
+        )
+    );
+
+    if ($id_calendar === false) {
+        returnError('Special Day could not be created. Calendar doesn\'t exists.');
+        return;
+    }
+
     try {
         $sd = new SpecialDay();
         $sd->date($special_day);
@@ -14197,9 +14227,9 @@ function api_set_create_special_day($thrash1, $thrash2, $other, $thrash3)
         $sd->id_calendar($id_calendar);
         $sd->save();
         if ($sd->save() === true) {
-            returnError('Special Day could not be created');
-        } else {
             returnData('string', ['type' => 'string', 'data' => $sd->id()]);
+        } else {
+            returnError('Special Day could not be created');
         }
     } catch (Exception $e) {
         returnData('string', ['type' => 'string', 'data' => $e]);

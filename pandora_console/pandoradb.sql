@@ -578,7 +578,8 @@ CREATE TABLE IF NOT EXISTS `talert_calendar` (
 	`name` varchar(100) NOT NULL default '',
 	`id_group` INT(10) NOT NULL DEFAULT 0,
 	`description` text,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------

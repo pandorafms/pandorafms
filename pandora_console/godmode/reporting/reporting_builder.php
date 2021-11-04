@@ -1251,16 +1251,7 @@ switch ($action) {
                 array_push($table->data, $data);
             }
 
-            if ($columnview) {
-                $count = 0;
-                foreach ($table->data as $datos) {
-                    if (!isset($datos[9])) {
-                        $table->data[$count][9] = '';
-                    }
 
-                    $count++;
-                }
-            }
 
             html_print_table($table);
             ui_pagination(

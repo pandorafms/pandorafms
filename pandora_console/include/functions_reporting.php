@@ -2702,7 +2702,7 @@ function reporting_agent_module($report, $content)
     foreach ($modules as $modul_id) {
         $modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
         $modules_by_name[$cont]['id'] = $modul_id;
-        $cont ++;
+        $cont++;
     }
 
     if ($modules_by_name == false || $agents == false) {
@@ -14153,31 +14153,31 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NOT_INIT;
                     // NOT INIT.
                     $time_not_init = ($time_not_init + ($tend - $tstart));
-                    $data_not_init ++;
+                    $data_not_init++;
                 } else if ($tacum_data === null) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_UNKNOWN;
                     // UNKNOWN.
                     $time_unknown = ($time_unknown + ($tend - $tstart));
-                    $data_unknown ++;
+                    $data_unknown++;
                 } else if (( (isset($min_value_critical) || isset($max_value_critical)) && ($modules_is_string === false) && ($sla_check_value_critical == true) )
                     || ( isset($max_value_critical) && ($modules_is_string === true) && $string_check_value_critical )
                 ) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_CRITICAL_BAD;
                     // CRITICAL.
                     $time_critical = ($time_critical + ($tend - $tstart));
-                    $data_critical ++;
+                    $data_critical++;
                 } else if (( (isset($min_value_warning) || isset($max_value_warning)) && ($modules_is_string === false) && ($sla_check_value_warning == true) )
                     || ( isset($max_value_warning) && ($modules_is_string === true) && $sla_check_value_warning )
                 ) {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_WARNING;
                     // WARNING.
                     $time_warning = ($time_warning + ($tend - $tstart));
-                    $data_warning ++;
+                    $data_warning++;
                 } else {
                     $array_graph[$data_total]['data'] = AGENT_MODULE_STATUS_NORMAL;
                     // OK.
                     $time_ok = ($time_ok + ($tend - $tstart));
-                    $data_ok ++;
+                    $data_ok++;
                 }
 
                 $array_graph[$data_total]['utimestamp'] = ($tend - $tstart);

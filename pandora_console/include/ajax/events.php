@@ -1378,7 +1378,7 @@ if ($get_extended_event) {
     }
 
     // Tabs.
-    $tabs = "<ul class=''>";
+    $tabs = "<ul class='event_detail_tab_menu'>";
     $tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image(
         'images/lightning_go.png',
         true,
@@ -1436,7 +1436,7 @@ if ($get_extended_event) {
         ).'<span>'.__('Responses').'</span></a></li>';
     }
 
-    if ($event['custom_data'] != '') {
+    if (empty($event['custom_data']) === false) {
         $tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image(
             'images/custom_field_col.png',
             true,

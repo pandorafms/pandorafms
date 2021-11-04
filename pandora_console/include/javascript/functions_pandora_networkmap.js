@@ -763,7 +763,6 @@ function move_to_networkmap(node) {
 }
 
 function edit_node(data_node, dblClick) {
-  console.log("PATATA");
   var flag_edit_node = true;
   var edit_node = null;
 

@@ -237,12 +237,18 @@ if (is_metaconsole() === true) {
 $is_management_allowed = true;
 if (is_metaconsole() === false && is_management_allowed() === false) {
     $is_management_allowed = false;
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All users information is read only. Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=advanced/users_setup&tab=user&pure=0'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }
@@ -432,8 +438,9 @@ if (isset($double_authentication)) {
 
 if (check_acl($config['id_user'], 0, 'ER')) {
     $event_filter = '<div class="label_select"><p class="edit_user_labels">'.__('Event filter').'</p>';
+    $user_groups = implode(',', array_keys((users_get_groups($config['id_user'], 'AR', $display_all_group))));
     $event_filter .= html_print_select_from_sql(
-        'SELECT id_filter, id_name FROM tevent_filter',
+        'SELECT id_filter, id_name FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')',
         'event_filter',
         $user_info['default_event_filter'],
         '',
@@ -445,7 +452,7 @@ if (check_acl($config['id_user'], 0, 'ER')) {
 
 
 $autorefresh_list_out = [];
-if (is_metaconsole() === false || is_centrallised() === true) {
+if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';

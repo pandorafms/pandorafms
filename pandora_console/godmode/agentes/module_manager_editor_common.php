@@ -139,7 +139,7 @@ function add_component_selection($id_network_component_type)
         true,
         '',
         false,
-        'width: 460px; '
+        'width: 350px; '
     );
     $data[1] .= '</span>';
     $data[1] .= ' <span id="component_loading" class="invisible">';

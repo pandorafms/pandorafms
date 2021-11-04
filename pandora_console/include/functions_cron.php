@@ -595,7 +595,7 @@ function cron_list_table()
                         }
                     }
 
-                    $report_type = $args[7];
+                    $report_type = $args[8];
                     $report_per_agent = $args[3];
                     $report_name = $args[4];
                     $email = $args[5];

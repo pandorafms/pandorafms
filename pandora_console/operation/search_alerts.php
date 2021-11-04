@@ -52,7 +52,7 @@ if ($alerts === false || $totalAlerts == 0 || !$searchAlerts) {
     $table->data = [];
     foreach ($alerts as $alert) {
         if ($alert['disabled']) {
-            $disabledCell = html_print_image('images/lightbulb_off.png', true, ['title' => 'disable', 'alt' => 'disable']);
+            $disabledCell = html_print_image('images/lightbulb_off.png', true, ['title' => 'disable', 'alt' => 'disable', 'class' => 'filter_none']);
         } else {
             $disabledCell = html_print_image('images/lightbulb.png', true, ['alt' => 'enable', 'title' => 'enable']);
         }

@@ -297,12 +297,18 @@ if (is_metaconsole() === true) {
 }
 
 if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/modules/manage_network_components&tab=network&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All remote components are read only. Go to %s to manage them.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/modules/manage_network_components&tab=network&pure=0'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

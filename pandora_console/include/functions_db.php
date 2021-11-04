@@ -518,24 +518,25 @@ function db_get_row($table, $field_search, $condition, $fields=false, $cache=tru
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
  * @param string Condition to join the filters (AND, OR).
+ * @param boolean                                                  $cache Use cache or not.
  *
  * @return mixed Array of the row or false in case of error.
  */
-function db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false)
+function db_get_row_filter($table, $filter, $fields=false, $where_join='AND', $historydb=false, $cache=true)
 {
     global $config;
 
     switch ($config['dbtype']) {
         case 'mysql':
-        return mysql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb);
+        return mysql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
         case 'postgresql':
-        return postgresql_db_get_row_filter($table, $filter, $fields, $where_join);
+        return postgresql_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
         case 'oracle':
-        return oracle_db_get_row_filter($table, $filter, $fields, $where_join);
+        return oracle_db_get_row_filter($table, $filter, $fields, $where_join, $historydb, $cache);
 
             break;
     }

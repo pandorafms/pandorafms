@@ -1162,7 +1162,6 @@ function alerts_duplicate_alert_template($id_alert_template, $id_group)
     unset($template['name']);
     unset($template['id']);
     unset($template['type']);
-    $template['value'] = safe_sql_string($template['value']);
 
     return alerts_create_alert_template($name, $type, $template);
 }

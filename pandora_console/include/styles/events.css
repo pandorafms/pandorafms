@@ -311,3 +311,7 @@ div.multi-response-buttons {
   width: 100%;
   text-align: right;
 }
+
+.event_detail_tab_menu li {
+  max-width: 160px;
+}

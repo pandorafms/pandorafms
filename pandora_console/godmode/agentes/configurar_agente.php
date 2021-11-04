@@ -485,6 +485,13 @@ if ($id_agente) {
         $collectiontab = '';
     }
 
+    // NetworkConfigManager tab.
+    $ncm_tab = enterprise_hook('networkconfigmanager_tab');
+
+    if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+        $ncm_tab = '';
+    }
+
     // Group tab.
     $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
         'images/group.png',
@@ -616,6 +623,7 @@ if ($id_agente) {
                 'main'                 => $maintab,
                 'remote_configuration' => $remote_configuration_tab,
                 'module'               => $moduletab,
+                'ncm'                  => $ncm_tab,
                 'alert'                => $alerttab,
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
@@ -631,6 +639,7 @@ if ($id_agente) {
                 'separator'    => '',
                 'main'         => $maintab,
                 'module'       => $moduletab,
+                'ncm'          => $ncm_tab,
                 'alert'        => $alerttab,
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
@@ -697,6 +706,11 @@ if ($id_agente) {
         case 'collection':
             $tab_description = '- '.__('Collection');
             $tab_name = 'Collection';
+        break;
+
+        case 'ncm':
+            $tab_description = '- '.__('Network config manager');
+            $tab_name = 'Network config manager';
         break;
 
         case 'inventory':
@@ -2311,6 +2325,10 @@ switch ($tab) {
 
     case 'incident':
         include 'agent_incidents.php';
+    break;
+
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente]);
     break;
 
     case 'remote_configuration':

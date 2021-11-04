@@ -549,13 +549,13 @@ $table_ichanges = '<div class="autorefresh_select">
                         </div>
                         <div class="autorefresh_select_arrows" style="display:grid">
                             <a href="javascript:">'.html_print_image(
-    'images/darrowright_green.png',
-    true,
-    [
-        'id'    => 'right_autorefreshlist',
-        'alt'   => __('Push selected pages into autorefresh list'),
-        'title' => __('Push selected pages into autorefresh list'),
-    ]
+                                'images/darrowright_green.png',
+                                true,
+                                [
+                                    'id'    => 'right_autorefreshlist',
+                                    'alt'   => __('Push selected pages into autorefresh list'),
+                                    'title' => __('Push selected pages into autorefresh list'),
+                                ]
 ).'</a>
                             <a href="javascript:">'.html_print_image(
     'images/darrowleft_green.png',

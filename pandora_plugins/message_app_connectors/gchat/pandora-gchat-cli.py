@@ -15,10 +15,10 @@ parser.add_argument('-t', '--alert_title', help='Alert title',
 parser.add_argument('-D', '--alert_desc',
                     help='Alert description', default='Alert Fired')
 parser.add_argument('--thumb', help='Custom thumbnail url',
-                    default="https://barivion.com/images/alerta_roja.png")
+                    default="https://pandorafms.com/images/alerta_roja.png")
 parser.add_argument('--btn_desc', help='button description', default=None)
 parser.add_argument('--btn_url', help='button url',
-                    default="https://barivion.com/")
+                    default="https://pandorafms.com/")
 
 
 args = parser.parse_args()

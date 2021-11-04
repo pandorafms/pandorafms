@@ -27,7 +27,7 @@
 
 .title_task {
   background: url(../../images/icono_exclamacion.png) no-repeat scroll 280px 50%
-    #256bbd;
+    #82b92e;
   padding: 10px 5px 6px 300px;
   margin: 5px 5px 10px 5px;
   font-weight: bold;
@@ -56,7 +56,7 @@
   background-color: #3f3f3f;
   padding: 10px 10px 10px 10px;
   font-weight: bold;
-  color: #256bbd;
+  color: #82b92e;
   border: none;
 }
 #description_task {

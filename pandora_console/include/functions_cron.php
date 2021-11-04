@@ -5,7 +5,7 @@
  * @package    Linux cron functions.
  * @subpackage Backend functions.
  *
- * Pandora FMS- http://barivion.com
+ * Pandora FMS- http://pandorafms.com
  * ==================================================
  * Copyright (c) 20012 Artica Soluciones Tecnologicas
  * Please see http://pandorafms.org for full contribution list

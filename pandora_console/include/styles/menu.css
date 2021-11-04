@@ -113,7 +113,7 @@
 
 .submenu_selected {
   margin-bottom: 0px;
-  box-shadow: inset 4px 0 #256bbd;
+  box-shadow: inset 4px 0 #82b92e;
 }
 .selected.submenu_selected {
   background-color: #202020;
@@ -280,7 +280,7 @@ ul li {
 }
 
 .menu li.selected {
-  box-shadow: inset 4px 0 #256bbd;
+  box-shadow: inset 4px 0 #82b92e;
 }
 
 .operation {

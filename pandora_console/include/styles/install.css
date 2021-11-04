@@ -78,7 +78,7 @@ div#install_box {
 }
 
 div#install_box h2 {
-  color: #256bbd;
+  color: #82b92e;
   text-transform: uppercase;
 }
 
@@ -167,10 +167,10 @@ div.installation_step {
   margin: 10px;
   padding: 8px 20px 8px 20px;
   background-color: transparent;
-  border: 1px solid #256bbd;
+  border: 1px solid #82b92e;
   font: 1em Verdana;
   font-size: 11pt;
-  color: #256bbd;
+  color: #82b92e;
   border-radius: 0%;
 }
 .btn_install_next:hover {
@@ -182,7 +182,7 @@ div.installation_step {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  background-color: #256bbd;
+  background-color: #82b92e;
 }
 .btn_install_next_text {
   transition-property: background-color, color;
@@ -192,7 +192,7 @@ div.installation_step {
   -webkit-transition-duration: 1s;
   -o-transition-property: background-color, color;
   -o-transition-duration: 1s;
-  color: #256bbd;
+  color: #82b92e;
 }
 .btn_install_next:hover .btn_install_next_text {
   transition-property: background-color, color;
@@ -233,7 +233,7 @@ div.installation_step {
 }
 
 .popup-title {
-  background-color: #256bbd;
+  background-color: #82b92e;
   padding: 10px 20px;
   color: #fff;
   font-size: 12pt;
@@ -249,7 +249,7 @@ div.installation_step {
 }
 
 .popup-button-green {
-  background-color: #256bbd;
+  background-color: #82b92e;
   border: 1px solid transparent;
   color: #fff;
 }
@@ -260,11 +260,11 @@ div.installation_step {
 
 .popup-button-green:hover {
   background-color: transparent;
-  border: 1px solid #256bbd;
-  color: #256bbd;
+  border: 1px solid #82b92e;
+  color: #82b92e;
 }
 
 .popup-button-green:hover span {
-  color: #256bbd;
+  color: #82b92e;
 }
 /* POPUP -END */

@@ -4,7 +4,7 @@
 
 .update_text a {
   font-size: 11pt;
-  color: #256bbd;
+  color: #82b92e;
 }
 
 .update_manager_warning p {
@@ -49,7 +49,7 @@
   float: none;
 }
 #drop_file a {
-  background-color: #256bbd;
+  background-color: #82b92e;
   border-radius: 2px;
   color: #ffffff;
   cursor: pointer;
@@ -223,7 +223,7 @@ a.update_manager_button:after {
 }
 
 #box_online #pkg_version {
-  color: #256bbd;
+  color: #82b92e;
   font-size: 75pt;
   font-weight: bold;
   margin-bottom: 50px;
@@ -274,14 +274,14 @@ a.update_manager_button_open {
   padding: 5px 10px;
   font-size: 16px;
   text-decoration: none;
-  border: 1px solid #256bbd;
-  color: #256bbd;
+  border: 1px solid #82b92e;
+  color: #82b92e;
   border-radius: 2px;
 }
 
 a.update_manager_button_open:hover {
   color: #fff;
-  background-color: #256bbd;
+  background-color: #82b92e;
 }
 
 #um-update-details-header {

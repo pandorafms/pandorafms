@@ -567,7 +567,7 @@ CREATE TABLE IF NOT EXISTS `tskin` (
 	PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'barivion.css' WHERE `id` = 1;
+UPDATE `tskin` SET `name` = 'Default&#x20;theme' , `relative_path` = 'pandora.css' WHERE `id` = 1;
 UPDATE `tskin` SET `name` = 'Black&#x20;theme' , `relative_path` = 'Black&#x20;theme' , `description` = 'Black&#x20;theme' WHERE `id` = 2;
 
 -- ---------------------------------------------------------------------
@@ -1508,7 +1508,7 @@ ALTER TABLE tplanned_downtime_agents ADD COLUMN `manually_disabled` tinyint(1) D
 -- ---------------------------------------------------------------------
 UPDATE `tlink` SET `link` = 'http://library.pandorafms.com/' WHERE `name` = 'Module library';
 UPDATE `tlink` SET `name` = 'Enterprise Edition' WHERE `id_link` = 0000000002;
-UPDATE `tlink` SET `name` = 'Documentation', `link` = 'https://barivion.com/manual/' WHERE `id_link` = 0000000001;
+UPDATE `tlink` SET `name` = 'Documentation', `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 UPDATE `tlink` SET `link` = 'http://forums.pandorafms.com/index.php?board=22.0' WHERE `id_link` = 0000000004;
 UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WHERE `id_link` = 0000000003;
 

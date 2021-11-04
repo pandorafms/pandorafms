@@ -229,7 +229,7 @@ class ConsoleSupervisor
         /*
          * Check if the Pandora Console log
          * file remains in old location.
-         *  NOTIF.BARIVIONCONSOLE.LOG.OLD
+         *  NOTIF.PANDORACONSOLE.LOG.OLD
          */
 
         $this->checkPandoraConsoleLogOldLocation();
@@ -349,8 +349,8 @@ class ConsoleSupervisor
         /*
          * Check pandoradb running in main DB.
          * Check pandoradb running in historical DB.
-         *  NOTIF.BARIVIONDB
-         *  NOTIF.BARIVIONDB.HISTORICAL
+         *  NOTIF.PANDORADB
+         *  NOTIF.PANDORADB.HISTORICAL
          */
 
         $this->checkPandoraDBMaintenance();
@@ -664,8 +664,8 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.PHANTOMJS':
             case 'NOTIF.PHP.VERSION':
             case 'NOTIF.HISTORYDB':
-            case 'NOTIF.BARIVIONDB':
-            case 'NOTIF.BARIVIONDB.HISTORICAL':
+            case 'NOTIF.PANDORADB':
+            case 'NOTIF.PANDORADB.HISTORICAL':
             case 'NOTIF.HISTORYDB.MR':
             case 'NOTIF.EXT.ELASTICSEARCH':
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
@@ -1240,7 +1240,10 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = '';
+                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
+                if ($config['language'] == 'es') {
+                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
+                }
 
                 $this->notify(
                     [
@@ -1354,7 +1357,10 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = '';
+            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
+            if ($config['language'] == 'es') {
+                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
+            }
 
             $this->notify(
                 [
@@ -1544,7 +1550,10 @@ class ConsoleSupervisor
         }
 
         if (!isset($result_ejecution) || $result_ejecution == '') {
-            $url = '';
+            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#Phantomjs';
+            if ($config['language'] == 'es') {
+                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
+            }
 
             $this->notify(
                 [
@@ -1559,13 +1568,16 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 7) {
-            $url = '';
+            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/14_php_7';
+            if ($config['language'] == 'es') {
+                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/14_php_7';
+            }
 
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.VERSION',
                     'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('For a correct operation of '.get_product_name().', PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
+                    'message' => __('For a correct operation of PandoraFMS, PHP must be updated to version 7.0 or higher.').'<br>'.__('Otherwise, functionalities will be lost.').'<br>'."<ol><li class='color_67'>".__('Report download in PDF format').'</li>'."<li class='color_67'>".__('Emails Sending').'</li><li class="color_67">'.__('Metaconsole Collections').'</li><li class="color_67">...</li></ol>',
                     'url'     => $url,
                 ]
             );
@@ -1674,7 +1686,7 @@ class ConsoleSupervisor
         if ($last_maintance > 172800) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.BARIVIONDB',
+                    'type'    => 'NOTIF.PANDORADB',
                     'title'   => __('Database maintenance problem'),
                     'message' => __(
                         'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
@@ -1684,7 +1696,7 @@ class ConsoleSupervisor
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.BARIVIONDB');
+            $this->cleanNotifications('NOTIF.PANDORADB');
         }
 
         if (isset($config['history_db_enabled'])
@@ -1735,7 +1747,7 @@ class ConsoleSupervisor
             if ($last_maintance > 172800) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.BARIVIONDB.HISTORY',
+                        'type'    => 'NOTIF.PANDORADB.HISTORY',
                         'title'   => __(
                             'Historical database maintenance problem.'
                         ),
@@ -1745,11 +1757,11 @@ class ConsoleSupervisor
                 );
             } else {
                 // Historical db working fine.
-                $this->cleanNotifications('NOTIF.BARIVIONDB.HISTORY');
+                $this->cleanNotifications('NOTIF.PANDORADB.HISTORY');
             }
         } else {
             // Disabled historical db.
-            $this->cleanNotifications('NOTIF.BARIVIONDB.HISTORY');
+            $this->cleanNotifications('NOTIF.PANDORADB.HISTORY');
         }
     }
 
@@ -2299,7 +2311,10 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = '';
+            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+            if ($config['language'] == 'es') {
+                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+            }
 
             $this->notify(
                 [
@@ -2578,28 +2593,31 @@ class ConsoleSupervisor
         global $config;
 
         if (file_exists($config['homedir'].'/pandora_console.log')) {
-            $title_pandoraconsole_old_log = get_product_name().' '.__(
-                'console log file changed location',
+            $title_pandoraconsole_old_log = __(
+                'Pandora FMS console log file changed location',
                 $config['homedir']
             );
             $message_pandoraconsole_old_log = __(
-                get_product_name().' console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+                'Pandora FMS console log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );
 
-            $url = '';
+            $url = 'https://pandorafms.com/manual/en/quickguides/general_quick_guide#solving_problems_where_to_look_and_who_to_ask';
+            if ($config['language'] == 'es') {
+                $url = 'https://pandorafms.com//manual/es/quickguides/general_quick_guide#solucion_de_problemas_donde_mirar_a_quien_preguntar';
+            }
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.BARIVIONCONSOLE.LOG.OLD',
+                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
                     'title'   => __($title_pandoraconsole_old_log),
                     'message' => __($message_pandoraconsole_old_log),
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.BARIVIONCONSOLE.LOG.OLD');
+            $this->cleanNotifications('NOTIF.PANDORACONSOLE.LOG.OLD');
         }
     }
 
@@ -2614,12 +2632,12 @@ class ConsoleSupervisor
         global $config;
 
         if (file_exists($config['homedir'].'/audit.log')) {
-            $title_audit_old_log = get_product_name().' '.__(
-                'audit log file changed location',
+            $title_audit_old_log = __(
+                'Pandora FMS audit log file changed location',
                 $config['homedir']
             );
-            $message_audit_old_log = get_product_name().' '.__(
-                'audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
+            $message_audit_old_log = __(
+                'Pandora FMS audit log file has been moved to new location %s/log. Currently you have an outdated and inoperative version of this file at %s. Please, consider deleting it.',
                 $config['homedir'],
                 $config['homedir']
             );

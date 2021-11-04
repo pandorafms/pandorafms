@@ -205,7 +205,7 @@
 .datos4 {
   background-color: #fff;
   color: #000;
-  border-bottom: 2px solid #256bbd;
+  border-bottom: 2px solid #82b92e;
   border-left: none;
   border-right: none;
   height: 30px;
@@ -287,7 +287,7 @@ a.pandora_pagination:hover {
 a.pandora_pagination.current,
 a.pandora_pagination.current:hover {
   color: #fff;
-  background-color: #256bbd;
+  background-color: #82b92e;
 }
 
 /* CSV button datatables */

@@ -1096,14 +1096,6 @@ function config_update_config()
                         $error_update[] = __('Custom support url');
                     }
 
-                    if (!config_update_value('meta_rb_product_name', (string) get_parameter('meta_rb_product_name'))) {
-                        $error_update[] = __('Custom product name');
-                    }
-
-                    if (!config_update_value('meta_rb_copyright_notice', (string) get_parameter('meta_rb_copyright_notice'))) {
-                        $error_update[] = __('Custom copyright notice');
-                    }
-
                     if (!config_update_value('legacy_vc', (int) get_parameter('legacy_vc'))) {
                         $error_update[] = __('Use the legacy Visual Console');
                     }
@@ -2276,7 +2268,7 @@ function config_process_config()
     }
 
     if (!isset($config['disable_help'])) {
-        config_update_value('disable_help', true);
+        config_update_value('disable_help', false);
     }
 
     if (!isset($config['fixed_header'])) {
@@ -2342,7 +2334,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title_header'])) {
-        config_update_value('custom_title_header', get_product_name());
+        config_update_value('custom_title_header', __('Pandora FMS'));
     }
 
     if (!isset($config['custom_subtitle_header'])) {
@@ -2350,7 +2342,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title_header'])) {
-        config_update_value('meta_custom_title_header', get_product_name().' '.__('Metaconsole'));
+        config_update_value('meta_custom_title_header', __('PandoraFMS Metaconsole'));
     }
 
     if (!isset($config['meta_custom_subtitle_header'])) {
@@ -2358,7 +2350,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_title1_login'])) {
-        config_update_value('custom_title1_login', strtoupper(get_product_name()));
+        config_update_value('custom_title1_login', __('PANDORA FMS'));
     }
 
     if (!isset($config['custom_title2_login'])) {
@@ -2366,11 +2358,11 @@ function config_process_config()
     }
 
     if (!isset($config['custom_docs_url'])) {
-        config_update_value('custom_docs_url', '');
+        config_update_value('custom_docs_url', 'https://pandorafms.com/manual');
     }
 
     if (!isset($config['custom_support_url'])) {
-        config_update_value('custom_support_url', '');
+        config_update_value('custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['rb_product_name'])) {
@@ -2382,19 +2374,11 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_docs_url'])) {
-        config_update_value('meta_custom_docs_url', '');
+        config_update_value('meta_custom_docs_url', 'https://pandorafms.com/manual/');
     }
 
     if (!isset($config['meta_custom_support_url'])) {
-        config_update_value('meta_custom_support_url', '');
-    }
-
-    if (!isset($config['meta_rb_product_name'])) {
-        config_update_value('meta_rb_product_name', get_product_name());
-    }
-
-    if (!isset($config['meta_rb_copyright_notice'])) {
-        config_update_value('meta_rb_copyright_notice', get_copyright_notice());
+        config_update_value('meta_custom_support_url', 'https://support.pandorafms.com');
     }
 
     if (!isset($config['meta_custom_logo_white_bg'])) {
@@ -2410,7 +2394,7 @@ function config_process_config()
     }
 
     if (!isset($config['meta_custom_title1_login'])) {
-        config_update_value('meta_custom_title1_login', strtoupper(get_product_name()).' '.__('NEXT GENERATION'));
+        config_update_value('meta_custom_title1_login', __('PANDORA FMS NEXT GENERATION'));
     }
 
     if (!isset($config['meta_custom_title2_login'])) {
@@ -2474,11 +2458,11 @@ function config_process_config()
     }
 
     if (!isset($config['email_from_dir'])) {
-        config_update_value('email_from_dir', 'x@x.x');
+        config_update_value('email_from_dir', 'pandora@pandorafms.org');
     }
 
     if (!isset($config['email_from_name'])) {
-        config_update_value('email_from_name', get_product_name());
+        config_update_value('email_from_name', 'Pandora FMS');
     }
 
     if (!isset($config['email_smtpServer'])) {

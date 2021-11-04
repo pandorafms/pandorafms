@@ -615,7 +615,7 @@ class Diagnostics extends Wizard
 
         $currentTime = time();
 
-        $pandoraDbLastRun = __('%s DB has never been executed', get_product_name());
+        $pandoraDbLastRun = __('Pandora DB has never been executed');
         if ($dateDbMantenaince !== false) {
             $difference = ($currentTime - $dateDbMantenaince);
             $pandoraDbLastRun = human_time_description_raw(
@@ -637,7 +637,7 @@ class Diagnostics extends Wizard
                     'value' => $notInitAgents,
                 ],
                 'pandoraDbLastRun' => [
-                    'name'  => __('%s DB Last run', get_product_name()),
+                    'name'  => __('Pandora DB Last run'),
                     'value' => $pandoraDbLastRun,
                 ],
             ],
@@ -1481,13 +1481,11 @@ class Diagnostics extends Wizard
         if (isset($config['db_maintenance']) === false) {
             $result .= '(*) ';
             $result .= __(
-                'Please check your %s Server setup and make sure that the database maintenance daemon is running.',
-                get_product_name()
+                'Please check your Pandora Server setup and make sure that the database maintenance daemon is running.'
             );
             $result .= ' ';
             $result .= __(
-                'It\' is very important to keep the database up-to-date to get the best performance and results in %s',
-                get_product_name()
+                'It\' is very important to keep the database up-to-date to get the best performance and results in Pandora'
             );
         }
 

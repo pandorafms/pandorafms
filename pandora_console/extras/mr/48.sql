@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-UPDATE `tlink` SET `link` = 'https://barivion.com/manual/' WHERE `id_link` = 0000000001;
+UPDATE `tlink` SET `link` = 'https://pandorafms.com/manual/' WHERE `id_link` = 0000000001;
 
 UPDATE `tuser_task_scheduled` SET
     `args`= REPLACE(`args`, 's:15:"first_execution"', 'i:8;s:3:"PDF";s:15:"first_execution"'),

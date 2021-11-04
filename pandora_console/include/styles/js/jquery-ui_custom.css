@@ -10,7 +10,7 @@
 }
 
 .ui-dialog .ui-dialog-titlebar {
-  background-color: #256bbd;
+  background-color: #82b92e;
   border-radius: 0;
   margin: 0;
   display: inherit;
@@ -25,7 +25,7 @@
 /*center ui dialog center*/
 .ui-button-text-only .ui-button-text {
   font-size: 9pt;
-  color: #256bbd;
+  color: #82b92e;
 }
 .ui-datepicker .ui-datepicker-title *,
 .ui-datepicker th * {
@@ -77,7 +77,7 @@
   cursor: pointer;
   background: white;
   background-color: white;
-  border: 1px solid #256bbd;
+  border: 1px solid #82b92e;
   height: 30px;
   width: 90px;
 }
@@ -137,7 +137,7 @@
   background-color: #3f3f3f;
 }
 .ui-dialog .ui-widget-header {
-  background-color: #256bbd;
+  background-color: #82b92e;
   margin: -1px -1px 0px -1px;
 }
 .ui_tpicker_hour,
@@ -260,9 +260,9 @@ input[type="submit"].ui-button-dialog {
   cursor: pointer;
   background: white;
   background-color: white;
-  color: #256bbd;
+  color: #82b92e;
   text-align: center;
-  border: 1px solid #256bbd;
+  border: 1px solid #82b92e;
   height: 30px;
   width: 90px;
 }

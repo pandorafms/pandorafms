@@ -1232,6 +1232,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`user_comment` text NOT NULL,
 	`id_source_event` int(10)  NULL default 0,
 	`server_id` int(10) NOT NULL default 0,
+	`time_from` TIME NULL,
+	`time_to` TIME NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

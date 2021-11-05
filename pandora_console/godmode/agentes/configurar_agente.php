@@ -196,6 +196,13 @@ if ($create_agent) {
 
     $nombre_agente = hash('sha256', $alias.'|'.$direccion_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
     $grupo = (int) get_parameter_post('grupo');
+
+    if ((bool) check_acl($config['id_user'], $grupo, 'AW') === false) {
+        db_pandora_audit('ACL Violation', 'Trying to access agent manager');
+        include $config['homedir'].'/general/noaccess.php';
+        return;
+    }
+
     $intervalo = (string) get_parameter_post('intervalo', SECONDS_5MINUTES);
     $comentarios = (string) get_parameter_post('comentarios', '');
     $modo = (int) get_parameter_post('modo');

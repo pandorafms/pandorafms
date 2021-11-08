@@ -318,3 +318,28 @@ div#rules.show {
   align-items: center;
   margin-right: 80px;
 }
+
+.note-special-day {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+}
+
+.note-special-day div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+}
+
+.note-special-day div a.tip {
+  margin: 0px;
+  margin-right: 2px;
+}
+
+.note-special-day div a.tip > img {
+  margin: 0px;
+}

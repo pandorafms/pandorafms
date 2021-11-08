@@ -153,7 +153,7 @@ class CalendarManager
         $buttons['list'] = [
             'active' => false,
             'text'   => '<a href="'.ui_get_full_url(
-                $this->url.'&tab=list'
+                $this->url.'&tab_calendar=list'
             ).'&pure='.(int) $config['pure'].'">'.html_print_image(
                 'images/list.png',
                 true,
@@ -175,7 +175,7 @@ class CalendarManager
             $buttons['list_edit'] = [
                 'active' => false,
                 'text'   => '<a href="'.ui_get_full_url(
-                    $this->url.'&tab=list&op=edit&id='.$id
+                    $this->url.'&tab_calendar=list&op=edit&id='.$id
                 ).'&pure='.(int) $config['pure'].'">'.html_print_image(
                     'images/pencil.png',
                     true,
@@ -189,7 +189,7 @@ class CalendarManager
             $buttons['special_days'] = [
                 'active' => false,
                 'text'   => '<a href="'.ui_get_full_url(
-                    $this->url.'&tab=special_days&id_calendar='.$id
+                    $this->url.'&tab_calendar=special_days&id_calendar='.$id
                 ).'&pure='.(int) $config['pure'].'">'.html_print_image(
                     'images/templates.png',
                     true,
@@ -220,7 +220,7 @@ class CalendarManager
     {
         \ui_require_css_file('alert');
         $op = get_parameter('op');
-        $tab = get_parameter('tab');
+        $tab = get_parameter('tab_calendar');
         switch ($tab) {
             case 'special_days':
                 if ($op === 'edit') {
@@ -544,7 +544,7 @@ class CalendarManager
             'calendar/edit',
             [
                 'ajax_url' => $this->ajaxUrl,
-                'url'      => $this->url.'&op=edit&tab=list',
+                'url'      => $this->url.'&op=edit&tab_calendar=list',
                 'tabs'     => $this->getTabs('list'),
                 'calendar' => $calendar,
                 'message'  => $this->message,
@@ -601,6 +601,8 @@ class CalendarManager
                 true
             )['count'];
 
+            $is_management_allowed = \is_management_allowed();
+
             if ((bool) $data === true) {
                 $manage = check_acl(
                     $config['id_user'],
@@ -611,7 +613,7 @@ class CalendarManager
 
                 $data = array_reduce(
                     $data,
-                    function ($carry, $item) use ($manage) {
+                    function ($carry, $item) use ($manage, $is_management_allowed) {
                         // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
                         // Transforms array of arrays $data into an array
                         // of objects, making a post-process of certain fields.
@@ -620,7 +622,7 @@ class CalendarManager
                         if ((bool) $manage === true) {
                             $name = '<b><a href="';
                             $name .= ui_get_full_url(
-                                $this->url.'&op=special_days&tab=special_days&id_calendar='.$tmp->id
+                                $this->url.'&op=special_days&tab_calendar=special_days&id_calendar='.$tmp->id
                             );
                             $name .= '">';
                             $name .= $tmp->name;
@@ -636,26 +638,28 @@ class CalendarManager
                         // Options. View.
                         $tmp->options = '';
                         if ((bool) $manage === true) {
-                            // Options. Edit.
-                            $tmp->options .= '<a href="';
-                            $tmp->options .= ui_get_full_url(
-                                $this->url.'&op=edit&id='.$tmp->id
-                            );
-                            $tmp->options .= '">';
-                            $tmp->options .= html_print_image(
-                                'images/config.png',
-                                true,
-                                [
-                                    'title' => __('Edit'),
-                                    'class' => 'invert_filter',
-                                ]
-                            );
-                            $tmp->options .= '</a>';
+                            if ($is_management_allowed === true) {
+                                // Options. Edit.
+                                $tmp->options .= '<a href="';
+                                $tmp->options .= ui_get_full_url(
+                                    $this->url.'&op=edit&id='.$tmp->id
+                                );
+                                $tmp->options .= '">';
+                                $tmp->options .= html_print_image(
+                                    'images/config.png',
+                                    true,
+                                    [
+                                        'title' => __('Edit'),
+                                        'class' => 'invert_filter',
+                                    ]
+                                );
+                                $tmp->options .= '</a>';
+                            }
 
                             // Options. Especial days.
                             $tmp->options .= '<a href="';
                             $tmp->options .= ui_get_full_url(
-                                $this->url.'&op=special_days&tab=special_days&id_calendar='.$tmp->id
+                                $this->url.'&op=special_days&tab_calendar=special_days&id_calendar='.$tmp->id
                             );
                             $tmp->options .= '">';
                             $tmp->options .= html_print_image(
@@ -668,7 +672,7 @@ class CalendarManager
                             );
                             $tmp->options .= '</a>';
 
-                            if ($tmp->id != 1) {
+                            if ($is_management_allowed === true && $tmp->id != 1) {
                                 // Options. Delete.
                                 $tmp->options .= '<a href="';
                                 $tmp->options .= ui_get_full_url(
@@ -787,7 +791,7 @@ class CalendarManager
             'calendar/special_days',
             [
                 'ajax_url'      => $this->ajaxUrl,
-                'url'           => $this->url.'&tab=special_days',
+                'url'           => $this->url.'&tab_calendar=special_days',
                 'tabs'          => $this->getTabs('special_days'),
                 'message'       => $this->message,
                 'specialDays'   => $specialDays,
@@ -912,7 +916,7 @@ class CalendarManager
             'calendar/special_days_edit',
             [
                 'ajax_url'    => $this->ajaxUrl,
-                'url'         => $this->url.'&id_calendar='.$specialDay->id_calendar().'&op=edit&tab=special_days',
+                'url'         => $this->url.'&id_calendar='.$specialDay->id_calendar().'&op=edit&tab_calendar=special_days',
                 'tabs'        => $this->getTabs('special_days'),
                 'specialDay'  => $specialDay,
                 'message'     => $this->message,

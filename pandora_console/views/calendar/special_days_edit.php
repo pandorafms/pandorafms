@@ -27,23 +27,47 @@
  */
 
 // Extras required.
-ui_require_css_file('wizard');
+\ui_require_css_file('wizard');
+\enterprise_include_once('meta/include/functions_alerts_meta.php');
+\enterprise_hook('open_meta_frame');
 
-// Header.
-\ui_print_page_header(
-    // Title.
-    __('Alerts').' &raquo; '.__('Configure special day'),
-    // Icon.
-    'images/gm_alerts.png',
-    // Return.
-    false,
-    // Help.
-    'alert_special_days',
-    // Godmode.
-    true,
-    // Options.
-    $tabs
-);
+if (\is_metaconsole() === true) {
+    \alerts_meta_print_header($tabs);
+} else {
+    // Header.
+    \ui_print_page_header(
+        // Title.
+        __('Alerts').' &raquo; '.__('Configure special day'),
+        // Icon.
+        'images/gm_alerts.png',
+        // Return.
+        false,
+        // Help.
+        'alert_special_days',
+        // Godmode.
+        true,
+        // Options.
+        $tabs
+    );
+}
+
+$is_management_allowed = \is_management_allowed();
+if ($is_management_allowed === false) {
+    if (\is_metaconsole() === false) {
+        $url_link = '<a target="_blank" href="'.ui_get_meta_url($url).'">';
+        $url_link .= __('metaconsole');
+        $url_link .= '</a>';
+    } else {
+        $url_link = __('any node');
+    }
+
+    \ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All alert calendar information is read only. Go to %s to manage it.',
+            $url_link
+        )
+    );
+}
 
 if (empty($message) === false) {
     echo $message;
@@ -131,15 +155,17 @@ $inputs[] = [
     ],
 ];
 
-// Submit.
-$inputs[] = [
-    'arguments' => [
-        'name'       => 'button',
-        'label'      => (($create === true) ? __('Create') : __('Update')),
-        'type'       => 'submit',
-        'attributes' => 'class="sub next"',
-    ],
-];
+if ($is_management_allowed === true) {
+    // Submit.
+    $inputs[] = [
+        'arguments' => [
+            'name'       => 'button',
+            'label'      => (($create === true) ? __('Create') : __('Update')),
+            'type'       => 'submit',
+            'attributes' => 'class="sub next"',
+        ],
+    ];
+}
 
 // Print form.
 HTML::printForm(
@@ -159,6 +185,8 @@ echo '<div id="modal-alert-templates" class="invisible"></div>';
 
 ui_require_javascript_file('calendar');
 ui_require_javascript_file('pandora_alerts');
+
+\enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

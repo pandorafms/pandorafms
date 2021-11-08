@@ -28,21 +28,47 @@
 
 global $config;
 
-// Header.
-\ui_print_page_header(
-    // Title.
-    __('Special days'),
-    // Icon.
-    'images/gm_alerts.png',
-    // Return.
-    false,
-    // Help.
-    'alert_special_days',
-    // Godmode.
-    true,
-    // Options.
-    $tabs
-);
+\ui_require_css_file('wizard');
+\enterprise_include_once('meta/include/functions_alerts_meta.php');
+\enterprise_hook('open_meta_frame');
+
+if (\is_metaconsole() === true) {
+    \alerts_meta_print_header($tabs);
+} else {
+    // Header.
+    \ui_print_page_header(
+        // Title.
+        __('Special days'),
+        // Icon.
+        'images/gm_alerts.png',
+        // Return.
+        false,
+        // Help.
+        'alert_special_days',
+        // Godmode.
+        true,
+        // Options.
+        $tabs
+    );
+}
+
+$is_management_allowed = \is_management_allowed();
+if ($is_management_allowed === false) {
+    if (\is_metaconsole() === false) {
+        $url_link = '<a target="_blank" href="'.ui_get_meta_url($url).'">';
+        $url_link .= __('metaconsole');
+        $url_link .= '</a>';
+    } else {
+        $url_link = __('any node');
+    }
+
+    \ui_print_warning_message(
+        __(
+            'This node is configured with centralized mode. All alert calendar information is read only. Go to %s to manage it.',
+            $url_link
+        )
+    );
+}
 
 if (empty($message) === false) {
     echo $message;
@@ -115,19 +141,21 @@ $inputs[] = [
     ],
 ];
 
-// Print form.
-HTML::printForm(
-    [
-        'form'   => [
-            'action'  => $url.'&op=upload_ical&id='.$id_calendar,
-            'method'  => 'POST',
-            'id'      => 'icalendar-special-days',
-            'enctype' => 'multipart/form-data',
+if ($is_management_allowed === true) {
+    // Print form.
+    HTML::printForm(
+        [
+            'form'   => [
+                'action'  => $url.'&op=upload_ical&id='.$id_calendar,
+                'method'  => 'POST',
+                'id'      => 'icalendar-special-days',
+                'enctype' => 'multipart/form-data',
+            ],
+            'inputs' => $inputs,
         ],
-        'inputs' => $inputs,
-    ],
-    false
-);
+        false
+    );
+}
 
 
 $this_year = date('Y');
@@ -290,13 +318,15 @@ for ($month = 1; $month <= 12; $month++) {
         $cal_table->cellstyle[$cal_line][$week] .= 'font-size: 18px;';
         $cal_table->data[$cal_line][$week] = $day.'&nbsp;';
 
-        $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&date='.$date.'" title=';
-        $cal_table->data[$cal_line][$week] .= __('Create');
-        $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
-            'images/add_mc.png',
-            true,
-            ['class' => 'invert_filter']
-        ).'</a>';
+        if ($is_management_allowed === true) {
+            $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&date='.$date.'" title=';
+            $cal_table->data[$cal_line][$week] .= __('Create');
+            $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                'images/add_mc.png',
+                true,
+                ['class' => 'invert_filter']
+            ).'</a>';
+        }
 
         if (empty($specialDays) === false && isset($specialDays[$display_year][$display_month][$day]) === true) {
             $cal_table->data[$cal_line][$week] .= '<br>';
@@ -395,25 +425,28 @@ for ($month = 1; $month <= 12; $month++) {
                         true,
                         ['class' => 'invert_filter']
                     ).'</a>';
-                    $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&id='.$special_day['id'].'" title=';
-                    $cal_table->data[$cal_line][$week] .= __('Edit');
-                    $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
-                        'images/config.png',
-                        true,
-                        ['class' => 'invert_filter']
-                    ).'</a> &nbsp;';
-                    $url_delete = $url.'&op=delete&id='.$special_day['id'];
-                    $script_delete = 'if (!confirm(\''.__('Are you sure?').'\')) return false;';
-                    $cal_table->data[$cal_line][$week] .= '<a href="'.$url_delete.'"';
-                    $cal_table->data[$cal_line][$week] .= ' onClick="'.$script_delete.'"';
-                    $cal_table->data[$cal_line][$week] .= 'title="';
-                    $cal_table->data[$cal_line][$week] .= __('Remove');
-                    $cal_table->data[$cal_line][$week] .= '">';
-                    $cal_table->data[$cal_line][$week] .= html_print_image(
-                        'images/cross.png',
-                        true,
-                        ['class' => 'invert_filter']
-                    ).'</a>';
+
+                    if ($is_management_allowed === true) {
+                        $cal_table->data[$cal_line][$week] .= '<a href="'.$url.'&op=edit&id='.$special_day['id'].'" title=';
+                        $cal_table->data[$cal_line][$week] .= __('Edit');
+                        $cal_table->data[$cal_line][$week] .= '>'.html_print_image(
+                            'images/config.png',
+                            true,
+                            ['class' => 'invert_filter']
+                        ).'</a> &nbsp;';
+                        $url_delete = $url.'&op=delete&id='.$special_day['id'];
+                        $script_delete = 'if (!confirm(\''.__('Are you sure?').'\')) return false;';
+                        $cal_table->data[$cal_line][$week] .= '<a href="'.$url_delete.'"';
+                        $cal_table->data[$cal_line][$week] .= ' onClick="'.$script_delete.'"';
+                        $cal_table->data[$cal_line][$week] .= 'title="';
+                        $cal_table->data[$cal_line][$week] .= __('Remove');
+                        $cal_table->data[$cal_line][$week] .= '">';
+                        $cal_table->data[$cal_line][$week] .= html_print_image(
+                            'images/cross.png',
+                            true,
+                            ['class' => 'invert_filter']
+                        ).'</a>';
+                    }
                 }
 
                 $cal_table->data[$cal_line][$week] .= '</div>';
@@ -457,6 +490,8 @@ if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
 
 echo '<div id="modal-alert-templates" class="invisible"></div>';
 ui_require_javascript_file('pandora_alerts');
+
+\enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {

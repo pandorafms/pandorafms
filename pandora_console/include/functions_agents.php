@@ -679,7 +679,7 @@ function agents_get_agents(
     // Add the group filter to
     $where = db_format_array_where_clause_sql($filter, 'AND', '('.$where_secondary.') AND ');
     if ($where == '' && $where_secondary != '') {
-        $where = $where_secondary;
+        $where = '('.$where_secondary.')';
     }
 
     $where_nogroup = db_format_array_where_clause_sql(

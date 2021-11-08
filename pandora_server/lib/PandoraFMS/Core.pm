@@ -5440,6 +5440,9 @@ sub pandora_process_policy_queue ($) {
 				next;
 			}
 
+			# Refresh policy agents.
+			enterprise_hook('pandora_apply_policy_groups', [$pa_config, $dbh]);
+
 			my $operation = enterprise_hook('get_first_policy_queue', [$dbh]);
 			next unless (defined ($operation) && $operation ne '');
 

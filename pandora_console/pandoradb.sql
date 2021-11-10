@@ -4043,6 +4043,7 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 CREATE TABLE IF NOT EXISTS `tncm_vendor` (
     `id` serial,
     `name` varchar(255) UNIQUE,
+	`icon` varchar(255) DEFAULT '',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -659,6 +659,14 @@ select:-internal-list-box {
   justify-content: flex-end;
   align-content: flex-end;
 }
+.flex-content-left {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+}
 .flex-column {
   display: flex;
   flex-direction: column;

@@ -441,7 +441,10 @@ class AgentWizard extends HTML
                             $this->resultsInterfaceWizard();
                         }
                     } else {
+                        hd('obtiene module blocks1', true);
                         $this->moduleBlocks = $this->getModuleBlocks();
+                        hd($this->moduleBlocks, true);
+                        // TRAZA0: hd($this->moduleBlocks, true); /// PARA VER CUÁL ES EL ID QUE TENEMOS QUE BUSCAR EN tnetwork_component.
                         if ($this->moduleBlocks === false) {
                             $this->message['type'][]    = 'info';
                             $this->message['message'][] = __(
@@ -946,10 +949,12 @@ class AgentWizard extends HTML
             // Set the name of interface.
             $interfaces[$indexKey]['name'] = $name;
             // Get the description.
+            hd('AQUI0', true);
             $interfaces[$indexKey]['descr'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.2.'.$indexKey
             );
             // Get the MAC address.
+            hd('AQUI1', true);
             $interfaces[$indexKey]['mac'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.6.'.$indexKey
             );
@@ -960,11 +965,13 @@ class AgentWizard extends HTML
             }
 
             // Get interface alias.
+            hd('AQUI2', true);
             $interfaces[$indexKey]['alias'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.31.1.1.1.18.'.$indexKey
             );
 
             // Get interface speed.
+            hd('AQUI3', true);
             $interfaces[$indexKey]['speed'] = $this->snmpGetValue(
                 '.1.3.6.1.2.1.2.2.1.5.'.$indexKey
             );
@@ -1116,6 +1123,7 @@ class AgentWizard extends HTML
         // [1] => [wmi/wmic.c:196:main()] ERROR: Login to remote object.
         // If execution gone fine.
         if ($execCorrect === true) {
+            hd('obtiene module blocks2', true);
             $this->moduleBlocks = $this->getModuleBlocks();
         } else {
             $this->message['type'][]    = 'error';
@@ -2405,6 +2413,8 @@ class AgentWizard extends HTML
     private function resultsInterfaceWizard()
     {
         $generalInterfaceModules = $this->getInterfacesModules();
+        // hd($generalInterfaceModules, true);
+        // TRAZA6 (ver si aqui llega todo bien seteado o si por el contrario se jode a partir de este punto)
         $generalInterfaceTables = [];
         $generalInterfaceModulesUpdated = [];
         $component_id_number = 0;
@@ -2423,17 +2433,20 @@ class AgentWizard extends HTML
             }
 
             // Get current value.
-            if (in_array(
-                $moduleData['module_type'],
-                [
-                    MODULE_TYPE_REMOTE_SNMP,
-                    MODULE_TYPE_REMOTE_SNMP_INC,
-                    MODULE_TYPE_REMOTE_SNMP_STRING,
-                    MODULE_TYPE_REMOTE_SNMP_PROC,
-                ]
-            ) === true
+            if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                || in_array(
+                    $moduleData['module_type'],
+                    [
+                        MODULE_TYPE_REMOTE_SNMP,
+                        MODULE_TYPE_REMOTE_SNMP_INC,
+                        MODULE_TYPE_REMOTE_SNMP_STRING,
+                        MODULE_TYPE_REMOTE_SNMP_PROC,
+                    ]
+                ) === true
             ) {
-                $currentValue = $this->snmpGetValue($moduleData['value']);
+                if (isset($moduleData['value']) === true) {
+                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                }
             }
 
             // It unit of measure have data, attach to current value.
@@ -2464,7 +2477,8 @@ class AgentWizard extends HTML
         }
 
         $generalInterfaceTables[0]['data'] = $generalInterfaceModulesUpdated;
-
+        // hd("GENERAL1", true);
+        // hd($generalInterfaceTables, true);
         // General Default monitoring.
         html_print_div(
             [
@@ -2576,6 +2590,7 @@ class AgentWizard extends HTML
 
             $interfaceModulesUpdated = [];
             $component_id_number = 0;
+
             foreach ($thisInterfaceModules as $moduleIndex => $moduleData) {
                 if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
                     if ($moduleData['module_type'] == MODULE_TYPE_REMOTE_SNMP) {
@@ -2593,17 +2608,20 @@ class AgentWizard extends HTML
                 // Get current value.
                 $currentValue = '';
 
-                if (in_array(
-                    $moduleData['module_type'],
-                    [
-                        MODULE_TYPE_REMOTE_SNMP,
-                        MODULE_TYPE_REMOTE_SNMP_INC,
-                        MODULE_TYPE_REMOTE_SNMP_STRING,
-                        MODULE_TYPE_REMOTE_SNMP_PROC,
-                    ]
-                ) === true
+                if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE
+                    || in_array(
+                        $moduleData['module_type'],
+                        [
+                            MODULE_TYPE_REMOTE_SNMP,
+                            MODULE_TYPE_REMOTE_SNMP_INC,
+                            MODULE_TYPE_REMOTE_SNMP_STRING,
+                            MODULE_TYPE_REMOTE_SNMP_PROC,
+                        ]
+                    ) === true
                 ) {
-                    $currentValue = $this->snmpGetValue($moduleData['value']);
+                    if (isset($moduleData['value']) === true) {
+                        $currentValue = $this->snmpGetValue($moduleData['value']);
+                    }
                 }
 
                 // Format current value with thousands and decimals.
@@ -2621,7 +2639,7 @@ class AgentWizard extends HTML
                 $interfaceModulesUpdated[] = [
                     'component_id'   => $component_id_number++,
                     'execution_type' => $moduleData['execution_type'],
-                    'name'           => $moduleData['module_name'],
+                    'name'           => io_safe_input($moduleData['module_name']),
                     'type'           => $moduleData['module_type'],
                     'description'    => $moduleData['module_description'],
                     'min_warning'    => $moduleData['module_thresholds']['min_warning'],
@@ -2644,6 +2662,8 @@ class AgentWizard extends HTML
             $interfaceTables[$interface['name']]['data'] = $interfaceModulesUpdated;
         }
 
+        hd('GENERAL22222', true);
+        hd($interfaceTables, true);
         html_print_div(
             [
                 'class'   => 'wizard wizard-result',
@@ -2956,6 +2976,7 @@ class AgentWizard extends HTML
     {
         $moduleBlocks = $this->moduleBlocks;
 
+        // TRAZA1: hd($moduleBlocks, true); /// COMPROBAR QUE moduleBlocks NO ESTÁ VACÍO.
         $blockTables = [];
         // Lets work with the modules.
         foreach ($moduleBlocks as $k => $module) {
@@ -2980,6 +3001,7 @@ class AgentWizard extends HTML
                 // Common for FIXED Scan types.
                 // If _nameOID_ macro exists, stablish the name getted.
                 if (empty($module['name_oid']) === false) {
+                    hd('AQUI7', true);
                     $nameValue = $this->snmpGetValue($module['name_oid']);
                     $moduleBlocks[$k]['name'] = str_replace(
                         '_nameOID_',
@@ -2994,7 +3016,10 @@ class AgentWizard extends HTML
                         $module['value'] = 0;
                     }
 
+                    hd('AQUI8', true);
+                    // TRAZA3: hd($module['value'], true); /// COMPROBAR SI $module['value'] ESTÁ VACÍO.
                     $value = $this->snmpGetValue($module['value']);
+
                     // If the value is missing, we must not show this module.
                     if (empty($value) === true) {
                         unset($moduleBlocks[$k]);
@@ -3006,6 +3031,9 @@ class AgentWizard extends HTML
                         );
                     }
 
+                    hd('TRAZA2', true);
+                    // TRAZA2: hd($moduleBlocks[$k], true); /// COMPROBAR QUE current_value ESTÁ VACÍO.
+                    // $moduleBlocks[$k]['current_value'] = 'blablabla';
                     $moduleBlocks[$k]['macros'] = '';
                 } else {
                     // Three steps for FIXED PLUGIN wizard modules.
@@ -3016,6 +3044,7 @@ class AgentWizard extends HTML
                     // OIDs and get his values.
                     foreach ($macros as $key => $oid) {
                         if (preg_match('/extra_field_/', $key) !== 0) {
+                            hd('AQUI9', true);
                             $value = (float) $this->snmpGetValue($oid);
 
                             // If the value not exists,
@@ -3135,6 +3164,7 @@ class AgentWizard extends HTML
                         foreach ($oids as $oidName => $oid) {
                             $currentOid = $oid.'.'.$tmpSecond[0];
                             $macros['macros'][$oidName] = $currentOid;
+                            hd('AQUI10', true);
                             $currentOidValue = $this->snmpGetValue($currentOid);
                             // If for any reason the value comes empty, add 1.
                             if ($currentOidValue == '') {
@@ -3288,7 +3318,7 @@ class AgentWizard extends HTML
             $fields,
             $whereString
         );
-
+        // hd(db_get_all_rows_sql($sql), true);
         return db_get_all_rows_sql($sql);
     }
 
@@ -4186,15 +4216,15 @@ class AgentWizard extends HTML
                         $module['current_value'] = 'NO DATA';
                     }
 
-                    $data[5] = ui_print_truncate_text(
-                        io_safe_output($module['current_value']),
-                        20,
-                        false,
-                        true,
-                        true,
-                        '&hellip;',
-                        false
-                    );
+                                        $data[5] = ui_print_truncate_text(
+                                            io_safe_output($module['current_value']),
+                                            20,
+                                            false,
+                                            true,
+                                            true,
+                                            '&hellip;',
+                                            false
+                                        );
 
                     // Activation column.
                     $data[6] = html_print_checkbox_switch_extended(
@@ -4506,6 +4536,7 @@ class AgentWizard extends HTML
             $inv_critical = false;
         }
 
+        // TRAZA5 hd($name); (ver si llega aquí Y valor de $name)
         $moduleName = $name.'ifOperStatus';
         $definition['ifOperStatus'] = [
             'module_name'        => $moduleName,

@@ -105,6 +105,19 @@ function tactical_get_data($id_user=false, $user_strict=false, $acltags, $return
     if (is_metaconsole() && !empty($list_groups)) {
         $cache_table = 'tmetaconsole_agent';
 
+        if (users_is_admin() === false) {
+            $user_groups_ids_array = explode(',', $user_groups_ids);
+
+            $user_group_children_ids = [];
+
+            foreach ($user_groups_ids_array as $user_group_id) {
+                $group_children_ids = groups_get_children_ids($user_group_id);
+                $user_group_children_ids = array_merge($user_group_children_ids, $group_children_ids);
+            }
+
+            $user_groups_ids = implode(',', array_unique($user_group_children_ids));
+        }
+
         $sql_stats = "SELECT id_grupo, COUNT(id_agente) AS agents_total,
 						SUM(total_count) AS monitors_total,
 						SUM(normal_count) AS monitors_ok,

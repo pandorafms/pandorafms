@@ -616,36 +616,7 @@ if (! isset($config['id_user'])) {
                 config_prepare_session();
             }
 
-            if (is_user_admin($config['id_user'])) {
-                // PHP configuration values.
-                $PHPupload_max_filesize = config_return_in_bytes(
-                    ini_get('upload_max_filesize')
-                );
-                $PHPmemory_limit = config_return_in_bytes(
-                    ini_get('memory_limit')
-                );
-                $PHPmax_execution_time = ini_get('max_execution_time');
 
-                if ($PHPmax_execution_time !== '0') {
-                    set_time_limit(0);
-                }
-
-                $PHPupload_max_filesize_min = config_return_in_bytes('800M');
-
-                if ($PHPupload_max_filesize < $PHPupload_max_filesize_min) {
-                    ini_set('upload_max_filesize', config_return_in_bytes('800M'));
-                }
-
-                $PHPmemory_limit_min = config_return_in_bytes('500M');
-
-                if ($PHPmemory_limit < $PHPmemory_limit_min && $PHPmemory_limit !== '-1') {
-                    ini_set('memory_limit', config_return_in_bytes('500M'));
-                }
-
-                set_time_limit((int) $PHPmax_execution_time);
-                ini_set('upload_max_filesize', $PHPupload_max_filesize);
-                ini_set('memory_limit', $PHPmemory_limit);
-            }
 
             // ==========================================================
             // -------- SET THE CUSTOM CONFIGS OF USER ------------------

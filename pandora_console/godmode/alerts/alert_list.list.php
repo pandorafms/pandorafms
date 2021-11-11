@@ -811,7 +811,7 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'filter_none']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -861,10 +861,16 @@ foreach ($simple_alerts as $alert) {
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW')) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-            if ($policyInfo === false) {
-                $data[1] .= '';
+            $module_linked = policies_is_module_linked($alert['id_agent_module']);
+            if (is_array($policyInfo) === false && $module_linked === false) {
+                $data[$index['policy']] = '';
             } else {
-                $img = 'images/policies_mc.png';
+                $module_linked = policies_is_module_linked($alert['id_agent_module']);
+                if ($module_linked === '0') {
+                    $img = 'images/unlinkpolicy.png';
+                } else {
+                    $img = 'images/policies_mc.png';
+                }
 
                 $data[1] .= '&nbsp;&nbsp;<a href="?sec=gmodules&sec2=enterprise/godmode/policies/policies&pure='.$pure.'&id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             }
@@ -886,7 +892,7 @@ foreach ($simple_alerts as $alert) {
                     ]
                 );
             } else {
-                if ((int) $alert['id_policy_alerts'] === 0) {
+                if ((int) $alert['id_policy_alerts'] === 0 || $module_linked === '0') {
                     $data[4] .= '<a href="javascript:show_add_action(\''.$alert['id'].'\');">';
                     $data[4] .= html_print_image('images/add.png', true, ['title' => __('Add action'), 'class' => 'invert_filter']);
                     $data[4] .= '</a>';
@@ -992,7 +998,7 @@ if (! $id_agente) {
                 echo '"'.html_print_image(
                     'images/lightbulb_off.png',
                     true,
-                    false,
+                    ['class' => 'filter_none'],
                     true
                 ).'"';
                 ?>
@@ -1031,7 +1037,7 @@ if (! $id_agente) {
                 echo '"'.html_print_image(
                     'images/lightbulb_off.png',
                     true,
-                    false,
+                    ['class' => 'filter_none'],
                     true
                 ).'"';
                 ?>

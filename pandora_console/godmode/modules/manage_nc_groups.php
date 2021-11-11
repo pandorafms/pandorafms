@@ -271,12 +271,18 @@ foreach ($groups as $group) {
 }
 
 if (is_management_allowed() === false && is_metaconsole() === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups'
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. Component groups are read only. Go to %s to manage it.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/modules/manage_nc_groups'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }

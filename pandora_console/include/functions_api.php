@@ -5777,10 +5777,6 @@ function api_set_create_alert_template($name, $thrash1, $other, $thrash3)
 {
     global $config;
 
-    if (is_metaconsole() === true) {
-        return;
-    }
-
     $headers = getallheaders();
     if (isset($headers['idk']) === false
         && is_management_allowed($headers['idk']) === false
@@ -14646,6 +14642,53 @@ function api_set_add_element_service($thrash1, $thrash2, $other, $thrash3)
 
 
 /**
+ * Example: http://127.0.0.1/pandora_console/include/api.php?op=set&op2=recreate_service_modules&id=1&user=admin&apipass=1234&pass=pandora
+ * Recreates modules for given service id, if needed.
+ *
+ * @param  integer      $id       Id service.
+ * @param  integer|null $id_agent Agent id to allocate service if node env.
+ * @return void
+ */
+function api_set_recreate_service_modules($id, $id_agent)
+{
+    global $config;
+    if (!check_acl($config['id_user'], $service['id_group'], 'AW')) {
+        returnError('forbidden', 'string');
+        return;
+    }
+
+    $id_agent = (int) $id_agent;
+    if (empty($id_agent) === true) {
+        $id_agent = null;
+    }
+
+    if (is_metaconsole() === true) {
+        // Force agent recreation in MC if modules are missing.
+        $id_agent = null;
+    }
+
+    $result = false;
+    try {
+        $service = new PandoraFMS\Enterprise\Service($id);
+        if ($service->migrateModules() !== true) {
+            $service->addModules($id_agent);
+        }
+
+        $result = true;
+    } catch (Exception $e) {
+        $result = false;
+        $error = $e->getMessage();
+    }
+
+    if ($result === true) {
+        returnData('string', ['type' => 'string', 'data' => 'OK']);
+    } else {
+        returnError('The service modules could not be recreated: '.$error);
+    }
+}
+
+
+/**
  * Update a special day. And return a message with the result of the operation.
  *
  * @param string            $id    Id of the special day to update.
@@ -16733,9 +16776,15 @@ function api_get_group_id_by_name($thrash1, $thrash2, $other, $thrash3)
         return;
     }
 
+    if (is_array($other['data']) === true) {
+        $group_id = $other['data'][0];
+    } else {
+        $group_id = $other['data'];
+    }
+
     $sql = sprintf(
         'SELECT id_grupo
-        FROM tgrupo WHERE nombre = "'.$other['data'].'"'
+        FROM tgrupo WHERE nombre = "'.$group_id.'"'
     );
 
     $group_id = db_get_all_rows_sql($sql);

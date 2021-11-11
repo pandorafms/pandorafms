@@ -273,9 +273,9 @@ sub get_agent_id ($$) {
 	
 	my $rc;
 	if($is_meta == 1) {
-		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tmetaconsole_agent WHERE nombre = ?", safe_input($agent_name));
 	} else {
-		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
+		$rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ?", safe_input($agent_name));
 	}
 
 	return defined ($rc) ? $rc : -1;
@@ -917,7 +917,7 @@ sub get_db_value_limit ($$$;@) {
 
 ##########################################################################
 ## Get a single row returned by an SQL query as a hash reference. Returns
-## -1 on error.
+## hash or undef on error.
 ##########################################################################
 sub get_db_single_row ($$;@) {
 	my ($dbh, $query, @values) = @_;

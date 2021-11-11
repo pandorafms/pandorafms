@@ -1400,6 +1400,10 @@ class ConsoleSupervisor
         $PHPmemory_limit_min = config_return_in_bytes('800M');
         $PHPSerialize_precision = ini_get('serialize_precision');
 
+        if (is_metaconsole() === true) {
+            $PHPmemory_limit_min = config_return_in_bytes('-1');
+        }
+
         // PhantomJS status.
         $phantomjs_dir = io_safe_output($config['phantomjs_bin']);
         $result_ejecution = exec($phantomjs_dir.'/phantomjs --version');
@@ -1504,6 +1508,11 @@ class ConsoleSupervisor
                 $url = 'http://php.net/manual/es/ini.core.php#ini.memory-limit';
             }
 
+            $recommended_memory = '800M';
+            if (is_metaconsole() === true) {
+                $recommended_memory = '-1';
+            }
+
             $this->notify(
                 [
                     'type'    => 'NOTIF.PHP.MEMORY_LIMIT',
@@ -1513,7 +1522,7 @@ class ConsoleSupervisor
                     ),
                     'message' => sprintf(
                         __('Recommended value is: %s'),
-                        sprintf(__('%s or greater'), '800M')
+                        sprintf(__('%s or greater'), $recommended_memory)
                     ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
                     'url'     => $url,
                 ]

@@ -696,6 +696,19 @@ function servers_get_info($id_server=-1)
                 $id_modulo = 2;
             break;
 
+            case SERVER_TYPE_CORRELATION:
+                $server['img'] = html_print_image(
+                    'images/lightning_go.png',
+                    true,
+                    [
+                        'title' => __('Correlation server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'correlation';
+                $id_modulo = 0;
+            break;
+
             case SERVER_TYPE_ENTERPRISE_ICMP:
                 $server['img'] = html_print_image(
                     'images/network.png',
@@ -797,6 +810,19 @@ function servers_get_info($id_server=-1)
                     ]
                 );
                 $server['type'] = 'syslog';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_NCM:
+                $server['img'] = html_print_image(
+                    'images/book_edit.png',
+                    true,
+                    [
+                        'title' => __('NCM server'),
+                        'class' => 'invert_filter',
+                    ]
+                );
+                $server['type'] = 'ncm';
                 $id_modulo = 0;
             break;
 

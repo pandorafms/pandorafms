@@ -1082,6 +1082,9 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
 	`vconsole_view` tinyint(1) NOT NULL DEFAULT 0,
 	`vconsole_edit` tinyint(1) NOT NULL DEFAULT 0,
 	`vconsole_management` tinyint(1) NOT NULL DEFAULT 0,
+	`network_config_view`tinyint(1) NOT NULL DEFAULT 0,
+	`network_config_edit`tinyint(1) NOT NULL DEFAULT 0,
+	`network_config_management`tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1229,6 +1232,8 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`user_comment` text NOT NULL,
 	`id_source_event` int(10)  NULL default 0,
 	`server_id` int(10) NOT NULL default 0,
+	`time_from` TIME NULL,
+	`time_to` TIME NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1562,12 +1567,14 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -1580,6 +1587,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE
@@ -3012,6 +3022,10 @@ CREATE TABLE IF NOT EXISTS `tevent_alert` (
 	`group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') default '',
 	`special_days` tinyint(1) default 0,
 	`disable_event` tinyint(1) default 0,
+	`id_template_conditions` int(10) unsigned NOT NULL default 0,
+	`id_template_fields` int(10) unsigned NOT NULL default 0,
+	`last_evaluation` bigint(20) NOT NULL default 0,
+	`pool_occurrences` int unsigned not null default 0,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -3175,12 +3189,14 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`total_time` TINYINT(1) DEFAULT '1',
 	`time_failed` TINYINT(1) DEFAULT '1',
 	`time_in_ok_status` TINYINT(1) DEFAULT '1',
+	`time_in_warning_status` TINYINT(1) DEFAULT '0',
 	`time_in_unknown_status` TINYINT(1) DEFAULT '1',
 	`time_of_not_initialized_module` TINYINT(1) DEFAULT '1',
 	`time_of_downtime` TINYINT(1) DEFAULT '1',
 	`total_checks` TINYINT(1) DEFAULT '1',
 	`checks_failed` TINYINT(1) DEFAULT '1',
 	`checks_in_ok_status` TINYINT(1) DEFAULT '1',
+	`checks_in_warning_status` TINYINT(1) DEFAULT '0',
 	`unknown_checks` TINYINT(1) DEFAULT '1',
 	`agent_max_value` TINYINT(1) DEFAULT '1',
 	`agent_min_value` TINYINT(1) DEFAULT '1',
@@ -3193,6 +3209,9 @@ CREATE TABLE IF NOT EXISTS `treport_content_template` (
 	`pagebreak` tinyint(1) UNSIGNED NOT NULL default 0,
 	`compare_work_time` tinyint(1) UNSIGNED NOT NULL default 0,
 	`graph_render` tinyint(1) UNSIGNED NOT NULL default 0,
+	`ipam_network_filter` int(10) UNSIGNED DEFAULT 0,
+	`ipam_alive_ips` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`ipam_ip_not_assigned_to_agent` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -3683,6 +3702,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_template` (
 	`width` INTEGER UNSIGNED NOT NULL default 0,
 	`background_color` varchar(50) NOT NULL default '#FFF',
 	`is_favourite` INTEGER UNSIGNED NOT NULL default 0,
+	`auto_adjust` INTEGER UNSIGNED NOT NULL default 0,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -4015,4 +4035,96 @@ CREATE TABLE IF NOT EXISTS `tsync_queue` (
 	`table` text,
 	`error` MEDIUMTEXT,
 	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_vendor`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_vendor` (
+    `id` serial,
+    `name` varchar(255) UNIQUE,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_model`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_model` (
+    `id` serial,
+    `id_vendor` bigint(20) unsigned NOT NULL,
+    `name` varchar(255) UNIQUE,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_vendor`) REFERENCES `tncm_vendor`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_template`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_template` (
+    `id` serial,
+    `name` text,
+    `vendors` text,
+    `models` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_script`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_script` (
+    `id` serial,
+    `type` int unsigned not null default 0,
+    `content` text,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_template_scripts`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
+    `id` serial,
+    `id_template` bigint(20) unsigned NOT NULL,
+    `id_script` bigint(20) unsigned NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent` (
+    `id_agent` int(10) unsigned NOT NULL,
+    `id_vendor` bigint(20) unsigned,
+    `id_model` bigint(20) unsigned,
+    `protocol` int unsigned not null default 0,
+    `cred_key` varchar(100),
+    `adv_key` varchar(100),
+    `port` int(4) unsigned default 22,
+    `status` int(4) NOT NULL default 5,
+    `updated_at` bigint(20) NOT NULL default 0,
+    `config_backup_id` bigint(20) UNSIGNED DEFAULT NULL,
+    `id_template` bigint(20) unsigned,
+    `execute_type` int(2) UNSIGNED NOT NULL default 0,
+    `execute` int(2) UNSIGNED NOT NULL default 0,
+    `last_error` text,
+    PRIMARY KEY (`id_agent`),
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`cred_key`) REFERENCES `tcredential_store`(`identifier`) ON UPDATE CASCADE ON DELETE SET NULL,
+    FOREIGN KEY (`id_template`) REFERENCES `tncm_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_vendor`) REFERENCES `tncm_vendor`(`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+    FOREIGN KEY (`id_model`) REFERENCES `tncm_model`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent_data`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
+    `id` serial,
+    `id_agent` int(10) unsigned NOT NULL,
+    `script_type` int unsigned not null,
+    `data` LONGBLOB,
+    `status` int(4) NOT NULL default 5,
+    `updated_at` bigint(20) NOT NULL default 0,
+    FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -765,7 +765,7 @@ if (is_ajax()) {
 
             $result = [];
             foreach ($last_modules_set as $module_name => $module_data) {
-                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
+                $value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true, false, '...');
 
                 $module_data_processed = array_map(
                     function ($item) {
@@ -863,10 +863,12 @@ if (is_ajax()) {
                         io_safe_output($nameModule['nombre']),
                         'module_medium',
                         false,
-                        true
+                        true,
+                        false,
+                        '...'
                     );
                 } else {
-                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+                    $result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true, false, '...');
                 }
             }
         }
@@ -1531,6 +1533,11 @@ if ($url_route_analyzer) {
     }
 }
 
+$ncm_tab = enterprise_hook('networkconfigmanager_console_tab');
+if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+    $ncm_tab = '';
+}
+
 // GIS tab.
 $gistab = [];
 if ($config['activate_gis']) {
@@ -1768,6 +1775,7 @@ $onheader = [
     'wux_console'        => $wux_console_tab,
     'url_route_analyzer' => $url_route_analyzer_tab,
     'sap_view'           => $saptab,
+    'ncm_view'           => $ncm_tab,
     'external_tools'     => $external_tools,
 ];
 
@@ -1939,6 +1947,10 @@ switch ($tab) {
             $tab_name = 'SAP View';
     break;
 
+    case 'ncm':
+        $tab_name = 'Network configuration';
+    break;
+
     case 'external_tools':
         $tab_name = 'External Tools';
     break;
@@ -2065,6 +2077,10 @@ switch ($tab) {
 
     case 'sap_view':
         include 'general/sap_view.php';
+    break;
+
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente, false]);
     break;
 
     case 'external_tools':

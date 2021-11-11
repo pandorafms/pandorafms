@@ -198,7 +198,7 @@ $table->data[0][0] .= '<div class="label_select_parent">'.html_print_input_text(
 
 $integria_logo = 'images/integria_logo_gray.png';
 if ($config['style'] === 'pandora_black') {
-    $integria_logo = 'images/integria_logo.png';
+    $integria_logo = 'images/integria_logo.svg';
 }
 
 $table->data[0][2] = html_print_image($integria_logo, true, ['style' => 'width: 70%; float: right;'], false);

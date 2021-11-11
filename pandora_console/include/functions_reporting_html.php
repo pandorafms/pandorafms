@@ -389,6 +389,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_inventory_changes($table, $item);
             break;
 
+            case 'IPAM_network':
+                reporting_enterprise_html_ipam($table, $item, $mini);
+            break;
+
             case 'agent_detailed_event':
             case 'event_report_agent':
                 reporting_html_event_report_agent($table, $item);
@@ -432,10 +436,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                     $item,
                     $mini
                 );
-            break;
-
-            case 'histogram_data':
-                reporting_enterprise_html_histogram_data($table, $item, $mini);
             break;
         }
 
@@ -1535,7 +1535,7 @@ function reporting_html_agents_inventory($table, $item, $pdf=0)
         foreach ($data as $data_field_key => $data_field_value) {
             $column_value = $data_field_value;
 
-            $show_link = $pdf === 0 ? true : false;
+            $show_link = ($pdf === 0) ? true : false;
 
             // Necessary transformations of data prior to represent it.
             if ($data_field_key === 'id_os') {
@@ -3566,25 +3566,31 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table1->head[4] = __('');
         }
 
-        if ($item['fields']['time_in_unknown_status']) {
-            $table1->head[5] = __('Time Unknown');
+        if ($item['fields']['time_in_warning_status']) {
+            $table1->head[5] = __('Time in warning status');
         } else {
             $table1->head[5] = __('');
         }
 
-        if ($item['fields']['time_of_not_initialized_module']) {
-            $table1->head[6] = __('Time Not Init Module');
+        if ($item['fields']['time_in_unknown_status']) {
+            $table1->head[6] = __('Time Unknown');
         } else {
             $table1->head[6] = __('');
         }
 
-        if ($item['fields']['time_of_downtime']) {
-            $table1->head[7] = __('Time Downtime');
+        if ($item['fields']['time_of_not_initialized_module']) {
+            $table1->head[7] = __('Time Not Init Module');
         } else {
             $table1->head[7] = __('');
         }
 
-        $table1->head[8] = __('% Ok');
+        if ($item['fields']['time_of_downtime']) {
+            $table1->head[8] = __('Time Downtime');
+        } else {
+            $table1->head[8] = __('');
+        }
+
+        $table1->head[9] = __('% Ok');
 
         $table1->headstyle = [];
         if (isset($item['data'][0]['failover']) === true) {
@@ -3600,6 +3606,7 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table1->headstyle[6]  = 'text-align: center';
         $table1->headstyle[7]  = 'text-align: right';
         $table1->headstyle[8]  = 'text-align: right';
+        $table1->headstyle[9]  = 'text-align: right';
 
         if (isset($item['data'][0]['failover']) === true) {
             $table1->style[-1]  = 'text-align: left';
@@ -3615,6 +3622,7 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table1->style[7]  = 'text-align: right';
         $table1->style[8]  = 'text-align: right';
         $table1->style[9]  = 'text-align: right';
+        $table1->style[10] = 'text-align: right';
 
         $table2 = new stdClass();
         $table2->width = '99%';
@@ -3652,10 +3660,16 @@ function reporting_html_availability($table, $item, $pdf=0)
             $table2->head[4] = __('');
         }
 
-        if ($item['fields']['unknown_checks']) {
-            $table2->head[5] = __('Checks Uknown');
+        if ($item['fields']['checks_in_warning_status']) {
+            $table2->head[5] = __('Checks Warning');
         } else {
             $table2->head[5] = __('');
+        }
+
+        if ($item['fields']['unknown_checks']) {
+            $table2->head[6] = __('Checks Uknown');
+        } else {
+            $table2->head[6] = __('');
         }
 
         $table2->headstyle = [];
@@ -3673,6 +3687,7 @@ function reporting_html_availability($table, $item, $pdf=0)
         $table2->headstyle[3] = 'text-align: right';
         $table2->headstyle[4] = 'text-align: right';
         $table2->headstyle[5] = 'text-align: right';
+        $table2->headstyle[6] = 'text-align: right';
 
         if (isset($item['data'][0]['failover']) === true) {
             $table2->style[-1] = 'text-align: left';
@@ -3764,6 +3779,20 @@ function reporting_html_availability($table, $item, $pdf=0)
                 );
             } else if ($row['time_ok'] == 0
                 && $item['fields']['time_in_ok_status']
+            ) {
+                $table_row[] = '--';
+            } else {
+                $table_row[] = '';
+            };
+
+            if ($row['time_warning'] != 0 && $item['fields']['time_in_warning_status']) {
+                $table_row[] = human_time_description_raw(
+                    $row['time_warning'],
+                    true,
+                    $interval_description
+                );
+            } else if ($row['time_warning'] == 0
+                && $item['fields']['time_in_warning_status']
             ) {
                 $table_row[] = '--';
             } else {
@@ -3875,6 +3904,12 @@ function reporting_html_availability($table, $item, $pdf=0)
 
             if ($item['fields']['checks_in_ok_status']) {
                 $table_row2[] = $row['checks_ok'];
+            } else {
+                $table_row2[] = '';
+            }
+
+            if ($item['fields']['checks_in_warning_status']) {
+                $table_row2[] = $row['checks_warning'];
             } else {
                 $table_row2[] = '';
             }

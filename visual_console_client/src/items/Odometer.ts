@@ -8,6 +8,7 @@ export type OdometerProps = {
   value: number;
   status: string;
   title: string | null;
+  titleModule: string;
   titleColor: string;
   odometerType: string;
   thresholds: string | any;
@@ -32,6 +33,7 @@ export function odometerPropsDecoder(data: AnyObject): OdometerProps | never {
     status: stringIsEmpty(data.status) ? "#B2B2B2" : data.status,
     titleColor: stringIsEmpty(data.titleColor) ? "#3f3f3f" : data.titleColor,
     title: stringIsEmpty(data.title) ? "" : data.title,
+    titleModule: stringIsEmpty(data.titleModule) ? "" : data.titleModule,
     thresholds: stringIsEmpty(data.thresholds) ? "" : data.thresholds,
     minMaxValue: stringIsEmpty(data.minMaxValue) ? "" : data.minMaxValue,
     odometerType: stringIsEmpty(data.odometerType)
@@ -208,10 +210,13 @@ export default class Odometer extends Item<OdometerProps> {
 
     const h2 = document.createElement("h2");
     if (this.props.title == "") {
-      h2.textContent = this.props.moduleName;
+      h2.textContent = this.truncateTitle(this.props.moduleName);
     } else {
       h2.textContent = this.truncateTitle(this.props.title);
     }
+    h2.title = this.props.titleModule;
+    h2.setAttribute("title", this.props.titleModule);
+
     h2.style.fontSize = `${anchoB * 0.06}px`;
     h2.style.color = `${this.props.titleColor}`;
     h2.style.lineHeight = "0";

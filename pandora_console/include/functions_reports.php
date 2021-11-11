@@ -686,6 +686,13 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Module Histogram graph'),
     ];
 
+    if ($config['enterprise_installed'] && is_metaconsole() === false) {
+        $types['IPAM_network'] = [
+            'optgroup' => __('IPAM'),
+            'name'     => __('IPAM networks'),
+        ];
+    }
+
     $types['SLA'] = [
         'optgroup' => __('SLA'),
         'name'     => __('S.L.A.'),
@@ -756,10 +763,6 @@ function reports_get_report_types($template=false, $not_editor=false)
     $types['last_value'] = [
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
-    ];
-    $types['histogram_data'] = [
-        'optgroup' => __('Modules'),
-        'name'     => __('Histogram'),
     ];
 
     $types['general'] = [

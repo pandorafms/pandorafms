@@ -1,0 +1,10 @@
+span.select2.select2-container.select2-container--default {
+  max-width: 175px !important;
+  width: 175px !important;
+}
+
+.edit_discovery_input b {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

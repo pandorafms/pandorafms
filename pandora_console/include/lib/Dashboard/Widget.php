@@ -352,6 +352,14 @@ class Widget
                     $className .= '\ServiceMapWidget';
                 break;
 
+                case 'service_view':
+                    if (\enterprise_installed() === false) {
+                        $not_installed = true;
+                    }
+
+                    $className .= '\ServiceViewWidget';
+                break;
+
                 case 'single_graph':
                     $className .= '\SingleGraphWidget';
                 break;

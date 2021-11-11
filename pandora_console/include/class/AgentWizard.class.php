@@ -442,7 +442,6 @@ class AgentWizard extends HTML
                         }
                     } else {
                         $this->moduleBlocks = $this->getModuleBlocks();
-
                         if ($this->moduleBlocks === false) {
                             $this->message['type'][]    = 'info';
                             $this->message['message'][] = __(
@@ -2406,7 +2405,6 @@ class AgentWizard extends HTML
     private function resultsInterfaceWizard()
     {
         $generalInterfaceModules = $this->getInterfacesModules();
-
         $generalInterfaceTables = [];
         $generalInterfaceModulesUpdated = [];
         $component_id_number = 0;
@@ -2581,7 +2579,6 @@ class AgentWizard extends HTML
 
             $interfaceModulesUpdated = [];
             $component_id_number = 0;
-
             foreach ($thisInterfaceModules as $moduleIndex => $moduleData) {
                 if ($this->serverType === SERVER_TYPE_ENTERPRISE_SATELLITE) {
                     if ($moduleData['module_type'] == MODULE_TYPE_REMOTE_SNMP) {
@@ -3004,7 +3001,6 @@ class AgentWizard extends HTML
                     }
 
                     $value = $this->snmpGetValue($module['value']);
-
                     // If the value is missing, we must not show this module.
                     if (empty($value) === true) {
                         unset($moduleBlocks[$k]);
@@ -3016,7 +3012,6 @@ class AgentWizard extends HTML
                         );
                     }
 
-                    // $moduleBlocks[$k]['current_value'] = 'blablabla';
                     $moduleBlocks[$k]['macros'] = '';
                 } else {
                     // Three steps for FIXED PLUGIN wizard modules.

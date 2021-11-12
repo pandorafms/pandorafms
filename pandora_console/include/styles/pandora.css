@@ -8348,3 +8348,32 @@ div.stat-win-spinner img {
 #license_error_msg_dialog {
   min-height: 350px !important;
 }
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__rendered {
+  padding: 5px 10px 10px !important;
+}
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice {
+  background-color: #82b92e !important;
+  border: 1px solid #82b92e !important;
+  padding: 0.3em 0.6em !important;
+  color: #fff;
+  font-size: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+}
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice__remove {
+  color: #fff !important;
+  font-size: 1.2em;
+  margin-right: 5px !important;
+}

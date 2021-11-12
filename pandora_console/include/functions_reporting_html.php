@@ -377,6 +377,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_agent_module($table, $item);
             break;
 
+            case 'alert_report_actions':
+                reporting_html_alert_report_actions($table, $item);
+            break;
+
             case 'agents_inventory':
                 reporting_html_agents_inventory($table, $item);
             break;
@@ -2726,6 +2730,12 @@ function reporting_html_group_configuration($table, $item, $pdf=0)
     } else {
         return $cell;
     }
+}
+
+
+function reporting_html_alert_report_actions($table, $item, $pdf=0)
+{
+    hd($item);
 }
 
 

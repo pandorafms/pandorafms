@@ -2949,3 +2949,100 @@ function alerts_get_agent_modules(
     return $agent_modules;
 
 }
+
+
+function alerts_get_alert_fired($filters=[], $groupsBy=[])
+{
+    $filter_group = '';
+    if (isset($filters['group']) === true) {
+        $filter_group = sprintf('AND id_grupo = %d', $filters['group']);
+    }
+
+    $filter_agents = '';
+    if (isset($filters['agents']) === true) {
+        $filter_agents = sprintf(
+            'AND id_agente IN ("%s")',
+            implode(',', $filters['agents'])
+        );
+    }
+
+    $filter_modules = '';
+    if (isset($filters['modules']) === true) {
+        $filter_modules = sprintf(
+            'AND id_agentmodule IN ("%s")',
+            implode(',', $filters['modules'])
+        );
+    }
+
+    $filter_actions = '';
+    if (isset($filters['actions']) === true) {
+        $filter_actions = '';
+    }
+
+    $filter_templates = '';
+    if (isset($filters['templates']) === true) {
+        $filter_templates = '';
+    }
+
+    $filter_period = '';
+    if (isset($filters['period']) === true) {
+        $filter_period = '';
+    }
+
+    $group_by = '';
+    if (isset($groupsBy['group_by']) === true) {
+        switch ($groupsBy['group_by']) {
+            case 'module':
+                $group_by = sprintf('GROUP BY id_agentmodule');
+            break;
+
+            case 'action':
+                $group_by = sprintf('GROUP BY 1');
+            break;
+
+            case 'template':
+                $group_by = sprintf('GROUP BY id_alert_am');
+            break;
+
+            case 'agent':
+                $group_by = sprintf('GROUP BY id_agente');
+            break;
+
+            default:
+                // Nothing.
+            break;
+        }
+    }
+
+    // TODO: group by periods $groupsBy['lapse'].
+    $query = sprintf(
+        'SELECT id_agente, id_grupo, id_agentmodule, count(*) as fired
+        FROM tevento
+        WHERE custom_data != ""
+            AND event_type="alert_fired"
+            %s
+            %s
+            %s
+            %s
+            %s
+            %s
+            AND (
+                JSON_CONTAINS(custom_data, "Mail to Admin", "$.actions") = 1
+                OR JSON_CONTAINS(custom_data, "Restart agent", "$.actions") = 1
+            )
+            %s',
+        $filter_group,
+        $filter_agents,
+        $filter_modules,
+        $filter_actions,
+        $filter_templates,
+        $filter_period,
+        $group_by
+    );
+
+    hd($query, '', true);
+
+    $alert_fired = db_get_all_rows_sql($query);
+
+    hd($alert_fired);
+}

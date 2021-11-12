@@ -748,6 +748,38 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'alert_report_actions':
+                    hd('1');
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+                    $id_agents = $es['id_agents'];
+
+                    $selection_a_m = get_parameter('selection');
+                    $recursion = $item['recursion'];
+
+                    if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
+                        $module = '';
+                    } else {
+                        $module = $es['module'];
+                    }
+
+                    $group = $item['id_group'];
+                    $modulegroup = $item['id_module_group'];
+                    $idAgentModule = $module;
+
+                    $alert_templates_selected = $es['templates'];
+                    $alert_actions_selected = $es['actions'];
+
+                    $show_summary = $es['show_summary'];
+
+                    $group_by = $es['group_by'];
+
+                    $period = $item['period'];
+
+                    $lapse = $item['lapse'];
+                    $lapse_calc = 1;
+                break;
+
                 case 'agents_inventory':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -1648,7 +1680,7 @@ $class = 'databox filters';
             <td class="bolder"><?php echo __('Agents'); ?></td>
             <td>
                 <?php
-                $all_agent_log = agents_get_agents(false, ['id_agente', 'alias']);
+                $all_agent_log = agents_get_agents(['id_grupo' => $group], ['id_agente', 'alias']);
                 foreach ($all_agent_log as $key => $value) {
                     $agents2[$value['id_agente']] = $value['alias'];
                 }
@@ -1680,7 +1712,18 @@ $class = 'databox filters';
                     true,
                     '',
                     false,
-                    'min-width: 180px'
+                    'min-width: 500px; max-height: 100px',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true
                 );
                 ?>
             </td>
@@ -1721,7 +1764,7 @@ $class = 'databox filters';
                     $all_modules = '';
                 } else {
                     $all_modules = db_get_all_rows_sql(
-                        'SELECT DISTINCT nombre FROM 
+                        'SELECT DISTINCT nombre, id_agente_modulo FROM
 							tagente_modulo WHERE id_agente IN ('.implode(',', array_values($id_agents)).')'
                     );
                 }
@@ -1730,12 +1773,12 @@ $class = 'databox filters';
                     $all_modules = [];
                 }
 
-                    $modules_select = [];
-                    $all_modules_structured = [];
+                $modules_select = [];
+                $all_modules_structured = [];
                 if (is_array($idAgentModule) || is_object($idAgentModule)) {
-                    foreach ($idAgentModule as $id) {
-                        foreach ($all_modules as $key => $a) {
-                            if ($a['id_agente_modulo'] == (int) $id) {
+                    foreach ($all_modules as $key => $a) {
+                        foreach ($idAgentModule as $id) {
+                            if ((int) $a['id_agente_modulo'] === (int) $id) {
                                 $modules_select[$a['id_agente_modulo']] = $a['id_agente_modulo'];
                             }
                         }
@@ -1751,14 +1794,115 @@ $class = 'databox filters';
                     'module[]',
                     $modules_select,
                     $script = '',
-                    __('None'),
+                    '',
                     0,
                     false,
                     true,
                     true,
                     '',
                     false,
-                    'min-width: 180px'
+                    'min-width: 500px; max-height: 100px',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_alert_templates" class="datos">
+            <td class="bolder"><?php echo __('Templates'); ?></td>
+            <td>
+                <?php
+                $alert_templates = [];
+                $own_info = get_user_info($config['id_user']);
+                if ($own_info['is_admin']) {
+                    $alert_templates = alerts_get_alert_templates(
+                        false,
+                        [
+                            'id',
+                            'name',
+                        ]
+                    );
+                } else {
+                    $usr_groups = users_get_groups($config['id_user'], 'LW', true);
+                    $filter_groups = '';
+                    $filter_groups = implode(',', array_keys($usr_groups));
+                    $alert_templates = alerts_get_alert_templates(
+                        ['id_group IN ('.$filter_groups.')'],
+                        [
+                            'id',
+                            'name',
+                        ]
+                    );
+                }
+
+                html_print_select(
+                    $alert_templates,
+                    'alert_templates[]',
+                    $alert_templates_selected,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true,
+                    true,
+                    '',
+                    false,
+                    'min-width: 500px; max-height: 100px',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_alert_actions" class="datos">
+            <td class="bolder"><?php echo __('Actions'); ?></td>
+            <td>
+                <?php
+                $alert_actions = alerts_get_alert_actions(true);
+                html_print_select(
+                    $alert_actions,
+                    'alert_actions[]',
+                    $alert_actions_selected,
+                    '',
+                    '',
+                    0,
+                    false,
+                    true,
+                    true,
+                    '',
+                    false,
+                    'min-width: 500px; max-height: 100px',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true
                 );
                 ?>
             </td>
@@ -3108,7 +3252,60 @@ $class = 'databox filters';
                 ?>
                 </td>
         </tr>
-        
+
+        <tr id="row_show_summary" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show Summary');
+            ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'show_summary',
+                    true,
+                    $show_summary
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_group_by" class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Group by');
+            ?>
+            </td>
+            <td>
+                <?php
+                $valuesGroupBy = [
+                    'agent'    => 'Agent',
+                    'module'   => 'Module',
+                    'action'   => 'Action',
+                    'template' => 'Template',
+                ];
+                html_print_select(
+                    $valuesGroupBy,
+                    'group_by',
+                    $group_by,
+                    '',
+                    __('None'),
+                    '0',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_landscape"   class="datos">
             <td class="bolder">
             <?php
@@ -3772,23 +3969,23 @@ function print_SLA_list($width, $action, $idItem=null)
                                         ],
                                     ]
                                 );
-                                if (!empty($services_tmp)
-                                    && $services_tmp != ENTERPRISE_NOT_HOOK
+                        if (!empty($services_tmp)
+                            && $services_tmp != ENTERPRISE_NOT_HOOK
+                        ) {
+                            foreach ($services_tmp as $service) {
+                                $check_module_sla = modules_check_agentmodule_exists(
+                                    $service['sla_id_module']
+                                );
+                                $check_module_sla_value = modules_check_agentmodule_exists(
+                                    $service['sla_value_id_module']
+                                );
+                                if ($check_module_sla
+                                    && $check_module_sla_value
                                 ) {
-                                    foreach ($services_tmp as $service) {
-                                        $check_module_sla = modules_check_agentmodule_exists(
-                                            $service['sla_id_module']
-                                        );
-                                        $check_module_sla_value = modules_check_agentmodule_exists(
-                                            $service['sla_value_id_module']
-                                        );
-                                        if ($check_module_sla
-                                            && $check_module_sla_value
-                                        ) {
-                                            $services[$service['id']] = $service['name'];
-                                        }
-                                    }
+                                    $services[$service['id']] = $service['name'];
                                 }
+                            }
+                        }
 
                                 echo '<td class="sla_list_service_col">';
                                 echo html_print_select(
@@ -4252,12 +4449,12 @@ $(document).ready (function () {
     // Load selected modules by default
     $("#id_agents2").trigger('click');
 
-    $('#combo_server').change (function (){
+    $('#combo_server').change(function () {
         $("#id_agents").html('');
-            $("#id_agents2").html('');
-            $("#module").html('');
-            $("#inventory_modules").html('');
-    })
+        $("#id_agents2").html('');
+        $("#module").html('');
+        $("#inventory_modules").html('');
+    });
 
     $("#text-url").keyup (
         function () {
@@ -4273,7 +4470,6 @@ $(document).ready (function () {
 
     $("#combo_group").change (
         function () {
-
             // Alert report group must show all matches when selecting All group
             // ignoring 'recursion' option. #6497.
             if ($("#combo_group").val() == 0) {
@@ -4284,7 +4480,12 @@ $(document).ready (function () {
             }
 
             $("#id_agents2").html('');
+            // Check agent all.
+            $("#checkbox-id_agents2-check-all").prop('checked', false);
             $("#module").html('');
+            // Check module all.
+            $("#checkbox-module-check-all").prop('checked', false);
+
             $("#inventory_modules").html('');
             jQuery.post ("ajax.php",
                 {"page" : "operation/agentes/ver_agente",
@@ -4310,7 +4511,6 @@ $(document).ready (function () {
             );
         }
     );
-    $("#combo_group").change();
 
     $("#checkbox-recursion").change (
         function () {
@@ -4324,6 +4524,11 @@ $(document).ready (function () {
                 },
                 function (data, status) {
                     $("#id_agents2").html('');
+                    // Check agent all.
+                    $("#checkbox-id_agents2-check-all").prop('checked', false);
+                    $("#module").html('');
+                    // Check module all.
+                    $("#checkbox-module-check-all").prop('checked', false);
                     jQuery.each (data, function (id, value) {
                         // Remove keys_prefix from the index
                         id = id.substring(1);
@@ -4351,6 +4556,8 @@ $(document).ready (function () {
                 },
                 function (data, status) {
                     $("#module").html('');
+                    // Check module all.
+                    $("#checkbox-module-check-all").prop('checked', false);
                     jQuery.each (data, function (id, value) {
                         option = $("<option></option>")
                             .attr ("value", value["id_agente_modulo"])
@@ -4374,6 +4581,8 @@ $(document).ready (function () {
                 },
                 function (data, status) {
                     $("#module").html('');
+                    // Check module all.
+                    $("#checkbox-module-check-all").prop('checked', false);
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
@@ -4399,6 +4608,8 @@ $(document).ready (function () {
                 },
                 function (data, status) {
                     $("#module").html('');
+                    // Check module all.
+                    $("#checkbox-module-check-all").prop('checked', false);
                     if(data){
                         jQuery.each (data, function (id, value) {
                             option = $("<option></option>")
@@ -5538,6 +5749,8 @@ function chooseType() {
     $('#row_hide_notinit_agents').hide();
     $('#row_priority_mode').hide();
     $("#row_module_group").hide();
+    $("#row_alert_templates").hide();
+    $("#row_alert_actions").hide();
     $("#row_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -5894,6 +6107,18 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_period").show();
             $("#row_historical_db_check").hide();
+            break;
+
+        case 'alert_report_actions':
+            $("#row_description").show();
+            $("#row_group").show();
+            $("#select_agent_modules").show();
+            $("#agents_modules_row").show();
+            $("#modules_row").show();
+            $("#row_alert_templates").show();
+            $("#row_alert_actions").show();
+            $("#row_period").show();
+            $("#row_lapse").show();
             break;
 
         case 'event_report_group':

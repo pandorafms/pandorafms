@@ -734,6 +734,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'alert_report_actions':
+                $report['contents'][] = reporting_alert_report_actions(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'agents_inventory':
                 $report['contents'][] = reporting_agents_inventory(
                     $report,
@@ -2653,6 +2660,58 @@ function reporting_inventory($report, $content, $type)
     if ($config['metaconsole']) {
         metaconsole_restore_db();
     }
+
+    return reporting_check_structure_content($return);
+}
+
+
+function reporting_alert_report_actions($report, $content)
+{
+    global $config;
+    $return = [];
+
+    $return['type'] = 'alert_report_actions';
+    if (empty($content['name']) === true) {
+        $content['name'] = __('Alert actions');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+
+    $return['subtitle'] = __('Actions');
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+
+    $return['data'] = [];
+
+    $es = json_decode($content['external_source'], true);
+
+    $period = $content['period'];
+    $id_group = $content['id_group'];
+    $modules = $es['modules'];
+    $agents = $es['id_agents'];
+    $templates = $es['templates'];
+    $actions = $es['actions'];
+    $show_summary = $es['show_summary'];
+    $group_by = $es['group_by'];
+    $lapse = $content['lapse'];
+
+    $filters = [
+        'group'     => $id_group,
+        'agents'    => $agents,
+        'modules'   => $modules,
+        'templates' => $templates,
+        'actions'   => $actions,
+        'period'    => $period,
+    ];
+
+    $goupsBy = [
+        'group_by' => $group_by,
+        'lapse'    => $lapse,
+    ];
+
+    alerts_get_alert_fired($filters, $goupsBy);
 
     return reporting_check_structure_content($return);
 }

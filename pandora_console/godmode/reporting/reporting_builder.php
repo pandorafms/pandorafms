@@ -1692,6 +1692,36 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'alert_report_actions':
+                                hd('3');
+                                $agents_to_report = get_parameter('id_agents2');
+                                $modules_to_report = get_parameter('module', '');
+                                $alert_templates_to_report = get_parameter('alert_templates');
+                                $alert_actions_to_report = get_parameter('alert_actions');
+                                $show_summary = get_parameter('show_summary', 0);
+                                $group_by = get_parameter('group_by', 0);
+
+                                $es['module'] = get_same_modules(
+                                    $agents_to_report,
+                                    $modules_to_report
+                                );
+                                $es['id_agents'] = $agents_to_report;
+                                $es['templates'] = $alert_templates_to_report;
+                                $es['actions'] = $alert_actions_to_report;
+                                $es['show_summary'] = $show_summary;
+                                $es['group_by'] = $group_by;
+
+                                $values['external_source'] = json_encode($es);
+
+                                $values['period'] = get_parameter('period');
+                                $values['lapse_calc'] = get_parameter(
+                                    'lapse_calc'
+                                );
+                                $values['lapse'] = get_parameter('lapse');
+
+                                $good_format = true;
+                            break;
+
                             case 'inventory':
                                 $values['period'] = 0;
                                 $es['date'] = get_parameter('date');
@@ -2433,6 +2463,36 @@ switch ($action) {
                                 $es['id_agents'] = $agents_to_report;
 
                                 $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'alert_report_actions':
+                                hd('2');
+                                $agents_to_report = get_parameter('id_agents2');
+                                $modules_to_report = get_parameter('module', '');
+                                $alert_templates_to_report = get_parameter('alert_templates');
+                                $alert_actions_to_report = get_parameter('alert_actions');
+                                $show_summary = get_parameter('show_summary', 0);
+                                $group_by = get_parameter('group_by', 0);
+
+                                $es['module'] = get_same_modules(
+                                    $agents_to_report,
+                                    $modules_to_report
+                                );
+                                $es['id_agents'] = $agents_to_report;
+                                $es['templates'] = $alert_templates_to_report;
+                                $es['actions'] = $alert_actions_to_report;
+                                $es['show_summary'] = $show_summary;
+                                $es['group_by'] = $group_by;
+
+                                $values['external_source'] = json_encode($es);
+
+                                $values['period'] = get_parameter('period');
+                                $values['lapse_calc'] = get_parameter(
+                                    'lapse_calc'
+                                );
+                                $values['lapse'] = get_parameter('lapse');
+
                                 $good_format = true;
                             break;
 

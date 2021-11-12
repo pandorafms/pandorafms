@@ -205,7 +205,7 @@ foreach ($files as $key => $value) {
 
 $table_files_section->data[0][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
 $table_files_section->data[0][0] .= html_print_input_file('userfile', true);
-$table_files_section->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Description').':</p>';
+$table_files_section->data[1][0] = '<div class="label_select"><p class="input_label">'.__('Attachment description').':</p>';
 $table_files_section->data[1][0] .= html_print_textarea(
     'file_description',
     3,
@@ -215,11 +215,11 @@ $table_files_section->data[1][0] .= html_print_textarea(
     true
 );
 
-$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload2'), 'accion', false, 'class="sub wand"', true).'</div>';
+$table_files_section->data[2][0] .= '<div class="w100p right">'.html_print_submit_button(__('Upload'), 'accion', false, 'class="sub wand"', true).'</div>';
 
 $upload_file_form = '<div class="w100p">';
 
-$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment1').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', true, true);
+$upload_file_form .= '<form method="post" id="file_control" enctype="multipart/form-data">'.'<h4>'.__('Add attachment').'</h4>'.html_print_table($table_files_section, true).html_print_input_hidden('upload_file', true, true);
 
 $upload_file_form .= '<h4>'.__('Attached files').'</h4>'.html_print_table($table_files, true).'</form></div>';
 

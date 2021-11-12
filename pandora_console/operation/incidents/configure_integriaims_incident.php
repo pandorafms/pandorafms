@@ -315,7 +315,7 @@ $table->data[3][0] .= '<div class="label_select_parent">'.html_print_textarea(
 
 $table->data[4][0] = '<div class="label_select"><p class="input_label">'.__('File name').':</p>';
 $table->data[4][0] .= html_print_input_file('userfile', true);
-$table->data[5][0] = '<div class="label_select"><p class="input_label">'.__('Description').':</p>';
+$table->data[5][0] = '<div class="label_select"><p class="input_label">'.__('Attachment description').':</p>';
 $table->data[5][0] .= html_print_textarea(
     'file_description',
     3,

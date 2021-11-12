@@ -5799,6 +5799,8 @@ function chooseType() {
     $("#row_network_filter").hide();
     $("#row_alive_ip").hide();
     $("#row_agent_not_assigned_to_ip").hide();
+    $("#row_show_summary").hide();
+    $("#row_group_by").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6119,6 +6121,8 @@ function chooseType() {
             $("#row_alert_actions").show();
             $("#row_period").show();
             $("#row_lapse").show();
+            $("#row_show_summary").show();
+            $("#row_group_by").show();
             break;
 
         case 'event_report_group':

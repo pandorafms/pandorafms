@@ -2627,7 +2627,7 @@ class AgentWizard extends HTML
                 $interfaceModulesUpdated[] = [
                     'component_id'   => $component_id_number++,
                     'execution_type' => $moduleData['execution_type'],
-                    'name'           => io_safe_input($moduleData['module_name']),
+                    'name'           => $moduleData['module_name'],
                     'type'           => $moduleData['module_type'],
                     'description'    => $moduleData['module_description'],
                     'min_warning'    => $moduleData['module_thresholds']['min_warning'],
@@ -3467,7 +3467,7 @@ class AgentWizard extends HTML
                 } else {
                     preg_match('/\.\d+$/', $key, $index);
                     $tmp = explode(': ', $oid_unit);
-                    $output[$index[0]] = ($tmp[1] ?? '');
+                    $output[$index[0]] = str_replace('"', '', ($tmp[1] ?? ''));
                 }
             }
         }

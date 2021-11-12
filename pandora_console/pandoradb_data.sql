@@ -2749,7 +2749,7 @@ INSERT IGNORE INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_gro
 
 INSERT IGNORE INTO `tpen` VALUES (171,'dlink','D-Link Systems, Inc.'),(14988,'mikrotik','MikroTik'),(6486,'alcatel','Alcatel-Lucent Enterprise'),(41112,'ubiquiti','Ubiquiti Networks, Inc.'),(207,'telesis','Allied Telesis, Inc.'),(10002,'frogfoot','Frogfoot Networks'),(2,'ibm','IBM'),(4,'unix','Unix'),(63,'apple','Apple Computer, Inc.'),(674,'dell','Dell Inc.'),(111,'oracle','Oracle'),(116,'hitachi','Hitachi, Ltd.'),(173,'netlink','Netlink'),(188,'ascom','Ascom'),(6574,'synology','Synology Inc.'),(3861,'fujitsu','Fujitsu Network Communications, Inc.'),(53526,'dell','Dell ATC'),(52627,'apple','Apple Inc'),(19464,'hitachi','Hitachi Communication Technologies, Ltd.'),(13062,'ascom','Ascom');
 
-INSERT INTO `tncm_vendor` VALUES
+INSERT INTO `tncm_vendor` (`id`, `name`) VALUES
     (1,'Cisco'),
 	(2, 'D-Link Systems, Inc.'),
     (3, 'MikroTik'),

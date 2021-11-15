@@ -581,7 +581,7 @@ if ($is_management_allowed === true && $multiple_delete) {
     $id = 0;
 }
 
-if ($id || $new_component
+if ((bool) $id !== false || $new_component
     || $create_network_from_module
     || $create_network_from_snmp_browser
 ) {
@@ -598,6 +598,7 @@ $url = ui_get_url_refresh(
         'offset'          => false,
         'search_string'   => $search_string,
         'search_id_group' => $search_id_group,
+        'id'              => $id,
     ],
     true,
     false

@@ -664,7 +664,7 @@ function mainAgentsModules()
             $name = $module;
             $modules_by_name[$cont]['name'] = $name;
             $modules_by_name[$cont]['id'][] = $key;
-            $cont ++;
+            $cont++;
         }
     }
 

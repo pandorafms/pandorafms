@@ -910,7 +910,7 @@ if ($agents !== false) {
                 echo ' onClick="if (!confirm(\' '.__('You are going to enable a cluster agent. Are you sure?').'\')) return false;">';
             }
 
-            echo html_print_image('images/lightbulb_off.png', true, ['alt' => __('Enable agent'), 'title' => __('Enable agent')]).'</a>';
+            echo html_print_image('images/lightbulb_off.png', true, ['alt' => __('Enable agent'), 'title' => __('Enable agent'), 'class' => 'filter_none']).'</a>';
         } else {
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			disable_agent=".$agent['id_agente']."&group_id=$ag_group&recursion=$recursion&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort&disabled=$disabled'";

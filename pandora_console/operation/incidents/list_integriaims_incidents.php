@@ -60,6 +60,223 @@ $created_to = (string) get_parameter('created_to', '');
 $offset = (int) get_parameter('offset');
 
 $delete_incident = get_parameter('delete_incident');
+
+// Sorting.
+$sort_field = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+
+$selected = true;
+$select_incident_id_up = false;
+$select_incident_id_down = false;
+$select_title_up = false;
+$select_title_down = false;
+$select_group_company_up = false;
+$select_group_company_down = false;
+$select_status_resolution_up = false;
+$select_status_resolution_down = false;
+$select_priority_up = false;
+$select_priority_down = false;
+$select_creator_up = false;
+$select_creator_down = false;
+$select_owner_up = false;
+$select_owner_down = false;
+
+$order[] = [
+    'field' => 'incident_id',
+    'order' => 'ASC',
+];
+
+switch ($sort_field) {
+    case 'incident_id':
+        switch ($sort) {
+            case 'up':
+                $select_incident_id_up = $selected;
+                $order = [
+                    'field' => 0,
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_incident_id_down = $selected;
+                $order = [
+                    'field' => 0,
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'title':
+        switch ($sort) {
+            case 'up':
+                $select_title_up = $selected;
+                $order = [
+                    'field' => 3,
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_title_down = $selected;
+                $order = [
+                    'field' => 3,
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'group_company':
+        switch ($sort) {
+            case 'up':
+                $select_group_company_up = $selected;
+                $order = [
+                    'field' => 'group_company',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_group_company_down = $selected;
+                $order = [
+                    'field' => 'group_company',
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'status_resolution':
+        switch ($sort) {
+            case 'up':
+                $select_status_resolution_up = $selected;
+                $order = [
+                    'field' => 'status_resolution',
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_status_resolution_down = $selected;
+                $order = [
+                    'field' => 'status_resolution',
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'priority':
+        switch ($sort) {
+            case 'up':
+                $select_priority_up = $selected;
+                $order = [
+                    'field' => 7,
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_priority_down = $selected;
+                $order = [
+                    'field' => 7,
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'creator':
+        switch ($sort) {
+            case 'up':
+                $select_creator_up = $selected;
+                $order = [
+                    'field' => 10,
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_creator_down = $selected;
+                $order = [
+                    'field' => 10,
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    case 'owner':
+        switch ($sort) {
+            case 'up':
+                $select_owner_up = $selected;
+                $order = [
+                    'field' => 5,
+                    'order' => 'ASC',
+                ];
+            break;
+
+            case 'down':
+                $select_owner_down = $selected;
+                $order = [
+                    'field' => 5,
+                    'order' => 'DESC',
+                ];
+            break;
+
+            default:
+                // Nothing to do.
+            break;
+        }
+    break;
+
+    default:
+        $select_incident_id_up = $selected;
+        $select_incident_id_down = false;
+        $select_title_up = false;
+        $select_title_down = false;
+        $select_group_company_up = false;
+        $select_group_company_down = false;
+        $select_status_resolution_up = false;
+        $select_status_resolution_down = false;
+        $select_priority_up = false;
+        $select_priority_down = false;
+        $select_creator_up = false;
+        $select_creator_down = false;
+        $select_owner_up = false;
+        $select_owner_down = false;
+        $order = [
+            'field' => 'id_user',
+            'order' => 'ASC',
+        ];
+    break;
+}
+
 if ($delete_incident) {
     // Call Integria IMS API method to delete an incident.
     $result_api_call_delete = integria_api_call(
@@ -79,12 +296,6 @@ if ($delete_incident) {
         __('Could not be deleted')
     );
 }
-
-// Full url with all filters.
-$url = ui_get_full_url(
-    'index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&incident_text='.$incident_text.'&incident_status='.$incident_status.'&incident_group='.$incident_group.'&incident_owner='.$incident_owner.'&incident_creator='.$incident_creator.'&incident_priority='.$incident_priority.'&incident_resolution='.$incident_resolution.'&created_from='.$created_from.'&created_to='.$created_to.'&offset='.$offset
-);
-
 
 // ---- FILTERS ----
 // API calls to fill the filters.
@@ -204,6 +415,10 @@ $tickets_filters = [
 // Data to export to csv file.
 $decode_csv = base64_encode(json_encode($tickets_filters));
 
+// Full url with all filters.
+$url = ui_get_full_url(
+    'index.php?sec=incident&sec2=operation/incidents/list_integriaims_incidents&incident_text='.$incident_text.'&incident_status='.$incident_status.'&incident_group='.$incident_group.'&incident_owner='.$incident_owner.'&incident_creator='.$incident_creator.'&incident_priority='.$incident_priority.'&incident_resolution='.$incident_resolution.'&created_from='.$created_from.'&created_to='.$created_to.'&offset='.$offset.'&sort_field='.$sort_field.'&sort='.$sort
+);
 
 // ---- PRINT TABLE FILTERS ----
 $integria_incidents_form = '<form method="post" action="'.$url.'" class="pdd_0px">';
@@ -241,6 +456,37 @@ ui_toggle($integria_incidents_form, __('Filter'), '', '', false);
 // Get list of incidents.
 $array_get_incidents = get_tickets_integriaims($tickets_filters);
 
+$props = [
+    'order'               => $order,
+    'group_incident'      => $group_incident,
+    'status_incident'     => $status_incident,
+    'resolution_incident' => $resolution_incident,
+];
+
+usort(
+    $array_get_incidents,
+    function ($a, $b) use ($props) {
+        $order_field = $props['order']['field'];
+
+        $item_a = $a[$order_field];
+        $item_b = $b[$order_field];
+
+        if ($order_field === 'group_company') {
+            $item_a = $props['group_incident'][$a[8]];
+            $item_b = $props['group_incident'][$b[8]];
+        } else if ($order_field === 'status_resolution') {
+            $item_a = $props['status_incident'][$a[6]].' / '.$props['resolution_incident'][$a[12]];
+            $item_b = $props['status_incident'][$b[6]].' / '.$props['resolution_incident'][$b[12]];
+        }
+
+        if ($props['order']['order'] === 'DESC') {
+            return $item_a < $item_b;
+        } else {
+            return $item_a > $item_b;
+        }
+    }
+);
+
 // Prepare pagination.
 $incidents_limit = $config['block_size'];
 $incidents_paginated = array_slice($array_get_incidents, $offset, $incidents_limit, true);
@@ -251,14 +497,29 @@ $table->width = '100%';
 $table->class = 'info_table';
 $table->head = [];
 
-$table->head[0] = __('ID');
-$table->head[1] = __('Ticket');
-$table->head[2] = __('Group/Company');
-$table->head[3] = __('Status/Resolution');
-$table->head[4] = __('Prior');
+$url_incident_id_up = $url.'&sort_field=incident_id&sort=up';
+$url_incident_id_down = $url.'&sort_field=incident_id&sort=down';
+$url_title_up = $url.'&sort_field=title&sort=up';
+$url_title_down = $url.'&sort_field=title&sort=down';
+$url_group_company_up = $url.'&sort_field=group_company&sort=up';
+$url_group_company_down = $url.'&sort_field=group_company&sort=down';
+$url_status_resolution_up = $url.'&sort_field=status_resolution&sort=up';
+$url_status_resolution_down = $url.'&sort_field=status_resolution&sort=down';
+$url_priority_up = $url.'&sort_field=priority&sort=up';
+$url_priority_down = $url.'&sort_field=priority&sort=down';
+$url_creator_up = $url.'&sort_field=creator&sort=up';
+$url_creator_down = $url.'&sort_field=creator&sort=down';
+$url_owner_up = $url.'&sort_field=owner&sort=up';
+$url_owner_down = $url.'&sort_field=owner&sort=down';
+
+$table->head[0] = __('ID').ui_get_sorting_arrows($url_incident_id_up, $url_incident_id_down, $select_incident_id_up, $select_incident_id_down);
+$table->head[1] = __('Title').ui_get_sorting_arrows($url_title_up, $url_title_down, $select_title_up, $select_title_down);
+$table->head[2] = __('Group/Company').ui_get_sorting_arrows($url_group_company_up, $url_group_company_down, $select_group_company_up, $select_group_company_down);
+$table->head[3] = __('Status/Resolution').ui_get_sorting_arrows($url_status_resolution_up, $url_status_resolution_down, $select_status_resolution_up, $select_status_resolution_down);
+$table->head[4] = __('Priority').ui_get_sorting_arrows($url_priority_up, $url_priority_down, $select_priority_up, $select_priority_down);
 $table->head[5] = __('Updated/Started');
-$table->head[6] = __('Creator');
-$table->head[7] = __('Owner');
+$table->head[6] = __('Creator').ui_get_sorting_arrows($url_creator_up, $url_creator_down, $select_creator_up, $select_creator_down);
+$table->head[7] = __('Owner').ui_get_sorting_arrows($url_owner_up, $url_owner_down, $select_owner_up, $select_owner_down);
 $table->head[8] = '';
 
 $table->data = [];

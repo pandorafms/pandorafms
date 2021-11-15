@@ -1042,39 +1042,19 @@ class AgentWizard extends HTML
                 $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
             } else {
                 $this->interfacesx64 = false;
-                $oidExplore = '1.3.6.1.2.1.2.2.1.2';
+                $oidExplore = '.1.3.6.1.2.1.2.2.1.2';
             }
-
-            // Explore interface names.
-            $oidExplore = '.1.3.6.1.2.1.31.1.1.1.1';
-            $receivedOid = $this->snmpWalkValues(
-                $oidExplore,
-                false,
-                true
-            );
         } else {
             // Get the device PEN.
             $oidExplore = '.1.3.6.1.2.1.1.2.0';
         }
 
-        // Doc Interfaces de red.
+        // Explore general or interfaces
         $receivedOid = $this->snmpWalkValues(
             $oidExplore,
             false,
             false
         );
-
-        if (empty($receivedOid) || preg_grep('/no.*object/i', $receivedOid)) {
-            $this->interfacesx64 = false;
-
-            $oidExplore = '1.3.6.1.2.1.2.2.1.2';
-            // Doc Interfaces de red.
-            $receivedOid = $this->snmpWalkValues(
-                $oidExplore,
-                false,
-                true
-            );
-        }
 
         // The snmpwalk return information.
         if (empty($receivedOid) === false) {

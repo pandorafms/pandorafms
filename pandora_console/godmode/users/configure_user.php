@@ -721,6 +721,7 @@ if ($update_user) {
         );
     }
 
+
     if ($values['strict_acl']) {
         $count_groups = 0;
         $count_tags = 0;
@@ -1226,7 +1227,10 @@ $session_time .= html_print_input_text(
     'class="input_line_small"'
 ).'</div>';
 
-$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter');
+
+$user_groups = implode(',', array_keys((users_get_groups($id, 'AR', $display_all_group))));
+
+$event_filter_data = db_get_all_rows_sql('SELECT id_name, id_filter FROM tevent_filter WHERE id_group_filter IN ('.$user_groups.')');
 if ($event_filter_data === false) {
     $event_filter_data = [];
 }
@@ -1317,6 +1321,8 @@ if (isset($double_authentication)) {
 if ($meta) {
     enterprise_include_once('include/functions_metaconsole.php');
 
+    $access_node = db_get_value('metaconsole_access_node', 'tusuario', 'id_user', $id);
+
     $metaconsole_agents_manager = '<div class="label_select_simple" id="metaconsole_agents_manager_div"><p class="edit_user_labels">'.__('Enable agents managment').'</p>';
     $metaconsole_agents_manager .= html_print_checkbox_switch(
         'metaconsole_agents_manager',
@@ -1338,7 +1344,7 @@ if ($meta) {
     $metaconsole_access_node .= html_print_checkbox(
         'metaconsole_access_node',
         1,
-        $user_info['metaconsole_access_node'],
+        $access_node,
         true
     ).'</div>';
 }

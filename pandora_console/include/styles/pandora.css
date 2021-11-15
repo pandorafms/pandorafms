@@ -688,6 +688,12 @@ select:-internal-list-box {
   align-items: baseline;
 }
 
+.flex-row-center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .flex-row-vcenter {
   display: flex;
   flex-direction: row;
@@ -745,6 +751,12 @@ select:-internal-list-box {
 }
 .padding-right-2-imp {
   padding-right: 2em !important;
+}
+.padding-left-2 {
+  padding-left: 2em;
+}
+.padding-left-2-imp {
+  padding-left: 2em !important;
 }
 .margin-soft {
   margin: 0.3em 1em;
@@ -2988,7 +3000,7 @@ input.search_input {
   background-color: #f2f6f7;
   padding: 0px;
   margin: 0;
-  width: 300px;
+  width: 150px;
   height: 30px;
   margin-left: 2px;
   padding-left: 15px;
@@ -6150,9 +6162,8 @@ div.graph div.legend table {
 
 .sound_events {
   background-color: #494949;
-  max-width: 550px;
-  max-height: 400px;
-  margin-top: 40px;
+  margin: 40px 2em 0;
+  min-height: auto;
 }
 
 .w16px {

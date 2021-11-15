@@ -2731,16 +2731,20 @@ function ui_print_status_image(
  * @param integer $status Module status.
  * @param boolean $return True or false.
  * @param string  $class  Custom class or use defined.
+ * @param string  $title  Custom title or inherit from module status.
  *
  * @return string HTML code for shape.
  */
 function ui_print_module_status(
     $status,
     $return=false,
-    $class='status_rounded_rectangles'
+    $class='status_rounded_rectangles',
+    $title=null
 ) {
     $color = modules_get_color_status($status, true);
-    $title = modules_get_modules_status($status);
+    if ($title === null) {
+        $title = modules_get_modules_status($status);
+    }
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
@@ -4315,18 +4319,28 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     }
 
+    $skip_meta_tag = false;
     if ($url === '') {
-        if ($proxy) {
-            $url = '';
-        } else {
+        if ($proxy === false) {
             $url = $_SERVER['REQUEST_URI'];
-        }
-    } else if ($url === false) {
-        if ($proxy) {
-            $url = '';
+            // Already inserted in request_uri.
+            $skip_meta_tag = true;
         } else {
-            // Only add the home url.
+            // Redirect to main.
+            $url = '?'.$_SERVER['QUERY_STRING'];
+        }
+    } else if (empty($url) === true) {
+        if ($proxy === false) {
             $url = $config['homeurl_static'].'/';
+            if ($metaconsole_root === true
+                && is_metaconsole()
+            ) {
+                $url = $config['homeurl_static'].'/'.ENTERPRISE_DIR.'/meta/';
+            }
+
+            $skip_meta_tag = true;
+        } else {
+            $url = '';
         }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
@@ -4354,8 +4368,11 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         $url = substr($url, 1);
     }
 
-    if (is_metaconsole() && $metaconsole_root) {
-        $fullurl .= 'enterprise/meta/';
+    if ($skip_meta_tag === false
+        && $metaconsole_root
+        && is_metaconsole()
+    ) {
+        $fullurl .= ENTERPRISE_DIR.'/meta/';
     }
 
     return $fullurl.$url;

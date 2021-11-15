@@ -123,6 +123,11 @@ if ($id_profile || $new_profile) {
         $vconsole_edit = 0;
         $vconsole_management = 0;
 
+        // NCM.
+        $network_config_view = 0;
+        $network_config_edit = 0;
+        $network_config_management = 0;
+
         $page_title = __('Create profile');
     } else {
         $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
@@ -181,13 +186,41 @@ if ($id_profile || $new_profile) {
         $vconsole_edit = (bool) $profile['vconsole_edit'];
         $vconsole_management = (bool) $profile['vconsole_management'];
 
+        // NCM.
+        $network_config_management = (bool) $profile['network_config_management'];
+        $network_config_view = (bool) $profile['network_config_view'] || $network_config_management;
+        $network_config_edit = (bool) $profile['network_config_edit'] || $network_config_management;
+
         $id_audit = db_pandora_audit(
             'User management',
             'Edit profile '.io_safe_output($name)
         );
         enterprise_include_once('include/functions_audit.php');
 
-        $info = 'Name: '.$name.' Agent view: '.$agent_view.' Agent edit: '.$agent_edit.' Agent disable: '.$agent_disable.' Alert edit: '.$alert_edit.' Alert management: '.$alert_management.' User management: '.$user_management.' DB management: '.$db_management.' Event view: '.$event_view.' Event edit: '.$event_edit.' Event management: '.$event_management.' Report view: '.$report_view.' Report edit: '.$report_edit.' Report management: '.$report_management.' Network map view: '.$map_view.' Network map edit: '.$map_edit.' Network map management: '.$map_management.' Visual console view: '.$vconsole_view.' Visual console edit: '.$vconsole_edit.' Visual console management: '.$vconsole_management.' '.get_product_name().' Management: '.$pandora_management;
+        $info = 'Name: '.$name;
+        $info .= ' Agent view: '.$agent_view;
+        $info .= ' Agent edit: '.$agent_edit;
+        $info .= ' Agent disable: '.$agent_disable;
+        $info .= ' Alert edit: '.$alert_edit;
+        $info .= ' Alert management: '.$alert_management;
+        $info .= ' User management: '.$user_management;
+        $info .= ' DB management: '.$db_management;
+        $info .= ' Event view: '.$event_view;
+        $info .= ' Event edit: '.$event_edit;
+        $info .= ' Event management: '.$event_management;
+        $info .= ' Report view: '.$report_view;
+        $info .= ' Report edit: '.$report_edit;
+        $info .= ' Report management: '.$report_management;
+        $info .= ' Network map view: '.$map_view;
+        $info .= ' Network map edit: '.$map_edit;
+        $info .= ' Network map management: '.$map_management;
+        $info .= ' Visual console view: '.$vconsole_view;
+        $info .= ' Visual console edit: '.$vconsole_edit;
+        $info .= ' Visual console management: '.$vconsole_management;
+        $info .= ' Network config view: '.$network_config_view;
+        $info .= ' Network config write: '.$network_config_write;
+        $info .= ' Network config management: '.$network_config_management;
+        $info .= ' '.get_product_name().' Management: '.$pandora_management;
 
         enterprise_hook('audit_pandora_enterprise', [$id_audit, $info]);
 
@@ -313,6 +346,21 @@ if ($id_profile || $new_profile) {
     if (check_acl($config['id_user'], 0, 'PM') || users_is_admin()) {
         $disable_option = '';
     }
+
+    // NCM
+    $row = [];
+    $row['name'] = __('View NCM data');
+    $row['input'] = html_print_checkbox('network_config_view', 1, $network_config_view, true);
+    $table->data['VR'] = $row;
+    $row = [];
+    $row['name'] = __('Operate NCM');
+    $row['input'] = html_print_checkbox('network_config_edit', 1, $network_config_edit, true, false, 'autoclick_profile_users(\'network_config_edit\', \'network_config_view\', \'false\')');
+    $table->data['VW'] = $row;
+    $row = [];
+    $row['name'] = __('Manage NCM');
+    $row['input'] = html_print_checkbox('network_config_management', 1, $network_config_management, true, false, 'autoclick_profile_users(\'network_config_management\', \'network_config_view\', \'network_config_edit\')');
+    $table->data['VM'] = $row;
+    $table->data[] = '<hr>';
 
     // Users
     $row = [];

@@ -485,6 +485,13 @@ if ($id_agente) {
         $collectiontab = '';
     }
 
+    // NetworkConfigManager tab.
+    $ncm_tab = enterprise_hook('networkconfigmanager_tab');
+
+    if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
+        $ncm_tab = '';
+    }
+
     // Group tab.
     $grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.html_print_image(
         'images/group.png',
@@ -616,6 +623,7 @@ if ($id_agente) {
                 'main'                 => $maintab,
                 'remote_configuration' => $remote_configuration_tab,
                 'module'               => $moduletab,
+                'ncm'                  => $ncm_tab,
                 'alert'                => $alerttab,
                 'template'             => $templatetab,
                 'inventory'            => $inventorytab,
@@ -631,6 +639,7 @@ if ($id_agente) {
                 'separator'    => '',
                 'main'         => $maintab,
                 'module'       => $moduletab,
+                'ncm'          => $ncm_tab,
                 'alert'        => $alerttab,
                 'template'     => $templatetab,
                 'inventory'    => $inventorytab,
@@ -697,6 +706,11 @@ if ($id_agente) {
         case 'collection':
             $tab_description = '- '.__('Collection');
             $tab_name = 'Collection';
+        break;
+
+        case 'ncm':
+            $tab_description = '- '.__('Network config manager');
+            $tab_name = 'Network config manager';
         break;
 
         case 'inventory':
@@ -976,6 +990,8 @@ if ($update_agent) {
     $cps = get_parameter_switch('cps', -1);
     $old_values = db_get_row('tagente', 'id_agente', $id_agente);
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
+    $secondary_groups = (string) get_parameter('secondary_hidden', '');
+
 
     if ($fields === false) {
         $fields = [];
@@ -1205,7 +1221,16 @@ if ($update_agent) {
 				"Quiet":"'.(int) $quiet.'",
 				"Cps":"'.(int) $cps.'"}';
 
-            enterprise_hook('update_agent', [$id_agente]);
+            // Create the secondary groups.
+            enterprise_hook(
+                'agents_update_secondary_groups',
+                [
+                    $id_agente,
+                    explode(',', $secondary_groups),
+                    [],
+                ]
+            );
+
             ui_print_success_message(__('Successfully updated'));
             db_pandora_audit(
                 'Agent management',
@@ -2311,6 +2336,10 @@ switch ($tab) {
 
     case 'incident':
         include 'agent_incidents.php';
+    break;
+
+    case 'ncm':
+        enterprise_hook('ncm_agent_tab', [$id_agente]);
     break;
 
     case 'remote_configuration':

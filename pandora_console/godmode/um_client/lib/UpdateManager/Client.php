@@ -1270,12 +1270,13 @@ class Client
         }
 
         $content = file_get_contents($delete_files_txt);
-        $files = explode('\n', $content);
+        $files = explode("\n", $content);
         $processed = [];
         foreach ($files as $file) {
             $file = trim(str_replace("\0", '', $this->productPath.'/'.$file));
             if (file_exists($file) === true
                 && is_file($delete_files_txt) === true
+                && is_dir($file) === false
             ) {
                 unlink($file);
                 $processed[$file] = 'removed';
@@ -1674,7 +1675,7 @@ class Client
                         );
 
                         $this->updateMR(
-                            $this->extract_to.'/extras/mr/'.$mr,
+                            $extract_to.'/extras/mr/'.$mr,
                             $this->dbhHistory,
                             $historical_MR
                         );

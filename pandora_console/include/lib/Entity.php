@@ -37,6 +37,13 @@ abstract class Entity
 {
 
     /**
+     * Load from DB or new one.
+     *
+     * @var boolean
+     */
+    protected $existsInDB;
+
+    /**
      * Entity fields (from table).
      *
      * @var array
@@ -88,6 +95,7 @@ abstract class Entity
             $obj->{$k}($v);
         }
 
+        $obj->existsInDB = true;
         return $obj;
     }
 
@@ -98,13 +106,15 @@ abstract class Entity
      * @param string      $table            Table.
      * @param array|null  $filters          Filters, for instance ['id' => $id].
      * @param string|null $enterprise_class Enterprise class name.
+     * @param boolean     $cache            Use cache or not.
      *
      * @throws \Exception On error.
      */
     public function __construct(
         string $table,
         ?array $filters=null,
-        ?string $enterprise_class=null
+        ?string $enterprise_class=null,
+        bool $cache=true
     ) {
         if (empty($table) === true) {
             throw new \Exception(
@@ -116,7 +126,14 @@ abstract class Entity
 
         if (is_array($filters) === true) {
             // New one.
-            $data = \db_get_row_filter($this->table, $filters);
+            $data = \db_get_row_filter(
+                $this->table,
+                $filters,
+                false,
+                'AND',
+                false,
+                $cache
+            );
 
             if ($data === false) {
                 throw new \Exception(
@@ -128,6 +145,9 @@ abstract class Entity
             foreach ($data as $k => $v) {
                 $this->fields[$k] = $v;
             }
+
+            // Mark as existing object.
+            $this->existsInDB = true;
         } else {
             // Empty one.
             $data = \db_get_all_rows_sql(
@@ -140,6 +160,9 @@ abstract class Entity
             foreach ($data as $row) {
                 $this->fields[$row['Field']] = null;
             }
+
+            // Mark as virtual object.
+            $this->existsInDB = false;
         }
 
         if (\enterprise_installed() === true

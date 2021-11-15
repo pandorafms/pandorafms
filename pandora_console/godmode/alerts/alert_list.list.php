@@ -811,7 +811,7 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px',
             true,
-            ['class' => 'invert_filter']
+            ['class' => 'filter_none']
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -998,7 +998,7 @@ if (! $id_agente) {
                 echo '"'.html_print_image(
                     'images/lightbulb_off.png',
                     true,
-                    false,
+                    ['class' => 'filter_none'],
                     true
                 ).'"';
                 ?>
@@ -1037,7 +1037,7 @@ if (! $id_agente) {
                 echo '"'.html_print_image(
                     'images/lightbulb_off.png',
                     true,
-                    false,
+                    ['class' => 'filter_none'],
                     true
                 ).'"';
                 ?>

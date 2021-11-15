@@ -782,7 +782,8 @@ function pie_graph(
     $ttl=1,
     $legend_position=false,
     $colors='',
-    $hide_labels=false
+    $hide_labels=false,
+    $max_values=9
 ) {
     if (empty($chart_data) === true) {
         return graph_nodata_image($width, $height, 'pie');
@@ -793,8 +794,7 @@ function pie_graph(
     }
 
     // This library allows only 8 colors.
-    $max_values = 9;
-
+    // $max_values = 9;
     // Remove the html_entities.
     $temp = [];
     foreach ($chart_data as $key => $value) {

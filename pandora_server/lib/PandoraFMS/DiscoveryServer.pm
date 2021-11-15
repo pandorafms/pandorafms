@@ -29,6 +29,8 @@ use POSIX qw(strftime ceil);
 use JSON;
 use Encode qw(encode_utf8);
 use MIME::Base64;
+use File::Basename qw(dirname);
+use File::Copy;
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -378,7 +380,8 @@ sub exec_recon_script ($$$) {
   }
   
   if (-x $command) {
-    my $exec_output = `$command $args`;
+    my $exec_output = `$command $args 2>&1`;
+    log_execution($pa_config, $task->{'id_rt'}, "$command $args", $exec_output);
     logger($pa_config, "Execution output: \n". $exec_output, 10);
   } else {
     logger($pa_config, "Cannot execute recon task command $command.", 10);
@@ -1776,6 +1779,55 @@ sub PandoraFMS::Recon::Base::update_progress ($$) {
     db_do ($self->{'dbh'}, 'UPDATE trecon_task SET utimestamp = ?, status = ?, summary = ? WHERE id_rt = ?',
       time (), $progress, "{}", $self->{'task_id'});
   }
+}
+
+################################################################################
+# Store a log with execution details.
+################################################################################
+sub log_execution($$$$) {
+  my ($pa_config, $task_id, $cmd, $output) = @_;
+
+  return unless $pa_config->{'verbosity'} eq 10;
+
+  my $discovery_log_path = dirname($pa_config->{'log_file'}).'/discovery/';
+  mkdir($discovery_log_path) unless -d  $discovery_log_path;
+
+  eval {
+    local $SIG{__DIE__};
+
+    open (my $f, ">", $discovery_log_path.'task.'.$task_id.'.cmd');
+    print $f $cmd;
+    close ($f);
+
+    open ($f, ">", $discovery_log_path.'task.'.$task_id.'.out');
+    print $f $output;
+    close ($f);
+
+  };
+  
+}
+
+################################################################################
+# Store configuration files.
+################################################################################
+sub log_conf_files($$@) {
+	my $pa_config = shift;
+  my $task_id = shift;
+  my @files = @_;
+
+  return unless $pa_config->{'verbosity'} eq 10;
+
+	my $discovery_log_path = dirname($pa_config->{'log_file'}).'/discovery/';
+	mkdir($discovery_log_path) unless -d  $discovery_log_path;
+
+	eval {
+		local $SIG{__DIE__};
+
+    foreach my $f (@files) {
+      copy($f, $discovery_log_path);
+    }
+	};
+
 }
 
 1;

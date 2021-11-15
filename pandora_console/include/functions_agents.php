@@ -1283,7 +1283,7 @@ function agents_get_group_agents(
         if (!$add_alert_bulk_op) {
             // Add the rest of the filter from the search array.
             foreach ($search as $key => $value) {
-                $filter[] = $value;
+                $filter[$key] = $value;
             }
         }
     } else if ($filter !== true) {
@@ -3072,7 +3072,7 @@ function agents_get_network_interfaces($agents=false, $agents_filter=false)
 
     $ni_by_agents = [];
     foreach ($agents as $agent) {
-        $agent_id = $agent['id_agente'];
+        $agent_id = (isset($agent['id_agente'])) ? $agent['id_agente'] : $agent;
         $agent_group_id = $agent['id_grupo'];
         $agent_name = $agent['alias'];
         $agent_interfaces = [];

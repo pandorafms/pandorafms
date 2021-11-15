@@ -1041,7 +1041,7 @@ function ui_format_alert_row(
         $styleDisabled = '';
     }
 
-    if (empty($alert)) {
+    if (empty($alert) === true) {
         if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
             return [
                 '',
@@ -1066,7 +1066,7 @@ function ui_format_alert_row(
         }
     }
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $server = db_get_row('tmetaconsole_setup', 'id', $alert['server_data']['id']);
 
         if (metaconsole_connect($server) == NOERR) {
@@ -1087,7 +1087,7 @@ function ui_format_alert_row(
     $data = [];
 
     // Validate checkbox.
-    if (!defined('METACONSOLE')) {
+    if (is_metaconsole() === false) {
         if (check_acl($config['id_user'], $id_group, 'LW')
             || check_acl($config['id_user'], $id_group, 'LM')
         ) {
@@ -1106,7 +1106,7 @@ function ui_format_alert_row(
     }
 
     if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true && (int) $alert['server_data']['id'] !== 0) {
             $node = metaconsole_get_connection_by_id($alert['server_data']['id']);
             if (metaconsole_load_external_db($node) !== NOERR) {
                 // Restore the default connection.
@@ -1117,18 +1117,25 @@ function ui_format_alert_row(
         }
 
         $policyInfo = policies_is_alert_in_policy2($alert['id'], false);
-        if ($policyInfo === false) {
+        $module_linked = policies_is_module_linked($alert['id_agent_module']);
+        if (is_array($policyInfo) === false && $module_linked === false) {
             $data[$index['policy']] = '';
         } else {
-            $img = 'images/policies_mc.png';
-            if (!is_metaconsole()) {
+            $module_linked = policies_is_module_linked($alert['id_agent_module']);
+            if ($module_linked === '0') {
+                $img = 'images/unlinkpolicy.png';
+            } else {
+                $img = 'images/policies_mc.png';
+            }
+
+            if (is_metaconsole() === false) {
                 $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=enterprise/godmode/policies/policies&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             } else {
                 $data[$index['policy']] = '<a href="?sec=gmodules&amp;sec2=advanced/policymanager&amp;id='.$policyInfo['id'].'">'.html_print_image($img, true, ['title' => $policyInfo['name']]).'</a>';
             }
         }
 
-        if (is_metaconsole()) {
+        if (is_metaconsole() === true) {
             metaconsole_restore_db();
         }
     }
@@ -1139,7 +1146,7 @@ function ui_format_alert_row(
         $data[$index['standby']] = html_print_image('images/bell_pause.png', true, ['title' => __('Standby on')]);
     }
 
-    if (!defined('METACONSOLE')) {
+    if (is_metaconsole() === false) {
         // Force alert execution.
         if (check_acl($config['id_user'], $id_group, 'AW') || check_acl($config['id_user'], $id_group, 'LM')) {
             if ($alert['force_execution'] == 0) {
@@ -1154,7 +1161,7 @@ function ui_format_alert_row(
     if ($agent == 0) {
         $data[$index['module_name']] .= ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name($alert['id_agent_module']), 'module_small', false, true, true, '[&hellip;]', '');
     } else {
-        if (defined('METACONSOLE')) {
+        if (is_metaconsole() === true) {
             $agent_name = $alert['agent_name'];
             $id_agent = $alert['id_agent'];
         } else {
@@ -1162,7 +1169,7 @@ function ui_format_alert_row(
             $id_agent = modules_get_agentmodule_agent($alert['id_agent_module']);
         }
 
-        if (defined('METACONSOLE') || !can_user_access_node()) {
+        if (is_metaconsole() === true || !can_user_access_node()) {
             $data[$index['agent_name']] = ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', '');
         } else {
             if ($agent_style !== false) {
@@ -1179,7 +1186,7 @@ function ui_format_alert_row(
 
     $data[$index['description']] = '';
 
-    if (defined('METACONSOLE')) {
+    if (is_metaconsole() === true) {
         $data[$index['template']] .= '<a class="template_details" href="'.ui_get_full_url('/', false, false, false).'/ajax.php?page=enterprise/meta/include/ajax/tree_view.ajax&action=get_template_tooltip&id_template='.$template['id'].'&server_name='.$alert['server_data']['server_name'].'">';
     } else {
         $data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
@@ -1196,7 +1203,7 @@ function ui_format_alert_row(
 
     $actions = alerts_get_alert_agent_module_actions($alert['id'], false, $alert['server_data']['id']);
 
-    if (!empty($actions)) {
+    if (empty($actions) === false) {
         $actionText = '<div><ul class="action_list">';
         foreach ($actions as $action) {
             $actionText .= '<div class="mrgn_btn_5px" ><span class="action_name"><li>'.$action['name'];
@@ -2724,16 +2731,20 @@ function ui_print_status_image(
  * @param integer $status Module status.
  * @param boolean $return True or false.
  * @param string  $class  Custom class or use defined.
+ * @param string  $title  Custom title or inherit from module status.
  *
  * @return string HTML code for shape.
  */
 function ui_print_module_status(
     $status,
     $return=false,
-    $class='status_rounded_rectangles'
+    $class='status_rounded_rectangles',
+    $title=null
 ) {
     $color = modules_get_color_status($status, true);
-    $title = modules_get_modules_status($status);
+    if ($title === null) {
+        $title = modules_get_modules_status($status);
+    }
 
     $output = '<div style="background: '.$color;
     $output .= '" class="'.$class;
@@ -4283,10 +4294,6 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
             if (substr($fullurl, -1) != '/') {
                 $fullurl .= '/';
             }
-
-            if ($url == 'index.php' && is_metaconsole()) {
-                $fullurl .= ENTERPRISE_DIR.'/meta';
-            }
         } else if (!empty($config['public_url'])
             && (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
         ) {
@@ -4312,22 +4319,28 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         }
     }
 
+    $skip_meta_tag = false;
     if ($url === '') {
-        if ($proxy) {
-            $url = '';
-        } else {
+        if ($proxy === false) {
             $url = $_SERVER['REQUEST_URI'];
-        }
-    } else if ($url === false) {
-        if ($proxy) {
-            $url = '';
+            // Already inserted in request_uri.
+            $skip_meta_tag = true;
         } else {
-            // Only add the home url.
-            $url = $config['homeurl_static'].'/';
+            // Redirect to main.
+            $url = '?'.$_SERVER['QUERY_STRING'];
         }
+    } else if (empty($url) === true) {
+        if ($proxy === false) {
+            $url = $config['homeurl_static'].'/';
+            if ($metaconsole_root === true
+                && is_metaconsole()
+            ) {
+                $url = $config['homeurl_static'].'/'.ENTERPRISE_DIR.'/meta/';
+            }
 
-        if (is_metaconsole() && $metaconsole_root) {
-            $url .= 'enterprise/meta/';
+            $skip_meta_tag = true;
+        } else {
+            $url = '';
         }
     } else if (!strstr($url, '.php')) {
         if ($proxy) {
@@ -4335,30 +4348,31 @@ function ui_get_full_url($url='', $no_proxy=false, $add_name_php_file=false, $me
         } else {
             $fullurl .= $config['homeurl_static'].'/';
         }
-
-        if (is_metaconsole() && $metaconsole_root) {
-            $fullurl .= 'enterprise/meta/';
-        }
     } else {
-        if ($proxy) {
-            $fullurl .= '/';
-        } else {
+        if ((bool) $proxy === false) {
             if ($add_name_php_file) {
                 $fullurl .= $_SERVER['SCRIPT_NAME'];
             } else {
                 $fullurl .= $config['homeurl_static'].'/';
-
-                if (is_metaconsole() && $metaconsole_root) {
-                    $fullurl .= 'enterprise/meta/';
-                }
             }
         }
     }
 
-    if (substr($fullurl, -1, 1) === substr($url, 0, 1)) {
-        if (substr($fullurl, -1, 1) === '/') {
-            $url = substr($url, 1);
-        }
+    // Add last slash if missing.
+    if (substr($fullurl, -1, 1) !== '/') {
+        $fullurl .= '/';
+    }
+
+    // Remove starting slash if present.
+    if (substr($url, 0, 1) === '/') {
+        $url = substr($url, 1);
+    }
+
+    if ($skip_meta_tag === false
+        && $metaconsole_root
+        && is_metaconsole()
+    ) {
+        $fullurl .= ENTERPRISE_DIR.'/meta/';
     }
 
     return $fullurl.$url;
@@ -5738,7 +5752,7 @@ function ui_print_agent_autocomplete_input($parameters)
     }
 
     $attrs = [];
-    $attrs['style'] = 'background: url('.$icon_image.') no-repeat right; '.$text_color.'';
+    $attrs['style'] = 'padding-right: 20px; background: url('.$icon_image.') no-repeat right; '.$text_color.'';
 
     if (!$disabled_javascript_on_blur_function) {
         $attrs['onblur'] = $javascript_on_blur_function_name.'()';

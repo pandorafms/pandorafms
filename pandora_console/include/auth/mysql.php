@@ -349,18 +349,24 @@ function process_user_login_remote($login, $pass, $api=false)
             return false;
         }
 
+        $user_info = [
+            'fullname' => $login,
+            'comments' => 'Imported from '.$config['auth'],
+        ];
+
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ad_adv_user_node'];
+        }
+
         // Create the user.
         if (enterprise_hook(
             'prepare_permissions_groups_of_user_ad',
             [
                 $login,
                 $pass,
-                [
-                    'fullname' => $login,
-                    'comments' => 'Imported from '.$config['auth'],
-                ],
+                $user_info,
                 false,
-                defined('METACONSOLE'),
+                defined('METACONSOLE') && is_centralized() === false,
             ]
         ) === false
         ) {
@@ -371,6 +377,10 @@ function process_user_login_remote($login, $pass, $api=false)
         if (is_management_allowed() === false) {
             $config['auth_error'] = __('Please, login into metaconsole first');
             return false;
+        }
+
+        if (is_metaconsole() === true) {
+            $user_info['metaconsole_access_node'] = $config['ldap_adv_user_node'];
         }
 
         $permissions = fill_permissions_ldap($sr);
@@ -387,7 +397,7 @@ function process_user_login_remote($login, $pass, $api=false)
                 $pass,
                 $user_info,
                 $permissions,
-                is_metaconsole()
+                is_metaconsole() && is_centralized() === false
             );
         }
     } else {
@@ -770,7 +780,7 @@ function ldap_process_user_login($login, $password)
             io_safe_output($config['ldap_base_dn']),
             $config['ldap_login_attr'],
             io_safe_output($config['ldap_admin_login']),
-            $config['ldap_admin_pass'],
+            io_safe_output($config['ldap_admin_pass']),
             io_safe_output($login)
         );
 

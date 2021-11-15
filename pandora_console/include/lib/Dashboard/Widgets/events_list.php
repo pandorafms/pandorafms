@@ -613,6 +613,8 @@ class EventsListWidget extends Widget
             'tg.nombre as group_name',
         ];
 
+        $home_url = $config['homeurl'];
+
         if ((bool) \is_metaconsole() === false
             || $this->nodeId > 0
         ) {
@@ -676,6 +678,14 @@ class EventsListWidget extends Widget
             $table->size = [];
             $table->rowclass = [];
 
+            // If its node, get direccion value and construct rute.
+            if ($this->nodeId !== null && $this->nodeId > 0) {
+                metaconsole_restore_db();
+                $result = db_get_all_rows_sql('SELECT server_url FROM tmetaconsole_setup WHERE id = '.$this->nodeId.'');
+                $home_url = $result[0]['server_url'];
+                metaconsole_connect(null, $this->nodeId);
+            }
+
             foreach ($events as $event) {
                 $data = [];
                 $event['evento'] = \io_safe_output($event['evento']);
@@ -684,8 +694,8 @@ class EventsListWidget extends Widget
                 $agent_alias = \agents_get_alias($event['id_agente']);
 
                 if ($agent_alias !== '') {
-                    $data[1] = '<a href="'.$config['homeurl'];
-                    $data[1] .= 'index.php?sec=estado';
+                    $data[1] = '<a href="'.$home_url;
+                    $data[1] .= '/index.php?sec=estado';
                     $data[1] .= '&sec2=operation/agentes/ver_agente';
                     $data[1] .= '&id_agente='.$event['id_agente'];
                     $data[1] .= '" title="'.$event['evento'].'">';

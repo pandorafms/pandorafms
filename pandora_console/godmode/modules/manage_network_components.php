@@ -297,12 +297,18 @@ if (is_metaconsole() === true) {
 }
 
 if ($is_management_allowed === false) {
+    if (is_metaconsole() === false) {
+        $url = '<a target="_blank" href="'.ui_get_meta_url(
+            'index.php?sec=advanced&sec2=godmode/modules/manage_network_components&tab=network&pure='.(int) $config['pure']
+        ).'">'.__('metaconsole').'</a>';
+    } else {
+        $url = __('any node');
+    }
+
     ui_print_warning_message(
         __(
             'This node is configured with centralized mode. All remote components are read only. Go to %s to manage them.',
-            '<a target="_blank" href="'.ui_get_meta_url(
-                'index.php?sec=advanced&sec2=godmode/modules/manage_network_components&tab=network&pure=0'
-            ).'">'.__('metaconsole').'</a>'
+            $url
         )
     );
 }
@@ -575,7 +581,7 @@ if ($is_management_allowed === true && $multiple_delete) {
     $id = 0;
 }
 
-if ($id || $new_component
+if ((bool) $id !== false || $new_component
     || $create_network_from_module
     || $create_network_from_snmp_browser
 ) {
@@ -592,6 +598,7 @@ $url = ui_get_url_refresh(
         'offset'          => false,
         'search_string'   => $search_string,
         'search_id_group' => $search_id_group,
+        'id'              => $id,
     ],
     true,
     false

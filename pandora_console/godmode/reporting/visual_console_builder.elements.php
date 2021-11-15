@@ -204,6 +204,15 @@ foreach ($layoutDatas as $layoutData) {
             );
         break;
 
+        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+        case CIRCULAR_PROGRESS_BAR:
+            $table->data[($i + 1)]['icon'] = html_print_image(
+                'images/percentile_item.png',
+                true,
+                ['title' => __('Percentile')]
+            );
+        break;
+
         case MODULE_GRAPH:
             $table->data[($i + 1)]['icon'] = html_print_image(
                 'images/chart_curve.png',
@@ -335,6 +344,30 @@ foreach ($layoutDatas as $layoutData) {
             );
         break;
 
+        case BASIC_CHART:
+            $table->data[($i + 1)]['icon'] = html_print_image(
+                'images/basic_chart.png',
+                true,
+                ['title' => __('Basic chart')]
+            );
+        break;
+
+        case ODOMETER:
+            $table->data[($i + 1)]['icon'] = html_print_image(
+                'images/odometer.png',
+                true,
+                ['title' => __('Odometer')]
+            );
+        break;
+
+        case CLOCK:
+            $table->data[($i + 1)]['icon'] = html_print_image(
+                'images/clock-tab.png',
+                true,
+                ['title' => __('Clock')]
+            );
+        break;
+
         default:
             if (enterprise_installed()) {
                 $table->data[($i + 1)]['icon'] = enterprise_visual_map_print_list_element('icon', $layoutData);
@@ -402,6 +435,13 @@ foreach ($layoutDatas as $layoutData) {
 
         case COLOR_CLOUD:
             $table->data[($i + 1)][2] = html_print_input_text('width_'.$idLayoutData, $layoutData['width'], '', 2, 5, true).' x '.html_print_input_text('height_'.$idLayoutData, $layoutData['width'], '', 2, 5, true);
+        break;
+
+        case CIRCULAR_PROGRESS_BAR:
+        case CIRCULAR_INTERIOR_PROGRESS_BAR:
+        case PERCENTILE_BUBBLE:
+        case PERCENTILE_BAR:
+            $table->data[($i + 1)][2] = html_print_input_text('width_'.$idLayoutData, $layoutData['width'], '', 2, 5, true);
         break;
 
         default:
@@ -488,6 +528,7 @@ foreach ($layoutDatas as $layoutData) {
         case LABEL:
         case NETWORK_LINK:
         case LINE_ITEM:
+        case CLOCK:
             $table->data[($i + 2)][0] = '';
         break;
 
@@ -530,7 +571,7 @@ foreach ($layoutDatas as $layoutData) {
                     $params['value'] = db_get_value('alias', 'tagente', 'id_agente', $layoutData['id_agent']);
                 }
 
-                if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {
+                if ($layoutData['id_custom_graph'] != 0) {
                     $table->data[($i + 2)][0] = __('Custom graph');
                 } else {
                     $table->data[($i + 2)][0] = ui_print_agent_autocomplete_input($params);
@@ -550,6 +591,7 @@ foreach ($layoutDatas as $layoutData) {
         case NETWORK_LINK:
         case LINE_ITEM:
         case GROUP_ITEM:
+        case CLOCK:
             $table->data[($i + 2)][1] = '';
         break;
 
@@ -579,7 +621,7 @@ foreach ($layoutDatas as $layoutData) {
 
                 $modules = io_safe_output($modules);
 
-                if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {
+                if ($layoutData['id_custom_graph'] != 0) {
                     if (is_metaconsole()) {
                         $graphs = [];
                         $graphs = metaconsole_get_custom_graphs(true);

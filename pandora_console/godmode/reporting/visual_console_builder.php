@@ -459,11 +459,15 @@ switch ($activeTab) {
 
                         break;
 
-                        case MODULE_GRAPH:
                         case SIMPLE_VALUE_MAX:
                         case SIMPLE_VALUE_MIN:
                         case SIMPLE_VALUE_AVG:
                             $values['period'] = get_parameter('period_'.$id, 0);
+                        break;
+
+                        case MODULE_GRAPH:
+                            $values['period'] = get_parameter('period_'.$id, 0);
+                            unset($values['image']);
                         break;
 
                         case GROUP_ITEM:

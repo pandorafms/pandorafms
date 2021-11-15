@@ -1181,6 +1181,10 @@ function agents_get_group_agents(
             }
         }
 
+        if (isset($search['all_agents'])) {
+            unset($search['all_agents']);
+        }
+
         if (isset($search['string']) === true) {
             $string = io_safe_input($search['string']);
             $filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";

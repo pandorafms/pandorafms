@@ -731,7 +731,7 @@ class Ui
             $html_title_close_button = "data-close-btn='yes'";
         }
 
-        $dialogHtml = "<div id='".$dialog_id."' class='".$dialog_class."' data-role='dialog' ".$html_title_close_button.">\n";
+        $dialogHtml = "<div data-close-btn='right' id='".$dialog_id."' class='".$dialog_class."' data-role='dialog' ".$html_title_close_button.">\n";
         $dialogHtml .= "<div data-role='header'>\n";
         $dialogHtml .= "<h1 class='dialog_title'>".$title_text."</h1>\n";
         $dialogHtml .= "</div>\n";
@@ -785,10 +785,9 @@ class Ui
         echo "		<meta charset='UTF-8' />\n";
         echo "		<meta name='viewport' content='width=device-width, initial-scale=1'>\n";
         echo "		<link rel='stylesheet' href='include/style/main.css' />\n";
-
-        echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.3.1.css' />\n";
+        echo "		<link rel='stylesheet' href='include/style/jquery.mobile-1.4.5.css' />\n";
         echo "		<script src='include/javascript/jquery.js'></script>\n";
-        echo "		<script src='include/javascript/jquery.mobile-1.3.1.js'></script>\n";
+        echo "		<script src='include/javascript/jquery.mobile-1.4.5.js'></script>\n";
         echo "		<script src='../include/javascript/pandora.js'></script>\n";
         echo "		<script src='../include/javascript/pandora_ui.js'></script>\n";
 

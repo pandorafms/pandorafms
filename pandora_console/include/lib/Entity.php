@@ -101,6 +101,32 @@ abstract class Entity
 
 
     /**
+     * Duplicates an object.
+     *
+     * @param array  $field_exceptions Fields to skip.
+     * @param string $class_str        Class name.
+     *
+     * @return object
+     */
+    public function duplicate(
+        array $field_exceptions=[],
+        string $class_str=__CLASS__
+    ) {
+        $keys = array_keys($this->toArray());
+
+        $new = new $class_str();
+        foreach ($keys as $k) {
+            if (in_array($k, $field_exceptions) === false) {
+                $new->$k($this->$k());
+            }
+        }
+
+        return $new;
+
+    }
+
+
+    /**
      * Defines a generic constructor to extract information of the object.
      *
      * @param string      $table            Table.

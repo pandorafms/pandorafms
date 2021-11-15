@@ -133,7 +133,9 @@ class AgentsAlerts extends HTML
         // Refresh rate.
         $this->refreshSelectedRate = (string) get_parameter('refresh-rate', '30');
         // Show Modules without alerts table.
-        $this->showWithoutAlertModules = isset($_POST['show-modules-without-alerts']);
+        $this->showWithoutAlertModules = (isset($_POST['show-modules-without-alerts']))
+            ? true
+            : isset($_GET['show-modules-without-alerts']);
         // Selected group.
         $this->groupId = (int) get_parameter('group-id', 0);
         // Create alert token.
@@ -200,6 +202,8 @@ class AgentsAlerts extends HTML
      */
     private function createAlertTable()
     {
+        global $config;
+
         $table = new stdClass();
 
         if ($this->groupId > 0) {
@@ -219,7 +223,7 @@ class AgentsAlerts extends HTML
         $sql = 'SELECT tagente.alias, tagente_modulo.nombre,
         tagente_modulo.id_agente_modulo FROM tagente_modulo
         INNER JOIN tagente ON tagente.id_agente = tagente_modulo.id_agente
-        WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules) '.$grupo.' LIMIT 20 OFFSET '.$offset_modules;
+        WHERE id_agente_modulo NOT IN (SELECT id_agent_module FROM talert_template_modules) '.$grupo.' LIMIT '.$config['block_size'].' OFFSET '.$offset_modules;
 
         $agent_modules = db_get_all_rows_sql($sql);
 
@@ -227,7 +231,7 @@ class AgentsAlerts extends HTML
             $count_agent_module[0]['COUNT(tagente_modulo.nombre)'],
             ui_get_url_refresh(),
             0,
-            0,
+            false,
             false,
             'offset',
             true,

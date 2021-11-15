@@ -483,23 +483,15 @@ function menu_add_extras(&$menu)
     $menu_extra['gusuarios']['sub']['godmode/users/configure_user']['text'] = __('Configure user');
     $menu_extra['gusuarios']['sub']['godmode/users/configure_profile']['text'] = __('Configure profile');
 
-    $menu_extra['gservers']['sub']['godmode/servers/manage_recontask_form']['text'] = __('Manage recontask');
-
     $menu_extra['gmodules']['sub']['godmode/modules/manage_network_templates_form']['text'] = __('Module templates management');
     $menu_extra['gmodules']['sub']['enterprise/godmode/modules/manage_inventory_modules_form']['text'] = __('Inventory modules management');
-    $menu_extra['gmodules']['sub']['godmode/tag/edit_tag']['text'] = __('Tags management');
 
     $menu_extra['gagente']['sub']['godmode/agentes/configurar_agente']['text'] = __('Agents management');
 
-    $menu_extra['estado']['sub']['operation/agentes/ver_agente']['text'] = __('View agent');
-
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_template']['text'] = __('Configure alert template');
 
-    $menu_extra['network']['sub']['operation/agentes/networkmap']['text'] = __('Manage network map');
     $menu_extra['network']['sub']['operation/visual_console/render_view']['text'] = __('View visual console');
     $menu_extra['network']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Builder visual console');
-
-    $menu_extra['eventos']['sub']['godmode/events/events']['text'] = __('Administration events');
 
     $menu_extra['reporting']['sub']['operation/reporting/reporting_viewer']['text'] = __('View reporting');
     $menu_extra['reporting']['sub']['operation/reporting/graph_viewer']['text'] = __('Graph viewer');
@@ -516,7 +508,6 @@ function menu_add_extras(&$menu)
         $menu_extra['godgismaps']['sub']['godmode/gis_maps/configure_gis_map']['text'] = __('Manage GIS Maps');
     }
 
-    $menu_extra['workspace']['sub']['operation/incidents/incident_statistics']['text'] = __('Incidents statistics');
     $menu_extra['workspace']['sub']['operation/messages/message_edit']['text'] = __('Manage messages');
 
     $menu_extra['gagente']['sub']['godmode/groups/configure_group']['text'] = __('Manage groups');
@@ -525,14 +516,9 @@ function menu_add_extras(&$menu)
 
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_action']['text'] = __('Manage alert actions');
     $menu_extra['galertas']['sub']['godmode/alerts/configure_alert_command']['text'] = __('Manage commands');
-    $menu_extra['galertas']['sub']['enterprise/godmode/alerts/alert_correlation']['text'] = __('Manage event alerts');
 
     $menu_extra['gservers']['sub']['enterprise/godmode/servers/manage_export_form']['text'] = __('Manage export targets');
 
-    $menu_extra['estado']['sub']['enterprise/godmode/services/manage_services']['text'] = __('Manage services');
-    $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
-    $menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
-    $menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
     $menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 
@@ -586,6 +572,10 @@ function menu_get_sec($with_categories=false)
                 if ($k != 'gismaps') {
                     $in_godmode = true;
                 }
+            }
+
+            if ($k === 'discovery') {
+                $in_godmode = true;
             }
 
             if ($in_godmode) {
@@ -664,6 +654,9 @@ function menu_get_sec_pages($sec, $menu_hash=false)
             // If this value has various parameters, we only get the first.
             $k = explode('&', $k);
             $k = $k[0];
+            if (is_array($v['text']) === true) {
+                $v['text'] = $v['text'][0];
+            }
 
             $sec2_array[$k] = $v['text'];
         }
@@ -744,4 +737,48 @@ function menu_sec3_in_sec2($sec, $sec2, $sec3)
     }
 
     return false;
+}
+
+
+/**
+ * Prepare menu data for enterprise acl conf.
+ *
+ * @param  array  $pages
+ * @param  string $sec
+ * @return string $pages
+ */
+function menu_pepare_acl_select_data($pages, $sec)
+{
+    $exclude_pages = [
+        'estado'     => 'operation/agentes/tactical',
+        'network'    => 'operation/agentes/networkmap_list',
+        'extensions' => [
+            'operation/extensions',
+            'enterprise/extensions/vmware',
+            'extensions/users_connected',
+        ],
+        'gmodules'   => 'godmode/modules/manage_network_templates',
+        'geventos'   => 'godmode/events/events&amp;section=filter',
+        'gsetup'     => 'godmode/setup/setup&section=general',
+        'messages'   => [
+            'godmode/update_manager/update_manager&tab=online',
+            'godmode/update_manager/update_manager&tab=offline',
+            'godmode/update_manager/update_manager&tab=setup',
+        ],
+
+    ];
+
+    foreach ($exclude_pages as $exclude_sec => $sec2) {
+        if ($sec === $exclude_sec) {
+            if (is_array($sec2) === true) {
+                foreach ($sec2 as $value) {
+                    unset($pages[$value]);
+                }
+            }
+
+            unset($pages[$sec2]);
+        }
+    }
+
+    return $pages;
 }
